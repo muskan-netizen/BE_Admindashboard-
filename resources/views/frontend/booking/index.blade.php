@@ -443,7 +443,6 @@ body .alFullMapForm .scheduled-footer .btn {
             if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){
                 payableAmout = result.subscription_discount;
             }
-
             %>
                 <input type="hidden" id="stripe_token" name="stripe_token" value="">
                 <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
@@ -768,15 +767,15 @@ body .alFullMapForm .scheduled-footer .btn {
     });
 </script>
 
-@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options) || in_array('stripe_ideal',$client_payment_options))
+@if(in_array('stripe', $client_payment_options) || in_array('stripe_fpx', $client_payment_options) || in_array('stripe_oxxo', $client_payment_options) || in_array('stripe_ideal', $client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
-@if(in_array('stripe_oxxo',$client_payment_options))
+@if(in_array('stripe_oxxo', $client_payment_options))
 <script>
 var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
 </script>
 @endif
-@if(in_array('stripe_ideal',$client_payment_options))
+@if(in_array('stripe_ideal', $client_payment_options))
 <script>
 var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 </script>

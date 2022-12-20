@@ -159,6 +159,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
         Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');
         Route::post('app-styling/updateTabBar', 'Client\AppStylingController@updateTabBar')->name('styling.updateTabBar');
+        Route::post('app-styling/updateAppStylesNew', 'Client\AppStylingController@updateAppStylesNew')->name('styling.updateAppStylesNew');
+        Route::post('app-styling/pickup-append-section', 'Client\AppStylingController@appendPickupSection')->name('app.pickup.append.section');
         Route::post('app-styling/updateHomePage', 'Client\AppStylingController@updateHomePage')->name('styling.updateHomePage');
         Route::post('app-styling/updateSignupTagLine', 'Client\AppStylingController@updateSignupTagLine')->name('styling.updateSignupTagLine');
         Route::post('app-styling/addTutorials', 'Client\AppStylingController@addTutorials')->name('styling.addTutorials');

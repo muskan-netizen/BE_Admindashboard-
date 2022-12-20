@@ -1667,101 +1667,117 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
 <div class="col-md-4 ">
    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
       <label for="is_long_term_service" class="mr-2 mb-0">{{__('Long Term Service')}}<small class="d-block pr-5">{{__("Enable to add long term service.")}}</small></label>
-      <span> 
+      <span>
          <input type="checkbox" data-plugin="switchery" name="is_long_term_service_switch" id="is_long_term_service_switch" class="form-control checkbox_change" data-className="is_long_term_service" data-color="#43bee1" @if( @getAdditionalPreference(['is_long_term_service'])['is_long_term_service']=='1' ) checked='checked' @endif>
       </span>
       <input type="hidden" @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service']==1) value="1" @else value="0" @endif name="is_long_term_service" id="is_long_term_service" />
-      </div>
+   </div>
 </div>
 @endif
-      <div class="col-md-4">
-         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="is_gst_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('GST Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show GST details for vendor registration")}}</small></label>
-            <span>
-               <input type="checkbox" data-plugin="switchery" name="is_gst_required_for_vendor_registration_switch" id="is_gst_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_gst_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_gst_required_for_vendor_registration']=='1' ) checked='checked' @endif>
-               <input type="hidden" @if($getAdditionalPreference['is_gst_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_gst_required_for_vendor_registration" id="is_gst_required_for_vendor_registration" />
-            </span>
-         </div>
-      </div>
-      <div class="col-md-4">
-         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="is_baking_details_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('Banking Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show Banking details for vendor registration")}}</small></label>
-            <span>
-               <input type="checkbox" data-plugin="switchery" name="is_baking_details_required_for_vendor_registration_switch" id="is_baking_details_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_baking_details_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_baking_details_required_for_vendor_registration']=='1' ) checked='checked' @endif>
-               <input type="hidden" @if($getAdditionalPreference['is_baking_details_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_baking_details_required_for_vendor_registration" id="is_baking_details_required_for_vendor_registration" />
-            </span>
-         </div>
-      </div>
-      <div class="col-md-4">
-         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="is_advance_details_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('Advanced Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show Advanced details for vendor registration")}}</small></label>
-            <span>
-               <input type="checkbox" data-plugin="switchery" name="is_advance_details_required_for_vendor_registration_switch" id="is_advance_details_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_advance_details_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_advance_details_required_for_vendor_registration']=='1' ) checked='checked' @endif>
-               <input type="hidden" @if($getAdditionalPreference['is_advance_details_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_advance_details_required_for_vendor_registration" id="is_advance_details_required_for_vendor_registration" />
-            </span>
-         </div>
-      </div>
-      <div class="col-md-4">
-         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="is_vendor_category_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('Vendor Category for vendor')}}<small class="d-block pr-5">{{__("Enable to show Vendor Category for vendor registration")}}</small></label>
-            <span>
-               <input type="checkbox" data-plugin="switchery" name="is_vendor_category_required_for_vendor_registration_switch" id="is_vendor_category_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_vendor_category_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_vendor_category_required_for_vendor_registration']=='1' ) checked='checked' @endif>
-               <input type="hidden" @if($getAdditionalPreference['is_vendor_category_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_vendor_category_required_for_vendor_registration" id="is_vendor_category_required_for_vendor_registration" />
-            </span>
-         </div>
-      </div>
 
-      <div class="col-md-4">
-         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="is_seller_module_switch" class="mr-2 mb-0">{{__('Show Seller Module')}}<small class="d-block pr-5">{{__("Enable to show Seller Module")}}</small></label>
-            <span>
-               <input type="checkbox" data-plugin="switchery" name="is_seller_module_switch" id="is_seller_module_switch" class="form-control checkbox_change" data-className="is_seller_module" data-color="#43bee1" @if( $getAdditionalPreference['is_seller_module']=='1' ) checked='checked' @endif>
-               <input type="hidden" @if($getAdditionalPreference['is_seller_module']==1) value="1" @else value="0" @endif name="is_seller_module" id="is_seller_module" />
-            </span>
-         </div>
-      </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                     <label for="is_cab_pooling_switch" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) checked='checked'  @endif>
-                     </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) value="1" @else value="0" @endif  name="is_cab_pooling"  id="is_cab_pooling"/>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                     <label for="is_tracking_url_switch" class="mr-2 mb-0">{{__('Tracking Url')}}<small class="d-block pr-5">{{__("Enable to allow guest customers to tracking url.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_tracking_url_switch" id="is_tracking_url_switch" class="form-control checkbox_change" data-className="is_tracking_url" data-color="#43bee1" @if(@getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1) checked='checked'  @endif>
-                     </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1) value="1" @else value="0" @endif  name="is_tracking_url"  id="is_tracking_url"/>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                     <label for="is_tracking_url_switch" class="mr-2 mb-0">{{__('Tracking Url Sms Enable')}}<small class="d-block pr-5">{{__("Enable to access guest customers to tracking url via sms otp.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_tracking_url_sms_switch" id="is_tracking_url_sms_switch" class="form-control checkbox_change" data-className="is_tracking_sms_url" data-color="#43bee1" @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1) checked='checked'  @endif>
-                     </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1) value="1" @else value="0" @endif  name="is_tracking_sms_url"  id="is_tracking_sms_url"/>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                     <label for="is_corporate_user_switch" class="mr-2 mb-0">{{__('Corporate User Enable')}}<small class="d-block pr-5">{{__("Enable to show corporate user type in user registration.")}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="is_corporate_user_switch" id="is_corporate_user_switch" class="form-control checkbox_change" data-className="is_corporate_user" data-color="#43bee1" @if(@getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) checked='checked'  @endif>
-                     </span>
-                     <input type="hidden"  @if(@getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) value="1" @else value="0" @endif  name="is_corporate_user"  id="is_corporate_user"/>
-                  </div>
-               </div>
-
-               </div>
-            </div>
-         </form>
-    
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="is_gst_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('GST Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show GST details for vendor registration")}}</small></label>
+      <span>
+         <input type="checkbox" data-plugin="switchery" name="is_gst_required_for_vendor_registration_switch" id="is_gst_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_gst_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_gst_required_for_vendor_registration']=='1' ) checked='checked' @endif>
+         <input type="hidden" @if($getAdditionalPreference['is_gst_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_gst_required_for_vendor_registration" id="is_gst_required_for_vendor_registration" />
+      </span>
    </div>
+</div>
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="is_baking_details_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('Banking Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show Banking details for vendor registration")}}</small></label>
+      <span>
+         <input type="checkbox" data-plugin="switchery" name="is_baking_details_required_for_vendor_registration_switch" id="is_baking_details_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_baking_details_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_baking_details_required_for_vendor_registration']=='1' ) checked='checked' @endif>
+         <input type="hidden" @if($getAdditionalPreference['is_baking_details_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_baking_details_required_for_vendor_registration" id="is_baking_details_required_for_vendor_registration" />
+      </span>
+   </div>
+</div>
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="is_advance_details_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('Advanced Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show Advanced details for vendor registration")}}</small></label>
+      <span>
+         <input type="checkbox" data-plugin="switchery" name="is_advance_details_required_for_vendor_registration_switch" id="is_advance_details_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_advance_details_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_advance_details_required_for_vendor_registration']=='1' ) checked='checked' @endif>
+         <input type="hidden" @if($getAdditionalPreference['is_advance_details_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_advance_details_required_for_vendor_registration" id="is_advance_details_required_for_vendor_registration" />
+      </span>
+   </div>
+</div>
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="is_vendor_category_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('Vendor Category for vendor')}}<small class="d-block pr-5">{{__("Enable to show Vendor Category for vendor registration")}}</small></label>
+      <span>
+         <input type="checkbox" data-plugin="switchery" name="is_vendor_category_required_for_vendor_registration_switch" id="is_vendor_category_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_vendor_category_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_vendor_category_required_for_vendor_registration']=='1' ) checked='checked' @endif>
+         <input type="hidden" @if($getAdditionalPreference['is_vendor_category_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_vendor_category_required_for_vendor_registration" id="is_vendor_category_required_for_vendor_registration" />
+      </span>
+   </div>
+</div>
+
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="is_seller_module_switch" class="mr-2 mb-0">{{__('Show Seller Module')}}<small class="d-block pr-5">{{__("Enable to show Seller Module")}}</small></label>
+      <span>
+         <input type="checkbox" data-plugin="switchery" name="is_seller_module_switch" id="is_seller_module_switch" class="form-control checkbox_change" data-className="is_seller_module" data-color="#43bee1" @if( $getAdditionalPreference['is_seller_module']=='1' ) checked='checked' @endif>
+         <input type="hidden" @if($getAdditionalPreference['is_seller_module']==1) value="1" @else value="0" @endif name="is_seller_module" id="is_seller_module" />
+      </span>
+   </div>
+</div>
+
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="is_cab_pooling_switch" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
+      <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) checked='checked' @endif>
+      </span>
+      <input type="hidden" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) value="1" @else value="0" @endif name="is_cab_pooling" id="is_cab_pooling" />
+   </div>
+</div>
+
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="add_to_cart_btn_switch" class="mr-2 mb-0">{{__('Add to Cart')}}<small class="d-block pr-5">{{__("Enable to allow customers to add to cart.")}}</small></label>
+      <span> <input type="checkbox" data-plugin="switchery" name="add_to_cart_btn_switch" id="add_to_cart_btn_switch" class="form-control checkbox_change" data-className="add_to_cart_btn" data-color="#43bee1" @if(@getAdditionalPreference(['add_to_cart_btn'])['add_to_cart_btn']==1) checked='checked' @endif>
+      </span>
+      <input type="hidden" @if(@getAdditionalPreference(['add_to_cart_btn'])['add_to_cart_btn']==1) value="1" @else value="0" @endif name="add_to_cart_btn" id="add_to_cart_btn" />
+   </div>
+</div>
+
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="chat_button_switch" class="mr-2 mb-0">{{__('Chat Button')}}<small class="d-block pr-5">{{__("Enable to allow customers to chat button.")}}</small></label>
+      <span> <input type="checkbox" data-plugin="switchery" name="chat_button_switch" id="chat_button_switch" class="form-control checkbox_change" data-className="chat_button" data-color="#43bee1" @if(@getAdditionalPreference(['chat_button'])['chat_button']==1) checked='checked' @endif>
+      </span>
+      <input type="hidden" @if(@getAdditionalPreference(['chat_button'])['chat_button']==1) value="1" @else value="0" @endif name="chat_button" id="chat_button" />
+   </div>
+</div>
+
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="call_button_switch" class="mr-2 mb-0">{{__('Call Button')}}<small class="d-block pr-5">{{__("Enable to allow customers to chat button.")}}</small></label>
+      <span> <input type="checkbox" data-plugin="switchery" name="call_button_switch" id="call_button_switch" class="form-control checkbox_change" data-className="call_button" data-color="#43bee1" @if(@getAdditionalPreference(['call_button'])['call_button']==1) checked='checked' @endif>
+      </span>
+      <input type="hidden" @if(@getAdditionalPreference(['call_button'])['call_button']==1) value="1" @else value="0" @endif name="call_button" id="call_button" />
+   </div>
+</div>
+
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="is_tracking_url_switch" class="mr-2 mb-0">{{__('Tracking Url')}}<small class="d-block pr-5">{{__("Enable to allow guest customers to tracking url.")}}</small></label>
+      <span> <input type="checkbox" data-plugin="switchery" name="is_tracking_url_switch" id="is_tracking_url_switch" class="form-control checkbox_change" data-className="is_tracking_url" data-color="#43bee1" @if(@getAdditionalPreference(['is_tracking_url'])['is_tracking_url']==1) checked='checked' @endif>
+      </span>
+      <input type="hidden" @if(@getAdditionalPreference(['is_tracking_url'])['is_tracking_url']==1) value="1" @else value="0" @endif name="is_tracking_url" id="is_tracking_url" />
+   </div>
+</div>
+
+<div class="col-md-4">
+   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+      <label for="is_tracking_url_switch" class="mr-2 mb-0">{{__('Tracking Url Sms Enable')}}<small class="d-block pr-5">{{__("Enable to access guest customers to tracking url via sms otp.")}}</small></label>
+      <span> <input type="checkbox" data-plugin="switchery" name="is_tracking_url_sms_switch" id="is_tracking_url_sms_switch" class="form-control checkbox_change" data-className="is_tracking_sms_url" data-color="#43bee1" @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url']==1) checked='checked' @endif>
+      </span>
+      <input type="hidden" @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url']==1) value="1" @else value="0" @endif name="is_tracking_sms_url" id="is_tracking_sms_url" />
+   </div>
+</div>
+
+
+</div>
 </div>
 </form>
 <!-- Custom Mods end -->
@@ -2508,7 +2524,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
    var dispatcherDiv = $('#need_dispacher_ride');
    var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
    var laundry_service = $('#need_laundry_service');
-
+   var need_inventory_service = $('#need_inventory_service');
    var laundry_service = $('#need_laundry_service');
 
    var is_hubspot_enable = $('#is_hubspot_enable');
@@ -2618,6 +2634,17 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
          $('.sos_row').hide();
       } else {
          $('.sos_row').show();
+      }
+   }
+
+   var is_postpay_edit = $('#is_order_edit_enable_switch');
+
+   is_postpay_edit[0].onchange = function() {
+      if ($('#is_order_edit_enable_switch:checked').length != 1) {
+         $('#edit_order_time_limit_div').hide();
+         $('#order_edit_before_hours').val(0);
+      } else {
+         $('#edit_order_time_limit_div').show();
       }
    }
 

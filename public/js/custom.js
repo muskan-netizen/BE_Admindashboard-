@@ -30,6 +30,37 @@ $(".mobile-account .fa").click(function(){
     $(".onhover-show-div").toggleClass("open");
 });
 
+$(document).on("click", '.discard_editing_order', function (e) {
+    Swal.fire({
+        title: confirm_discard_edit_order_title,
+        text: confirm_discard_edit_order_desc,
+        showCancelButton: true,
+        confirmButtonText: 'Ok',
+    }).then((result) => {
+        if(result.value)
+        {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: discard_order_editing_url,
+                data: {
+                    "_token": $('meta[name="_token"]').attr('content'),
+                    "orderid": $(this).data('orderid')
+                },
+                success: function (res) {
+                    if (res.status == "Success") {
+                        success_error_alert('success', res.message, success_error_container);
+                        location.reload();
+                    } else {
+                        success_error_alert('error', res.message, success_error_container);
+                    }
+                }
+            });
+        }else{
+            return false;
+        }
+    });
+});
 
 // Material Select Initialization
 $(document).ready(function () {
@@ -705,7 +736,10 @@ $(document).ready(function () {
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-
+        if($("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val() != schedule_dt)){
+            success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
+            $(this).val($("#edit_order_schedule_datetime").val());
+        }
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -918,7 +952,11 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
-
+        if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
+            success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
+            $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
+            return false;
+        }
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
@@ -1706,7 +1744,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot },
+            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot, is_postpay:post_pay_edit_order },
 
             success: function (response) {
                 if (response.status == "Success") {
@@ -1826,8 +1864,8 @@ $(document).ready(function () {
         let total_amount = $("input[name='cart_total_payable_amount']").val();
         // alert(total_amount);
         // return false;
-        if (payment_option_id == 1 || payment_option_id == 38) {
-            placeOrder(address_id, payment_option_id, '', tip, delivery_type,other_taxes_string);
+        if (payment_option_id == 1 || payment_option_id == 38 || post_pay_edit_order == 1) {
+            placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string);
         } else{
             cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
         }
@@ -2224,6 +2262,12 @@ $(document).ready(function () {
                                 }
                                 if(response.schedule_datetime!=null){
                                     $("#schedule_datetime").val(response.schedule_datetime);
+                                    if($("#edit_order_schedule_datetime").val()!=''){
+                                        $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
+                                        $("#schedule_datetime").attr("max", $("#schedule_datetime").val());
+                                        $("#schedule_datetime").attr("min", $("#schedule_datetime").val());
+                                        $("#edit_order_schedule_datetime").val($("#schedule_datetime").val());
+                                    }
                                     $("#taskschedule").click();
                                 }
 

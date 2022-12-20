@@ -316,6 +316,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 
 /*================== Wrapper home page css ==========================*/
+.al_body_template_six .img-outer-box {
+    margin-top: -26px;
+}
 .alSpaListBox p {
     margin-top: 10px;
     font-size: 20px;

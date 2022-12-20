@@ -24,7 +24,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
 
-use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate,VendorMinAmount}; 
+use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption}; 
 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
@@ -61,9 +61,19 @@ class CartController extends BaseController
             // }
             $user = Auth::user();
             if (!$user->id) {
-                $cart = Cart::where('unique_identifier', $user->system_user);
+                if(checkColumnExists('carts','order_id'))
+                {
+                    $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
+                }else{
+                    $cart = Cart::where('unique_identifier', $user->system_user);
+                }
             } else {
-                $cart = Cart::where('user_id', $user->id);
+                if(checkColumnExists('carts','order_id'))
+                {
+                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
+                }else{
+                    $cart = Cart::where('user_id', $user->id);
+                }
             }
             $cart = $cart->first();
        
@@ -1161,9 +1171,12 @@ class CartController extends BaseController
                         $vendorData->vendor->is_vendor_closed = 0;
                     }
                 }
-                if($vendorData->vendor->$action == 0){
-                    $vendorData->is_vendor_closed = 1;
-                    $delivery_status = 0;
+                $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+                if(isset($set_template)  && $set_template->template_id != 9){
+                    if($vendorData->vendor->$action == 0){
+                        $vendorData->is_vendor_closed = 1;
+                        $delivery_status = 0;
+                    }
                 }
 
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
@@ -1629,51 +1642,30 @@ class CartController extends BaseController
         try {
             $user = Auth::user();
             if ($user) {
-
                 if(isset($request->slot)){
                     $fslot = explode(' - ',$request->slot);
                     $fslot = $fslot[0];
                 }
+                
                 if(isset($request->dropoff_scheduled_slot)){
-                    $dslot = explode(' - ',$request->dropoff_scheduled_slot);
+                    $dslot = explode(' - ', $request->dropoff_scheduled_slot);
                     $dslot = $dslot[0];
                 }
-
                 if ($request->task_type == 'now') {
                     $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
                 } else {
                     if(isset($request->schedule_dt) && !empty($request->schedule_dt)){
-                        $request->schedule_dt = $request->schedule_dt.'T'.$fslot;
-                    $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                        $request->schedule_dt = (isset($fslot)) ? $request->schedule_dt.'T'.$fslot : $request->schedule_dt;
+                        $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                     }
                 }
                
 
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
-                $request->schedule_pickup = Carbon::parse($request->schedule_pickup.'T'.$fslot, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $request->schedule_pickup = Carbon::parse((isset($fslot)) ? $request->schedule_pickup.'T'.$fslot : $request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
                 if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff))  # for pickup laundry
-                $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff.'T'.$dslot, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-
-                // if($request->task_type!='now'){
-                //         if(isset($request->slot))
-                //         {
-                //         //$request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                //             $time = $request->schedule_dt;
-                //             $slot = $request->slot;
-                //         }else{
-                //             $time = $request->schedule_dt;
-                //             $slot = null;
-                //         }
-                //     }else{
-                //         $time = $request->schedule_dt;
-                //         $slot = null;
-                //     }
-
-                    // if(isset($request->dropoff_scheduled_slot))
-                    //     {
-                    //         $dropSlot = $request->dropoff_scheduled_slot;
-                    //     }
+                $request->schedule_dropoff = Carbon::parse((isset($fslot)) ? $request->schedule_dropoff.'T'.$dslot : $request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
                 Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null,
                 'schedule_type' => $request->task_type??null,

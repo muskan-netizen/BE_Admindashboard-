@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption};
 use App\Models\AutoRejectOrderCron;
 
 use App\Models\{VendorOrderCancelReturnPayment};
@@ -85,6 +85,10 @@ class OrderController extends BaseController
     {
         try {
             $action = ($request->has('type')) ? $request->type : 'delivery';
+            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+            if(isset($set_template)  && $set_template->template_id == 9){
+                $action = 'delivery';
+            }
 
             if($request->has('type') && $request->type != 'delivery'){
                 $rules = [
@@ -149,6 +153,10 @@ class OrderController extends BaseController
                     $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
                 }
                 $client_preference = ClientPreference::first();
+
+                $editlimit_datetime = Carbon::now()->toDateTimeString();
+                $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+                $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
                 $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
                 // if ($client_preference->verify_email == 1) {
                 //     if ($user->is_email_verified == 0) {
@@ -170,7 +178,12 @@ class OrderController extends BaseController
                     return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
                 }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
-                $cart = Cart::where('user_id', $user->id)->first();
+                if(checkColumnExists('carts','order_id'))
+                {//get if any order is being edit
+                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder'])->first();
+                }else{
+                    $cart = Cart::where('user_id', $user->id)->first();
+                }
                 if ($cart) {
                     // $loyalty_points_used=0;
                     // $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
@@ -200,9 +213,27 @@ class OrderController extends BaseController
                     $loyalty_points_used =  $loyaltyCheck->loyalty_points_used;
                             
 
-                    $order = new Order;
+                    if(isset($cart->editingOrder) && !empty($cart->editingOrder))
+                    {
+                        $order = Order::where('id', $cart->editingOrder->id)->first();
+                        if((strtotime($order->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
+                            return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
+                        }
+                        $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
+                        if($VendorOrderStatus > 0){
+                            return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
+                        }
+                        OrderProduct::where('order_id', $order->id)->delete();
+                        OrderProductPrescription::where('order_id', $order->id)->delete();
+                        OrderTax::where('order_id', $order->id)->delete();
+                        VendorOrderStatus::where('order_id', $order->id)->delete();
+                        $order->is_edited = 1;
+                    }else{
+                        $order = new Order;
+                        $order->order_number = generateOrderNo();
+                    }
+                    
                     $order->user_id = $user->id;
-                    $order->order_number = generateOrderNo();
                     $order->address_id = $request->address_id;
                     $order->total_other_taxes = $cart->total_other_taxes;
                     $order->payment_option_id = $request->payment_option_id;
@@ -228,6 +259,9 @@ class OrderController extends BaseController
                                     }
                                 }
                     $order->taxable_amount = $total_taxes;
+                    if(checkColumnExists('orders', 'is_postpay')){
+                        $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+                    }
                     $order->save();
 
                     $is_long_term_order = 0;
@@ -266,7 +300,14 @@ class OrderController extends BaseController
                         $vendor_discount_amount = 0;
                         $is_restricted = 0;
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
-                        $order_vendor = new OrderVendor;
+                        if(isset($cart->editingOrder) && !empty($cart->editingOrder))
+                        {
+                            $order_vendor = OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $vendor_id)->first();
+                            $order_vendor->web_hook_code = $order_vendor->web_hook_code;
+                        }else{
+                            $order_vendor = new OrderVendor();
+                        }
+                        //$order_vendor = new OrderVendor;
                         $order_vendor->status = 0;
                         $order_vendor->user_id = $user->id;
                         $order_vendor->order_id = $order->id;
@@ -760,7 +801,12 @@ class OrderController extends BaseController
                         
                         CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
 
-                        Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
+                        if(checkColumnExists('carts','order_id'))
+                        {
+                            Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL, 'order_id' => NULL]);
+                        }else{
+                            Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
+                        }
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
@@ -1120,8 +1166,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id', 'asc')->first();
@@ -1257,8 +1315,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id', 'asc')->first();
@@ -1385,8 +1455,20 @@ class OrderController extends BaseController
                  $cash_to_be_collected = 'Yes';
                  $payable_amount = $order->payable_amount;
              } else {
-                 $cash_to_be_collected = 'No';
-                 $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
              }
  
  
@@ -1749,16 +1831,27 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request'
         ])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
                 $q1->orWhere(function ($q2) {
-                    $q2->whereIn('orders.payment_option_id', [1,38]);
+                    $q2->whereIn('orders.payment_option_id', [1,38])
+                    ->orWhere(function($q3) {
+                        $q3->where('orders.is_postpay', 1) //1 for order is post paid
+                            ->whereNotIn('orders.payment_option_id', [1, 38]);
+                    });
+                    
                 });
             })
             ->paginate($paginate);
+
+        $is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
+        $is_order_edit_enable = getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
+        $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+        $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+
         foreach ($orders as $order) {
             $order_item_count = 0;
             $order->user_name = $user->name;
@@ -1770,6 +1863,26 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
+            if(checkColumnExists('orders', 'is_postpay')){
+                $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+            }
+            if(checkColumnExists('orders', 'is_edited')){
+                $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
+            }
+            if(!empty($order->orderDetail->scheduled_date_time) && $is_order_edit_enable == 1 && $order_edit_before_hours > 0 && ($order->orderDetail->payment_option_id==1 || $order->orderDetail->payment_status !=1)){
+                if((strtotime($order->orderDetail->scheduled_date_time) - strtotime($editlimit_datetime)) > 0){
+                    $order->is_editable  = 1;
+                }else{
+                    $order->is_editable  = 0;
+                }
+            }else{
+                $order->is_editable  = 0;
+            }
+
+            if(!empty($order->orderDetail->editingInCart)){
+                $order->is_editable  = 2;
+            }
+
             $product_details = [];
             $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->orderDetail->id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
             if ($vendor_order_status) {
@@ -3225,6 +3338,34 @@ class OrderController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
         
+    }
+
+    public function editOrderByUser(Request $request)
+    {
+        try
+        {
+            $orderid = $request->orderid;
+            $response = $this->editOrderInCart($orderid);
+            return $response;
+        }
+        catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+    public function discardEditOrderByUser(Request $request)
+    {
+        try
+        {
+            $orderid = $request->orderid;
+            $response = $this->discardEditOrder($orderid);
+            return $response;
+        }
+        catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
     }
 
 }

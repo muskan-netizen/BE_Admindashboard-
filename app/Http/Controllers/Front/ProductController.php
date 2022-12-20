@@ -300,6 +300,8 @@ class ProductController extends FrontController{
                         if( !empty($value->attribute) && !empty($value->attribute->status) && $value->attribute->status == 1 ) {
                             $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
                             $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
+                            $product_attr[$key]['hexacode'] = optional($value->attributeOption)->hexacode ?? '';
+                            $product_attr[$key]['type'] = optional($value->attribute)->type ?? '';
                             
                             if( !empty($value->attribute) && $value->attribute->type != 4) {
                                 $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
@@ -320,12 +322,16 @@ class ProductController extends FrontController{
                         $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
                         $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
                         $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                        $attr_array[$pro_att_val['title']][$pro_att_key]['hexacode'] = $pro_att_val['hexacode'];
+                        $attr_array[$pro_att_val['title']][$pro_att_key]['type'] = $pro_att_val['type'];
                     }
                     else {
                         $attr_id = $pro_att_val['attribute_id'];
                         $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
                         $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
                         $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                        $attr_array[$pro_att_val['title']][$pro_att_key]['hexacode'] = $pro_att_val['hexacode'];
+                        $attr_array[$pro_att_val['title']][$pro_att_key]['type'] = $pro_att_val['type'];
                     }
                 }
             }
