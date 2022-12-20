@@ -736,9 +736,9 @@ $(document).ready(function () {
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-        if($("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val() != schedule_dt)){
+        if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val() != schedule_dt)){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
-            $(this).val($("#edit_order_schedule_datetime").val());
+            $(".schedule_datetime").val($("#edit_order_schedule_datetime").val());
         }
         $.ajax({
             type: "POST",
@@ -2261,8 +2261,9 @@ $(document).ready(function () {
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
                                 if(response.schedule_datetime!=null){
-                                    $("#schedule_datetime").val(response.schedule_datetime);
+                                    //$("#schedule_datetime").val(response.schedule_datetime);
                                     if($("#edit_order_schedule_datetime").val()!=''){
+                                        $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
                                         $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("max", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("min", $("#schedule_datetime").val());

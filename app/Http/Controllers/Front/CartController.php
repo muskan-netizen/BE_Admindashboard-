@@ -2004,7 +2004,9 @@ class CartController extends FrontController
 
         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
         {
-            $request->request->add(['schedule_date_delivery' => Carbon::parse($cart->editingOrder->scheduled_date_time)->timezone($timezone)->format('Y-m-d H:i:s')]);
+            $schedule_date_delivery_edit = Carbon::parse($cart->editingOrder->scheduled_date_time)->timezone($timezone)->format('Y-m-d H:i:s');
+        }else{
+            $schedule_date_delivery_edit = '';
         }
 
         if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
@@ -2053,7 +2055,7 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
 
-            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $request->schedule_date_delivery])->render();
+            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit])->render();
         }
         return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'']);
     }
