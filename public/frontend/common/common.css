@@ -1546,3 +1546,21 @@ body.al_body_template_two .royo_whatsapp_img {
 body.al_body_template_two .royo_whatsapp_img img {
     width: 50px;
 }
+body.al_body_template_two span.fa.fa-eye-slash.toggle-password {
+    right: 10px;
+}
+.al_body_template_two .render_full_brands a.barnd-img-outer img.blur-up.lazyloaded {
+    object-fit: contain;
+    width: 100px;
+}
+.al_body_template_two .render_full_brands a.barnd-img-outer {
+    height: 150px;
+    width: 150px !important;
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+    text-align: center;
+    margin: 0 auto;
+    border: 1px solid#cccc;
+    padding: 20px;
+}
