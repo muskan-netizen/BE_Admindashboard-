@@ -15,9 +15,9 @@ $(document).on('click', '#open_gift_card', function(e) {
                 $('#giftCard-modal').modal('show');
                 $("#promo_code_list_main_div").html('');
                 $(document).find('.manual_promocode_input').val("");
-                $('#giftCard_code_list_main_div').html(response.html);
-                 $('.validate_giftCard_code_btn').attr('data-cart_id', cart_id);
-                $('.validate_giftCard_code_btn').attr('data-amount', cart_total_payable_amount);
+               // $('#giftCard_code_list_main_div').html(response.html);
+                //$('.validate_giftCard_code_btn').attr('data-cart_id', cart_id);
+                
             }
         }
     });
@@ -53,38 +53,32 @@ $(document).on("click", ".apply_gifCard_code_btn", function () {
         }
     });
 });
-$(document).on('click', '.validate_promo_code_btn', function () {
-    let amount = $(this).attr('data-amount');
-    let cart_id = $(this).attr('data-cart_id');
-    let vendor_id = $(this).attr('data-vendor_id');
-    let promocode = $(document).find('.manual_promocode_input').val();
-    if (promocode && promocode != "") {
+$(document).on('click', '.validate_giftCard_code_btn', function () {
+    let cart_id  =  $("#cart_id").val();
+    
+    let giftCardCode = $(document).find('.manual_giftCard_input').val();
+    if (giftCardCode && giftCardCode != "") {
         // let coupon_id = $(this).data('coupon_id');
         $.ajax({
             type: "POST",
             dataType: 'json',
-            url: validate_promocode_coupon_url,
-            data: { cart_id: cart_id, vendor_id: vendor_id, amount: amount, promocode: promocode },
+            url: `verify/giftCard`,
+            data: { cart_id: cart_id, giftCardCode: giftCardCode},
             success: function (response) {
                 if (response.status == "Success") {
-                    $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-amount', amount);
-                    $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-cart_id', cart_id);
-                    $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-vendor_id', vendor_id);
-                    $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-coupon_id', response.data.id);
-                    $('.validate_promo_div').find('.apply_promo_code_btn').trigger('click');
-                    $('#refferal-modal').modal('hide');
+                    $('#giftCard-modal').modal('hide');
                     cartHeader();
                 }
             },
             error: function (reject) {
                 if (reject.status === 422) {
                     var message = $.parseJSON(reject.responseText);
-                    $(".invalid-feedback.manual_promocode").html("<strong>" + message.message + "</strong>");
+                    $(".invalid-feedback.manual_giftCard").html("<strong>" + message.message + "</strong>");
                 }
             }
         });
     } else {
-        $(".invalid-feedback.manual_promocode").html("<strong>Please enter promocode</strong>");
+        $(".invalid-feedback.manual_giftCard").html("<strong>Please Enter Gift Card</strong>");
     }
 });
 

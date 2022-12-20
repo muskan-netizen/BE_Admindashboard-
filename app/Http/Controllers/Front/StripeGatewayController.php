@@ -199,19 +199,16 @@ class StripeGatewayController extends FrontController
                     if(!empty($json_obj->send_card_to_email)){
                         $sendor['send_card_to_email'] = $json_obj->send_card_to_email;
                     }
+                    if(!empty($json_obj->send_card_to_address)){
+                        $sendor['send_card_to_address'] = $json_obj->send_card_to_address;
+                    }
+                    
+                    $sendor['send_card_is_delivery'] = $json_obj->send_card_is_delivery ??0;
+                   
                     $postdata['metadata']['senderData'] =!empty($sendor) ? json_encode($sendor) : '';
                     $parameters['senderData'] = !empty($sendor) ? json_encode($sendor) : '';
                 }
-
-                // $postdata['shipping']['name'] = ($user->name) ? $user->name : 'N/A';
-                // $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
-                // $postdata['shipping']['address']['line1'] = ($user_address) ? ($user_address->street != "") ? $user_address->street : 'N/A' : 'N/A';
-                // $postdata['shipping']['address']['city'] = ($user_address) ? ($user_address->city != "") ? $user_address->city : 'N/A' : 'N/A';
-                // $postdata['shipping']['address']['state'] = ($user_address) ? ($user_address->state != "") ? $user_address->state : 'N/A' : 'N/A';
-                // $postdata['shipping']['address']['country'] = ($user_address) ? ($user_address->country != "") ? $user_address->country : 'N/A' : 'N/A';
-                // $postdata['shipping']['address']['postal_code'] = ($user_address) ? ($user_address->pincode != "") ? $user_address->pincode : 'N/A' : 'N/A';
-
-                $intent = \Stripe\PaymentIntent::create($postdata);
+                 $intent = \Stripe\PaymentIntent::create($postdata);
             }
             if (isset($json_obj->payment_intent_id)) {
                 $intent = \Stripe\PaymentIntent::retrieve(

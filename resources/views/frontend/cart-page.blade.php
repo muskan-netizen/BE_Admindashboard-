@@ -623,7 +623,7 @@
             <div class="col-12 mb-2">
                 <h5 class="order_text">{{ __('Order Summary') }}</h5>
                 @if(array_key_exists('gift_card_id', $cart_details) && empty($cart_details->gift_card) )
-                    <a id='open_gift_card' href="javascript:void(0)">{{ __("open gift Card") }}</a>
+                    <a id='open_gift_card' href="javascript:void(0)" class="btn btn-solid w-100">{{ __("open gift Card") }}</a>
                 @endif
             </div>
         <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
@@ -716,7 +716,7 @@
                     <div class="col-12 alFourSpecificInstructions mt-2">
                         <span class="pb-1"> {{__('Gift Card')}}</span>
                        <div class="order-user-name">
-                            <p class="mb-0"><img class="blur-up lazyloaded" data-src="http://local.myorder.com/assets/images/discount_icon.svg" src="http://local.myorder.com/assets/images/discount_icon.svg"> {{ $cart_details->gift_card->name }}</p>
+                            <p class="mb-0"><img class="blur-up lazyloaded" data-src="http://local.myorder.com/assets/images/discount_icon.svg" src="http://local.myorder.com/assets/images/discount_icon.svg"> {{ $cart_details->gift_card->title }}</p>
                             <a href="javascript:void(0);" data-giftcard_id='{{ $cart_details->gift_card->id }}' class="float-right remove_giftCard"> <i class="fa fa-times" aria-hidden="true"></i></a>
                        </div>
                     </div>

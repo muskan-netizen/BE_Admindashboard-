@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
-use App\Models\{GiftCard};
+use App\Models\{GiftCard,OrderStatusOption,OrderVendor};
 
 use Exception;
 class GiftcardController extends BaseController
@@ -75,7 +75,7 @@ class GiftcardController extends BaseController
             'short_desc' => 'required',
             'expiry_date' => 'required',
             'amount' => 'required|numeric',
-            'name' => 'required|string|max:150||unique:gift_cards',
+           // 'name' => 'required|string|max:150||unique:gift_cards',
         );
         if ($request->hasFile('image')) {    /* upload logo file */
             $rules['image'] =  'image|mimes:jpeg,png,jpg,gif';
@@ -108,7 +108,7 @@ class GiftcardController extends BaseController
      */
     public function save(Request $request, GiftCard $GiftCard, $update = 'false'){
         try{
-            foreach ($request->only('name', 'amount', 'expiry_date','short_desc', 'title') as $key => $value) {
+            foreach ($request->only( 'amount', 'expiry_date','short_desc', 'title') as $key => $value) {
                 $GiftCard->{$key} = $value;
             }
             if ($request->hasFile('image')) {    /* upload logo file */
@@ -149,7 +149,7 @@ class GiftcardController extends BaseController
      */
     public function update(Request $request, $domain = '', $id = 0){
         $rules = array(
-            'name' => 'required|string|max:150||unique:gift_cards,name,'.$id,
+           // 'name' => 'required|string|max:150||unique:gift_cards,name,'.$id,
             'amount' => 'required|numeric',
             'title' => 'required',
             'short_desc' => 'required',
@@ -199,6 +199,176 @@ class GiftcardController extends BaseController
             ]);
         }
         
+    }
+
+
+    public function filter(Request $request){
+        try {
+            $user = Auth::user();
+            $search_value = $request->get('search');
+            $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
+   
+            $vendor_orders_query = OrderVendor::with(['orderDetail.paymentOption','vendor'])->whereHas('orderDetail.giftCard');
+            if (Auth::user()->is_superadmin == 0) {
+                $vendor_orders_query = $vendor_orders_query->whereHas('vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
+                });
+            }
+            if (!empty($request->get('date_filter'))) {
+                $date_date_filter = explode(' to ', $request->get('date_filter'));
+                $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
+                $from_date = $date_date_filter[0];
+                $vendor_orders_query = $vendor_orders_query->between($from_date." 00:00:00", $to_date." 23:59:59");
+            }
+            if (!empty($request->get('promo_code_filter'))) {
+                $promo_code_filter = $request->get('promo_code_filter');
+                $vendor_orders_query = $vendor_orders_query->where('coupon_id', $promo_code_filter);
+            }
+            if (!empty($request->get('status_filter'))) {
+                $status_filter = $request->get('status_filter');
+                $vendor_orders_query = $vendor_orders_query->where('order_status_option_id', $status_filter);
+               
+            }
+            $vendor_orders = $vendor_orders_query->orderBy('id', 'desc');
+            return Datatables::of($vendor_orders)
+                ->addColumn('gift_card_amount', function($vendor_orders) {
+                    return decimal_format($vendor_orders->orderDetail->gift_card_amount??0);
+                })
+                ->addColumn('gift_name', function($vendor_orders) {
+                    return $vendor_orders->orderDetail->giftCard->name??'Null';
+                })
+                ->addColumn('gift_amount', function($vendor_orders) {
+                    return decimal_format($vendor_orders->orderDetail->giftCard->amount??0);
+                })
+                ->addColumn('expiry_date', function($vendor_orders) use($timezone) {
+                   if(isset($vendor_orders->orderDetail->giftCard->expiry_date)){
+                    return dateTimeInUserTimeZone($vendor_orders->orderDetail->giftCard->expiry_date,$timezone);
+                   }
+                   return 'Null';
+                })
+                ->addColumn('is_delivery', function($vendor_orders) {
+                   // $sender = $vendor_orders->orderDetail->
+              
+                    if(isset($vendor_orders->orderDetail->userGiftCard)){
+                        $Sender = isset($vendor_orders->orderDetail->userGiftCard->buy_for_data)? json_decode($vendor_orders->orderDetail->userGiftCard->buy_for_data) : [];
+                        return !empty( $Sender ) ? ((isset($Sender->send_card_is_delivery) && ($Sender->send_card_is_delivery ==1)) ? 'Yes' : 'NO' ) : 'NO';
+                    }
+                    return 'NO';
+                 })
+                 ->addColumn('delivery_address', function($vendor_orders) {
+                    // $sender = $vendor_orders->orderDetail->
+               
+                     if(isset($vendor_orders->orderDetail->userGiftCard)){
+                         $Sender = isset($vendor_orders->orderDetail->userGiftCard->buy_for_data)? json_decode($vendor_orders->orderDetail->userGiftCard->buy_for_data) : [];
+                         return !empty( $Sender ) ? ( (isset($Sender->send_card_to_address) && (!empty($Sender->send_card_to_address) ) )  ? $Sender->send_card_to_address : 'NA' )  : 'NA';
+                     }
+                     return 'NA';
+                  })
+                ->addColumn('order_number', function($vendor_orders) {
+                    return $vendor_orders->orderDetail ? $vendor_orders->orderDetail->order_number : '';
+                })
+                ->addColumn('view_url', function($vendor_orders) {
+                    if(!empty($vendor_orders->order_id) && !empty($vendor_orders->vendor_id)){
+                        return route('order.show.detail', [$vendor_orders->order_id, $vendor_orders->vendor_id]);
+                    }else{
+                        return '#';
+                    }
+                })
+                ->addColumn('created_date', function($vendor_orders) use($timezone) {
+                    return dateTimeInUserTimeZone($vendor_orders->created_at, $timezone);
+                })
+
+                ->addColumn('user_name', function($vendor_orders) {
+                    return $vendor_orders->user ? $vendor_orders->user->name : '';
+                })
+                ->addColumn('vendor_name',function($vendor_orders){
+                    return $vendor_orders->vendor ? __($vendor_orders->vendor->name) : '';
+                })
+                ->addIndexColumn()
+                ->filter(function ($instance) use ($request) {
+                    if (!empty($request->get('search'))) {
+                        $search = $request->get('search');
+                        $instance->where(function($query) use($search){
+                            $query->whereHas('orderDetail', function($q) use($search){
+                                $q->where('order_number', 'LIKE', '%'.$search.'%');
+                            })
+                            ->orwhereHas('orderDetail.giftCard', function($q) use($search){
+                                $q->where('name', 'LIKE', '%'.$search.'%');
+                            })
+                            ->orWhereHas('user', function($q) use($search){
+                                $q->where('name', 'LIKE', '%'.$search.'%');
+                            })
+                            ->orWhereHas('vendor', function($q) use($search){
+                                $q->where('name', 'LIKE', '%'.$search.'%');
+                            });
+                        });
+                    }
+                })->make(true);
+        } catch (Exception $e) {
+
+        }
+    }
+
+    
+    
+    /**
+     * redeemedCard
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function redeemedCard(Request $request){
+        $order_status_options = OrderStatusOption::where('type', 1)->get();
+
+        //  promo_code_uses_count
+        $promo_code_uses_count = OrderVendor::distinct('coupon_code');
+        if (Auth::user()->is_superadmin == 0) {
+            $promo_code_uses_count = $promo_code_uses_count->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $promo_code_uses_count = $promo_code_uses_count->count('coupon_code');
+
+        /// unique_users_to_use_promo_code_count
+        $unique_users_to_use_promo_code_count = OrderVendor::whereNotNull('coupon_id')->distinct('user_id');
+        if (Auth::user()->is_superadmin == 0) {
+            $unique_users_to_use_promo_code_count = $unique_users_to_use_promo_code_count->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $unique_users_to_use_promo_code_count = $unique_users_to_use_promo_code_count->count('user_id');
+
+        /// admin_paid_total_amt
+        $admin_paid_total_amt = OrderVendor::where('coupon_paid_by', 1);
+        if (Auth::user()->is_superadmin == 0) {
+            $admin_paid_total_amt = $admin_paid_total_amt->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $admin_paid_total_amt = $admin_paid_total_amt->sum('discount_amount');
+
+    /// vendor_paid_total_amt
+        $vendor_paid_total_amt = OrderVendor::where('coupon_paid_by', 0);
+        if (Auth::user()->is_superadmin == 0) {
+            $vendor_paid_total_amt = $vendor_paid_total_amt->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $vendor_paid_total_amt = $vendor_paid_total_amt->sum('discount_amount');
+
+        /// promo_code_options
+        $promo_code_options = OrderVendor::whereNotNull('coupon_id')->distinct('coupon_id');
+
+        if (Auth::user()->is_superadmin == 0) {
+            $promo_code_options = $promo_code_options->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $promo_code_options = $promo_code_options->get();
+
+
+
+        return view('backend/giftcard/giftcardlist', compact('vendor_paid_total_amt','admin_paid_total_amt','promo_code_uses_count','unique_users_to_use_promo_code_count','order_status_options','promo_code_options'));
     }
 
 

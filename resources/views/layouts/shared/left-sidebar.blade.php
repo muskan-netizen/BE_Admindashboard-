@@ -198,6 +198,11 @@
                                                     <a href="{{route('backend.order.refund')}}">{{ __('Order Refunds') }}</a>
                                                 </li>
                                             @endif
+                                            @if(in_array('accounting_promo_codes',$allowed) || Auth::user()->is_superadmin == 1)
+                                                <li>
+                                                    <a href="{{route('account.redeemedcard')}}">{{ __('Gift Cards') }}</a>
+                                                </li>
+                                            @endif
                                         </ul>
                                     </div>
                                 </li>

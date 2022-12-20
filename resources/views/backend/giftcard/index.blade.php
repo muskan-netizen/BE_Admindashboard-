@@ -135,7 +135,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                {{-- <div class="col-md-6">
                                     <div class="form-group" id="nameInput">
                                         {!! Form::label('title', __('Gift Card Code'),['class' => 'control-label']) !!}
                                         {!! Form::text('name', '', ['class' => 'form-control', 'placeholder'=>'Enter Gift Card Code']) !!}
@@ -143,7 +143,7 @@
                                             <strong></strong>
                                         </span>
                                     </div>
-                                </div>
+                                </div> --}}
                                 
                     
                                 <div class="col-md-6">

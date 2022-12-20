@@ -789,6 +789,7 @@ class OrderController extends FrontController
             $UserGiftCardId = '';
             $giftCardTotalAmount = 0;
             $giftCardUsedAmount = 0;
+            $userGiftCardCode   = null;
             $nowDate = Carbon::now()->toDateTimeString();
 
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
@@ -844,15 +845,16 @@ class OrderController extends FrontController
             if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
                 
                 if(isset($cart->giftCard) && !empty($cart->giftCard)){
-                    $giftCardCode = $cart->giftCard->name;
-                  
-                    $giftcard = UserGiftCard::with('giftCard')->whereHas('giftCard',function ($query) use ($nowDate,$giftCardCode){
-                        return  $query->whereDate('expiry_date', '>=', $nowDate)->where('name',$giftCardCode);
-                    })->where(['is_used'=>'0','user_id'=>$user->id])->first();
+                    
+                    $giftcard = UserGiftCard::with('giftCard')->whereHas('giftCard',function ($query) use ($nowDate){
+                        return  $query->whereDate('expiry_date', '>=', $nowDate);
+                    })->where(['is_used'=>'0','gift_card_code'=>$cart->user_gift_code])->first();
+                    
                    
                     if($giftcard){
                         $UserGiftCardId = $giftcard->id;
                         $giftCardTotalAmount = $cart->giftCard->amount;
+                        $userGiftCardCode    = $cart->user_gift_code;
                     }
                 }
             }
@@ -1609,8 +1611,9 @@ class OrderController extends FrontController
                 $order->payable_amount = $orderTotalPay;
             }
             if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1 && checkColumnExists('orders', 'gift_card_id') ){
-                $order->gift_card_id = $cart->gift_card_id;
-                $order->gift_card_amount =decimal_format($giftCardUsedAmount);
+                $order->gift_card_id     = $cart->gift_card_id;
+                $order->gift_card_amount = decimal_format($giftCardUsedAmount);
+                $order->gift_card_code   = $userGiftCardCode;
                 Cart::where('id', $cart->id)->update(['gift_card_id'=>null]);
                 if($UserGiftCardId && ($giftCardUsedAmount >0)){
                     $giftcard = UserGiftCard::where(['id'=>$UserGiftCardId])->update(['is_used'=>1]);

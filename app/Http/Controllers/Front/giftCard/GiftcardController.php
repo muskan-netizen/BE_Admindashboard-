@@ -27,9 +27,32 @@ class GiftcardController extends FrontController
      */
     public function __construct()
     {
-        $getAdditionalPreference = getAdditionalPreference(['is_gift_card']);
         if(@getAdditionalPreference(['is_gift_card'])['is_gift_card']==0){
             abort(404);
+        }
+    }
+    public function textGiftMail(){
+        $GiftCard       = GiftCard::where('id', '5')->first();
+        $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',  'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
+        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+            if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_from) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+                $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
+            $email_data = [
+                'GiftCard' => $GiftCard,
+                'currSymbol' => $currSymbol,
+                'email' => 'harbans.singh@codebrewinnovations.com',//"harbans.sayonakh@gmail.com",//  $sendto,//
+                'mail_from' => $data->mail_from,
+                'client_name' => $client->name ?? 'Royo',
+                'logo' => $client->logo['original'],
+                'subject' => 'Gift Card Buy From Royo '. $client->name,
+                'email_template_content' => 'you got gift Card',
+                'user' => Auth::user(),
+            ];
+            // pr($email_data);
+            // pr(new \App\Mail\GiftCardEmail($email_data));
+            $mail = 	Mail::to('harbans.singh@codebrewinnovations.com')->send(new \App\Mail\GiftCardEmail($email_data));
+            pr($mail);
+            //dispatch(new \App\Jobs\GiftCardEmailJob($email_data))->onQueue('verify_email');
         }
     }
 
@@ -108,35 +131,41 @@ class GiftcardController extends FrontController
      */
     public function purchaseGiftCard(Request $request, $domain = '', $gift_card_id = '')
     {
-        //pr( $request->all());
+       
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }else{
             $user = Auth::user();
         }
         $GiftCard       = GiftCard::where('id', $gift_card_id)->first();
-        // $senderData = !empty($request->senderData) ? json_decode($request->senderData) : '';
-        if(isset($senderData['send_card_to_email']) && !empty($senderData['send_card_to_email'])){
-            //pr($senderData['send_card_to_email']);
+        $senderData = !empty($request->senderData) ? json_decode($request->senderData) : '';
+       
+        if(isset($senderData->send_card_to_email) && !empty($senderData->send_card_to_email)){
+           // pr($senderData->send_card_to_email);
+           
         }
+       // pr( $request->all());
         if( $GiftCard ){
-            $UserGiftCard               = new UserGiftCard();
-            $UserGiftCard->user_id      = $user->id;
-            $UserGiftCard->gift_card_id = $GiftCard->id;
-            $UserGiftCard->amount       = $GiftCard->amount;
-            $UserGiftCard->expiry_date  = $GiftCard->expiry_date;
-            $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : ''; 
-            $UserGiftCard->save();
-
-            $payment                        = new Payment;
-            $payment->user_id               = $user->id;
-            $payment->balance_transaction   = $request->amount;
-            $payment->transaction_id        = $request->transaction_id;
-            $payment->reference_table_id    = $UserGiftCard->id;
-            $payment->payment_option_id     = $request->payment_option_id;
-            $payment->date                  = Carbon::now()->format('Y-m-d');
-            $payment->type                  = 'giftCard';
-            $payment->save();
+            if(Payment::where('transaction_id',$request->transaction_id)->count() ==0){
+                $UserGiftCard               = new UserGiftCard();
+                $UserGiftCard->user_id      = $user->id;
+                $UserGiftCard->gift_card_id = $GiftCard->id;
+                $UserGiftCard->amount       = $GiftCard->amount;
+                $UserGiftCard->expiry_date  = $GiftCard->expiry_date;
+                $UserGiftCard->gift_card_code = $this->getGiftCardCode($GiftCard->title);
+                $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : ''; 
+                $UserGiftCard->save();
+    
+                $payment                        = new Payment;
+                $payment->user_id               = $user->id;
+                $payment->balance_transaction   = $request->amount;
+                $payment->transaction_id        = $request->transaction_id;
+                $payment->reference_table_id    = $UserGiftCard->id;
+                $payment->payment_option_id     = $request->payment_option_id;
+                $payment->date                  = Carbon::now()->format('Y-m-d');
+                $payment->type                  = 'giftCard';
+                $payment->save();
+            }
             
             $message = __('Your Gift Card has been activated successfully.');
             Session::put('success', $message);
@@ -177,25 +206,27 @@ class GiftcardController extends FrontController
         try {
             $user = Auth::user();
             $now = Carbon::now()->toDateTimeString();
-            $now = convertDateTimeInClientTimeZone($now);
-          // pr( $user);
+           
             $cart_detail = Cart::where('id', $request->cart_id)->first();
             if(!$cart_detail){
                 return $this->errorResponse('Invalid Cart Id', 422);
             }
-            $giftcard = UserGiftCard::with('giftCard')->whereHas('giftCard',function ($query) use ($now){
+          
+            $giftcard = UserGiftCard::with('giftCard')->whereHas('giftCard',function ($query) use ($now,$request){
                 return  $query->whereDate('expiry_date', '>=', $now);
-            })->where(['is_used'=>'0','user_id'=>$user->id,'gift_card_id'=>$request->giftCard_id])->first();
-          //  pr( $giftcard);
+            })->where(['is_used'=>'0','gift_card_code' => $request->giftCardCode])->first(); //,'gift_card_code'=>$request->giftCardCode
+
+          
             if($giftcard){
                 if($cart_detail->gift_card_id ==  $giftcard->gift_card_id){
                     return $this->errorResponse('Gift Card already applied.', 422);
                 }
                 $cart_detail->gift_card_id = $giftcard->gift_card_id;
+                $cart_detail->user_gift_code = $giftcard->gift_card_code;
                 $cart_detail->save();
                 return $this->successResponse($giftcard, 'Gift Card Used Successfully.', 200);
             }
-            return $this->errorResponse('Invalid gift Card Id', 422);
+            return $this->errorResponse('Invalid gift Card', 422);
            
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

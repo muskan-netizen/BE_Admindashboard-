@@ -21,6 +21,16 @@ form#giftCard_payment_form input.form-control {
     width: 100%;
     margin: 0px;
 }
+.gift_card label {
+    display: inline-block;
+}
+
+.gift_card 
+ input#check_is_delivery {
+    width: 3% !important;
+    display: inline-block;
+    height: auto;
+}
 </style>
 
 <section class="section-b-space">
@@ -112,6 +122,10 @@ form#giftCard_payment_form input.form-control {
                             </div>
                                 
                             @endforeach
+                            @else
+                            <div class="no_gift text-center py-3 col-12">
+                                <h4>{{ __('You dont have Gift Card') }}</h4>
+                            </div>
                             @endif
                             <div class="page-title col-12">
                                 <h2>{{ __('Gift Card List') }}</h2>
@@ -242,17 +256,24 @@ form#giftCard_payment_form input.form-control {
                 <p class="modal-title text-17 mb-0 mt-2" >{{ __('Send Gift Card') }}</p>
                 </div>
                 <div class="form-group col-6">
-                   
                     {!! Form::text('send_card_to_name','', ['class'=>'form-control', 'placeholder' => 'Name', 'required' => 'required']) !!}
-                   
                 </div>
                 <div class="form-group col-6">
-                    
-                    {!! Form::text('send_card_to_mobile', '', ['class'=>'form-control', 'placeholder' => 'mobile', 'required' => 'required']) !!}
-                    
+                    {!! Form::text('send_card_to_mobile', '', ['class'=>'form-control', 'placeholder' => 'Mobile', 'required' => 'required']) !!}
                 </div>
                 <div class="form-group col-12">
-                    {!! Form::text('send_card_to_email','', ['class'=>'form-control', 'placeholder' => 'email', 'required' => 'required']) !!}
+                    {!! Form::text('send_card_to_email','', ['class'=>'form-control', 'placeholder' => 'E-mail', 'required' => 'required']) !!}
+                </div>
+                <div class="form-group col-12">
+                    {!! Form::text('send_card_to_address','', ['class'=>'form-control', 'placeholder' => 'Address', 'required' => 'required']) !!}
+                </div>
+                <div class="form-group col-12 gift_card d-flex align-items-center">
+                   
+                      
+                       
+                        <input data-plugin="switchery" id="check_is_delivery" class="form-control checkbox_change" data-color="#43bee1" data-className="send_card_is_delivery" type="checkbox" >
+                        <input type="hidden"  name="send_card_is_delivery" value="0" id="send_card_is_delivery"/>
+                        <label for="check_is_delivery" class="ml-1">{{ __("Is Deliverable") }}</label>
                 </div>
             </div>
             <hr class="mb-1" />

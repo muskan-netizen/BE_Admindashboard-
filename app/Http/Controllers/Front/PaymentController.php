@@ -69,7 +69,7 @@ class PaymentController extends FrontController{
             // if(count($vendor_min_amount_errors) > 0){
             //     return $this->errorResponse($vendor_min_amount_errors, 402);
             // }
-        }
+        } 
         $ex_codes = ['cod'];
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {

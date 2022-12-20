@@ -1233,10 +1233,12 @@ $(document).ready(function () {
             payment_form = 'giftCard';
             total_amount = $("input[name='giftCard_amount']").val();
             // paymentAjaxData = $("#subscription_payment_form").serializeArray();
-            paymentAjaxData.gift_card_id = $("#giftCard_id").val();
-            paymentAjaxData.send_card_to_name = $("input[name='send_card_to_name']").val();
+            paymentAjaxData.gift_card_id        = $("#giftCard_id").val();
+            paymentAjaxData.send_card_to_name   = $("input[name='send_card_to_name']").val();
             paymentAjaxData.send_card_to_mobile = $("input[name='send_card_to_mobile']").val();
-            paymentAjaxData.send_card_to_email = $("input[name='send_card_to_email']").val();
+            paymentAjaxData.send_card_to_email  = $("input[name='send_card_to_email']").val();
+            paymentAjaxData.send_card_to_address    = $("input[name='send_card_to_address']").val();
+            paymentAjaxData.send_card_is_delivery   = $("#send_card_is_delivery").val();
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
