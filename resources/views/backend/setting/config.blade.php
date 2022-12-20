@@ -265,7 +265,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
             <p class="sub-header">{{ __('Offer Inventory Services with Order.') }}</p>
             <div class="row">
                <div class="col-12">
-
                   <div class="form-group mb-0">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="need_inventory_service" class="mr-3">{{ __('Enable') }}</label>
@@ -292,9 +291,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </span>
                      @endif
                   </div>
-
-
-
                </div>
             </div>
          </div><!-- On Demand Services section end -->
@@ -1749,6 +1745,15 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
                     <span> <input type="checkbox" data-plugin="switchery" name="is_tracking_url_sms_switch" id="is_tracking_url_sms_switch" class="form-control checkbox_change" data-className="is_tracking_sms_url" data-color="#43bee1" @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1) checked='checked'  @endif>
                      </span>
                      <input type="hidden"  @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1) value="1" @else value="0" @endif  name="is_tracking_sms_url"  id="is_tracking_sms_url"/>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="is_corporate_user_switch" class="mr-2 mb-0">{{__('Corporate User Enable')}}<small class="d-block pr-5">{{__("Enable to show corporate user type in user registration.")}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_corporate_user_switch" id="is_corporate_user_switch" class="form-control checkbox_change" data-className="is_corporate_user" data-color="#43bee1" @if(@getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) checked='checked'  @endif>
+                     </span>
+                     <input type="hidden"  @if(@getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) value="1" @else value="0" @endif  name="is_corporate_user"  id="is_corporate_user"/>
                   </div>
                </div>
 

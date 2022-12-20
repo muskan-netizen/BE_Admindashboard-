@@ -2053,18 +2053,18 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 <div class="col-xl-12 my-2 p-0" id="">
                                     <div class="row">
                                         <div class="col-12">
-                                            <div class="form-group mb-0 switchery-demo">
-                                                @if (isset($roles))
-                                                    @foreach ($roles as $key => $_role)
-                                                        <input type="text" name="role[{{ $_role['id'] }}]" class="form-control" id="role{{ $_role['id'] }}" value="{{ $_role['role'] }}">
+                                            @if (isset($roles))
+                                                @foreach ($roles as $key => $_role)
+                                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+
+                                                        <input type="text" name="role[{{ $_role['id'] }}]" class="form-control" id="role{{ $_role['id'] }}" value="{{ $_role['role'] }}" style="width:75%;">
                                                         <input type="hidden" name="role_id[{{ $_role['id'] }}]" value="{{ $_role['id'] }}">
 
-                                                        <input type="checkbox"  name="is_enable_pricing[{{ $_role['id'] }}]" data-plugin="switchery" id="is_enable_pricing" class="form-control checkbox_change" data-className="is_enable_pricing_hidden" data-color="#43bee1"
-                                                        @if(@$_role['is_enable_pricing'] == '1') checked='checked' value="1"  @endif data-role-id={{$_role['id']}}>
-                                                        <br>
-                                                    @endforeach
-                                                @endif
-                                            </div>
+                                                        <span> <input type="checkbox" data-plugin="switchery" name="is_enable_pricing[{{ $_role['id'] }}]" id="is_enable_pricing[{{ $_role['id'] }}]" class="form-control" data-color="#43bee1" @if(@$_role['is_enable_pricing'] == '1') checked='checked' value="1" @endif>
+                                                        </span>
+                                                    </div>
+                                                @endforeach
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

@@ -182,8 +182,6 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        
-
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
         if( checkTableExists('product_attributes') ) {
             $with_array[] = 'ProductAttribute';
@@ -693,6 +691,19 @@ class ProductController extends BaseController
                         }
                     }
                     // Product Variant By Roles (END)
+
+                    if ($request->has('corporate_user_price') && $request->has('minimum_order_count_corporate_user')) {
+                        $corporate_user_price   = $request->corporate_user_price;
+                        $minimum_order_count    = $request->minimum_order_count_corporate_user;
+
+                        $product_variant_by_roles = [];
+                        foreach($corporate_user_price as $key => $val) {
+                            // $product_variant_by_roles[$key]['product_id'] = 
+                            // $product_variant_by_roles[$key]['product_variant_id'] = 
+                            // $product_variant_by_roles[$key]['role_id'] = 
+                            // $product_variant_by_roles[$key]['amount'] = 
+                        }
+                    }
                 }
 
                 // min order count
