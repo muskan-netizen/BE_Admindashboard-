@@ -63,6 +63,8 @@ class HomeController extends BaseController
             //pr($vendorMode);
             $homeData['profile']->preferences->vendorMode = $vendorMode;
             $homeData['profile']->preferences->is_cab_pooling = (int) getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+            $homeData['profile']->preferences->chat_button = (int) getAdditionalPreference(['chat_button'])['chat_button'];
+            $homeData['profile']->preferences->call_button = (int) getAdditionalPreference(['call_button'])['call_button'];
             //dd($homeData['profile']);
             $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
             $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
@@ -232,7 +234,8 @@ class HomeController extends BaseController
             else
                 $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
             $homeData['domain_link'] = $domain_link;
-
+            $homeData['profile']->preferences->is_postpay_enable = (int) @getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
+            $homeData['profile']->preferences->is_order_edit_enable = (int) @getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -261,7 +264,8 @@ class HomeController extends BaseController
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
             $type = $request->has('type') ? $request->type : 'delivery';
-
+            \Log::info($request->all());
+            \Log::info($type);
             if (empty($type))
             $type = 'delivery';
 
@@ -533,6 +537,7 @@ class HomeController extends BaseController
                 $long_term_service_products = $this->longTermServiceProducts($venderIds, $langId, $clientCurrency,'', $type,'', $requestFrom);
             }
             $homeData['long_term_service'] = $long_term_service_products;
+            \Log::info($homeData['categories']);
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

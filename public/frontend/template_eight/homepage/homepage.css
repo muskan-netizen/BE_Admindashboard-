@@ -720,6 +720,10 @@ body.al_body_template_eight .product-m .slick-next:before, .product-m .slick-pre
 }
 /*----------------mobile view----------*/
 @media(max-width:767px){
+    .al_body_template_eight .product-description_list p span.product_discription {
+        width: 60%;
+    }
+   
     .al_body_template_eight .render_nav_categories .row .col {
         width: 50%;
         max-width: 50%;

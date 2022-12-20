@@ -15,13 +15,15 @@ use App\Models\EstimatedProductCart;
 use App\Models\EstimatedProductAddons;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Traits\{ApiResponser,CartManager};
+use App\Http\Traits\{ApiResponser,CartManager, KwikApi};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
+use Http\Message\Cookie;
+
 class CartController extends FrontController
 {
-    use ApiResponser,CartManager;
+    use ApiResponser,CartManager,KwikApi;
 
 
     private function randomString()
@@ -116,6 +118,10 @@ class CartController extends FrontController
             'fixedFee'=>$fixedFee
         );
         $client_preference_detail = ClientPreference::first();
+        if(!empty($client_preference_detail)){
+            $client_preference_detail->is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
+        }
+        
         $client_detail = Client::first();
         // dd($client_detail);
         $public_key_yoco=PaymentOption::where('code','yoco')->first();
@@ -149,7 +155,7 @@ class CartController extends FrontController
             }
         }
 
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
+        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
@@ -391,7 +397,7 @@ class CartController extends FrontController
 
 
             // total booking time as single service duration time as per service for get totel service time multiply by quantity
-            if(in_array($luxury_option->id,[6,8])){
+            if(@$luxury_option->id && in_array($luxury_option->id,[6,8])){
                 $total_booking_time = $productDetail->minimum_duration_min;
             }
             $oldquantity = $isnew = 0;
@@ -438,12 +444,12 @@ class CartController extends FrontController
                 $isLongTermService = $checkLongTermService->product->is_long_term_service ;
             }
            
-            if ($luxury_option) {
+            if (@$luxury_option && $luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
-                if ($luxury_option->id == 2 || $luxury_option->id == 3) {
+                if (@$luxury_option->id && ($luxury_option->id == 2 || $luxury_option->id == 3)) {
                     if ($checkVendorId) {
                         CartProduct::where('cart_id', $cart_detail->id)->delete();
                     }else{
@@ -452,7 +458,7 @@ class CartController extends FrontController
                     }
                 }
             }
-            if ( ((isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1)) || ($luxury_option->id == 4) ) {
+            if ( ((isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1)) || (@$luxury_option->id && $luxury_option->id == 4) ) {
                 if ($checkVendorId) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
@@ -1977,21 +1983,36 @@ class CartController extends FrontController
         if ($user) {
             $cart = Cart::where('status', '0')->where('user_id', $user->id);
             if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
-                $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id')->with('giftCard');
+               
+                $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id')->with('giftCard');
             }else{
-                $cart = $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type');
+                
+                $cart = $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','order_id');
             }
-            $cart = $cart->with('coupon.promo')->first();
-            //pr($cart->toArray());
-        } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
-        }
+            
+            $cart = $cart->with(['coupon.promo','editingOrder'])->first();
 
+            //pr($cart->toArray());
+            
+        } else {
+            if(checkColumnExists('carts','order_id'))
+            {
+                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            }else{
+                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type')->with(['coupon.promo'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            }
+            
+        }
 
         if (isset($request->address_id) && !empty($request->address_id)) {
             $address_id = $request->address_id;
             $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
             $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
+        }
+
+        if(isset($cart->editingOrder) && !empty($cart->editingOrder))
+        {
+            $request->request->add(['schedule_date_delivery' => Carbon::parse($cart->editingOrder->scheduled_date_time)->timezone($timezone)->format('Y-m-d H:i:s')]);
         }
 
         if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
@@ -2004,7 +2025,7 @@ class CartController extends FrontController
         if ($cart) {
             $cart_details = $this->getCartsNew($cart, $address_id,$request->code, $schedule_datetime_del);
         }
-
+        
         $client_preference_detail = ClientPreference::first();
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 
@@ -2040,7 +2061,7 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
 
-            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference])->render();
+            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $request->schedule_date_delivery])->render();
         }
         return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'']);
     }
@@ -2123,6 +2144,29 @@ class CartController extends FrontController
                             'code' => 'D_0'
                         );
                     }
+
+
+                //Kwik Delivery changes code
+                $kwick = new QuickApiController();
+                $deliver_fee = $kwick->getDeliveryFeeKwikApi($vendorData->vendor_id);
+                if($deliver_fee>0)
+                {
+                    $deliver_fee = decimal_format($deliver_fee);
+
+                    $optionKwikApi[] = array(
+                        'type'=>'K',
+                        'courier_name'=>__('KwikApi'),
+                        'rate' => $deliver_fee,
+                        'courier_company_id' => 0,
+                        'etd' => 0,
+                        'etd_hours' => 0,
+                        'duration' => 0,
+                        'estimated_delivery_days' => 0,
+                        'code' => 'K_0'
+                    );
+                    $option = array_merge($option,$optionKwikApi);
+                }
+                //End Kwik Delivery changes code
 
 
                 //Lalamove Delivery changes code
@@ -2458,7 +2502,7 @@ class CartController extends FrontController
                 'comment_for_vendor' => $request->comment_for_vendor??null,
                 'schedule_pickup' => $request->schedule_pickup??null,
                 'schedule_dropoff' => $request->schedule_dropoff??null,
-                // 'scheduled_slot' => $request->schedule_time??null
+                'payable_amount' => $request->payable_amount??0
                 ]);
 
                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);

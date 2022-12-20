@@ -21,6 +21,7 @@ use App\Http\Controllers\AhoyController;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
 
 use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate,VendorMinAmount}; 
@@ -60,9 +61,19 @@ class CartController extends BaseController
             // }
             $user = Auth::user();
             if (!$user->id) {
-                $cart = Cart::where('unique_identifier', $user->system_user);
+                if(checkColumnExists('carts','order_id'))
+                {
+                    $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
+                }else{
+                    $cart = Cart::where('unique_identifier', $user->system_user);
+                }
             } else {
-                $cart = Cart::where('user_id', $user->id);
+                if(checkColumnExists('carts','order_id'))
+                {
+                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
+                }else{
+                    $cart = Cart::where('user_id', $user->id);
+                }
             }
             $cart = $cart->first();
        
@@ -557,6 +568,7 @@ class CartController extends BaseController
         $total_markup_fee_tax = 0;
         $total_taxable_amount = 0;
         $preferences = ClientPreference::first();
+        $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
             return false;
@@ -876,7 +888,7 @@ class CartController extends BaseController
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                                    if(!$preferences->is_tax_price_inclusive){
+                                    if(!$additionalPreferences->is_tax_price_inclusive){
                                         $product_tax = ($quantity_price+$total_addon_price) * $rate / 100; 
                                     }else{
                                         $product_tax = (($quantity_price+$total_addon_price)  * $rate) / (100 + $rate); 
@@ -1198,32 +1210,42 @@ class CartController extends BaseController
          if(!empty($taxRates)){
             $delivery_charges_tax_rate = 0;
             if($vendorData->vendor->delivery_charges_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->delivery_charges_tax_id])){
                     $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
+                }
             }
 
             $fixed_fee_tax_rate = 0;
             if($vendorData->vendor->fixed_fee_tax_id!=null){
-                    $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
+                if(isset($taxRates[$vendorData->vendor->fixed_fee_tax_id])){
+                     $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
+                }
             }
 
 
             $service_charges_tax_rate = 0;
             if($vendorData->vendor->service_charges_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->service_charges_tax_id])){
                     $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
+                }
             }
 
             $markup_price_tax_rate = 0;
             if($vendorData->vendor->markup_price_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->markup_price_tax_id])){
                     $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
+                }
             }
 
             $container_charges_tax_rate = 0;
             if($vendorData->vendor->container_charges_tax_id!=null){
+                if(isset($taxRates[$vendorData->vendor->container_charges_tax_id])){
                     $container_charges_tax_rate=$taxRates[$vendorData->vendor->container_charges_tax_id]['tax_rate'];
+                }
             }
 
 
-            if(!$preferences->is_tax_price_inclusive)
+            if(!$additionalPreferences->is_tax_price_inclusive)
             {
                 if($vendorData->vendor->container_charges_tax)
                 $container_charges_tax =  $total_container_charges * $container_charges_tax_rate/100;
@@ -1617,51 +1639,30 @@ class CartController extends BaseController
         try {
             $user = Auth::user();
             if ($user) {
-
                 if(isset($request->slot)){
                     $fslot = explode(' - ',$request->slot);
                     $fslot = $fslot[0];
                 }
+                
                 if(isset($request->dropoff_scheduled_slot)){
-                    $dslot = explode(' - ',$request->dropoff_scheduled_slot);
+                    $dslot = explode(' - ', $request->dropoff_scheduled_slot);
                     $dslot = $dslot[0];
                 }
-
                 if ($request->task_type == 'now') {
                     $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
                 } else {
                     if(isset($request->schedule_dt) && !empty($request->schedule_dt)){
-                        $request->schedule_dt = $request->schedule_dt.'T'.$fslot;
-                    $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                        $request->schedule_dt = (isset($fslot)) ? $request->schedule_dt.'T'.$fslot : $request->schedule_dt;
+                        $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                     }
                 }
                
 
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
-                $request->schedule_pickup = Carbon::parse($request->schedule_pickup.'T'.$fslot, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $request->schedule_pickup = Carbon::parse((isset($fslot)) ? $request->schedule_pickup.'T'.$fslot : $request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
                 if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff))  # for pickup laundry
-                $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff.'T'.$dslot, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-
-                // if($request->task_type!='now'){
-                //         if(isset($request->slot))
-                //         {
-                //         //$request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                //             $time = $request->schedule_dt;
-                //             $slot = $request->slot;
-                //         }else{
-                //             $time = $request->schedule_dt;
-                //             $slot = null;
-                //         }
-                //     }else{
-                //         $time = $request->schedule_dt;
-                //         $slot = null;
-                //     }
-
-                    // if(isset($request->dropoff_scheduled_slot))
-                    //     {
-                    //         $dropSlot = $request->dropoff_scheduled_slot;
-                    //     }
+                $request->schedule_dropoff = Carbon::parse((isset($fslot)) ? $request->schedule_dropoff.'T'.$dslot : $request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
                 Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null,
                 'schedule_type' => $request->task_type??null,
@@ -1829,6 +1830,28 @@ class CartController extends BaseController
             $option = array_merge($option,$optionLala);
         }
         //End Lalamove Delivery changes code
+
+        //Kwik Delivery changes code
+        $kwick = new QuickApiController();
+        $deliver_fee = $kwick->getDeliveryFeeKwikApi($vendorData->vendor_id);
+        if($deliver_fee>0)
+        {
+            $deliver_fee = decimal_format($deliver_fee);
+
+            $optionKwikApi[] = array(
+                'type'=>'K',
+                'courier_name'=>__('KwikApi'),
+                'rate' => $deliver_fee,
+                'courier_company_id' => 0,
+                'etd' => 0,
+                'etd_hours' => 0,
+                'duration' => 0,
+                'estimated_delivery_days' => 0,
+                'code' => 'K_0'
+            );
+            $option = array_merge($option,$optionKwikApi);
+        }
+        //End Kwik Delivery changes code
 
 
         if($vendorData->vendor->shiprocket_pickup_name){

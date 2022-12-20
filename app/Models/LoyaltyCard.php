@@ -14,7 +14,7 @@ class LoyaltyCard extends Model
     public static function getLoyaltyPoint($minimum_points, $payable_amount){
     	$per_order_points = 0;
         $loyalty_card_id = 0;
-    	$result = LoyaltyCard::where('amount_per_loyalty_point','<=', $payable_amount)->orderBy('amount_per_loyalty_point', 'DESC')->first();
+    	$result = LoyaltyCard::where('amount_per_loyalty_point','<=', $payable_amount)->orderBy('minimum_points', 'DESC')->first();
     	if($result){
             if($result->amount_per_loyalty_point > 0){
                 $amount_per_loyalty_point = ($payable_amount / $result->amount_per_loyalty_point);
