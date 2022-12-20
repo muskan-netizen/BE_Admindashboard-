@@ -1564,3 +1564,44 @@ body.al_body_template_two span.fa.fa-eye-slash.toggle-password {
     border: 1px solid#cccc;
     padding: 20px;
 }
+.al_body_template_three .collection-product-wrapper div#category_products_filter .product-card-box {
+    min-height: 415px;
+}
+.al_body_template_three .collection-content.col-lg-9.outter-fillter-data.fillter_product div#category_products_filter a.product-box.scale-effect.mt-0.product-card-box.position-relative.al_box_third_template.al p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.al_body_template_three .exzoom .exzoom_btn{display: none;}
+.al_body_template_three section.container.mb-0.render_full_best_sellers .slick-track {
+    margin-left: 0;
+}
+.al_body_template_two .cart-sub-total{
+    margin-bottom:10px;
+}
+body.al_body_template_one .scrollspy-menu{z-index:9 !important;}
+.al_body_template_three ul.exzoom_img_ul img {
+    width: 100%;
+    min-height: 550px;
+    object-fit: cover;
+}
+body.al_body_template_two .col-12.product-bottom-bar.vendor-description .vender-icon {
+    margin-top: -100px;
+}
+.al_body_template_two .vendor-description .vendor-reviwes {
+    padding: 0;
+    position: absolute;
+    right: auto;
+    left: 75px;
+    top: -15px;
+}
+body.al_body_template_four .scrolling_section h2.category-head{
+    z-index:9 !important;
+}
+.al_body_template_six .displayProducts .product-box .media-body h3{padding-left:0 !important;}
+body.al_body_template_two .alRentalSinglePageView .single_cart-temp_label {
+    width: 100%;
+}
+body.al_body_template_two .alRentalSinglePageView .single_cart-temp_label label {
+    width: 43%;
+}
