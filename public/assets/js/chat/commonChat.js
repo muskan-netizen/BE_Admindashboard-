@@ -542,6 +542,7 @@
 
      async function fetchChatGroups(client_data){
         var client_data = JSON.parse(client_data);
+        
          if(client_data == undefined && client_data == 'undefined'){
             return;
          }
