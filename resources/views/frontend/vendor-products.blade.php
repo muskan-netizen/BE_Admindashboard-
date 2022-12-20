@@ -64,7 +64,7 @@
 
                                         </div>
                                         @if($vendor->desc)
-                                            <div class="col-md-12 text-left vender-peragraph mt-3 mb-2">
+                                            <div class="col-md-12 text-center vender-peragraph mt-3 mb-2">
                                                 <p>{{$vendor->desc}}</p>
                                                <p> {!! $vendor->short_desc !!}</p>
                                             </div>
