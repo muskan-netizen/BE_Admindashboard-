@@ -1716,7 +1716,7 @@ class OrderController extends FrontController
     public function placeOrderRequestShiprocket($request)
     {
         $ship = new ShiprocketController();
-        $is_place_order_delivery_zero = getAdditionalPreference(['is_long_term_service'])['is_long_term_service'];
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
@@ -1741,7 +1741,7 @@ class OrderController extends FrontController
     {
 
         $data = new AhoyController();
-        $is_place_order_delivery_zero = getAdditionalPreference(['is_long_term_service'])['is_long_term_service'];
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
@@ -1764,7 +1764,7 @@ class OrderController extends FrontController
     {
 
         $data = new DunzoController();
-        $is_place_order_delivery_zero = getAdditionalPreference(['is_long_term_service'])['is_long_term_service'];
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
@@ -1790,7 +1790,7 @@ class OrderController extends FrontController
     {
 
         $lala = new LalaMovesController();
-        $is_place_order_delivery_zero = getAdditionalPreference(['is_long_term_service'])['is_long_term_service'];
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
@@ -1812,7 +1812,7 @@ class OrderController extends FrontController
     public function checkIfanyProductLastMileon($request)
     {
         $order_dispatchs = 2;
-        $is_place_order_delivery_zero = getAdditionalPreference(['is_long_term_service'])['is_long_term_service'];
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
