@@ -103,7 +103,7 @@
                             </div>
                         </div>
             </div>
-            
+
             <div class="row border-bottom product_title_add py-1 no-gutters">
                     <div class="col-md-4 col">
                         <span>{{ __('Product Details') }}</span>
@@ -266,7 +266,7 @@
                                                 $dura = getHoursMinutes($vendor_product->total_booking_time);
                                             @endphp
                                             <p class="mb-0">{{$dura}}</p>
-                                           
+
                                         </div>
                                     </div>
 
@@ -296,6 +296,7 @@
                                             </span>
                                         </div>
                                     </div>
+
                                     @if($cart_details->pharmacy_check == 1)
                                         @if($vendor_product->product->pharmacy_check == 1)
                                             <button type="button" class="float-left btn btn-solid prescription_btn mt-2" data-cart="{{$vendor_product->cart_id }}" data-product="{{$vendor_product->product->id }}" data-vendor_id="{{$vendor_product->vendor_id }}">{{ __('Add Prescription')}}</button>
@@ -374,7 +375,7 @@
                                             if($vendor_product->product->container_charges_tax_id==$index){
                                                 $product_container_charges_tax_amount+=$vendor_product->quantity_container_charges*$tax->tax_rate/100;
                                                $incTax = 1;
-                                            }                                           
+                                            }
                                       }
                                     }
                                     @endphp
@@ -435,7 +436,7 @@
                         @if( $vendor_product->product->is_long_term_service ==  1)
                         @include('frontend.cart.longTermTimeSelection')
                         @endif
-                    
+
                     </div>
 
                     @if( ($vendor_product->product->delay_order_time->delay_order_hrs != '' && $vendor_product->product->delay_order_time->delay_order_min != '' ) &&  (($vendor_product->product->delay_order_time->delay_order_hrs != 0) || ($vendor_product->product->delay_order_time->delay_order_hrs != 0)))
@@ -594,7 +595,7 @@
         </div>
 
 
-           
+
 
 
 
@@ -608,7 +609,7 @@
 
     {{-- Start Right Section --}}
     <div class="col-lg-4">
-        
+
         <div class="row m-0">
          <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
@@ -863,7 +864,7 @@
             @endif
             <div class="row">
                 <div class="col-6 d-flex">
-                    <p class="total_amt m-0">{{__('Amount Payable')}} 
+                    <p class="total_amt m-0">{{__('Amount Payable')}}
                         @if($other_taxes)<small>({{__('incl. tax')}})</small>@endif </p>
                         @if($cart_details->conversion_rate>0 && $cart_details->currency_code=="MXN")
                         <div class="ml-2 alInfoIocn position-relative">

@@ -19,14 +19,14 @@ class NotificationTemplateSeeder extends Seeder
             [
                 'label' =>'New Order',
                 'subject' =>'New Vendor Signup',
-                'tags' => '', 
+                'tags' => '',
                 'content' => 'Thanks for your Order',
                 'slug' => 'new-order'
             ],
             [
                 'label' => 'Order Status Update',
                 'subject' => 'Verify Mail',
-                'tags' => '', 
+                'tags' => '',
                 'content' => 'Your Order status has been updated',
                 'slug' => 'order-status-update'
             ],
@@ -85,6 +85,13 @@ class NotificationTemplateSeeder extends Seeder
                 "tags" => "",
                 "content" => "Place your order before it's too late",
                 "slug" => "place-order-reminder"
+            ],
+            [
+                "label" => "Place Bid Request (Customer)",
+                "subject" => "You have new bid request",
+                "tags" => "{prescription}",
+                "content" => "Place your bid before it's too late {prescription}",
+                "slug" => "place-bid-request"
             ]
         ];
         NotificationTemplate::truncate();

@@ -35,6 +35,13 @@ if(session()->has('applocale')){
                         </div>
 
                     </div>
+                    @auth
+                        @if(@getAdditionalPreference(['is_bid_enable'])['is_bid_enable'] == 1)
+                        <a type="button" href="{{route('bid.index')}}"
+                            class="float-left btn btn-solid bid_prescription_btn ">{{ __('Place bid request') }}</a>
+                        @endif
+                    @endauth
+
                 </div>
 
                 <div class="col-lg-6 text-right ml-auto al_z_index p-0"  >
@@ -212,6 +219,7 @@ if(session()->has('applocale')){
         </div>
     </div>--}}
 </div>
+
 <div class="al_mobile_menu al_new_mobile_header">
                 <div class="al_new_cart">
                     @if($client_preference_detail->cart_enable == 1)
@@ -337,5 +345,4 @@ if(session()->has('applocale')){
                     </ul>
                 </div>
             </div>
-
 

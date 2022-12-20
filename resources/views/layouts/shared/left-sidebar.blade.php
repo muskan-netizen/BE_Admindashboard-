@@ -148,6 +148,7 @@
                                 </li>
                             @endif
 
+
                             @if(count(array_intersect($accounting_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="#sidebaraccounting" data-toggle="collapse">
@@ -202,6 +203,17 @@
                                     </div>
                                 </li>
                             @endif
+
+                            @if(@getAdditionalPreference(['is_bid_enable'])['is_bid_enable'] == 1)
+                                <li>
+                                    <a href="{{route('bid.create')}}">
+                                    <span class="icon-vendor"></span>
+                                        {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
+                                        <span>{{ __('Bid Requests') }}</span>
+                                    </a>
+                                </li>
+                            @endif
+
                             @if(Auth::user()->is_superadmin == 1)
                             {{-- @if(count(array_intersect($subscription_permissions, $allowed)) || Auth::user()->is_superadmin == 1) --}}
                                 @if($client_preference->subscription_mode == 1)

@@ -1269,7 +1269,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
                   @endforeach
 
                <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                   <label for="is_same_day_delivery_switch" class="mr-2 mb-0">{{__('Same Day Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to same day delivery.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_same_day_delivery_switch" id="is_same_day_delivery_switch" class="form-control checkbox_change" data-className="is_same_day_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) checked='checked'  @endif>
                      </span>
@@ -1278,7 +1278,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
                </div>
 
                <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                   <label for="is_next_day_delivery_switch" class="mr-2 mb-0">{{__('Next Day Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to next day delivery.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_next_day_delivery_switch" id="is_next_day_delivery_switch" class="form-control checkbox_change" data-className="is_next_day_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) checked='checked'  @endif>
                      </span>
@@ -1287,7 +1287,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
                </div>
 
                <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                   <label for="is_hyper_local_delivery_switch" class="mr-2 mb-0">{{__('Hyper Local Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to hyper local delivery.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_hyper_local_delivery_switch" id="is_hyper_local_delivery_switch" class="form-control checkbox_change" data-className="is_hyper_local_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) checked='checked'  @endif>
                      </span>
@@ -1296,7 +1296,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
                </div>
 
                <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                   <label for="is_cod_payment_switch" class="mr-2 mb-0">{{__('COD Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to cod payment.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_cod_payment_switch" id="is_cod_payment_switch" class="form-control checkbox_change" data-className="is_cod_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) checked='checked'  @endif>
                      </span>
@@ -1305,7 +1305,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
                </div>
 
                <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                   <label for="is_prepaid_payment_switch" class="mr-2 mb-0">{{__('Prepaid Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to prepaid payment.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_prepaid_payment_switch" id="is_prepaid_payment_switch" class="form-control checkbox_change" data-className="is_prepaid_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) checked='checked'  @endif>
                      </span>
@@ -1314,7 +1314,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
                </div>
 
                <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                   <label for="is_partial_payment_switch" class="mr-2 mb-0">{{__('Partial Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to partial payment.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_partial_payment_switch" id="is_partial_payment_switch" class="form-control checkbox_change" data-className="is_partial_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) checked='checked'  @endif>
                      </span>
@@ -1650,7 +1650,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
 <div class="col-md-4 ">
    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
       <label for="is_long_term_service" class="mr-2 mb-0">{{__('Long Term Service')}}<small class="d-block pr-5">{{__("Enable to add long term service.")}}</small></label>
-      <span> 
+      <span>
          <input type="checkbox" data-plugin="switchery" name="is_long_term_service_switch" id="is_long_term_service_switch" class="form-control checkbox_change" data-className="is_long_term_service" data-color="#43bee1" @if( @getAdditionalPreference(['is_long_term_service'])['is_long_term_service']=='1' ) checked='checked' @endif>
       </span>
       <input type="hidden" @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service']==1) value="1" @else value="0" @endif name="is_long_term_service" id="is_long_term_service" />
@@ -1715,6 +1715,15 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
 
                <div class="col-md-4">
                   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                     <label for="is_order_bid_switch" class="mr-2 mb-0">{{__('Enable Bidding')}}<small class="d-block pr-5">{{__("Enable to allow customers to bid on orders.")}}</small></label>
+                     <span> <input type="checkbox" data-plugin="switchery" name="is_order_bid_switch" id="is_order_bid_switch" class="form-control checkbox_change" data-className="is_bid_enable" data-color="#43bee1" @if(@getAdditionalPreference(['is_bid_enable'])['is_bid_enable']==1) checked='checked' @endif>
+                     </span>
+                     <input type="hidden" @if(@getAdditionalPreference(['is_bid_enable'])['is_bid_enable']==1) value="1" @else value="0" @endif name="is_bid_enable" id="is_bid_enable" />
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                      <label for="is_tracking_url_switch" class="mr-2 mb-0">{{__('Tracking Url')}}<small class="d-block pr-5">{{__("Enable to allow guest customers to tracking url.")}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_tracking_url_switch" id="is_tracking_url_switch" class="form-control checkbox_change" data-className="is_tracking_url" data-color="#43bee1" @if(@getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1) checked='checked'  @endif>
                      </span>
@@ -1734,7 +1743,7 @@ $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token','is_h
                </div>
             </div>
          </form>
-    
+
    </div>
 </div>
 </form>
