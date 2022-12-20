@@ -530,6 +530,10 @@
             },
         });
     }
+
+    $(document).ready(function(){
+        filterProducts();
+        });
 </script>
 
 @endsection
