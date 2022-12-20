@@ -42,7 +42,7 @@ use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, ReturnReason,OrderDeliveryStatusIcon};
+use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, ReturnReason,OrderDeliveryStatusIcon,UserGiftCard};
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -203,7 +203,7 @@ class OrderController extends FrontController
                 // $vendor->driver_chat =  $dispatcher_status_options ? 1 : 0 ;
             }
         }
-      //  pr($activeOrders->toArray());exit();
+        //  pr($activeOrders->toArray());exit();
 
         foreach ($pastOrders as $order) {
             
@@ -213,8 +213,8 @@ class OrderController extends FrontController
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
                 foreach ($vendor->products as $product) {
-// dd($product->product->return_days);
-// $vendor->is_order_days_for_return = 1;
+                // dd($product->product->return_days);
+                // $vendor->is_order_days_for_return = 1;
                     if((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0){
                         $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
                         $vendor->is_order_days_for_return = 1;
@@ -811,6 +811,11 @@ class OrderController extends FrontController
         try {
             $latitude = '';
             $longitude = '';
+            $UserGiftCardId = '';
+            $giftCardTotalAmount = 0;
+            $giftCardUsedAmount = 0;
+            $userGiftCardCode   = null;
+            $nowDate = Carbon::now()->toDateTimeString();
 
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             if($action == 'takeaway' || $action == 'dine_in'|| $action == 'appointment'){
@@ -871,6 +876,27 @@ class OrderController extends FrontController
             $loyaltyCheck = $this->getOrderLoyalityAmount($user,$customerCurrency);
             $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
             $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
+
+            // check gift card
+            if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
+                
+                if(isset($cart->giftCard) && !empty($cart->giftCard)){
+                    
+                    $giftcard = UserGiftCard::with('giftCard')->whereHas('giftCard',function ($query) use ($nowDate){
+                        return  $query->whereDate('expiry_date', '>=', $nowDate);
+                    })->where(['is_used'=>'0','gift_card_code'=>$cart->user_gift_code])->first();
+                    
+                   
+                    if($giftcard){
+                        $UserGiftCardId = $giftcard->id;
+                        $giftCardTotalAmount = $cart->giftCard->amount;
+                        $userGiftCardCode    = $cart->user_gift_code;
+                    }
+                }
+            }
+            //pr($UserGiftCardId);
+            /* Generate order object */
+            $order = new Order;
             
             /* Generate order object  based on conditions is cart is created by editing any order or not */
             
@@ -947,11 +973,11 @@ class OrderController extends FrontController
             /* Getting subscripton details */
             $subscription_features = array();
             if ($user) {
-                $now = Carbon::now()->toDateTimeString();
+                
                 $user_subscription = SubscriptionInvoicesUser::with('features')
                     ->select('id', 'user_id', 'subscription_id')
                     ->where('user_id', $user->id)
-                    ->where('end_date', '>', $now)
+                    ->where('end_date', '>', $nowDate)
                     ->orderBy('end_date', 'desc')->first();
                 // if ($user_subscription) {
                 //     foreach ($user_subscription->features as $feature) {
@@ -1633,11 +1659,35 @@ class OrderController extends FrontController
             $order->luxury_option_id = $luxury_option->id;
 
             if(!$additionalPreferences->is_tax_price_inclusive) {
-                $order->payable_amount = decimal_format($payable_amount);
+               
+                $orderTotalPay = decimal_format($payable_amount);
+                // gift card calculation
+                if($giftCardTotalAmount >0 && $orderTotalPay >0){
+                    $calCulateGiftCard      = $this->calCulateGiftCard($orderTotalPay,$giftCardTotalAmount);
+                    $orderTotalPay          = @$calCulateGiftCard['totalPaybel'];
+                    $giftCardUsedAmount     = @$calCulateGiftCard['used_GiftCardAmount'];
+                }
+                $order->payable_amount = $orderTotalPay;
             }else{
-                $order->payable_amount = decimal_format($payable_amount - $total_other_taxes);
-            }
 
+                $orderTotalPay = decimal_format($payable_amount - $total_other_taxes);
+                // gift card calculation
+                if($giftCardTotalAmount >0 && $orderTotalPay >0){
+                    $calCulateGiftCard      = $this->calCulateGiftCard($orderTotalPay,$giftCardTotalAmount);
+                    $orderTotalPay          = @$calCulateGiftCard['totalPaybel'];
+                    $giftCardUsedAmount     = @$calCulateGiftCard['used_GiftCardAmount'];
+                }
+                $order->payable_amount = $orderTotalPay;
+            }
+            if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1 && checkColumnExists('orders', 'gift_card_id') ){
+                $order->gift_card_id     = $cart->gift_card_id;
+                $order->gift_card_amount = decimal_format($giftCardUsedAmount);
+                $order->gift_card_code   = $userGiftCardCode;
+                Cart::where('id', $cart->id)->update(['gift_card_id'=>null]);
+                if($UserGiftCardId && ($giftCardUsedAmount >0)){
+                    $giftcard = UserGiftCard::where(['id'=>$UserGiftCardId])->update(['is_used'=>1]);
+                }
+            }
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->additional_price = $totalAdditionalPrice;
             $order->total_container_charges = $total_container_charges;
