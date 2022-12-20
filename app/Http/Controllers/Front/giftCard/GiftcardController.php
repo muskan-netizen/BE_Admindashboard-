@@ -32,7 +32,7 @@ class GiftcardController extends FrontController
         }
     }
     public function textGiftMail(){
-        $GiftCard       = GiftCard::where('id', '5')->first();
+        $GiftCard       = GiftCard::first();
         $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',  'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_from) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
