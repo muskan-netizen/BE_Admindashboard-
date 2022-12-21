@@ -76,8 +76,6 @@ class ProductController extends FrontController{
         $p_id = $product->id;
         $product =  $this->getProduct($p_id,$vendor,$url_slug,$user,$langId);
        
-        
-       
         if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
         }
@@ -246,7 +244,7 @@ class ProductController extends FrontController{
                 $product_page = "product";
             }
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
-            $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
+            $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles']);
             if( !empty($product->category->category_id) ) {
                 $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
                 $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->orderby('id', 'desc')->limit(20)->get();
@@ -350,7 +348,6 @@ class ProductController extends FrontController{
             
             $user_vendor = UserVendor::where('user_id', $user->id)->first();
 
-            
             return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response]);
 
         }

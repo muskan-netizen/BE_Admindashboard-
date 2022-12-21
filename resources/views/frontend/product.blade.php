@@ -332,6 +332,19 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 </h3>
                                             @endif
                                         </div>
+                                        @if(Auth::user()->role_id == 3)
+                                            <div id="product_by_roles">
+                                               @foreach ($product->productVariantByRoles as $key => $data)
+                                                   @if($data->role_id == 3)
+                                                        <div class="form-check-inline">
+                                                            <label class="form-check-label">
+                                                                <input type="radio" name="bulk_order" data-quantity="{{$data->quantity}}" data-price="{{$data->amount}}" class="form-check-input bulk_order" value="{{$data->id}}">{{Session::get('currencySymbol')}}<span class="product_role_fixed_price">{{number_format($data->amount,2,".",",")}}</span> ( {{$data->quantity}} )
+                                                            </label>
+                                                        </div>
+                                                   @endif
+                                               @endforeach 
+                                            </div>
+                                        @endif
                                         <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
                                             <p></p>
@@ -1490,6 +1503,17 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                 $(".img_active").find('img').removeClass("active");
                 $(this).find('img').addClass("active");
             });
+        });
+
+        $('.bulk_order').change(function() {
+            var quantity = $(this).data('quantity');
+            var amount = $(this).data('price');
+            if(quantity != '' && amount != ''){
+                $('#quantity').val(quantity);
+                $('#productPriceValue .product_fixed_price').text(amount);
+                $('button.btn.quantity-left-minus').prop("disabled", true);
+                $('button.btn.quantity-right-plus').prop("disabled", true);
+            }
         });
             
         </script>

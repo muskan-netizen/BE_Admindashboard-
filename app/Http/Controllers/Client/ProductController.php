@@ -342,7 +342,6 @@ class ProductController extends BaseController
         if(checkTableExists('pincodes')){
             $pincodes = Pincode::where('is_disabled', 0)->get();
         }
-        
         return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'delivery_slots' => $delivery_slots, 'pincodes' => $pincodes]);
     }
 
@@ -622,7 +621,25 @@ class ProductController extends BaseController
                 }
 
 
+                
+                if ($request->has('corporate_user_price') && $request->has('minimum_order_count_corporate_user')) {
+                    $corporate_user_price   = $request->corporate_user_price;
+                    $minimum_order_count    = $request->minimum_order_count_corporate_user;
 
+                    $product_variant_by_roles = [];
+                    foreach($corporate_user_price as $key => $val) {
+                        if($val != ''){
+                            $product_variant_by_roles[$key]['product_id'] = $product->id;
+                            $product_variant_by_roles[$key]['role_id'] = $request->role_id['corporate_user'];
+                            $product_variant_by_roles[$key]['amount'] = $val;
+                            $product_variant_by_roles[$key]['quantity'] = $minimum_order_count[$key];
+                        }
+                    }
+                    $delete = ProductVariantByRole::where('product_id', $product->id)->where('role_id', 3)->delete();
+                    foreach($product_variant_by_roles as $key => $data){
+                        ProductVariantByRole::create($data);
+                    }
+                }
 
 
                 $existv = array();
@@ -677,7 +694,7 @@ class ProductController extends BaseController
 
                     // Save Product Variant By Roles without product_variant_id and amount
                     // Product Variant By Roles (START)
-                    if($request->has('role_id')){
+                    if($request->has('role_id') && !$request->has('corporate_user_price') && !$request->has('minimum_order_count_corporate_user')){
                         foreach ($request->role_id as $key => $value) {
                             $productVariantByRole = ProductVariantByRole::where('product_id', $product->id)->where('role_id',$value)->first();
                             if (!$productVariantByRole) {
@@ -691,21 +708,8 @@ class ProductController extends BaseController
                         }
                     }
                     // Product Variant By Roles (END)
-
-                    if ($request->has('corporate_user_price') && $request->has('minimum_order_count_corporate_user')) {
-                        $corporate_user_price   = $request->corporate_user_price;
-                        $minimum_order_count    = $request->minimum_order_count_corporate_user;
-
-                        $product_variant_by_roles = [];
-                        foreach($corporate_user_price as $key => $val) {
-                            // $product_variant_by_roles[$key]['product_id'] = 
-                            // $product_variant_by_roles[$key]['product_variant_id'] = 
-                            // $product_variant_by_roles[$key]['role_id'] = 
-                            // $product_variant_by_roles[$key]['amount'] = 
-                        }
-                    }
                 }
-
+                
                 // min order count
                 if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == 1){
                     $minimum_order_count_arr = $request->minimum_order_count_arr;
