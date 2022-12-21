@@ -742,7 +742,7 @@ label {
     width: 100%;
     overflow: hidden;
     left: 0;
-    z-index: 999;
+    z-index: 9;
 }
 
 .scrollspy-menu ul {
@@ -3708,9 +3708,9 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
 }
 
 
-.al_body_template_one .footer-card a span {
+/* .al_body_template_one .footer-card a span {
     width: 20%;
-}
+} */
 
 .al_body_template_one .ac-royo-btn a {
     width: 16%;
