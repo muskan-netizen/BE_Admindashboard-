@@ -231,5 +231,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('/create-contact', 'Hubspot\HubspotApiController@create');
 
+
+        // gift Card Order
+        Route::group(['prefix' => 'giftCard'], function () {
+            Route::get('list', 'Api\v1\GiftcardController@getGiftCard');
+            Route::post('apply', 'Api\v1\GiftcardController@postVerifyGiftCardCode');
+            Route::post('remove', 'Api\v1\GiftcardController@RemoveGiftCardCode');
+        }); 
+
     });
 });

@@ -469,3 +469,6 @@ body[dir=rtl] .slick-prev {
 .royo_whatsapp_img img {
     width: 50px;
 }
+body.al_body_template_two .slick-track{
+    margin-left:0 !important;
+}
