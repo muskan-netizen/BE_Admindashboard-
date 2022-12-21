@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption};
 use App\Models\AutoRejectOrderCron;
 
 use App\Models\{VendorOrderCancelReturnPayment};
@@ -85,6 +85,10 @@ class OrderController extends BaseController
     {
         try {
             $action = ($request->has('type')) ? $request->type : 'delivery';
+            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+            if(isset($set_template)  && $set_template->template_id == 9){
+                $action = 'delivery';
+            }
 
             if($request->has('type') && $request->type != 'delivery'){
                 $rules = [
