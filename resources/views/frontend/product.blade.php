@@ -353,7 +353,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                
                                                     <?php /*<span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
-                                                    <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
+                                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
                                                 
                                             @endif
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
@@ -971,7 +971,32 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         </div>
     </div>
 </div>
+@php
 
+$user_type = 'user';
+$to_message = 'to_user';
+$from_message = 'from_user';
+$chat_type = 'user_to_user';
+$startChatype = 'user_to_user';
+$apiPre = 'client';
+$rePre = 'user/chat/userToUser';
+$fetchDe = 'fetchRoomByUserIdUserToUser';
+@endphp
+
+@section('script')
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+{{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
 @endsection
 @section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
@@ -1316,5 +1341,5 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         });
             
         </script>
-<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
+
 @endsection

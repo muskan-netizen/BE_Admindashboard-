@@ -119,17 +119,18 @@ class ChatController extends FrontController
 
     }
 
-    public function vendorUserChat(Request $request){
+    public function UserToUserChat(Request $request){
         $user = Auth::user();
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
         if($user->is_superadmin == 1){
-            //$roomData = $this->getAllChatRoom('vendor_to_user');
+            
             $roomData['status'] = false;
             $view = "index";
         } else {
-            $vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
-            $this->client_data['vendor_id'] = $vendor_id;
+            $vendor_id = UserVendor::where('user_id',$user->id)->select('vendor_id')->first();
+            // dd($vendor_id);
+            $this->client_data['vendor_id'] = $vendor_id->vendor_id;
             //$roomData = $this->getChatRoom($vendor_id,'vendor_to_user');
             $roomData['status'] = false;
             $view = "VendorUserChat";
@@ -141,11 +142,11 @@ class ChatController extends FrontController
             } else {
                 $chatroom = [];
             }
-            return view('frontend.chat.VendorUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom,
+            return view('frontend.chat.UserToUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom,
             'navCategories' => $navCategories]);
             
         } catch (\Throwable $th) {
-            return view('frontend.chat.VendorUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>[],
+            return view('frontend.chat.UserToUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>[],
             'navCategories' => $navCategories]);
         }
        
@@ -175,7 +176,8 @@ class ChatController extends FrontController
                 $order_id = $order->id;
                 $vendor_id = $vendor_id;
                 $orderby_user_id = $order->user_id;
-                $response =   Http::post($socket_url.'/api/room/createRoom', [
+
+                $request_data = [
                     'room_id' => $room_id, 
                     'room_name' => $room_name,
                     'order_vendor_id'=>$order_vendor_id,
@@ -188,7 +190,8 @@ class ChatController extends FrontController
                     'type'=>$data['type'],
                     'db_name'=>$this->client_data->database_name,
                     'client_id'=>$this->client_data->id
-                ]);
+                ];
+                $response =   Http::post($socket_url.'/api/room/createRoom', $request_data);
                 $statusCode = $response->getStatusCode();
                 if($statusCode == 200) {
                     $roomData = $response['roomData'];
