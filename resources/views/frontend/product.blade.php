@@ -346,7 +346,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
                                             {{-- Chat Button --}}
                                             <hr>
-                                            @if(@$user_vendor->vendor_id &&  $vendor_info->id != $user_vendor->vendor_id)
+                                            {{--@if(@$user_vendor->vendor_id &&  $vendor_info->id != $user_vendor->vendor_id)--}}
                                                 <h6 class="sold-by">
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
                                             
@@ -360,7 +360,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
                                             @endif
                                                 </h6>
-                                                @endif
+                                             {{--   @endif --}}
                                     @endif
 
 

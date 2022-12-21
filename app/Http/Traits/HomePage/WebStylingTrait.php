@@ -43,7 +43,7 @@ trait WebStylingTrait
     public function updateSingleCategoryProductsToDb($request)
     {
 
-        dd($request->product_category);
+        
         if (checkTableExists('home_products')) {
             $insert = ['slug' => 'single_category_products', 'product_category' => $request->product_category];
             HomeProduct::updateOrCreate(

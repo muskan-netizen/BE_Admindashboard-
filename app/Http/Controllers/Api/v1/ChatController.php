@@ -174,11 +174,14 @@ class ChatController extends BaseController
             $product_id = $data['product_id'] ?? null;
 
             $socket_url = $this->client_data->socket_url;
+            $c_type = $data['type'] ?? null;
+            $p2p_id = null;
             // dd(is_null($order_id));
             // check order_vendor_id and order_id is empty then it is called for p2p chat
-            if( empty($vendor_order_id) && empty($order_id) && !empty($product_id) ) {
+            if( $c_type == 'user_to_user' ) {
                 $room_name = $room_id = 'p2p-productId-'.$product_id.'-vendorId-'.$vendor_id.'-currentUser-'.Auth::id();
                 $orderby_user_id = Auth::id();
+                $p2p_id = $vendor_id;
                
             }
             else {
@@ -206,7 +209,8 @@ class ChatController extends BaseController
                 'order_user_id' =>$orderby_user_id,
                 'type'=>$data['type'],
                 'db_name'=>$this->client_data->database_name,
-                'client_id'=>$this->client_data->id
+                'client_id'=>$this->client_data->id,
+                'p2p_id'=>$p2p_id
             ]);
             \Log::info("================================");
             \Log::info($response);
