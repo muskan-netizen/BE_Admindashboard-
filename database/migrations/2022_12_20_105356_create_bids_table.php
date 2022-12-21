@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBidRequestsTable extends Migration
+class CreateBidsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,16 @@ class CreateBidRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('bid_requests', function (Blueprint $table) {
+        Schema::create('bids', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('prescription')->nullable();
+            $table->unsignedBigInteger('prescription_id')->nullable();
+            $table->bigInteger('vendor_id')->nullable();
+            $table->string('total')->nullable();
+            $table->string('discount')->nullable();
             $table->tinyInteger('status')->default(0)->comment('0 Pending 1 Accepted');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('prescription_id')->references('id')->on('bid_requests')->onDelete('cascade');
         });
     }
 
@@ -31,6 +33,6 @@ class CreateBidRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bid_requests');
+        Schema::dropIfExists('bids');
     }
 }

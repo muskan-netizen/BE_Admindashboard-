@@ -2,41 +2,138 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Front\FrontController;
+use App\Http\Traits\ApiResponser;
+use App\Models\Bid;
+use App\Models\BidProduct;
 use App\Models\BidRequest;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\ClientPreference;
 use App\Models\NotificationTemplate;
+use App\Models\Product;
 use App\Models\UserDevice;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Str;
 
-class BidController extends Controller
+class BidController extends FrontController
 {
-    public function index()
+    use ApiResponser;
+    public function index(Request $request)
     {
-        $prescriptions = BidRequest::where('id', Auth::user()->id)->get();
+        $user = Auth::user();
+        $prescriptions = BidRequest::where('id', $user->id)->where('status' , '=' , 0)
+        ->with('bids')->get();
         return view('frontend.bidding_module.index', compact('prescriptions',$prescriptions));
     }
 
     public function create()
     {
-        return view('frontend.bidding_module.create');
+        $prescriptions = BidRequest::where('status' , '=' , 0)->get();
+        return view('frontend.bidding_module.create', compact('prescriptions'));
+    }
+
+    public function store(Request $request)
+    {
+       $user = Auth::user();
+       $prod_vendor = Vendor::where('email', '=' , Auth::user()->email)->pluck('id');
+       $prescriptions = BidRequest::where('status' , '=' , 0)->where('id', $user->id)->pluck('id');
+
+       $prod_vendor = $prod_vendor[0];
+       $products = json_decode($request->data,true);
+       $discount = $products[0]['discount'];
+
+       if($products){
+
+        $data = [
+            'prescription_id' => $prescriptions,
+            'vendor_id' => $prod_vendor,
+            'discount' =>  $discount,
+        ];
+
+
+        $vendor_bids = Bid::create($data);
+
+        foreach ($products as $key => $data) {
+            BidProduct::create([
+              'bid_id'       =>  $vendor_bids->id,
+              'product_id'   =>  $data['id'],
+              'quantity'     =>  $data['qty'],
+            ]);
+        }
+
+       }
+
+       return back()->with('success', 'Bid Placed Successfully');
+    }
+
+
+    public function search(Request $request)
+    {
+        $response = [];
+        $user = Auth::user();
+        $keyword = $request->input('keyword');
+        $language_id = Session::get('customerLanguage');
+        $allowed_vendors = $this->getServiceAreaVendors();
+
+        $prod_vendor = Vendor::where('email', '=' , Auth::user()->email)->pluck('id');
+
+
+        $products = Product::with(['media', 'vendor','variant'])->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id', 'products.vendor_id')
+            ->select('products.id', 'products.sku', 'products.url_slug', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description', 'products.vendor_id', 'vendors.slug as vendor_slug')
+            ->where('pt.language_id', $language_id)
+            ->where('products.vendor_id', $prod_vendor)
+            ->where(function ($q) use ($keyword) {
+                $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
+            })->where('products.is_live', 1);
+        //if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+        $products = $products->whereIn('vendor_id', $allowed_vendors);
+        //}
+        $products = $products->whereNull('deleted_at')->groupBy('products.id')->get();
+        $product_results = [];
+        foreach ($products as $product) {
+            $redirect_url = route('productDetail', [$product->vendor_slug, $product->url_slug]);
+            $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'] . '80/80' . $product->media->first()->image->path['image_path'] : '';
+            $product_results[] = ['id' => $product->id, 'name' => $product->dataname , 'price' =>$product->variant[0]->price];
+        }
+        if (@$product_results) {
+            $response[] = ['title' => '', 'result' => $product_results];
+        }
+        if (@$vender_results) {
+            $response[] = ['title' => __('Venders'), 'result' => $vender_results];
+        }
+        // dd($response);
+        return $this->successResponse($response);
     }
 
     public function uploadPrescription(Request $request, $domain = '')
     {
         // dd($request->prescriptions);
         $user = Auth::user();
+        $doc_name = 'prescription';
+        $folderName = 'prescriptions';
         if ($user) {
-            foreach ($request->prescriptions as $prescription) {
-                $bid_request_prescription = new bidRequest();
-                $bid_request_prescription->prescription =  Storage::disk('s3')->put('prescription', $prescription, 'public');
-                $bid_request_prescription->save();
+            if ($request->hasFile($doc_name)) {
+                $filePath = $folderName . '/' . Str::random(40);
+                $file = $request->file($doc_name);
+                $orignal_name = $request->file($doc_name)->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                BidRequest::updateOrCreate(
+                    ['user_id' => $user->id],
+                    ['prescription' => $url]
+                );
             }
 
         }
-        return redirect()->back()->with(['status' => 'success', 'message' => "Uploaded Successfully"]);
+
+        $previousUrl = url('/index');
+        return redirect()->to($previousUrl.'?'. http_build_query(['success'=>'done']));
+        //return redirect()->back()->with(['status' => 'success', 'message' => "Uploaded Successfully"]);
     }
 
     public function getPrescription(Request $request){

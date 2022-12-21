@@ -5,7 +5,7 @@
     @if($mod_count > 1)
     <ul class="nav nav-tabs navigation-tab nav-material tab-icons vendor_mods"
         id="top-tab" role="tablist">
-      
+
         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
             @php
             $clientVendorTypes = $vendor_typ_key.'_check';

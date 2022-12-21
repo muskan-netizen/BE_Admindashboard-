@@ -102,7 +102,7 @@
                                                 <div class="dropify-errors-container">
                                                     <ul></ul>
                                                 </div>
-                                                <input required type="file" accept="image/*,.pdf,.doc" data-plugins="dropify" name="prescriptions" class="dropify" data-default-file="">
+                                                <input required type="file" accept="image/*,.pdf,.doc" data-plugins="dropify" name="prescription" class="dropify" data-default-file="">
                                                 <button type="button" class="dropify-clear">Remove</button>
                                                 <div class="dropify-preview">
                                                     <span class="dropify-render"></span>
@@ -118,7 +118,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button type="submit" class="w-50 mt-3 btn btn-info waves-effect waves-light mt-2">Submit</button>
+                                            <button type="submit" id="getBedRequests"class="w-50 mt-3 btn btn-info waves-effect waves-light mt-2">Submit</button>
                                         </div>
                                     </form>
                                 </div>
@@ -140,9 +140,10 @@
                                                 <tbody>
                                                     @foreach ($prescriptions as $prescription)
                                                     <tr>
-                                                        <td>{{$loop->iterations}}</td>
-                                                        <td>{{$pescription->prescription}}</td>
-                                                        <td>{{$pescription->createdAt}}</td>
+                                                        <td>{{$loop->iteration}}</td>
+                                                        <td><img src="{{$prescription->prescription}}" width="50" height="50"></td>
+                                                        <td>{{$prescription->created_at}}</td>
+                                                        <td>View / Delete</td>
 
                                                     </tr>
                                                     @endforeach
@@ -153,22 +154,52 @@
                                 </div>
                             </div>
                         </div>
-                        <hr class="mt-2">
-                        <div class="row welcome-msg justify-content-between">
-                            <div class="col-12">
-                                <h4 class="d-inline-block m-0">
-                                    <span>{{ __('Bid Requests')}}</span>
-                                </h4>
-                                <sup class="position-relative">
-
-                                </sup>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    @if(Request::get('success') == 'done')
+    <div class="modal fade showBidsModel"  tabindex="-1" aria-labelledby="profile-modalLabel" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="row align-items-center px-2">
+                    <div class="col-4">
+                        <div class="modal-header">
+                            <h5 class="modal-title d-block" id="profile-modalLabel">{{ __('Bid Requests From Vendor') }}</h5>
+
+                        </div>
+                    </div>
+
+                </div>
+                <form id="placeBidForm" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body d-none" id="VendorProductBox">
+                        <table class="table">
+                            <thead>
+                                <td>ID</td>
+                                <td>name</td>
+                                <td>Price</td>
+                                <td>Quantity</td>
+                                <td>Action</td>
+                            </thead>
+                            <tbody id="productTable">
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-solid w-100">{{ __('Accept / Add to Cart') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
 </section>
 @endsection
 @section('script')
@@ -216,5 +247,19 @@
         var dial_code = $(this).attr('data-dial-code');
         $('#dialCode').val(dial_code);
     });
+    <?php
+        if(Request::get('success') == 'done'){
+    ?>
+    $(document).ready(function() {
+            $(".showBidsModel").modal({
+            backdrop: 'static',
+            keyboard: false
+            });
+        });
+    <?php
+    }
+    ?>
 </script>
+
+
 @endsection

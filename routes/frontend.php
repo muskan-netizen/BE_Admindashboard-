@@ -599,12 +599,11 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
     //bidding system
     Route::get('index', [BidController::class, 'index'])->name('bid.index');
     Route::get('create', [BidController::class, 'create'])->name('bid.create');
+    Route::post('store', [BidController::class, 'store'])->name('bid.store');
+    Route::post('add/bid/prescription', [BidController::class, 'uploadPrescription'])->name('bid.uploadPrescription');  //add bidding prescription
+    Route::post('get/bid/prescription', [BidController::class, 'getPrescription'])->name('getPrescription'); //get bedding prescription
 
-    //add bidding prescription
-    Route::post('add/bid/prescription', [BidController::class, 'uploadPrescription'])->name('bid.uploadPrescription');
-
-    //get bedding prescription
-    Route::post('get/bid/prescription', [BidController::class, 'getPrescription'])->name('getPrescription');
+    Route::get('product-search', [BidController::class, 'search'])->name('searchProduct');
 
 
 
