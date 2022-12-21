@@ -75,6 +75,7 @@ trait HomePageTrait
 
     public function getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim)
     {
+        $spotlight_products = [];
         $products = Product::with([
             'category.categoryDetail.translation' => function ($q) use ($language_id) {
                 $q->where('category_translations.language_id', $language_id);
