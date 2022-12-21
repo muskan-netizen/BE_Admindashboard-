@@ -523,7 +523,7 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a.btn.btn
     margin: 0 !important;
 }
 body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect {
-    height: 390px;
+    height: 370px;
 }
 body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect p{
     white-space: nowrap;
@@ -534,6 +534,7 @@ body.al_body_template_nine.p2p-module .theme-card.custom-inner-card .accordion .
     display:none;
 }
 body.al_body_template_nine .common-product-box, .product-box, .product-card-box, .suppliers-box{display:block;}
+
 /*-------------------dark theam css-----------*/
 body.dark.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head ul.header-dropdown li a {
     color: #fff !important;
@@ -543,6 +544,46 @@ body.dark.al_body_template_nine .p2p-sidebar label.control-label {
 }
 body.dark.al_body_template_nine .pixelstrap a, .pixelstrap a:active, .pixelstrap a:hover {
     color: #fff !important;
+}
+body.al_body_template_nine.p2p-module .main_category .al_box_third_template .product-image {
+    border-radius: 10px 10px 0 0;
+    padding: 0;
+}
+.al_body_template_nine .main_category .product-image img.img-fluid.blur-up.lazyloaded {
+    object-fit: cover;
+    height: 200px !important;
+    width: 100%;
+}
+.al_body_template_nine .main_category .product-image img.img-fluid.blur-up.lazyloaded {
+    object-fit: cover;
+    height: 200px !important;
+    width: 100%;
+    position: inherit;
+}
+body.dark.al_body_template_nine .review-date {
+    color: #000;
+    font-size: 14px;
+}
+body.dark.al_body_template_nine .product-full-tab .tab-content.nav-material p, .tab-product .tab-content.nav-material p{
+    color: #000 !important;
+}
+body.dark.al_body_template_nine .review-author i {
+    color: #e3b005;
+}
+body.dark.al_body_template_nine .collection-wrapper.al .product-right.inner_spacing.pl-sm-3.p-0 .container-badge-value span {
+    color: #fff !important;
+}
+body.dark.al_body_template_nine .onhover-show-div li.active:after {
+    color: #fff;
+}
+body.dark.al_body_template_nine .p2p-sidebar label.control-label {
+    color: #fff;
+}
+body.dark.al_body_template_nine .collection-wrapper.al .product-right.inner_spacing.pl-sm-3.p-0 .container-badge-value span {
+    color: #fff;
+}
+body.dark.al_body_template_nine .al_details_vendor, .al_vendor_signup {
+    background-color: transparent !important;
 }
 /*----------media css--------------*/
 @media(max-width:991px){
