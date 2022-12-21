@@ -198,7 +198,7 @@
                                                     <a href="{{route('backend.order.refund')}}">{{ __('Order Refunds') }}</a>
                                                 </li>
                                             @endif
-                                            @if(in_array('accounting_promo_codes',$allowed) || Auth::user()->is_superadmin == 1)
+                                            @if( Auth::user()->is_superadmin == 1 && @$getAdditionalPreference['is_gift_card']==1)
                                                 <li>
                                                     <a href="{{route('account.redeemedcard')}}">{{ __('Gift Cards') }}</a>
                                                 </li>
@@ -503,7 +503,7 @@
                         </a>
                         <ul class="nav-second-level p-0 mx-2">
                             
-                            @if( Auth::user()->is_superadmin == 1 && @getAdditionalPreference(['is_gift_card'])['is_gift_card']==1)
+                            @if( Auth::user()->is_superadmin == 1 && @$getAdditionalPreference['is_gift_card']==1)
                             <li>
                                 <a href="{{route('giftCart.index')}}">
                                     <span class="icon-settings-1-1"></span>
