@@ -67,8 +67,8 @@
                     <div class="card">
                         <div class="card-body position-relative p-0">
                             <div class="chat-body row overflow-hidden shadow bg-light rounded">
-                                @include('frontend.chat.uservendorpart.left')
-                                @include('frontend.chat.uservendorpart.right')
+                                @include('frontend.chat.usertouserpart.left')
+                                @include('frontend.chat.usertouserpart.right')
                             </div>
                         </div>
                     </div>
@@ -86,17 +86,17 @@
             });
         });
     </script> -->
-    @php
-        $authData = json_encode(@$data->toArray());
-        $user_type = 'vendor';
-        $to_message = 'to_user';
-        $from_message = 'from_vendor';
-        $chat_type = 'vendor_to_user';
-        $startChatype = 'vendor_to_user';
-        $apiPre = 'client';
-        $fetchDe = 'fetchRoomByVendor';
-        $rePre = 'client/chat/user';
-    @endphp
+@php
+$authData = json_encode(@$data->toArray());
+$user_type = 'user';
+$to_message = 'to_user';
+$from_message = 'from_user';
+$chat_type = 'user_to_user';
+$startChatype = 'user_to_user';
+$apiPre = 'client';
+$rePre = 'user/chat/userVendor';
+$fetchDe = 'fetchRoomByUserIdUserToUser';
+@endphp
 @endsection
 @section('script')
 <script>
@@ -109,10 +109,12 @@
     var rePre = `<?php echo $rePre; ?>`;
     var fetchDe = `<?php echo $fetchDe; ?>`;
 </script>
-<script src="https://momentjs.com/downloads/moment.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
+{{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
 <script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
+
+<script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
+<script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
 <script>
     var client_data = `<?php echo $authData; ?>`;
     fetchChatGroups(client_data);
@@ -121,16 +123,11 @@
 
 <script>
     $(document).ready(async function(){
-        var client_data = `<?php echo $authData; ?>`;
-         fetchChatGroups(client_data);
 //alert(window.location.pathname.split('/')[4])
           // Create SocketIO instance, connect
-          setTimeout(async() => {
-            if(window.location.pathname.split('/')[4] !=  undefined && window.location.pathname.split('/')[4] !=null) {
-                await $('#room_'+window.location.pathname.split('/')[4]).click();
-            }
-          }, 2000);
-         
+          if(window.location.pathname.split('/')[4] !=  undefined && window.location.pathname.split('/')[4] !=null) {
+            await $('#room_'+window.location.pathname.split('/')[4]).click();
+          }
 
     })
 
