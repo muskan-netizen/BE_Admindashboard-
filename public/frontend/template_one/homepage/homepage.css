@@ -3550,7 +3550,7 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
 .al_body_template_one .collection-product-wrapper .product-wrapper-grid .media-body p {
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: clip;
+    text-overflow: ellipsis;
 }
 
 
@@ -3868,4 +3868,8 @@ body.al_body_template_one .al_custom_brand .brand-ing{
 }
 body.al_body_template_one .brand-box img {
     object-fit: contain;
+}
+body.al_body_template_one .blur-up {
+    -webkit-filter: blur(0px) !important;
+    filter: blur(0px) !important;
 }
