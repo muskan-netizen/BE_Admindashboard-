@@ -1811,6 +1811,7 @@ class UserhomeController extends FrontController
 
     public function setSessionIndex(Request $request, $domain='')
     {
+        
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
 
