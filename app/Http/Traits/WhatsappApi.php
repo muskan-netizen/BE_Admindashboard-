@@ -5,6 +5,7 @@ use App\Models\{Order};
 use Carbon\Carbon;
 
 trait WhatsappApi{
+    
     /**
      * Create Order on https://logisy.tech/
      */
@@ -98,64 +99,249 @@ trait WhatsappApi{
     /**
      * Hit custom event 
      */
-     public function customEvents() {
-        $api_data = [
-            "to_number" => "917355555968",
-            "customer_name" => "Nitish",
-            "template_name" => "test_template",
+     public function customEvents($order_status_option, $order_data) {
+        if( !empty($order_data->products) && !empty($order_data->products->first()) && !empty($order_data->products->first()->image)) {
+            $product_image  = $order_data->products->first()->image;
+            $proxy_url      = $product_image['proxy_url'];
+            $image_path     = $product_image['image_path'];
+            $image_url      = $proxy_url.'400/400'.$image_path;
+            $image_url      = str_replace("@webp","",$image_url);
+        }
+        switch ($order_status_option) {
+            case '2':
+                $this->acceptOrderEvent($order_data, $image_url);
+                break;
+            case '3':
+                $this->cancelOrderEvent($order_data, $image_url);
+                break;
+            case '4':
+                $this->processingOrderEvent($order_data, $image_url);
+                break;
+            case '5':
+                $this->outForDeliveryOrderEvent($order_data, $image_url);
+                break;
+            case '6':
+                $this->deliveredOrderEvent($order_data, $image_url);
+                break;
+        }
+     }
 
-            "headers" => [
-                "type" => "image/url/document/text",
-                "link" => "https://cdn.shopify.com/s/files/1/0042/4384/9314/files/IMG-20210411-WA0006_2.jpg",
-                "text" => "1234" 
-            ],
-
-            "body" => [
+     /**
+      * When admin accept the order
+      */
+     function acceptOrderEvent($order_data, $image_url) {
+        try {
+            $header = [
+                "type"=> "image",
+                "link" => $image_url
+            ];
+            $body = [
                 "parameters" => [
-                    "nitish",
-                    "abcd",
-                    "efgh"
+                    optional($order_data->user)->name,
+                    $order_data->order_number
                 ]
-            ],
-            "buttons" => [
-                [
-                    "index" => "0",
-                    "type" => "https://logisy.tech",
-                    "value" => "https://logisy.tech"
-                ]
-            ],
-        ];
+            ];
+            $data = [
+                'order_data' => $order_data,
+                'template_name' => 'clickocart_order_accept_v1',
+                'header' => $header ?? [],
+                'body' => $body ?? [],
+                'message' => $message ?? null
+            ];
+            $template = $this->createTemplate($data);
+            $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
+        }
+        catch(\Exception $e) {
+            Log::info('### Order Accept Event ###');
+            Log::info($e->getLine());
+            Log::info($e->getMessage());
+            Log::info('### Order Accept Event ###');
+        }
+     }
 
-        $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($api_data));
-        
+     /**
+      * When admin cancel the order
+      */
+     function cancelOrderEvent($order_data, $image_url) {
+        try {
+            $header = [
+                "type"=> "image",
+                "link" => $image_url
+            ];
+            $body = [
+                "parameters" => [
+                    optional($order_data->user)->name,
+                    $order_data->order_number
+                ]
+            ];
+            $data = [
+                'order_data' => $order_data,
+                'template_name' => 'clickocart_order_reject_v1',
+                'header' => $header ?? [],
+                'body' => $body ?? [],
+                'message' => $message ?? null
+            ];
+            $template = $this->createTemplate($data);
+            $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
+        }
+        catch(\Exception $e) {
+            Log::info('### Order Cancel Event ###');
+            Log::info($e->getLine());
+            Log::info($e->getMessage());
+            Log::info('### Order Cancel Event ###');
+        }
+     }
+
+     /**
+      * When order in to processong state
+      */
+     function processingOrderEvent($order_data, $image_url) {
+        Log::info('processing');
+        try {
+            $header = [
+                "type"=> "image",
+                "link" => 'https://hub.360dialog.com/dist/aa3a1c9718745e4b5cf6d31742e2ee74.svg'
+            ];
+            $body = [
+                "parameters" => [
+                    optional($order_data->user)->name,
+                    $order_data->order_number
+                ]
+            ];
+            $data = [
+                'order_data' => $order_data,
+                'template_name' => 'clickocart_order_processing_v1',
+                'header' => $header ?? [],
+                'body' => $body ?? [],
+                'message' => $message ?? null
+            ];
+            $template = $this->createTemplate($data);
+            Log::info($template);
+            Log::info(json_encode($template));
+            $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
+        }
+        catch(\Exception $e) {
+            Log::info('### Order Processing Event ###');
+            Log::info($e->getLine());
+            Log::info($e->getMessage());
+            Log::info('### Order Processing Event ###');
+        }
+     }
+
+     /**
+      * When order out for delivery
+      */
+     function outForDeliveryOrderEvent($order_data, $image_url) {
+        try {
+            $header = [
+                "type"=> "image",
+                "link" => $image_url
+            ];
+            $body = [
+                "parameters" => [
+                    optional($order_data->user)->name,
+                    $order_data->order_number
+                ]
+            ];
+            $data = [
+                'order_data' => $order_data,
+                'template_name' => 'clickocart_order_out_for_delivery_v1',
+                'header' => $header ?? [],
+                'body' => $body ?? [],
+                'message' => $message ?? null
+            ];
+            $template = $this->createTemplate($data);
+            $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
+        }
+        catch(\Exception $e) {
+            Log::info('### Order Out For Delivery Event ###');
+            Log::info($e->getLine());
+            Log::info($e->getMessage());
+            Log::info('### Order Out For Delivery Event ###');
+        }
+     }
+
+     /**
+      * When order is delivered
+      */
+      function deliveredOrderEvent($order_data, $image_url) {
+        try {
+            $header = [
+                "type"=> "image",
+                "link" => $image_url
+            ];
+            $body = [
+                "parameters" => [
+                    optional($order_data->user)->name,
+                    $order_data->order_number
+                ]
+            ];
+            $data = [
+                'order_data' => $order_data,
+                'template_name' => 'clickocart_order_delivered_v1',
+                'header' => $header ?? [],
+                'body' => $body ?? [],
+                'message' => $message ?? null
+            ];
+            $template = $this->createTemplate($data);
+            $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
+        }
+        catch(\Exception $e) {
+            Log::info('### Order Delivered Event ###');
+            Log::info($e->getLine());
+            Log::info($e->getMessage());
+            Log::info('### Order Delivered Event ###');
+        }
+      }
+
+     /**
+      * Create whatsapp template
+      */
+     function createTemplate($data) {
+        extract($data);
+        // $order = Order::where('id', $order_id)->first();
+        // optional($order->user)->phone_number
+        return $api_data = [
+            "to_number"     => '917355555968',
+            "customer_name" => optional($order_data->user)->name,
+            "template_name" => $template_name,
+            "headers"       => $header,
+            "body"          => $body,
+            "message"       => $message
+        ];
      }
 
      /**
       * Common Curl function
       */
      public function hitCurl($url, $data) {
+        try{
+            set_time_limit(0);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_TIMEOUT,500); // 500 seconds
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
 
-        set_time_limit(0);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_TIMEOUT,500); // 500 seconds
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            $headers = array();
+            $headers[] = 'X-Api-Key: fCnPbahHymjjKsqJgZU6qGoXCY9nTj5q';
+            $headers[] = 'Content-Type: application/json';
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-        $headers = array();
-        $headers[] = 'X-Api-Key: fCnPbahHymjjKsqJgZU6qGoXCY9nTj5q';
-        $headers[] = 'Content-Type: application/json';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            Log::info(curl_error($ch));
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                Log::info(curl_error($ch));
+            }
+            curl_close($ch);
         }
-        curl_close($ch);
+        catch(\Exception $e) {
+            Log::info('curl error');
+            Log::info($e->getMessage());
+        }
      }
 }
