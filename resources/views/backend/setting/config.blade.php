@@ -36,6 +36,95 @@
             </div>
         </div>
 
+        <div class="row">
+        @if ($client_preference_detail->business_type != 'taxi')
+            <div class="col-lg-4 col-md-6 mb-3">
+                <div class="row h-100">
+                    <div class="col-12">
+                        <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                            @csrf
+                            <!-- Hyperlocal start -->
+                            <div class="card-box h-100">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h4 class="header-title mb-0">{{ __('Hyperlocal') }}</h4>
+                                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
+                                </div>
+                                <p class="sub-header">
+                                    {{ __('Enable location based visibility of Vendors and set the Default Location.') }}
+                                </p>
+                                <input type="hidden" name="hyperlocals" id="hyperlocals" value="1">
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group mb-0">
+                                            <label for="is_hyperlocal" class="mr-3">{{ __('Enable') }}</label>
+                                            <input type="checkbox" data-plugin="switchery" name="is_hyperlocal"
+                                                id="is_hyperlocal" class="form-control" data-color="#43bee1"
+                                                @if (isset($preference) && $preference->is_hyperlocal == '1') checked @endif>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 mt-3 disableHyperLocal"
+                                                style="{{ isset($preference) && $preference->is_hyperlocal == '1' ? '' : 'display:none;' }}">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="form-group mb-0">
+                                                            <label
+                                                                for="Default_location_name">{{ __('Default Location') }}</label>
+                                                            <div class="input-group">
+                                                                <input type="text" name="Default_location_name"
+                                                                    id="Default_location_name"
+                                                                    placeholder="Delhi, India" class="form-control"
+                                                                    value="{{ old('Default_location_name', $preference->Default_location_name ?? '') }}">
+                                                                <div class="input-group-append">
+                                                                    <button
+                                                                        class="btn btn-xs btn-dark waves-effect waves-light showMap"
+                                                                        type="button" num="add1"> <i
+                                                                            class="mdi mdi-map-marker-radius"></i></button>
+                                                                </div>
+                                                            </div>
+                                                            @if ($errors->has('Default_location_name'))
+                                                                <span class="text-danger" role="alert">
+                                                                    <strong>{{ $errors->first('Default_location_name') }}</strong>
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="form-group mt-3 mb-0">
+                                                            <label for="Default_latitude">{{ __('Latitude') }}</label>
+                                                            <input type="text" name="Default_latitude"
+                                                                id="Default_latitude" placeholder="24.9876755"
+                                                                class="form-control"
+                                                                value="{{ old('Default_latitude', $preference->Default_latitude ?? '') }}">
+                                                            @if ($errors->has('Default_latitude'))
+                                                                <span class="text-danger" role="alert">
+                                                                    <strong>{{ $errors->first('Default_latitude') }}</strong>
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="form-group mt-3 mb-0">
+                                                            <label
+                                                                for="Default_longitude">{{ __('Longitude') }}</label>
+                                                            <input type="text" name="Default_longitude"
+                                                                id="Default_longitude" placeholder="11.9871371723"
+                                                                class="form-control"
+                                                                value="{{ old('Default_longitude', $preference->Default_longitude ?? '') }}">
+                                                            @if ($errors->has('Default_longitude'))
+                                                                <span class="text-danger" role="alert">
+                                                                    <strong>{{ $errors->first('Default_longitude') }}</strong>
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- Hyperlocal end -->
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
       <div class="col-lg-4 col-md-6 mb-3">
          <div class="row h-100">
             <div class="col-12">
@@ -118,6 +207,7 @@
             </div>
          </div>
       </div>
+    </div>
 
       {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
 =======
@@ -2396,7 +2486,6 @@
       <input type="hidden" @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url']==1) value="1" @else value="0" @endif name="is_tracking_sms_url" id="is_tracking_sms_url" />
    </div>
 </div>
-=======
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                     <label for="is_seller_module_switch"
@@ -2413,7 +2502,6 @@
                                     </span>
                                 </div>
                             </div>
->>>>>>> pre_dev
 
 <div class="col-md-4">
    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
