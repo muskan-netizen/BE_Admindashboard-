@@ -115,11 +115,11 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
 }
 .select2-results__option{display: block;}
 body.al_body_template_nine .alPostBoxOuter ul li a.active {
-    background: #4297fc;
-    border: 1px solid #4297fc;
+    background: #efe7e7;
+    border: 1px solid #ccc;
 }
 body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
-    color: #fff;
+    color: #000;
 }
 </style>
 @endsection
