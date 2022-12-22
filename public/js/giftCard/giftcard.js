@@ -15,6 +15,7 @@ function datepic(){
   
 $(document).on('click', '.submitGiftCardForm', function(e) {
     e.preventDefault();
+    $('.submitGiftCardForm').attr("disabled", true);
     var form = document.getElementById('giftCardForm');
     var formData = new FormData(form); 
     var urls = "/client/gitcart/store";
@@ -38,6 +39,10 @@ function saveGiftCardData(formData, type, url) {
         processData: false,
         success: function(response) {
             if (response.status == 'success') {
+                $('.dropify').dropify().data('dropify').resetPreview();
+                $('.submitGiftCardForm').attr("disabled", false);
+                $('span.invalid-feedback').hide();
+                document.getElementById('giftCardForm').reset();
                 $('#agiftCart_model').modal('hide');
                 $('#EditagiftCart_model').modal('hide');
                  Swal.fire({
@@ -46,8 +51,9 @@ function saveGiftCardData(formData, type, url) {
                     text: response.message,
                 });
                 setTimeout(() => {
-                    $('.submitServiceProduct').attr("disabled", false);
+                    
                     $('#add-service').modal('hide');
+                    $(".submitGiftCardForm").removeAttr("disabled");
                     datatable.ajax.reload();
                 },1000);
               
@@ -58,6 +64,7 @@ function saveGiftCardData(formData, type, url) {
             return response;
         },
         error: function(response) {
+            $(".submitGiftCardForm").removeAttr("disabled");
             if (response.status === 422) {
                 let errors = response.responseJSON.errors;
                 Object.keys(errors).forEach(function(key) {
