@@ -831,7 +831,7 @@
 
         $(".morelink").click(function() {
             if ($(this).hasClass("less")) {
-                $(this).removeClass("less");
+                // $(this).removeClass("less");
                 $(this).html(moretext);
             } else {
                 $(this).addClass("less");

@@ -1858,3 +1858,19 @@ body.dark.al_body_template_six .tab-content.nav-material .tab-pane .row .col-12:
     background-color: #0000007a;
 }
 
+body.dark.al_body_template_eight section.wrapper-main form#login-form-new span.fa.fa-eye-slash.toggle-password {
+    right: 50px !important;
+    color: #fff;
+}
+body.dark.al_body_template_eight .main-login-page div#login-section h3{color:#fff;}
+body.dark.al_body_template_eight .product-right .product-description .qty-box .input-group .form-control{color: #fff;}
+body.al_body_template_nine .main_category .product-image img.img-fluid.blur-up.lazyloaded {
+    height: 245px !important;
+}
+/*-----all template using read more css------*/
+.morecontent span {
+    display: none;
+}
+.morelink {
+    display: inline-block;
+}
