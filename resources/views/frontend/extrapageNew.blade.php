@@ -165,7 +165,7 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-12 mb-3" id="nameInput">
-                                        <label for="validationCustom01">{{getNomenclatureName('Vendors', true) .' '. __('Name')}}</label>
+                                        <label for="validationCustom01">{{ __('Restaurants Name') }} </label>
                                         <input type="text" class="form-control" name="name" value="">
                                         <span class="invalid-feedback" id="name_error"><strong></strong></span>
                                     </div>
@@ -443,7 +443,7 @@
                                                 <div class="col-md-4">
 
                                                     <div class="col-md-12">
-                                                        {!! Form::label('title', getNomenclatureName('Vendors', true) .' '. __('Category') ,['class' => 'control-label']) !!}
+                                                        {!! Form::label('title', __('Sale Category') ,['class' => 'control-label']) !!}
                                                         <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
                                                             <ol class="dd-list">
                                                                 @forelse($builds as $build)
