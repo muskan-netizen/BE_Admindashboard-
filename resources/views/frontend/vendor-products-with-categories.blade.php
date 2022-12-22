@@ -1036,6 +1036,7 @@
             } else {
                 $(this).addClass("less");
                 $(this).html(lesstext);
+                
             }
             $(this).parent().prev().toggle();
             $(this).prev().toggle();
