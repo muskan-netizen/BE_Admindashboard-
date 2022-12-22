@@ -260,7 +260,8 @@ class ChatController extends BaseController
                 'type'=>$data['type'],
                 'db_name'=>$this->client_data->database_name,
                 'client_id'=>$this->client_data->id, 
-                'p2p_id'=>$p2p_id
+                'p2p_id'=>$p2p_id,
+                'product_id'=>$product_id
             ];
 
             $response =   Http::post($socket_url.'/api/room/createRoom', $request_data );

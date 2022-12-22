@@ -606,7 +606,7 @@
                 if(response.data.roomData.length > 0) {
                     await response.data.roomData.reverse().forEach(async function (data,i) {
                     console.log("data===================");
-                    console.log(data.product_id);
+                    console.log(data);
                     var renderUserd = await renderUser(data);
                     var last_message =  data.chat_Data[0]!=undefined?data.chat_Data[0].message:'';
                     var last_message_name = data.chat_Data[0]!=undefined?data.chat_Data[0].username : '';
