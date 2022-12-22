@@ -252,6 +252,40 @@ body.al_body_template_nine .alPostBoxOuter .breadcrumb-item.breadcrumb-item::bef
     position: absolute;
     right: -13px;
 }
+body.al_body_template_nine .footer-card{
+    padding:0 !important;
+}
+body.al_body_template_nine .footer-card a {
+    display: inline-block;
+    margin: 10px;
+}
+body.al_body_template_nine a#next-button-ondemand-3 {
+    float: right;
+}
+body.al_body_template_nine a#next-button-ondemand-2 {
+    float: right;
+}
+body.al_body_template_nine .number input {
+    color: #fff;
+}
+body.dark.al_body_template_nine.p2p-module.modal-open form#add_edit_address_form .address-input-group input#address {
+    width: 90%;
+}
+body.dark.al_body_template_nine .product-wrapper-grid .product-image{
+    padding:0 !important;
+}
+body.al_body_template_nine .product-wrapper-grid .product-image img{position: relative !important;}
+body.al_body_template_nine .pagination.pagination-rounded.justify-content-end.mb-0 {
+    margin-top: 40px;
+}
+body.al_body_template_nine .start_chat {
+    float: none !important;
+    margin: 0 !important;
+    padding: 6.7px 10px !important;
+}
+body.al_body_template_nine .total_booking_time span {
+    border-left: 1px solid #fff;
+}
 /*-----------------------p2p module dark theme css -----------------*/
 body.dark.al_body_template_one.p2p-module .breadcrumb-section {
     background-color: #2b2b2b !important;
