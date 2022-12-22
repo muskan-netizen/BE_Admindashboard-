@@ -132,6 +132,12 @@ class Order extends Model implements Auditable
     {
         return $this->hasMany('App\Models\OrderVendorProduct', 'order_id', 'id');
     }
+    public function giftCard(){
+        return $this->hasOne('App\Models\GiftCard','id','gift_card_id');
+    }
+    public function userGiftCard(){
+        return $this->hasOne('App\Models\UserGiftCard','gift_card_code','gift_card_code');
+    }
     public function editingInCart()
     {
         return $this->hasOne('App\Models\Cart', 'order_id', 'id');

@@ -742,7 +742,7 @@ label {
     width: 100%;
     overflow: hidden;
     left: 0;
-    z-index: 999;
+    z-index: 9;
 }
 
 .scrollspy-menu ul {
@@ -3550,7 +3550,7 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
 .al_body_template_one .collection-product-wrapper .product-wrapper-grid .media-body p {
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: clip;
+    text-overflow: ellipsis;
 }
 
 
@@ -3708,9 +3708,9 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
 }
 
 
-.al_body_template_one .footer-card a span {
+/* .al_body_template_one .footer-card a span {
     width: 20%;
-}
+} */
 
 .al_body_template_one .ac-royo-btn a {
     width: 16%;
@@ -3868,4 +3868,8 @@ body.al_body_template_one .al_custom_brand .brand-ing{
 }
 body.al_body_template_one .brand-box img {
     object-fit: contain;
+}
+body.al_body_template_one .blur-up {
+    -webkit-filter: blur(0px) !important;
+    filter: blur(0px) !important;
 }

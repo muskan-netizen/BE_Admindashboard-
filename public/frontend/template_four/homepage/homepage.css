@@ -2446,6 +2446,7 @@ span.alFourTempTitle {
   padding: 7px 20px;
   background-color: var(--theme-deafult);
   color: #fff;
+  font-size:14px;
 }
 
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {
@@ -4251,5 +4252,8 @@ body.al_body_template_four.p2p-module .tab-product {
     border-radius: 5px;
     font-size: 14px;
     width: 51px;
+}
+body.al_body_template_four .slick-track{
+  margin-left:0 !important;
 }
   /* car bar css end */

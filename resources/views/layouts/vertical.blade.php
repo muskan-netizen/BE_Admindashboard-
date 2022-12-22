@@ -51,7 +51,7 @@
 
         <!-- Start Page Content here -->
 
-        <div class="content-page {{(is_p2p_vendor()) ? 'full-width-area' : ''}}">
+        <div class="content-page {{(is_p2p_vendor()) ? '' : ''}}">
             <div class="content">
                <!-- @php
                     $style = "";
