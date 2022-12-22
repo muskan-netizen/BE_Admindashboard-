@@ -1069,7 +1069,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div> -->
                     
-                    @if($product->vendor->pick_drop == 1)
+                    @if($product->vendor->pick_drop == 1 && $product->category->categoryDetail->type_id == 7)
                     <div class="row mb-2">
                         <div class="col-md-6 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Toll Tax'),['class' => 'control-label']) !!}
@@ -1103,8 +1103,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
                     @endif
-                    
-                    @if($product->vendor->pick_drop == 1 && $configData->is_cab_pooling == 1)
+                    @if($product->vendor->pick_drop == 1 && $configData->is_cab_pooling == 1 && $product->category->categoryDetail->type_id == 7)
                     <div class="row">
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Available for Pooling'),['class' => 'control-label']) !!}
