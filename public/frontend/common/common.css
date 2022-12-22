@@ -3479,9 +3479,6 @@ div#delivery_form .form-control{
     display: unset !important;
     width: unset !important;
     height: unset !important;
-=======
->>>>>>> pre_dev
-=======
 }
 
 
@@ -3731,5 +3728,4 @@ body.al_body_template_two .alRentalSinglePageView .single_cart-temp_label {
 }
 body.al_body_template_two .alRentalSinglePageView .single_cart-temp_label label {
     width: 43%;
->>>>>>> pre_dev
 }

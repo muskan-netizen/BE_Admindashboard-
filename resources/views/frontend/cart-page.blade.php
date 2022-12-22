@@ -157,6 +157,7 @@
     $incTax = 0;
     $product_container_charges_tax_amount=0;
 
+    $tax_container_charges_percentage=$cart_details->container_charges_tax;
     $other_taxes=$cart_details->other_taxes;
     $other_taxes_string=$cart_details->other_taxes_string;
     @endphp
@@ -817,10 +818,9 @@
                 $other_taxes = $other_taxes+$product_container_charges_tax_amount;
                 $other_taxes_string=$other_taxes_string.',tax_product_container_charges:'.$product_container_charges_tax_amount;
                 $incTax = 1;
-            }else if($tax_container_charges_percentage>0){
-
-                $other_taxes=$other_taxes+($cart_details->$total_container_charges*$tax_container_charges_percentage/100);
-                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'+($cart_details.$total_container_charges*$tax_container_charges_percentage/100);
+            }else if($tax_container_charges_percentage > 0){
+                $other_taxes=$other_taxes+$tax_container_charges_percentage;
+                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'.$tax_container_charges_percentage;
                 $incTax = 1;
             }
             @endphp

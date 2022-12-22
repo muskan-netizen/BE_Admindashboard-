@@ -627,6 +627,20 @@ body.al_body_template_eight .product-m .slick-next:before, .product-m .slick-pre
     line-height: 29px;
     border: 1px solid#ccc;
 }
+body.dark.al_body_template_eight section.popular-brands.left-shape_.position-relative.bg-light-gray {
+    background: #2b2b2b !important;
+}
+body.dark.al_body_template_eight .main-product {
+    background: linear-gradient(to right, #2d2c2b , #2b2b2b );
+}
+body.dark.al_body_template_eight section.suppliers-section.container.vender_slider .product-m.render_vendors {
+    background: #464545;
+}
+body.dark.al_body_template_eight .render_full_spotlight_deals{
+    background: #464545;
+}
+body.dark.al_body_template_eight .main-pro-slider .suppliers-slider-recently_viewed{background: #464545;}
+body.dark.al_body_template_eight section#homepage_top_rated{background: #464545;}
 /*----------new design media css---------*/
 /*------------ipad view css-------------*/
 @media(max-width:991px){
