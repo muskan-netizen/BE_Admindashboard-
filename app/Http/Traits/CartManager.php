@@ -438,6 +438,7 @@ trait cartManager{
             }
           // $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */
+            $quantity_role_price = [];
             foreach ($cartData as $ven_key => $vendorData) {
                 $opt_quantity_price_new = 0.00;
                 $addon_price=0;
@@ -629,8 +630,17 @@ trait cartManager{
                         $container_charges_in_currency = $prod->pvariant->container_charges / $divider;
                         $container_charges_in_doller_compare = $container_charges_in_currency * $customerCurrency->doller_compare;
                     }
-                    $quantity_price = $price_in_doller_compare * $prod->quantity;
-                    $sub_total+=$quantity_price+$container_charges_in_currency;
+
+                    if ((Auth::user()->role_id == 3)) {
+                        $quantity_role_price = $this->calculatePrice($prod->productVariantByRoles, $prod->quantity);
+                    }
+                    if(@$quantity_role_price['quantity_price'] != 0 ) {
+                            $quantity_price = $quantity_role_price['quantity_price'];
+                    } else {
+                        $quantity_price = $price_in_doller_compare * $prod->quantity;    
+                    }
+                   
+                    $total_container_charges = $container_charges_in_currency * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     $sub_total+=$quantity_price+$quantity_container_charges;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
@@ -644,6 +654,7 @@ trait cartManager{
                     $prod->quantity_price = decimal_format($quantity_price);
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
+                    $prod->quantity_role_price = $quantity_role_price;
 
                     $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
@@ -1369,9 +1380,10 @@ trait cartManager{
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $this->user_allAddresses??[], 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
-            $cart->scheduled_date_time = $myDate;
+            $cart->scheduled_date_time = $myDate; 
             $cart->giftCardUsedAmount = $giftCardUsed;
-
+            // $cart->quantity_role_price = $quantity_role_price;
+            
             if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                 if($cart->pickupSlotsCnt==0){
                     $mdate = (object)findSlotNew('',$cart->vendor_id,1);
@@ -1413,7 +1425,6 @@ trait cartManager{
             $cart->sub_total =  $sub_total??0;
             $cart->products = $cartData->toArray();
         }
-        // dd($cart);
         return $cart;
       }
 
@@ -1461,6 +1472,9 @@ trait cartManager{
             }
             $quantity_price = $amount * $prodQuantity;
         }
-        return $quantity_price;        
+        return [
+            'quantity_price' => $quantity_price,
+            'amount' => $amount
+        ]; 
     }
 }

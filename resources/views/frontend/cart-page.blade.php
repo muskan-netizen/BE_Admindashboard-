@@ -214,7 +214,7 @@
 
 
         {{-- Product Detail Loop --}}
-
+        
         <div id="tbody_{{$product->vendor->id}}">
 
             @foreach($product->vendor_products as $vendor_product)
@@ -251,34 +251,17 @@
                                 $getAdditionalPreference = getAdditionalPreference(['is_corporate_user']);
                                 $corporate_user_price = 0;
                             @endphp
-                            {{-- @dd($getAdditionalPreference['is_corporate_user']) --}}
-                            @if( (Auth::user()->role_id == 3) && ($getAdditionalPreference['is_corporate_user'] == 1) && !empty($vendor_product->product_variant_by_roles)) 
-                                @php 
-                                    $amount = 0;
-                                    $quantity = 0;
-                                @endphp
-                                {{-- @dd($vendor_product->product_variant_by_roles) --}}
-                                @foreach (array_reverse($vendor_product->product_variant_by_roles) as $productVar)
-                                    @if($productVar->role_id == Auth::user()->role_id)
-                                        @if($quantity < $productVar->quantity && $productVar->quantity <= $vendor_product->quantity) 
-                                            @php
-                                                $quantity = $productVar->quantity; 
-                                                $corporate_user_price = $productVar->amount; 
-                                            @endphp
-                                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
-                                                <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($productVar->amount) }}</div>
-                                            </div>
-                                        @endif        
-                                    @endif
-                                    {{-- @php break; @endphp --}}
-                                @endforeach
+                            @if( (Auth::user()->role_id == 3) && ($getAdditionalPreference['is_corporate_user'] == 1) && !empty($vendor_product->product_variant_by_roles) && !empty($vendor_product->quantity_role_price) && $vendor_product->quantity_role_price->quantity_price != 0 )
+                                <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->quantity_role_price->amount) }}</div>
+                                </div>
                             @else
                                 @if(isset($vendor_product->pvariant->actual_price))
                                 <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                     <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
                                 </div>
                                 @endif
-                            @endif
+                            @endif                            
 
                             @if(!empty($vendor_product->quantity_price))
                             <div class="col-6 col-md-2 text-left order-md-4">
