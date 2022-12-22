@@ -1867,6 +1867,57 @@ body.dark.al_body_template_eight .product-right .product-description .qty-box .i
 body.al_body_template_nine .main_category .product-image img.img-fluid.blur-up.lazyloaded {
     height: 245px !important;
 }
+body.al_body_template_four.homeHeader .listing-categories ul li {
+    display: block;
+}
+body.al_body_template_four.homeHeader .listing-categories ul li a{
+    color: #222;
+}
+body.al_body_template_four.homeHeader div#collapseOne {
+    background-color: #f1f1f1;
+}
+body.al_body_template_four.homeHeader .theme-card.custom-inner-card h2.mb-0 {
+    margin-top: 0;
+}
+body.al_body_template_four.homeHeader section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span {
+    padding:10px;
+}
+body.al_body_template_four.homeHeader .collection-product-wrapper a.product-box{background: #f2f2f2;box-shadow: 0 4px 14px 0 rgb(0 0 0 / 8%);display: block;}
+body.al_body_template_four.homeHeader .collection-content.col-lg-9.outter-fillter-data .row.margin-res.mt-3 h3.d-flex.align-items-center.justify-content-between label {
+    text-align: center !important;
+    display: block !important;
+    width: 100%;
+    margin-bottom: 10px !important;
+}
+body.dark.al_body_template_four.homeHeader .collection-product-wrapper a.product-box{
+    background:#222222 !important;
+}
+body.dark.al_body_template_four.homeHeader div#collapseOne {
+    background-color: #222;
+}
+body.dark.al_body_template_four.homeHeader .listing-categories ul li a {
+    color: #fff;
+}
+body.dark.al_body_template_four.homeHeader .collection-content.col-lg-9.outter-fillter-data.fillter_product div#category_products_filter a.product-box.scale-effect.mt-0.product-card-box.position-relative.al_box_third_template.al {
+    background: #000 !important;
+}
+body.al_body_template_four.homeHeader .collection-content.col-lg-9.outter-fillter-data.fillter_product div#category_products_filter a.product-box.scale-effect.mt-0.product-card-box.position-relative.al_box_third_template.al label.mb-0 {
+    text-align: left !important;
+    width: 50%;
+}
+body.dark.al_body_template_four .custom_filtter ul li span{
+    color:#fff;
+}
+body.dark.al_body_template_four .p2p-sidebar label.control-label{color:#fff;}
+body.dark.al_body_template_four  div#variantAjaxDiv {
+    background: #222;
+}
+body.al_body_template_four div#variantAjaxDiv {
+    background: #ccc;
+}
+body.dark.al_body_template_four section.section-b-space.ratio_asos {
+    background: #282828;
+}
 /*-----all template using read more css------*/
 .morecontent span {
     display: none;
