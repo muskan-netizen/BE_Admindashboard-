@@ -47,6 +47,11 @@
     .box-info table tr:first-child td {
         padding-top: .85rem;
     }
+    .wishlist_product {
+    height: 550px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 </style>
 @endsection
 @section('content')
@@ -65,7 +70,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                 </ul>
             </div>
         @endif
-        <div class="row my-md-3">
+        <div class="row my-md-3 mt-5 pt-4">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{__('My Account')}}</a></div>
                 <div class="dashboard-left mb-3">
@@ -79,7 +84,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                         <div class="page-title">
                             <h2>{{__(getNomenclatureName('Wishlist', true)) }}</h2>
                         </div>
-                        <div class="box-account box-info mt-md-3 mt-2">
+                        <div class="box-account wishlist_product box-info mt-md-3 mt-2">
                             <div class="row">
                                 <div class="col-sm-12 table-responsive table-responsive-xs">
                                     <table class="table wishlist-table border">
@@ -96,10 +101,10 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                                     </div>
                                                 </th>
                                                 <th scope="col">{{__('Image')}}</th>
-                                                <th scope="col">{{__('Product Name')}}</th>
+                                                <th scope="col">{{__(getNomenclatureName('Product Name', true)) }}</th>
                                                 <th scope="col">{{__('Price')}}</th>
                                                 <th scope="col">{{__('Date Added')}}</th>
-                                                <th scope="col">{{__('Stock Status')}}</th>
+                                                <th scope="col">{{__(getNomenclatureName('Stock Status',true))}}</th>
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>

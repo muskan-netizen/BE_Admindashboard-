@@ -1,5 +1,9 @@
 <?php
-Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
+Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () { 
+
+    Route::post('dispatcher/check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromDispatcher');
+
+    Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
 
     Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 
@@ -31,6 +35,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
 
         Route::post('cart/add', 'Api\v1\CartController@add');
+        Route::post('checkProductAvailibility', 'Api\v1\RentalProductController@checkProductAvailibility');
         Route::get('cart/list', 'Api\v1\CartController@index');
         Route::post('upload/prescriptions', 'Api\v1\CartController@uploadPrescriptions');
         Route::post('delete/prescriptions', 'Api\v1\CartController@deleteProductPrescription');
@@ -42,6 +47,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
         Route::post('header', 'Api\v1\HomeController@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
+        Route::POST('checkProductAvailibility', 'Api\v1\ProductController@checkProductAvailibility');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');
         Route::get('products_faq/{id}', 'Api\v1\ProductController@getProductFaq');
@@ -85,6 +91,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('order/after/payment', 'Front\PaytabController@after_app_payment');
         //Passbase Store 
         Route::post('passbase/store', 'Api\v1\PassbaseController@storeAuthkey');
+
+        Route::post('order-tracking', 'Api\v1\OrderController@OrderTracking');
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger

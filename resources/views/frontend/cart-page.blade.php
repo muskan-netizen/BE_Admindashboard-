@@ -1,6 +1,61 @@
+<style>
+    .alInfoIocn .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+.alInfoIocn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+.alInfoIocn:hover .tooltiptext {
+    visibility: visible;
+}
+    .cross-sell .img-outer-box.position-relative img,
+    .upsell-sell .img-outer-box.position-relative img {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+    .cross-sell .img-outer-box.position-relative,
+    .upsell-sell  .img-outer-box.position-relative {
+        padding-bottom: 100%;
+    }
+    .cross-sell .media-body,
+    .upsell-sell .media-body{padding: 0 10px;}
+    .cross-sell .media-body .product-description,
+    .upsell-sell .media-body .product-description {
+        text-align: left;
+        padding: 0;
+    }
+    .cross-sell .slick-slide>div {
+        margin: 0 12px;
+    }
+    .order-user-name p {
+    display: inline-block;
+}
+.order-user-name {
+    background: #eeeeee;
+    padding: 6px 6px;
+    border-radius: 4px;
+}
+    </style>
+
 @php 
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
-$serviceType =  Session::get('vendorType'); @endphp
+$serviceType =  Session::get('vendorType');
+@endphp
 
 @if($cart_details->totalQuantity<=0)
     <div class="container" >
@@ -18,12 +73,24 @@ $serviceType =  Session::get('vendorType'); @endphp
 
     @else
 
-    <div class="container">
+    <div class="container mt-3 mb-5">
+
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box">
-                    <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
+            <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2">
+                <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
+                    <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+                        {{__('Continue Shopping')}}</a>
                 </div>
+                <div class="col-md-6">
+                    @if(!empty($cart_details->editing_order))
+                        <span class="shoping">{{ __("Order") }} {{$cart_details->editing_order->order_number}} {{ __("being edited") }} <a class="btn shoping discard_editing_order" href="javascript:void(0)" data-orderid="{{$cart_details->editing_order->id}}"><i class="fa fa-trash-o"></i> {{__('Discard')}}</a></span>
+                    @endif
+                </div>
+            </div>
+                <!-- <div class="page-title-box">
+                    <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
+                </div> -->
                 <div class="cart_response mt-3 mb-3 d-none">
                     <div class="alert p-0" role="alert"></div>
                 </div>
@@ -42,7 +109,7 @@ $serviceType =  Session::get('vendorType'); @endphp
             <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
-                                    <h3>{{ __("Shopping Cart") }}</h3>
+                                    <h3>{{ __("Shopping Cart") }} </h3>
                             </div>
                         </div>
                         <div class="col-6">
@@ -51,6 +118,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                             </div>
                         </div>
             </div>
+            
             <div class="row border-bottom product_title_add py-1 no-gutters">
                     <div class="col-md-4 col">
                         <span>{{ __('Product Details') }}</span>
@@ -60,15 +128,15 @@ $serviceType =  Session::get('vendorType'); @endphp
                         <span>{{ __('Price') }}</span>
                     </div>
                     @if($serviceType ==  'rental')
-                        <div class="col-md-2 text-center">
+                        <div class="col-md-2 col text-center">
                             <span>Duration By(min)</span>
                         </div>
                     @else
-                    <div class="col-md-2 text-center">
+                    <div class="col-md-2 col text-center">
                         <span>{{ __('Quantity') }}</span>
                     </div>
                     @endif
-                    <div class="col-md-4 text-center">
+                    <div class="col-md-4 col text-center">
                         <span>Total</span>
                     </div>
 
@@ -90,6 +158,7 @@ $serviceType =  Session::get('vendorType'); @endphp
     $incTax = 0;
     $product_container_charges_tax_amount=0;
 
+    $tax_container_charges_percentage=$cart_details->container_charges_tax;
     $other_taxes=$cart_details->other_taxes;
     $other_taxes_string=$cart_details->other_taxes_string;
     @endphp
@@ -114,12 +183,13 @@ $serviceType =  Session::get('vendorType'); @endphp
                 @elseif( $product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 1 )
                     <div class="col-12">
                         <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ').$product->delaySlot}}
+                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}{{@$product->delaySlot}}
                         </div>
                     </div>
                @endif
 
-                @if( (($product->vendor->order_min_amount) > 0) &&  (($cart_details->total_payable_amount)+($total_wallet_amount_used) < ($product->vendor->order_min_amount)) )
+
+                @if( (($product->vendor->order_min_amount) > 0) &&  (($product->product_total_amount + $product->vendor->fixed_fee_amount) < ($product->vendor->order_min_amount)) )
                     <div class="col-12" id="MOV_Notification">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then')}} {{Session::get('currencySymbol').decimal_format($product->vendor->order_min_amount)}}
@@ -149,6 +219,9 @@ $serviceType =  Session::get('vendorType'); @endphp
         <div id="tbody_{{$product->vendor->id}}">
 
             @foreach($product->vendor_products as $vendor_product)
+            {{-- @php
+            pr($vendor_product);
+            @endphp --}}
                 <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage" id="tr_vendor_products_{{$vendor_product->id}}">
                     <div class="product-img col-3 col-md-2">
                         @if(!empty($vendor_product->pvariant->media_one))
@@ -161,7 +234,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                     </div>
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
-                          
+
                             <div class="col-md-3 order-md-1">
                                 <h4 class="cart_product_name">{{@$vendor_product->product->category_name->name }}</h4>
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{@$vendor_product->product->translation_one ?@ $vendor_product->product->translation_one->title :  @$vendor_product->product->sku }}</strong></h4>
@@ -174,7 +247,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                                 @endforeach
                                 @endif
                             </div>
-                            
+
                             @if(isset($vendor_product->pvariant->actual_price))
                             <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                 <div class="items-price">@if( $additionalPreference["is_token_currency_enable"]) 
@@ -186,7 +259,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                             @endif
                             @if(!empty($vendor_product->quantity_price))
                             <div class="col-6 col-md-2 text-left order-md-4">
-                                @if($serviceType ==  'rental') 
+                                @if($serviceType ==  'rental')
                                 @php
                                 $additionalPrice = 0;
                                 if($vendor_product->pvariant->incremental_price_per_min > 0){
@@ -201,33 +274,35 @@ $serviceType =  Session::get('vendorType'); @endphp
                                                 {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($vendor_product->quantity_price))}} @else 
                                                 {{Session::get('currencySymbol').decimal_format($vendor_product->quantity_price) }} @endif</div>
                                 @endif
-                                
                             </div>
                             @endif
                             @if($serviceType ==  'rental')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
-                                <div class="number d-flex justify-content-md-center">
+                                <div class="number d-flex justify-content-md-center border-0">
                                     <div style="display: none !important;" class="counter-container d-flex align-items-center">
                                         <input placeholder="1"  type="number" min="0"  data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
                                         data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
-                                        
+
                                     </div>
                                     <div class="qty-box alCartInput">
                                         <div class="input-group">
-                                            @php 
+                                            @php
                                                 $dura = getHoursMinutes($vendor_product->total_booking_time);
                                             @endphp
-                                            <p>{{$dura}}</p>
+                                            <p class="mb-0">{{$dura}}</p>
                                            
                                         </div>
                                     </div>
-                                
+
                                 </div>
-                               
                             </div>
                             @elseif( $serviceType ==  'appointment')
                             <div class="col-10 col-md-4 text-md-center order-md-3">
-                                
+                                1
+                            </div>
+                            @elseif( $vendor_product->product->is_long_term_service ==  1)
+                            <div class="col-10 col-md-4 text-md-center order-md-3">
+                                <span class="">1</span>
                             </div>
                             @else
                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -253,6 +328,10 @@ $serviceType =  Session::get('vendorType'); @endphp
                                             @endif
                                         @endif
                                     @endif
+
+                                    @if(isset($vendor_product->product->product_delivery_fee) && $vendor_product->product->product_delivery_fee >0)
+                                    <div class="float-left mt-2">Delivery Fee : <span style="color: #000;font-size: 14px;font-weight: 500;">{{Session::get('currencySymbol')}}{{$vendor_product->product->product_delivery_fee}}</span></div>
+                                    @endif
                                 </div>
                             @endif
 
@@ -261,7 +340,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </a>
                             </div>
-                        
+
                         </div>
                         @if($serviceType ==  'rental')
                          <hr class="my-2">
@@ -285,7 +364,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                                     <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                 </div>
                             </div>
-                            
+
                             @foreach($vendor_product->addon as $ad=>$addon)
                             @if($addon->option)
                                 <div class="row">
@@ -319,15 +398,16 @@ $serviceType =  Session::get('vendorType'); @endphp
 
 
                                     {{-- /* --- Vendor Tax Get Percentage ---- */ --}}
-                                    @foreach($cart_details->taxRates as $index=> $tax)
-                                        @if($vendor_product->product->container_charges_tax_id!=null)
-                                            @if($vendor_product->product->container_charges_tax_id==$index)
-                                               {{ $product_container_charges_tax_amount+=$vendor_product->pvariant->container_charges*$tax->tax_rate/100;}}
-                                               {{$incTax = 1;}}
-                                            @endif
-                                        @endif
-                                    @endforeach
-
+                                    @php
+                                    foreach($cart_details->taxRates as $index=> $tax){
+                                        if($vendor_product->product->container_charges_tax_id!=null){
+                                            if($vendor_product->product->container_charges_tax_id==$index){
+                                                $product_container_charges_tax_amount+=$vendor_product->quantity_container_charges*$tax->tax_rate/100;
+                                               $incTax = 1;
+                                            }                                           
+                                      }
+                                    }
+                                    @endphp
                                     </div>
                                 </div>
                                 <div class="col-md-7 col-sm-4 text-right">
@@ -336,14 +416,14 @@ $serviceType =  Session::get('vendorType'); @endphp
                                 </div>
                             </div>
                         @endif
-                      
+
 
                         {{-- Home Service Schedual code Start at down --}}
                         {{-- @php
                        pr($cart_details->closed_store_order_scheduled);
                         @endphp --}}
                         @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && ( in_array($serviceType ,['appointment','on_demand']) && $vendor_product->product->mode_of_service == "schedule" ))
-                        
+
                         <hr class="my-1">
                            @if($client_preference_detail->business_type != 'laundry')
                            @if(@$vendor_product->product->is_slot_from_dispatch !=1 || ($vendor_product->product->Requires_last_mile !=1) )
@@ -369,20 +449,24 @@ $serviceType =  Session::get('vendorType'); @endphp
                                        @else
                                            <input type="datetime-local" id="vendor_schedule_slot_{{$product->vendor_id }}" data-schedule_type="ProductDateTime" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" value="{{ (($vendor_product->manual_scheduled_date_time != '')?$vendor_product->manual_scheduled_date_time : $product->delay_date ) }} "
                                            min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}" data-cart_product_id="{{ $vendor_product->id }}">
-       
+
                                        @endif
-       
+
                                    @endif
-                                       
+
                                </div>
                            </div>
                            @else
                            {{-- Dispatch sloat shoty --}}
                            @include('frontend.cart.dispatchSlots')
-                          
+
                            @endif
                            @endif
                         @endif
+                        @if( $vendor_product->product->is_long_term_service ==  1)
+                        @include('frontend.cart.longTermTimeSelection')
+                        @endif
+                    
                     </div>
 
                     @if( ($vendor_product->product->delay_order_time->delay_order_hrs != '' && $vendor_product->product->delay_order_time->delay_order_min != '' ) &&  (($vendor_product->product->delay_order_time->delay_order_hrs != 0) || ($vendor_product->product->delay_order_time->delay_order_hrs != 0)))
@@ -415,13 +499,13 @@ $serviceType =  Session::get('vendorType'); @endphp
                         </div>
                        @endif
                     @endif
-                    
+
 
                 </div>
                 <input type="hidden" name="cart_product_ids[]" value="{{$vendor_product->product_id }}">
                 <hr class="my-1">
-               
-            
+
+
             @endforeach
 
         {{-- End Product Detail Loop --}}
@@ -431,7 +515,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                 --}}
         <div class="row my-2">
             @if(!$cart_details->guest_user)
-                <div class="col-lg-6 ">
+                <div class="col-lg-6">
                 @if($product->is_promo_code_available > 0)
                         <div class="coupon_box w-100 d-flex align-content-center">
                             <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
@@ -449,7 +533,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                 @endif
             </div>
         @endif
-                    <div class="col-lg-6">
+                <div class="col-lg-6">
                         @if($product->delOptions)
                             <div class="row mb-1 d-flex align-items-center   @if($product->promo_free_deliver == 1  ) {{$product->promo_free_deliver }} org_price @endif ">
                                 <div class="col-5 text-lg-right">
@@ -484,7 +568,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                                         {{__('Scheduled Slot')}} :</label>
                                     </div>
                                 <div class="col-7 vendor_slot_cart">
-                                   
+
                                     @if($product->slotsCnt != 0)
                                     <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value='schedule' >
                                         <input type="date" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="{{$product->vendor_id}}" data-cart_product_id="{{$product->cart_product_id}}" value="{{(($product->scheduled_date_time != '')?$product->scheduled_date_time : $product->delay_date ) }}"  min="{{(($product->delay_date != '0') ? $product->delay_date : '') }}" >
@@ -535,18 +619,16 @@ $serviceType =  Session::get('vendorType'); @endphp
 
             @endforeach
 
-            <div class="row mb-md-1 alFourTemplateCartButtons mt-2 pt-2 border-top">
-                <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
-                    <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
-                        {{__('Continue Shopping')}}</a>
-                </div>
+
+        </div>
+        <div class="row m-0">
+            <div class="col-lg-12 left_box new_cart mt-4 p-3" id="left_address">
+                {!!$cart_details->left_section!!}
             </div>
         </div>
 
 
-            <div class="col-lg-12 left_box new_cart mt-4 p-3" id="left_address">
-                {!!$cart_details->left_section!!}
-            </div>
+           
 
 
 
@@ -560,10 +642,14 @@ $serviceType =  Session::get('vendorType'); @endphp
 
     {{-- Start Right Section --}}
     <div class="col-lg-4">
+        
         <div class="row m-0">
          <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
                 <h5 class="order_text">{{ __('Order Summary') }}</h5>
+                @if(array_key_exists('gift_card_id', $cart_details) && empty($cart_details->gift_card) )
+                    <a id='open_gift_card' href="javascript:void(0)" class="btn btn-solid w-100">{{ __("open gift Card") }}</a>
+                @endif
             </div>
         <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
         @if($client_preference_detail->category_kyc_documents ==1)
@@ -650,8 +736,17 @@ $serviceType =  Session::get('vendorType'); @endphp
                     <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart_details->specific_instructions??''}}"  name="specific_instructions">
                 </div>
             </div>
-
-
+            @if((isset($cart_details->gift_card_id) )&& (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
+                <div class="row">
+                    <div class="col-12 alFourSpecificInstructions mt-2">
+                        <span class="pb-1"> {{__('Gift Card')}}</span>
+                       <div class="order-user-name">
+                            <p class="mb-0"><img class="blur-up lazyloaded" data-src="http://local.myorder.com/assets/images/discount_icon.svg" src="http://local.myorder.com/assets/images/discount_icon.svg"> {{ $cart_details->gift_card->title }}</p>
+                            <a href="javascript:void(0);" data-giftcard_id='{{ $cart_details->gift_card->id }}' class="float-right remove_giftCard"> <i class="fa fa-times" aria-hidden="true"></i></a>
+                       </div>
+                    </div>
+                </div>
+            @endif
 
             @endif  {{--//isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry' --}}
 
@@ -699,10 +794,9 @@ $serviceType =  Session::get('vendorType'); @endphp
                 $other_taxes = $other_taxes+$product_container_charges_tax_amount;
                 $other_taxes_string=$other_taxes_string.',tax_product_container_charges:'.$product_container_charges_tax_amount;
                 $incTax = 1;
-            }else if($tax_container_charges_percentage>0){
-
-                $other_taxes=$other_taxes+($cart_details->$total_container_charges*$tax_container_charges_percentage/100);
-                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'+($cart_details.$total_container_charges*$tax_container_charges_percentage/100);
+            }else if($tax_container_charges_percentage > 0){
+                $other_taxes=$other_taxes+$tax_container_charges_percentage;
+                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'.$tax_container_charges_percentage;
                 $incTax = 1;
             }
             @endphp
@@ -711,7 +805,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                 {{-- <div class="row">
                     <div class="col-6">{{__('Extended Duration')}}</div>
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
-                    </div>  
+                    </div>
                 </div> --}}
             @endif
 
@@ -745,6 +839,14 @@ $serviceType =  Session::get('vendorType'); @endphp
                     <div class="col-6">{{__('Subscription Discount')}}</div>
                     <div class="col-6 text-right"><b> - @if( $additionalPreference["is_token_currency_enable"]) 
                         {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}@else {{Session::get('currencySymbol')}}@endif<span id="total_subscription_discount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->total_subscription_discount)): decimal_format($cart_details->total_subscription_discount)}}<span></b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+            @if((isset($cart_details->gift_card_id) )&& (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
+
+                <div class="row">
+                    <div class="col-6">{{__('Gift Card Used Amount')}}</div>
+                    <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="loyalty_amount">{{ decimal_format($cart_details->giftCardUsedAmount) }}</span></b></div>
                 </div>
                 <hr class="my-2">
             @endif
@@ -826,8 +928,15 @@ $serviceType =  Session::get('vendorType'); @endphp
                 <hr class="my-2">
             @endif
             <div class="row">
-                <div class="col-6">
-                    <p class="total_amt m-0">{{__('Amount Payable')}} @if($other_taxes)<small>({{__('incl. tax')}})</small>@endif </p>
+                <div class="col-6 d-flex">
+                    <p class="total_amt m-0">{{__('Amount Payable')}} 
+                        @if($other_taxes)<small>({{__('incl. tax')}})</small>@endif </p>
+                        @if($cart_details->conversion_rate>0 && $cart_details->currency_code=="MXN")
+                        <div class="ml-2 alInfoIocn position-relative">
+                            <i class="fa fa-info-circle"></i>
+                        <span class="tooltiptext">Equivalent to {{ (decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)) * $cart_details->conversion_rate}} USD</span>
+                        </div>
+                        @endif
                 </div>
 
 
@@ -846,10 +955,14 @@ $serviceType =  Session::get('vendorType'); @endphp
                                 <p class="total_amt m-0 b" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">@if( $additionalPreference["is_token_currency_enable"]) 
                                     {{ '' }} @else {{Session::get('currencySymbol').decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}@endif</p>
 
+                        @else
+
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}</p>
+
                                     <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                   <input type="hidden" name="cart_total_payable_amount" value="{{$additionalPreference['is_token_currency_enable'] 
-                                   ? '' : decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}" > 
-                    @endif
+                                    <input type="hidden" name="cart_total_payable_amount" value="{{$additionalPreference['is_token_currency_enable'] 
+                                    ? '' : decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}" >
+                        @endif
                         <div>
                         <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}">
                     </div>
@@ -862,6 +975,7 @@ $serviceType =  Session::get('vendorType'); @endphp
                     </div>
 
                     {{-- Schedual code Start at down --}}
+        @if( !((($product->vendor->order_min_amount) > 0) &&  (($product->product_total_amount + $product->vendor->fixed_fee_amount) < ($product->vendor->order_min_amount))) )
             @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1 && (!in_array($serviceType ,['appointment','on_demand']) ) )
                 @if($client_preference_detail->business_type != 'laundry')
             <div class="row arabic-lng position-relative my-3" id="dateredio">
@@ -890,21 +1004,22 @@ $serviceType =  Session::get('vendorType'); @endphp
                                 <li class="close-window">
                                     <i class="fa fa-times cross" style="display:none!important"  aria-hidden="true"></i>
                                 </li>
-                               @endif                        </ul>
+                               @endif                        
+                        </ul>
                         <div class=" col-sm-10 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
+                        
+                        
                         @if($cart_details->slotsCnt == 0)
-                        @if($cart_details->delay_date != 0)
-                            <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
-                            min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
-                        @else
+                            @if($cart_details->delay_date != 0)
                                 <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
                                 min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
+                            @else
+                                    <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
+                                    min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
 
-                                @endif
+                            @endif
 
                         @else
-
-
                             <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="{{(($cart_details->scheduled_date_time != '')?$cart_details->scheduled_date_time : $cart_details->delay_date ) }}"  min="{{$cart_details->delay_date}}" >
                             <input type="hidden" id="checkSlot" value="1">
                             <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
@@ -913,7 +1028,8 @@ $serviceType =  Session::get('vendorType'); @endphp
                                 <option value="{{$slot->value }}" {{$slot->value == $cart_details->scheduled->slot ? 'selected' : ''}} >{{$slot->name}}</option>
                                 @endforeach
                             </select>
-                    @endif
+                        @endif
+                    
 
                 </div>
                     </div>
@@ -927,8 +1043,13 @@ $serviceType =  Session::get('vendorType'); @endphp
                         @if(isset($ageVerify->status) && $ageVerify->status == 1)
                             {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
                         @endif
+                        @if(!empty($cart_details->editing_order) && !empty($cart_details->editing_order->scheduled_date_time) && !empty($edit_order_schedule_datetime))
+                        <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
+                        <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
+                        @endif
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                     </div>
+                @endif
 
         </div>
 
@@ -945,4 +1066,120 @@ $serviceType =  Session::get('vendorType'); @endphp
             {{-- Schedual code end at down --}}
         </div>
 
+
+
+        <div class="container">
+
+            @if(count($cart_details->upSell_products)>0)
+                <h3 class="mb-2 mt-4">{{__('Frequently bought together')}}</h3>
+                <div class="row">
+                    <div class="col-12 p-0">
+                        <div class="product-4 product-m">
+                            @foreach($cart_details->upSell_products as $product)
+
+                                <a class="common-product-box scale-effect text-center" href="{{$product->vendor->slug.'/product/'.$product->url_slug}}">
+                                    <div class="img-outer-box position-relative">
+                                        <img class="blur-up lazyload" data-src="{{$product->image_url}}" alt="">
+                                        <div class="pref-timing">
+                                            <!--<span>5-10 min</span>-->
+                                        </div>
+                                        <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <div class="inner_spacing px-0">
+                                            <div class="product-description">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <h6 class="card_title ellips">{{$product->translation_title}}</h6>
+                                                    <!--<span class="rating-number">2.0</span>-->
+                                                </div>
+                                                <p>{{$product->vendor_name}}</p>
+                                                <p class="border-bottom pb-1">In {{$product->category_name}}</p>
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <b>@if($product->inquiry_only == 0)
+                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($product->variant_price)}}
+                                                    @endif
+                                                </b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+        @if(count($cart_details->crossSell_products)>0)
+                <h3 class="mb-2 mt-3">{{__('You might be interested in')}}</h3>
+                <div class="row">
+                    <div class="col-12 p-0">
+                        <div class="product-4 product-m">
+                            @foreach($cart_details->crossSell_products as $product)
+
+                                <a class="common-product-box scale-effect text-center" href="{{$product->vendor->slug .'/product/'. $product->url_slug}}">
+                                    <div class="img-outer-box position-relative">
+                                        <img class="blur-up lazyload" data-src="{{$product->image_url}}" alt="">
+                                            <div class="pref-timing">
+                                            </div>
+                                            <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <div class="inner_spacing px-0">
+                                            <div class="product-description">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <h6 class="card_title ellips">{{$product->translation_title}}</h6>
+                                                </div>
+                                                <p>{{$product->vendor_name}}</p>
+                                                <p class="border-bottom pb-1">In {{$product->category_name}}</p>
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <b>
+                                                        @if($product->inquiry_only == 0)
+                                                        {{ Session::get('currencySymbol') }}{{decimal_format($product->variant_price)}}
+                                                    @endif</b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+
 @endif
+
+
+<script>
+    $(document).ready(function(){
+        $(".upsell-sell").slick({
+            arrows: true,
+            dots: false,
+            infinite: true,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 1, slidesToScroll: 2 } }
+            ]
+        });
+
+        $(".cross-sell").slick({
+            arrows: true,
+            dots: false,
+            infinite: true,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 1, slidesToScroll: 2 } }
+            ]
+        });
+    });
+</script>
+
+@section('script-bottom-js')
+<script defer type="text/javascript"  src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
+@endsection

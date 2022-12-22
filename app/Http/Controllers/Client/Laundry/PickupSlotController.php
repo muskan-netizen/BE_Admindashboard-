@@ -22,6 +22,7 @@ class PickupSlotController extends Controller
         $dine_in = $request->has('pickup_slot_type') ? (in_array('dine_in', $request->pickup_slot_type) ? '1' : 0) : 0;
         $takeaway = $request->has('pickup_slot_type') ? (in_array('takeaway', $request->pickup_slot_type) ? '1' : 0) : 0;
         $delivery = $request->has('pickup_slot_type') ? (in_array('delivery', $request->pickup_slot_type) ? '1' : 0) : 0;
+        $laundry = $request->has('pickup_slot_type') ? (in_array('laundry', $request->pickup_slot_type) ? '1' : 0) : 0;
 
         // if(empty($request->slot_date) || $request->slot_date == 'null'){
         if($request->pickup_stot_type == 'day'){
@@ -32,6 +33,7 @@ class PickupSlotController extends Controller
             $slot->dine_in      = $dine_in;
             $slot->takeaway     = $takeaway;
             $slot->delivery     = $delivery;
+            $slot->laundry      = $laundry;
             $slot->slot_type     = '1';
             $slot->save();
 
@@ -48,6 +50,7 @@ class PickupSlotController extends Controller
             $slotData['dine_in']            = $dine_in;
             $slotData['takeaway']           = $takeaway;
             $slotData['delivery']           = $delivery;
+            $slotData['laundry']            = $laundry;
             $slotData['slot_type']          = '1';
             $slotData['working_today']      = 1;
 
@@ -63,6 +66,7 @@ class PickupSlotController extends Controller
         $dine_in = $request->has('pickup_slot_type') ? (in_array('dine_in', $request->pickup_slot_type) ? '1' : 0) : 0;
         $takeaway = $request->has('pickup_slot_type') ? (in_array('takeaway', $request->pickup_slot_type) ? '1' : 0) : 0;
         $delivery = $request->has('pickup_slot_type') ? (in_array('delivery', $request->pickup_slot_type) ? '1' : 0) : 0;
+        $laundry = $request->has('pickup_slot_type') ? (in_array('laundry', $request->pickup_slot_type) ? '1' : 0) : 0;
 
         if($request->pickup_edit_type == 'day') {
             $slotDay = SlotDay::where('id', $request->pickup_edit_type_id)->where('day', $request->pickup_edit_day)->first();
@@ -88,6 +92,7 @@ class PickupSlotController extends Controller
                     $dateSlot->dine_in          = $dine_in;
                     $dateSlot->takeaway         = $takeaway;
                     $dateSlot->delivery         = $delivery;
+                    $dateSlot->laundry          = $laundry;
                     $dateSlot->working_today    = 1;
                     $dateSlot->save();
 
@@ -101,6 +106,7 @@ class PickupSlotController extends Controller
             $slot->dine_in      = $dine_in;
             $slot->takeaway     = $takeaway;
             $slot->delivery     = $delivery;
+            $slot->laundry     = $laundry;
             $slot->slot_type     = '1';
             $slot->save();
 
@@ -129,6 +135,7 @@ class PickupSlotController extends Controller
                     $slot->dine_in      = $dine_in;
                     $slot->takeaway     = $takeaway;
                     $slot->delivery     = $delivery;
+                    $slot->laundry      = $laundry;
                     $slot->slot_type     = '1';
                     $slot->save();
 
@@ -146,6 +153,7 @@ class PickupSlotController extends Controller
             $dateSlot->dine_in          = $dine_in;
             $dateSlot->takeaway         = $takeaway;
             $dateSlot->delivery         = $delivery;
+            $dateSlot->laundry          = $laundry;
             $dateSlot->working_today    = 1;
             $dateSlot->save();
 

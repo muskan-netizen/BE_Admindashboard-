@@ -34,7 +34,7 @@ class PaymentOptionController extends BaseController
         $payment_codes = array('cod', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
-        $payout_codes = array('cash', 'stripe', 'pagarme');
+        $payout_codes = array('cash', 'stripe', 'pagarme','razorpay');
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
 
        
@@ -128,6 +128,12 @@ class PaymentOptionController extends BaseController
                             ));
                             break;
                         
+                        case 'cod':
+                            $json_creds = json_encode(array(
+                                'cod_min_amount' => $request->cod_min_amount
+                            ));
+                        break;
+
                         case 'stripe':
                             $validatedData = $request->validate([
                                 'stripe_api_key'        => 'required',
@@ -690,6 +696,15 @@ class PaymentOptionController extends BaseController
                         'api_key' => $request->pagarme_payout_api_key,
                         'secret_key' => $request->pagarme_payout_secret_key,
                         'multiplier' => $request->pagarme_payout_multiplier,
+                    ));
+                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'razorpay')) {
+                    $validatedData = $request->validate([
+                        'razorpay_payout_api_key' => 'required',
+                        'razorpay_payout_secret_key' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->razorpay_payout_api_key,
+                        'secret_key' => $request->razorpay_payout_secret_key
                     ));
                 }
             }

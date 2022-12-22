@@ -6,8 +6,9 @@ $total_amount = $order->payable_amount;
 $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges;
 $additional_price=0;
 $serviceType =  Session::get('vendorType');
-    $timezone = Auth::user()->timezone;
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+$timezone = Auth::user()->timezone;
+$order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_long_term : 0;
 @endphp
 @section('customcss')
 <style>
@@ -47,7 +48,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 
                 <div class="row">
                     <div class="col-lg-6">
-                        <div class="product-order py-3">
+                        <div class="product-order py-3 pro-scroller">
                             <h3>{{__('Your Order Details')}}</h3>
                          
                             @foreach($order->products as $product)
@@ -58,15 +59,17 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                 @endphp
 
                                     <div class="row product-order-detail">
-                                        <div class="col-12"><h4>{{$product['vendor']->name}}</h4></div>
-                                            <div class="col-2">
+                                        <div class="col-12">
+                                            <h4>{{$product['vendor']->name}}</h4>
+                                        </div>
+                                        <div class="col-2">
                                             <img src="{{ $image }}" class="img-fluid blur-up lazyloaded">
                                         </div>
                                         <div class="col-10">
                                             <div class="row">
                                                 <div class="col-4 order_detail">
                                                     <div>
-                                                        <h4>{{__('Product Name')}}</h4>
+                                                        <h4> {{ ($order_is_long_term ==1)? __('Long term service Name') : __('Product Name')}}</h4>
                                                         <h5>{{ (!empty($product->pvariant->translation) && isset($product->pvariant->translation[0])) ? $product->pvariant->translation[0]->title : ''}}</h5>
                                                         @foreach($product->pvariant->vset as $vset)
                                                             <label><span>{{$vset->optionData->trans->title}}:</span>{{$vset->variantDetail->trans->title}}</label>
@@ -76,6 +79,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 
                                                 </div>
                                                 <div class="col-4 order_detail">
+                                                    @if($order_is_long_term ==0)
                                                     <div>
                                                         @if($serviceType=='rental')
                                                             <h4>{{__('Duration')}}</h4>
@@ -87,6 +91,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                             <h5>{{$product->quantity}}</h5>
                                                         @endif
                                                     </div>
+                                                    @endif
                                                 </div>
                                                 <div class="col-4 order_detail">
                                                     <div>
@@ -133,6 +138,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                 @endforeach
 
                                             @endif
+
                                             @if(isset($product->scheduled_date_time))
                                                 <hr class="my-2" style="width:100%;  display: block !important;">
                                                 <div class="spa_order_detail_slot">
@@ -146,8 +152,12 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                 </div>
                                         
                                             @endif
+                                            @if($order_is_long_term ==1)
+                                                @include('frontend.order.longTermDetails')
+                                            @endif
                                         </div>
                                     </div>
+                                    
                             @endforeach
                             <div class="total-sec row">
                                 <ul class="col-sm-6 offset-sm-6">
@@ -198,6 +208,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                         <li>{{$additionalPreference ['is_token_currency_enable'] ? __('Used Token') : __('Wallet Amount')}} <span> @if( $additionalPreference["is_token_currency_enable"]) 
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
+                                    @if( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                        <li>{{__('Gift Card Amount')}} <span> {{Session::get('currencySymbol')}}{{decimal_format($order->gift_card_amount * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
                                     @if($order->tip_amount > 0)
                                         <li>{{__('Tip Amount')}} <span>@if( $additionalPreference["is_token_currency_enable"]) 
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->tip_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->tip_amount * @$clientCurrency->doller_compare)}}@endif</span></li>
@@ -227,10 +240,17 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">
-                                    <li class="col-4">{{__('Order Total')}}:<span> @if( $additionalPreference["is_token_currency_enable"]) 
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total_amount))}}@else{{Session::get('currencySymbol').decimal_format($total_amount)}}@endif</span></li>
-                                    <li class="Shipping col-8">
+                                    <li class="col-4">{{__('Order Total')}}:<span>@if( $additionalPreference["is_token_currency_enable"]) 
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total_amount))}}@else{{Session::get('currencySymbol').decimal_format($total_amount)}}@endif 
+                                        @if(!checkColumnExists('orders', 'is_postpay'))
+                                            $order->is_postpay = 0;
+                                        @endif
 
+                                        @if($order->payment_option_id != 1 && $order->payment_status!=1 && $order->is_postpay==1)
+                                        <span style="color:var(--theme-deafult);">Unpaid</span>
+                                        @endif
+                                    </span></li>
+                                    <li class="Shipping col-8">
                                         @if($order->luxury_option_id == 1)
                                             {{__('Delivery Address')}}:
                                         <span>

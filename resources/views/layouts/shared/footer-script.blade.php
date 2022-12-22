@@ -45,7 +45,10 @@ if (Session::has('toaster')) {
 <script src="{{ asset('assets/js/alert/alert.js') }}"></script>
 
 {{-- <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" ></script> --}}
-
+{{-- add translation file  --}}
+@include('layouts.language')
+@yield('headerJs')
+{{-- end translation file  --}}
 
 {{-- <script src="{{asset('assets/libs/datetimepicker/jquery.datetimepicker.min.js')}}"></script> --}}
 @if((!empty($socket_url)))
@@ -152,26 +155,7 @@ if (Session::has('toaster')) {
             'X-CSRF-TOKEN': $('input[name="_token"]').val()
         }
     });
-    // var ip_address = window.location.host;
-    // var host_arr = ip_address.split(".");
-    // let socket = io(constants.socket_domain, {
-    //     query: {
-    //         "user_id": host_arr[0] + "_" + "{{ Auth::user()->id }}",
-    //         "subdomain": host_arr[0]
-    //     }
-    // });
-    // socket.on('createOrderByCustomer_' + host_arr[0] + "_" + "{{ (!empty(Auth::user()))?Auth::user()->id:0 }}", (message) => {
-    //     get_latest_order_socket(message.order_number);
-    // });
-    // async function createSocketConnection(){
-    //     if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
-
-    //         socket = new io(SocketConstants.Socket_url);
-    //         await socket.connect(); 
-    //         console.log(socket);
-    //         console.log(SocketConstants.Socket_url);
-    //     }
-    // }
+    
     function get_latest_order_socket(order_number){
         console.log(order_number);
         Audio.prototype.play = (function(play) {

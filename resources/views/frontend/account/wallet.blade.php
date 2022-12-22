@@ -369,7 +369,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                               <!-- A Stripe Element will be inserted here. -->
                             </div>
                         </div>
-                       
+
                         <span class="error text-danger"id="error-message"></span>
                     </div>
                 <% } %>
@@ -391,7 +391,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                             <!-- form will be added here -->
                         </div>
                         <span class="error text-danger" id="checkout_card_error"></span>
-                    </div>  
+                    </div>
                 <% } %>
                 <% if(payment_option.slug == 'payphone') { %>
                     <div id="pp-button"></div>

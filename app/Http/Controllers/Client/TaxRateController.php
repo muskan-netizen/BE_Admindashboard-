@@ -50,6 +50,7 @@ class TaxRateController extends BaseController{
                 ];
             }
             TaxRateCategory::insert($dataCate);
+            session()->put('success','Tax rate added Successfully!');
             return response()->json([
                 'status'=>'success',
                 'message' => 'Tax rate added Successfully!',
@@ -120,6 +121,7 @@ class TaxRateController extends BaseController{
             $exist[] = $value;
         }
         $delete = TaxRateCategory::where('tax_rate_id', $taxRate->id)->whereNotIn('tax_cate_id', $exist)->delete();
+        session()->put('success','Tax rate updated Successfully!');
         return response()->json([
             'status'=>'success',
             'message' => 'Tax rate updated Successfully!',
@@ -137,6 +139,6 @@ class TaxRateController extends BaseController{
     public function destroy($domain = '', $id)
     {
         $tax = TaxRate::where('id', $id)->delete();
-        return redirect('client/tax')->with('success', 'Tax category updated successfully!');
+        return redirect('client/tax')->with('success', 'Tax rate deleted successfully!');
     }
 }

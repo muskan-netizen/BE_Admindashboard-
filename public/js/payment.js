@@ -78,7 +78,7 @@ $(document).ready(function() {
             ajaxData.order_number = order.order_number;
 
         } else if (cabElement.length > 0) {
-            total_amount = cabElement.data('amount');
+            total_amount = cabElement.data('totalamount');
             ajaxData.payment_form = 'pickup_delivery';
             ajaxData.order_number = order.order_number;
             ajaxData.reload_route = order.route;
@@ -652,19 +652,9 @@ $(document).ready(function() {
         razorpay_options.handler = function (response){
             startLoader('body','We are processing your transaction...');
             razorPayCompletePayment(data,response, order);
-            // alert(response.razorpay_payment_id);
-            // alert(response.razorpay_order_id);
-            // alert(response.razorpay_signature);
         }
         var rzp1 = new Razorpay(razorpay_options);
         rzp1.on('payment.failed', function (response){
-                // alert(response.error.code);
-                // alert(response.error.description);
-                // alert(response.error.source);
-                // alert(response.error.step);
-                // alert(response.error.reason);
-                // alert(response.error.metadata.order_id);
-                // alert(response.error.metadata.payment_id);
         });
         rzp1.open();
     }
@@ -1559,6 +1549,8 @@ $(document).ready(function() {
         let subscriptionId = $("input[name='subscription_id']");
         let tipElement = $("#cart_tip_amount");
         let payment_from = '';
+        let cabElement = $("#pickup_now");
+
         if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             payment_from = 'cart';
@@ -1567,6 +1559,10 @@ $(document).ready(function() {
             total_amount = walletElement.val();
             payment_from = 'wallet';
             var rowData = 'amt='+total_amount+'&from='+payment_from;
+        }else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            payment_from = 'pickup_delivery';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
         }else if (path.indexOf("subscription") !== -1) {
             total_amount = subscriptionElement.val();
             subsId = subscriptionId.val();

@@ -25,7 +25,9 @@ class WebStylingOptionSeeder extends Seeder
                 array('web_styling_id' => $web_styling, 'name' => 'Food Delivery', 'is_selected' => '0', 'template_id' => '3', 'image' => 'template-three.jpg'),
                 array('web_styling_id' => $web_styling, 'name' => 'E-Commerce', 'is_selected' => '0', 'template_id' => '4', 'image' => 'template-four.jpg'),
                // array('web_styling_id' => $web_styling, 'name' => 'Pickup & Drop', 'is_selected' => '0', 'template_id' => '5', 'image' => 'template-five.jpg'),
-                array('web_styling_id' => $web_styling, 'name' => 'On Demand Service', 'is_selected' => '0', 'template_id' => '6', 'image' => 'template-six.jpg')
+                array('web_styling_id' => $web_styling, 'name' => 'On Demand Service', 'is_selected' => '0', 'template_id' => '6', 'image' => 'template-six.jpg'),
+                array('web_styling_id' => $web_styling, 'name' => 'E-Commerce 2', 'is_selected' => '0', 'template_id' => '8', 'image' => 'template-eight.jpg'),
+                array('web_styling_id' => $web_styling, 'name' => 'p2p', 'is_selected' => '0', 'template_id' => '9', 'image' => 'template-nine.jpg')
             );
             if($web_styling_options_count == 0)
             {

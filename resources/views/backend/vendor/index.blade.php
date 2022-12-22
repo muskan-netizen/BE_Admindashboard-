@@ -23,6 +23,9 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                 $vendors = getNomenclatureName('vendors', true);
                 $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ;
                 @endphp
+                @php
+                    $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
+                @endphp
 
                 <h4 class="page-title">{{ $newvendors }}</h4>
             </div>
@@ -140,7 +143,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                                                 name="all_vendor_id" id="all-vendor_check"></th>
                                                     <th>{{ __('Icon') }}</th>
                                                     <th>{{ __('Name') }}</th>
-                                                    <th>{{ _('Status') }}</th>
+                                                    <th>{{ __('Status') }}</th>
                                                     <th>{{ __('Address') }}</th>
                                                     <th>{{ __('Offers') }}</th>
                                                     <th class="text-center">{{ __('Can Add') }} <br> {{ __('Category') }}</th>

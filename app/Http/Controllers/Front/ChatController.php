@@ -119,6 +119,39 @@ class ChatController extends FrontController
 
     }
 
+    public function vendorUserChat(Request $request){
+        $user = Auth::user();
+        $langId = Session::get('customerLanguage');
+        $navCategories = $this->categoryNav($langId);
+        if($user->is_superadmin == 1){
+            //$roomData = $this->getAllChatRoom('vendor_to_user');
+            $roomData['status'] = false;
+            $view = "index";
+        } else {
+            $vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
+            $this->client_data['vendor_id'] = $vendor_id;
+            //$roomData = $this->getChatRoom($vendor_id,'vendor_to_user');
+            $roomData['status'] = false;
+            $view = "VendorUserChat";
+        }
+        try {
+           
+            if($roomData['status']){
+                $chatroom = $roomData['roomData'];
+            } else {
+                $chatroom = [];
+            }
+            return view('frontend.chat.VendorUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom,
+            'navCategories' => $navCategories]);
+            
+        } catch (\Throwable $th) {
+            return view('frontend.chat.VendorUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>[],
+            'navCategories' => $navCategories]);
+        }
+       
+
+    }
+
     /**
      * start Chat.
      *

@@ -174,7 +174,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                     </a>
                         <div class="row">
                             <div class="col-12">
-                                <div class="col-sm-6 offset-3">
+                                <div class="col-sm-6 offset-sm-3">
                                     <div class="row mt-2 d-flex align-items-center mb-sm-2 justify-content-center">
                                         <div class="col-6 vendor-search-bar mb-sm-0 mb-2">
                                             <div class="radius-bar w-100">
@@ -215,7 +215,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6 alScrollspyProduct">
-                                          
+
                                             <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
                                                 @if (isset($tags) && !empty($tags))
                                                     @foreach ($tags as $key => $tag)

@@ -4,6 +4,9 @@
 'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
 'meta_description'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description:'',
 ])
+@php
+$clientData = \App\Models\Client::select('socket_url')->first();
+@endphp
 
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
@@ -20,6 +23,17 @@
         .exzoom .exzoom_zoom_outer{display:none}
         }
     .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
+.container-badge-value span{
+    padding: 0px;
+    margin-right: 10px;
+    color: #6c757d;
+    font-size: 15px;}
+
+.container-badge{display: flex;margin-bottom: 10px;}
+.value-badge{width:100px;font-weight: bold;}
+.container-badge-value{width:calc( 100% - 100px);}
+
+
 </style>
 
 @endsection
@@ -205,7 +219,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                     </div>
                             </div>
 
-                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text">
+                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'col-lg-7'; } @endphp rtl-text">
                                 <div class="product-right inner_spacing pl-sm-3 p-0">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -274,10 +288,38 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                         <span class="text-danger mb-2 mt-2"></span>
                                     </div>
                                     <div class="border-product al_disc">
-                                        <h6 class="product-title">{{__('Product Details')}}</h6>
-                                        <p></p>
+                                        <h6 class="product-title mb-2">{{__('Product Details')}}</h6>
+                                        
                                         {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}
+
+                                        @if( p2p_module_status() )
+                                            @if( !empty($attr_array) )
+                                                @foreach($attr_array as $attr_key => $attr_val)
+                                                    <div class="container-badge">
+                                                        <div class="value-badge">{{ $attr_key }} : </div>
+                                                        @if( !empty($attr_val) )
+                                                            <div class="container-badge-value">
+                                                                @foreach($attr_val as $inn_key => $inn_val)
+                                                                    <span>{{$inn_val['value']}}</span>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                        
+                                                    </div>
+                                                @endforeach
+                                            @endif
+
+                                            {{-- Chat Button --}}
+                                            @if($clientData->socket_url !='' )
+                                                <hr>
+                                                <h6 class="sold-by">
+                                                    <span>Sold by : </span>
+                                                    <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                                                    <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
+                                                </h6>
+                                            @endif
+                                    @endif
                                     </div>
                                     <div class="border-product">
                                         <h6 class="product-title">{{__('Share It')}}</h6>
@@ -402,7 +444,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
 
                                         @endphp
                                         @if($is_available == 1 )
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart  {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory) || ($product->variant[0]->quantity < $product->minimum_order_count)) ? 'btn-disabled' : '' }}" ><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart  {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->has_inventory && $product->variant[0]->quantity <= $product_quantity_in_cart) || ($product->has_inventory && $product->variant[0]->quantity < $product->minimum_order_count)) ? 'btn-disabled' : '' }}" ><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
                                         @endif
 
                                             @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
@@ -1588,5 +1630,6 @@ $checkSlot = findSlot('',$product->vendor->id,'');
 
         });
     </script>
-
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 @endsection

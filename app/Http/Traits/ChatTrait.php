@@ -3,6 +3,7 @@ namespace App\Http\Traits;
 use App\Models\{Order,OrderVendor,UserDevice,ClientPreference};
 use Auth;
 use GuzzleHttp\Client as GCLIENT;
+//use Log;
 
 trait ChatTrait{
 

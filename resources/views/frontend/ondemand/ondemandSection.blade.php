@@ -53,7 +53,7 @@
 
                         @endif
 
-                        <div class="card-box">
+                        <div class="card-box ">
                                      <!-- static html -->
 
                                 @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
@@ -68,7 +68,7 @@
                                                     <div class='' id='section_set{{$key}}'>
                                                         @if(!empty($childs))
                                                         <div class="service-img mb-3">
-                                                            <img class="img-fluid" src="{{$childs->image['proxy_url'] . '1000/200' . $childs->image['image_path']}}" alt="">
+                                                            <img class="img-fluid" src="{{$childs->image['proxy_url'] . '1000/300' . $childs->image['image_path']}}" alt="">
                                                         </div>
                                                         @endif
 
@@ -173,14 +173,14 @@
                             @if(!empty($category->childs) && count($category->childs) == 0)
 
                                         @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
-                                        <div class="service-data-wrapper al @if(app('request')->input('addons') == 1) d-none @endif"  id="step-1-ondemand" >
+                                        <div class="outter-scroller  service-data-wrapper al @if(app('request')->input('addons') == 1) d-none @endif"  id="step-1-ondemand" >
                                             <div class="service-data">
                                                 @if($category->translation_name !='')<h4><b>{{ $category->translation_name }}</b></h4>@endif
 
 
                                                 @if(!empty($category->image))
                                                 <div class="service-img mb-3">
-                                                    <img class="img-fluid" src="{{$category->image['proxy_url'] . '1000/200' . $category->image['image_path']}}" alt="">
+                                                    <img class="img-fluid" src="{{$category->image['proxy_url'] . '1000/300' . $category->image['image_path']}}" alt="">
                                                 </div>
                                                 @endif
                                                 @if($listData->isNotEmpty())
@@ -521,7 +521,7 @@
 
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-4 side-card">
                         <div class="card-box">
                             <div class="product-order">
                                 <div class="total-sec border-0 py-0 my-0">
