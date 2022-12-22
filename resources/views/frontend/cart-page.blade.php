@@ -256,10 +256,14 @@
                                     $amount = 0;
                                     $quantity = 0;
                                 @endphp
+                                {{-- @dd($vendor_product->product_variant_by_roles) --}}
                                 @foreach (array_reverse($vendor_product->product_variant_by_roles) as $productVar)
-                                    @if($productVar->role_id == Auth::user()->role_id && $productVar->quantity >= $vendor_product->quantity)
+                                    @if($productVar->role_id == Auth::user()->role_id)
                                         @if($quantity < $productVar->quantity && $productVar->quantity <= $vendor_product->quantity) 
-                                            @php $corporate_user_price = $productVar->amount; @endphp
+                                            @php
+                                                $quantity = $productVar->quantity; 
+                                                $corporate_user_price = $productVar->amount; 
+                                            @endphp
                                             <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                                 <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($productVar->amount) }}</div>
                                             </div>
