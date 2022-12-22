@@ -900,9 +900,11 @@ class OrderController extends FrontController
                 $vendor_discount_amount = 0;
                 $product_taxable_amount = 0;
                 $vendor_products_total_amount = 0;
+                $vendor_total_container_charges = 0;
                 $vendor_taxable_amount = 0;
                 $is_restricted = 0;
                 $additionalPrice=0.00;
+                $quantity_container_charges = 0;
 
                 $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
@@ -961,13 +963,12 @@ class OrderController extends FrontController
                     // $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
-                    // $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                    $vendor_total_container_charges =  $quantity_container_charges;
+                    $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
+                    // $vendor_total_container_charges =  $quantity_container_charges;
                     //echo  "<br>payable_amount: ".$payable_amount."+ quantity_price: ".$quantity_price ;
-// dump("PA Start ================ ".$payable_amount); 
+
                     $payable_amount = $payable_amount + $quantity_price ;
-// dump("Quantity_price ".$quantity_price."/- ------ ".$quantity_price); 
-// dump("Payable_amount ------ ".$payable_amount); 
+
                     //$payable_amount = $payable_amount + $quantity_price;
                     //$vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
@@ -1138,15 +1139,15 @@ class OrderController extends FrontController
                             // }
                         }
                     }
-// dump("VPA ".$quantity_price);
-                $vendor_service_fee_percentage_amount = 0;
-                if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                    // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
-                    $vendor_service_fee_percentage_amount = ( $quantity_price * $vendor_cart_product->vendor->service_fee_percent) / 100;
-                    $payable_amount += $vendor_service_fee_percentage_amount;
-                    $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
-                }
-// dump("+vendor_service_fee_percentage_amount fee ".$vendor_service_fee_percentage_amount."/- ---------".$payable_amount); 
+
+                    $vendor_service_fee_percentage_amount = 0;
+                    if ($vendor_cart_product->vendor->service_fee_percent > 0) {
+                        // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
+                        $vendor_service_fee_percentage_amount = ( $quantity_price * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                        $payable_amount += $vendor_service_fee_percentage_amount;
+                        $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                    }
+
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                     if ($cart_addons) {
                         foreach ($cart_addons as $cart_addon) {
@@ -1174,13 +1175,14 @@ class OrderController extends FrontController
                         //         $payable_amount = $payable_amount + $product_tax;
                     }
 
-                }
-        //        $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
-                //echo  "    payable_amount==".$payable_amount;
+                    }
+                    //        $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
+                    //echo  "    payable_amount==".$payable_amount;
                 }
                 
-                $payable_amount+= $total_container_charges;
-            
+                // $payable_amount+= $total_container_charges;
+                $payable_amount+= $vendor_total_container_charges;
+           
                 //echo "vendor_total_container_charges: ".$vendor_total_container_charges."payable_amount: ".$payable_amount."<br>";
 
                 $coupon_id = null;
@@ -1268,7 +1270,8 @@ class OrderController extends FrontController
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
-                $OrderVendor->total_container_charges = $total_container_charges;
+                $OrderVendor->total_container_charges = $vendor_total_container_charges;
+
                 $OrderVendor->is_restricted = $is_restricted;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
@@ -1387,7 +1390,7 @@ class OrderController extends FrontController
             $order->scheduled_slot = (($cart->scheduled_slot)?$cart->scheduled_slot:null);
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
-
+// dump('Last --'.$payable_amount);
             if(!$preferences->is_tax_price_inclusive) {
                 $order->payable_amount = decimal_format($payable_amount);
             }else{
