@@ -43,7 +43,7 @@ use App\Models\SubscriptionInvoicesUser;
 use App\Models\OrderDeliveryStatusIcon;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, ReturnReason,OrderDeliveryStatusIcon,UserGiftCard};
+use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption, ReturnReason,UserGiftCard};
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -1068,6 +1068,7 @@ class OrderController extends FrontController
 
                 $vendorProductIds = array();
                 // $addonArray = [];
+                @dd($vendor_cart_products);
                 foreach ($vendor_cart_products as $vendor_cart_product) {
                     if( !empty($vendor_cart_product->slot_price) ) {
                         $slot_based_price += $vendor_cart_product->slot_price;

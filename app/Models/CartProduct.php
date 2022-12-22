@@ -80,4 +80,8 @@ class CartProduct extends Model{
     public function LongTermProducts(){
       return $this->hasOne('App\Models\LongTermServiceProducts','long_term_service_id','product_id');
     }
+
+    public function productVariantByRoles(){
+      return $this->hasMany('App\Models\ProductVariantByRole','product_id','product_id');
+    }
 }

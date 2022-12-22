@@ -146,7 +146,7 @@ div#attribute_section .col-sm-9 .form-check-inline.w-100 {
 }
 .field_wrapper a.add_button i {
     font-size: 30px;
-    margin-top: 26px;
+    margin-top: -4px;
     display: inline-block;
 }
 .field_wrapper a.remove_button i {
@@ -418,34 +418,16 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                             @if($_role['role'] === 'Corporate_user')
                                                 <div class="col-12">
                                                     <div class="field_wrapper">
-                                                        <div class="row corporate-row">
-                                                            <div class="col-md-5">
-                                                                <div class="form-group">
-                                                                    {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
-                                                                    <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKey(event)" placeholder="0" name="{{lcfirst($_role['role'])}}_price[]" value="">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-5">
-                                                                <div class="form-group">
-                                                                    {!! Form::label('title', __('Minimum Order Count').' ['.$_role['role'].']', ['class' => 'control-label']) !!}
-                                                                    <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_corporate_user[]" value="">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <a href="javascript:void(0);" class="add_button" title="Add field"><i class="mdi mdi-plus-circle mr-1"></i></a>
-                                                            </div>
-                                                            <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
-                                                        </div>
                                                         @foreach ($product->productVariantByRoles as $role)
                                                             @if($role->role_id == 3)
                                                                 <div class="row corporate-row">
                                                                     <div class="col-md-5">
                                                                         <div class="form-group">
-                                                                            <input type="number" class="form-control" min="0" id="corporate_user_price" onkeyup="isNumberKey(event)" placeholder="0" name="corporate_user_price[]" value="{{$role->amount}}">
+                                                                            <input type="number" class="form-control" min="0" id="corporate_user_price" onkeyup="isNumberKey(event)" placeholder="Corporate User Price" name="corporate_user_price[]" value="{{$role->amount}}">
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-5">
-                                                                        <div class="form-group"><input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_corporate_user[]" value="{{$role->quantity}}">
+                                                                        <div class="form-group"><input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="Quantity" name="minimum_order_count_corporate_user[]" value="{{$role->quantity}}">
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-2">
@@ -454,6 +436,22 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                                 </div>
                                                             @endif
                                                         @endforeach
+                                                        <div class="row corporate-row">
+                                                            <div class="col-md-5">
+                                                                <div class="form-group">
+                                                                    <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKey(event)" placeholder="Corporate User Price" name="{{lcfirst($_role['role'])}}_price[]" value="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-5">
+                                                                <div class="form-group">
+                                                                    <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="Quantity" name="minimum_order_count_corporate_user[]" value="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <a href="javascript:void(0);" class="add_button" title="Add field"><i class="mdi mdi-plus-circle mr-1"></i></a>
+                                                            </div>
+                                                            <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             @else
@@ -933,12 +931,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                         $label_min = 'Minimum Order Count ['.$role->role.']';
                                         $input_min = 'minimum_order_count['.$role->role.']';
                                     @endphp
-                                    <div class="col-md-6 mb-2">
-                                        {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
+                                    @if($role->role != 'Corporate_user')
+                                        <div class="col-md-6 mb-2">
+                                            {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
 
-                                        <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_arr[{{$role['id']}}]" value="{{ isset($product->productByRoleForAdmin[$key]) ? (decimal_format($product->productByRoleForAdmin[$key]->minimum_order_count) ?? 0.00) : 0.00 }}">
+                                            <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_arr[{{$role['id']}}]" value="{{ isset($product->productByRoleForAdmin[$key]) ? (decimal_format($product->productByRoleForAdmin[$key]->minimum_order_count) ?? 0.00) : 0.00 }}">
 
-                                    </div>
+                                        </div>
+                                    @endif
                                 @endforeach
                             @endif
                         @endif
@@ -2333,7 +2333,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             var maxField = 10; //Input fields increment limitation
             var addButton = $('.add_button'); //Add button selector
             var wrapper = $('.field_wrapper'); //Input field wrapper
-            var fieldHTML = '<div class="row corporate-row"><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" id="corporate_user_price" onkeyup="isNumberKey(event)" placeholder="0" name="corporate_user_price[]" value=""></div></div><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_corporate_user[]" value=""></div></div><div class="col-md-2"><a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a></div></div>'; //New input field html 
+            var fieldHTML = '<div class="row corporate-row"><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" id="corporate_user_price" onkeyup="isNumberKey(event)" placeholder="Corporate User Price" name="corporate_user_price[]" value=""></div></div><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="Quantity" name="minimum_order_count_corporate_user[]" value=""></div></div><div class="col-md-2"><a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a></div></div>'; //New input field html 
             var x = $("div.corporate-row").length; //Initial field counter is 1
             
             //Once add button is clicked

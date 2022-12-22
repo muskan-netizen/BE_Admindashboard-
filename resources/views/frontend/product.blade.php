@@ -332,19 +332,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 </h3>
                                             @endif
                                         </div>
-                                        @if(Auth::user()->role_id == 3)
-                                            <div id="product_by_roles">
-                                               @foreach ($product->productVariantByRoles as $key => $data)
-                                                   @if($data->role_id == 3)
-                                                        <div class="form-check-inline">
-                                                            <label class="form-check-label">
-                                                                <input type="radio" name="bulk_order" data-quantity="{{$data->quantity}}" data-price="{{$data->amount}}" class="form-check-input bulk_order" value="{{$data->id}}">{{Session::get('currencySymbol')}}<span class="product_role_fixed_price">{{number_format($data->amount,2,".",",")}}</span> ( {{$data->quantity}} )
-                                                            </label>
-                                                        </div>
-                                                   @endif
-                                               @endforeach 
-                                            </div>
-                                        @endif
                                         <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
                                             <p></p>
@@ -528,6 +515,88 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 </tbody>
                                             </table>--}}
                                         </div>
+                                        @endif
+
+
+
+                                        @if(Auth::user()->role_id == 3)
+                                            <div class="border-product">
+                                                <h6 class="product-title">{{ __('Bulk Order')}}</h6>
+                                                <div id="bulk-order-table">
+                                                    @foreach ($product->productVariantByRoles as $key => $data)
+                                                        @if($data->role_id == 3)
+                                                            <h6 bulk_id="{{$data->id}}" class="header-title productAddonSet mb-1">{{__('Greater than or equal to quantity ').$data->quantity.' ( price '.Session::get('currencySymbol').''.$data->amount.' )'}}
+                                                            </h6>
+                                                        @endif
+                                                    @endforeach 
+                                                    {{-- @foreach($product->addOn as $row => $addon)
+                                                        <div class="addon-product">
+                                                            <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
+                                                                @php
+                                                                    $min_select = '';
+                                                                    $minText = __('Minimum');
+                                                                    $maxText = __('Maximum');
+                                                                    $andText = __('and');
+                                                                    if($addon->min_select > 0){
+                                                                        $min_select = $minText.' '.$addon->min_select;
+                                                                    }
+                                                                    $max_select = '';
+                                                                    if($addon->max_select > 0){
+                                                                        $max_select = $maxText.' '.$addon->max_select;
+                                                                    }
+                                                                    if( ($min_select != '') && ($max_select != '') ){
+                                                                        $min_select = $min_select.' '.$andText.' ';
+                                                                    }
+                                                                @endphp
+                                                                @if( ($min_select != '') || ($max_select != '') )
+                                                                    <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
+                                                                @endif
+                                                            </h4>
+                                                        </div>
+                                                    @endforeach --}}
+                                                </div>
+
+
+                                                {{--<table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
+                                                    <tbody>
+                                                        @foreach($product->addOn as $row => $addon)
+                                                        <tr>
+                                                            <td>
+                                                                <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}}
+                                                                    @php
+                                                                        $min_select = '';
+                                                                        if($addon->min_select > 0){
+                                                                            $min_select = 'Minimum '.$addon->min_select;
+                                                                        }
+                                                                        $max_select = '';
+                                                                        if($addon->max_select > 0){
+                                                                            $max_select = 'Maximum '.$addon->max_select;
+                                                                        }
+                                                                        if( ($min_select != '') && ($max_select != '') ){
+                                                                            $min_select = $min_select.' and ';
+                                                                        }
+                                                                    @endphp
+                                                                    @if( ($min_select != '') || ($max_select != '') )
+                                                                        <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                                    @endif
+                                                                </h4>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                            <td>
+                                                                @foreach($addon->setoptions as $k => $option)
+                                                                <div class="checkbox checkbox-success form-check-inline">
+                                                                    <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                                    <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
+                                                                        {{$option->title .' ($'.decimal_format($option->price).')' }}</label>
+                                                                </div>
+                                                                @endforeach
+                                                            </td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>--}}
+                                            </div>
                                         @endif
                                         
                                         @if($product->same_day_delivery == 1 && $product->next_day_delivery == 1 && $product->hyper_local_delivery == 1)
@@ -1505,16 +1574,16 @@ $clientData = \App\Models\Client::select('socket_url')->first();
             });
         });
 
-        $('.bulk_order').change(function() {
-            var quantity = $(this).data('quantity');
-            var amount = $(this).data('price');
-            if(quantity != '' && amount != ''){
-                $('#quantity').val(quantity);
-                $('#productPriceValue .product_fixed_price').text(amount);
-                $('button.btn.quantity-left-minus').prop("disabled", true);
-                $('button.btn.quantity-right-plus').prop("disabled", true);
-            }
-        });
+        // $('.bulk_order').change(function() {
+        //     var quantity = $(this).data('quantity');
+        //     var amount = $(this).data('price');
+        //     if(quantity != '' && amount != ''){
+        //         $('#quantity').val(quantity);
+        //         $('#productPriceValue .product_fixed_price').text(amount);
+        //         $('button.btn.quantity-left-minus').prop("disabled", true);
+        //         $('button.btn.quantity-right-plus').prop("disabled", true);
+        //     }
+        // });
             
         </script>
 <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>

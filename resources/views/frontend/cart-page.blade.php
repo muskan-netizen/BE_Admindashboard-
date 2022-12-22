@@ -246,12 +246,35 @@
                                 @endforeach
                                 @endif
                             </div>
-
-                            @if(isset($vendor_product->pvariant->actual_price))
-                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
-                            </div>
+                            @php
+                                $getAdditionalPreference = getAdditionalPreference(['is_corporate_user']);
+                                $corporate_user_price = 0;
+                            @endphp
+                            {{-- @dd($getAdditionalPreference['is_corporate_user']) --}}
+                            @if( (Auth::user()->role_id == 3) && ($getAdditionalPreference['is_corporate_user'] == 1) && !empty($vendor_product->product_variant_by_roles)) 
+                                @php 
+                                    $amount = 0;
+                                    $quantity = 0;
+                                @endphp
+                                @foreach (array_reverse($vendor_product->product_variant_by_roles) as $productVar)
+                                    @if($productVar->role_id == Auth::user()->role_id && $productVar->quantity >= $vendor_product->quantity)
+                                        @if($quantity < $productVar->quantity && $productVar->quantity <= $vendor_product->quantity) 
+                                            @php $corporate_user_price = $productVar->amount; @endphp
+                                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
+                                                <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($productVar->amount) }}</div>
+                                            </div>
+                                        @endif        
+                                    @endif
+                                    {{-- @php break; @endphp --}}
+                                @endforeach
+                            @else
+                                @if(isset($vendor_product->pvariant->actual_price))
+                                <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
+                                </div>
+                                @endif
                             @endif
+
                             @if(!empty($vendor_product->quantity_price))
                             <div class="col-6 col-md-2 text-left order-md-4">
                                 @if($serviceType ==  'rental')
@@ -263,7 +286,12 @@
                                 @endphp
                                     <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + ($additionalPrice )) }}</div>
                                 @else
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                    @if( $corporate_user_price != 0 )
+                                        <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($corporate_user_price) * $vendor_product->quantity }}</div>
+                                    @else
+                                        <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                    @endif
+                                
                                 @endif
                             </div>
                             @endif
