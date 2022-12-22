@@ -684,9 +684,12 @@ $(document).ready(function () {
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-        if($("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val() != schedule_dt)){
+        if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val() != schedule_dt)){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
-            $(this).val($("#edit_order_schedule_datetime").val());
+            var edit_order_schedule_datetime = $("#edit_order_schedule_datetime").val();
+            schedule_datetime  = edit_order_schedule_datetime.split(" ")[0];
+            $(this).val(schedule_datetime);
+            return false;
         }
         $.ajax({
             type: "POST",
@@ -696,6 +699,12 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.status == "Success") {
                     $('#slot').html(response.data);
+                    if(typeof $('#edit_order_schedule_slot').val()!='undefined'){
+                        $(".schedule_datetime").change();
+                        $('#slot').val($('#edit_order_schedule_slot').val());
+                        $('#slot option').prop('disabled', true);
+                        $('#slot option[value="'+$('#edit_order_schedule_slot').val()+'"]').attr("disabled", false);
+                    }
                 } else {
                     success_error_alert('error', response.message, ".cart_response");
                     $('#slot').html(response.data);
@@ -2195,16 +2204,27 @@ $(document).ready(function () {
                                     $("#order_placed_btn").removeAttr("disabled");
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
-                                if(response.schedule_datetime!=null){
-                                    $("#schedule_datetime").val(response.schedule_datetime);
-                                    if($("#edit_order_schedule_datetime").val()!=''){
+                                //if(response.schedule_datetime!=null){
+                                    var schedule_datetime = '';
+                                    if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && typeof $('#edit_order_schedule_slot').val()!='undefined' && $('#edit_order_schedule_slot').val()!=''){
+                                        var edit_order_schedule_datetime = $("#edit_order_schedule_datetime").val();
+                                        schedule_datetime  = edit_order_schedule_datetime.split(" ")[0];
+                                    }else{
+                                        schedule_datetime = $("#edit_order_schedule_datetime").val();
+                                    }
+                                    if(schedule_datetime!=''){
+                                        $("#schedule_datetime").val(schedule_datetime);
                                         $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("max", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("min", $("#schedule_datetime").val());
                                         $("#edit_order_schedule_datetime").val($("#schedule_datetime").val());
+                                        if(typeof $('#slot').val()!='undefined' && typeof $('#edit_order_schedule_slot').val()!='undefined'){
+                                            $(".schedule_datetime").change();
+                                            $('#slot').val($('#edit_order_schedule_slot').val());
+                                        }
+                                        $("#taskschedule").click();
                                     }
-                                    $("#taskschedule").click();
-                                }
+                                //}
 
                             }
                             cartTotalProductCount();
