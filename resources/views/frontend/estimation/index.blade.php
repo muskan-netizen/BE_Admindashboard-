@@ -839,7 +839,7 @@
             }
             $(this).parent().prev().toggle();
             $(this).prev().toggle();
-            return false;
+            return true;
         });
 
         $(document).delegate(".product_tag_filter", "change", function() {
