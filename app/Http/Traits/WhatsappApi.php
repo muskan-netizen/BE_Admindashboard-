@@ -302,7 +302,7 @@ trait WhatsappApi{
         // $order = Order::where('id', $order_id)->first();
         // optional($order->user)->phone_number
         return $api_data = [
-            "to_number"     => '917355555968',
+            "to_number"     => optional($order_data->user)->dial_code.optional($order_data->user)->phone_number,
             "customer_name" => optional($order_data->user)->name,
             "template_name" => $template_name,
             "headers"       => $header,
