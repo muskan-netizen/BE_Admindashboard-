@@ -45,6 +45,8 @@
                 <p>{{ $return_details->coments ?? '' }}</p>
             </div>
             @endif
+
+            
             <div class="row form-group">
                 <div class="col-md-12">
                     <label>{{__('Update Status')}}</label>
@@ -62,10 +64,12 @@
                 <label>{{__('Comment By Vendor (Optional)')}}:</label>
                 <textarea class="form-control" name="reason_by_vendor" id="reason_by_vendor" cols="20" rows="4">{{$return_details->reason_by_vendor}}</textarea>
             </div>
+           
 
             <span class="text-danger" id="error-msg"></span>
             <span class="text-success" id="success-msg"></span>
             <button class="btn btn-primary w-100 mt-3" id="return_form_button">{{__('Update')}}</button>
+            
         </form>
 
 

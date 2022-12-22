@@ -270,8 +270,7 @@ $(document).ready( async function () {
             dataType: 'json',
             url: `/setSessionIndex?type=${type}`,
             success: function (response) {
-               //location.reload();
-               window.location.href = home_page_url;
+                window.location.href = home_page_url;
             }
         });
     }
@@ -737,7 +736,7 @@ $(document).ready( async function () {
                                         dots: false,
                                         infinite: true,
                                         speed: 300,
-                                        slidesToShow: 4,
+                                        slidesToShow: 5,
                                         slidesToScroll: 3,
                                         responsive: [
                                             {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
@@ -1260,10 +1259,3 @@ $(document).delegate("#edit-address #address-input", "focus", function(){
 
     });
   }
-
-
-
-
-
-
-

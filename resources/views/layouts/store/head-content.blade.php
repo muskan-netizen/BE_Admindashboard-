@@ -115,6 +115,7 @@ if(Auth::check()){
 @elseif(isset($set_template)  && $set_template->template_id == 8)
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/footer/footer.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/eighttemplate.css')}}">
 	@if(Route::currentRouteName() == "userHome")
 	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/homepage/homepage.css')}}">
 	@else
@@ -126,7 +127,19 @@ if(Auth::check()){
 
 	<link defer type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}">
 	@endif
+@elseif(isset($set_template)  && $set_template->template_id == 9)
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
+<link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/header/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/footer/footer.css')}}">
+<!-- p2p css -->
+<link rel="stylesheet" href="{{asset('frontend/common/p2p.css')}}">
 
+	@if(Route::currentRouteName() == "userHome" || Route::currentRouteName() == "homeTest")
+	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/homepage/homepage.css')}}">
+	@else
+	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/homepage/inner_page.css')}}">
+	@endif
 @endif
 
 

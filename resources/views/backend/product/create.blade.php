@@ -184,7 +184,7 @@
 
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto;">
-                            <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
+                            <h5 class="text-uppercase mt-0 bg-light p-2">{{ __(getNomenclatureName('Variant') ." Information") }}</h5>
                         </div>
                         <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
                             <button type="button" class="btn btn-info makeVariantRow"> {{ __("Create Variants") }}</button>

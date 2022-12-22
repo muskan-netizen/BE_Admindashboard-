@@ -42,6 +42,11 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\PaymentOption', 'id', 'payment_option_id');
     }
+
+    public function reqCancelOrder()
+    {
+        return $this->hasOne('App\Models\OrderCancelRequest'); //, 'order_id', 'id'
+    }
     public function orderStatusVendor()
     {
         return $this->hasMany('App\Models\VendorOrderStatus', 'order_id', 'id');
@@ -112,9 +117,24 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\OrderVendorReport', 'order_id', 'id');
     }
+
+    public function order_exchange_request()
+    {
+        return $this->hasOne('App\Models\OrderReturnRequest', 'order_id', 'id');
+    }
     
     public function getByNumber($order_number)
     {
         return self::where('order_number',$order_number)->with('user','products','products.addon','products.addon.option','products.pvariant')->first();
+    }
+    public function giftCard(){
+        return $this->hasOne('App\Models\GiftCard','id','gift_card_id');
+    }
+    public function userGiftCard(){
+        return $this->hasOne('App\Models\UserGiftCard','gift_card_code','gift_card_code');
+    }
+    public function editingInCart()
+    {
+        return $this->hasOne('App\Models\Cart', 'order_id', 'id');
     }
 }

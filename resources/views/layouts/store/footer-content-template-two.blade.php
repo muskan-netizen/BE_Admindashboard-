@@ -6,9 +6,16 @@ if(Session::get('config_theme') == 'dark'){
 }else{
     $urlImg = $clientData ? $clientData->logo['original'] : ' ';
 }
-
+$currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
+$languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $paymentMethod = \App\Models\PaymentMethod::where('is_show',1)->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
+@endphp
+@php
+$applocale = 'en';
+if(session()->has('applocale')){
+    $applocale = session()->get('applocale');
+}
 @endphp
         </article>
     @if($clientData->whatsapp_url)
@@ -236,7 +243,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </button>
             </div>
             <div class="modal-body">
-                <h6 class="m-0">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?')}}</h6>
+                <h6 class="m-0" id="single_vendor_order_modal_text">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
@@ -244,4 +251,42 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade mobile-setting" id="setting_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="setting-modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-bottom">
+        <h5 class="modal-title" id="setting-modalLabel">Language & Currency</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body pt-0">
+        <div class="show-div setting">
+            <h6 class="mb-1">{{ __("language") }}</h6>
+            <ul>
+                @foreach($languageList as $key => $listl)
+                    <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
+                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}
+                            @if($listl->language->id != 1)
+                            ({{$listl->language->nativeName}})
+                            @endif
+                         </a>
+                    </li>
+                @endforeach
+            </ul>
+            <h6 class="mb-1">{{ __("currency") }}</h6>
+            <ul class="list-inline">
+                @foreach($currencyList as $key => $listc)
+                    <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
+                        <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

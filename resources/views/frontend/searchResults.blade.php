@@ -121,7 +121,20 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                                 @endif
                                 <div class="row margin-res">
                                     @if(!empty($listData))
-                                    @foreach($listData as $key => $data)
+                                    @foreach($listData as $key => $result)
+                                    @if(@$result['title'])
+                                    <div class="col-md-2 col-6 col-grid-box mt-3">
+                                        <div class="product-box scale-effect mt-0">
+                                            
+                                            <div class="product-detail">
+                                                <div class="inner_spacing">
+                                                        <h3>{{__($result['title'])}}</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    @foreach($result['result'] as $data)
                                     <div class="col-md-2 col-6 col-grid-box mt-3">
                                         <div class="product-box scale-effect mt-0">
                                             <div class="img-wrapper">
@@ -138,6 +151,7 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                                             </div>
                                         </div>
                                     </div>
+                                    @endforeach
                                     @endforeach
                                     @else
                                     <div class="col-xl-12 col-12 mt-4">
@@ -162,8 +176,8 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
 <script>
     vendorAllOnMap();
     function vendorAllOnMap() {
-        var latitude = "{{ $vendorLatLong[0][0] }}";
-        var longitude = "{{ $vendorLatLong[0][1] }}";
+        var latitude = "{{ $vendorLatLong[0][0] ?? 0 }}";
+        var longitude = "{{ $vendorLatLong[0][1] ?? 0 }}";
         var latlng = new google.maps.LatLng(latitude, longitude);
         var prev_infowindow =false; 
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OrderVendor extends Model{
     use HasFactory;
     
-	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url'];
+	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url','delivery_response'];
 	public function orderDetail(){
 	    return $this->hasOne('App\Models\Order' , 'id', 'order_id'); 
 	}
@@ -38,6 +38,12 @@ class OrderVendor extends Model{
 	}
 	public function status(){
 	    return $this->hasOne('App\Models\VendorOrderStatus','order_vendor_id','id')->orderBy('id', "DESC"); 
+	}
+	public function exchanged_to_order(){
+	    return $this->hasOne('App\Models\OrderVendor','exchange_order_vendor_id','id'); 
+	}
+	public function exchanged_of_order(){
+	    return $this->belongsTo('App\Models\OrderVendor','exchange_order_vendor_id','id'); 
 	}
 	public function orderstatus(){
 	    return $this->hasOne('App\Models\VendorOrderStatus' , 'vendor_id', 'vendor_id', 'order_id', 'order_id')->orderBy('id', 'DESC')->latest(); 
@@ -122,4 +128,5 @@ class OrderVendor extends Model{
 	public function cancel_request(){
         return $this->hasOne('App\Models\OrderCancelRequest', 'order_vendor_id', 'id')->select('*', 'status as status_id')->orderBy('updated_at', 'desc');
     }
+
 }

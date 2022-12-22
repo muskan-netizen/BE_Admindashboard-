@@ -10,12 +10,12 @@
 @endsection
 @section('content')
 
-<section class="section-b-space ratio_asos">
+<section class="section-b-space ratio_asos main_venders">
     <div class="collection-wrapper">
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <div class="top-banner-wrapper mb-sm-4 mb-2">
+                    <div class="top-banner-wrapper">
                         @if(!empty($vendor->banner))
                             <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1920/1080' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
@@ -23,7 +23,7 @@
                             <div class="col-12">
                                 <form action="">
                                     <div class="row">
-                                        <div class="col-sm-12 text-center">
+                                        <div class="col-sm-12 text-left w-10 pl-5">
                                             <div class="file file--upload">
                                                 <label>
                                                     <span class="update_pic border-0">
@@ -54,7 +54,7 @@
                                             @endif
                                         </div>
                                         @if($vendor->desc)
-                                            <div class="col-md-12 text-center">
+                                            <div class="col-md-12 text-center vender-peragraph mt-3">
                                                 <p>{{$vendor->desc}}</p>
                                                 <p>{!! $vendor->short_desc !!}</p>
                                             </div>
@@ -80,7 +80,7 @@
             </div>
         </div>
         <div class="container homepageSix">
-            <div class="row mb-sm-5 mb-2">
+            <div class="row mb-sm-5 mb-2 mt-5">
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -90,7 +90,8 @@
                             </span>
                         </h5>
                         <div class="offer-slider al">
-                            @if(!empty($newProducts) && count($newProducts) > 0)
+                        @php $show_new_Products = 0; @endphp
+                            @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                     @foreach($newProds as $new)
                                     <div class="col-md-12 p-0">

@@ -3,7 +3,18 @@
   --star-color: #FFEEA3;
   --star-background: #fc0;
 }
-
+body.al_body_template_four section.cab-banner-area.alTaxiBannerStart form.cab-booking-form input {
+  margin: 20px 0;
+}
+body.al_body_template_four .col-sm-6.offset-sm-3 {
+  margin-bottom: 20px;
+}
+body.al_body_template_four .alFourTemplateCartButtons a.shoping i {
+  position: inherit;
+}
+body.al_body_template_four .row.mb-md-1.alFourTemplateCartButtons.mt-2.pt-2 {
+  margin-bottom: 20px !important;
+}
 /* cab booking code css */
 .cab-booking {
   height: 100vh;
@@ -2435,6 +2446,7 @@ span.alFourTempTitle {
   padding: 7px 20px;
   background-color: var(--theme-deafult);
   color: #fff;
+  font-size:14px;
 }
 
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {
@@ -3132,6 +3144,11 @@ body.al_body_template_four .categories-product-list .search_form {
   overflow: hidden;
 }
 
+body.al_body_template_four .alCartInput .input-group:after{background-color: transparent;}
+
+body.al_body_template_four .categories-product-list .search_form input {background-color: #eee;overflow: hidden;}
+body.al_body_template_four .categories-product-list .search_form {border-radius: 30px !important;overflow: hidden;}
+
 
 /* Dark theme  */
 .dark .tip_label,
@@ -3612,13 +3629,75 @@ body[dir=rtl] .alFourThLogo {
     justify-content: left;
     margin-top: 10px;
   }
+  body.al_body_template_four .nav.nav-tabs.nav-material {
+    margin-top: 0 !important;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: scroll !important;
+}
+body.al_body_template_four .navigation_tab_al.nav-material.tab-icons .nav-link {
+  min-width: 138px;
+}
+body.al_body_template_four .al_count_tabs_fourdesign {
+  overflow-x: scroll;
+}
+::-webkit-scrollbar {
+  height: 3px;
+}
+::-webkit-scrollbar-track{background:transparent;}
+body.al_body_template_four .al_count_tabs_fourdesign::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+body.al_body_template_four .navigation_tab_al.nav-material.tab-icons{border-radius:0 !important;}
+body.al_body_template_four .main-menu .container-fluid.text-center.py-md-3.py-1 {
+  padding-top: 0 !important;
+}
+body.al_body_template_four.p2p-module.homeHeader .collection-content.col-lg-9.outter-fillter-data a.product-box.scale-effect {
+height: auto;
+padding: 10px;
+}
+body.al_body_template_four .product-wrapper-grid .inner_spacing.w-100 h4.mt-1{padding:0 !important;}
+body.al_body_template_four.p2p-module.homeHeader .inner_spacing span.rating {
+padding: 6px 5px;
+font-size: 12px;
+width: 65px;
+text-align: center;
+}
+body.al_body_template_four.p2p-module .product-buttons .btn.btn-solid{max-width: 160px !important;}
+body.al_body_template_four.p2p-module .tab-product {
+margin-top: 30px !important;
+}
+body.al_body_template_four.p2p-module .cab-banner-area .card-box{padding:20px !important;}
+body.al_body_template_four.p2p-module .col-sm-12.p-lg-0.d-flex.align-items-center.justify-content-md-around.justify-content-between.pr-lg-3.pl-lg-0 {
+  display: none !important;
+}
+body.al_body_template_four.p2p-module a.navbar-brand.m-0 img {
+  width: auto !important;
+}
+body.al_body_template_four.p2p-module .navbar-brand{display:block;text-align:center;}
+body.al_body_template_four.p2p-module .onhover-div.pl-0.ml-xl-3.ml-lg-1.shake-effect.d-block.d-md-none {
+  display: block !important;
+}
+body.al_body_template_four.p2p-module .product-wrapper-grid .col-md-3 {
+  flex: 33%;
+  max-width: 33%;
+}
+body.al_body_template_four.p2p-module  .displayProducts .product-image img {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+body.al_body_template_four.p2p-module .vendor-reviwes{display:none;}
+body.al_body_template_four.p2p-module .shoping_cart .vendor_products_tr h4 strong {
+  display: none;
+}
 }
 
 @media(max-width:767px) {
   body .shimmer_effect .grid-row .card_image {
     height: 90px !important
   }
-
+  body.al_body_template_four .navigation_tab_al.nav-material.tab-icons{border:none !important;}
   .alFourTemplateCartButtons a.btn.btn-solid:before {
     font-size: 18px
   }
@@ -3631,11 +3710,11 @@ body[dir=rtl] .alFourThLogo {
     height: 30px
   }
 
-  .product-card-box.position-relative {
+  /* .product-card-box.position-relative {
     padding: 6px !important;
     box-shadow: 0 0 5px rgb(0 0 0 / 20%);
     border-radius: 10px
-  }
+  } */
 
   .vendors h2.h2-heading.mb-3 {
     margin-bottom: 10px !important
@@ -3920,7 +3999,45 @@ body[dir=rtl] .alFourThLogo {
   .tap-top.top-cls {
     z-index: 9999;
   }
-
+  body.al_body_template_four .nav.nav-tabs.nav-material {
+      margin-top: 0 !important;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: scroll !important;
+  }
+  body.al_body_template_four .navigation_tab_al.nav-material.tab-icons .nav-link {
+    min-width: 138px;
+}
+  body.al_body_template_four .al_count_tabs_fourdesign {
+    overflow-x: scroll;
+  }
+  ::-webkit-scrollbar {
+    height: 3px;
+}
+::-webkit-scrollbar-track{background:transparent;}
+  body.al_body_template_four .al_count_tabs_fourdesign::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  body.al_body_template_four .navigation_tab_al.nav-material.tab-icons{border-radius:0 !important;}
+  body.al_body_template_four .main-menu .container-fluid.text-center.py-md-3.py-1 {
+    padding-top: 0 !important;
+}
+body.al_body_template_four.p2p-module.homeHeader .collection-content.col-lg-9.outter-fillter-data a.product-box.scale-effect {
+  height: auto;
+  padding: 10px;
+}
+body.al_body_template_four .product-wrapper-grid .inner_spacing.w-100 h4.mt-1{padding:0 !important;}
+body.al_body_template_four.p2p-module.homeHeader .inner_spacing span.rating {
+  padding: 6px 5px;
+  font-size: 12px;
+  width: 65px;
+  text-align: center;
+}
+body.al_body_template_four.p2p-module .product-buttons .btn.btn-solid{max-width: 160px !important;}
+body.al_body_template_four.p2p-module .tab-product {
+  margin-top: 30px !important;
+}
+}
   @media(max-width:576px) {
     .al_body_template_four .cab-banner-area .card-box {
       padding: 16px;
@@ -4127,5 +4244,16 @@ body[dir=rtl] .alFourThLogo {
     border-radius: 0 !important;
     font-size: 16px
   }
-
+  body.al_body_template_four .inner_spacing.w-100 label.mb-0{font-size:16px;width: 70%;}
+  body.al_body_template_four div#category_products_filter span.rating {
+    background: green;
+    color: #fff;
+    padding: 6px 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 51px;
+}
+body.al_body_template_four .slick-track{
+  margin-left:0 !important;
+}
   /* car bar css end */

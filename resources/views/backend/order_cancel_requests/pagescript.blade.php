@@ -99,43 +99,94 @@
             }).then((result) => {
                 if(result.value)
                 {
-                    $.ajax({
-                        type: "POST",
-                        data: {id: id, status: status},
-                        url: cancel_request_update_url,
-                        headers: {Accept: "application/json"},
-                        success: function(response) {
-                            if (response.status == 'Success') {
-                                $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                                setTimeout(function(){location.reload();}, 2500);
-                            } else {
+                    if(title != "Approve"){
+                        $('#vendor_order_reject').modal('show');
+                        $('#vendor_order_reject #id').val(id);
+                        $('#vendor_order_reject #status').val(status);
+                        $('#vendor_order_reject #title').val(title);
+                    }
+                    if(title == "Approve"){
+                        $.ajax({
+                            type: "POST",
+                            data: {id: id, status: status},
+                            url: cancel_request_update_url,
+                            headers: {Accept: "application/json"},
+                            success: function(response) {
+                                if (response.status == 'Success') {
+                                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                                    setTimeout(function(){location.reload();}, 2500);
+                                } else {
+                                    Swal.fire({
+                                        text: response.message,
+                                        icon : "error",
+                                        button: "OK",
+                                    });
+                                    return false;
+                                }
+                            },
+                            beforeSend: function(){
+                                $(".loader_box").show();
+                            },
+                            complete: function(){
+                                $(".loader_box").hide();
+                            },
+                            error: function(response) {
+                                let error = response.responseJSON;
                                 Swal.fire({
-                                    text: response.message,
+                                    text: error.message,
                                     icon : "error",
                                     button: "OK",
                                 });
                                 return false;
                             }
-                        },
-                        beforeSend: function(){
-                            $(".loader_box").show();
-                        },
-                        complete: function(){
-                            $(".loader_box").hide();
-                        },
-                        error: function(response) {
-                            let error = response.responseJSON;
-                            Swal.fire({
-                                text: error.message,
-                                icon : "error",
-                                button: "OK",
-                            });
-                            return false;
-                        }
-                    });
+                        });
+                    }
                 }
             });
         });
+
+        $(document).on('click', '.vendorrejectReqSubmit', function(e) {
+            let id = $("#vendor_order_reject #id").val();
+            let status = $("#vendor_order_reject #status").val();
+            let title = $("#vendor_order_reject #title").val();
+            let vendor_reject_reason = $("#vendor_order_reject #reject_reason").val();
+            $.ajax({
+                type: "POST",
+                data: {id: id, status: status, vendor_reject_reason: vendor_reject_reason},
+                url: cancel_request_update_url,
+                headers: {Accept: "application/json"},
+                success: function(response) {
+                    if (response.status == 'Success') {
+                        $('#vendor_order_reject').modal('hide');
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function(){location.reload();}, 2500);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon : "error",
+                            button: "OK",
+                        });
+                        return false;
+                    }
+                },
+                beforeSend: function(){
+                    $(".loader_box").show();
+                },
+                complete: function(){
+                    $(".loader_box").hide();
+                },
+                error: function(response) {
+                    let error = response.responseJSON;
+                    Swal.fire({
+                        text: error.message,
+                        icon : "error",
+                        button: "OK",
+                    });
+                    return false;
+                }
+            });
+        });
+
     });
 
 </script>

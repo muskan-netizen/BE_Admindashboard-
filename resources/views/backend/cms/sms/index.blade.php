@@ -130,10 +130,9 @@
             let subject = $('#edit_page_content #subject').val();
             let content = $('#edit_page_content #content').val();
             let template_id = $('#edit_page_content #template_id').val();
-
            // let content = CKEDITOR.instances.content.getData();
             let email_template_id = $('#edit_page_content #sms_template_id').val();
-            var data = { subject: subject, content: content, email_template_id:email_template_id,template_id:template_id};
+            var data = { subject: subject, content: content, email_template_id:email_template_id, template_id:template_id};
             $.post(update_url, data, function(response) {
               $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
               setTimeout(function() {

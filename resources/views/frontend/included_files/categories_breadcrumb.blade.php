@@ -2,7 +2,7 @@
 $subParent = $category->allParentsAccount;
 $breadcrumb = '<li class="breadcrumb-item align-items-center active" aria-current="page">'.$category->translation_name.'</li>';
 do{
-    if(strtolower($subParent->slug) == "root"){
+    if(!empty($subParent->slug) && (strtolower($subParent->slug) == "root")){
         $breadcrumb = '<li class="breadcrumb-item align-items-center"><a href="'.route("userHome").'">'.__('Home').'</a></li>'.$breadcrumb;
     } else {
         $translation_name = ($subParent->translation->first()) ? $subParent->translation->first()->name : $subParent->slug;
