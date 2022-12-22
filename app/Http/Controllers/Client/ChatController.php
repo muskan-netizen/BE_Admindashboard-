@@ -15,7 +15,7 @@ use App\Http\Traits\GlobalFunction;
 use Illuminate\Support\Facades\Http;
 
 
-use App\Models\{Client, Order, UserVendor, ClientPreference, LoyaltyCard,OrderProductRating};
+use App\Models\{Client, Order, UserVendor, ClientPreference, LoyaltyCard,OrderProductRating, Product, Vendor};
 
 class ChatController extends BaseController
 {
@@ -229,12 +229,20 @@ class ChatController extends BaseController
             $socket_url = $this->client_data->socket_url;
             $c_type = $data['type'] ?? null;
             $p2p_id = null;
+            $vendor_name = null;
+            $product_name = null;
+            $product_price = null;
             // dd(is_null($order_id));
             // check order_vendor_id and order_id is empty then it is called for p2p chat
             if( $c_type == 'user_to_user' ) {
                 $room_name = $room_id = 'p2p-productId-'.$product_id.'-vendorId-'.$vendor_id.'-currentUser-'.Auth::id();
                 $orderby_user_id = Auth::id();
                 $p2p_id = $vendor_id;
+                $vendor = Vendor::where('id', $vendor_id)->first();
+                $vendor_name = $vendor->name;
+                $product = Product::with('variant')->where('id', $product_id)->first();
+                $product_name = $product->title ?? '';
+                $product_price = $product->variant[0]->price ?? 0.00;
             }
             else {
 
@@ -261,7 +269,10 @@ class ChatController extends BaseController
                 'db_name'=>$this->client_data->database_name,
                 'client_id'=>$this->client_data->id, 
                 'p2p_id'=>$p2p_id,
-                'product_id'=>$product_id
+                'product_id'=>$product_id,
+                'vendor_name' => $vendor_name,
+                'product_name' => $product_name,
+                'product_price' => $product_price
             ];
 
             $response =   Http::post($socket_url.'/api/room/createRoom', $request_data );

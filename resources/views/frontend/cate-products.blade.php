@@ -53,11 +53,11 @@
             </div>
             <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter">
-                        <ul class="breadcrumb p-0 mb-2 mt-3">
+                        <!-- <ul class="breadcrumb p-0 mb-2 mt-3">
                             <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
                                 </span><span class="active">Healthcare Device</span></a>
                             </li>
-                        </ul>
+                        </ul> -->
                     <aside class="side_fillter mt-2">
                     <!-- side-bar colleps block stat -->
                     @if( count($category->brands) > 0 || count($variantSets) > 0 )

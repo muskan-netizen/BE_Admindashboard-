@@ -57,7 +57,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box">
-                                <h4 class="page-title">{{ getNomenclatureName('Vendor Chat', true) }}</h4>
+                                <h4 class="page-title">{{ getNomenclatureName('Chat', true) }}</h4>
                             </div>
                         </div>
                     </div>
@@ -108,6 +108,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var apiPre = `<?php echo $apiPre; ?>`;
     var rePre = `<?php echo $rePre; ?>`;
     var fetchDe = `<?php echo $fetchDe; ?>`;
+    var user_room_id = `<?php echo $room_id; ?>`;
 </script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 {{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}

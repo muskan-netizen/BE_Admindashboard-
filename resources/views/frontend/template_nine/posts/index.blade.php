@@ -145,7 +145,7 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
                         <ul class="row p-0 m-0 no-gutters">
                             @if(@$categories)
                             @foreach($categories as $key=>$category)
-                            @php  $icon = $category['icon']['proxy_url'] . '30/30' . $category['icon']['image_path'];  @endphp
+                            @php  $icon = $category['icon']['proxy_url'] . '50/50' . $category['icon']['image_path'];  @endphp
                             
                             <li class="col-3 px-1 category-list @if($key>3) view-all_cats @endif" id="category_{{$category->id}}" @if($key>3) style="display:none;" @endif>
                                 <a class="cate-item text-center w-100 py-3 mb-4 rounded select-category" data-name="{{$category['translation_one']["name"]}}" data-id="{{$category['id']}}" href="#">
@@ -219,7 +219,7 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
                                         <label>Price *</label>
                                         <div class="input-group mb-2">
                                             <div class="input-group-prepend">
-                                              <div class="input-group-text">₹</div>
+                                              <div class="input-group-text">{{getPrimaryCurrencySymbol()}}</div>
                                             </div>
                                             <input type="text" class="form-control" required name="price" id="" placeholder="">
                                           </div>

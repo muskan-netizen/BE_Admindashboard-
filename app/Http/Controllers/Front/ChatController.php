@@ -119,7 +119,8 @@ class ChatController extends FrontController
 
     }
 
-    public function UserToUserChat(Request $request){
+    public function UserToUserChat(Request $request, $domain, $room_id =''){
+        
         $user = Auth::user();
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
@@ -143,11 +144,11 @@ class ChatController extends FrontController
                 $chatroom = [];
             }
             return view('frontend.chat.UserToUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom,
-            'navCategories' => $navCategories]);
+            'navCategories' => $navCategories, 'room_id' => $room_id]);
             
         } catch (\Throwable $th) {
             return view('frontend.chat.UserToUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>[],
-            'navCategories' => $navCategories]);
+            'navCategories' => $navCategories, 'room_id' => $room_id]);
         }
        
 
