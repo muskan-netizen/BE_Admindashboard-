@@ -1289,19 +1289,26 @@ class OrderController extends FrontController
                         $Service_quantity = $vendor_cart_product->LongTermProducts->quantity;
                         $start_service_date = Carbon::parse($vendor_cart_product->service_start_date)->format('Y-m-d'); 
                         $end_service_date   = Carbon::parse($vendor_cart_product->service_start_date)->addMonths($vendor_cart_product->product->service_duration);
-                     
+                        $ndate =  convertDateTimeInClientTimeZone(Carbon::now());
+
                         if($vendor_cart_product->service_period=='days'){
                           
                             $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addDays(($vendor_cart_product->LongTermProducts->quantity +1) );
                             $period   = CarbonPeriod::create($start_service_date, $end_service_date);
                             $entery = 1;
                             foreach ($period as $key => $date) {
-                                if($entery <= $Service_quantity ){
-                                    $OrderLongTermServiceSchedule [] = [
-                                        'order_long_term_services_id' => $OrderLongTermServices->id,
-                                        'schedule_date'               => $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
-                                    ];
-                                    $entery++;
+                               
+                                $newDate = $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s');
+                                $UserutcTime = convertDateTimeInClientTimeZone($newDate) ;
+                              
+                                if(strtotime($ndate) < strtotime($UserutcTime) ){
+                                    if($entery <= $Service_quantity ){
+                                        $OrderLongTermServiceSchedule [] = [
+                                            'order_long_term_services_id' => $OrderLongTermServices->id,
+                                            'schedule_date'               => $UserutcTime, //
+                                        ];
+                                        $entery++;
+                                    }
                                 }
                             }
                         }elseif($vendor_cart_product->service_period=='week')
