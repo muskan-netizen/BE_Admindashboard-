@@ -52,10 +52,9 @@
 }
     </style>
 
-@php 
+@php $serviceType =  Session::get('vendorType');
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
-$serviceType =  Session::get('vendorType');
-@endphp
+ @endphp
 
 @if($cart_details->totalQuantity<=0)
     <div class="container" >
@@ -392,7 +391,7 @@ $serviceType =  Session::get('vendorType');
                                     <p class="p-0 m-0 alert-danger">{{ __('Container Charges') }} *</p>
                                 </div>
                                 <div class="col-md-2 col-sm-4 text-center">
-                                    <div class="extra-items-price">>@if( $additionalPreference["is_token_currency_enable"]) 
+                                    <div class="extra-items-price">@if( $additionalPreference["is_token_currency_enable"]) 
                                         {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($vendor_product->pvariant->container_charges))}} 
                                         @else {{ Session::get('currencySymbol').decimal_format($vendor_product->pvariant->container_charges) }} @endif
 
@@ -954,10 +953,6 @@ $serviceType =  Session::get('vendorType');
                     @else
                                 <p class="total_amt m-0 b" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">@if( $additionalPreference["is_token_currency_enable"]) 
                                     {{ '' }} @else {{Session::get('currencySymbol').decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}@endif</p>
-
-                        @else
-
-                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}</p>
 
                                     <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
                                     <input type="hidden" name="cart_total_payable_amount" value="{{$additionalPreference['is_token_currency_enable'] 

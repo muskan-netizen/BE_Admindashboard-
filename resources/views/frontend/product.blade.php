@@ -145,48 +145,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         @endif
                                     </div>
                                 </div>
-                                <div id="myresult" class="img-zoom-result"></div>
-                            </div>
-
-                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
-                                <div class="product-right inner_spacing pl-sm-3 p-0">
-                                    <h2 class="mb-0">
-                                        {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
-                                    </h2>
-                                    <h6 class="sold-by">
-                                        <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
-                                    </h6>
-                                    @if($client_preference_detail)
-                                        @if($client_preference_detail->rating_check == 1)
-                                            @if($product->averageRating > 0)
-                                                <span class="rating">{{ decimal_format($product->averageRating) }} <i class="fa fa-star text-white p-0"></i></span>
-                                            @endif
-                                        @endif
-                                    @endif
-                                    <div class="description_txt mt-3">
-                                        <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
-                                    </div>
-                                    <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
-                                    <input type="hidden" name="start_time" id="start_time" value="">
-                                    <input type="hidden" name="end_time" id="end_time" value="">
-                                    <div id="product_variant_wrapper">
-                                        <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
-                                        @if($product->inquiry_only == 0)
-                                        <h3 id="productPriceValue" class="mb-md-3">
-                                            @if($additionalPreference ['is_token_currency_enable'])
-                                            <b class="mr-1"><span class="product_fixed_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($product->variant[0]->price * $product->variant[0]->multiplier))}}</span></b>
-                                            @else
-                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
-                                                @if($product->variant[0]->compare_at_price > 0 )
-                                                    <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
-                                                @endif
-                                            @endif
-                                            </h3>
-                                        @endif
-                                    </div>
-                                   
-                                    <div id="product_variant_options_wrapper">
-                                        @if(!empty($product->variantSet))
                                 @endif
                                 <div class="{{(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id != '8') ? 'col-lg-5' : 'col-lg-4'}}  p-0 @php if(count($product->media) == 0){  echo 'dd-none'; } @endphp ">
                                     {{-- <div class="product__carousel">
@@ -349,9 +307,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
-                                                    <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
-                                                    @if($product->variant[0]->compare_at_price > 0 )
-                                                        <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                    @if($additionalPreference ['is_token_currency_enable'])
+                                                        <b class="mr-1"><span class="product_fixed_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",","))}}</span></b>
+                                                    @else
+                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
+                                                        @if($product->variant[0]->compare_at_price > 0 )
+                                                            <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                        @endif
                                                     @endif
                                                 </h3>
                                             @endif

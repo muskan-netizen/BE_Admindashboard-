@@ -350,7 +350,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                                     @endif
                                                                     </div>
                                                                     @if($data->inquiry_only == 0)
-                                                                        <h4 class="mt-1">{{additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        <h4 class="mt-1">{{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                     @endif
                                                                 
                                                             </div>
