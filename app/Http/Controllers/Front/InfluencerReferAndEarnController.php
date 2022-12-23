@@ -10,6 +10,9 @@ use Session;
 class InfluencerReferAndEarnController extends Controller
 {
     function index(Request $request) {
+        $user =  Auth::user();
+        // $refer_earn = ReferEarnDetail::with('user')->where('user_id', $user->id)->first();
+        // dd($refer_earn);
         $influencer_category = InfluencerCategory::get();
         return view('frontend/account/referAndEarn')->with(['influencer_category' => $influencer_category]);
     }
