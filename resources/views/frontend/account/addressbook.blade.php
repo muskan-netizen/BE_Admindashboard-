@@ -170,7 +170,11 @@
 </div>
 <script type="text/template" id="add_address_template">
     <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="addedit-addressLabel">{{ __('Add') }} {{ __('Address') }}</h5>
+        <% if(title == 'Edit') { %>
+            <h5 class="modal-title" id="addedit-addressLabel">{{ __('Edit') }} {{ __('Address') }}</h5>
+        <% }else{ %>
+            <h5 class="modal-title" id="addedit-addressLabel">{{ __('Add') }} {{ __('Address') }}</h5>
+        <% } %>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
