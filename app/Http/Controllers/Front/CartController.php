@@ -15,7 +15,7 @@ use App\Models\EstimatedProductCart;
 use App\Models\EstimatedProductAddons;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Traits\{ApiResponser,CartManager, KwikApi};
+use App\Http\Traits\{ApiResponser,CartManager, KwikApi,biddingCartTrait};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
@@ -23,7 +23,7 @@ use Http\Message\Cookie;
 
 class CartController extends FrontController
 {
-    use ApiResponser,CartManager,KwikApi;
+    use ApiResponser,CartManager,KwikApi,biddingCartTrait;
 
 
     private function randomString()
@@ -284,7 +284,6 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-       // pr($request->all());
 
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
@@ -680,65 +679,14 @@ class CartController extends FrontController
         }
     }
 
-    public function biddingCart(Request $request, $id)
+    //initialize bidding cart
+    public function initCart(Request $request)
     {
+        $this->biddingCart($request->id);
 
-        $user_id = ' ';
-        $cartInfo = ' ';
-        $user = Auth::user();
-        $currency = ClientCurrency::where('is_primary', '=', 1)->first();
-        if ($user) {
-            $user_id = $user->id;
-            $userFind = Cart::where('user_id', $user_id)->first();
-            if (!$userFind) {
-                $cart = new Cart;
-                $cart->status = '0';
-                $cart->is_gift = '1';
-                $cart->item_count = '1';
-                $cart->user_id = $user_id;
-                $cart->created_by = $user_id;
-                $cart->currency_id = $currency->currency->id;
-                $cart->unique_identifier = $user->system_id;
-                $cart->save();
-                $cartInfo = $cart;
-            } else {
-                $cartInfo = $userFind;
-            }
-            $checkIfExist = CartProduct::where('product_id', $request->product_id)->where('variant_id', $request->variant_id)->where('cart_id', $cartInfo->id)->first();
-            if ($checkIfExist) {
-                $checkIfExist->quantity = (int)$checkIfExist->quantity + 1;
-                $cartInfo->cartProducts()->save($checkIfExist);
-                return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!']);
-            } else {
-            }
-        } else {
-            $cart_detail = Cart::where('unique_identifier', session()->get('_token'))->first();
-            if (!$cart_detail) {
-                $cart = new Cart;
-                $cart->status = '0';
-                $cart->is_gift = '1';
-                $cart->item_count = '1';
-                $cart->currency_id = $currency->currency->id;
-                $cart->unique_identifier = session()->get('_token');
-                $cart->save();
-            }
-            $productForVendor = Product::where('id', $request->product_id)->first();
-            $cartProduct = new CartProduct;
-            $cartProduct->status  = '0';
-            $cartProduct->is_tax_applied  = '1';
-            $cartProduct->created_by  = $user_id;
-            $cartProduct->cart_id  = $cart_detail->id;
-            $cartProduct->quantity  = $request->quantity;
-            $cartProduct->product_id = $request->product_id;
-            $cartProduct->variant_id  = $request->variant_id;
-            $cartProduct->currency_id = $cart_detail->currency_id;
-            $cartProduct->vendor_id  = $productForVendor->vendor_id;
-            $cartProduct->save();
+        return redirect()->route('showCart')->with('success', 'Product added successfully');
 
-            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id]);
-        }
     }
-
     /**
      * get products from cart
      *

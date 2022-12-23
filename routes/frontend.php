@@ -604,7 +604,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
     Route::post('add/bid/prescription', [BidController::class, 'uploadPrescription'])->name('bid.uploadPrescription');  //add bidding prescription
     Route::post('get/bid/prescription', [BidController::class, 'getPrescription'])->name('getPrescription'); //get bedding prescription
     Route::get('product-search', [BidController::class, 'search'])->name('searchProduct'); //vendor product search
-    Route::get('bid/add/to/cart/{id}', [CartController::class, 'biddingCart'] )->name('bidding-cart');
+    Route::get('bid/add/to/cart/{id}', [CartController::class, 'initCart'] )->name('bidding-cart');
 
 
 

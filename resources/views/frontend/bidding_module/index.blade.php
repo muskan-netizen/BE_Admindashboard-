@@ -176,7 +176,7 @@
                     @foreach ($bids as $bid)
                         <div id="accordion">
                             <div class="card">
-                            <div class="card-header" id="headingOne">
+                            <div class="card-header headingOne_{{ $bid->id }}" id="headingOne">
                                 <h5 class="m-0">
                                 <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                 {{$bid->vendor->name}}
@@ -186,7 +186,7 @@
                             <div class="" id="VendorProductBox">
                                 <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                                     <div class="card-body">
-                                        <form id="placeBidForm" action="{{route('bidding-cart',$bid->id)}}" enctype="multipart/form-data">
+                                        <form id="placeBidForm_{{ $bid->id }}" action="{{route('bidding-cart',$bid->id)}}" enctype="multipart/form-data">
                                             @csrf
                                                 <table class="table">
                                                     <thead>
@@ -214,7 +214,7 @@
                                                             <a href="#"><button type="submit" class="btn btn-success">Accept / Add to Cart</button></a>
                                                         </th>
                                                         <th>
-                                                            <button class="btn btn-danger">Reject</button>
+                                                            <button class="btn btn-danger removeBid" data-bid="{{ $bid->id}}">Reject</button>
                                                         </th>
                                                     </tfoot>
                                                 </table>
@@ -291,6 +291,12 @@
     ?>
     $(document).delegate('.showBidsModel .close', 'click', function() {
         window.location.href = "{{ url('/index') }}";
+    });
+
+    $(document).on("click", ".removeBid", function (e) {
+        var bid = $(this).attr('data-bid');
+        $("#placeBidForm_"+bid).remove();
+        $(".headingOne_"+bid).remove();
     });
 </script>
 

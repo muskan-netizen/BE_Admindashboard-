@@ -84,26 +84,33 @@ class BidController extends FrontController
 
     public function search(Request $request)
     {
+
         $response = [];
         $user = Auth::user();
         $keyword = $request->input('keyword');
         $language_id = Session::get('customerLanguage');
         $allowed_vendors = $this->getServiceAreaVendors();
-
-        $prod_vendor = Vendor::where('email', '=' , Auth::user()->email)->pluck('id');
-
+        $vendors = Vendor::where('status','1');
+        if (Auth::user()->is_superadmin == 0) {
+            $vendors = $vendors->whereHas('permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $vendor_ids =  $vendors->pluck('id');
 
         $products = Product::with(['media', 'vendor','variant'])->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id', 'products.vendor_id')
             ->select('products.id', 'products.sku', 'products.url_slug', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description', 'products.vendor_id', 'vendors.slug as vendor_slug')
             ->where('pt.language_id', $language_id)
-            ->where('products.vendor_id', $prod_vendor)
+           // ->where('products.vendor_id', $prod_vendor)
             ->where(function ($q) use ($keyword) {
                 $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
             })->where('products.is_live', 1);
+
         //if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-        $products = $products->whereIn('vendor_id', $allowed_vendors);
+        $products = $products->whereIn('vendor_id', $vendor_ids);
         //}
         $products = $products->whereNull('deleted_at')->groupBy('products.id')->get();
+
         $product_results = [];
         foreach ($products as $product) {
             $redirect_url = route('productDetail', [$product->vendor_slug, $product->url_slug]);
