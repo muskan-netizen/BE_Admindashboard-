@@ -1036,10 +1036,15 @@
             } else {
                 $(this).addClass("less");
                 $(this).html(lesstext);
+                
             }
             $(this).parent().prev().toggle();
             $(this).prev().toggle();
             return false;
+        });
+
+        $(document).ready(function(){
+            vendorProductsSearchResults();
         });
 
         $(document).delegate(".product_tag_filter", "change", function() {
@@ -1188,6 +1193,11 @@
             });
             var checkedvalus = checkboxesChecked.length > 0 ? checkboxesChecked : null;
             // if (keyword.length > 2 || keyword.length == 0) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
             ajaxCall = $.ajax({
                 type: "post",
                 dataType: 'json',

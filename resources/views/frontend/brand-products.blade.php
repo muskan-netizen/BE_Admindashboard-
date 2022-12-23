@@ -12,7 +12,7 @@
 <section class="section-b-space ratio_asos outer-categories">
     <div class="collection-wrapper">
         <div class="container">
-            {{--<div class="row">
+            <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
                         @if(!empty($brand->image_banner))
@@ -23,20 +23,20 @@
                         </div>
                     </div>
                 </div>
-            </div>--}}
+            </div>
             <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter">
                         <div class="collection-filter-block bg-transparent p-0">
-                            <!-- <div class="collection-mobile-back">
+                            <div class="collection-mobile-back">
                                 <span class="filter-back d-lg-none d-inline-block">
                                     <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
                                 </span>
-                            </div> -->
-                            <ul class="breadcrumb p-0 mb-2">
+                            </div>
+                            <!-- <ul class="breadcrumb p-0 mb-2">
                                 <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
                                     </span><span class="active">Healthcare Device</span></a>
                                 </li>
-                            </ul>
+                            </ul> -->
                             
                             <aside class="side_fillter">
                             @if(!empty($variantSets) && count($variantSets) > 0)
@@ -199,7 +199,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-12 custom_filtter mt-2">
-                                                <ul>
+                                                <!-- <ul>
                                                     <li><span>Sort By:</span></li>
                                                     <li><a href="javascript:void(0)" class="active">Featured</a></li>
                                                     <li><a href="javascript:void(0)">A to Z</a></li>
@@ -208,8 +208,8 @@
                                                     <li><a href="javascript:void(0)">Cost : High to Low</a></li>
                                                     <li><a href="javascript:void(0)">Avg. Customer Review</a></li>
                                                     <li><a href="javascript:void(0)">Newest Arrivals</a></li>
-                                                </ul>
-                                                <div class="product-filter-content border-left">
+                                                </ul> -->
+                                                <div class="product-filter-content">
                                                     {{-- <div class="collection-view border-left">
                                                         <ul>
                                                             <li><i class="fa fa-th grid-layout-view"></i></li>

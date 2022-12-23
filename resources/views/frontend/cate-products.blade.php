@@ -231,7 +231,7 @@
                     </aside>
                 </div>
                 
-                <div class="collection-content col-lg-9 outter-fillter-data">
+                <div class="collection-content col-lg-9 outter-fillter-data fillter_product">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -282,7 +282,7 @@
                                     </div>
                                     <div class="displayProducts main_category" id="category_products_filter">
                                         <div class="col-12 custom_filtter mt-2">
-                                        <!-- <select name="order_type" id='order_type' class="sortingFilter p-1">
+                                        <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
                                                 <option value="featured">{{_('Featured')}}</option>
                                                 <option value="a_to_z">{{_('A to Z')}}</option>
@@ -291,8 +291,8 @@
                                                 <option value="high_to_low">{{_('Cost : High to Low')}}</option>
                                                 <option value="rating">{{_('Avg. Customer Review')}}</option>
                                                 <option value="newly_added">{{_('Newest Arrivals')}}</option>
-                                            </select> -->
-                                            <ul>
+                                            </select>
+                                            <!-- <ul>
                                                 <li><span>{{__('Sort By:')}}</span></li>
                                                 <li><a href="javascript:void(0)" class="active">{{__('Featured')}}</a></li>
                                                 <li><a href="javascript:void(0)">{{__('A to Z')}}</a></li>
@@ -301,7 +301,7 @@
                                                 <li><a href="javascript:void(0)">{{__('Cost : High to Low')}}</a></li>
                                                 <li><a href="javascript:void(0)">{{__('Avg. Customer Review')}}</a></li>
                                                 <li><a href="javascript:void(0)">{{__('Newest Arrivals')}}</a></li>
-                                            </ul>
+                                            </ul> -->
                                         </div>
                                         <div class="product-wrapper-grid">
                                             <div class="row margin-res">

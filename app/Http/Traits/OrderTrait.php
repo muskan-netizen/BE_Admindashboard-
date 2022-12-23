@@ -10,13 +10,14 @@ use App\Models\Client as CP;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use App\Http\Traits\{ValidatorTrait};
+use App\Http\Traits\{ValidatorTrait, ApiResponser};
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice};
+use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,ClientPreference,ProductBooking,User,UserAddress,Vendor,OrderProduct,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus, Product,OrderLongTermServices,VendorOrderStatus,VendorOrderDispatcherStatus,OrderLongTermServiceSchedule,UserDevice,SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, OrderProductPrescription, CartProductPrescription};
 
 trait OrderTrait{
-    use ValidatorTrait;
+    use ValidatorTrait, ApiResponser;
 
     public function ProductVariantStock($order_id)
     {
@@ -856,6 +857,73 @@ trait OrderTrait{
         }
     }
 
+    public function sendTrackingUrlSMS($user, $order, $vendor_id = '')
+    {
+        $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','currency_id')->first();
+        if ($user['dial_code'] == "971") {
+            $to = '+' . $user['dial_code'] . "0" . $user['phone_number'];
+        } else {
+            $to = '+' . $user['dial_code'] . $user['phone_number'];
+        }
+        $provider = $prefer['sms_provider'];
+      
+
+        $tracking_url = url('/order/track/'.$user['id'].'/'.$order['order_number'].'');
+        $tracking_url = get_tiny_url($tracking_url);
+       
+        $keyData = ['{user_name}'=>$user['name']??'','{order_number}'=>$order['order_number']??'','{track_url}'=>$tracking_url??''];
+        \Log::info($keyData);
+        
+        $checkSeeder = SmsTemplate::where('slug','order-tracking-url')->count();
+        if($checkSeeder > 0){
+            $body = sendSmsTemplate('order-tracking-url',$keyData);
+
+            if (!empty($prefer['sms_provider'])) {
+                
+                $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                //\Log::info($send);
+            }
+        }
+        
+    }
+
+    public function sendAccessTrackingUrlSMS($user, $order,$vendor_id = '')
+    {
+        $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','currency_id')->first();
+        if ($user['dial_code'] == "971") {
+            $to = '+' . $user['dial_code'] . "0" . $user['phone_number'];
+        } else {
+            $to = '+' . $user['dial_code'] . $user['phone_number'];
+        }
+        $provider = $prefer['sms_provider'];
+      
+        $phoneCode = mt_rand(100000, 999999);
+        $sendTime  = Carbon::now()->addMinutes(10)->toDateTimeString();
+
+        if(checkColumnExists('users','track_order_phone_token') && checkColumnExists('users','track_order_phone_token_valid_till')){
+            $user                                       = User::find($user['id']);
+            $user->track_order_phone_token              = $phoneCode;
+            $user->track_order_phone_token_valid_till   = $sendTime;
+            $user->save();
+        }
+
+        
+
+        $keyData = ['{otp_code}'=>$phoneCode??''];
+        \Log::info($keyData);
+        
+        $checkSeeder = SmsTemplate::where('slug','otp-sms-tracking-url')->count();
+        if($checkSeeder > 0){
+            $body = sendSmsTemplate('otp-sms-tracking-url',$keyData);
+            
+            if (!empty($prefer['sms_provider'])) {
+        
+                $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                //\Log::info($send);
+            }
+        }
+    }
+        
     /**
      * check order days of return / replace
      */
@@ -871,6 +939,166 @@ trait OrderTrait{
         }
         return false;
 
+    }
+
+    public function editOrderInCart($orderid)
+    {
+        try
+        {
+            DB::beginTransaction();
+            $user = Auth::user();
+            $langId = Session::get('customerLanguage')??'1';
+            $new_session_token = session()->get('_token');
+            $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
+
+            $orderdata = Order::where('id', $orderid)->with(['vendors.products.addon', 'vendors.products.LongTermService.addon', 'editingInCart'])->first();
+            
+            if(!empty($orderdata)):
+                
+                $cart = NULL;
+                if ($user):
+                    $cart = Cart::where('user_id', $user->id)->first();
+                else:
+                    $cart = Cart::where('unique_identifier', session()->get('_token'))->first();
+                endif;
+    
+                if(!empty($cart)):
+                    CartProduct::where('cart_id', $cart->id)->delete();
+                    Cart::where('id', $cart->id)->delete();
+                    CartProductPrescription::where('cart_id', $cart->id)->delete();
+                endif;
+
+                $cart_detail = [
+                    'is_gift' => $orderdata->is_gift,
+                    'status' => '0',
+                    'item_count' => 0,
+                    'currency_id' => $client_currency->currency_id,
+                    'unique_identifier' => !$user ? $new_session_token : '',
+                    'schedule_type' => (!empty($orderdata->scheduled_date_time)) ? "schedule" : '',
+                    'scheduled_date_time' => (!empty($orderdata->scheduled_date_time)) ? $orderdata->scheduled_date_time : NULL,
+                    'order_id' => $orderdata->id,
+                    'scheduled_slot' => (!empty($orderdata->scheduled_slot)) ? $orderdata->scheduled_slot : NULL,
+                    'address_id' => (!empty($orderdata->address_id)) ? $orderdata->address_id : NULL,
+                    'comment_for_pickup_driver' => (!empty($orderdata->comment_for_pickup_driver)) ? $orderdata->comment_for_pickup_driver : NULL,
+                    'comment_for_dropoff_driver' => (!empty($orderdata->comment_for_dropoff_driver)) ? $orderdata->comment_for_dropoff_driver : NULL,
+                    'comment_for_vendor' => (!empty($orderdata->comment_for_vendor)) ? $orderdata->comment_for_vendor : NULL,
+                    'schedule_pickup' => (!empty($orderdata->schedule_pickup)) ? $orderdata->schedule_pickup : NULL,
+                    'schedule_dropoff' => (!empty($orderdata->schedule_dropoff)) ? $orderdata->schedule_dropoff : NULL,
+                    'specific_instructions' => (!empty($orderdata->specific_instructions)) ? $orderdata->specific_instructions : NULL,
+                ];
+
+                if(Session::has('vendorType')):
+                    Session::forget('vendorType');
+                endif;
+                $luxury_option = LuxuryOption::where('id', $orderdata->luxury_option_id)->first();
+                Session::put('vendorType', $luxury_option->title);
+                //Orders-----------------
+                //id, created_by, order_number, scheduled_date_time, payment_option_id, user_id, address_id, is_deleted, currency_id, loyalty_membership_id, luxury_option_id, loyalty_points_used, loyalty_amount_saved, loyalty_points_earned, paid_via_wallet, paid_via_loyalty, total_amount, wallet_amount_used, subscription_discount, total_discount, total_delivery_fee, taxable_amount, tip_amount, payable_amount, tax_category_id, created_at, updated_at, payment_method, payment_status, comment_for_pickup_driver, comment_for_dropoff_driver, comment_for_vendor, schedule_pickup, schedule_dropoff, specific_instructions, is_gift, total_service_fee, shipping_delivery_type, scheduled_slot, total_container_charges, viva_order_id, fixed_fee_amount, type, friend_name, friend_phone_number, total_other_taxes, dropoff_scheduled_slot, user_latitude, user_longitude, additional_price, total_toll_amount, is_postpay, is_long_term
+                $cart_data = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
+
+                $OrderProductPrescription = OrderProductPrescription::where('order_id', $orderdata->id)->get();
+                foreach($OrderProductPrescription as $prescription):
+                    $CartProductPrescription = new CartProductPrescription();
+                    $CartProductPrescription->cart_id = $cart_data->id;
+                    $CartProductPrescription->vendor_id = $prescription->vendor_id;
+                    $CartProductPrescription->product_id = $prescription->product_id;
+                    $CartProductPrescription->prescription = $prescription->getRawOriginal('prescription');
+                    $CartProductPrescription->save();
+                endforeach;
+
+                if(!empty($orderdata->address_id)):
+                    UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
+                    UserAddress::where('id', $orderdata->address_id)->where('user_id', $user->id)->update(['is_primary' => 1]);
+                endif;
+                foreach($orderdata->vendors as $ordervendorproducts):
+                    //Order_vendors---------------
+                    //id, order_id, vendor_id, vendor_dinein_table_id, user_id, delivery_fee, status, coupon_id, coupon_code, taxable_amount, subtotal_amount, payable_amount, discount_amount, web_hook_code, admin_commission_percentage_amount, admin_commission_fixed_amount, coupon_paid_by, payment_option_id, dispatcher_status_option_id, order_status_option_id, created_at, updated_at, dispatch_traking_url, order_pre_time, user_to_vendor_time, reject_reason, service_fee_percentage_amount, cancelled_by, lalamove_tracking_url, shipping_delivery_type, courier_id, ship_order_id, ship_shipment_id, ship_awb_id, total_container_charges, accepted_by, driver_id, scheduled_date_time, schedule_slot, is_restricted, total_markup_price, fixed_fee, additional_price, fixed_service_charge_amount, toll_amount, return_reason_id, is_exchanged_or_returned, exchange_order_vendor_id
+                    foreach($ordervendorproducts->products as $orderproduct):
+                        //Order_vendor_products-------------
+                        //id, order_id, product_id, order_vendor_id, quantity, product_name, image, price, taxable_amount, vendor_id, created_by, variant_id, tax_category_id, created_at, updated_at, category_id, product_dispatcher_tag, schedule_type, scheduled_date_time, product_variant_sets, user_product_order_form, container_charges, markup_price, additional_increments_hrs_min, start_date_time, end_date_time, schedule_slot, dispatch_agent_id, incremental_price, total_booking_time, toll_price, product_delivery_fee, no_seats_for_pooling, is_cab_pooling, available_for_pooling
+                        $cart_product_detail = [
+                            'status'                        => '0',
+                            'is_tax_applied'                => '1',
+                            'created_by'                    => $user->id,
+                            'cart_id'                       => $cart_data->id,
+                            'quantity'                      => $orderproduct->quantity ?? 1,
+                            'vendor_id'                     => $ordervendorproducts->vendor_id,
+                            'product_id'                    => $orderproduct->product_id,
+                            'variant_id'                    => $orderproduct->variant_id,
+                            'user_product_order_form'       => $orderproduct->user_product_order_form,
+                            'currency_id'                   => $client_currency->currency_id,
+                            'luxury_option_id'              => ($orderdata->luxury_option_id) ? $orderdata->luxury_option_id : 0,
+                            'start_date_time'               => ($orderproduct->start_date_time) ? $orderproduct->start_date_time : NULL,
+                            'end_date_time'                 => ($orderproduct->end_date_time) ? $orderproduct->end_date_time : NULL,
+                            'additional_increments_hrs_min' => ($orderproduct->additional_increments_hrs_min) ? $orderproduct->additional_increments_hrs_min : NULL,
+                            'total_booking_time'            => $orderproduct->total_booking_time,
+                            'service_day'                   => (!empty($orderproduct->LongTermService)) ? $orderproduct->LongTermService->service_day : null,
+                            'service_date'                  => (!empty($orderproduct->LongTermService)) ? $orderproduct->LongTermService->service_date : null,
+                            'service_period'                => (!empty($orderproduct->LongTermService)) ? $orderproduct->LongTermService->service_period : null,
+                            'service_start_date'            => (!empty($orderproduct->LongTermService)) ? $orderproduct->LongTermService->service_start_date : null,
+                            'vendor_dinein_table_id'        => ($ordervendorproducts->vendor_dinein_table_id) ? $ordervendorproducts->vendor_dinein_table_id : NULL,
+                            'scheduled_date_time'           => ($orderproduct->scheduled_date_time) ? $orderproduct->scheduled_date_time : NULL,
+                            'schedule_slot'                 => ($orderproduct->schedule_slot) ? $orderproduct->schedule_slot : NULL,
+                            'schedule_type'                 => ($orderproduct->schedule_type) ? $orderproduct->schedule_type : NULL,
+                        ];
+
+                        $cartProduct = CartProduct::create($cart_product_detail);
+
+                        foreach($orderproduct->addon as $addon):
+                            $saveAddons = [
+                                'option_id' => $addon->option_id,
+                                'cart_id' => $cart_data->id,
+                                'addon_id' => $addon->addon_id,
+                                'cart_product_id' => $cartProduct->id,
+                            ];
+                            CartAddon::insert($saveAddons);
+                        endforeach;
+
+                    endforeach;
+                endforeach;
+                DB::commit();
+                return $this->successResponse([], __('Items has been added to Cart.'), 200);
+            else:
+                return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+            endif;
+        }
+        catch (\Exception $e) {
+            DB::rollback();
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+    public function discardEditOrder($orderid)
+    {
+        try
+        {
+            DB::beginTransaction();
+            $user = Auth::user();
+            $new_session_token = session()->get('_token');
+
+            $cart = NULL;
+            if ($user):
+                $cart = Cart::where('user_id', $user->id)->where('order_id', $orderid)->first();
+            else:
+                $cart = Cart::where('unique_identifier', session()->get('_token'))->where('order_id', $orderid)->first();
+            endif;
+            if(!empty($cart)):
+                Log::info($cart);
+                CartProduct::where('cart_id', $cart->id)->delete();
+                CartProductPrescription::where('cart_id', $cart->id)->delete();
+                Cart::where('id', $cart->id)->delete();
+                DB::commit();
+                return $this->successResponse([], __('Order editing discarded successfully.'), 200);
+            else:
+                return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+            endif;
+        }
+        catch (\Exception $e) {
+            DB::rollback();
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
     }
 
 }

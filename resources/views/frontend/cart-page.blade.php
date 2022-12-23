@@ -43,9 +43,18 @@
     .cross-sell .slick-slide>div {
         margin: 0 12px;
     }
+    .order-user-name p {
+    display: inline-block;
+}
+.order-user-name {
+    background: #eeeeee;
+    padding: 6px 6px;
+    border-radius: 4px;
+}
     </style>
 
-@php $serviceType =  Session::get('vendorType'); @endphp
+@php $serviceType =  Session::get('vendorType');
+ @endphp
 
 @if($cart_details->totalQuantity<=0)
     <div class="container" >
@@ -72,6 +81,11 @@
                     <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
                         {{__('Continue Shopping')}}</a>
                 </div>
+                <div class="col-md-6">
+                    @if(!empty($cart_details->editing_order))
+                        <span class="shoping">{{ __("Order") }} {{$cart_details->editing_order->order_number}} {{ __("being edited") }} <a class="btn shoping discard_editing_order" href="javascript:void(0)" data-orderid="{{$cart_details->editing_order->id}}"><i class="fa fa-trash-o"></i> {{__('Discard')}}</a></span>
+                    @endif
+                </div>
             </div>
                 <!-- <div class="page-title-box">
                     <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
@@ -94,7 +108,7 @@
             <div class="row border-bottom">
                         <div class="col-6">
                             <div class="single_cart_heading">
-                                    <h3>{{ __("Shopping Cart") }}</h3>
+                                    <h3>{{ __("Shopping Cart") }} </h3>
                             </div>
                         </div>
                         <div class="col-6">
@@ -143,6 +157,7 @@
     $incTax = 0;
     $product_container_charges_tax_amount=0;
 
+    $tax_container_charges_percentage=$cart_details->container_charges_tax;
     $other_taxes=$cart_details->other_taxes;
     $other_taxes_string=$cart_details->other_taxes_string;
     @endphp
@@ -587,6 +602,11 @@
 
 
         </div>
+        <div class="row m-0">
+            <div class="col-lg-12 left_box new_cart mt-4 p-3" id="left_address">
+                {!!$cart_details->left_section!!}
+            </div>
+        </div>
 
 
            
@@ -603,15 +623,14 @@
 
     {{-- Start Right Section --}}
     <div class="col-lg-4">
+        
         <div class="row m-0">
-            <div class="col-lg-12 cart-summary  p-2 pb-4 mr-3" id="left_address">
-                {!!$cart_details->left_section!!}
-            </div>
-        </div>
-        <div class="row m-0">
-         <div class="cart-summary mt-4 p-2 pb-4">
+         <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
                 <h5 class="order_text">{{ __('Order Summary') }}</h5>
+                @if(array_key_exists('gift_card_id', $cart_details) && empty($cart_details->gift_card) )
+                    <a id='open_gift_card' href="javascript:void(0)" class="btn btn-solid w-100">{{ __("open gift Card") }}</a>
+                @endif
             </div>
         <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
         @if($client_preference_detail->category_kyc_documents ==1)
@@ -698,8 +717,17 @@
                     <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart_details->specific_instructions??''}}"  name="specific_instructions">
                 </div>
             </div>
-
-
+            @if((isset($cart_details->gift_card_id) )&& (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
+                <div class="row">
+                    <div class="col-12 alFourSpecificInstructions mt-2">
+                        <span class="pb-1"> {{__('Gift Card')}}</span>
+                       <div class="order-user-name">
+                            <p class="mb-0"><img class="blur-up lazyloaded" data-src="http://local.myorder.com/assets/images/discount_icon.svg" src="http://local.myorder.com/assets/images/discount_icon.svg"> {{ $cart_details->gift_card->title }}</p>
+                            <a href="javascript:void(0);" data-giftcard_id='{{ $cart_details->gift_card->id }}' class="float-right remove_giftCard"> <i class="fa fa-times" aria-hidden="true"></i></a>
+                       </div>
+                    </div>
+                </div>
+            @endif
 
             @endif  {{--//isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry' --}}
 
@@ -744,10 +772,9 @@
                 $other_taxes = $other_taxes+$product_container_charges_tax_amount;
                 $other_taxes_string=$other_taxes_string.',tax_product_container_charges:'.$product_container_charges_tax_amount;
                 $incTax = 1;
-            }else if($tax_container_charges_percentage>0){
-
-                $other_taxes=$other_taxes+($cart_details->$total_container_charges*$tax_container_charges_percentage/100);
-                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'+($cart_details.$total_container_charges*$tax_container_charges_percentage/100);
+            }else if($tax_container_charges_percentage > 0){
+                $other_taxes=$other_taxes+$tax_container_charges_percentage;
+                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'.$tax_container_charges_percentage;
                 $incTax = 1;
             }
             @endphp
@@ -787,6 +814,14 @@
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
                     <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="total_subscription_discount">{{ decimal_format($cart_details->total_subscription_discount)}}<span></b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+            @if((isset($cart_details->gift_card_id) )&& (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
+
+                <div class="row">
+                    <div class="col-6">{{__('Gift Card Used Amount')}}</div>
+                    <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="loyalty_amount">{{ decimal_format($cart_details->giftCardUsedAmount) }}</span></b></div>
                 </div>
                 <hr class="my-2">
             @endif
@@ -903,8 +938,8 @@
 
                     {{-- Schedual code Start at down --}}
         @if( !((($product->vendor->order_min_amount) > 0) &&  (($product->product_total_amount + $product->vendor->fixed_fee_amount) < ($product->vendor->order_min_amount))) )
-            @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1 && (!in_array($serviceType ,['appointment','on_demand']) ) )
-                @if($client_preference_detail->business_type != 'laundry')
+            @if(($cart_details->is_long_term_service != 1 ) && ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1 && (!in_array($serviceType ,['appointment','on_demand']) ) )
+                @if($client_preference_detail->business_type != 'laundry' )
             <div class="row arabic-lng position-relative my-3" id="dateredio">
                 <div class=" col-md-12 mb-2 mb-md-0 text-right">
                     <div class="login-form col schedule_btn">
@@ -931,21 +966,22 @@
                                 <li class="close-window">
                                     <i class="fa fa-times cross" style="display:none!important"  aria-hidden="true"></i>
                                 </li>
-                               @endif                        </ul>
+                               @endif                        
+                        </ul>
                         <div class=" col-sm-10 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
+                        
+                        
                         @if($cart_details->slotsCnt == 0)
-                        @if($cart_details->delay_date != 0)
-                            <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
-                            min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
-                        @else
+                            @if($cart_details->delay_date != 0)
                                 <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
                                 min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
+                            @else
+                                    <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
+                                    min="{{(($cart_details->delay_date != '0') ? $cart_details->delay_date : '') }}">
 
-                                @endif
+                            @endif
 
                         @else
-
-
                             <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="{{(($cart_details->scheduled_date_time != '')?$cart_details->scheduled_date_time : $cart_details->delay_date ) }}"  min="{{$cart_details->delay_date}}" >
                             <input type="hidden" id="checkSlot" value="1">
                             <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
@@ -954,7 +990,8 @@
                                 <option value="{{$slot->value }}" {{$slot->value == $cart_details->scheduled->slot ? 'selected' : ''}} >{{$slot->name}}</option>
                                 @endforeach
                             </select>
-                    @endif
+                        @endif
+                    
 
                 </div>
                     </div>
@@ -967,6 +1004,10 @@
                     <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
                         @if(isset($ageVerify->status) && $ageVerify->status == 1)
                             {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
+                        @endif
+                        @if(!empty($cart_details->editing_order) && !empty($cart_details->editing_order->scheduled_date_time) && !empty($edit_order_schedule_datetime))
+                        <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
+                        <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
                         @endif
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                     </div>
@@ -1100,3 +1141,7 @@
         });
     });
 </script>
+
+@section('script-bottom-js')
+<script defer type="text/javascript"  src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
+@endsection

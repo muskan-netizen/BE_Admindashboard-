@@ -194,6 +194,9 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                     @if($order->wallet_amount_used > 0)
                                         <li>{{__('Wallet Amount')}} <span> {{Session::get('currencySymbol')}}{{decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
+                                    @if( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                        <li>{{__('Gift Card Amount')}} <span> {{Session::get('currencySymbol')}}{{decimal_format($order->gift_card_amount * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
                                     @if($order->tip_amount > 0)
                                         <li>{{__('Tip Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->tip_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
@@ -221,9 +224,16 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">
-                                    <li class="col-4">{{__('Order Total')}}:<span> {{Session::get('currencySymbol')}}{{decimal_format($total_amount)}}</span></li>
-                                    <li class="Shipping col-8">
+                                    <li class="col-4">{{__('Order Total')}}:<span> {{Session::get('currencySymbol')}}{{decimal_format($total_amount)}} 
+                                        @if(!checkColumnExists('orders', 'is_postpay'))
+                                            $order->is_postpay = 0;
+                                        @endif
 
+                                        @if($order->payment_option_id != 1 && $order->payment_status!=1 && $order->is_postpay==1)
+                                        <span style="color:var(--theme-deafult);">Unpaid</span>
+                                        @endif
+                                    </span></li>
+                                    <li class="Shipping col-8">
                                         @if($order->luxury_option_id == 1)
                                             {{__('Delivery Address')}}:
                                         <span>

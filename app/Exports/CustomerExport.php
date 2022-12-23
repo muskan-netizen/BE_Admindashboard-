@@ -7,10 +7,38 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+use DB;
 
 class CustomerExport implements FromCollection, WithHeadings, WithMapping
 {
+    protected $start_date;
+    protected $end_date;
+
+ function __construct(Request $request) {
+    $this->start_date   = $request->start_date;
+    $this->end_date     = $request->end_date;
+ }
+
     public function collection(){
+
+       
+       
+        if(!empty($this->start_date) && !empty($this->end_date)){
+            $e_day      = date('Y-m-d', strtotime($this->end_date. ' + 1 day'));
+            $start_date = Carbon::parse($this->start_date)->format('Y-m-d');
+            $end_date   = Carbon::parse($e_day)->format('Y-m-d');
+            $start_date = $start_date . ' 00:00:00';
+            $end_date   = $end_date . ' 00:00:00';
+            $query      = 'SELECT * FROM users WHERE EXISTS (SELECT 1 FROM orders WHERE orders.user_id = users.id AND orders.created_at >= "'.$start_date.'" AND orders.created_at <= "'.$end_date.'")';
+            $user_ids    = DB::select($query); 
+            $user_ids    = array_column($user_ids, 'id');
+            $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->whereNotIn('id',$user_ids)->where('is_superadmin', '!=', 1)->where('created_at', '<=', $end_date )
+                ->orderBy('id', 'desc');
+
+        }
+
         $current_user = Auth::user();
         $timezone = $current_user->timezone ? $current_user->timezone : 'Asia/Kolkata';
         $users = User::withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc')->get();

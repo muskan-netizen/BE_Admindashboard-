@@ -74,7 +74,7 @@ class VendorController extends FrontController
             $value->vendorRating = $this->vendorRating($value->products);
         }
         $page_title = __('All ').getNomenclatureName('Vendors', true);  ;
-        $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
+        $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->web()->where('for_no_product_found_html',1)->orderBy('order_by')->get();
         return view('frontend/vendor-all')->with(['navCategories' => $navCategories,'for_no_product_found_html' => $for_no_product_found_html,'vendors' => $vendors,'page_title' => $page_title]);
     }
     /**
@@ -83,7 +83,6 @@ class VendorController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function vendorProducts(Request $request, $domain = '', $slug = 0){
-
         if($request->ajax())
         {
             $returnHTML = $this->vendorFilters($request,'',$slug);
