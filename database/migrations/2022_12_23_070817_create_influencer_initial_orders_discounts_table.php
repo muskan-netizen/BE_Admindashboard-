@@ -22,7 +22,7 @@ class CreateInfluencerInitialOrdersDiscountsTable extends Migration
             $table->date('date')->nullable();
             $table->timestamps();
 
-            $table->foreign('influencer_tier_id')->references('id')->on('influencer_users')->onDelete('cascade');
+            $table->foreign('influencer_user_id')->references('id')->on('influencer_users')->onDelete('cascade');
         });
     }
 

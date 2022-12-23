@@ -20,10 +20,9 @@ class CreateInfluencerUsersTable extends Migration
             $table->tinyInteger('commision_type')->comment('1=Percentage, 2=fixed')->nullable();
             $table->integer('commision')->comment('commision percentage or amount')->nullable();
             $table->string('reffered_code')->nullable();
-            $table->tinyInteger('is_approved')->nullable();
-            $table->tinyInteger('status')->comment('1=active, 0=inactive')->nullable();
+            $table->tinyInteger('is_approved')->default(0);
+            $table->tinyInteger('status')->comment('1=active, 0=inactive')->default(0);
             $table->timestamps();
-
             
             $table->foreign('influencer_tier_id')->references('id')->on('influencer_tiers')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

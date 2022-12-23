@@ -21,13 +21,14 @@ class InfluencerReferAndEarnController extends BaseController
         $attributes = [];
         if( checkTableExists('influ_attributes') ) {
             // , 'varcategory.cate.primary'
-            $attributes = InfluencerAttribute::with('option','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc');
+            $attributes = InfluencerAttribute::with('option','translation_one', 'influencerCategory')->where('status', '!=', 2)->orderBy('position', 'asc');
             if(Auth::user()->is_superadmin) {
                 $attributes = $attributes->get();
             }
             else {
                 $attributes = $attributes->where('user_id', Auth::id())->get();
             }
+            
         }
         
         $influencer_list = InfluencerCategory::paginate(10);

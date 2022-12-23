@@ -103,17 +103,23 @@
                                             <thead>
                                                 <tr>
                                                     <th>{{ __('Name') }}</th>
+                                                    <th>{{ __('Category') }}</th>
                                                     <th>{{ __('Options') }}</th>
                                                     <th>{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                
                                                 @if(!empty($attributes))
                                                 @foreach($attributes as $key => $variant)
+
                                                     @if(!empty($variant->translation_one))
                                                         <tr class="variantList" data-row-id="{{$variant->id}}">
                                                             <td>
                                                                 <a class="editAttributeBtn" dataid="{{$variant->id}}" href="javascript:void(0);">{{$variant->title}}</a>
+                                                            </td>
+                                                            <td>
+                                                            <a href="{{ route('influencer-refer-earn.edit', ['id' => $variant->influencerCategory[0]->id]) }}">{{$variant->influencerCategory[0]->name ?? ''}}</a>
                                                             </td>
                                                             <td>
                                                                 @foreach($variant->option as $key => $value)
@@ -153,6 +159,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row">
+    @include('backend.influencerreferandearn.tiers')
     </div>
 </div>
 

@@ -513,6 +513,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         /** Refer and earn  */
         Route::prefix('influencer-refer-earn')->group(function () {
+            Route::resource('tier', 'Client\TierController');
             Route::name('influencer-refer-earn.')->group(function () {
                 Route::get('index', 'Client\InfluencerReferAndEarnController@index')->name('index');
                 Route::get('create', 'Client\InfluencerReferAndEarnController@create')->name('create');

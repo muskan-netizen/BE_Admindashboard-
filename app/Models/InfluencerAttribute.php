@@ -50,6 +50,10 @@ class InfluencerAttribute extends Model
       public function category(){
         return $this->belongsToMany(Category::class, 'attribute_categories', 'attribute_id', 'category_id');
       }
+
+      public function influencerCategory(){
+        return $this->belongsToMany(InfluencerCategory::class, 'influ_attr_cat', 'attribute_id', 'category_id');
+      }
     
     
       public function getActualPriceAttribute()
