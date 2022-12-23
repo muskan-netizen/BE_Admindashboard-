@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\InfluencerTier;
+use Session;
 use Illuminate\Http\Request;
 
 class TierController extends Controller
@@ -14,8 +16,8 @@ class TierController extends Controller
      */
     public function index()
     {
-        dd("asdf");
-        return view('backend.influencerreferandearn.tier')->with();
+       
+        return view('backend.influencerreferandearn.tier');
     }
 
     /**
@@ -25,7 +27,7 @@ class TierController extends Controller
      */
     public function create()
     {
-        //
+        //dd("asdf");
     }
 
     /**
@@ -36,7 +38,9 @@ class TierController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all());
+        InfluencerTier::create($request->all());
+        return redirect()->route('influencer-refer-earn.index');
     }
 
     /**
@@ -56,9 +60,12 @@ class TierController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
+    public function edit($domain, $id)
+    { 
+        $influencer_tier = InfluencerTier::find($id);
+        $submitUrl = route('tier.update', $id);
+        $returnHTML = view('backend.influencerreferandearn.edit-tier')->with(['influencer_tier' => $influencer_tier])->render();
+        return response()->json(array('success' => true, 'html'=>$returnHTML, 'submitUrl' => $submitUrl));
     }
 
     /**
@@ -68,9 +75,12 @@ class TierController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $domain, $id)
     {
-        //
+        $request->request->remove('_token');
+        $request->request->remove('_method');
+        InfluencerTier::where('id', $id)->update($request->all());
+        return redirect()->back()->with('success', 'Tier updated successfully!');
     }
 
     /**

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{InfluencerCategory, Attribute, InfluencerAttribute, ReferEarnDetail};
+use App\Models\{InfluencerCategory, Attribute, InfluencerAttribute, ReferEarnDetail, InfluencerTier};
 use App\Http\Requests\InfluencerCategoryRequest;
 use Auth;
 
@@ -32,7 +32,10 @@ class InfluencerReferAndEarnController extends BaseController
         }
         
         $influencer_list = InfluencerCategory::paginate(10);
-        return view('backend.influencerreferandearn.index')->with(['influencer_list' => $influencer_list, 'attributes' => $attributes]);
+
+        $influencer_tier_list = InfluencerTier::paginate(10);
+        // dd($influencer_tier_list);
+        return view('backend.influencerreferandearn.index')->with(['influencer_list' => $influencer_list, 'attributes' => $attributes, 'influencer_tier_list'=> $influencer_tier_list]);
     }
 
     function edit($domain ,$id) {

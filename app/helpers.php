@@ -1334,6 +1334,16 @@ if( !function_exists('p2p_module_status') ) {
     }   
 }
 
+if( !function_exists('check_influencer_enable') ) {
+    function check_influencer_enable() {
+        $additional_preference = getAdditionalPreference(['is_attribute']);
+        if(@$additional_preference['is_attribute']) {
+            return true;
+        }
+        return false;
+    }   
+}
+
 if( !function_exists('is_p2p_vendor') ) {
     function is_p2p_vendor($vendor_id = '') {
         $auth_user = auth()->user();

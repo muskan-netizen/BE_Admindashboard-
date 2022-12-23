@@ -512,8 +512,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor_banner/destroy/{id}', 'Client\VendorMultiBannerController@destroy')->name("vendor_banner.destroy");
 
         /** Refer and earn  */
+        Route::resource('tier', 'Client\TierController');
         Route::prefix('influencer-refer-earn')->group(function () {
-            Route::resource('tier', 'Client\TierController');
+            
             Route::name('influencer-refer-earn.')->group(function () {
                 Route::get('index', 'Client\InfluencerReferAndEarnController@index')->name('index');
                 Route::get('create', 'Client\InfluencerReferAndEarnController@create')->name('create');
