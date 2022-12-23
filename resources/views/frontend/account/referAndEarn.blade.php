@@ -98,22 +98,67 @@
             <div class="col-lg-9">
                 <div class="dashboard-right">
                     <div class="dashboard">
-                        <div class="page-title">
-                                <h2>{{ __('Refer and earn') }}</h2>
-                        </div>
-                        <div class="box-account box-info order-address">
-                            @if( !empty($influencer_category) )
-                                <div class="row">
-                                    @foreach($influencer_category as $key => $val)
-                                        <div class="col-md-4">
-                                            <a class="alert alert-dark cursor-pointer d-block" role="alert" href="{{ route('refer-earn.form', $val->id) }}">
-                                                {{$val->name ?? ''}}
+                        @if($influencer_user->count() == 0)
+                            <div class="page-title">
+                                    <h2>{{ __('Refer and earn') }}</h2>
+                            </div>
+                            <div class="box-account box-info order-address">
+                                @if( !empty($influencer_category) )
+                                    <div class="row">
+                                        @foreach($influencer_category as $key => $val)
+                                            <div class="col-md-4">
+                                                <a class="alert alert-dark cursor-pointer d-block" role="alert" href="{{ route('refer-earn.form', $val->id) }}">
+                                                    {{$val->name ?? ''}}
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                            @else
+                                <div class="row welcome-msg justify-content-between">
+                                    <div class="col-12">
+                                        <h4 class="d-inline-block m-0">
+                                            <span>Your  Referral Code: aedbc774</span>
+                                        </h4>
+                                        <sup class="position-relative">
+                                            <a class="copy-icon ml-2" id="copy_icon" data-url="http://192.168.101.214:9002?ref=aedbc774" style="cursor:pointer;">
+                                                <i class="fa fa-copy"></i>
                                             </a>
-                                        </div>
-                                    @endforeach
+                                            <p id="copy_message" class="copy-message"></p>
+                                        </sup>
+                                    </div>
                                 </div>
-                            @endif
-                        </div>
+                                <div class="row mt-3 profile-page">
+                                    <div class="col-lg-6">
+                                        <div class="card-box">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="info-text mb-2">
+                                                        <label class="m-0">Name :</label>
+                                                        <p>{{$influencer_user->user->name??''}}</p>
+                                                    </div>
+        
+                                                    <div class="info-text mb-2">
+                                                        <label class="m-0">Email :</label>
+                                                        <p>{{$influencer_user->user->email??''}}</p>
+                                                    </div>
+        
+                                                    <div class="info-text mb-2">
+                                                        <label class="m-0">Phone Number :</label>
+                                                        <p>{{$influencer_user->user->phone_number??''}}</p>
+                                                    </div>
+
+                                                    <div class="info-text mb-2">
+                                                        <label class="m-0">Status :</label>
+                                                        <p>{{$influencer_user->user->phone_number??''}}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        @endif
                     </div>
                 </div>
             </div>
