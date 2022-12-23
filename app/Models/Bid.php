@@ -9,15 +9,20 @@ class Bid extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['vendor_id', 'discount', 'prescription_id'];
+    protected $fillable = ['vendor_id', 'discount', 'prescription_id','bid_total', 'final_amount'];
 
-    public function prescriptions()
+    public function bidRequests()
     {
         return $this->belongsTo(BidRequest::class, 'id');
     }
 
     public function bidProducts()
     {
-        return $this->belongsTo(BidProduct::class, 'prescription_id');
+        return $this->hasMany(BidProduct::class, 'bid_id')->with('product');
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class, 'vendor_id');
     }
 }

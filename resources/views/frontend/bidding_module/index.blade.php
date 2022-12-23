@@ -143,7 +143,9 @@
                                                         <td>{{$loop->iteration}}</td>
                                                         <td><img src="{{$prescription->prescription}}" width="50" height="50"></td>
                                                         <td>{{$prescription->created_at}}</td>
-                                                        <td>View / Delete</td>
+                                                        <td>
+                                                            <a href="{{$prescription->prescription}}" target="_blank"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
+                                                        </td>
 
                                                     </tr>
                                                     @endforeach
@@ -162,40 +164,68 @@
 
     @if(Request::get('success') == 'done')
     <div class="modal fade showBidsModel"  tabindex="-1" aria-labelledby="profile-modalLabel" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <div class="row align-items-center px-2">
-                    <div class="col-4">
-                        <div class="modal-header">
-                            <h5 class="modal-title d-block" id="profile-modalLabel">{{ __('Bid Requests From Vendor') }}</h5>
-
-                        </div>
-                    </div>
-
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profile-modalLabel">{{ __('Bid Requests From Vendor') }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <form id="placeBidForm" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-body d-none" id="VendorProductBox">
-                        <table class="table">
-                            <thead>
-                                <td>ID</td>
-                                <td>name</td>
-                                <td>Price</td>
-                                <td>Quantity</td>
-                                <td>Action</td>
-                            </thead>
-                            <tbody id="productTable">
+                <div class="modal-body">
+                    @foreach ($bids as $bid)
+                        <div id="accordion">
+                            <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h5 class="m-0">
+                                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                {{$bid->vendor->name}}
+                                </button>
+                                </h5>
+                            </div>
+                            <div class="" id="VendorProductBox">
+                                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                                    <div class="card-body">
+                                        <form id="placeBidForm" action="{{route('bidding-cart',$bid->id)}}" enctype="multipart/form-data">
+                                            @csrf
+                                                <table class="table">
+                                                    <thead>
+                                                        <td>S.No</td>
+                                                        <td>name</td>
+                                                        <td>Price</td>
+                                                        <td>Quantity</td>
+                                                    </thead>
+                                                    <tbody id="productTable">
+                                                        @foreach ($bid->bidProducts as $product )
 
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-solid w-100">{{ __('Accept / Add to Cart') }}</button>
-                    </div>
-                </form>
+                                                            <tr>
+                                                                <td>{{$loop->iteration}}</td>
+                                                                <td>{{$product->product->title}}</td>
+                                                                <td>{{$product->price}}</td>
+                                                                <td>{{$product->quantity}}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <th><span>Total : {{$bid->bid_total}}</span></th>
+                                                        <th><span>Discont % : {{$bid->discount}}</span></th>
+                                                        <th><span>Final Total : {{$bid->final_amount}}</span></th>
+                                                        <th>
+                                                            <a href="#"><button type="submit" class="btn btn-success">Accept / Add to Cart</button></a>
+                                                        </th>
+                                                        <th>
+                                                            <button class="btn btn-danger">Reject</button>
+                                                        </th>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
@@ -259,6 +289,9 @@
     <?php
     }
     ?>
+    $(document).delegate('.showBidsModel .close', 'click', function() {
+        window.location.href = "{{ url('/index') }}";
+    });
 </script>
 
 

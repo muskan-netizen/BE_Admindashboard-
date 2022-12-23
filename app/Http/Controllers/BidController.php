@@ -28,7 +28,9 @@ class BidController extends FrontController
         $user = Auth::user();
         $prescriptions = BidRequest::where('id', $user->id)->where('status' , '=' , 0)
         ->with('bids')->get();
-        return view('frontend.bidding_module.index', compact('prescriptions',$prescriptions));
+        $bids = Bid::with('bidProducts','vendor')->get();
+         //dd($vendorBids->toArray());
+        return view('frontend.bidding_module.index', compact('prescriptions','bids'));
     }
 
     public function create()
@@ -41,34 +43,42 @@ class BidController extends FrontController
     {
        $user = Auth::user();
        $prod_vendor = Vendor::where('email', '=' , Auth::user()->email)->pluck('id');
-       $prescriptions = BidRequest::where('status' , '=' , 0)->where('id', $user->id)->pluck('id');
-
        $prod_vendor = $prod_vendor[0];
        $products = json_decode($request->data,true);
+    //    dd($products);
        $discount = $products[0]['discount'];
+       $prescription_id = $products[0]['prescription_id'];
 
        if($products){
-
+        $total = 0;
+        foreach ($products as $key => $bidTotal) {
+            $total += $bidTotal['qty'] * $bidTotal['price'];
+        }
+        $amountPayable = $total - ($total * ($discount/ 100));
         $data = [
-            'prescription_id' => $prescriptions,
-            'vendor_id' => $prod_vendor,
-            'discount' =>  $discount,
+            'prescription_id' => (int) $prescription_id,
+            'vendor_id'    => $prod_vendor,
+            'discount'     => $discount,
+            'bid_total'    => $total,
+            'final_amount' => $amountPayable,
         ];
 
-
         $vendor_bids = Bid::create($data);
-
+        $total = 0;
         foreach ($products as $key => $data) {
-            BidProduct::create([
+            $total = $data['qty'] * $data['price'];
+           $bids = BidProduct::create([
               'bid_id'       =>  $vendor_bids->id,
               'product_id'   =>  $data['id'],
               'quantity'     =>  $data['qty'],
+              'price'        =>  $data['price'],
+              'total'        =>  $total,
             ]);
         }
 
        }
 
-       return back()->with('success', 'Bid Placed Successfully');
+       Session::flash('success', 'Bid Placed Successfully');
     }
 
 
@@ -98,13 +108,10 @@ class BidController extends FrontController
         foreach ($products as $product) {
             $redirect_url = route('productDetail', [$product->vendor_slug, $product->url_slug]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'] . '80/80' . $product->media->first()->image->path['image_path'] : '';
-            $product_results[] = ['id' => $product->id, 'name' => $product->dataname , 'price' =>$product->variant[0]->price];
+            $product_results[] = ['id' => $product->id, 'name' => $product->dataname , 'price' =>$product->variant[0]->price,];
         }
         if (@$product_results) {
             $response[] = ['title' => '', 'result' => $product_results];
-        }
-        if (@$vender_results) {
-            $response[] = ['title' => __('Venders'), 'result' => $vender_results];
         }
         // dd($response);
         return $this->successResponse($response);

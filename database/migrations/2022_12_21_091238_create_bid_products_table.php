@@ -18,6 +18,8 @@ class CreateBidProductsTable extends Migration
             $table->unsignedBigInteger('bid_id')->nullable();
             $table->bigInteger('product_id')->nullable();
             $table->integer('quantity')->nullable();
+            $table->double('price')->nullable();
+            $table->double('total')->nullable();
             $table->timestamps();
 
             $table->foreign('bid_id')->references('id')->on('bids')->onDelete('cascade');

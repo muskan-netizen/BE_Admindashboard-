@@ -83,9 +83,9 @@
             </div>
         </div>
         <div class="row my-md-3 mt-5 pt-4">
-            <div class="col-lg-1">
+            <div class="col-lg-2">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
-                {{-- @include('layouts.store/profile-sidebar') --}}
+                @include('layouts.store/profile-sidebar')
             </div>
             <div class="col-lg-10">
                 <div class="dashboard-right">
@@ -113,45 +113,14 @@
                                                 <td><img src="{{$prescription->prescription}}" width="50" height="50"></td>
                                                 <td>{{$prescription->created_at}}</td>
                                                 <td>
-                                                    <a href="javascript:void(0)"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
-                                                    <a href="javascript:void(0)" id="biddingBitton" ><i class="fa fa-gavel" aria-hidden="true"></i></a>
+                                                    <a href="{{$prescription->prescription}}" target="_blank"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
+
+                                                    <a href="javascript:void(0)" data-prescription="{{$prescription->id}}" id="biddingBitton" ><i class="fa fa-gavel" aria-hidden="true"></i></a>
                                                 </td>
                                             </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="mt-2">
-                        <div class="row welcome-msg justify-content-between">
-                            <div class="col-12">
-                                <h4 class="d-inline-block m-0">
-                                    <span>{{ __('Bid Requests')}}</span>
-                                </h4>
-                                <sup class="position-relative">
-
-                                </sup>
-                            </div>
-                        </div>
-                        <div class="row mt-3 profile-page">
-                            <div class="col-lg-6">
-                                <div class="card-box">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="info-text mb-2">
-                                            </div>
-
-                                            <div class="info-text mb-2">
-                                            </div>
-
-                                            <div class="info-text mb-2">
-                                            </div>
-
-                                            <div class="info-text mb-2">
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -204,6 +173,7 @@
                     <div class="form-group mt-2 d-none" id="discount-section">
                         <label for="discount">Discount %</label>
                         <input type="text"  onkeypress="return event.charCode >= 48 && event.charCode <= 57" class="form-control" name="discount" id="discount" required >
+                        <input type="hidden" id="prescription_id">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -274,9 +244,8 @@
         $(this).parent().parent().remove();
     });
 
-    $("#placeBidForm").submit(function(e) {
+    $("#placeBidForm").submit(function() {
 
-        e.preventDefault();
         var formData = $("#productTable tr").map(function() {
         var $this = $(this);
         return {
@@ -285,6 +254,7 @@
             price: $this.find(".price").text(),
             qty:$this.find(".qty input").val(),
             discount:$("#discount").val(),
+            prescription_id:$("#prescription_id").val(),
         };
         }).get();
 
@@ -299,10 +269,9 @@
             dataType: "json",
             success: function(data)
             {
-                console.log(data);
+                window.location.href = "{{ url('/') }}";
             }
         });
-       return false;
     });
 
     $("#search_box").blur(function (e) {
@@ -357,7 +326,10 @@
     }
 
     $('#biddingBitton').click(function(){
+        var prescription_id = $(this).attr('data-prescription');
+
         $('.biddingModel').modal('show');
+        $('.biddingModel').find("#prescription_id").val(prescription_id);
     });
 </script>
 

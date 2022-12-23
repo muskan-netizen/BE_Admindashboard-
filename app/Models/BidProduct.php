@@ -9,10 +9,15 @@ class BidProduct extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['bid_id', 'product_id', 'vendor_id', 'quantity'];
+    protected $fillable = ['bid_id', 'product_id', 'vendor_id', 'quantity', 'price', 'total'];
 
     public function bids()
     {
-        return $this->hasMany(Bid::class, 'id');
+        return $this->belongsTo(Bid::class, 'id');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id')->with('variant');
     }
 }

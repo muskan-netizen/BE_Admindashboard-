@@ -121,7 +121,7 @@ class CartController extends FrontController
         if(!empty($client_preference_detail)){
             $client_preference_detail->is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
         }
-        
+
         $client_detail = Client::first();
         // dd($client_detail);
         $public_key_yoco=PaymentOption::where('code','yoco')->first();
@@ -322,12 +322,12 @@ class CartController extends FrontController
                     $sel->groupBy('product_id');
                 }
             ])->find($request->product_id);
-           
-             /** if product is not lonf term */ 
+
+             /** if product is not lonf term */
             if(checkColumnExists('products','is_long_term_service') && $productDetail->is_long_term_service !=1){
                 /** if product type is not equal to on demand and appointment
-                 **/ 
-                        
+                 **/
+
                 if( ( !in_array($productDetail->category->categoryDetail->type_id,[8,12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
                     if(!empty($already_added_product_in_cart)){
                         if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
@@ -345,7 +345,7 @@ class CartController extends FrontController
                     }
                 }
             }
-          
+
             //\Log::info($request->addon_id);
 
             $addonSets = $addon_ids = $addon_options = array();
@@ -413,7 +413,7 @@ class CartController extends FrontController
                 $start_date = $service_start_time ; /** we user start_date_time for long term order timing */
                 $service_start_date = carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
             }
-            
+
             $cart_product_detail = [
                 'status'            => '0',
                 'is_tax_applied'    => '1',
@@ -439,11 +439,11 @@ class CartController extends FrontController
             /** check is long term is added to cart */
             $checkLongTermService = CartProduct::where('cart_id', $cart_detail->id)->with('product')->first();
             $isLongTermService  = 0;
-           
+
             if(checkColumnExists('products','is_long_term_service') && !empty($checkLongTermService->product)){
                 $isLongTermService = $checkLongTermService->product->is_long_term_service ;
             }
-           
+
             if (@$luxury_option && $luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
@@ -677,6 +677,65 @@ class CartController extends FrontController
             return response()->json(['status' => 'success', 'message' => 'Products Has Been Added to Cart Successfully!']);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->message()]);
+        }
+    }
+
+    public function biddingCart(Request $request, $id)
+    {
+
+        $user_id = ' ';
+        $cartInfo = ' ';
+        $user = Auth::user();
+        $currency = ClientCurrency::where('is_primary', '=', 1)->first();
+        if ($user) {
+            $user_id = $user->id;
+            $userFind = Cart::where('user_id', $user_id)->first();
+            if (!$userFind) {
+                $cart = new Cart;
+                $cart->status = '0';
+                $cart->is_gift = '1';
+                $cart->item_count = '1';
+                $cart->user_id = $user_id;
+                $cart->created_by = $user_id;
+                $cart->currency_id = $currency->currency->id;
+                $cart->unique_identifier = $user->system_id;
+                $cart->save();
+                $cartInfo = $cart;
+            } else {
+                $cartInfo = $userFind;
+            }
+            $checkIfExist = CartProduct::where('product_id', $request->product_id)->where('variant_id', $request->variant_id)->where('cart_id', $cartInfo->id)->first();
+            if ($checkIfExist) {
+                $checkIfExist->quantity = (int)$checkIfExist->quantity + 1;
+                $cartInfo->cartProducts()->save($checkIfExist);
+                return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!']);
+            } else {
+            }
+        } else {
+            $cart_detail = Cart::where('unique_identifier', session()->get('_token'))->first();
+            if (!$cart_detail) {
+                $cart = new Cart;
+                $cart->status = '0';
+                $cart->is_gift = '1';
+                $cart->item_count = '1';
+                $cart->currency_id = $currency->currency->id;
+                $cart->unique_identifier = session()->get('_token');
+                $cart->save();
+            }
+            $productForVendor = Product::where('id', $request->product_id)->first();
+            $cartProduct = new CartProduct;
+            $cartProduct->status  = '0';
+            $cartProduct->is_tax_applied  = '1';
+            $cartProduct->created_by  = $user_id;
+            $cartProduct->cart_id  = $cart_detail->id;
+            $cartProduct->quantity  = $request->quantity;
+            $cartProduct->product_id = $request->product_id;
+            $cartProduct->variant_id  = $request->variant_id;
+            $cartProduct->currency_id = $cart_detail->currency_id;
+            $cartProduct->vendor_id  = $productForVendor->vendor_id;
+            $cartProduct->save();
+
+            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id]);
         }
     }
 
@@ -1993,7 +2052,7 @@ class CartController extends FrontController
             }else{
                 $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type')->with(['coupon.promo'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             }
-            
+
         }
 
         if (isset($request->address_id) && !empty($request->address_id)) {
@@ -2017,7 +2076,7 @@ class CartController extends FrontController
         if ($cart) {
             $cart_details = $this->getCartsNew($cart, $address_id,$request->code, $schedule_datetime_del);
         }
-        
+
         $client_preference_detail = ClientPreference::first();
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 
@@ -2046,7 +2105,7 @@ class CartController extends FrontController
                 $conversion_rate=(double)ClientCurrency::where('currency_id',147)->first()->doller_compare;
             }
             $cart_details->conversion_rate=$conversion_rate;
-            
+
             $currency=ClientCurrency::with('currency')->where('is_primary',1)->first();
             if(!empty($currency->currency->iso_code)){
                 $currency_code=$currency->currency->iso_code;
@@ -2091,7 +2150,7 @@ class CartController extends FrontController
      * totalRoute = number to total route witch we have send to dispatcher
      */
 
-     
+
     public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='',$totalRoute = '1')
     {
         $option = array();
@@ -2099,12 +2158,12 @@ class CartController extends FrontController
         try {
             if($vendorData->vendor_id)
             {
-                
+
                 Session()->put('vid',$vendorData->vendor_id);
 
                 $getAdditionalPreference = getAdditionalPreference(['is_free_delivery_by_roles']);
                 $skip_delivery_fees = false;
-                
+
                 if($getAdditionalPreference['is_free_delivery_by_roles'] == 1 ){
                     $product_id = $vendorData->vendorProducts[0]['product_id'];
                     $result = ProductDeliveryFeeByRole::where('product_id', $product_id)->where('role_id', Auth::user()->role_id)

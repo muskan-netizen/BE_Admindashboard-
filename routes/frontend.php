@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BidController;
+use App\Http\Controllers\Front\CartController;
 
 	Route::post('ajaxGetScheduleDateDetails', 'Front\CartController@ajaxGetScheduleDateDetails')->name('ajaxGetScheduleDateDetails');
 	Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
@@ -602,8 +603,8 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
     Route::post('store', [BidController::class, 'store'])->name('bid.store');
     Route::post('add/bid/prescription', [BidController::class, 'uploadPrescription'])->name('bid.uploadPrescription');  //add bidding prescription
     Route::post('get/bid/prescription', [BidController::class, 'getPrescription'])->name('getPrescription'); //get bedding prescription
-
-    Route::get('product-search', [BidController::class, 'search'])->name('searchProduct');
+    Route::get('product-search', [BidController::class, 'search'])->name('searchProduct'); //vendor product search
+    Route::get('bid/add/to/cart/{id}', [CartController::class, 'biddingCart'] )->name('bidding-cart');
 
 
 

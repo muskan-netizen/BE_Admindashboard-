@@ -114,9 +114,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                 @if((!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8'))
                                 <div class="col-md-1 pl-0">
                                     <div class="exzoom_nav side_nav_img">
-                                       
+
                                         @if(!empty($product->media) && count($product->media) > 0)
-                                        
+
                                         @foreach($product->media as $k => $image)
                                         @php
                                                         if(isset($image->pimage)){
@@ -169,9 +169,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
                                             <div class="swiper-container gallery-top">
                                                 <div class="swiper-wrapper">
-                                               
+
                                                 @if(!empty($product->media) && count($product->media) > 0)
-                                                
+
                                                     @foreach($product->media as $k => $image)
                                                         @php
                                                             if(isset($image->pimage)){
@@ -187,7 +187,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                         </div>
                                                     @endforeach
                                                 @else
-                                                
+
                                                     <div class="swiper-slide easyzoom easyzoom--overlay">
                                                             <a href="{{loadDefaultImage()}}">
                                                             <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
@@ -211,7 +211,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                                 $img = $image->image;
                                                             }
                                                         @endphp
-                                                        
+
                                                         @endforeach
                                                     @else
                                                         <div class="swiper-slide">
@@ -227,7 +227,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         <div class="exzoom_img_box mb-2">
                                             <ul class='exzoom_img_ul img-sidebar'>
                                             @if(!empty($product->media) && count($product->media) > 0)
-                                            
+
                                                 @foreach($product->media as $k => $image)
                                                         @php
                                                             if(isset($image->pimage)){
@@ -241,9 +241,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
                                                 @endif
                                                 @else
-                                                        
+
                                                     <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-                                                        
+
                                             @endif
                                             </ul>
                                         </div>
@@ -322,7 +322,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
 
                                         @if( is_category_p2p($product->category) )
-                                        
+
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
                                                     <div class="container-badge">
@@ -339,7 +339,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                                 @endforeach
                                                             </div>
                                                         @endif
-                                                        
+
                                                     </div>
                                                 @endforeach
                                             @endif
@@ -348,12 +348,12 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <hr>
                                                 <h6 class="sold-by">
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
-                                            
-                                               
+
+
                                                     <?php /*<span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
                                                     <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
-                                                
+
                                             @endif
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
@@ -366,7 +366,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <div class="discriptions">
                                                 <h3>Return Policy</h3>
                                                 <p>  <span>{{ $product->return_days }} days return policy is applicable on this product </span> </p>
-                                            
+
                                             </div>
                                             @endif
                                         <div id="product_variant_options_wrapper">
@@ -408,8 +408,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         @if($product->category->categoryDetail->type_id == 10)
                                             @include('frontend.product-part.booking-slot')
                                         @endif
-                                        
-                                        
+
+
 
                                         @if(!empty($product->addOn) && $product->addOn->count() > 0)
                                         <div class="border-product">
@@ -502,7 +502,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             else
                                                 $checkSlot = 0;
                                         @endphp
-                                        
+
                                         @if( !is_category_p2p($product->category) )
                                         <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
@@ -543,10 +543,10 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 @endif
 
                                             </div>
-                                           
+
                                             <div class="product-buttons">
 
-                                                
+
                                                 @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                                 @if($is_inwishlist_btn && $is_available)
                                                 <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
@@ -578,7 +578,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 @endif
                                                 @endif
                                             </div>
-                                            
+
                                         </div>
                                         @endif
                                         {{-- @dump($product) --}}
@@ -601,7 +601,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             </div>
                                         </div>
 
-                                        
+
                                     </div>
 
                                 </div>
@@ -614,14 +614,14 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 @foreach($coupon_list as $m_key => $m_val)
                                                 <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
                                                    <p> <small> Description :</small> <span>{{ $m_val['short_desc'] ?? '' }} </span> </p>
-                                                   
+
                                                    <p>  <small>Coupon Type :  </small><span>{{ $m_val['promo_type_title'] ?? '' }} </span> </p>
-                                                   <p> 
+                                                   <p>
                                                     <small>
                                                     @if($m_val['promo_type_id'] == 1)
-                                                         Amount : 
+                                                         Amount :
                                                     @else
-                                                        Percentage : 
+                                                        Percentage :
                                                     @endif
                                                     </small>
                                                     <span>{{decimal_format($m_val['amount'])}}</span>
@@ -629,7 +629,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     <hr>
                                                 @endforeach
                                             </div>
-                                        
+
                                         <!-- <form>
                                             <div class="form-group">
                                                 <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
@@ -712,9 +712,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                 </section>
                                 @endif
                             </div>
-                            
 
-                       
+
+
                             </div>
                     </div>
 
@@ -730,7 +730,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                     @endif
                     {{-- End of Related Products --}}
 
-                    
+
                 </div>
             </div>
         </div>
@@ -1071,7 +1071,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     });
     function updatePrice()
     {
-        
+
         var variants = [];
         var options = [];
         $('.changeVariant').each(function() {
@@ -1289,7 +1289,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
             $('.img-zoom-result').hide();
             $('.img-zoom-lens').remove();
         });
-        
+
         $(".suggested-product").slick({
             infinite: true,
             slidesToShow: 4,
@@ -1303,16 +1303,16 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         });
 
 
-      
+
 
         $(document).ready(function() {
             $(".img_active").click(function(){
-               
+
                 $(".img_active").find('img').removeClass("active");
                 $(this).find('img').addClass("active");
             });
         });
-            
+
         </script>
 <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 @endsection

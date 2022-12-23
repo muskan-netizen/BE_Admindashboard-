@@ -17,9 +17,10 @@ class CreateBidsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('prescription_id')->nullable();
             $table->bigInteger('vendor_id')->nullable();
-            $table->string('total')->nullable();
+            $table->string('bid_total')->nullable();
             $table->string('discount')->nullable();
-            $table->tinyInteger('status')->default(0)->comment('0 Pending 1 Accepted');
+            $table->string('final_amount')->nullable();
+            $table->tinyInteger('status')->default(0)->comment('0 Pending 1 Accepted 2 Rejected');
             $table->timestamps();
 
             $table->foreign('prescription_id')->references('id')->on('bid_requests')->onDelete('cascade');
