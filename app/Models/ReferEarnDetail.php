@@ -10,7 +10,7 @@ class ReferEarnDetail extends Model
     use HasFactory;
     protected $table = 'refer_and_earn_details';
 
-    public function user() {
-        return $this->belongsTo('App\Models\User');
-    }
+    // public function user() {
+    //     return $this->belongsTo('App\Models\User');
+    // }
 }

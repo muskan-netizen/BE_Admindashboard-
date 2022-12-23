@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Models\InfluencerUser;
 use Illuminate\Http\Request;
 use App\Models\{InfluencerCategory, InfluencerAttribute, ReferEarnDetail};
 use Auth;
@@ -11,10 +12,15 @@ class InfluencerReferAndEarnController extends Controller
 {
     function index(Request $request) {
         $user =  Auth::user();
-        // $refer_earn = ReferEarnDetail::with('user')->where('user_id', $user->id)->first();
-        // dd($refer_earn);
-        $influencer_category = InfluencerCategory::get();
-        return view('frontend/account/referAndEarn')->with(['influencer_category' => $influencer_category]);
+        $influencer_user = [];
+        $influencer_category = [];
+        if (checkTableExists('influencer_users')) {
+            $influencer_user = InfluencerUser::with('user')->where('user_id', $user->id)->first();
+        }
+        if (checkTableExists('influencer_categories')) {
+            $influencer_category = InfluencerCategory::get();
+        }
+        return view('frontend/account/referAndEarn')->with(['influencer_category' => $influencer_category, 'influencer_user' => $influencer_user]);
     }
 
     function getReferEarnForm(Request $request, $domain, $id) {
@@ -40,6 +46,10 @@ class InfluencerReferAndEarnController extends Controller
                 $insert_arr = [];
                 $insert_count = 0;
                 $user_id = Auth::user()->id;
+
+                $influencer_user_id = InfluencerUser::insertGetId([
+                    "user_id" => $user_id
+                ]);
     
                 foreach($request->attribute as $key => $value) {
                     if( !empty($value) && !empty($value['option'] && is_array($value) )) {
@@ -50,6 +60,7 @@ class InfluencerReferAndEarnController extends Controller
                             foreach( $value['option'] as $key1 => $val1 ) {
                                 if( @in_array($val1['option_id'], $value_arr) ) {
     
+                                    $insert_arr[$insert_count]['influencer_user_id'] = $influencer_user_id ;
                                     $insert_arr[$insert_count]['user_id'] = $user_id;
                                     $insert_arr[$insert_count]['attribute_id'] = $value['id'];
                                     $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
@@ -62,6 +73,7 @@ class InfluencerReferAndEarnController extends Controller
                         else {
                             foreach($value['option'] as $option_key => $option) {
                                 if(@$option['value']){
+                                    $insert_arr[$insert_count]['influencer_user_id'] = $influencer_user_id ;
                                     $insert_arr[$insert_count]['user_id'] = $user_id;
                                     $insert_arr[$insert_count]['attribute_id'] = $value['id'];
                                     $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];

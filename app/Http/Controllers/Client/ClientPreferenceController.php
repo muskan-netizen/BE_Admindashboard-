@@ -231,6 +231,7 @@ class ClientPreferenceController extends BaseController{
      * @return \Illuminate\Http\Response
      */
 
+
     public function updateTaxInclusivePrice(Request $request){
         $this->updatePreferenceAdditional($request);
         return true;
