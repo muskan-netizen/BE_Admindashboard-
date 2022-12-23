@@ -86,7 +86,7 @@
     color: #0A0A0A;
     position: relative;
 }
-.custom_filtter ul li span:after {
+/* .custom_filtter ul li span:after {
     content: '';
     background: #D9D9D9;
     height: 1px;
@@ -94,7 +94,7 @@
     left: -49px;
     width: 37px;
     bottom: -13px;
-}
+} */
 .custom_filtter ul li {
     flex-grow: 1;
     min-width: 0;
@@ -397,16 +397,27 @@
                                     </div>
                                     <div class="displayProducts" id="category_products_filter">
                                         <div class="col-12 custom_filtter">
+                                        <!-- <select name="order_type" id='order_type' class="sortingFilter p-1">
+                                                <option value="">{{__('Sort By')}}</option>
+                                                <option value="featured">{{_('Featured')}}</option>
+                                                <option value="a_to_z">{{_('A to Z')}}</option>
+                                                <option value="z_to_a">{{_('Z to A')}}</option>
+                                                <option value="low_to_high">{{_('Cost : Low to High')}}</option>
+                                                <option value="high_to_low">{{_('Cost : High to Low')}}</option>
+                                                <option value="rating">{{_('Avg. Customer Review')}}</option>
+                                                <option value="newly_added">{{_('Newest Arrivals')}}</option>
+                                            </select> -->
                                         
                                             <ul>
+                                                <input type="hidden" name="order_type" id='order_type' class="sortingFilter" />
                                                 <li><span>{{__('Sort By:')}}</span></li>
-                                                <li><a href="javascript:void(0)" class="active">{{__('Featured')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('A to Z')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('Z to A')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('Cost : Low to High')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('Cost : High to Low')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('Avg. Customer Review')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('Newest Arrivals')}}</a></li>
+                                                <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="featured">{{__('Featured')}}</a></li>
+                                                <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="a_to_z">{{__('A to Z')}}</a></li>
+                                                <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="z_to_a">{{__('Z to A')}}</a></li>
+                                                <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="low_to_high">{{__('Cost : Low to High')}}</a></li>
+                                                <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="high_to_low">{{__('Cost : High to Low')}}</a></li>
+                                                <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="rating">{{__('Avg. Customer Review')}}</a></li>
+                                                <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="newly_added">{{__('Newest Arrivals')}}</a></li>
                                             </ul>
                                         </div>
                                         <div class="product-wrapper-grid">
@@ -524,6 +535,13 @@
         var page = urlParams.get('page');
         filterProducts(page);
     });
+    
+
+    $(document).on('click','.sortingFilterOther',function(){
+        var filterValue = $(this).data('value');
+        $('#order_type').val(filterValue);
+        filterProducts();
+    });
 
     $(document).on('change','.sortingFilter',function(){
         filterProducts();
@@ -598,7 +616,8 @@
             "options": options,
             "range": range,
             "order_type" : order_type,
-            "dynamic_options" : dynamic_options
+            "dynamic_options" : dynamic_options,
+            "filter_type" : 1
         };
 
         if(limit != ''){

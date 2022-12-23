@@ -108,7 +108,7 @@
         </div>
     </div>
 </div> -->
-@if( !p2p_module_status() )
+
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -310,7 +310,7 @@
         </div>
     </div>
 </div>
-@endif
+
 
 @if(Auth::user()->is_superadmin == 1)
 

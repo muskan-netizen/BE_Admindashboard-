@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
+use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
 use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency};
 use DB;
@@ -91,7 +92,11 @@ class OrderController extends BaseController
         $pending_order_count = $pending_order_count->where(function ($q1) {
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
+                $q2->whereIn('payment_option_id', [1, 38]) // 1 for cod ,38 for offline manual by harbans
+                    ->orWhere(function($q3) {
+                        $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                            ->whereNotIn('payment_option_id', [1, 38]);
+                    });
             });
         })->count();
 
@@ -112,7 +117,11 @@ class OrderController extends BaseController
         $past_order_count = $past_order_count->where(function ($q1) {
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                ->orWhere(function($q3) {
+                    $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                        ->whereNotIn('payment_option_id', [1, 38]);
+                });
             });
         })->count();
 
@@ -134,7 +143,11 @@ class OrderController extends BaseController
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                ->orWhere(function($q3) {
+                    $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                        ->whereNotIn('payment_option_id', [1, 38]);
+                });
             });
         })->count();
 
@@ -181,7 +194,11 @@ class OrderController extends BaseController
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                ->orWhere(function($q3) {
+                    $q3->where('is_postpay', 1) // 1 for order is post pay
+                        ->whereNotIn('payment_option_id', [1, 38]);
+                });
             });
         })->orderBy('id', 'asc');
         if ($user->is_superadmin == 0) {
@@ -330,7 +347,11 @@ class OrderController extends BaseController
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                    ->orWhere(function($q3) {
+                        $q3->where('is_postpay', 1)
+                            ->whereNotIn('payment_option_id', [1, 38]);
+                    });
             });
         });
 
@@ -774,7 +795,6 @@ class OrderController extends BaseController
         $orderPlaced = true;
         $orderPlacedNo = '';
         DB::beginTransaction();
-        \Log::info('11');
         $client_preferences = ClientPreference::first();
          try {
 
@@ -828,6 +848,10 @@ class OrderController extends BaseController
                         //Create Shipping place order request for Lalamove
                         //$orderPlaced = $this->placeOrderRequestlalamove($request);
 
+                    } elseif ($orderData->shipping_delivery_type == 'K') {
+                        //Create Shipping place order request for Kwik
+                        $orderPlaced = $this->placeOrderRequestKwikApi($request);
+
                     } elseif ($orderData->shipping_delivery_type == 'SR') {
                         //Create Shipping place order request for Shiprocket
                         $orderPlaced = $this->placeOrderRequestShiprocket($request);
@@ -875,7 +899,11 @@ class OrderController extends BaseController
                             //Cancel Shipping place order request for Lalamove
                             $lala = new LalaMovesController();
                             $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
-                        } elseif ($orderData->shipping_delivery_type == 'SR') {
+                        }elseif ($orderData->shipping_delivery_type == 'K') {
+                            //Cancel Shipping place order request for KwikApi
+                            $lala = new QuickApiController();
+                            $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
+                        }elseif ($orderData->shipping_delivery_type == 'SR') {
                             //Cancel Shipping place order request for Shiprocket
                             $ship = new ShiprocketController();
                             $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
@@ -1026,6 +1054,28 @@ class OrderController extends BaseController
         }
 
         return 2;
+    }
+
+    public function placeOrderRequestKwikApi($request)
+    {
+        $kwik = new QuickApiController();
+        //Create Shipping place order request for KwikApi
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            $order_ship = $kwik->placeOrderToKwikApi($request->vendor_id, $request->order_id);
+        }
+        if ($order_ship) {
+            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'delivery_response' => json_encode($order_ship),
+                    'dispatch_traking_url'=>$order_ship->pickups[0]->result_tracking_link,
+                    'web_hook_code' => $order_ship->unique_order_id
+                ]);
+            return 1;
+        }
+
+        return false;
     }
 
     public function placeOrderRequestShiprocket($request)
@@ -1285,7 +1335,6 @@ class OrderController extends BaseController
     public function placeRequestToDispatch($order, $vendor, $dispatch_domain)
     {
         try {
-            \Log::info("asdf innerrrrrr");
             $order = Order::find($order);
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
@@ -1294,12 +1343,30 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
-            $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
+            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
+            if(!empty($orderVendorDetails->web_hook_code))
+            {
+                $dynamic = $orderVendorDetails->web_hook_code;
+            }
+            $call_back_url = route('dispatch-order-update', $dynamic);
+            
             $tasks = array();
             $meta_data = '';
 
@@ -1313,7 +1380,6 @@ class OrderController extends BaseController
                 $task_type = 'now';
             }
 
-            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
             if (!empty($orderVendorDetails->scheduled_date_time) && $orderVendorDetails->scheduled_date_time > 0) {
                 $task_type = 'schedule';
                 $user = Auth::user();
@@ -1411,7 +1477,6 @@ class OrderController extends BaseController
             );
             
             $response = json_decode($res->getBody(), true);
-           \Log::info("dafsdffffffff". json_encode($response));
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
@@ -1445,8 +1510,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
@@ -1569,8 +1646,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
 
 
@@ -1946,8 +2035,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
