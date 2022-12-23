@@ -89,11 +89,12 @@ class InfluencerReferAndEarnController extends Controller
                 }
                 ReferEarnDetail::insert($insert_arr);
                 Session::flash('success', 'Thanks for registering with us');
-                return redirect()->back();
+                // return redirect()->back();
+                return redirect()->route('refer-earn.index');
             }
         } catch (\Exception $e) {
             Session::flash('danger', 'Something went wrong');
-            return redirect()->back();
+            return redirect()->route('refer-earn.index');
         }
         
     }
