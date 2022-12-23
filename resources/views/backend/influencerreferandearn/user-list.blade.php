@@ -20,7 +20,7 @@
     </div>
     <!-- end page title -->
     <div class="row">
-        <div class="col-6">
+        <div class="col-12">
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-2">
@@ -45,15 +45,41 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Tier</th>
+                                    <th>Refferal Code</th>
+                                    <th>Commision Type</th>
+                                    <th>Commision</th>
+                                    <th>Approval</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($refer_earn as $value)
+                                @foreach($influencer_users as $influencer_user)
                                 <tr>
-                                    <td> {{ $value->user->name ?? '' }} </td>
+                                    <td> {{ $influencer_user->user->name ?? '' }} </td>
+                                    <td> {{ $influencer_user->tier->name ?? '' }} </td>
+                                    <td> {{ $influencer_user->reffered_code ?? '' }} </td>
+                                    <td>
+                                        {{($influencer_user->commision_type==1)?'Percentage':(($influencer_user->commision_type==2)?'Fixed':'')}}
+                                    </td>
+                                    <td>
+                                        {{$influencer_user->commision}}
+                                    </td>
+                                    <td> @if($influencer_user->is_approved == 1)<!--  Approved --->
+                                            {{_('Approved')}}
+                                        @elseif($influencer_user->is_approved == 2) <!--  Rejected --->
+                                            {{_('Rejected')}}   
+                                        @else <!--  Pending --->
+                                            {{--_('Pending')--}} 
+                                            <a class="action-icon approveRejectTierBtn" dataid="{{$influencer_user->id}}" href="javascript:void(0);">
+                                                            <i class="mdi mdi-square-edit-outline"></i>
+                                                    </a>
+                                        @endif
+                                </td>
+                                <td> {{ (@$influencer_user->status)?'Active':'Inactive' }} </td>
                                     <td> 
-                                        {{-- <a href="{{ route('influencer-refer-earn.edit', ['id' => $value->id]) }}"><i class="fas fa-eye"></i></a> --}}
+                                        {{-- <a href="{{ route('influencer-refer-earn.edit', ['id' => $influencer_user->id]) }}"><i class="fas fa-eye"></i></a> --}}
                                     </td>
                                 </tr>
                                @endforeach
@@ -61,7 +87,7 @@
                         </table>
                     </div>
                     <div class="pagination pagination-rounded justify-content-end mb-0">
-                        {{$refer_earn->links()}}
+                        {{$influencer_users->links()}}
                     </div>
 
                     
@@ -71,12 +97,78 @@
 
     </div>
 </div>
+<div id="approveRejectmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Edit ".getNomenclatureName('Attribute')) }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="outter-loader d-none"><div class="css-loader"></div></div>
+            <form id="approveRejectForm" method="post" enctype="multipart/form-data">
+                @csrf
+               
+                <div class="modal-body" id="approveRejectBox">
 
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="approveRejectSubmit" value="1" class="btn btn-info waves-effect waves-light approveRejectSubmit">{{ __("Approve") }}</button>
+                    <button type="button" name="approveRejectSubmit" value="2" class="btn btn-info waves-effect waves-light approveRejectSubmit rejectBtn">{{ __("Reject") }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('script')
 
 <script type="text/javascript">
+$('.rejectBtn').on('click', function(e) {
+    $('#tierdata').removeAttr('required');
     
+    $('#approveRejectForm').submit();
+    
+});
+    // Edit Influencer Attribute
+$('.approveRejectTierBtn').on('click', function(e) {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    e.preventDefault();
+    var did = $(this).attr('dataid');
+    $.ajax({
+        type: "get",
+        url: "{{url('client/influencer-user/getUploadedData')}}" ,
+        data: {'did':did},
+        dataType: 'json',
+        beforeSend: function() {
+            $(".loader_box").show();
+        },
+        success: function(data) {
+            $('#approveRejectmodal').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+            
+            $('#approveRejectForm #approveRejectBox').html(data.html);
+           
+            $('.selectize-select').selectize();
+           
+            
+            document.getElementById('approveRejectForm').action = data.submitUrl;
+        },
+        error: function(data) {
+            console.log('data2');
+        },
+        complete: function() {
+            $('.loader_box').hide();
+        }
+    });
+});
+
+
 </script>
 @endsection

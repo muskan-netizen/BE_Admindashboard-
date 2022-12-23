@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{InfluencerCategory, Attribute, InfluencerAttribute, ReferEarnDetail, InfluencerTier};
+use App\Models\{InfluencerCategory, Attribute, InfluencerAttribute, ReferEarnDetail, InfluencerTier, InfluencerUser};
 use App\Http\Requests\InfluencerCategoryRequest;
 use Auth;
 
@@ -81,7 +81,8 @@ class InfluencerReferAndEarnController extends BaseController
     }
 
     function userList(Request $request) {
-        $refer_earn = ReferEarnDetail::with('user')->groupBy('user_id')->paginate(10);
-        return view('backend.influencerreferandearn.user-list')->with(['refer_earn' => $refer_earn]);
+        $influencer_users = InfluencerUser::with(['user', 'tier'])->paginate(10);
+        
+        return view('backend.influencerreferandearn.user-list')->with(['influencer_users' => $influencer_users]);
     }
 }

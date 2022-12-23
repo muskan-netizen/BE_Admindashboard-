@@ -513,7 +513,17 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         /** Refer and earn  */
         Route::resource('tier', 'Client\TierController');
+
+        Route::prefix('influencer-user')->group(function () {
+            Route::name('influencer-user.')->group(function () {
+                Route::resource('influencer-user', 'Client\InfluencerUserController');
+                Route::get('getUploadedData', 'Client\InfluencerUserController@getUploadedData')->name('getUploadedData');
+                Route::post('approveReject', 'Client\InfluencerUserController@approveReject')->name('approveReject');
+               
+            });
+        });
         Route::prefix('influencer-refer-earn')->group(function () {
+            
             
             Route::name('influencer-refer-earn.')->group(function () {
                 Route::get('index', 'Client\InfluencerReferAndEarnController@index')->name('index');
