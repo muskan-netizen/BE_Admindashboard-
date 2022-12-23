@@ -12,4 +12,12 @@ class InfluencerUser extends Model
     public function user() {
         return $this->belongsTo('App\Models\User');
     }
+
+    public function tier() {
+        return $this->belongsTo('App\Models\InfluencerTier', 'influencer_tier_id');
+    }
+
+    public function ReferEarnDetail() {
+        return $this->hasMany('App\Models\ReferEarnDetail', 'influencer_user_id');
+    }
 }
