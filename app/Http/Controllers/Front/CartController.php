@@ -1895,9 +1895,29 @@ class CartController extends FrontController
      */
     public function deleteCartProduct($domain = '', Request $request)
     {
+        $CartProductdata = CartProduct::where('id', $request->cartproduct_id)->first();
         CartProduct::where('id', $request->cartproduct_id)->delete();
         CartCoupon::where('vendor_id', $request->vendor_id)->delete();
         CartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
+
+        if(!empty($CartProductdata)){
+            $cartpro_count = CartProduct::where('cart_id', $CartProductdata->cart_id)->count();
+            if($cartpro_count == 0){
+                if(checkColumnExists('carts','order_id'))
+                {
+                    Cart::where('id', $CartProductdata->cart_id)->update([
+                        'schedule_type' => null, 'scheduled_date_time' => null,
+                        'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null, 'order_id' => NULL
+                    ]);
+                }else{
+                    Cart::where('id', $CartProductdata->cart_id)->update([
+                        'schedule_type' => null, 'scheduled_date_time' => null,
+                        'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
+                    ]);
+                }
+            }
+        }
+
         return response()->json(['status' => 'success', 'message' => __('Product removed from cart successfully.') ]);
     }
 
@@ -2014,10 +2034,21 @@ class CartController extends FrontController
         {
             $schedule_date_delivery_edit = Carbon::parse($cart->editingOrder->scheduled_date_time)->timezone($timezone)->format('Y-m-d H:i:s');
             $schedule_slots_edit = $cart->editingOrder->scheduled_slot;
-            Log::info($schedule_date_delivery_edit);
+            $editlimit_datetime = Carbon::now()->toDateTimeString();
+            $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+            $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+            $error_message = '';
+            if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
+                $error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
+            }
+            $VendorOrderStatus = VendorOrderStatus::where('order_id', $cart->editingOrder->id)->whereNotIn('order_status_option_id', [1, 2])->count();
+            if($VendorOrderStatus > 0){
+                $error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
+            }
         }else{
             $schedule_date_delivery_edit = '';
             $schedule_slots_edit = '';
+            $error_message = '';
         }
 
         if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
@@ -2066,9 +2097,9 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
 
-            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit])->render();
+            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'']);
+        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message]);
     }
 
 

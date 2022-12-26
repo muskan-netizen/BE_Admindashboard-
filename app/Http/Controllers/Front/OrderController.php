@@ -905,11 +905,11 @@ class OrderController extends FrontController
             {
                 $order = Order::where('id', $cart->editingOrder->id)->first();
                 if((strtotime($order->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
-                    return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
+                    return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing."), 400);
                 }
                 $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
                 if($VendorOrderStatus > 0){
-                    return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
+                    return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing. Please discard order editing."), 400);
                 }
                 OrderProduct::where('order_id', $order->id)->delete();
                 OrderProductPrescription::where('order_id', $order->id)->delete();
