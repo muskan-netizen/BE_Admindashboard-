@@ -132,7 +132,7 @@
                                             <div class="total_amount_details">
                                                 <div class="total-amount">
                                                     <label>Earning Amount</label>
-                                                    <h3>$243.00</h3>
+                                                    <h3>$00.00</h3>
                                                 </div>
                                                 <div class="Earning-amount">
                                                     <label>Discount per order</label>
