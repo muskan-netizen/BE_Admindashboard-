@@ -82,7 +82,14 @@ class InfluencerReferAndEarnController extends BaseController
 
     function userList(Request $request) {
         $influencer_users = InfluencerUser::with(['user', 'tier'])->paginate(10);
-        
         return view('backend.influencerreferandearn.user-list')->with(['influencer_users' => $influencer_users]);
+    }
+
+    function editInfluencerUser(Request $request){
+        if($request->ajax()){
+            $influencer_users = InfluencerUser::with(['user', 'tier'])->where('id', $request->influencer_user_id)->first();
+            $returnHTML = view('backend.influencerreferandearn.edit-influencer-user-ajax')->with('influencer_users', $influencer_users)->render();
+            return response()->json(array('success' => true, 'html'=>$returnHTML));
+        }
     }
 }

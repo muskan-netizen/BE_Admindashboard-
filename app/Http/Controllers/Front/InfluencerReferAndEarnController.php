@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\{InfluencerCategory, InfluencerAttribute, ReferEarnDetail};
 use Auth;
 use Session;
+use Validator;
+
 class InfluencerReferAndEarnController extends Controller
 {
     function index(Request $request) {
@@ -15,7 +17,7 @@ class InfluencerReferAndEarnController extends Controller
         $influencer_user = [];
         $influencer_category = [];
         if (checkTableExists('influencer_users')) {
-            $influencer_user = InfluencerUser::with('user')->where('user_id', $user->id)->first();
+            $influencer_user = InfluencerUser::with('user', 'tier')->where('user_id', $user->id)->first();
         }
         if (checkTableExists('influencer_categories')) {
             $influencer_category = InfluencerCategory::get();
@@ -97,5 +99,18 @@ class InfluencerReferAndEarnController extends Controller
             return redirect()->route('refer-earn.index');
         }
         
+    }
+
+    public function updateRefferalCode(Request $request){
+        $validator = Validator::make($request->all(), [
+            'refferal_code' => 'required|unique:influencer_users,reffered_code,'.$request->influencer_user_id,
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->all()]);
+        }
+
+        InfluencerUser::where('id', $request->influencer_user_id)->update(['reffered_code' => $request->refferal_code]);
+        return response()->json(['success' => 'Refferal code updated successfully.']);
     }
 }

@@ -60,6 +60,14 @@
     .cursor-pointer{
         cursor: pointer;
     }
+    input.referral_code {
+        width: 140px;
+        border: 1px solid #ccc;
+        padding: 7px;
+        cursor: not-allowed;
+        background: #c1c1c157;
+        color: #333;
+    }
 </style>
 <section class="section-b-space">
     <div class="container">
@@ -81,6 +89,7 @@
                         </div>
                     @endif
                 </div>
+                <div id="success-msg"></div>
             </div>
         </div>
         <div class="row my-md-3">
@@ -120,23 +129,23 @@
                                     <div class="row welcome-msg justify-content-between refer_code">
                                         <div class="col-md-6 mt-3">
                                             <h4 class="d-inline-block m-0 mb-3">
-                                                <span>{{__('Your  Referral Code:')}} <strong>{{$influencer_user->reffered_code}}</strong></span>
+                                                <span>{{__('Your Referral Code:')}}</span> <input type="text" class="referral_code" name="referral_code" value="{{$influencer_user->reffered_code}}" readonly>
+                                                <span id="copy_message" class="copy-message text-success" style="font-size: 14px;"></span>    
                                             </h4>
                                             <sup class="position-relative">
                                                 <a class="copy-icon ml-1" id="copy_icon" title="Copy" style="cursor:pointer;"><i class="fa fa-copy"></i></a>
-                                                <a class="edit-icon ml-1" id="edit_refferal_icon" title="Edit" style="cursor:pointer;"><i class="fa fa-edit"></i></a>
-                                                <p id="copy_message" class="copy-message"></p>
+                                                <a class="edit-icon ml-1" id="edit_refferal_icon" title="Edit" data-code="{{$influencer_user->reffered_code}}" data-id="{{$influencer_user->id}}" style="cursor:pointer;"><i class="fa fa-edit"></i></a>
                                             </sup>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="total_amount_details">
                                                 <div class="total-amount">
-                                                    <label>Earning Amount</label>
-                                                    <h3>$00.00</h3>
+                                                    <label>Earning Amount ({{Session::get('currencySymbol')}})</label>
+                                                    <h3>00.00</h3>
                                                 </div>
                                                 <div class="Earning-amount">
-                                                    <label>Discount per order</label>
-                                                    <h3>10%</h3>
+                                                    <label>Discount per order ({{Session::get('currencySymbol')}})</label>
+                                                    <h3>{{$influencer_user->tier->commision}} ({{($influencer_user->tier->commision_type==1)?'% Percentage':(($influencer_user->tier->commision_type==2)?'Fixed':'')}})</h3>
                                                 </div>
                                             </div>
                                         </div>
@@ -204,6 +213,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                @elseif ($influencer_user->is_approved == 2)
+                                    <div class="text-center"><h3><strong>Request Rejected By Admin</strong></h3></div>
                                 @else
                                     <div class="text-center"><h3><strong>Waiting For Admin Approval</strong></h3></div>
                                 @endif
@@ -238,23 +249,32 @@
 
 <div class="modal fade" id="updateRefferalCode" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_addressLabel">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header border-bottom">
-          <h5 class="modal-title" id="remove_addressLabel">{{ __('Update Refferal Code') }} </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
+        <div class="modal-content">
+            <form action="" method="post">
+                <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="remove_addressLabel">{{ __('Update Refferal Code') }} </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger print-error-msg" style="display:none">
+                        <ul></ul>
+                    </div>
+                    <input type="hidden" name="influencer_user_id" id="influencer_user_id" value="">
+                    <div class="form-group">
+                        <label for="refferal_code_edit">Refferal Code:</label>
+                        <input type="text" class="form-control" name="refferal_code" id="refferal_code_edit" value="" placeholder="Enter Refferal Code" required>
+                        @if ($errors->has('refferal_code'))
+                            <span class="text-danger">{{ $errors->first('refferal_code') }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="modal-footer text-center" style="display: block;">
+                    <button type="button" class="btn btn-solid text-left" id="update_refferal_code_btn" data-id="">{{ __('Update') }}</button>
+                </div>
+            </form>
         </div>
-        <div class="modal-body">
-          <h6 class="m-0">
-                  {{ __('Do you really want to delete this address ?') }}
-          </h6>
-        </div>
-        <div class="modal-footer">
-            {{-- <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{ __('Cancel') }}</button> --}}
-            <button type="button" class="btn btn-solid text-left" id="update_refferal_code_btn" data-id="">{{ __('Update') }}</button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -263,8 +283,57 @@
 <script>
 $(document).ready(function(){
     $('#edit_refferal_icon').on('click', function(){
+        var code = $(this).data('code');
+        var id = $(this).data('id');
+        $('#updateRefferalCode #refferal_code_edit').val(code);
+        $('#updateRefferalCode #influencer_user_id').val(id);
         $('#updateRefferalCode').modal();
     });
+
+    $("#copy_icon").click(function(){
+        var temp = $("<input>");
+        var selector = $('.referral_code').val();
+        $("body").append(temp);
+        temp.val(selector).select();
+        console.log(temp.val(selector).select());
+        document.execCommand("copy");
+        temp.remove();
+        $("#copy_message").text("{{ __('Copied!') }}").show();
+        setTimeout(function(){
+            $("#copy_message").text('').hide();
+        }, 3000);
+    });
+
+    $('#update_refferal_code_btn').on('click', function(){
+        var influencer_user_id = $('#influencer_user_id').val();
+        var refferal_code = $('#refferal_code_edit').val();
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url : "{{ route('refer-earn.updateRefferalCode') }}",
+            data : {'influencer_user_id': influencer_user_id,'refferal_code': refferal_code},
+            type : 'POST',
+            dataType : 'json',
+            success : function(result){
+                if($.isEmptyObject(result.error)){
+                    $('#success-msg').html('<div class="alert alert-success" role="alert">'+result.success+'</div>');
+                    $('#updateRefferalCode').modal('hide');
+                    $('.refer_code .referral_code').val(refferal_code);
+                }else{
+                    printErrorMsg(result.error);
+                }
+            }
+        });
+    });
+
+    function printErrorMsg (msg) {
+        $(".print-error-msg").find("ul").html('');
+        $(".print-error-msg").css('display','block');
+        $.each( msg, function( key, value ) {
+            $(".print-error-msg").find("ul").append('<li>'+value+'</li>');
+        });
+    }
 });
 </script>
 @endsection

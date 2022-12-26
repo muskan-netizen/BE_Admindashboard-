@@ -107,16 +107,14 @@ class InfluencerUserController extends Controller
 
     public function approveReject(Request $request)
     {
-        
         if($request->approveRejectSubmit){ //Approve
             $promo = 'Promo'.rand(1000,9999);
-            InfluencerUser::where('id', $request->id)->update(['is_approved'=> 1, 'reffered_code' => $promo]);
+            InfluencerUser::where('id', $request->id)->update(['is_approved'=> 1, 'reffered_code' => $promo, 'influencer_tier_id' => $request->tier]);
             Session::flash('success', 'Influencer request approved');
         }else{ //Reject
             InfluencerUser::where('id', $request->id)->update(['is_approved'=> 2]);
             Session::flash('success', 'Influencer request rejected');
         }
-        
-                return redirect()->back();
+        return redirect()->back();
     }
 }
