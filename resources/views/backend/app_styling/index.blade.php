@@ -285,14 +285,7 @@
                                             @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
                                         </option>
                                         @endforeach
-                                    </select>
-                                    <select class="form-control" id='category_product' name="category_product"  data-placeholder="Choose ..." required style="display: none">
-                                        <option value="">{{ __("Select Category Products") }}</option>
-                                           <option>Test</option>
-                                           <option>Test</option>
-                                           <option>Test</option>
-                                        </option>
-                                    </select>
+                         
                                 </div>
                                 </div>
                                 </div>
@@ -314,9 +307,9 @@
                                 <input type="hidden" name="for_no_product_found_html[{{$key}}]">
                                 @endif
                                 @if($home_page_label->slug == 'banner')
-                               
                                 <a class="action-icon openBannerModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
-                                    <input type="file" id="image" name="image" accept="image/*">
+
+                                    <input required type="file" accept="image/*,.pdf,.doc" data-plugins="dropify" name="banner_image[{{$key}}][check]" class="dropify" data-default-file="">
                                 </a>
                                 @endif
                                 <div class="mb-0 ml-1">
@@ -708,12 +701,7 @@ $("#save_home_page_pickup").click(function(event) {
             }
         });
     }
-    $("#product_category").change(function() {
-         var category_id = $("#product_category").val();
-         alert(category_id);
-         $("#category_product").show();
-        });
-
+  
     function submitSecondaryColorForm() {
         var data_uri = "{{route('styling.updateColor')}}";
         $.ajaxSetup({

@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{AppStyling, AppStylingOption,ClientPreference,AppDynamicTutorial, CabBookingLayout, CabBookingLayoutCategory, CabBookingLayoutTranslation, Category, Client, ClientLanguage, HomePageLabel, Product};
+use App\Models\{AppStyling, AppStylingOption,ClientPreference,AppDynamicTutorial, CabBookingLayout, CabBookingLayoutBanner, CabBookingLayoutCategory, CabBookingLayoutTranslation, Category, Client, ClientLanguage, HomePageLabel, Product};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\HomePage\WebStylingTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AppStylingController extends BaseController
 {
@@ -266,8 +267,9 @@ class AppStylingController extends BaseController
      */
     public function updateAppStylesNew(Request $request){
       
-        // dd($request->all());
+       
         foreach ($request->home_labels as $key => $value) {
+           
             $home_translation = CabBookingLayoutTranslation::where('language_id', $request->languages[$key])->where('cab_booking_layout_id', $request->home_labels[$key])->first();
             if (!$home_translation) {
                 $home_translation = new CabBookingLayoutTranslation();
@@ -275,7 +277,6 @@ class AppStylingController extends BaseController
             $home_translation->title = $request->names[$key];
             $home_translation->cab_booking_layout_id  = $request->home_labels[$key];
             $home_translation->language_id = $request->languages[$key];
-            $home_translation->banner_image_url=$request->image;
             $home_translation->save();
 
 
@@ -313,15 +314,41 @@ class AppStylingController extends BaseController
             //    Log::info($is_cat);
             }
 
+            if(isset($request->banner_image[$key]) && !empty($request->banner_image[$key])){
+                $is_img =$request->banner_image[$key]['check'];
+            } else{
+                $is_img =  0;
+            }
+
 
 
             if($is_cat != 0)
             {
+                
                 $del = CabBookingLayoutCategory::where('cab_booking_layout_id',$request->pickup_labels[$key])->delete();
                 $cate = new CabBookingLayoutCategory();
                 $cate->cab_booking_layout_id  = $request->pickup_labels[$key];
                 $cate->category_id  = $is_cat;
                 $cate->save();
+            }
+
+            if($is_img != 0){
+                $del = CabBookingLayoutBanner::where('cab_booking_layout_id',$request->pickup_labels[$key])->delete();
+                    $folderName='banner';
+                    $filePath = $folderName . '/' . Str::random(40);
+                    $file = $is_img;
+                   
+                    $orignal_name = $is_img->getClientOriginalName();
+                    $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                  
+                    $url = Storage::disk('s3')->url($file_name);
+                
+                
+                $cate = new CabBookingLayoutBanner();
+                $cate->cab_booking_layout_id  = $request->pickup_labels[$key];
+                $cate->banner_image_url  = $url;
+                $cate->save();
+
             }
 
 
