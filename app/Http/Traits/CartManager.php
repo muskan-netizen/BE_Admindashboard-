@@ -434,6 +434,7 @@ trait cartManager{
             $total_fixed_fee_tax = 0;
             $total_service_fee = 0;
             $total_markup_fee_tax = 0;
+            $container_charges_tax = 0;
 
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
@@ -759,8 +760,7 @@ trait cartManager{
                             $delivery_fee_charges = 0;
                             $deliver_charges_lalmove =0;
                             $deliveryCharges = 0;
-                            $code = (($code)?$code:$cart->shipping_delivery_type);
-                      
+                            $code = (($code)?$code:$cart->shipping_delivery_type.'_0');
                             $checkLastMile = 0;
                             $lastMileDate['tags'] = '';
                             $NumberOfroutes= 1;
@@ -788,17 +788,18 @@ trait cartManager{
                                     if (count($deliveries)>1) {
                                         foreach ($deliveries as $k=> $opt) {
                                             if($prod->product->individual_delivery_fee == 1) {
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate'])):($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate']).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate'])):($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate'])).'</option>';
                                             }else{
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate'])):($vendorTotalDeliveryFee + $opt['rate']).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate'])):($vendorTotalDeliveryFee + $opt['rate'])).'</option>';
                                             }
                                         }
                                     } else {
                                         foreach ($deliveries as $k=> $opt) {
                                             if($prod->product->individual_delivery_fee == 1) {
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate'])):($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate']).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate'])):($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate'])).'</option>';
                                             }else{
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate'])):($vendorTotalDeliveryFee + $opt['rate']).'</option>';
+                                                // dd($opt['code'],$code);
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate'])):($vendorTotalDeliveryFee + $opt['rate'])).'</option>';
                                             }
                                         }
                                     }
