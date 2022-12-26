@@ -131,7 +131,7 @@
     </div>
 </section>
 <div class="modal fade biddingModel"  tabindex="-1" aria-labelledby="profile-modalLabel" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-    <div class="modal-dialog  modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -161,7 +161,8 @@
                     <table class="table">
                         <thead>
                             <td>ID</td>
-                            <td>name</td>
+                            <td>Name</td>
+                            <td>Varient</td>
                             <td>Price</td>
                             <td>Quantity</td>
                             <td>Action</td>
@@ -237,7 +238,7 @@
         var quantity = 1;
         $("#addProductBox").removeClass('d-none').addClass('d-block');
         $("#discount-section").removeClass('d-none').addClass('d-block');
-        $("#productTable").append('<tr><td class="id">'+pid+'</td><td class="name">'+name+'</td><td class="price">'+price+'</td><td class="qty"><input type="number" class="form-control quantity" value="'+quantity+'" min="1" max="10"></td><td><a href="javascript:void(0)" class="removeProduct"><i class="fa fa-trash"></i></a></td></tr>');
+        $("#productTable").append('<tr><td class="id">'+pid+'</td><td class="name">'+name+'</td><td><select class="form-control" name="varients" id="varients"><option value="varient_id">varientOne</option></select></td><td class="price">'+price+'</td><td class="qty"><input type="number" class="form-control quantity" value="'+quantity+'" min="1" max="10"></td><td><a href="javascript:void(0)" class="removeProduct"><i class="fa fa-trash"></i></a></td></tr>');
     });
 
     $(document).on("click", ".removeProduct", function (e) {

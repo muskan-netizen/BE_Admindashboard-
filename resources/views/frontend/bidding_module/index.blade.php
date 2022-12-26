@@ -53,6 +53,9 @@
     .invalid-feedback {
         display: block;
     }
+    .showBidsModel .modal-content {
+        min-height: 400px;
+    }
 </style>
 
 <section class="section-b-space">
@@ -173,6 +176,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div class="" id='loader'>
+                        <img src="{{asset('assets/images/loading_new.gif')}}" alt="" height="40px" width="40px">
+                    </div>
                     @foreach ($bids as $bid)
                         <div id="accordion">
                             <div class="card">
