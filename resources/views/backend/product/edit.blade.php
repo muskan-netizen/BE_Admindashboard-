@@ -486,8 +486,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
                     @include('backend.product.variant')
                 @else
-                
-                    
+
+
                     @if($productVariants->count() > 0)
                     <div class="card-box" >
                         <div class="row mb-2 bg-light">
@@ -698,7 +698,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Replaceable'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="replaceable" data-plugin="switchery" name="replaceable" class="chk_box" data-color="#43bee1" @if($product->replaceable == 1) checked @endif>
                         </div>
-                       
+
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
@@ -722,7 +722,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 </div>
                                 <div class="col-md-7">
                                     <select class="selectize-select1 form-control" name="tags">
-                                        
+
                                         @if($agent_dispatcher_tags != null && count($agent_dispatcher_tags))
                                         @foreach($agent_dispatcher_tags as $key => $tags)
                                         <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
@@ -734,7 +734,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                         @endif
 
-                        
+
 
                         @if(($configData->need_dispacher_home_other_service == 1 && ($product->category->categoryDetail->type_id == 8)) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 ) )
                         @if($product->Requires_last_mile == 1 )
@@ -782,7 +782,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                     </div>
 
-                    
+
                     <div class="row">
                         <div class="col-sm-12 mb-2">
                             {!! Form::label('title', __('Live'),['class' => 'control-label']) !!}
@@ -1068,7 +1068,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </select>
                         </div>
                     </div> -->
-                    
+
                     @if($product->vendor->pick_drop == 1 && $product->category->categoryDetail->type_id == 7)
                     <div class="row mb-2">
                         <div class="col-md-6 d-flex align-items-center justify-content-between">
@@ -1222,6 +1222,33 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 </div>
                 @endif
 
+                <div class="card-box" style="">
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pickup Point For Customer") }}</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="title" class="control-label">Pickup Point :</label>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <input type="radio" class="custom-control-input check is-processor-enable" id="option2" value="0" name="is_processor_enable" {{ @$processorProduct->is_processor_enable == 0 ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="option2">{{ __("Vendor") }}</label>
+                        </div>
+                        <div class="col-md-7 text-align:left;">
+                            <input type="radio" class="custom-control-input check is-processor-enable" id="option1" value="1" name="is_processor_enable" {{ @$processorProduct->is_processor_enable == 1 ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="option1">{{ __("Processor") }}</label>
+                        </div>
+                    </div>
+                    <div class="row processor-enable-row" style="display:{{ @$processorProduct->is_processor_enable == 1 ? 'block;' : 'none;' }}">
+                        <div class="col-md-6 mb-2" >
+                            {!! Form::label('title', __('Processor Name'),['class' => 'control-label']) !!}
+                            <input class="form-control" id="processor-title" required name="processor_title" type="text" value="{{ (@$processorProduct->name) ? $processorProduct->name : '' }}">
+                        </div>
+                        <div class="col-md-6 mb-2" >
+                            {!! Form::label('title', __('Processor Date'),['class' => 'control-label']) !!}
+                            <input class="form-control date-datepicker flatpickr-input" id="processor-date" required name="processor_date" type="text" value="{{ (@$processorProduct->date) ? $processorProduct->date : '' }}">
+                        </div>
+
+                    </div>
+                </div>
 
                 <!-- start product faqs -->
                 @if($configData->product_order_form == 1)
@@ -1491,6 +1518,22 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 <script type="text/javascript">
 
+        var isProcessorEnable = $('#is-processor-enable');
+        $(document).on("click", ".is-processor-enable", function() {
+            $('.processor-enable-row').hide();
+            if($(this).val() == 1){
+                $('.processor-enable-row').show();
+            }
+        });
+        function checkAddressString(obj,name)
+        {
+            if($(obj).val() == "")
+            {
+                document.getElementById(name + '_latitude').value = '';
+                document.getElementById(name + '_longitude').value = '';
+            }
+        }
+
         $(document).on("change", "#file_type_select", function() {
         var file_type = $(this).val();
         if(file_type == 'selector'){
@@ -1664,7 +1707,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
     var uploadedDocumentMap = {};
     Dropzone.autoDiscover = false;
-       
+
 
 
     $(document).ready(function() {
@@ -1878,6 +1921,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
         $(this).closest('tr').remove();
     });
 
+    $('#processor-date').flatpickr({
+        enableTime: false,
+        startDate: new Date(),
+        minDate: new Date(),
+        dateFormat: "Y-m-d"
+    });
 
 
     $(document).on('change', '.vimageNew', function() {
@@ -2064,7 +2113,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 <!-- start product faq -->
 <script>
     $(document).on("change",".attr_radio", function() {
-        
+
     var parentClass = $(this).parent().prop('className');
     var attr_radio_class = $(this).data('class');
     $("."+parentClass+" .attr_radio").prop('checked', false);
