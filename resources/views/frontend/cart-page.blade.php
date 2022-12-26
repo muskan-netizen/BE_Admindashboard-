@@ -1009,7 +1009,12 @@
                         <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
                         <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
                         @endif
-                        <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                        @if($cart_error_message=='')
+                            <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                        @else
+                        <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
+                        @endif
+                        
                     </div>
                 @endif
 

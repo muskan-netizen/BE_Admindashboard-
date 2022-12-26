@@ -429,6 +429,7 @@ trait cartManager{
             $total_quantity = 0;
             $deliveryCharges_real = 0;
             $is_long_term_service = 0;
+            $container_charges_tax = 0;
 
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
