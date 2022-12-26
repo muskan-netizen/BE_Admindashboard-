@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{AppStyling, AppStylingOption,ClientPreference,AppDynamicTutorial, CabBookingLayout, CabBookingLayoutCategory, CabBookingLayoutTranslation, Category, Client, ClientLanguage, HomePageLabel};
+use App\Models\{AppStyling, AppStylingOption,ClientPreference,AppDynamicTutorial, CabBookingLayout, CabBookingLayoutBanner, CabBookingLayoutCategory, CabBookingLayoutTranslation, Category, Client, ClientLanguage, HomePageLabel, Product};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\HomePage\WebStylingTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AppStylingController extends BaseController
 {
@@ -107,7 +108,7 @@ class AppStylingController extends BaseController
                     $slug = 'single_category_products';
                     $single_category_products = $this->getCategories($slug); // get categories listing for single cat products  section 
                     $selected_single_category_products = $this->getSingleCategoryProducts($slug); // get categories listing for single cat products  section 
-
+                    $select_products=Product::where(['is_live'=>'1','is_long_term_service'=>'0'])->get();
 
         //end home page
 
@@ -132,8 +133,8 @@ class AppStylingController extends BaseController
         $dynamicTutorials = AppDynamicTutorial::orderBy('sort')->get();
         return view('backend/app_styling/index')->with([
             'single_category_products'=> $single_category_products, 'selected_single_category_products' => $selected_single_category_products,
-            'all_pickup_category'=> $all_pickup_category,'langs' => $langs,'tertiary_color_options' => $tertiary_color_options, 'secondary_color_options' => $secondary_color_options, 'primary_color_options' => $primary_color_options, 'medium_font_options' => $medium_font_options, 'bold_font_options' => $bold_font_options, 'regular_font_options' => $regular_font_options, 'tab_style_options' => $tab_style_options, 'homepage_style_options' => $homepage_style_options, 'signup_tag_line_text' => $signup_tag_line_text, 'dynamicTutorials' => $dynamicTutorials,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts]);
-    }
+            'all_pickup_category'=> $all_pickup_category,'langs' => $langs,'tertiary_color_options' => $tertiary_color_options, 'secondary_color_options' => $secondary_color_options, 'primary_color_options' => $primary_color_options, 'medium_font_options' => $medium_font_options, 'bold_font_options' => $bold_font_options, 'regular_font_options' => $regular_font_options, 'tab_style_options' => $tab_style_options, 'homepage_style_options' => $homepage_style_options, 'signup_tag_line_text' => $signup_tag_line_text, 'dynamicTutorials' => $dynamicTutorials,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts,'select_products'=>$select_products]);
+    }         
     /**
      * Store a regular font.
      *
@@ -265,8 +266,10 @@ class AppStylingController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function updateAppStylesNew(Request $request){
-        // dd($request->all());
+      
+       
         foreach ($request->home_labels as $key => $value) {
+           
             $home_translation = CabBookingLayoutTranslation::where('language_id', $request->languages[$key])->where('cab_booking_layout_id', $request->home_labels[$key])->first();
             if (!$home_translation) {
                 $home_translation = new CabBookingLayoutTranslation();
@@ -311,15 +314,41 @@ class AppStylingController extends BaseController
             //    Log::info($is_cat);
             }
 
+            if(isset($request->banner_image[$key]) && !empty($request->banner_image[$key])){
+                $is_img =$request->banner_image[$key]['check'];
+            } else{
+                $is_img =  0;
+            }
+
 
 
             if($is_cat != 0)
             {
+                
                 $del = CabBookingLayoutCategory::where('cab_booking_layout_id',$request->pickup_labels[$key])->delete();
                 $cate = new CabBookingLayoutCategory();
                 $cate->cab_booking_layout_id  = $request->pickup_labels[$key];
                 $cate->category_id  = $is_cat;
                 $cate->save();
+            }
+
+            if($is_img != 0){
+                $del = CabBookingLayoutBanner::where('cab_booking_layout_id',$request->pickup_labels[$key])->delete();
+                    $folderName='banner';
+                    $filePath = $folderName . '/' . Str::random(40);
+                    $file = $is_img;
+                   
+                    $orignal_name = $is_img->getClientOriginalName();
+                    $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                  
+                    $url = Storage::disk('s3')->url($file_name);
+                
+                
+                $cate = new CabBookingLayoutBanner();
+                $cate->cab_booking_layout_id  = $request->pickup_labels[$key];
+                $cate->banner_image_url  = $url;
+                $cate->save();
+
             }
 
 
