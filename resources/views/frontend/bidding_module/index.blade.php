@@ -8,6 +8,12 @@
         padding-top: 20px;
         padding-bottom: 20px;
     }
+    .modal-body div#loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
 
 </style>
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
@@ -170,15 +176,17 @@
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="profile-modalLabel">{{ __('Bid Requests From Vendor') }}</h5>
+                    <h3 class="modal-title" id="profile-modalLabel">{{ __('Requests From Vendors') }}</h3>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="" id='loader'>
-                        <img src="{{asset('assets/images/loading_new.gif')}}" alt="" height="40px" width="40px">
+                        <img src="{{asset('assets/images/loading_new.gif')}}" alt=""  width="40px" class="pr-2">
+                        <p class="mb-0">we are looking for bids...</p>
                     </div>
+
                     @foreach ($bids as $bid)
                         <div id="accordion">
                             <div class="card">
