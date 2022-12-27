@@ -1678,7 +1678,6 @@ class CartController extends FrontController
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
-        // dd($cart); die;
         return $cart;
     }
 

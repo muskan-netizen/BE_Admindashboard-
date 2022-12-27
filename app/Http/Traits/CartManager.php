@@ -305,7 +305,6 @@ trait cartManager{
        */
       public function getCartsNew($cart, $address_id=0 , $code = 'D',$schedule_datetime_del='')
       {
-
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
         $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $this->config();
@@ -631,7 +630,7 @@ trait cartManager{
                         $container_charges_in_doller_compare = $container_charges_in_currency * $customerCurrency->doller_compare;
                     }
 
-                    if ((Auth::user()->role_id == 3)) {
+                    if ((@Auth::user()->role_id == 3)) {
                         $quantity_role_price = $this->calculatePrice($prod->productVariantByRoles, $prod->quantity);
                     }
                     if(@$quantity_role_price['quantity_price'] != 0 ) {
@@ -913,7 +912,7 @@ trait cartManager{
                     if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                         $payable_amount = $payable_amount + decimal_format($prod->slot_price);
                     }
-
+                    
                     // Add Delivery Slot Price In total amount
                     if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                         $delivery_slot_amount += decimal_format($prod->slot_price);
@@ -1425,6 +1424,7 @@ trait cartManager{
             $cart->sub_total =  $sub_total??0;
             $cart->products = $cartData->toArray();
         }
+        // dd($cart);
         return $cart;
       }
 

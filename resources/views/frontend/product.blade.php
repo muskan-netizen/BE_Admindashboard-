@@ -519,7 +519,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
 
 
-                                        @if(Auth::user()->role_id == 3)
+                                        @if(@Auth::user()->role_id == 3)
                                             <div class="border-product">
                                                 <h6 class="product-title">{{ __('Bulk Order')}}</h6>
                                                 <div id="bulk-order-table">

@@ -139,6 +139,7 @@ class CartController extends BaseController
     public function add(Request $request)
     {
         try {
+            // \Log::info($request->all());
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
             $user = Auth::user();
@@ -297,6 +298,9 @@ class CartController extends BaseController
                     'service_date'        => $request->has('service_date') ? $request->service_date : null,
                     'service_period'      => $request->has('service_period') ? $request->service_period : null,
                     'service_start_date'  => @$service_start_date,
+                    'slot_id'  => $request->has('sele_slot_id') ? $request->sele_slot_id : null,
+                    'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
+                    'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
                 ];
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
@@ -592,7 +596,7 @@ class CartController extends BaseController
             'vendor', 'coupon' => function ($qry) use ($cartID) {
                 $qry->where('cart_id', $cartID);
             }, 'coupon.promo.details', 'vendorProducts.pvariant.media.image', 'vendorProducts.product.media.image',
-            'vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
+            'vendorProducts.productDeliverySlot','vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
             'vendorProducts.pvariant.vset.optionData.trans' => function ($qry) use ($langId) {
@@ -690,6 +694,7 @@ class CartController extends BaseController
             $total_markup_charges = 0 ;
             $deliver_fee_charges = 0;
             $total_fixed_fee_tax = 0;
+            $delivery_slot_amount = 0;
       
             foreach ($cartData as $ven_key => $vendorData) {
                 $deliver_fee_charges = 0;
@@ -1290,7 +1295,11 @@ class CartController extends BaseController
             }
             
             } //End Tax Code
-
+            
+            // Add Delivery Slot Price In total amount
+            if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
+                $delivery_slot_amount += decimal_format($prod->slot_price);
+            }
 
             }//End cart Vendor loop
             ++$vondorCnt;
@@ -1415,6 +1424,7 @@ class CartController extends BaseController
         $cart->products = $cartData;
         $cart->item_count = $item_count;
         $cart->is_long_term_added = $is_long_term;
+        $cart->delivery_slot_amount = $delivery_slot_amount;
         $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
         if ($cart->user_id > 0) {
             //$loyalty_amount_saved = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);
