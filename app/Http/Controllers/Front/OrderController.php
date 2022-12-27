@@ -905,11 +905,11 @@ class OrderController extends FrontController
             {
                 $order = Order::where('id', $cart->editingOrder->id)->first();
                 if((strtotime($order->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
-                    return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
+                    return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing."), 400);
                 }
                 $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
                 if($VendorOrderStatus > 0){
-                    return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
+                    return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing. Please discard order editing."), 400);
                 }
                 OrderProduct::where('order_id', $order->id)->delete();
                 OrderProductPrescription::where('order_id', $order->id)->delete();
@@ -1290,19 +1290,26 @@ class OrderController extends FrontController
                         $Service_quantity = $vendor_cart_product->LongTermProducts->quantity;
                         $start_service_date = Carbon::parse($vendor_cart_product->service_start_date)->format('Y-m-d'); 
                         $end_service_date   = Carbon::parse($vendor_cart_product->service_start_date)->addMonths($vendor_cart_product->product->service_duration);
-                     
+                        $ndate =  convertDateTimeInClientTimeZone(Carbon::now());
+
                         if($vendor_cart_product->service_period=='days'){
                           
                             $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addDays(($vendor_cart_product->LongTermProducts->quantity +1) );
                             $period   = CarbonPeriod::create($start_service_date, $end_service_date);
                             $entery = 1;
                             foreach ($period as $key => $date) {
-                                if($entery <= $Service_quantity ){
-                                    $OrderLongTermServiceSchedule [] = [
-                                        'order_long_term_services_id' => $OrderLongTermServices->id,
-                                        'schedule_date'               => $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
-                                    ];
-                                    $entery++;
+                               
+                                $newDate = $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s');
+                                $UserutcTime = convertDateTimeInClientTimeZone($newDate) ;
+                              
+                                if(strtotime($ndate) < strtotime($UserutcTime) ){
+                                    if($entery <= $Service_quantity ){
+                                        $OrderLongTermServiceSchedule [] = [
+                                            'order_long_term_services_id' => $OrderLongTermServices->id,
+                                            'schedule_date'               => $UserutcTime, //
+                                        ];
+                                        $entery++;
+                                    }
                                 }
                             }
                         }elseif($vendor_cart_product->service_period=='week')
@@ -2088,10 +2095,11 @@ class OrderController extends FrontController
     public function placeOrderRequestShiprocket($request)
     {
         $ship = new ShiprocketController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
             $order_ship = $ship->createOrderRequestShiprocket($checkOrder->user_id,$checkdeliveryFeeAdded);
             }
             if ($order_ship->order_id){
@@ -2112,10 +2120,11 @@ class OrderController extends FrontController
     {
 
         $data = new AhoyController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
                 $orderDetails = $data->createPreOrderRequestAhoy($checkOrder->user_id,$checkdeliveryFeeAdded);
             }
 
@@ -2134,10 +2143,11 @@ class OrderController extends FrontController
     {
 
         $data = new DunzoController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
                 $order_lalamove = $data->createOrderRequestDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
             }
 
@@ -2159,10 +2169,11 @@ class OrderController extends FrontController
     {
 
         $lala = new LalaMovesController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id,$checkOrder->user_id,$checkOrder->id);
             }
 
@@ -2180,10 +2191,11 @@ class OrderController extends FrontController
     public function checkIfanyProductLastMileon($request)
     {
         $order_dispatchs = 2;
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
 

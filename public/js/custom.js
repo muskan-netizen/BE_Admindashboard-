@@ -2226,7 +2226,12 @@ $(document).ready(function () {
                                             $(".schedule_datetime").change();
                                             $('#slot').val($('#edit_order_schedule_slot').val());
                                         }
-                                        $("#taskschedule").click();
+                                        $("#taskschedule").trigger('click');
+                                    }
+                                    if(response.cart_error_message !=''){
+                                        success_error_alert('error', response.cart_error_message, ".cart_response");
+                                        $("#order_placed_btn").attr("disabled", true);
+                                        $("#order_placed_btn").addClass("d-none");
                                     }
                                 //}
 
@@ -5188,3 +5193,4 @@ function numberWithCommas(x) {
 }
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
+
