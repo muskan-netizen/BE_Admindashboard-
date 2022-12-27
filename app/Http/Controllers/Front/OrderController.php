@@ -905,11 +905,11 @@ class OrderController extends FrontController
             {
                 $order = Order::where('id', $cart->editingOrder->id)->first();
                 if((strtotime($order->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
-                    return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
+                    return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing."), 400);
                 }
                 $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
                 if($VendorOrderStatus > 0){
-                    return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
+                    return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing. Please discard order editing."), 400);
                 }
                 OrderProduct::where('order_id', $order->id)->delete();
                 OrderProductPrescription::where('order_id', $order->id)->delete();
@@ -1036,9 +1036,11 @@ class OrderController extends FrontController
                 $vendor_discount_amount = 0;
                 $product_taxable_amount = 0;
                 $vendor_products_total_amount = 0;
+                $vendor_total_container_charges = 0;
                 $vendor_taxable_amount = 0;
                 $is_restricted = 0;
                 $additionalPrice=0.00;
+                $quantity_container_charges = 0;
 
                 $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
@@ -1105,13 +1107,12 @@ class OrderController extends FrontController
                     // $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
-                    // $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                    $vendor_total_container_charges =  $quantity_container_charges;
+                    $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
+                    // $vendor_total_container_charges =  $quantity_container_charges;
                     //echo  "<br>payable_amount: ".$payable_amount."+ quantity_price: ".$quantity_price ;
-                    //dump("PA Start ================ ".$payable_amount); 
+
                     $payable_amount = $payable_amount + $quantity_price ;
-                    //dump("Quantity_price ".$quantity_price."/- ------ ".$quantity_price); 
-                    //dump("Payable_amount ------ ".$payable_amount); 
+
                     //$payable_amount = $payable_amount + $quantity_price;
                     //$vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
@@ -1289,19 +1290,26 @@ class OrderController extends FrontController
                         $Service_quantity = $vendor_cart_product->LongTermProducts->quantity;
                         $start_service_date = Carbon::parse($vendor_cart_product->service_start_date)->format('Y-m-d'); 
                         $end_service_date   = Carbon::parse($vendor_cart_product->service_start_date)->addMonths($vendor_cart_product->product->service_duration);
-                     
+                        $ndate =  convertDateTimeInClientTimeZone(Carbon::now());
+
                         if($vendor_cart_product->service_period=='days'){
                           
                             $end_service_date = Carbon::parse($vendor_cart_product->service_start_date)->addDays(($vendor_cart_product->LongTermProducts->quantity +1) );
                             $period   = CarbonPeriod::create($start_service_date, $end_service_date);
                             $entery = 1;
                             foreach ($period as $key => $date) {
-                                if($entery <= $Service_quantity ){
-                                    $OrderLongTermServiceSchedule [] = [
-                                        'order_long_term_services_id' => $OrderLongTermServices->id,
-                                        'schedule_date'               => $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s'), //
-                                    ];
-                                    $entery++;
+                               
+                                $newDate = $date->format('Y-m-d').' '. Carbon::parse($vendor_cart_product->start_date_time)->format('H:i:s');
+                                $UserutcTime = convertDateTimeInClientTimeZone($newDate) ;
+                              
+                                if(strtotime($ndate) < strtotime($UserutcTime) ){
+                                    if($entery <= $Service_quantity ){
+                                        $OrderLongTermServiceSchedule [] = [
+                                            'order_long_term_services_id' => $OrderLongTermServices->id,
+                                            'schedule_date'               => $UserutcTime, //
+                                        ];
+                                        $entery++;
+                                    }
                                 }
                             }
                         }elseif($vendor_cart_product->service_period=='week')
@@ -1407,14 +1415,15 @@ class OrderController extends FrontController
                             // }
                         }
                     }
-                    //dump("VPA ".$quantity_price);
-                $vendor_service_fee_percentage_amount = 0;
-                if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                    // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
-                    $vendor_service_fee_percentage_amount = ( $quantity_price * $vendor_cart_product->vendor->service_fee_percent) / 100;
-                    $payable_amount += $vendor_service_fee_percentage_amount;
-                }
-                //dump("+Service fee ".$vendor_service_fee_percentage_amount."/- ---------".$payable_amount); 
+
+                    $vendor_service_fee_percentage_amount = 0;
+                    if ($vendor_cart_product->vendor->service_fee_percent > 0) {
+                        // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
+                        $vendor_service_fee_percentage_amount = ( $quantity_price * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                        $payable_amount += $vendor_service_fee_percentage_amount;
+                        $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                    }
+
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                     if ($cart_addons) {
                         foreach ($cart_addons as $cart_addon) {
@@ -1442,14 +1451,14 @@ class OrderController extends FrontController
                         //         $payable_amount = $payable_amount + $product_tax;
                     }
 
-                }
-                //  $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
-                //echo  "    payable_amount==".$payable_amount;
+                    }
+                    //        $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
+                    //echo  "    payable_amount==".$payable_amount;
                 }
                 
+                // $payable_amount+= $total_container_charges;
                 $payable_amount+= $vendor_total_container_charges;
-                //dump("+Container_charges ".$vendor_total_container_charges."/- ---".$payable_amount); 
-            
+           
                 //echo "vendor_total_container_charges: ".$vendor_total_container_charges."payable_amount: ".$payable_amount."<br>";
 
                 $coupon_id = null;
@@ -1492,9 +1501,8 @@ class OrderController extends FrontController
 
 
                 //End applying service fee on vendor products total
-                $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                // $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $OrderVendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
-                //echo  "total_service_fee: ".$total_service_fee." | ";
 
                 //$total_delivery_fee += $delivery_fee;
                 $vendor_payable_amount += $additionalPrice;
@@ -1503,7 +1511,7 @@ class OrderController extends FrontController
 
                 
                 $payable_amount+= $additionalPrice;
-                //dump("+AdditionalPrice ".$additionalPrice."/- ----".$payable_amount); 
+
                 $totalAdditionalPrice+= $additionalPrice;
 
 
@@ -1539,6 +1547,7 @@ class OrderController extends FrontController
                 $OrderVendor->payable_amount = $vendor_payable_amount;
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
+
                 $OrderVendor->is_restricted = $is_restricted;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
@@ -1593,7 +1602,7 @@ class OrderController extends FrontController
             $order->taxable_amount = $total_taxable_amount;
             
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
-            //dump("+TotDelivery_fee ".$total_delivery_fee."/- -Total_disco ".$total_discount."/- --".$payable_amount);
+
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $payable_amount) {
                     $loyalty_amount_saved = $payable_amount;
@@ -1601,7 +1610,7 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
-            //dump("+Fixed_fee ".$fixed_fee_amount."/- -Loyalty_amount ".$loyalty_amount_saved. "/- ---".$payable_amount);
+
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
 
             
@@ -1621,7 +1630,7 @@ class OrderController extends FrontController
             
             // $payable_amount = $payable_amount + $tip_amount + $total_taxable_amount+$total_other_taxes;
             $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
-            //dump("+Tip ".$tip_amount."/- &_other_taxes ".$total_other_taxes."/- ------- ".$payable_amount);
+
             $wallet_amount_used = 0;
             if ($user) {
                 if ($user->balanceFloat > 0) {
@@ -1637,9 +1646,9 @@ class OrderController extends FrontController
                     }
                 }
             }
-            //dump("-Wallet_amount ---------- ".$payable_amount);
+
             $payable_amount = $payable_amount - $wallet_amount_used;
-            //dd("Last -------------------- ".$payable_amount);
+
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
@@ -2073,10 +2082,11 @@ class OrderController extends FrontController
     public function placeOrderRequestShiprocket($request)
     {
         $ship = new ShiprocketController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
             $order_ship = $ship->createOrderRequestShiprocket($checkOrder->user_id,$checkdeliveryFeeAdded);
             }
             if ($order_ship->order_id){
@@ -2097,10 +2107,11 @@ class OrderController extends FrontController
     {
 
         $data = new AhoyController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
                 $orderDetails = $data->createPreOrderRequestAhoy($checkOrder->user_id,$checkdeliveryFeeAdded);
             }
 
@@ -2119,10 +2130,11 @@ class OrderController extends FrontController
     {
 
         $data = new DunzoController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
                 $order_lalamove = $data->createOrderRequestDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
             }
 
@@ -2144,10 +2156,11 @@ class OrderController extends FrontController
     {
 
         $lala = new LalaMovesController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id,$checkOrder->user_id,$checkOrder->id);
             }
 
@@ -2165,10 +2178,11 @@ class OrderController extends FrontController
     public function checkIfanyProductLastMileon($request)
     {
         $order_dispatchs = 2;
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
 

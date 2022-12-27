@@ -157,6 +157,7 @@
     $incTax = 0;
     $product_container_charges_tax_amount=0;
 
+    $tax_container_charges_percentage=$cart_details->container_charges_tax;
     $other_taxes=$cart_details->other_taxes;
     $other_taxes_string=$cart_details->other_taxes_string;
     @endphp
@@ -771,10 +772,9 @@
                 $other_taxes = $other_taxes+$product_container_charges_tax_amount;
                 $other_taxes_string=$other_taxes_string.',tax_product_container_charges:'.$product_container_charges_tax_amount;
                 $incTax = 1;
-            }else if($tax_container_charges_percentage>0){
-
-                $other_taxes=$other_taxes+($cart_details->$total_container_charges*$tax_container_charges_percentage/100);
-                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'+($cart_details.$total_container_charges*$tax_container_charges_percentage/100);
+            }else if($tax_container_charges_percentage > 0){
+                $other_taxes=$other_taxes+$tax_container_charges_percentage;
+                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'.$tax_container_charges_percentage;
                 $incTax = 1;
             }
             @endphp
@@ -795,7 +795,9 @@
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 @else  --}}
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount)}}</b></span>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">           
+                    {{ decimal_format($cart_details->gross_amount) }} 
+                </b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 {{-- @endif --}}
             </div>
@@ -938,8 +940,8 @@
 
                     {{-- Schedual code Start at down --}}
         @if( !((($product->vendor->order_min_amount) > 0) &&  (($product->product_total_amount + $product->vendor->fixed_fee_amount) < ($product->vendor->order_min_amount))) )
-            @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1 && (!in_array($serviceType ,['appointment','on_demand']) ) )
-                @if($client_preference_detail->business_type != 'laundry')
+            @if(($cart_details->is_long_term_service != 1 ) && ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1 && (!in_array($serviceType ,['appointment','on_demand']) ) )
+                @if($client_preference_detail->business_type != 'laundry' )
             <div class="row arabic-lng position-relative my-3" id="dateredio">
                 <div class=" col-md-12 mb-2 mb-md-0 text-right">
                     <div class="login-form col schedule_btn">
@@ -1006,10 +1008,15 @@
                             {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
                         @endif
                         @if(!empty($cart_details->editing_order) && !empty($cart_details->editing_order->scheduled_date_time) && !empty($edit_order_schedule_datetime))
-                        <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
-                        <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
+                            <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
+                            <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
                         @endif
-                        <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                            @if($cart_error_message=='')
+                                <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                            @else
+                            <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
+                        @endif
+                        
                     </div>
                 @endif
 

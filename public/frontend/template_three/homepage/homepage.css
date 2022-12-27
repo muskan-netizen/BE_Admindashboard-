@@ -131,11 +131,13 @@ article#page-container section .vendors section{padding:20px 0 !important;margin
 .al_body_template_three .tip_radio_controls{text-align: left;}
 }
 
-
+body.dark.al_body_template_three .al_box_third_template {
+    background: #222 !important;
+}
 body.al_body_template_three .al_box_third_template {
     border-color: #e8e8e8!important;
     box-shadow: rgb(28 28 28 / 3%) 0 .4rem 0.8rem!important;
-    background-color: #fff!important;
+    background-color: #fff;
     box-sizing: border-box!important;
     border: 1px solid #e8e8e8!important;
 }

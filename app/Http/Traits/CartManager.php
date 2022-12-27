@@ -217,6 +217,11 @@ trait cartManager{
                 }
             }
 
+            $container_charges_tax_rate = 0;
+            if($vendorData->vendor->container_charges_tax_id!=null){
+                    $container_charges_tax_rate=$taxRates[$vendorData->vendor->container_charges_tax_id]['tax_rate'];
+            }
+
             $fixed_fee_tax_rate = 0;
             if($vendorData->vendor->fixed_fee_tax_id!=null){
                 if(isset($taxRates[$vendorData->vendor->fixed_fee_tax_id])){
@@ -243,12 +248,16 @@ trait cartManager{
             $vendor_service_fee_percentage_amount =  $taxChargeable['vendor_service_fee_percentage_amount'];
             $total_fixed_fee_amount =  $taxChargeable['total_fixed_fee_amount'];
             $total_markup_charges =  $taxChargeable['total_markup_charges'];
+            $total_container_charges =  $taxChargeable['total_container_charges'];
 
 
             if(!$this->additionalPreferences->is_tax_price_inclusive)
             {
                 if($vendorData->vendor->delivery_charges_tax)
                 $taxCharges['deliver_fee_charges'] =  $deliveryCharges * $delivery_charges_tax_rate/100;
+
+                if($vendorData->vendor->container_charges_tax)
+                $taxCharges['container_charges_tax'] =  $total_container_charges * $container_charges_tax_rate/100;
 
                 if($vendorData->vendor->service_charges_tax)
                 $taxCharges['total_service_fee'] =  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
@@ -262,6 +271,9 @@ trait cartManager{
 
                 if($vendorData->vendor->delivery_charges_tax)
                 $taxCharges['deliver_fee_charges'] =  ($deliveryCharges * $delivery_charges_tax_rate)/(100 + $delivery_charges_tax_rate);
+
+                if($vendorData->vendor->container_charges_tax)
+                $taxCharges['container_charges_tax'] =  ($total_container_charges * $container_charges_tax_rate)/(100 + $container_charges_tax_rate);
 
                 if($vendorData->vendor->service_charges_tax)
                 $taxCharges['total_service_fee'] =  ($vendor_service_fee_percentage_amount * $service_charges_tax_rate)/(100 + $service_charges_tax_rate);
@@ -416,6 +428,8 @@ trait cartManager{
             $total_markup_charges = 0;
             $total_quantity = 0;
             $deliveryCharges_real = 0;
+            $is_long_term_service = 0;
+            $container_charges_tax = 0;
 
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
@@ -523,6 +537,7 @@ trait cartManager{
                     $prod->is_long_term_service = 0;
                     if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
                         $vendorData->is_long_term_service = 1;
+                        $is_long_term_service = 1;
                         $LongTermProducts = $prod->product->LongTermProducts;
                         if($prod->product->ServicePeriod){
                             $prod->product->ServicePeriods = $prod->product->ServicePeriod->pluck('service_period')->toArray();
@@ -617,8 +632,9 @@ trait cartManager{
                         $container_charges_in_doller_compare = $container_charges_in_currency * $customerCurrency->doller_compare;
                     }
                     $quantity_price = $price_in_doller_compare * $prod->quantity;
-                    $sub_total+=$quantity_price+$container_charges_in_currency;
+                    // $total_container_charges = $container_charges_in_currency * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
+                    $sub_total+=$quantity_price+$quantity_container_charges;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
                     $total_quantity += $prod->quantity;
                     $prod->pvariant->price = decimal_format($price_in_currency);
@@ -932,7 +948,7 @@ trait cartManager{
                                     $payable_amount -= $total_discount_percent;
                                     $coupon_amount_used = $total_discount_percent;
                                 } else {
-                                    $gross_amount = decimal_format($payable_amount - $taxable_amount-$quantity_container_charges);
+                                    $gross_amount = decimal_format($payable_amount - $taxable_amount-$total_container_charges);
                                     $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
                                     $payable_amount -= $percentage_amount;
                                     $coupon_amount_used = $percentage_amount;
@@ -1078,9 +1094,10 @@ trait cartManager{
 
 
                 $taxChargeable['deliveryCharges'] = $total_deliver_charges;
-                $taxChargeable['vendor_service_fee_percentage_amount'] = $vendor_service_fee_percentage_amount;
+                $taxChargeable['vendor_service_fee_percentage_amount'] = $total_service_fee;
                 $taxChargeable['total_fixed_fee_amount'] = $total_fixed_fee_amount;
                 $taxChargeable['total_markup_charges'] = $total_markup_charges;
+                $taxChargeable['total_container_charges'] = $total_container_charges;
 
                 $getalltaxes = $this->getAllOthertaxes($vendorData,$taxChargeable,$taxCharges);
 
@@ -1088,6 +1105,7 @@ trait cartManager{
                 $taxCharges['total_service_fee'] = $getalltaxes->total_service_fee??0;
                 $taxCharges['total_fixed_fee_tax'] = $getalltaxes->total_fixed_fee_tax??0;
                 $taxCharges['total_markup_fee_tax'] = $getalltaxes->total_markup_fee_tax??0;
+                $container_charges_tax = $getalltaxes->container_charges_tax??0;
 
             }//End vendor loop
 
@@ -1283,16 +1301,18 @@ trait cartManager{
             $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'].',product_tax_fee:'.$total_taxable_amount;;
 
 
-
+            $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
             $cart->other_taxes = $other_taxes;
             $cart->other_taxes_string = $other_taxes_string;
+            $cart->container_charges_tax =  decimal_format($container_charges_tax);
             $cart->slotsCnt = count((array)$slots);
             $cart->pickupSlotsCnt = count((array)$pickupSlots);
             $cart->dropoffSlotsCnt = count((array)$dropoffSlots);
             $cart->total_service_fee = decimal_format($total_service_fee);
             $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
-            $cart->gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
+            $cart->gross_amount = ($gross_amount < 0) ? decimal_format(0) : decimal_format($gross_amount);
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
+            $cart->is_long_term_service = $is_long_term_service ;
             if(!$this->additionalPreferences->is_tax_price_inclusive){
                 $cartTotalPay = decimal_format($total_payable_amount);
                // pr( $cartTotalPay);

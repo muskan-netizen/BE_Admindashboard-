@@ -278,6 +278,13 @@ body.al_body_template_eight #al_new_design .pixelstrap ul {
     line-height: 50px !important;
     object-fit: cover;
 }
+body.dark.al_body_template_eight ul.header-dropdown li a span {
+    color: #fff !important;
+}
+body.dark.al_body_template_eight .top-header .header-dropdown li span {
+    color: #fff;
+}
+
 
 /*--------------inner page header---------*/
 body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
