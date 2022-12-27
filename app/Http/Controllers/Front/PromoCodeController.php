@@ -329,7 +329,7 @@ class PromoCodeController extends Controller{
             if($product_ids){
                 $checkRefferalCode = $this->checkRefferalCode($request->promocode, $now);
                 if (!empty($checkRefferalCode)) {
-                    dd('fgd');
+                    $promo_detail = $checkRefferalCode;
                 }else{
                     $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
                     $promo_detail = Promocode::where(['name' => $request->promocode])->whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details) {
@@ -371,16 +371,16 @@ class PromoCodeController extends Controller{
                             );
                         })->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->first();
                     }
+                    if(!$promo_detail){
+                        return $this->errorResponse(__('Invalid Promocode'), 422);
+                    }
+                    if($total_minimum_spend < $promo_detail->minimum_spend){
+                        return $this->errorResponse(__('Cart amount is less than required amount'), 422);
+                    }
+                    if($total_minimum_spend > $promo_detail->maximum_spend){
+                        return $this->errorResponse(__('Cart amount is greater than required amount'), 422);
+                    }
                 }
-            }
-            if(!$promo_detail){
-                return $this->errorResponse(__('Invalid Promocode'), 422);
-            }
-            if($total_minimum_spend < $promo_detail->minimum_spend){
-                return $this->errorResponse(__('Cart amount is less than required amount'), 422);
-            }
-            if($total_minimum_spend > $promo_detail->maximum_spend){
-                return $this->errorResponse(__('Cart amount is greater than required amount'), 422);
             }
 
             // $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id')->toArray();
