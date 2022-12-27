@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\BidRequest;
+use App\Models\{BidRequest,Bid};
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\Vendor;
@@ -11,14 +11,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-
+use App\Http\Traits\{ApiResponser,BiddingCartTrait};
 class BiddingController extends Controller
 {
+    use ApiResponser,BiddingCartTrait;
     public function uploadBiddingPrescription(Request $request, $domain = '')
     {
         $user = Auth::user();
         if ($user) {
-            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             if ($request->hasFile('prescriptions')) {
                     
                 $file = $request->file('prescriptions');
@@ -28,10 +28,12 @@ class BiddingController extends Controller
                     $file_name = uniqid() .'.'.  $file->getClientOriginalExtension();
                     $s3filePath = '/assets/'.$folder.'/orders' . $file_name;
                     $path = Storage::disk('s3')->put($s3filePath, $file, 'public');
-                    $cart_product_prescription = new BidRequest();
-                    $cart_product_prescription->description = $request->description;
-                    $cart_product_prescription->prescription =  $path ;
-                    $cart_product_prescription->save();
+                    $url = Storage::disk('s3')->url($path);
+                    $BidRequest = new BidRequest();
+                    $BidRequest->user_id   =  $user->id; 
+                    $BidRequest->description = $request->description;
+                    $BidRequest->prescription =  $url ;
+                    $BidRequest->save();
                // }
             }
         }
@@ -50,13 +52,16 @@ class BiddingController extends Controller
 
     public function getUserPrescription(Request $request){
         $user = Auth::user();
-
-        if(!empty($request->prescriptionId) && $request->requestType == 'delete_prescription'){
-            BidRequest::where('id', $request->prescriptionId)->delete();
-            return response()->json(['status' => 'success', 'message' => "Prescription remove Successfully"]);
-        }
-
-        $bidPrescription = bidRequest::where('id' ,$user->id)->get()->toArray();
+        $bidPrescription = bidRequest::where('user_id' ,$user->id)->withCount('bids')->with('bids.vendor')->get();
+        return response()->json($bidPrescription);
+    }
+    public function getbidList($bid_id){
+        $user            = Auth::user();
+        $langId = Auth::user()->language;
+        $bidPrescription = Bid::where('prescription_id' ,$bid_id)->with(['vendor','bidProducts.product.translation_one' => function ($q) use ($langId) {
+            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+            $q->where('language_id', $langId);
+        }])->get();
         return response()->json($bidPrescription);
     }
 
@@ -86,26 +91,26 @@ class BiddingController extends Controller
             }
             $vendor_ids =  $vendors->pluck('id');
 
-
-            $products = Product::byProductCategoryServiceType($action)->join('product_translations as pt', 'pt.product_id', 'products.id')
-                ->select('products.id', 'products.sku', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
-                ->where('pt.language_id', $langId)
-                ->whereHas('vendor', function ($query) use ($action) {
-                    $query->where($action, 1);
-                })
-                ->where(function ($q) use ($keyword) {
-                    $q->where('products.sku', ' LIKE', '%' . $keyword . '%')
-                        ->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')
-                        ->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
-                });
-                $products = $products->where('products.is_live', 1)
-                        ->whereIn('vendor_id', $vendor_ids)
-                        ->whereNull('deleted_at')->groupBy('products.id')
-                        ->paginate($limit, $page);
-            foreach ($products as $product) {
-                $product->response_type = 'product';
-                $response[] = $product;
-            }
+            $response  = $this->searchProduct($langId,$keyword,$vendor_ids);
+            // $products = Product::byProductCategoryServiceType($action)->join('product_translations as pt', 'pt.product_id', 'products.id')
+            //     ->select('products.id', 'products.sku', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
+            //     ->where('pt.language_id', $langId)
+            //     ->whereHas('vendor', function ($query) use ($action) {
+            //         $query->where($action, 1);
+            //     })
+            //     ->where(function ($q) use ($keyword) {
+            //         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')
+            //             ->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')
+            //             ->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
+            //     });
+            //     $products = $products->where('products.is_live', 1)
+            //             ->whereIn('vendor_id', $vendor_ids)
+            //             ->whereNull('deleted_at')->groupBy('products.id')
+            //             ->paginate($limit, $page);
+            // foreach ($products as $product) {
+            //     $product->response_type = 'product';
+            //     $response[] = $product;
+            // }
             return $this->successResponse($response);
 
         } catch (Exception $e) {

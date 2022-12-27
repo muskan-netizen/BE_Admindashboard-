@@ -115,7 +115,7 @@
                                                 <td>
                                                     <a href="{{$prescription->prescription}}" target="_blank"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
 
-                                                    <a href="javascript:void(0)" data-prescription="{{$prescription->id}}" id="biddingBitton" ><i class="fa fa-gavel" aria-hidden="true"></i></a>
+                                                    <a href="javascript:void(0)" class="biddingBitton" data-prescription="{{$prescription->id}}"  ><i class="fa fa-gavel" aria-hidden="true"></i></a>
                                                 </td>
                                             </tr>
                                             @endforeach
@@ -245,8 +245,8 @@
         $(this).parent().parent().remove();
     });
 
-    $("#placeBidForm").submit(function() {
-
+    $("#placeBidForm").submit(function(e) {
+        e.preventDefault();
         var formData = $("#productTable tr").map(function() {
         var $this = $(this);
         return {
@@ -326,7 +326,7 @@
         }
     }
 
-    $('#biddingBitton').click(function(){
+    $('.biddingBitton').click(function(){
         var prescription_id = $(this).attr('data-prescription');
 
         $('.biddingModel').modal('show');

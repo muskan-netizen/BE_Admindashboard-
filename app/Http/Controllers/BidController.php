@@ -29,23 +29,34 @@ class BidController extends FrontController
         $prescriptions = BidRequest::where('id', $user->id)->where('status' , '=' , 0)
         ->with('bids')->get();
         $bids = Bid::with('bidProducts','vendor')->get();
-         //dd($vendorBids->toArray());
+        
         return view('frontend.bidding_module.index', compact('prescriptions','bids'));
     }
 
     public function create()
     {
         $prescriptions = BidRequest::where('status' , '=' , 0)->get();
+        //dd($prescriptions->toArray());
         return view('frontend.bidding_module.create', compact('prescriptions'));
     }
 
     public function store(Request $request)
     {
        $user = Auth::user();
-       $prod_vendor = Vendor::where('email', '=' , Auth::user()->email)->pluck('id');
-       $prod_vendor = $prod_vendor[0];
-       $products = json_decode($request->data,true);
-    //    dd($products);
+       $vendors = Vendor::where('status','1');
+       if (Auth::user()->is_superadmin == 0) {
+           $vendors = $vendors->whereHas('permissionToUser', function ($query) {
+               $query->where('user_id', Auth::user()->id);
+           });
+       }
+       $prod_vendor =  $vendors->first();
+       if(!$prod_vendor){
+            Session::flash('error', 'Somthing went wrong!');
+            return $this->successResponse(__('Somthing went wrong!'),'400');
+       }
+       $vendor_id = $prod_vendor->id;
+       
+       $products    = json_decode($request->data,true);
        $discount = $products[0]['discount'];
        $prescription_id = $products[0]['prescription_id'];
 
@@ -84,7 +95,6 @@ class BidController extends FrontController
 
     public function search(Request $request)
     {
-
         $response = [];
         $user = Auth::user();
         $keyword = $request->input('keyword');

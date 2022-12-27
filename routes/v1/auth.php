@@ -231,5 +231,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('/create-contact', 'Hubspot\HubspotApiController@create');
 
+        //Bidding Controller
+        Route::post('upload/bid/prescriptions',    'Api\v1\BiddingController@uploadBiddingPrescription');
+        Route::get('get/vendor/bid/prescriptions', 'Api\v1\BiddingController@getVendorPrescription');
+        Route::get('get/user/bid/prescriptions',   'Api\v1\BiddingController@getUserPrescription');
+        Route::post('delete/bid/prescriptions',     'Api\v1\BiddingController@deleteProductPrescription');
+        Route::post('get/vendor/product/search',   'Api\v1\BiddingController@search');
+        Route::get('get/user/bid/listing/{bid_id}',   'Api\v1\BiddingController@getbidList');
+
     });
 });
