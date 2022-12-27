@@ -2418,6 +2418,7 @@ class CartController extends FrontController
         return response()->json(['status' => 'success', 'message' => "Uploaded Successfully"]);
     }
 
+
     public function addVendorTableToCart(Request $request, $domain = '')
     {
         DB::beginTransaction();

@@ -182,10 +182,10 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="" id='loader'>
+                    {{-- <div class="" id='loader'>
                         <img src="{{asset('assets/images/loading_new.gif')}}" alt=""  width="40px" class="pr-2">
                         <p class="mb-0">we are looking for bids...</p>
-                    </div>
+                    </div> --}}
 
                     @foreach ($bids as $bid)
                         <div id="accordion">
@@ -222,7 +222,7 @@
                                                     </tbody>
                                                     <tfoot>
                                                         <th><span>Total : {{$bid->bid_total}}</span></th>
-                                                        <th><span>Discont % : {{$bid->discount}}</span></th>
+                                                        <th><span>Discont % : <br> {{$bid->discount}}</span></th>
                                                         <th><span>Final Total : {{$bid->final_amount}}</span></th>
                                                         <th>
                                                             <a href="#"><button type="submit" class="btn btn-success">Accept / Add to Cart</button></a>

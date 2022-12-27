@@ -1083,7 +1083,7 @@ if (!function_exists('getServiceTypesCategory')) {
                     session()->put('vendorType', 'p2p');
                 }
             }
-           
+
             $types =   Type::query();
             $service_types = [];
             if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
@@ -1098,7 +1098,7 @@ if (!function_exists('getServiceTypesCategory')) {
                 $service_types = ['laundry_service'];
             } elseif ($vendorType == "appointment") {
                 $service_types = ['appointment_service'];
-            } 
+            }
             // elseif ($vendorType == "p2p") {
             //     $service_types = ['products_service'];
             // }
@@ -1196,7 +1196,7 @@ if (!function_exists('getCategoryTypesServices')) {
                 break;
             case "super_app":
                 $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p'];
-               
+
                 break;
             default:
             $typeArray =['products_service','pick_drop_service','on_demand_service','appointment_service'];
@@ -1286,7 +1286,7 @@ if (!function_exists('inventorySyncOnOff')) {
     function inventorySyncOnOff($vendor_id)
     {
         if (!empty($vendor_id) && checkColumnExists('client_preferences', 'inventory_service_key_url')) {
-            
+
             $client_preferences = ClientPreference::first();
             if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
 
@@ -1320,7 +1320,7 @@ if( !function_exists('clientPrefrenceModuleStatus') ) {
         if( checkColumnExists('client_preferences', $module_name) ) {
             return ClientPreference::first()->value($module_name);
         }
-        
+
     }
 }
 
@@ -1331,7 +1331,7 @@ if( !function_exists('p2p_module_status') ) {
             return true;
         }
         return false;
-    }   
+    }
 }
 
 if( !function_exists('is_p2p_vendor') ) {
@@ -1345,9 +1345,9 @@ if( !function_exists('is_p2p_vendor') ) {
                 return false;
             }
         }
-        
+
         $vendor = Vendor::where('id', $vendor_id)->first();
-       
+
         if(@$vendor->p2p && $vendor->p2p == 1) {
             return true;
         }
@@ -1367,21 +1367,21 @@ if( !function_exists('is_category_p2p') ) {
 
 // if( !function_exists('is_p2p_vendor') ) {
 //     function is_p2p_vendor() {
-        
+
 //         if( p2p_module_status() ) {
-            
+
 //             if(auth()->user() && (auth()->user()->is_superadmin != 1)) {
 
 //                 $auth_user = auth()->user();
 //                 $user_vendor = UserVendor::where('user_id', $auth_user->id)->first();
-                
-                
-                
+
+
+
 //                 if( !empty($user_vendor->vendor_id) ) {
 
 //                     $vendor = Vendor::where('id', $user_vendor->vendor_id)->first();
 //                     $client_preference = (object)session()->get('preferences');
-                    
+
 //                     foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
 //                         $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
 //                         $clientVendorTypes = $vendor_typ_key.'_check';
@@ -1390,7 +1390,7 @@ if( !function_exists('is_category_p2p') ) {
 //                             $offers[]=  $vendor->$VendorTypesName == 1 ? getNomenclatureName($NomenclitureName) : $NomenclitureName;
 //                         }
 //                     }
-                    
+
 //                     if( count($offers) > 1 ) {
 //                         return false;
 //                     }
@@ -1407,31 +1407,32 @@ if( !function_exists('is_category_p2p') ) {
 //     }
 // }
 
-
-function generateSlug($name)
-{
-    if (Product::whereSku($slug = $name)->exists()) {
-        $max = Product::whereSku($name)->latest('id')->value('sku');
-        if (isset($max[-1]) && is_numeric($max[-1])) {
-            return preg_replace_callback('/(\d+)$/', function($mathces) {
-                return $mathces[1] + 1;
-            }, $max);
+if( !function_exists('generateSlug') ) {
+    function generateSlug($name)
+    {
+        if (Product::whereSku($slug = $name)->exists()) {
+            $max = Product::whereSku($name)->latest('id')->value('sku');
+            if (isset($max[-1]) && is_numeric($max[-1])) {
+                return preg_replace_callback('/(\d+)$/', function($mathces) {
+                    return $mathces[1] + 1;
+                }, $max);
+            }
+            return $slug.'-'.rand();
         }
-        return $slug.'-'.rand();
+        return $slug;
     }
-    return $slug;
 }
 
 if( !function_exists('get_tiny_url') ) {
-    function get_tiny_url($url)  {  
-        $ch = curl_init();  
-        $timeout = 5;  
-        curl_setopt($ch,CURLOPT_URL,'https://tinyurl.com/api-create.php?url='.$url);  
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);  
-        curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);  
-        $data = curl_exec($ch);  
-        curl_close($ch);  
-        return $data;  
+    function get_tiny_url($url)  {
+        $ch = curl_init();
+        $timeout = 5;
+        curl_setopt($ch,CURLOPT_URL,'https://tinyurl.com/api-create.php?url='.$url);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
     }
 }
 
