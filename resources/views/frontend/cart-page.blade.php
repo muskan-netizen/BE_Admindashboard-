@@ -161,8 +161,8 @@
     $other_taxes=$cart_details->other_taxes;
     $other_taxes_string=$cart_details->other_taxes_string;
     @endphp
+    {{-- @dd($cart_details->products) --}}
     @foreach($cart_details->products as $product)
-
             {{-- @php
             dd($product->is_vendor_closed.' -- '.$product->closed_store_order_scheduled);
             @endphp --}}
@@ -214,10 +214,11 @@
 
 
         {{-- Product Detail Loop --}}
-
+        
         <div id="tbody_{{$product->vendor->id}}">
 
             @foreach($product->vendor_products as $vendor_product)
+            {{-- @dd($vendor_product) --}}
             {{-- @php
             pr($vendor_product);
             @endphp --}}
@@ -246,12 +247,22 @@
                                 @endforeach
                                 @endif
                             </div>
+                            @php
+                                $getAdditionalPreference = getAdditionalPreference(['is_corporate_user']);
+                                $corporate_user_price = 0;
+                            @endphp
+                            @if( (@Auth::user()->role_id == 3) && ($getAdditionalPreference['is_corporate_user'] == 1) && !empty($vendor_product->product_variant_by_roles) && !empty($vendor_product->quantity_role_price) && $vendor_product->quantity_role_price->quantity_price != 0 )
+                                <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->quantity_role_price->amount) }}</div>
+                                </div>
+                            @else
+                                @if(isset($vendor_product->pvariant->actual_price))
+                                <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
+                                </div>
+                                @endif
+                            @endif                            
 
-                            @if(isset($vendor_product->pvariant->actual_price))
-                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
-                            </div>
-                            @endif
                             @if(!empty($vendor_product->quantity_price))
                             <div class="col-6 col-md-2 text-left order-md-4">
                                 @if($serviceType ==  'rental')
@@ -263,7 +274,12 @@
                                 @endphp
                                     <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + ($additionalPrice )) }}</div>
                                 @else
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                    @if( $corporate_user_price != 0 )
+                                        <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($corporate_user_price) * $vendor_product->quantity }}</div>
+                                    @else
+                                        <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                    @endif
+                                
                                 @endif
                             </div>
                             @endif
@@ -449,6 +465,10 @@
                         @endif
                         @if( $vendor_product->product->is_long_term_service ==  1)
                         @include('frontend.cart.longTermTimeSelection')
+                        @endif
+
+                        @if( $vendor_product->product->same_day_delivery ==  1 && $vendor_product->product->next_day_delivery ==  1)
+                            @include('frontend.cart.deliverySlotSelection')
                         @endif
                     
                     </div>
@@ -742,6 +762,15 @@
                 </div>
                 <hr class="my-2">
             @endif
+            
+            @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
+                <div class="row">
+                    <div class="col-6">{{__('Delivery Slot Fees')}}</div>
+                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+        
         @if($cart_details->total_service_fee > 0 && $price_bifurcation!=1)
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
@@ -908,7 +937,6 @@
                         </div>
                         @endif
                 </div>
-
 
                 <div class="col-6 text-right">
                     @if($client_preference_detail->auto_implement_5_percent_tip == 1)
