@@ -197,7 +197,7 @@ class OrderController extends BaseController
 
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-                    $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+                    $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon','vendorProducts.productVariantByRoles')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
                
@@ -289,6 +289,7 @@ class OrderController extends BaseController
                     $total_container_charges = 0;
                     $fixed_fee_amount = 0.00;
                     $vendor_total_container_charges = 0;
+                    $slot_based_price = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $delivery_fee = 0;
                         $deliver_charge = $delivery_fee_charges = 0.00;
@@ -316,7 +317,10 @@ class OrderController extends BaseController
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
-
+                            // @dd($vendor_cart_product->productVariantByRoles);
+                            if( !empty($vendor_cart_product->slot_price) ) {
+                                $slot_based_price += $vendor_cart_product->slot_price;
+                            }
                             if ((isset($client_preference->is_hyperlocal)) && ($client_preference->is_hyperlocal == 1) && ($latitude) && ($longitude)){
                                 if (!empty($latitude) && !empty($longitude)) {
                                     if(($client_preference->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
@@ -482,6 +486,19 @@ class OrderController extends BaseController
                             if ($vendor_cart_product->product->pimage) {
                                 $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                             }
+
+                            if(checkColumnExists('order_vendor_products', 'slot_id')){
+                                $order_product->slot_id = !empty($vendor_cart_product->slot_id) ? $vendor_cart_product->slot_id : null;
+                            }
+        
+                            if(checkColumnExists('order_vendor_products', 'delivery_date')){
+                                $order_product->delivery_date = !empty($vendor_cart_product->delivery_date) ? $vendor_cart_product->delivery_date : null;
+                            }
+        
+                            if(checkColumnExists('order_vendor_products', 'slot_price')){
+                                $order_product->slot_price = !empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
+                            }
+                            
                             $order_product->save();
 
                             if( ($checkLongTermInDB ==1) && $vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
@@ -704,7 +721,7 @@ class OrderController extends BaseController
                         $order_status->save();
                     }
                     
-                    $payable_amount = $payable_amount + $total_taxes + $additional_price;
+                    $payable_amount = $payable_amount + $total_taxes + $additional_price + $slot_based_price;
 // dump("point - ".$payable_amount);
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 

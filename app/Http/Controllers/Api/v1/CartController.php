@@ -1053,6 +1053,10 @@ class CartController extends BaseController
                         }
                     }
                 }
+                // Add Delivery Slot Price In total amount
+                if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
+                    $payable_amount = $payable_amount + decimal_format($prod->slot_price);
+                }
                 // echo $payable_amount ;
                 // exit();
                 $couponGetAmount = $payable_amount ;
