@@ -49,7 +49,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                     <div class="col-lg-6">
                         <div class="product-order py-3 pro-scroller">
                             <h3>{{__('Your Order Details')}}</h3>
-                         
+
                             @foreach($order->products as $product)
                             {{-- {{dd($product['vendor']->name)}} --}}
                                 @php
@@ -86,7 +86,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                                             <h5>{{$dura}}</h5>
                                                         @else
                                                             <h4>{{__('Quantity')}}</h4>
-                                                            
+
                                                             <h5>{{$product->quantity}}</h5>
                                                         @endif
                                                     </div>
@@ -95,7 +95,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                                 <div class="col-4 order_detail">
                                                     <div>
                                                         <h4>{{__('Price')}}</h4>
-                                                        <h5 class="total_booking_time" >{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}} @if(in_array($serviceType , ['appointment','on_demand'])) 
+                                                        <h5 class="total_booking_time" >{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}} @if(in_array($serviceType , ['appointment','on_demand']))
                                                             <span > {{ $product->total_booking_time > 0 ? $product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif</h5>
                                                         @if($product->container_charges>0)
                                                         <h4>{{__('Container Charges')}}</h4>
@@ -142,19 +142,19 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                                     <div class="sch_slot py-1">
                                                         <h6 class="m-0 pl-0">{{__('Scheduled slot')}}</h6>
                                                         <p class="p-0 m-0 float-right product_slot"><span>
-                                                            {{ date('F d, Y',strtotime(dateTimeInUserTimeZone($product->scheduled_date_time, $timezone))) }}  
+                                                            {{ date('F d, Y',strtotime(dateTimeInUserTimeZone($product->scheduled_date_time, $timezone))) }}
                                                         @if($product->schedule_slot!='')  {{' ; '. $product->schedule_slot }}  @endif
                                                         </span></p>
                                                     </div>
                                                 </div>
-                                        
+
                                             @endif
                                             @if($order_is_long_term ==1)
                                                 @include('frontend.order.longTermDetails')
                                             @endif
                                         </div>
                                     </div>
-                                    
+
                             @endforeach
                             <div class="total-sec row">
                                 <ul class="col-sm-6 offset-sm-6">
@@ -210,6 +210,14 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                         @endphp
                         <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($total_amount) * @$clientCurrency->doller_compare)}}</span></h3>
                     </div>
+                    @if(!empty(@$order->advance_amount) && $order->advance_amount > 0)
+                    <div class="total-sec final-total">
+                        <h3>{{__('Advance Paid')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(@$order->advance_amount)}}</span></h3>
+                    </div>
+                    <div class="final-total">
+                        <h3>{{__('Pending Amount')}} <span>{{Session::get('currencySymbol')}}{{(decimal_format(($total_amount) * @$clientCurrency->doller_compare)) - decimal_format(@$order->advance_amount)}}</span></h3>
+                    </div>
+                    @endif
                 </div></div>
                         <div class="col-lg-6">
                         <div class="row order-success-sec">
@@ -224,7 +232,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">
-                                    <li class="col-4">{{__('Order Total')}}:<span> {{Session::get('currencySymbol')}}{{decimal_format($total_amount)}} 
+                                    <li class="col-4">{{__('Order Total')}}:<span> {{Session::get('currencySymbol')}}{{decimal_format($total_amount)}}
                                         @if(!checkColumnExists('orders', 'is_postpay'))
                                             $order->is_postpay = 0;
                                         @endif
