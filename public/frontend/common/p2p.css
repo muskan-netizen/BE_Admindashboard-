@@ -343,9 +343,15 @@ body.al_body_template_nine a#next-button-ondemand-2 {
     float: right;
 }
 
-body.al_body_template_nine .number input {
-    color: #fff;
+body.dark.al_body_template_nine .minus,
+.plus {
+    color: #000;
 }
+
+
+/* body.al_body_template_nine .number input {
+    color: #fff;
+} */
 
 body.dark.al_body_template_nine.p2p-module.modal-open form#add_edit_address_form .address-input-group input#address {
     width: 90%;
@@ -385,15 +391,30 @@ body.al_body_template_nine.p2p-module article#page-container {
     min-height: auto !important;
 }
 
-body.al_body_template_nine.p2p-module .exzoom_nav.side_nav_img span.img_active img {
-    border-color: #e9248d;
-}
-
 body.al_body_template_nine.p2p-module .chat-input-section {
     z-index: 1;
     position: absolute;
     width: 100%;
     bottom: 0;
+}
+
+body.al_body_template_nine.p2p-module .info-text p {
+    display: inline-block;
+}
+
+body.al_body_template_nine.p2p-module .info-text label {
+    display: inline-block;
+}
+
+body.al_body_template_nine.p2p-module.homeHeader .collection-content.col-lg-9.outter-fillter-data div#category_products_filter .inner_spacing h3 {
+    margin: 10px 0;
+}
+
+body.al_body_template_nine.p2p-module.homeHeader .collection-content.col-lg-9.outter-fillter-data div#category_products_filter .inner_spacing h4 {
+    border-top: 1px solid#ccc;
+    position: absolute;
+    bottom: 18px;
+    width: 92%;
 }
 
 
@@ -577,7 +598,7 @@ body.al_body_template_nine.p2p-module .address-btn {
 }
 
 body.al_body_template_nine.p2p-module .nav-tabs .nav-item {
-    margin-bottom: -1px;
+    margin-bottom: 0px;
     padding: 0 20px;
 }
 
@@ -783,19 +804,38 @@ body.al_body_template_nine .common-product-box,
     display: block;
 }
 
-body.al_body_template_nine section#alSixHomeServices .card-box {
+body.al_body_template_nine .home-serivces .col-md-4.side-card .card-box {
+    height: auto !important;
+    min-height: auto;
+}
+
+body.al_body_template_nine div#step-1-ondemand {
     height: 90vh;
     overflow-y: scroll;
 }
 
-body.al_body_template_nine .home-serivces .card-box {
-    overflow-y: scroll;
-    height: 100vh;
+body.al_body_template_nine div#step-1-ondemand .service-data {
+    padding-right: 20px;
 }
 
-body.al_body_template_nine .home-serivces .col-md-4.side-card .card-box {
-    height: auto !important;
-    min-height: auto;
+body.al_body_template_nine.p2p-module .cart-design div#mycart {
+    padding: 90px;
+}
+
+body.al_body_template_nine.p2p-module div#category_products_filter .product-image img {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+body.al_body_template_nine.p2p-module div#category_products_filter .product-image {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect h4.mt-1 {
+    border-top: 0.1px solid#ccc !important;
+    margin-top: 15px !important;
+    position: absolute;
+    width: 90%;
+    bottom: 35px;
 }
 
 
