@@ -2162,10 +2162,12 @@ class OrderController extends BaseController
                             $product->is_processor_enable = (isset($processorProduct->is_processor_enable) && $processorProduct->is_processor_enable == 1)? true : false;
                             $product->processor_name = !empty($processorProduct->name)? $processorProduct->name : '';
                             $product->processor_date = !empty($processorProduct->date)? $processorProduct->date : '';
+                            $product->processor_address = !empty($processorProduct->address)? $processorProduct->address : '';
                         }else{
                             $product->is_processor_enable = false;
                             $product->processor_name = '';
                             $product->processor_date = '';
+                            $product->processor_address = '';
                         }
 
                         $product_addons = [];

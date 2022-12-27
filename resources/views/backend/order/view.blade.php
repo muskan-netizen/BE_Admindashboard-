@@ -1288,7 +1288,7 @@
                         $(".loader_box").show();
                     },
                     success: function(response) {
-
+                        location.reload();
                     },
                     error: function(response) {
 

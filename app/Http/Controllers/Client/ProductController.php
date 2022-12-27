@@ -676,7 +676,12 @@ class ProductController extends BaseController
                     'is_processor_enable' => ($request->is_processor_enable == 1)? 1 : 0,
                     'name' => !empty($request->processor_title)? $request->processor_title : '',
                     'date' => !empty($request->processor_date)? $request->processor_date : '',
+                    'address' => !empty($request->processor_address)? $request->processor_address : '',
+                    'latitude' => !empty($request->processor_latitude)? $request->processor_latitude : '',
+                    'longitude' => !empty($request->processor_longitude)? $request->processor_longitude : '',
+                    'date' => !empty($request->processor_date)? $request->processor_date : '',
                 ];
+
                 ProcessorProduct::updateOrCreate(['product_id' => $product->id], $processorProductDetail);
 
                 // min order count

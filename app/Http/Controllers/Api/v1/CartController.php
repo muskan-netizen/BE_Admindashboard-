@@ -777,10 +777,12 @@ class CartController extends BaseController
                         $prod->is_processor_enable = (isset($processorProduct->is_processor_enable) && $processorProduct->is_processor_enable == 1)? true : false;
                         $prod->processor_name = !empty($processorProduct->name)? $processorProduct->name : '';
                         $prod->processor_date = !empty($processorProduct->date)? $processorProduct->date : '';
+                        $prod->processor_address = !empty($processorProduct->addres)? $processorProduct->addres : '';
                     }else{
                         $prod->is_processor_enable = false;
                         $prod->processor_name = '';
                         $prod->processor_date = '';
+                        $prod->processor_addres = '';
                     }
 
                     if(isset($prod->product) && !empty($prod->product)){
