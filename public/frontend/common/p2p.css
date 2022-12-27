@@ -854,6 +854,11 @@ body.al_body_template_nine.p2p-module li.onhover-dropdown.quick-links.quick-link
     display: none;
 }
 
+.top-header .header-dropdown li a i.fa.fa-heart {
+    position: relative;
+    top: 3px;
+}
+
 
 /*-------------------dark theam css-----------*/
 
