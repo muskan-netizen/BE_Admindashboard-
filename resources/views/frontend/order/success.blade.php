@@ -224,7 +224,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
 
                         @endphp
                         <h3>{{__('Total')}} <span>@if( $additionalPreference["is_token_currency_enable"]) 
-                            {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ decimal_format(($total_amount) * @$clientCurrency->doller_compare)}}@else{{Session::get('currencySymbol').decimal_format(($total_amount) * @$clientCurrency->doller_compare)}}@endif</span></h3>
+                            {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format(($total_amount) * @$clientCurrency->doller_compare))}}@else{{Session::get('currencySymbol').decimal_format(($total_amount) * @$clientCurrency->doller_compare)}}@endif</span></h3>
                     </div>
                 </div></div>
                         <div class="col-lg-6">

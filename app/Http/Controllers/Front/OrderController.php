@@ -1627,22 +1627,22 @@ class OrderController extends FrontController
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
 
             
-            $tip_amount = 0;
-            if (isset($request->tip)) {
-                $request->tip = str_replace(',', '', $request->tip);
-                $tip_amount = floatval($request->tip);
-                if( ($tip_amount != '') && ($tip_amount > 0) ){
-                    $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
-                    $order->tip_amount = $tip_amount;
-                }
+            // $tip_amount = 0;
+            // if (isset($request->tip)) {
+            //     $request->tip = str_replace(',', '', $request->tip);
+            //     $tip_amount = floatval($request->tip);
+            //     if( ($tip_amount != '') && ($tip_amount > 0) ){
+            //         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
+            //         $order->tip_amount = $tip_amount;
+            //     }
 
-            }
+            // }
             //echo  " Total payable_amount1=".$payable_amount."; <br>";
             //echo  " tip_amount=".$tip_amount." fixed_fee_amount=".$fixed_fee_amount." total_taxable_amount=".$total_taxable_amount."; <br>";
 
             
             // $payable_amount = $payable_amount + $tip_amount + $total_taxable_amount+$total_other_taxes;
-            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+            // $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
 
             $wallet_amount_used = 0;
             if ($user) {
@@ -1717,7 +1717,7 @@ class OrderController extends FrontController
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;
             }
-            //dd("order:".$order);
+            // dd($order);
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
 
