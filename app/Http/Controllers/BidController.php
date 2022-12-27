@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Front\FrontController;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,BiddingCartTrait};
 use App\Models\Bid;
 use App\Models\BidProduct;
 use App\Models\BidRequest;
@@ -22,7 +22,7 @@ use Str;
 
 class BidController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,BiddingCartTrait;
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -97,30 +97,9 @@ class BidController extends FrontController
             });
         }
         $vendor_ids =  $vendors->pluck('id');
+        
+        $response  = $this->searchProduct($language_id,$keyword,$vendor_ids);
 
-        $products = Product::with(['media', 'vendor','variant'])->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id', 'products.vendor_id')
-            ->select('products.id', 'products.sku', 'products.url_slug', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description', 'products.vendor_id', 'vendors.slug as vendor_slug')
-            ->where('pt.language_id', $language_id)
-           // ->where('products.vendor_id', $prod_vendor)
-            ->where(function ($q) use ($keyword) {
-                $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
-            })->where('products.is_live', 1);
-
-        //if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-        $products = $products->whereIn('vendor_id', $vendor_ids);
-        //}
-        $products = $products->whereNull('deleted_at')->groupBy('products.id')->get();
-
-        $product_results = [];
-        foreach ($products as $product) {
-            $redirect_url = route('productDetail', [$product->vendor_slug, $product->url_slug]);
-            $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'] . '80/80' . $product->media->first()->image->path['image_path'] : '';
-            $product_results[] = ['id' => $product->id, 'name' => $product->dataname , 'price' =>$product->variant[0]->price,];
-        }
-        if (@$product_results) {
-            $response[] = ['title' => '', 'result' => $product_results];
-        }
-        // dd($response);
         return $this->successResponse($response);
     }
 
