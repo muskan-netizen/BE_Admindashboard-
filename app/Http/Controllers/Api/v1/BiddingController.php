@@ -19,11 +19,20 @@ class BiddingController extends Controller
         $user = Auth::user();
         if ($user) {
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-            foreach ($request->prescriptions as $prescription) {
-                $cart_product_prescription = new BidRequest();
-                $cart_product_prescription->description = $request->prescription;
-                $cart_product_prescription->prescription = Storage::disk('s3')->put('prescription', $prescription, 'public');
-                $cart_product_prescription->save();
+            if ($request->hasFile('prescriptions')) {
+                    
+                $file = $request->file('prescriptions');
+                
+                $folder = 'bid/prescriptions';
+                //foreach ($files as $file) {
+                    $file_name = uniqid() .'.'.  $file->getClientOriginalExtension();
+                    $s3filePath = '/assets/'.$folder.'/orders' . $file_name;
+                    $path = Storage::disk('s3')->put($s3filePath, $file, 'public');
+                    $cart_product_prescription = new BidRequest();
+                    $cart_product_prescription->description = $request->description;
+                    $cart_product_prescription->prescription =  $path ;
+                    $cart_product_prescription->save();
+               // }
             }
         }
         return response()->json(['status' => 'success', 'message' => "Uploaded Successfully"]);
@@ -34,7 +43,7 @@ class BiddingController extends Controller
             BidRequest::where('id', $request->prescriptionId)->delete();
             return response()->json(['status' => 'success', 'message' => "Prescription remove Successfully"]);
         }
-        $bidPrescription = bidRequest::get()->toArray();
+        $bidPrescription = bidRequest::get();
         return response()->json($bidPrescription);
     }
 
