@@ -22,7 +22,7 @@ class BiddingController extends Controller
             if ($request->hasFile('prescriptions')) {
                     
                 $file = $request->file('prescriptions');
-                
+                //pr($file);
                 $folder = 'bid/prescriptions';
                 //foreach ($files as $file) {
                     $file_name = uniqid() .'.'.  $file->getClientOriginalExtension();
