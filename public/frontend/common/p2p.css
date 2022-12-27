@@ -286,6 +286,9 @@ body.al_body_template_nine .start_chat {
 body.al_body_template_nine .total_booking_time span {
     border-left: 1px solid #fff;
 }
+body.al_body_template_nine .product-wrapper-grid .product-image{
+    padding:0;
+}
 /*-----------------------p2p module dark theme css -----------------*/
 body.dark.al_body_template_one.p2p-module .breadcrumb-section {
     background-color: #2b2b2b !important;
