@@ -106,6 +106,7 @@
                 </div>
             </div>
         </div>
+ 
         <div class="row mt-3 edit-category modal-category-list">
             @foreach($typeArray as $type)
             @if($type->title == 'Celebrity' && $preference->celebrity_check == 0)
