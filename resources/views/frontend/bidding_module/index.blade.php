@@ -8,6 +8,12 @@
         padding-top: 20px;
         padding-bottom: 20px;
     }
+    .modal-body div#loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
 
 </style>
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
@@ -52,6 +58,9 @@
 
     .invalid-feedback {
         display: block;
+    }
+    .showBidsModel .modal-content {
+        min-height: 400px;
     }
 </style>
 
@@ -167,12 +176,17 @@
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="profile-modalLabel">{{ __('Bid Requests From Vendor') }}</h5>
+                    <h3 class="modal-title" id="profile-modalLabel">{{ __('Requests From Vendors') }}</h3>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
+                    {{-- <div class="" id='loader'>
+                        <img src="{{asset('assets/images/loading_new.gif')}}" alt=""  width="40px" class="pr-2">
+                        <p class="mb-0">we are looking for bids...</p>
+                    </div> --}}
+
                     @foreach ($bids as $bid)
                         <div id="accordion">
                             <div class="card">
@@ -208,7 +222,7 @@
                                                     </tbody>
                                                     <tfoot>
                                                         <th><span>Total : {{$bid->bid_total}}</span></th>
-                                                        <th><span>Discont % : {{$bid->discount}}</span></th>
+                                                        <th><span>Discont % : <br> {{$bid->discount}}</span></th>
                                                         <th><span>Final Total : {{$bid->final_amount}}</span></th>
                                                         <th>
                                                             <a href="#"><button type="submit" class="btn btn-success">Accept / Add to Cart</button></a>
