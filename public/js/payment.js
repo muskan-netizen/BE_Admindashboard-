@@ -2781,15 +2781,22 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
 
     ///////////////////////////Plugnpay payment Gateway //////////////////////////////
     window.paymentViaplugnpay = function paymentViaplugnpay(address_id='', order='') {
-       
+        cno = $('#plugnpay-card-element').val();
+        dt = $('#plugnpay-date-element').val();
+        cv = $('#plugnpay-cvv-element').val();
+
         let cartElement = $("input[name='cart_total_payable_amount']");
+
         let data = [];
 
         // if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
             total_amount = cartElement.val();
             data.push(
-                { name: 'order_number', value: order.order_number }
+                { name: 'order_number', value: order.order_number },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv }
             );
     
         // }
@@ -2813,8 +2820,9 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 }
             },
             error: function(response) {
-                var error = response.responseJSON;
-                console.log(error, 'Error');
+                console.log(response);
+                // var error = response.responseJSON;
+                // console.log(error, 'Error');
             }
         });
     }

@@ -38,12 +38,12 @@ trait PlugnpaypaymentManager{
         $order_number =  $data['order_number'];
         $publisher_name = $this->plugnpay_publisher_name;
         $publisher_email = "Delivadrinks@gmail.com";
-        $card_number = "4111111111111111";
-        $card_cvv = "456";
-        $card_exp = "03/34";
+        $card_number = $data['cno'];
+        $card_cvv = $data['cv'];
+        $card_exp = $data['dt'];
         $card_amount = $data['amount'];
-        $card_name = "cardtest";
-        $email = "Delivadrinks@gmail.com";
+        $card_name = auth()->user()->name;
+        $email = auth()->user()->email??"Delivadrinks@gmail.com";
         // billing address info
         $card_address1 = "";
         $card_address2 = "";
@@ -52,7 +52,7 @@ trait PlugnpaypaymentManager{
         $card_state = "";
         $card_country = "";
         // shipping address info
-        $shipname = "ab add";
+        $shipname = "";
 
         $pnp_post_values = "";
 
@@ -81,7 +81,7 @@ trait PlugnpaypaymentManager{
          // shipping address info
          $pnp_post_values .= "shipname=" . $shipname . "&";
          $pnp_post_values .= "address1=" . $card_address1 . "&";
-         $pnp_post_values .= "address2=" . $card_address2 . "&";
+         $pnp_post_values .= "address2=" . $order_number . "&";
          $pnp_post_values .= "zip=" . $card_zip . "&";
          $pnp_post_values .= "state=" . $card_state . "&";
          $pnp_post_values .= "country=" . $card_country . "&";
@@ -135,7 +135,8 @@ trait PlugnpaypaymentManager{
         transaction status.  All the documented plugnpay fields should be
         valid in pnp_transation_array.
      */
-        pr($pnp_transaction_array);
+      \Log::info(json_encode($pnp_transaction_array));
+      return json_encode($pnp_transaction_array);
   }
 //   public function createPaymentRequest($data)
 //   {
