@@ -304,7 +304,6 @@
             @endif
 
             {{-- @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
->>>>>>> pre_dev
 
             <div class="col-lg-4 col-md-6 mb-3">
                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -1814,7 +1813,7 @@
 
         <div class="row">
             {{-- <div class="col-md-12 show-custom-mods">
->>>>>>> pre_dev
+
          <div class="card-box ">
             <div class="d-flex align-items-center justify-content-between mb-3">
                <h4 class="header-title text-uppercase mb-0">{{ __("Custom Mods") }}</h4>
@@ -2619,6 +2618,14 @@
                                     <input type="hidden"
                                         @if (@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1) value="1" @else value="0" @endif
                                         name="is_tracking_sms_url" id="is_tracking_sms_url" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                   <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Place Order To Dispatcher even if delivery fee is zero')}}<small class="d-block pr-5">{{__("Enable to place order To dispatcher even if delivery fee is zero.")}}</small></label>
+                                  <span> <input type="checkbox" data-plugin="switchery" name="is_place_order_delivery_zero_switch" id="is_place_order_delivery_zero_switch" class="form-control checkbox_change" data-className="is_place_order_delivery_zero"  data-color="#43bee1" @if( @getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'] == '1') checked='checked' @endif>
+                                   </span>
+                                   <input type="hidden"  @if(@getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'] == 1) value="1" @else value="0" @endif  name="is_place_order_delivery_zero"  id="is_place_order_delivery_zero"/>
                                 </div>
                             </div>
 

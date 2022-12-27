@@ -831,7 +831,7 @@
 
         $(".morelink").click(function() {
             if ($(this).hasClass("less")) {
-                $(this).removeClass("less");
+                // $(this).removeClass("less");
                 $(this).html(moretext);
             } else {
                 $(this).addClass("less");
@@ -839,7 +839,7 @@
             }
             $(this).parent().prev().toggle();
             $(this).prev().toggle();
-            return false;
+            return true;
         });
 
         $(document).delegate(".product_tag_filter", "change", function() {

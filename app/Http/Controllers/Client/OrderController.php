@@ -1069,10 +1069,12 @@ class OrderController extends BaseController
     public function placeOrderRequestShippo($request)
     {
         $ship = new ShippoController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
             //\Log::info($order_ship);
         }
@@ -1113,10 +1115,12 @@ class OrderController extends BaseController
     public function placeOrderRequestShiprocket($request)
     {
         $ship = new ShiprocketController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_ship = $ship->createOrderRequestShiprocket($checkOrder->user_id, $checkdeliveryFeeAdded);
         }
         if ($order_ship->order_id) {
@@ -1136,10 +1140,12 @@ class OrderController extends BaseController
     {
 
         $data = new AhoyController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Ahoy place order request for Ahoy
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_det = $data->createPreOrderRequestAhoy($checkOrder->user_id, $checkdeliveryFeeAdded);
         }
 
@@ -1159,10 +1165,12 @@ class OrderController extends BaseController
     {
 
         $data = new DunzoController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_lalamove = $data->createOrderRequestDunzo($checkOrder->user_id, $checkdeliveryFeeAdded);
         }
 
@@ -1182,10 +1190,12 @@ class OrderController extends BaseController
     public function placeOrderRequestlalamove($request)
     {
         $lala = new LalaMovesController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id, $checkOrder->user_id, $checkOrder->id);
         }
         if (isset($order_lalamove->orderRef)) {
@@ -1204,7 +1214,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         // pr( $checkdeliveryFeeAdded);
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
-
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
@@ -1283,8 +1293,7 @@ class OrderController extends BaseController
         \Log::info("asdf");
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
-                \Log::info("asdf inner");
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
 

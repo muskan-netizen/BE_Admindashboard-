@@ -284,10 +284,8 @@ body.dark.al_body_template_eight ul.header-dropdown li a span {
 body.dark.al_body_template_eight .top-header .header-dropdown li span {
     color: #fff;
 }
-body.dark.al_body_template_eight .accordion .card-header button:hover, .accordion .card-header button[aria-expanded="true"] {
-    background: linear-gradient(90deg, #000000 0, rgb(0 0 0) 92.47%) !important;
-    padding: 10px !important;
-}
+
+
 /*--------------inner page header---------*/
 body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
     height: auto !important;
