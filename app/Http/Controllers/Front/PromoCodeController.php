@@ -310,6 +310,7 @@ class PromoCodeController extends Controller{
 
     public function validate_code(Request $request){
         try {
+            // dd($request->all());
             $user = Auth::user();
             // $promo_codes = new \Illuminate\Database\Eloquent\Collection;
             $vendor_id = $request->vendor_id;
@@ -326,41 +327,50 @@ class PromoCodeController extends Controller{
             $now = Carbon::now()->toDateTimeString();
             $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
             if($product_ids){
-                $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
-                $promo_detail = Promocode::where(['name' => $request->promocode])->whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details) {
-                    $query->where(function ($query2) use ($promo_code_details) {
-                        $query2->where('restriction_type', 1);
-                        if (!empty($promo_code_details->toArray())) {
-                            $query2->whereNotIn('id', $promo_code_details->toArray());
-                        }
-                    });
-                    $query->orWhere(function ($query1) use ($promo_code_details) {
-                        $query1->where('restriction_type', 0);
-                        if (!empty($promo_code_details->toArray())) {
-                            $query1->whereIn('id', $promo_code_details->toArray());
-                        } else {
-                            $query1->where('id', 0);
-                        }
-                    });
-                })->where('is_deleted', 0)->first();
-                if (!$promo_detail) {
-                    $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $request->vendor_id)->pluck('promocode_id');
-                    $promo_detail = Promocode::where(['name' => $request->promocode])->where('restriction_on', 1)->where(function($query) use($vendor_promo_code_details){
-                        $query->where(function ($query2) use ($vendor_promo_code_details) {
+                $checkRefferalCode = $this->checkRefferalCode($request->promocode, $now);
+                if (!empty($checkRefferalCode)) {
+                    dd('fgd');
+                }else{
+                    $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
+                    $promo_detail = Promocode::where(['name' => $request->promocode])->whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details) {
+                        $query->where(function ($query2) use ($promo_code_details) {
                             $query2->where('restriction_type', 1);
-                            if (!empty($vendor_promo_code_details->toArray())) {
-                                $query2->whereNotIn('id', $vendor_promo_code_details->toArray());
+                            if (!empty($promo_code_details->toArray())) {
+                                $query2->whereNotIn('id', $promo_code_details->toArray());
                             }
-                        });
-                        $query->orWhere(function($query1) use($vendor_promo_code_details){
-                            $query1->where('restriction_type' , 0);
-                            if (!empty($vendor_promo_code_details->toArray())) {
-                                $query1->whereIn('id', $vendor_promo_code_details->toArray());
+                        }
+                        );
+                        $query->orWhere(function ($query1) use ($promo_code_details) {
+                            $query1->where('restriction_type', 0);
+                            if (!empty($promo_code_details->toArray())) {
+                                $query1->whereIn('id', $promo_code_details->toArray());
                             } else {
                                 $query1->where('id', 0);
                             }
-                        });
-                    })->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->first();
+                        }
+                        );
+                    })->where('is_deleted', 0)->first();
+                    if (!$promo_detail) {
+                        $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $request->vendor_id)->pluck('promocode_id');
+                        $promo_detail = Promocode::where(['name' => $request->promocode])->where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
+                            $query->where(function ($query2) use ($vendor_promo_code_details) {
+                                $query2->where('restriction_type', 1);
+                                if (!empty($vendor_promo_code_details->toArray())) {
+                                    $query2->whereNotIn('id', $vendor_promo_code_details->toArray());
+                                }
+                            }
+                            );
+                            $query->orWhere(function ($query1) use ($vendor_promo_code_details) {
+                                $query1->where('restriction_type', 0);
+                                if (!empty($vendor_promo_code_details->toArray())) {
+                                    $query1->whereIn('id', $vendor_promo_code_details->toArray());
+                                } else {
+                                    $query1->where('id', 0);
+                                }
+                            }
+                            );
+                        })->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->first();
+                    }
                 }
             }
             if(!$promo_detail){
@@ -397,5 +407,17 @@ class PromoCodeController extends Controller{
         }
         
         return array_merge($promocode_product, $promocode_vendor);
+    }
+
+    public function checkRefferalCode($promocode, $now){
+        if(!empty($promocode)){
+            $promo_detail = Promocode::where(['name' => $promocode])->whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->first();
+            if(!empty($promo_detail) && $promo_detail->promo_type == 1){
+                return $promo_detail;
+            }else{
+                return '';
+            }
+        }
+        return '';
     }
 }

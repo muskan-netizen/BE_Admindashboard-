@@ -61,10 +61,10 @@
                                     <td> {{ $influencer_user->tier->name ?? '' }} </td>
                                     <td> {{ $influencer_user->reffered_code ?? '' }} </td>
                                     <td>
-                                        {{(!empty($influencer_user->tier) && $influencer_user->tier->commision_type==1)?'Percentage':((!empty($influencer_user->tier) && $influencer_user->tier->commision_type==2)?'Fixed':'-')}}
+                                        {{(!empty($influencer_user->commision_type) && $influencer_user->commision_type==1)?'Percentage':((!empty($influencer_user->commision_type) && $influencer_user->commision_type==2)?'Fixed':'-')}}
                                     </td>
                                     <td>
-                                        {{$influencer_user->tier->commision??'-'}}
+                                        {{$influencer_user->commision??'-'}}
                                     </td>
                                     <td> @if($influencer_user->is_approved == 1)<!--  Approved --->
                                             {{_('Approved')}}
@@ -124,12 +124,15 @@
                 <h4 class="modal-title">{{ __("Edit ".getNomenclatureName('Influencer')) }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
-            <div class="modal-body" id="editInfluencerUserBox">
+            <form action="{{route('influencer-refer-earn.update-user-commision')}}" method="post">
+                @csrf
+                <div class="modal-body" id="editInfluencerUserBox">
 
-            </div>
-            <div class="modal-footer">
-                <button type="button" name="editInfluencerUser_btn" value="" class="btn btn-info waves-effect waves-light editInfluencerUserBtn">{{ __("Update") }}</button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="editInfluencerUser_btn" value="" class="btn btn-info waves-effect waves-light editInfluencerUserBtn">{{ __("Update") }}</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
