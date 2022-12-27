@@ -4916,6 +4916,16 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '49':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaplugnpay(address_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
         }
 
     }

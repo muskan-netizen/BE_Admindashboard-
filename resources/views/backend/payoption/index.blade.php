@@ -113,10 +113,12 @@
                 $aes_key = (isset($creds->aes_key)) ? $creds->aes_key : '';
                 $uuid_key = (isset($creds->uuid_key)) ? $creds->uuid_key : '';
 
-                
+
                 $subscription_key = (isset($creds->subscription_key)) ? $creds->subscription_key : '';
                 $reference_id = (isset($creds->reference_id)) ? $creds->reference_id : '';
                 $mtn_api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                $plugnpay_publisher_name = (isset($creds->plugnpay_publisher_name)) ? $creds->plugnpay_publisher_name : '';
+
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -1015,7 +1017,7 @@
                                 </div>
                             </div>
 
-                           
+
                         </div>
                     </div>
                     @endif
@@ -1125,10 +1127,23 @@
                                 <a class="btn btn-primary" id="generate_mtn_momo_api_key" href="javascript:void(0)">Generate Api Key</a>
                             </div>
                             <div class="form-group mb-2 mx-auto" id="msg_status">
-                               
+
                             </div>
                         </div>
                     </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'plugnpay') )
+                        <div class="mt-2" id="plugnpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group mb-2">
+                                        <label for="plugnpay_publisher_name" class="mr-3">{{ __("plugnpay Publisher Name") }}</label>
+                                        <input type="text" name="plugnpay_publisher_name" id="plugnpay_publisher_name" class="form-control" value="{{$plugnpay_publisher_name}}" @if($opt->status == 1) required @endif>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endif
 
                 </div>
@@ -1358,7 +1373,7 @@
         }
     });
 
-    
+
 
     $( "#mtn_momo_fields_wrapper" ).delegate( "#generate_mtn_momo_api_key", "click", function() {
         var subscription_key    = $("#subscription_key").val();

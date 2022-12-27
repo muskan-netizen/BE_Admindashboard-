@@ -2779,6 +2779,46 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
         $.redirect(userede_before_payment, data);
     }
 
+    ///////////////////////////Plugnpay payment Gateway //////////////////////////////
+    window.paymentViaplugnpay = function paymentViaplugnpay(address_id='', order='') {
+       
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let data = [];
+
+        // if (path.indexOf("cart") !== -1) {
+            payment_form = 'cart';
+            total_amount = cartElement.val();
+            data.push(
+                { name: 'order_number', value: order.order_number }
+            );
+    
+        // }
+        data.push(
+            { name: 'payment_form', value: payment_form },
+            { name: 'amount', value: total_amount },
+        );
+
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async: false,
+            url: payment_plugnpay_url,
+            data: data,
+            success: function(response) {
+                console.log(response);
+                if (response.status == "Success") {
+
+                } else {
+
+                }
+            },
+            error: function(response) {
+                var error = response.responseJSON;
+                console.log(error, 'Error');
+            }
+        });
+    }
+
     ///////////////////////////PayU payment Gateway //////////////////////////////
     window.payWithOpenPay = function payWithOpenPay(address_id='', payment_option_id='', order='') {
         console.log(default_country_code);

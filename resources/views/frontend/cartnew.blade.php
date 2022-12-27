@@ -504,6 +504,17 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <div id="pp-button"></div>
                             </div>
                         <% } %>
+
+                        <% if(payment_option.slug == 'plug_and_pay') { %>
+                            <div class="col-md-12 mt-3 mb-3 plug_and_pay_element_wrapper option-wrapper d-none">
+                                <div class="form-control">
+                                    <label class="mb-0">
+                                        <div id="plug-and-pay-card-element"></div>
+                                    </label>
+                                </div>
+                                <span class="error text-danger" id="plug_and_pay_card_error"></span>
+                            </div>
+                        <% } %>
                     </div>
                 <% }); %>
                 {{-- <div class="" id="" role="tabpanel">
@@ -1092,6 +1103,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
     if(!latitude){
         @if(!empty($client_preference_detail->Default_latitude))
             latitude = "{{$client_preference_detail->Default_latitude}}";
