@@ -323,13 +323,10 @@ class CartController extends FrontController
                 }
             ])->find($request->product_id);
 
-<<<<<<< HEAD
              /** if product is not lonf term */
-=======
             //items already ordered in case order is being edit in cart
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
-             /** if product is not lonf term */ 
->>>>>>> pre_dev
+             /** if product is not lonf term */
             if(checkColumnExists('products','is_long_term_service') && $productDetail->is_long_term_service !=1){
                 /** if product type is not equal to on demand and appointment
                  **/
