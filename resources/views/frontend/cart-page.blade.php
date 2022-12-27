@@ -795,7 +795,9 @@
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 @else  --}}
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount)}}</b></span>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">           
+                    {{(decimal_format($cart_details->gross_amount) < 0) ? 0 : decimal_format($cart_details->gross_amount) }} 
+                </b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 {{-- @endif --}}
             </div>
@@ -1006,13 +1008,13 @@
                             {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
                         @endif
                         @if(!empty($cart_details->editing_order) && !empty($cart_details->editing_order->scheduled_date_time) && !empty($edit_order_schedule_datetime))
-                        <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
-                        <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
+                            <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
+                            <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
                         @endif
-                        @if($cart_error_message=='')
-                            <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
-                        @else
-                        <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
+                            @if($cart_error_message=='')
+                                <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                            @else
+                            <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
                         @endif
                         
                     </div>
