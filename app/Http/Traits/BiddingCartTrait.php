@@ -18,8 +18,8 @@ trait biddingCartTrait{
         $cartInfo = ' ';
         $user = Auth::user();
         $bid_products = BidProduct::where('bid_id', $id)->with('product.variant')->get();
-        $bid_vendors = Bid::where('id',$id)->first();
-        $currency = ClientCurrency::where('is_primary', '=', 1)->first();
+        // $bid_vendors = Bid::where('id',$id)->first();
+        // $currency = ClientCurrency::where('is_primary', '=', 1)->first();
 
         $CartController  = new CartController();
         foreach($bid_products as $product) {
@@ -32,6 +32,7 @@ trait biddingCartTrait{
         return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!',]);
     }
     public function searchProduct($language_id=1,$keyword='',$vendor_ids=[]){
+        
         $products = Product::with(['media', 'vendor','variant'])->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id', 'products.vendor_id')
         ->select('products.id', 'products.sku', 'products.url_slug', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description', 'products.vendor_id', 'vendors.slug as vendor_slug')
         ->where('pt.language_id', $language_id)

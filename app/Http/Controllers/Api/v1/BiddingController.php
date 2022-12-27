@@ -56,8 +56,8 @@ class BiddingController extends Controller
         return response()->json($bidPrescription);
     }
     public function getbidList($bid_id){
-        $user            = Auth::user();
-        $langId = Auth::user()->language;
+        $user       = Auth::user();
+        $langId     = Auth::user()->language;
         $bidPrescription = Bid::where('prescription_id' ,$bid_id)->with(['vendor','bidProducts.product.translation_one' => function ($q) use ($langId) {
             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
             $q->where('language_id', $langId);
@@ -116,6 +116,12 @@ class BiddingController extends Controller
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+    public function addBidProductToCart(Request $request)
+    {
+        $this->biddingCart($request->bid_id);
+        return response()->json(['status' => 'success', 'message' => __("Bid  product Added successfully")]);
+       
     }
 
 }
