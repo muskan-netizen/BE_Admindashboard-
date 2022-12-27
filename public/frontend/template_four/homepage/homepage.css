@@ -4285,6 +4285,10 @@ body.al_body_template_four .slick-track{
   body[dir=rtl] .wallet-transactions tr.table-head th {text-align: right;}
   body[dir=rtl] .wallet-transactions tr.table-head th.text-right {text-align: left !important;}
   body[dir=rtl] .scrolling_section h2.category-head{text-align: right;}
+  body[dir=rtl] .dashboard-left .block-content ul li:before{left: 10px;position: absolute;transform: rotate(180deg);transform-origin: 20px 10px;}
+  body[dir=rtl] .footer-theme .sub-title li {text-align: right;}
+
+
 
   /*---vendor form page arabic language  css start here----*/
 body[dir=rtl] .main-top-heading h2 {text-align: right;}
