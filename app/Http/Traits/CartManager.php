@@ -1310,7 +1310,7 @@ trait cartManager{
             $cart->dropoffSlotsCnt = count((array)$dropoffSlots);
             $cart->total_service_fee = decimal_format($total_service_fee);
             $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
-            $cart->gross_amount = ($gross_amount < 0) ? decimal_format(0) : ecimal_format($gross_amount);
+            $cart->gross_amount = ($gross_amount < 0) ? decimal_format(0) : decimal_format($gross_amount);
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
             $cart->is_long_term_service = $is_long_term_service ;
             if(!$this->additionalPreferences->is_tax_price_inclusive){
