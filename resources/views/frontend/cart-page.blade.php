@@ -796,7 +796,7 @@
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 @else  --}}
                 <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">           
-                    {{(decimal_format($cart_details->gross_amount) < 0) ? 0 : decimal_format($cart_details->gross_amount) }} 
+                    {{ decimal_format($cart_details->gross_amount) }} 
                 </b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 {{-- @endif --}}
