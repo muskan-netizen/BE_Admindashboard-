@@ -574,6 +574,7 @@ jQuery(function () {
                 },
                 success: function(response) {
                     if(response.status == 'Success'){
+                        remove_spinner('.cab-booking-loader');
                         $('#vendor_main_div').html('');
                         if(response.data.length != 0){
                             let vendors_template = _.template($('#vendors_template').html());
@@ -615,7 +616,6 @@ jQuery(function () {
 
     $(document).on("change","#no_seats_for_pooling",function() {
         var product_id = $("#pickup_now").attr('data-product_id');
-        add_spinner('.cab-booking-loader');
         getVehicleDetail(product_id);
     });    
 
