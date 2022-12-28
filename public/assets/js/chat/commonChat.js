@@ -633,7 +633,7 @@
             if(response.status == 200) {
                 if(response.data.roomData.length > 0) {
                     var productSelected = '';
-                    await response.data.roomData.reverse().forEach(async function (data,i) 
+                    await response.data.roomData.reverse().forEach(async function (data,i) {
                         
                         if(data._id == user_room_id){
                             productSelected = data.product_id;
