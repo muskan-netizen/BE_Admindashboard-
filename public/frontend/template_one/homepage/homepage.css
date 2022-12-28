@@ -1,3 +1,9 @@
+article#page-container {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
 .al_body_template_one .slick-slide .inner_spacing p {
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -5282,4 +5288,12 @@ body.al_body_template_one .blur-up {
 
 body.al_body_template_one .product-card-box.position-relative.alInnerBox {
     box-shadow: none;
+}
+
+.al_body_template_one .slick-slider .d-flex.align-items-center.justify-content-between.al_clock b {
+    color: var(--theme-deafult);
+}
+
+body.al_body_template_two section#homepage_long_term_service_div .al_clock b {
+    color: var(--theme-deafult);
 }
