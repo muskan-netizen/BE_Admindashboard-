@@ -46,6 +46,7 @@ class InfluencerController extends Controller
     }
     function save(Request $request) {
         try {
+            \Log::info($request->all());
             if( !empty($request->attribute) ) {
             
                 $insert_arr = [];
@@ -55,8 +56,8 @@ class InfluencerController extends Controller
                 $influencer_user_id = InfluencerUser::insertGetId([
                     "user_id" => $user_id
                 ]);
-    
-                foreach($request->attribute as $key => $value) {
+                $attribute = json_decode($request->attribute, true);
+                foreach($attribute as $key => $value) {
                     if( !empty($value) && !empty($value['option'] && is_array($value) )) {
                         
                         if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
@@ -97,7 +98,7 @@ class InfluencerController extends Controller
                 
             }
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode());
+            return $this->errorResponse($e->getMessage(), 500);
         }
         
     }
