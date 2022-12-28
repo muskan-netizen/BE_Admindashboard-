@@ -24,7 +24,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                 $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ;
                 @endphp
                 @php
-                    $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
+                    $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
                 @endphp
 
                 <h4 class="page-title">{{ $newvendors }}</h4>

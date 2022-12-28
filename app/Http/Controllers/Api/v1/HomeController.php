@@ -79,6 +79,8 @@ class HomeController extends BaseController
             $want_to_tip=ucwords(str_replace("_"," ",$want_to_tip));
             $passbase = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
+            $getAdditionalPreference = getAdditionalPreference(['seller_sold_title','seller_platform_logo']);
+            
             $homeData['profile']->preferences->delivery_nomenclature = $delivery_nomenclature;
             $homeData['profile']->preferences->dinein_nomenclature = $dinein_nomenclature;
             $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
@@ -88,6 +90,8 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
             $homeData['profile']->preferences->want_to_tip_nomenclature = $want_to_tip;
             $homeData['profile']->preferences->referral_code = $referral_code;
+            $homeData['profile']->preferences->seller_sold_title = $getAdditionalPreference['seller_sold_title'];
+            $homeData['profile']->preferences->seller_platform_logo = $getAdditionalPreference['seller_platform_logo'];
             if(!is_null($passbase))
             {
                 $homeData['profile']->preferences->passbase_check = 1;
