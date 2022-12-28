@@ -232,14 +232,15 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                             <h3 class="col-12">{{__('Summary')}}</h3>
                             <div class="col-sm-12">
                                 <ul class="order-detail row">
-                                    <li class="col-4">{{__('Order ID')}}: <span> {{$order->order_number}}</span></li>
-                                    <li class="col-8">{{__('Order Date')}}:<span> {{ date('F d, Y', strtotime($order->created_at)) }} {{ convertDateTimeInTimeZone($order->created_at, $timezone, 'H:i')}}</span></li>
+                                    <li class="col-4"><span>{{__('Order ID')}}:</span> <span> {{$order->order_number}}</span></li>
+                                    <li class="col-8"><span>{{__('Order Date')}}:</span><span> {{ date('F d, Y', strtotime($order->created_at)) }} {{ convertDateTimeInTimeZone($order->created_at, $timezone, 'H:i')}}</span></li>
                                     @if (!empty($order->scheduled_date_time))
-                                    <li class="col-8">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }} {{ convertDateTimeInTimeZone($order->scheduled_date_time, $timezone, 'H:i')}}</span></li>
-                                    {{-- <li class="col-8">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }} {{ date("H:i",strtotime($order->scheduled_date_time ))}}</span></li> --}}
+                                    <li class="col-8"><span>{{__('Scheduled Date')}}:</span><span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }} {{ convertDateTimeInTimeZone($order->scheduled_date_time, $timezone, 'H:i')}}</span></li>
+                                    {{-- <li class="col-8"><span>{{__('Scheduled Date')}}:</span><span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }} {{ date("H:i",strtotime($order->scheduled_date_time ))}}</span></li> --}}
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">
+                                    <li class="col-4"><span>{{__('Order Total')}}:</span><span> {{Session::get('currencySymbol')}}{{decimal_format($total_amount)}} 
                                     <li class="col-4">{{__('Order Total')}}:<span>@if( $additionalPreference["is_token_currency_enable"]) 
                                         {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total_amount))}}@else{{Session::get('currencySymbol').decimal_format($total_amount)}}@endif 
                                         @if(!checkColumnExists('orders', 'is_postpay'))
@@ -252,7 +253,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                     </span></li>
                                     <li class="Shipping col-8">
                                         @if($order->luxury_option_id == 1)
-                                            {{__('Delivery Address')}}:
+                                           <span> {{__('Delivery Address')}}:</span>
                                         <span>
                                         {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{ $order->address ? $order->address->address : ''}}{{$order->address ? ($order->address->pincode ? ", ".$order->address->pincode : '') : ''}}
                                         </span>
