@@ -175,10 +175,30 @@ class CartController extends BaseController
             if (!$productVariant) {
                 return $this->errorResponse(__('Invalid product variant.'), 404);
             }
+
+            $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $cart_detail = [
+                'is_gift' => 0,
+                'status' => '0',
+                'item_count' => 0,
+                'user_id' => $user->id,
+                'created_by' => $user->id,
+                'unique_identifier' => $unique_identifier,
+                'currency_id' => $client_currency->currency_id,
+            ];
+            if (!empty($user_id)) {
+                $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
+                $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+            } else {
+                $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
+                $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+            }
+
+            $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
             if(checkColumnExists('products','is_long_term_service') && $product->is_long_term_service !=1){
                 if ($product->category->categoryDetail->type_id == 8) {
                 } else {
-                    if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity && $product->has_inventory == 1) ) {
+                    if ( ($product->sell_when_out_of_stock == 0) && (($productVariant->quantity + $order_edit_qty) < $request->quantity && $product->has_inventory == 1) ) {
                         return $this->errorResponse('You Can not order more than ' . $productVariant->quantity . ' quantity.', 404);
                     }
                 }
@@ -243,21 +263,7 @@ class CartController extends BaseController
                     ], 404);
                 }
             }
-            $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
-            $cart_detail = [
-                'is_gift' => 0,
-                'status' => '0',
-                'item_count' => 0,
-                'user_id' => $user->id,
-                'created_by' => $user->id,
-                'unique_identifier' => $unique_identifier,
-                'currency_id' => $client_currency->currency_id,
-            ];
-            if (!empty($user_id)) {
-                $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
-            } else {
-                $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
-            }
+            
             /** delete is long term is added from cart */
             if($isLongTermService || ($isLongTermService ==1) ){
                 if(CartProduct::where('cart_id', $cart_detail->id)->count() > 1 ){
