@@ -371,10 +371,10 @@ class StripeGatewayController extends FrontController
                 $returnUrl = route('user.orders');
             }
             elseif($payment_form == 'subscription'){
-                // $subscription = $parameters['subscription_id'];
-                // $request = new Request(['payment_option_id' => 4, 'amount' => $amount, 'transaction_id' => $transactionId]);
-                // $subscriptionController = new UserSubscriptionController();
-                // $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
+                $subscription = $parameters['subscription_id'];
+                $request = new Request(['payment_option_id' => 4, 'amount' => $amount, 'transaction_id' => $transactionId]);
+                $subscriptionController = new UserSubscriptionController();
+                $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
                 $message = __('Your subscription has been activated successfully.');
                 $returnUrl = route('user.subscription.plans');
             }
