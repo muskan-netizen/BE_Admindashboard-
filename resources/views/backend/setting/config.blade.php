@@ -36,181 +36,6 @@
             </div>
         </div>
 
-        <div class="row">
-        @if ($client_preference_detail->business_type != 'taxi')
-            <div class="col-lg-4 col-md-6 mb-3">
-                <div class="row h-100">
-                    <div class="col-12">
-                        <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
-                            @csrf
-                            <!-- Hyperlocal start -->
-                            <div class="card-box h-100">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <h4 class="header-title mb-0">{{ __('Hyperlocal') }}</h4>
-                                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
-                                </div>
-                                <p class="sub-header">
-                                    {{ __('Enable location based visibility of Vendors and set the Default Location.') }}
-                                </p>
-                                <input type="hidden" name="hyperlocals" id="hyperlocals" value="1">
-
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group mb-0">
-                                            <label for="is_hyperlocal" class="mr-3">{{ __('Enable') }}</label>
-                                            <input type="checkbox" data-plugin="switchery" name="is_hyperlocal"
-                                                id="is_hyperlocal" class="form-control" data-color="#43bee1"
-                                                @if (isset($preference) && $preference->is_hyperlocal == '1') checked @endif>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-12 mt-3 disableHyperLocal"
-                                                style="{{ isset($preference) && $preference->is_hyperlocal == '1' ? '' : 'display:none;' }}">
-                                                <div class="row">
-                                                    <div class="col-12">
-                                                        <div class="form-group mb-0">
-                                                            <label
-                                                                for="Default_location_name">{{ __('Default Location') }}</label>
-                                                            <div class="input-group">
-                                                                <input type="text" name="Default_location_name"
-                                                                    id="Default_location_name"
-                                                                    placeholder="Delhi, India" class="form-control"
-                                                                    value="{{ old('Default_location_name', $preference->Default_location_name ?? '') }}">
-                                                                <div class="input-group-append">
-                                                                    <button
-                                                                        class="btn btn-xs btn-dark waves-effect waves-light showMap"
-                                                                        type="button" num="add1"> <i
-                                                                            class="mdi mdi-map-marker-radius"></i></button>
-                                                                </div>
-                                                            </div>
-                                                            @if ($errors->has('Default_location_name'))
-                                                                <span class="text-danger" role="alert">
-                                                                    <strong>{{ $errors->first('Default_location_name') }}</strong>
-                                                                </span>
-                                                            @endif
-                                                        </div>
-                                                        <div class="form-group mt-3 mb-0">
-                                                            <label for="Default_latitude">{{ __('Latitude') }}</label>
-                                                            <input type="text" name="Default_latitude"
-                                                                id="Default_latitude" placeholder="24.9876755"
-                                                                class="form-control"
-                                                                value="{{ old('Default_latitude', $preference->Default_latitude ?? '') }}">
-                                                            @if ($errors->has('Default_latitude'))
-                                                                <span class="text-danger" role="alert">
-                                                                    <strong>{{ $errors->first('Default_latitude') }}</strong>
-                                                                </span>
-                                                            @endif
-                                                        </div>
-                                                        <div class="form-group mt-3 mb-0">
-                                                            <label
-                                                                for="Default_longitude">{{ __('Longitude') }}</label>
-                                                            <input type="text" name="Default_longitude"
-                                                                id="Default_longitude" placeholder="11.9871371723"
-                                                                class="form-control"
-                                                                value="{{ old('Default_longitude', $preference->Default_longitude ?? '') }}">
-                                                            @if ($errors->has('Default_longitude'))
-                                                                <span class="text-danger" role="alert">
-                                                                    <strong>{{ $errors->first('Default_longitude') }}</strong>
-                                                                </span>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- Hyperlocal end -->
-                        </form>
-                    </div>
-                </div>
-            </div>
-        @endif
-      <div class="col-lg-4 col-md-6 mb-3">
-         <div class="row h-100">
-            <div class="col-12">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-                  @csrf
-                  <div class="card-box h-100">
-                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{ __("Vendor Delivery Option") }}</h4>
-                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                     </div>
-                     <p class="sub-header">{{ __("Enable to show vendor delivery option.") }}</p>
-                     <div class="row">
-                        <div class="col-12">
-                           <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                              <label for="is_same_day_delivery_switch" class="mr-2 mb-0">{{__('Same Day Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to same day delivery.")}}</small></label>
-                              <span> <input type="checkbox" data-plugin="switchery" name="is_same_day_delivery_switch" id="is_same_day_delivery_switch" class="form-control checkbox_change" data-className="is_same_day_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) checked='checked'  @endif>
-                              </span>
-                              <input type="hidden"  @if(@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) value="1" @else value="0" @endif  name="is_same_day_delivery"  id="is_same_day_delivery"/>
-                           </div>
-                           
-                           <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                              <label for="is_next_day_delivery_switch" class="mr-2 mb-0">{{__('Next Day Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to next day delivery.")}}</small></label>
-                              <span> <input type="checkbox" data-plugin="switchery" name="is_next_day_delivery_switch" id="is_next_day_delivery_switch" class="form-control checkbox_change" data-className="is_next_day_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) checked='checked'  @endif>
-                              </span>
-                              <input type="hidden"  @if(@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) value="1" @else value="0" @endif  name="is_next_day_delivery"  id="is_next_day_delivery"/>
-                           </div>
-
-                           <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                              <label for="is_hyper_local_delivery_switch" class="mr-2 mb-0">{{__('Hyper Local Delivery')}}<small class="d-block pr-5">{{__("Enable to allow customers to hyper local delivery.")}}</small></label>
-                              <span> <input type="checkbox" data-plugin="switchery" name="is_hyper_local_delivery_switch" id="is_hyper_local_delivery_switch" class="form-control checkbox_change" data-className="is_hyper_local_delivery" data-color="#43bee1" @if(@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) checked='checked'  @endif>
-                              </span>
-                              <input type="hidden"  @if(@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) value="1" @else value="0" @endif  name="is_hyper_local_delivery"  id="is_hyper_local_delivery"/>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </form>
-            </div>
-         </div>
-      </div>
-
-      <div class="col-lg-4 col-md-6 mb-3">
-         <div class="row h-100">
-            <div class="col-12">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-                  @csrf
-                  <div class="card-box h-100">
-                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{ __("Payment Option") }}</h4>
-                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                     </div>
-                     <p class="sub-header">{{ __("Enable to show payment option.") }}</p>
-
-                     <div class="row">
-                        <div class="col-12">
-                           <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                              <label for="is_cod_payment_switch" class="mr-2 mb-0">{{__('COD Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to cod payment.")}}</small></label>
-                              <span> <input type="checkbox" data-plugin="switchery" name="is_cod_payment_switch" id="is_cod_payment_switch" class="form-control checkbox_change" data-className="is_cod_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) checked='checked'  @endif>
-                              </span>
-                              <input type="hidden"  @if(@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) value="1" @else value="0" @endif  name="is_cod_payment"  id="is_cod_payment"/>
-                           </div>
-                     
-                           <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                              <label for="is_prepaid_payment_switch" class="mr-2 mb-0">{{__('Prepaid Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to prepaid payment.")}}</small></label>
-                              <span> <input type="checkbox" data-plugin="switchery" name="is_prepaid_payment_switch" id="is_prepaid_payment_switch" class="form-control checkbox_change" data-className="is_prepaid_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) checked='checked'  @endif>
-                              </span>
-                              <input type="hidden"  @if(@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) value="1" @else value="0" @endif  name="is_prepaid_payment"  id="is_prepaid_payment"/>
-                           </div>
-                     
-                           <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> 
-                              <label for="is_partial_payment_switch" class="mr-2 mb-0">{{__('Partial Payment')}}<small class="d-block pr-5">{{__("Enable to allow customers to partial payment.")}}</small></label>
-                              <span> <input type="checkbox" data-plugin="switchery" name="is_partial_payment_switch" id="is_partial_payment_switch" class="form-control checkbox_change" data-className="is_partial_payment" data-color="#43bee1" @if(@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) checked='checked'  @endif>
-                              </span>
-                              <input type="hidden"  @if(@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) value="1" @else value="0" @endif  name="is_partial_payment"  id="is_partial_payment"/>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </form>
-            </div>
-         </div>
-      </div>
-    </div>
-
-      {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
-=======
 
         <div class="row">
 
@@ -361,6 +186,7 @@
    </div>
    @endif --}}
 
+
             @if ($client_preference_detail->enable_inventory_service == 1)
                 <div class="col-lg-3 col-md-6 mb-3">
                     <!-- Order Panel section start -->
@@ -384,6 +210,22 @@
                                                 @if (isset($preference) && $preference->need_inventory_service == '1') checked='checked' @endif>
                                         </div>
                                     </div>
+
+                                    <div class="form-group mt-3 mb-0 inventoryFields"
+                                        style="{{ isset($preference) && $preference->need_inventory_service == '1' ? '' : 'display:none;' }}">
+                                        <label for="inventory_service_key_url">{{ __('Inventory URL') }}
+                                            *(https://www.abc.com)</label>
+                                        <input type="text" name="inventory_service_key_url"
+                                            id="inventory_service_key_url" placeholder="https://www.abc.com"
+                                            class="form-control"
+                                            value="{{ old('inventory_service_key_url', $preference->inventory_service_key_url ?? '') }}">
+                                        @if ($errors->has('inventory_service_key_url'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ $errors->first('inventory_service_key_url') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
+
                                     <div class="form-group mt-3 mb-0 inventoryFields"
                                         style="{{ isset($preference) && $preference->need_inventory_service == '1' ? '' : 'display:none;' }}">
                                         <label for="inventory_service_key_code">{{ __('Inventory Short code') }}</label>
@@ -405,6 +247,7 @@
                     </form>
                 </div>
             @endif
+
             {{-- @if ($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app')
 
             <div class="col-lg-3 col-md-6 mb-3">
@@ -1604,23 +1447,7 @@
                             style="{{ isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1 ? '' : 'display:none;' }}">
                             <div class="col-12">
                                 <label class="mr-2 mb-0">Apply free delivery to these roles on all products</label>
-                  @foreach($allRoles as $allRole)
-                  <div class="form-group mb-2 mt-2">
-                     <label for="fb_client_id">{{ $allRole->role }}</label>
-                     <input type="checkbox" data-plugin="switchery" id="is_free_delivery_by_roles" class="form-control checkbox_change" name="apply_free_del[{{$allRole->id}}]" data-className="is_free_delivery_by_roles_hidden" data-color="#43bee1" value="{{$allRole->id}}">
-                  </div>
-                  @endforeach
-               </div>
-            </div>
-         </div><!-- HubSpot card end -->
-      </form>
-   </div>
-   {{-- end Free Delivery By Roles form --}}
-</div>
 
-<div class="row">
-   {{-- <div class="col-md-12 show-custom-mods">
-=======
                                 @foreach ($allRoles as $allRole)
                                     <div class="form-group mb-2 mt-2">
                                         <label for="fb_client_id">{{ $allRole->role }}</label>
@@ -1813,7 +1640,6 @@
 
         <div class="row">
             {{-- <div class="col-md-12 show-custom-mods">
-
          <div class="card-box ">
             <div class="d-flex align-items-center justify-content-between mb-3">
                <h4 class="header-title text-uppercase mb-0">{{ __("Custom Mods") }}</h4>
@@ -2373,118 +2199,6 @@
                                 </div>
                             </div>
 
-@if(checkColumnExists('products','is_long_term_service'))
-<div class="col-md-4 ">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="is_long_term_service" class="mr-2 mb-0">{{__('Long Term Service')}}<small class="d-block pr-5">{{__("Enable to add long term service.")}}</small></label>
-      <span>
-         <input type="checkbox" data-plugin="switchery" name="is_long_term_service_switch" id="is_long_term_service_switch" class="form-control checkbox_change" data-className="is_long_term_service" data-color="#43bee1" @if( @getAdditionalPreference(['is_long_term_service'])['is_long_term_service']=='1' ) checked='checked' @endif>
-      </span>
-      <input type="hidden" @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service']==1) value="1" @else value="0" @endif name="is_long_term_service" id="is_long_term_service" />
-   </div>
-</div>
-@endif
-
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="is_gst_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('GST Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show GST details for vendor registration")}}</small></label>
-      <span>
-         <input type="checkbox" data-plugin="switchery" name="is_gst_required_for_vendor_registration_switch" id="is_gst_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_gst_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_gst_required_for_vendor_registration']=='1' ) checked='checked' @endif>
-         <input type="hidden" @if($getAdditionalPreference['is_gst_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_gst_required_for_vendor_registration" id="is_gst_required_for_vendor_registration" />
-      </span>
-   </div>
-</div>
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="is_baking_details_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('Banking Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show Banking details for vendor registration")}}</small></label>
-      <span>
-         <input type="checkbox" data-plugin="switchery" name="is_baking_details_required_for_vendor_registration_switch" id="is_baking_details_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_baking_details_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_baking_details_required_for_vendor_registration']=='1' ) checked='checked' @endif>
-         <input type="hidden" @if($getAdditionalPreference['is_baking_details_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_baking_details_required_for_vendor_registration" id="is_baking_details_required_for_vendor_registration" />
-      </span>
-   </div>
-</div>
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="is_advance_details_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('Advanced Details for vendor')}}<small class="d-block pr-5">{{__("Enable to show Advanced details for vendor registration")}}</small></label>
-      <span>
-         <input type="checkbox" data-plugin="switchery" name="is_advance_details_required_for_vendor_registration_switch" id="is_advance_details_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_advance_details_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_advance_details_required_for_vendor_registration']=='1' ) checked='checked' @endif>
-         <input type="hidden" @if($getAdditionalPreference['is_advance_details_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_advance_details_required_for_vendor_registration" id="is_advance_details_required_for_vendor_registration" />
-      </span>
-   </div>
-</div>
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="is_vendor_category_required_for_vendor_registration_switch" class="mr-2 mb-0">{{__('Vendor Category for vendor')}}<small class="d-block pr-5">{{__("Enable to show Vendor Category for vendor registration")}}</small></label>
-      <span>
-         <input type="checkbox" data-plugin="switchery" name="is_vendor_category_required_for_vendor_registration_switch" id="is_vendor_category_required_for_vendor_registration_switch" class="form-control checkbox_change" data-className="is_vendor_category_required_for_vendor_registration" data-color="#43bee1" @if( $getAdditionalPreference['is_vendor_category_required_for_vendor_registration']=='1' ) checked='checked' @endif>
-         <input type="hidden" @if($getAdditionalPreference['is_vendor_category_required_for_vendor_registration']==1) value="1" @else value="0" @endif name="is_vendor_category_required_for_vendor_registration" id="is_vendor_category_required_for_vendor_registration" />
-      </span>
-   </div>
-</div>
-
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="is_seller_module_switch" class="mr-2 mb-0">{{__('Show Seller Module')}}<small class="d-block pr-5">{{__("Enable to show Seller Module")}}</small></label>
-      <span>
-         <input type="checkbox" data-plugin="switchery" name="is_seller_module_switch" id="is_seller_module_switch" class="form-control checkbox_change" data-className="is_seller_module" data-color="#43bee1" @if( $getAdditionalPreference['is_seller_module']=='1' ) checked='checked' @endif>
-         <input type="hidden" @if($getAdditionalPreference['is_seller_module']==1) value="1" @else value="0" @endif name="is_seller_module" id="is_seller_module" />
-      </span>
-   </div>
-</div>
-
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="is_cab_pooling_switch" class="mr-2 mb-0">{{__('Cab Pooling')}}<small class="d-block pr-5">{{__("Enable to allow customers to book Cab Pooling.")}}</small></label>
-      <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch" id="is_cab_pooling_switch" class="form-control checkbox_change" data-className="is_cab_pooling" data-color="#43bee1" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) checked='checked' @endif>
-      </span>
-      <input type="hidden" @if(@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']==1) value="1" @else value="0" @endif name="is_cab_pooling" id="is_cab_pooling" />
-   </div>
-</div>
-
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="add_to_cart_btn_switch" class="mr-2 mb-0">{{__('Add to Cart')}}<small class="d-block pr-5">{{__("Enable to allow customers to add to cart.")}}</small></label>
-      <span> <input type="checkbox" data-plugin="switchery" name="add_to_cart_btn_switch" id="add_to_cart_btn_switch" class="form-control checkbox_change" data-className="add_to_cart_btn" data-color="#43bee1" @if(@getAdditionalPreference(['add_to_cart_btn'])['add_to_cart_btn']==1) checked='checked' @endif>
-      </span>
-      <input type="hidden" @if(@getAdditionalPreference(['add_to_cart_btn'])['add_to_cart_btn']==1) value="1" @else value="0" @endif name="add_to_cart_btn" id="add_to_cart_btn" />
-   </div>
-</div>
-
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="chat_button_switch" class="mr-2 mb-0">{{__('Chat Button')}}<small class="d-block pr-5">{{__("Enable to allow customers to chat button.")}}</small></label>
-      <span> <input type="checkbox" data-plugin="switchery" name="chat_button_switch" id="chat_button_switch" class="form-control checkbox_change" data-className="chat_button" data-color="#43bee1" @if(@getAdditionalPreference(['chat_button'])['chat_button']==1) checked='checked' @endif>
-      </span>
-      <input type="hidden" @if(@getAdditionalPreference(['chat_button'])['chat_button']==1) value="1" @else value="0" @endif name="chat_button" id="chat_button" />
-   </div>
-</div>
-
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="call_button_switch" class="mr-2 mb-0">{{__('Call Button')}}<small class="d-block pr-5">{{__("Enable to allow customers to chat button.")}}</small></label>
-      <span> <input type="checkbox" data-plugin="switchery" name="call_button_switch" id="call_button_switch" class="form-control checkbox_change" data-className="call_button" data-color="#43bee1" @if(@getAdditionalPreference(['call_button'])['call_button']==1) checked='checked' @endif>
-      </span>
-      <input type="hidden" @if(@getAdditionalPreference(['call_button'])['call_button']==1) value="1" @else value="0" @endif name="call_button" id="call_button" />
-   </div>
-</div>
-
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="is_tracking_url_switch" class="mr-2 mb-0">{{__('Tracking Url')}}<small class="d-block pr-5">{{__("Enable to allow guest customers to tracking url.")}}</small></label>
-      <span> <input type="checkbox" data-plugin="switchery" name="is_tracking_url_switch" id="is_tracking_url_switch" class="form-control checkbox_change" data-className="is_tracking_url" data-color="#43bee1" @if(@getAdditionalPreference(['is_tracking_url'])['is_tracking_url']==1) checked='checked' @endif>
-      </span>
-      <input type="hidden" @if(@getAdditionalPreference(['is_tracking_url'])['is_tracking_url']==1) value="1" @else value="0" @endif name="is_tracking_url" id="is_tracking_url" />
-   </div>
-</div>
-
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="is_tracking_url_switch" class="mr-2 mb-0">{{__('Tracking Url Sms Enable')}}<small class="d-block pr-5">{{__("Enable to access guest customers to tracking url via sms otp.")}}</small></label>
-      <span> <input type="checkbox" data-plugin="switchery" name="is_tracking_url_sms_switch" id="is_tracking_url_sms_switch" class="form-control checkbox_change" data-className="is_tracking_sms_url" data-color="#43bee1" @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url']==1) checked='checked' @endif>
-      </span>
-      <input type="hidden" @if(@getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url']==1) value="1" @else value="0" @endif name="is_tracking_sms_url" id="is_tracking_sms_url" />
-   </div>
-</div>
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                     <label for="is_seller_module_switch"
@@ -2502,14 +2216,6 @@
                                 </div>
                             </div>
 
-                           <div class="col-md-4">
-                              <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                 <label for="is_corporate_user_switch" class="mr-2 mb-0">{{__('Corporate User Enable')}}<small class="d-block pr-5">{{__("Enable to show corporate user type in user registration.")}}</small></label>
-                              <span> <input type="checkbox" data-plugin="switchery" name="is_corporate_user_switch" id="is_corporate_user_switch" class="form-control checkbox_change" data-className="is_corporate_user" data-color="#43bee1" @if(@getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) checked='checked'  @endif>
-                                 </span>
-                                 <input type="hidden"  @if(@getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) value="1" @else value="0" @endif  name="is_corporate_user"  id="is_corporate_user"/>
-                              </div>
-                           </div>
 
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">

@@ -161,15 +161,15 @@ trait HomePageTrait
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
                 },
 
-            ])
-            ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only')
-            ->selectRaw('compare_at_price ,  price, (compare_at_price - price) as discount_amount, ((compare_at_price - price)/compare_at_price)*100 as discount_percentage')
-            ->join('product_variants', 'products.id', 'product_variants.product_id');
-            $products = $products->whereHas('vendor', function ($q) use ($vendor_ids) {
-                $q->where('status', 1);
-                $q->whereIn('vendors.id', $vendor_ids);
-            })->where('is_live', 1);
-            $products = $products->whereIn('products.id', $product_ids)
+            ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+
+
+            $products = $products->where('is_live', 1);
+            // ->whereHas('vendor', function ($q) use ($vendor_ids) {
+            //     $q->where('status', 1);
+            //     $q->whereIn('vendors.id', $vendor_ids);
+            // });
+            $products = $products->whereIn('id', $product_ids)
                 ->take(8)->get();
 
             

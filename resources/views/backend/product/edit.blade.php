@@ -30,10 +30,7 @@
         overflow: hidden;
         display: inline-block;
     }
-    .custom_select .selectize-input {
-    min-height: auto;
-    height: auto;
-}
+
 
 
     .upload-btn-wrapper input[type=file] {
@@ -143,17 +140,6 @@ div#attribute_section .col-sm-9 .form-check-inline.w-100 {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-.field_wrapper a.add_button i {
-    font-size: 30px;
-    margin-top: -4px;
-    display: inline-block;
-}
-.field_wrapper a.remove_button i {
-    font-size: 30px;
-    margin-top: -4px;
-    display: inline-block;
-    color: #bb0e0e;
 }
 </style>
 @endsection
@@ -415,52 +401,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 <div class="row mb-2">
                                     @if (isset($roles))
                                         @foreach ($roles as $key => $_role)
-                                            @if($_role['role'] === 'Corporate_user')
-                                                <div class="col-12">
-                                                    <div class="field_wrapper">
-                                                        @foreach ($product->productVariantByRoles as $role)
-                                                            @if($role->role_id == 3)
-                                                                <div class="row corporate-row">
-                                                                    <div class="col-md-5">
-                                                                        <div class="form-group">
-                                                                            <input type="number" class="form-control" min="0" id="corporate_user_price" onkeyup="isNumberKey(event)" placeholder="Corporate User Price" name="corporate_user_price[]" value="{{$role->amount}}">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-5">
-                                                                        <div class="form-group"><input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="Quantity" name="minimum_order_count_corporate_user[]" value="{{$role->quantity}}">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-2">
-                                                                        <a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                        @endforeach
-                                                        <div class="row corporate-row">
-                                                            <div class="col-md-5">
-                                                                <div class="form-group">
-                                                                    <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKey(event)" placeholder="Corporate User Price" name="{{lcfirst($_role['role'])}}_price[]" value="">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-5">
-                                                                <div class="form-group">
-                                                                    <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="Quantity" name="minimum_order_count_corporate_user[]" value="">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <a href="javascript:void(0);" class="add_button" title="Add field"><i class="mdi mdi-plus-circle mr-1"></i></a>
-                                                            </div>
-                                                            <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <div class="col-4 mb-2">
-                                                    {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
-                                                    <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKey(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="{{ isset($product->productVariantByRoles[$key]) ? (decimal_format($product->productVariantByRoles[$key]->amount) ?? 0.00) : 0.00 }}">
-                                                    <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
-                                                </div>
-                                            @endif
+                                            <div class="col-4 mb-2">
+                                                {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
+                                                <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKey(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="{{ isset($product->productVariantByRoles[$key]) ? (decimal_format($product->productVariantByRoles[$key]->amount) ?? 0.00) : 0.00 }}">
+                                                <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
+                                            </div>
                                         @endforeach
                                     @endif
                                 </div>
@@ -788,39 +733,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </div>
                         </div>
                         @endif
-                        @if($product->vendor->same_day_delivery == 1 && $getAdditionalPreference['is_same_day_delivery'])
-                            <div class="col-md-6 d-flex justify-content-between mb-2">
-                                {!! Form::label('title', __('Same Day Delivery'),['class' => 'control-label']) !!}
-                                <input type="checkbox" id="same_day_delivery" data-plugin="switchery" name="same_day_delivery" class="chk_box" data-color="#43bee1" @if($product->same_day_delivery == 1) checked @endif>
-                            </div>
-                        @endif
-                        @if($product->vendor->next_day_delivery == 1 && $getAdditionalPreference['is_next_day_delivery'])
-                            <div class="col-md-6 d-flex justify-content-between mb-2">
-                                {!! Form::label('title', __('Next Day Delivery'),['class' => 'control-label']) !!}
-                                <input type="checkbox" id="next_day_delivery" data-plugin="switchery" name="next_day_delivery" class="chk_box" data-color="#43bee1" @if($product->next_day_delivery == 1) checked @endif>
-                            </div>
-                        @endif
-                        @if($product->vendor->hyper_local_delivery == 1 && $getAdditionalPreference['is_hyper_local_delivery'])
-                            <div class="col-md-6 d-flex justify-content-between mb-2">
-                                {!! Form::label('title', __('Hyper Local Delivery'),['class' => 'control-label']) !!}
-                                <input type="checkbox" id="hyper_local_delivery" data-plugin="switchery" name="hyper_local_delivery" class="chk_box" data-color="#43bee1" @if($product->hyper_local_delivery == 1) checked @endif>
-                            </div>
-                        @endif
 
-                        @if($product->vendor->next_day_delivery == 1 || $product->vendor->same_day_delivery == 1)
-                            @php
-                                $pro_delivery_slot_ids = $product->syncProductDeliverySlot->pluck('id')->toArray();
-                            @endphp
-                            <div class="col-sm-12 custom_select">
-                                {!! Form::label('title', __('Choose Slots'),['class' => 'control-label']) !!}
-                                <select class="selectizeInput form-control" id="select_slot" name="slot_ids[]" multiple>
-                                    <option value="">Choose Slots</option>
-                                    @foreach ($delivery_slots as $slot)
-                                        <option value="{{$slot->id}}" @if(in_array($slot->id, $pro_delivery_slot_ids)) selected @endif>{{$slot->title.' ( '.$slot->start_time.'-'.$slot->end_time.' )'}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        @endif
+                        
 
                         @if(($configData->need_dispacher_home_other_service == 1 && ($product->category->categoryDetail->type_id == 8)) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 ) )
                         @if($product->Requires_last_mile == 1 )
@@ -861,6 +775,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <input type="checkbox" bid="" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box" data-color="#43bee1" @if($product->age_restriction == 1) checked @endif>
                         </div>
                         @endif
+
+
+
+
+
                     </div>
 
                     
@@ -931,14 +850,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                         $label_min = 'Minimum Order Count ['.$role->role.']';
                                         $input_min = 'minimum_order_count['.$role->role.']';
                                     @endphp
-                                    @if($role->role != 'Corporate_user')
-                                        <div class="col-md-6 mb-2">
-                                            {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
+                                    <div class="col-md-6 mb-2">
+                                        {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
 
-                                            <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_arr[{{$role['id']}}]" value="{{ isset($product->productByRoleForAdmin[$key]) ? (decimal_format($product->productByRoleForAdmin[$key]->minimum_order_count) ?? 0.00) : 0.00 }}">
+                                        <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_arr[{{$role['id']}}]" value="{{ isset($product->productByRoleForAdmin[$key]) ? (decimal_format($product->productByRoleForAdmin[$key]->minimum_order_count) ?? 0.00) : 0.00 }}">
 
-                                        </div>
-                                    @endif
+                                    </div>
                                 @endforeach
                             @endif
                         @endif
@@ -2228,14 +2145,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
         editProductOrderForm(product_faq_id);
     });
 
-    $(document).on("change", "#same_day_delivery", function() {
-        if(this.checked){
-            $('#next_day_delivery').prop("checked", true);
-        }else{
-            $('#next_day_delivery').prop("checked", false);
-        }
-    });
-
     function editProductOrderForm(product_faq_id){
         let language_id = $('#option_client_language').val();
         $('#add_product_faq_modal input[name=product_faq_id]').val(product_faq_id);
@@ -2326,32 +2235,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             }
         })
 
-    </script>
-
-    <script type="text/javascript">
-        $(document).ready(function(){
-            var maxField = 10; //Input fields increment limitation
-            var addButton = $('.add_button'); //Add button selector
-            var wrapper = $('.field_wrapper'); //Input field wrapper
-            var fieldHTML = '<div class="row corporate-row"><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" id="corporate_user_price" onkeyup="isNumberKey(event)" placeholder="Corporate User Price" name="corporate_user_price[]" value=""></div></div><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="Quantity" name="minimum_order_count_corporate_user[]" value=""></div></div><div class="col-md-2"><a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a></div></div>'; //New input field html 
-            var x = $("div.corporate-row").length; //Initial field counter is 1
-            
-            //Once add button is clicked
-            $(addButton).click(function(){
-                //Check maximum number of input fields
-                if(x < maxField){ 
-                    x++; //Increment field counter
-                    $(wrapper).append(fieldHTML); //Add field html
-                }
-            });
-            
-            //Once remove button is clicked
-            $(wrapper).on('click', '.remove_button', function(e){
-                e.preventDefault();
-                $(this).parent().parent('div').remove(); //Remove field html
-                x--; //Decrement field counter
-            });
-        });
     </script>
 <!-- end product faq -->
 

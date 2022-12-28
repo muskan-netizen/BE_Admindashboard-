@@ -20,7 +20,7 @@ use GuzzleHttp\Client;
 use App\Models\Client as CP;
 use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
-use App\Http\Traits\{ApiResponser, WhatsappApi};
+use App\Http\Traits\ApiResponser;
 use Log;
 use Carbon\Carbon;
 use App\Models\{LoyaltyCard, VendorOrderCancelReturnPayment};
@@ -29,7 +29,7 @@ class OrderController extends BaseController
 {
     private $folderName = '/order/reports';
 
-    use ApiResponser, WhatsappApi;
+    use ApiResponser;
     use \App\Http\Traits\OrderTrait;
     /**
      * Display a listing of the resource.
@@ -1011,7 +1011,6 @@ class OrderController extends BaseController
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
                 $customer = User::find($orderData->user_id);
-                $this->customEvents($request->status_option_id, $orderData);
                 if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
                      $this->sendTrackingUrlSMS($customer,$orderData);
                 }

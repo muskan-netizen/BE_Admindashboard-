@@ -49,9 +49,7 @@
                 <div class="media-body align-self-start">
                     <div class="inner_spacing px-0">
                         <div class="product-description">
-                        @if(@$product['discount_percentage'] && $product['discount_percentage'] > 0)
-                            <span class="flag-discount">{{$product['discount_percentage']}}% Off</span>
-                        @endif
+                        <span class="flag-discount">30% Off</span>
                         <span class="rating">4.0 <i class="fa fa-star text-white p-0"></i></span>
                             <div class="d-flex align-items-center justify-content-between">
                                 <h6 class="card_title ellips">{{ (!empty($scp->translation) && isset($scp->translation[0])) ? $scp->translation[0]->title : ''}}</h6>                             
