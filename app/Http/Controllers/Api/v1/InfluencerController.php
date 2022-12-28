@@ -9,6 +9,7 @@ use App\Models\InfluencerUser;
 use Illuminate\Http\Request;
 use Auth;
 use App\Http\Traits\ApiResponser;
+use App\Models\ReferEarnDetail;
 use Session;
 
 class InfluencerController extends Controller
@@ -42,5 +43,62 @@ class InfluencerController extends Controller
         }
         $data = ['attributes' => $productAttributes];
         return $this->successResponse($data);
+    }
+    function save(Request $request) {
+        try {
+            if( !empty($request->attribute) ) {
+            
+                $insert_arr = [];
+                $insert_count = 0;
+                $user_id = Auth::user()->id;
+
+                $influencer_user_id = InfluencerUser::insertGetId([
+                    "user_id" => $user_id
+                ]);
+    
+                foreach($request->attribute as $key => $value) {
+                    if( !empty($value) && !empty($value['option'] && is_array($value) )) {
+                        
+                        if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+                            $value_arr = @$value['value'];
+                            
+                            foreach( $value['option'] as $key1 => $val1 ) {
+                                if( @in_array($val1['option_id'], $value_arr) ) {
+    
+                                    $insert_arr[$insert_count]['influencer_user_id'] = $influencer_user_id ;
+                                    $insert_arr[$insert_count]['user_id'] = $user_id;
+                                    $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                    $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                    $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+                                    $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                }
+                                $insert_count++;
+                            }
+                        }
+                        else {
+                            foreach($value['option'] as $option_key => $option) {
+                                if(@$option['value']){
+                                    $insert_arr[$insert_count]['influencer_user_id'] = $influencer_user_id ;
+                                    $insert_arr[$insert_count]['user_id'] = $user_id;
+                                    $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                    $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                    $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+                                    $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+                                }
+                                $insert_count++;
+                            }
+                        }
+                    }
+    
+                
+                }
+                ReferEarnDetail::insert($insert_arr);
+                return $this->successResponse('', 'Thanks for registering with us');
+                
+            }
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+        
     }
 }
