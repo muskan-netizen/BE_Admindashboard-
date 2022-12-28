@@ -437,6 +437,7 @@ trait cartManager{
             $total_service_fee = 0;
             $total_markup_fee_tax = 0;
             $container_charges_tax = 0;
+            $processorProduct     = array();
 
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
