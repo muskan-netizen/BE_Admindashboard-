@@ -161,8 +161,8 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     $other_taxes=$cart_details->other_taxes;
     $other_taxes_string=$cart_details->other_taxes_string;
     @endphp
-    {{-- @dd($cart_details->products) --}}
     @foreach($cart_details->products as $product)
+
             {{-- @php
             dd($product->is_vendor_closed.' -- '.$product->closed_store_order_scheduled);
             @endphp --}}
@@ -214,11 +214,10 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 
 
         {{-- Product Detail Loop --}}
-        
+
         <div id="tbody_{{$product->vendor->id}}">
 
             @foreach($product->vendor_products as $vendor_product)
-            {{-- @dd($vendor_product) --}}
             {{-- @php
             pr($vendor_product);
             @endphp --}}
@@ -247,22 +246,16 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                 @endforeach
                                 @endif
                             </div>
-                            @php
-                                $getAdditionalPreference = getAdditionalPreference(['is_corporate_user']);
-                                $corporate_user_price = 0;
-                            @endphp
-                            @if( (@Auth::user()->role_id == 3) && ($getAdditionalPreference['is_corporate_user'] == 1) && !empty($vendor_product->product_variant_by_roles) && !empty($vendor_product->quantity_role_price) && $vendor_product->quantity_role_price->quantity_price != 0 )
-                                <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
-                                    <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->quantity_role_price->amount) }}</div>
-                                </div>
-                            @else
-                                @if(isset($vendor_product->pvariant->actual_price))
-                                <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
-                                    <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
-                                </div>
-                                @endif
-                            @endif                            
 
+                            @if(isset($vendor_product->pvariant->actual_price))
+                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
+                                <div class="items-price">@if( $additionalPreference["is_token_currency_enable"]) 
+                                    {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier))}}
+                                    @else {{Session::get('currencySymbol').decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }}
+                                    @endif 
+                                    @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
+                            </div>
+                            @endif
                             @if(!empty($vendor_product->quantity_price))
                             <div class="col-6 col-md-2 text-left order-md-4">
                                 @if($serviceType ==  'rental')
@@ -276,12 +269,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                                 {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($vendor_product->quantity_price + ($additionalPrice )))}} @else 
                                                 {{Session::get('currencySymbol').decimal_format($vendor_product->quantity_price + ($additionalPrice )) }}@endif</div>
                                 @else
-                                    @if( $corporate_user_price != 0 )
-                                        <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($corporate_user_price) * $vendor_product->quantity }}</div>
-                                    @else
-                                        <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
-                                    @endif
-                                
+                                <div class="items-price">@if( $additionalPreference["is_token_currency_enable"]) 
+                                                {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($vendor_product->quantity_price))}} @else 
+                                                {{Session::get('currencySymbol').decimal_format($vendor_product->quantity_price) }} @endif</div>
                                 @endif
                             </div>
                             @endif
@@ -476,10 +466,6 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                         @include('frontend.cart.longTermTimeSelection')
                         @endif
 
-                        @if( $vendor_product->product->same_day_delivery ==  1 && $vendor_product->product->next_day_delivery ==  1)
-                            @include('frontend.cart.deliverySlotSelection')
-                        @endif
-                    
                     </div>
 
                     @if( ($vendor_product->product->delay_order_time->delay_order_hrs != '' && $vendor_product->product->delay_order_time->delay_order_min != '' ) &&  (($vendor_product->product->delay_order_time->delay_order_hrs != 0) || ($vendor_product->product->delay_order_time->delay_order_hrs != 0)))
@@ -805,16 +791,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                 </div>
                 <hr class="my-2">
             @endif
-            
-            @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
-                <div class="row">
-                    <div class="col-6">{{__('Delivery Slot Fees')}}</div>
-                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
-                </div>
-                <hr class="my-2">
-            @endif
-        
-        @if($cart_details->total_service_fee > 0 && $price_bifurcation!=1)
+            @if($cart_details->total_service_fee > 0 && $price_bifurcation!=1)
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
                     <div class="col-6 text-right"><b> @if( $additionalPreference["is_token_currency_enable"]) 
@@ -990,6 +967,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                         </div>
                         @endif
                 </div>
+
 
                 <div class="col-6 text-right">
                     @if($client_preference_detail->auto_implement_5_percent_tip == 1)

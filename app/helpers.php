@@ -56,12 +56,6 @@ if (!function_exists('getAdditionalPreference')) {
         if(sizeof($key)){
             $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => session()->get('userCode')])->get() : [];
             $return = array_column($result->toArray(), 'key_value', 'key_name');
-            $addImageArr = ['seller_platform_logo'];
-            foreach($result as $res){
-                if(in_array($res->key_name, $addImageArr)){
-                    $res->key_value = getAdditionalImageAttribute($res->key_value);
-                }
-            }
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
             }
@@ -73,23 +67,23 @@ if (!function_exists('getAdditionalPreference')) {
     }
 }
 
-if (!function_exists('getAdditionalImageAttribute')) {
-    function getAdditionalImageAttribute($value)
-    {
-        $values = array();
-        $img = 'default/default_image.png';
-        if(!empty($value)){
-            $img = $value;
-        }
-        $ex = checkImageExtension($img);
-        $values['proxy_url'] = \Config::get('app.IMG_URL1');
-        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
-        $values['image_fit'] = \Config::get('app.FIT_URl');
+// if (!function_exists('getAdditionalImageAttribute')) {
+//     function getAdditionalImageAttribute($value)
+//     {
+//         $values = array();
+//         $img = 'default/default_image.png';
+//         if(!empty($value)){
+//             $img = $value;
+//         }
+//         $ex = checkImageExtension($img);
+//         $values['proxy_url'] = \Config::get('app.IMG_URL1');
+//         $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+//         $values['image_fit'] = \Config::get('app.FIT_URl');
 
-        //$values['small'] = url('showImage/small/' . $img);
-        return $values;
-    }
-}
+//         //$values['small'] = url('showImage/small/' . $img);
+//         return $values;
+//     }
+// }
 
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
@@ -175,17 +169,6 @@ if (! function_exists('orderProductDetails')) {
 }
 
 
-
-if (! function_exists('loadDefaultImage')) {
-    function loadDefaultImage()
-    {
-        $proxy_url = \Config::get('app.IMG_URL1');
-        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
-        $image_fit = \Config::get('app.FIT_URl');
-        $default_url = $image_fit .'300/300'. $image_path.'@webp';
-        return $default_url;
-    }
-}
 
 if (! function_exists('EasebuzzSubMerchent')) {
     function EasebuzzSubMerchent()
@@ -489,6 +472,15 @@ if (!function_exists('getDefaultImagePath')) {
         $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
         $values['image_fit'] = \Config::get('app.FIT_URl');
         return $values;
+    }
+}
+if (!function_exists('loadDefaultImage')) {
+    function loadDefaultImage(){
+        $proxy_url = \Config::get('app.IMG_URL1');
+        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
+        $image_fit = \Config::get('app.FIT_URl');
+        $default_url = $image_fit .'300/300'. $image_path.'@webp';
+        return $default_url;
     }
 }
 
@@ -1335,7 +1327,7 @@ if (!function_exists('inventorySyncOnOff')) {
         if (!empty($vendor_id) && checkColumnExists('client_preferences', 'inventory_service_key_url')) {
             
             $client_preferences = ClientPreference::first();
-            if(isset($$client_preferences) && ($client_preferences->inventory_service_key_url !='')){
+            if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
 
                 $client = new \GuzzleHttp\Client([
                     'headers' => [

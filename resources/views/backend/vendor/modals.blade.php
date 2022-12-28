@@ -392,36 +392,6 @@
                                                         </div>
                                                     </div>
                                                     @endif
-                                                    @if(@$getAdditionalPreference['is_same_day_delivery'] == '1')
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            {!! Form::label('title', __('Same Day Delivery'),['class' => 'control-label']) !!}
-                                                            <div class="mt-md-1">
-                                                                <input type="checkbox" data-plugin="switchery" name="same_day_delivery" class="form-control" data-color="#43bee1" @if(@$vendor->same_day_delivery == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    @endif
-                                                    @if(@$getAdditionalPreference['is_next_day_delivery'] == '1')
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            {!! Form::label('title', __('Next Day Delivery'),['class' => 'control-label']) !!}
-                                                            <div class="mt-md-1">
-                                                                <input type="checkbox" data-plugin="switchery" name="next_day_delivery" class="form-control" data-color="#43bee1" @if(@$vendor->next_day_delivery == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    @endif
-                                                    @if(@$getAdditionalPreference['is_hyper_local_delivery'] == '1')
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            {!! Form::label('title', __('Hyper Local Delivery'),['class' => 'control-label']) !!}
-                                                            <div class="mt-md-1">
-                                                                <input type="checkbox" data-plugin="switchery" name="hyper_local_delivery" class="form-control" data-color="#43bee1" @if(@$vendor->hyper_local_delivery == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    @endif
                                                 </div>
                                                 @if($client_preference_detail->business_type != 'taxi')
                                                     <div class="form-group">

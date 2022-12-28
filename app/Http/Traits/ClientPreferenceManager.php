@@ -2,14 +2,14 @@
 namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 use App\Models\{ClientPreference,ClientPreferenceAdditional,Client, ProductDeliveryFeeByRole, Product};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
+use Storage;
 
 trait ClientPreferenceManager{
 
-  public $client_preference_fillable_key = ['is_price_by_role','is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service', 'is_free_delivery_by_roles', 'is_cab_pooling', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'add_to_cart_btn', 'chat_button', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url','is_tracking_sms_url', 'is_tax_price_inclusive', 'is_postpay_enable', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card', 'is_place_order_delivery_zero', 'is_corporate_user', 'is_cust_success_signup_email'];
+  public $client_preference_fillable_key = ['is_price_by_role','is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service', 'is_free_delivery_by_roles', 'is_cab_pooling', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'add_to_cart_btn', 'chat_button', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url','is_tracking_sms_url', 'is_tax_price_inclusive', 'is_postpay_enable', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card', 'is_place_order_delivery_zero', 'is_cust_success_signup_email'];
   # get last mile teams
   public function getLastMileTeams(){
     try {
@@ -56,9 +56,9 @@ trait ClientPreferenceManager{
     // dd($validated_keys);
     $client = Client::first();
     foreach($validated_keys as $key => $value){
-      if ($key == 'seller_platform_logo') {
-        if ($request->hasFile('seller_platform_logo')) { /* upload logo file */
-          $file = $request->file('seller_platform_logo');
+      if ($key == 'saller_platform_logo') {
+        if ($request->hasFile('saller_platform_logo')) { /* upload logo file */
+          $file = $request->file('saller_platform_logo');
           $value = $this->uploadFile($file);
         }
       }
@@ -90,8 +90,7 @@ trait ClientPreferenceManager{
     
     return 1;
   }
-
   public function uploadFile($file){
-    return Storage::disk('s3')->put('/AdditionalImages', $file, 'public');
+      return Storage::disk('s3')->put('/vendor', $file, 'public');
   }
 }
