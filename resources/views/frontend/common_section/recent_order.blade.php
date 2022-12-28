@@ -1,4 +1,6 @@
-        @php $subtotal_order_price = $total_order_price = $total_tax_order_price = 0; @endphp
+        @php 
+        $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+        $subtotal_order_price = $total_order_price = $total_tax_order_price = 0; @endphp
         @foreach ($order['vendors'] as $vendor )
         @php $product_total_count = $product_subtotal_amount = $product_taxable_amount = 0; @endphp
             <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0"  >
@@ -56,8 +58,12 @@
                             @foreach($vendor['products'] as $product )
                                 @if($vendor['vendor_id'] == $product->vendor_id)
                                     <li class="text-center"> <img class="blur-up lazyload" data-src="{{$product['image_url']}} " alt="" title=""> <span class="item_no position-absolute">x {{$product['quantity']}} </span>
-                                        <label class="items_price">{{Session::get('currencySymbol')}}
-                                            {{$product->price * $product->pricedoller_compare}}
+                                        <label class="items_price">
+                                            @if($additionalPreference['is_token_currency_enable'] ) 
+                                            {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken($product->price * $product->pricedoller_compare) }}
+                                            @else
+                                             {{Session::get('currencySymbol').' '.$product->price * $product->pricedoller_compare}}
+                                            @endif
                                         </label>
                                     </li>
                                     @php $product_total_price = $product->price * $product->doller_compare; $product_total_count += $product->quantity * $product_total_price; $product_taxable_amount += $product->taxable_amount; $total_tax_order_price += $product->taxable_amount; @endphp
@@ -68,17 +74,31 @@
                     <div class="col-md-5 mt-md-0 mt-sm-2">
                         <ul class="price_box_bottom m-0 p-0">
                             <li class="d-flex align-items-center justify-content-between">
-                                <label class="m-0">{{__('Product Total')}}</label> <span>{{Session::get('currencySymbol')}}{{number_format((float)$vendor['subtotal_amount'], 2, '.', '')}}</span> </li>
+                                <label class="m-0">{{__('Product Total')}}</label> <span>@if($additionalPreference['is_token_currency_enable'] )
+                               {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(number_format((float)$vendor['subtotal_amount'], 2, '.', ''))}}
+                               @else
+                               {{Session::get('currencySymbol').' '.number_format((float)$vendor['subtotal_amount'], 2, '.', '')}}</span> 
+                               @endif</li>
                             <li class="d-flex align-items-center justify-content-between">
-                                <label class="m-0">{{__('Coupon Discount')}}</label> <span>{{Session::get('currencySymbol')}} {{number_format((float)$vendor['discount_amount'], 2, '.', '');}}</span> </li>
+                                <label class="m-0">{{__('Coupon Discount')}}</label> <span>@if($additionalPreference['is_token_currency_enable'] )
+                                {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(number_format((float)$vendor['discount_amount'], 2, '.', '') ) }}
+                                @else
+                                {{ Session::get('currencySymbol').' '.number_format((float)$vendor['discount_amount'], 2, '.', '');}}</span> 
+                                @endif</li>
                             <li class="d-flex align-items-center justify-content-between">
-                                <label class="m-0">{{__('Delivery Fee')}}</label> <span>{{Session::get('currencySymbol')}}{{number_format((float)$vendor['delivery_fee'], 2, '.', '');}}</span> </li>
+                                <label class="m-0">{{__('Delivery Fee')}}</label> <span>@if($additionalPreference['is_token_currency_enable'] )
+                                    {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(number_format((float)$vendor['delivery_fee'], 2, '.', '')) }}
+                                    @else
+                                    {{ Session::get('currencySymbol').' '.number_format((float)$vendor['delivery_fee'], 2, '.', '');}}</span>
+                                @endif </li>
                             <li class="grand_total d-flex align-items-center justify-content-between">
                                 <label class="m-0">{{__('Amount')}}</label>
                                 @php
                                 $product_subtotal_amount=$product_total_count - $vendor['discount_amount'] + $vendor['delivery_fee']; $subtotal_order_price +=$product_subtotal_amount;
                                 @endphp
-                                    <span>{{Session::get('currencySymbol')}}{{number_format((float)$vendor['payable_amount'], 2, '.', '');}}</span> </li>
+                                    <span>@if($additionalPreference['is_token_currency_enable'] )
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(number_format((float)$vendor['payable_amount'], 2, '.', '')) }}
+                                        @else {{Session::get('currencySymbol').' '.number_format((float)$vendor['payable_amount'], 2, '.', '');}} @endif</span> </li>
                         </ul>
                     </div>
                 </div>

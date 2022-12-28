@@ -12,6 +12,7 @@ use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ValidatorTrait;
+use Illuminate\Support\Facades\Redis;
 use Session;
 
 class ClientPreferenceController extends BaseController{
@@ -173,8 +174,35 @@ class ClientPreferenceController extends BaseController{
      */
 
     public function additionalupdate(Request $request){
+            $rules = array(
+                'token_currency' => 'required_if:is_token_currency_enable,1'
+            );
+    
+            $validation  = Validator::make($request->all(), $rules);
+            if ($validation->fails()) {
+                return redirect()->back()->with('error', $validation->errors()->first());
+            }  
+
         try {
             $this->updatePreferenceAdditional($request);
+
+            if($request->has('token_currency'))
+            {
+                $client = Client::first();
+                $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
+                Redis::set($client->code, json_encode($tokenCurrency), 'EX', 36000);
+            }
+            // $validated_keys = $request->only($this->client_preference_fillable_key);
+            // $client = Client::first();
+           
+            // foreach($validated_keys as $key => $value){ 
+              
+            //     ClientPreferenceAdditional::updateOrCreate(
+            //         ['key_name' => $key, 'client_code' => $client->code],
+            //         ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
+            //  } 
+        // try {
+        //     $this->updatePreferenceAdditional($request);
 
             if($request->has('apply_free_del')){
                 $this->updateFreeDeliveryForRoles($request->apply_free_del);
