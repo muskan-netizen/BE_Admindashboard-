@@ -24,10 +24,12 @@ use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
 use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, Permissions, UserPermissions, Type, Category, VendorCategory};
 use Log;
+use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 
 class AuthController extends BaseController
 {
     use ApiResponser;
+    use CustomerSignupSuccessEmailTrait;
     /**
      * Get Country List
      * * @return country array
@@ -775,6 +777,7 @@ class AuthController extends BaseController
                 $user->save();
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             }
+            $this->sendCustomerSignupSuccessEmail($user);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }

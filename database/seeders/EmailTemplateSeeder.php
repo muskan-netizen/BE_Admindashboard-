@@ -89,10 +89,23 @@ class EmailTemplateSeeder extends Seeder{
                 'tags' => '{customer_name},{customer_name}',
                 'content'=>'<tbody style="text-align: center;"><tr><td style="padding-top: 0;"><div style="background: #fff;box-shadow: 0 3px 4px #ddd;border-bottom-left-radius: 20px;border-bottom-right-radius: 20px;padding: 15px 40px 30px;"><b style="margin-bottom: 10px; display: block;">Hi {customer_name},</b><p>You can verify manually by entering the following referral code:</p><div style="padding:10px;border: 2px dashed #cb202d;word-break:keep-all!important;width: calc(100% - 40px);margin: 25px auto;"><p style="Margin:0;Margin-bottom:16px;color:#cb202d;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:20px;font-weight:600;line-height:1.5;margin:0;margin-bottom:0;padding:0;text-align:center;word-break:keep-all!important">{code}</p></div></td></tr></tbody>'
             ],
+            [
+                'label' => 'NewCustomerSignup',
+                'subject' => 'Signup Notification',
+                'tags' => '{name},{client_name}', 
+                'content'=>'<table style="width: 100%; background-color:#fff;"> <thead> <tr> <th colspan="2" style="text-align: center;"> <a style="display: block;margin-bottom: 10px;" href="#"><img src="images/logo.png" alt=""> </a> <h3 style="margin: 0 0 10px;font-weight:400;">Hi {name}</h1> <p style="margin: 0 0 20px;font-weight:300;">Thanks for signing up with {client_name}. We are delighted to serve you. </p> </th> </tr> </thead>  <tr> <td colspan="2" style="padding: 0;"> <table style="width:100%;"> <tbody>  </tbody> <tfoot> <tr> <td colspan="2" style="background-color: #8142ff;color: #fff; border-top: 1px solid rgb(221 221 221 / 41%);text-align: center;"> <b>Powered By Royo</b> </td> </tr> </tfoot> </table> </td> </tr> </tbody> </table> </td> </tr> </tbody></table>'
+            ],
         ];
-        EmailTemplate::truncate();
+        /* EmailTemplate::truncate();
         foreach ($create_array as $key => $array) {
             EmailTemplate::create(['label' => $array['label'], 'slug' => Str::slug($array['label'], "-"),'content' => $array['content'], 'subject' => $array['subject'], 'tags' => $array['tags']]);
+        } */
+
+        foreach ($create_array as $key => $array) {
+            $slug = Str::slug($array['label'], "-");
+            if(!EmailTemplate::where('slug', $slug)->exists()){
+                EmailTemplate::create(['label' => $array['label'], 'slug' => Str::slug($array['label'], "-"),'content' => $array['content'], 'subject' => $array['subject'], 'tags' => $array['tags']]);
+            }
         }
     }
 }
