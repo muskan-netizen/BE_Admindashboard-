@@ -11,7 +11,9 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @section('content')
-
+@php
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+@endphp
 <!-- section start -->
 <section class="section-b-space ratio_asos al_vendor_product_page">
     <div class="collection-wrapper">
@@ -212,7 +214,7 @@
                                                                 <b>
                                                                     @if($new['inquiry_only'] == 0)
                                                                         <?php $multiply = $new['variant_multiplier']; ?>
-                                                                        {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                        {{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                     @endif
                                                                 </b>
 
@@ -290,13 +292,14 @@
                                         <div class="col-12 custom_filtter mt-2">
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
+                                                <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
                                                 <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
                                                 <option value="a_to_z" {{isset($input['order_type']) && $input['order_type'] == "a_to_z" ? 'selected' : ''}}>{{__('A to Z')}}</option>
                                                 <option value="z_to_a" {{isset($input['order_type']) && $input['order_type'] == "z_to_a" ? 'selected' : ''}}>{{__('Z to A')}}</option>
                                                 <option value="low_to_high" {{isset($input['order_type']) && $input['order_type'] == "low_to_high" ? 'selected' : ''}}>{{__('Cost : Low to High')}}</option>
                                                 <option value="high_to_low" {{isset($input['order_type']) && $input['order_type'] == "high_to_low" ? 'selected' : ''}}>{{__('Cost : High to Low')}}</option>
                                                 <option value="rating" {{isset($input['order_type']) && $input['order_type'] == "rating" ? 'selected' : ''}}>{{__('Avg. Customer Review')}}</option>
-                                                <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
+                                                
 
                                             </select>
                                             <!-- <ul>
@@ -350,7 +353,7 @@
 
                                                                     <div class="d-flex align-items-center justify-content-between">
                                                                         @if($data['inquiry_only'] == 0)
-                                                                            <h4 class="mt-0">{{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                            <h4 class="mt-0">{{$additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                         @endif
                                                                       <!--   @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)
@@ -532,6 +535,7 @@
     }
 
     $(document).ready(function(){
+        $('.sortingFilter').val('newly_added');
         filterProducts();
         });
 </script>

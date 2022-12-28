@@ -74,6 +74,8 @@ class VendorController extends BaseController
                 $query->where('user_id', Auth::user()->id);
             });
         }
+
+        $vendors = $vendors->get();
         // $vendors = $vendors->get();
         // foreach ($vendors as $vendor) {
         //     $offers = [];

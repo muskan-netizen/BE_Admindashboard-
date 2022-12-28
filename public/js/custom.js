@@ -915,6 +915,10 @@ $(document).ready(function () {
             return false;
         }
         var delivery_type = 'D';
+        var other_taxes_string='';
+        if($("#other_taxes_string").val()!=null){
+            other_taxes_string=$("#other_taxes_string").val();
+        }
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
             delivery_type = selected.value;
@@ -1067,7 +1071,7 @@ $(document).ready(function () {
             // Save Cart Page Detail Forcely If user is paying from his cart.
             var checkParam = saveCartPageDetails(params);
             if (checkParam != false) {
-                placeOrder(address, 1, '', tip, delivery_type); // Adready Added
+                placeOrder(address, 1, '', tip, delivery_type, other_taxes_string); // Adready Added
                 return false;
             }
         } else {
@@ -2171,7 +2175,7 @@ $(document).ready(function () {
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
-
+                    // console.log(cart_details);
                     if (cart_details!= undefined) {
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
@@ -2558,6 +2562,7 @@ $(document).ready(function () {
         // var other_taxes                 =initialize_values($('#other_taxes').text());
         var other_taxes                 =0;
         var loyalty_amount              =initialize_values($('#loyalty_amount').text());
+        var token_currency              =initialize_values($('#token_currency').text());
         var wallet_amount_available     =initialize_values($('#wallet_amount_available').text());
         var wallet_amount_used_fixed    =initialize_values($('#wallet_amount_used_fixed').text());
         var gross_amount                =initialize_values($('#gross_amount').text());
@@ -2575,11 +2580,14 @@ $(document).ready(function () {
         $("#cart_tip_amount").val(tip.toFixed(parseInt(digit_count)));
         // $("#cart_total_payable_amount").html(currency + (amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         // $("input[name='cart_total_payable_amount']").val((amount_payable+other_taxes).toFixed(parseInt(digit_count)));
-
+        if(token_currency>0){
+            currency = '';
+            $("#cart_tip_amount").val(tip/token_currency);
+        }
         if(wallet_amount_available>0){
             if(wallet_amount_available >= wallet_amount_used_fixed+tip){
                 /* Paid amount is less then available wallet amount*/
-                $("#wallet_amount_used").text(" - "+currency+ " "+(wallet_amount_used_fixed+tip).toFixed(parseInt(digit_count)));
+                $("#wallet_amount_used").text(" - "+currency+ " "+(token_currency*(wallet_amount_used_fixed+(tip/token_currency))).toFixed(parseInt(digit_count)));
             }else{
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+wallet_amount_available.toFixed(parseInt(digit_count)));
