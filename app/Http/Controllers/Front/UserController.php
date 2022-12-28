@@ -14,9 +14,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{Currency, Banner, Client, Category, Cart, Brand, Product, ClientLanguage, User, ClientCurrency, ClientPreference, Country, UserAddress, UserVerification,EmailTemplate, VerificationOption, WebStylingOption};
-
+use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 
 class UserController extends FrontController{
+    use CustomerSignupSuccessEmailTrait;
     private $field_status = 2;
     /**
      * Display a listing of the resource.
@@ -41,15 +42,19 @@ class UserController extends FrontController{
         {
             return redirect()->route('passbase.page');
         }elseif ($preference->verify_email == 0 && $preference->verify_phone == 0) {
+            $this->sendCustomerSignupSuccessEmail($user);
             return redirect()->route('userHome');
         }elseif (Auth::user()->is_email_verified == 1 && Auth::user()->is_phone_verified == 1) {
+            $this->sendCustomerSignupSuccessEmail($user);
             return redirect()->route('userHome');
         }elseif ($preference->verify_email == 1 && $preference->verify_phone == 0) {
+            $this->sendCustomerSignupSuccessEmail($user);
             if (Auth::user()->is_email_verified == 1) {
                 return redirect()->route('userHome');
             }
         } elseif ($preference->verify_email == 0 && $preference->verify_phone == 1) {
             if (Auth::user()->is_phone_verified == 1) {
+                $this->sendCustomerSignupSuccessEmail($user);
                 return redirect()->route('userHome');
             }
         }
@@ -209,6 +214,7 @@ class UserController extends FrontController{
             $user->email = $request->email;
             $user->email_token_valid_till = NULL;
         }
+        $this->sendCustomerSignupSuccessEmail($user);
         $user->save();
         return response()->json(['success' => __('OTP verified')], 202);
     }

@@ -68,6 +68,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 @endif
 @php
   $img = '';
+  $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
 <!-- <div class="toast">
     <div class="toast-header">
@@ -111,7 +112,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                         </div>--}}
                         <section class="buy_details">
                             <div class="row">
-                                @if((!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8'))
+                                @if((!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id = '9')))
                                 <div class="col-md-1 pl-0">
                                     <div class="exzoom_nav side_nav_img">
                                        
@@ -279,7 +280,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-7'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
+                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-6'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -306,9 +307,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
-                                                    <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
-                                                    @if($product->variant[0]->compare_at_price > 0 )
-                                                        <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                    @if($additionalPreference ['is_token_currency_enable'])
+                                                        <b class="mr-1"><span class="product_fixed_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",","))}}</span></b>
+                                                    @else
+                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
+                                                        @if($product->variant[0]->compare_at_price > 0 )
+                                                            <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                        @endif
                                                     @endif
                                                 </h3>
                                             @endif
@@ -346,19 +351,21 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
                                             {{-- Chat Button --}}
                                             <hr>
+                                            {{--@if(@$user_vendor->vendor_id &&  $vendor_info->id != $user_vendor->vendor_id)--}}
                                                 <h6 class="sold-by">
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
                                             
                                                
                                                     <?php /*<span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
-                                                    <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
+                                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
                                                 
                                             @endif
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
                                             @endif
                                                 </h6>
+                                             {{--   @endif --}}
                                     @endif
 
 
@@ -969,7 +976,32 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         </div>
     </div>
 </div>
+@php
 
+$user_type = 'user';
+$to_message = 'to_user';
+$from_message = 'from_user';
+$chat_type = 'user_to_user';
+$startChatype = 'user_to_user';
+$apiPre = 'client';
+$rePre = 'user/chat/userToUser';
+$fetchDe = 'fetchRoomByUserIdUserToUser';
+@endphp
+
+@section('script')
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+{{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
 @endsection
 @section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
@@ -1063,6 +1095,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
+    var additionalPreference = "{{$additionalPreference['is_token_currency_enable']}}";
+    var token_currency = "{{getAdditionalPreference(['token_currency'])['token_currency']}}";
     var vendor_id = "{{ $product->vendor_id }}";
     var product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
@@ -1109,7 +1143,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                             $('.incremental-left-minus').click();
                             //$('#blocktime, #blocktime2').change();
                         }
-
+                        if(additionalPreference != 0){
+                            response.variant.productPrice = token_currency * response.variant.productPrice;
+                        }
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
@@ -1314,5 +1350,5 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         });
             
         </script>
-<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
+
 @endsection

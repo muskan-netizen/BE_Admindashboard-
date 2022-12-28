@@ -14,7 +14,7 @@ class CartProduct extends Model{
     protected $touches = ['cart'];
 
     public function cart(){
-        return $this->belongsTo('App\Models\Cart');
+        return $this->belongsTo('App\Models\Cart','cart_id','id');
     }
 
     public function addon(){

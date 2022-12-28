@@ -15,6 +15,9 @@
 @if(!empty($category))
 @include('frontend.included_files.categories_breadcrumb')
 @endif
+@php
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+@endphp
 <section class="section-b-space ratio_asos">
     <div class="collection-wrapper">
         <div class="container">
@@ -53,11 +56,11 @@
             </div>
             <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter">
-                        <ul class="breadcrumb p-0 mb-2 mt-3">
+                        <!-- <ul class="breadcrumb p-0 mb-2 mt-3">
                             <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
                                 </span><span class="active">Healthcare Device</span></a>
                             </li>
-                        </ul>
+                        </ul> -->
                     <aside class="side_fillter mt-2">
                     <!-- side-bar colleps block stat -->
                     @if( count($category->brands) > 0 || count($variantSets) > 0 )
@@ -173,7 +176,7 @@
                                                                     <b>
                                                                         @if($new['inquiry_only'] == 0)
                                                                             <?php $multiply = $new['variant_multiplier']; ?>
-                                                                            {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                            {{ $additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                         @endif
                                                                     </b>
 
@@ -347,7 +350,7 @@
                                                                     @endif
                                                                     </div>
                                                                     @if($data->inquiry_only == 0)
-                                                                        <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        <h4 class="mt-1">{{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                     @endif
                                                                 
                                                             </div>

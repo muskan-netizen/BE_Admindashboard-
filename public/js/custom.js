@@ -267,6 +267,28 @@ $(document).ready(function () {
     $.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
     });
+
+    let queryString = window.location.search;
+    let path = window.location.pathname;
+    let urlParams = new URLSearchParams(queryString);
+    if ((urlParams.has('PayerID')) && (urlParams.has('token'))) {
+        $('.spinner-overlay').show();
+        let tipAmount = 0;
+        if (urlParams.has('tip')) {
+            tipAmount = urlParams.get('tip');
+        }
+        order_number = 0;
+        if (urlParams.has('ordernumber')) {
+            order_number = urlParams.get('ordernumber');
+        }
+
+        paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount, order_number);
+    }
+
+    initialize();
+    cartHeader();
+
+});
     $("#main_search_box").blur(function (e) {
         setTimeout(function () {
             $('#search_box_main_div').html('').hide();
@@ -574,81 +596,7 @@ $(document).ready(function () {
         var payment_option_id = selected_option.data("payment_option_id");
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
-            // $('#subscription_payment').modal('hide');
-            // if (payment_option_id == 4) {
-            //     stripe.createToken(card).then(function (result) {
-            //         if (result.error) {
-            //             $('#stripe_card_error').html(result.error.message);
-            //             _this.attr("disabled", false);
-            //         } else {
-            //             $("#card_last_four_digit").val(result.token.card.last4);
-            //             $("#card_expiry_month").val(result.token.card.exp_month);
-            //             $("#card_expiry_year").val(result.token.card.exp_year);
-            //             paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-            //         }
-            //     });
-            // } else if (payment_option_id == 3) {
-            //     paymentViaPaypal('', payment_option_id);
-            // } else if (payment_option_id == 8) {
-            //     inline.createToken().then(function (result) {
-            //         if (result.error) {
-            //             Swal.fire({
-            //                 icon: 'error',
-            //                 title: 'Oops...',
-            //                 text: result.error.message,
-            //             });
-            //             // $('#yoco_card_error').html(result.error.message);
-            //             _this.attr("disabled", false);
-            //         } else {
-            //             const token = result;
-            //             paymentViaYoco(token.id, '', '');
-            //         }
-            //     }).catch(function (error) {
-            //         // Re-enable button now that request is complete
-            //         _this.attr("disabled", false);
-            //         //alert("error occured: " + error);
-            //         Swal.fire({
-            //             // title: "Warning!",
-            //             text: "error occured: " + error,
-            //             icon: "error",
-            //             button: "OK",
-            //         });
-            //     });
-            // } else if (payment_option_id == 9) {
-            //     paymentViaPaylink('', '');
-            // } else if (payment_option_id == 10) {
-            //     paymentViaRazorpay_wallet('', payment_option_id);
-            // }
-            // else if (payment_option_id == 12) {
-            //     paymentViaSimplify('', '');
-            // }
-            // else if (payment_option_id == 13) {
-            //     paymentViaSquare('', '');
-            // } else if (payment_option_id == 14) {
-            //     paymentViaOzow('', '');
-            // } else if (payment_option_id == 15) {
-            //     paymentViaPagarme('', '');
-            // } else if (payment_option_id == 17) {
-            //     paymentViaCheckout('', '');
-            // } else if (payment_option_id == 18) {
-            //     paymentViaAuthorize('', '');
-            // } else if (payment_option_id == 19) {
-            //     paymentViaStripeFPX('', 19, '');
-            // } else if (payment_option_id == 20) {
-            //     payWithKPG('');
-            // }else if (payment_option_id == 21) {
-            //     payWithVivaWallet('');
-            // }else if(payment_option_id == 22) {
-            //     payWithCcAvenue('');
-            // } else if (payment_option_id == 24) {
-            //     paymentViaCashfree('');
-            // } else if (payment_option_id == 26) {
-            //     paymentViaToyyibPay('');
-            // } else if (payment_option_id == 25) {
-            //     payWithEasebuss('');
-            // }else if (payment_option_id == 33) {
-            //     paymentViaBraintree('');
-            // }
+           
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -736,9 +684,12 @@ $(document).ready(function () {
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-        if($("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val() != schedule_dt)){
+        if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val() != schedule_dt)){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
-            $(this).val($("#edit_order_schedule_datetime").val());
+            var edit_order_schedule_datetime = $("#edit_order_schedule_datetime").val();
+            schedule_datetime  = edit_order_schedule_datetime.split(" ")[0];
+            $(this).val(schedule_datetime);
+            return false;
         }
         $.ajax({
             type: "POST",
@@ -748,6 +699,12 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.status == "Success") {
                     $('#slot').html(response.data);
+                    if(typeof $('#edit_order_schedule_slot').val()!='undefined'){
+                        $(".schedule_datetime").change();
+                        $('#slot').val($('#edit_order_schedule_slot').val());
+                        $('#slot option').prop('disabled', true);
+                        $('#slot option[value="'+$('#edit_order_schedule_slot').val()+'"]').attr("disabled", false);
+                    }
                 } else {
                     success_error_alert('error', response.message, ".cart_response");
                     $('#slot').html(response.data);
@@ -958,6 +915,10 @@ $(document).ready(function () {
             return false;
         }
         var delivery_type = 'D';
+        var other_taxes_string='';
+        if($("#other_taxes_string").val()!=null){
+            other_taxes_string=$("#other_taxes_string").val();
+        }
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
             delivery_type = selected.value;
@@ -1110,7 +1071,7 @@ $(document).ready(function () {
             // Save Cart Page Detail Forcely If user is paying from his cart.
             var checkParam = saveCartPageDetails(params);
             if (checkParam != false) {
-                placeOrder(address, 1, '', tip, delivery_type); // Adready Added
+                placeOrder(address, 1, '', tip, delivery_type, other_taxes_string); // Adready Added
                 return false;
             }
         } else {
@@ -1286,22 +1247,7 @@ $(document).ready(function () {
         });
     });
 
-    let queryString = window.location.search;
-    let path = window.location.pathname;
-    let urlParams = new URLSearchParams(queryString);
-    if ((urlParams.has('PayerID')) && (urlParams.has('token'))) {
-        $('.spinner-overlay').show();
-        let tipAmount = 0;
-        if (urlParams.has('tip')) {
-            tipAmount = urlParams.get('tip');
-        }
-        order_number = 0;
-        if (urlParams.has('ordernumber')) {
-            order_number = urlParams.get('ordernumber');
-        }
-
-        paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount, order_number);
-    }
+    
 
     var paymentAjaxData = {};
 
@@ -1333,10 +1279,20 @@ $(document).ready(function () {
             total_amount = walletElement.val();
             payment_form = 'tip';
             paymentAjaxData.order_number = $("#order_number").val();
+        } else if (path.indexOf("giftCard") !== -1) {
+            payment_form = 'giftCard';
+            total_amount = $("input[name='giftCard_amount']").val();
+            // paymentAjaxData = $("#subscription_payment_form").serializeArray();
+            paymentAjaxData.gift_card_id        = $("#giftCard_id").val();
+            paymentAjaxData.send_card_to_name   = $("input[name='send_card_to_name']").val();
+            paymentAjaxData.send_card_to_mobile = $("input[name='send_card_to_mobile']").val();
+            paymentAjaxData.send_card_to_email  = $("input[name='send_card_to_email']").val();
+            paymentAjaxData.send_card_to_address    = $("input[name='send_card_to_address']").val();
+            paymentAjaxData.send_card_is_delivery   = $("#send_card_is_delivery").val();
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
-
+        
         if (result.error) {
             swal.fire({
                 icon: 'error',
@@ -1748,14 +1704,6 @@ $(document).ready(function () {
 
             success: function (response) {
                 if (response.status == "Success") {
-                    var ip_address = window.location.host;
-                    var host_arr = ip_address.split(".");
-                    // var result = arr[2];
-                    // let ip_address = result;
-                    let socket = io(constants.socket_domain, {
-                        query: { "user_id": host_arr[0] + "_cus", "subdomain": host_arr[0] }
-                    });
-                    socket.emit("createOrder", response.data);
                     setTimeout(function () {
                         window.location.href = `${base_url}/order/success/${response.data.id}`;
                     }, 1000)
@@ -2150,7 +2098,7 @@ $(document).ready(function () {
             }, 300);
         }
     }
-    initialize();
+   // initialize();
     // google.maps.event.addDomListener(window, 'load', initialize);
     function cartTotalProductCount() {
         let cart_qty_total = 0;
@@ -2227,7 +2175,7 @@ $(document).ready(function () {
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
-
+                    // console.log(cart_details);
                     if (cart_details!= undefined) {
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
@@ -2260,16 +2208,32 @@ $(document).ready(function () {
                                     $("#order_placed_btn").removeAttr("disabled");
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
-                                if(response.schedule_datetime!=null){
-                                    $("#schedule_datetime").val(response.schedule_datetime);
-                                    if($("#edit_order_schedule_datetime").val()!=''){
+                                //if(response.schedule_datetime!=null){
+                                    var schedule_datetime = '';
+                                    if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && typeof $('#edit_order_schedule_slot').val()!='undefined' && $('#edit_order_schedule_slot').val()!=''){
+                                        var edit_order_schedule_datetime = $("#edit_order_schedule_datetime").val();
+                                        schedule_datetime  = edit_order_schedule_datetime.split(" ")[0];
+                                    }else{
+                                        schedule_datetime = $("#edit_order_schedule_datetime").val();
+                                    }
+                                    if(schedule_datetime!=''){
+                                        $("#schedule_datetime").val(schedule_datetime);
                                         $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("max", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("min", $("#schedule_datetime").val());
                                         $("#edit_order_schedule_datetime").val($("#schedule_datetime").val());
+                                        if(typeof $('#slot').val()!='undefined' && typeof $('#edit_order_schedule_slot').val()!='undefined'){
+                                            $(".schedule_datetime").change();
+                                            $('#slot').val($('#edit_order_schedule_slot').val());
+                                        }
+                                        $("#taskschedule").trigger('click');
                                     }
-                                    $("#taskschedule").click();
-                                }
+                                    if(response.cart_error_message !=''){
+                                        success_error_alert('error', response.cart_error_message, ".cart_response");
+                                        $("#order_placed_btn").attr("disabled", true);
+                                        $("#order_placed_btn").addClass("d-none");
+                                    }
+                                //}
 
                             }
                             cartTotalProductCount();
@@ -2598,6 +2562,7 @@ $(document).ready(function () {
         // var other_taxes                 =initialize_values($('#other_taxes').text());
         var other_taxes                 =0;
         var loyalty_amount              =initialize_values($('#loyalty_amount').text());
+        var token_currency              =initialize_values($('#token_currency').text());
         var wallet_amount_available     =initialize_values($('#wallet_amount_available').text());
         var wallet_amount_used_fixed    =initialize_values($('#wallet_amount_used_fixed').text());
         var gross_amount                =initialize_values($('#gross_amount').text());
@@ -2615,11 +2580,14 @@ $(document).ready(function () {
         $("#cart_tip_amount").val(tip.toFixed(parseInt(digit_count)));
         // $("#cart_total_payable_amount").html(currency + (amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         // $("input[name='cart_total_payable_amount']").val((amount_payable+other_taxes).toFixed(parseInt(digit_count)));
-
+        if(token_currency>0){
+            currency = '';
+            $("#cart_tip_amount").val(tip/token_currency);
+        }
         if(wallet_amount_available>0){
             if(wallet_amount_available >= wallet_amount_used_fixed+tip){
                 /* Paid amount is less then available wallet amount*/
-                $("#wallet_amount_used").text(" - "+currency+ " "+(wallet_amount_used_fixed+tip).toFixed(parseInt(digit_count)));
+                $("#wallet_amount_used").text(" - "+currency+ " "+(token_currency*(wallet_amount_used_fixed+(tip/token_currency))).toFixed(parseInt(digit_count)));
             }else{
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+wallet_amount_available.toFixed(parseInt(digit_count)));
@@ -2714,7 +2682,7 @@ $(document).ready(function () {
     });
 
 
-    cartHeader();
+//    cartHeader();
     $(document).on("click", "#cancel_save_address_btn", function () {
         $('#add_new_address').show();
         $('#add_new_address_btn').show();
@@ -5217,7 +5185,7 @@ $(document).ready(function () {
         }
     }
 
-});
+//});
 
 function numberWithCommas(x) {
     // x=x.toFixed(2)
@@ -5225,3 +5193,4 @@ function numberWithCommas(x) {
 }
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
+

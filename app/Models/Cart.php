@@ -18,7 +18,9 @@ class Cart extends Model
     public function coupon(){
       return $this->hasOne('App\Models\CartCoupon')->select("cart_id", "coupon_id", "vendor_id");
     }
-
+      public function giftCard(){
+        return $this->hasOne('App\Models\GiftCard','id','gift_card_id');
+      }
     public function product(){
       return $this->belongsTo('App\Models\Product');
     }

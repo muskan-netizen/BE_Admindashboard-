@@ -15,6 +15,7 @@ use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
+use App\Http\Controllers\Front\giftCard\GiftcardController;
 use App\Http\Controllers\Front\PickupDeliveryController;
 use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, Transaction, UserAddress, UserSavedPaymentMethods, Webhook};
 
@@ -70,6 +71,7 @@ class StripeGatewayController extends FrontController
             $stripe = new \Stripe\StripeClient($secret_key);
             
             $webhook_url = 'https://'.$domain.'/payment/webhook/stripe';
+           
             $webhook_exists = false;
             $endpoints = $stripe->webhookEndpoints->all();
             foreach($endpoints->data as $obj){
@@ -101,6 +103,9 @@ class StripeGatewayController extends FrontController
             }
             elseif($payment_form == 'subscription'){
                 $parameters['subscription_id'] = $json_obj->subscription_id;
+            }
+            elseif($payment_form == 'giftCard'){
+                $parameters['gift_card_id'] = $json_obj->gift_card_id;
             }
             
             if (isset($json_obj->payment_method_id) && !isset($json_obj->payment_intent_id)) {
@@ -179,16 +184,31 @@ class StripeGatewayController extends FrontController
                     $postdata['description'] = 'Subscription Checkout';
                     $postdata['metadata']['subscription_id'] = $json_obj->subscription_id;
                 }
-
-                // $postdata['shipping']['name'] = ($user->name) ? $user->name : 'N/A';
-                // $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
-                // $postdata['shipping']['address']['line1'] = ($user_address) ? ($user_address->street != "") ? $user_address->street : 'N/A' : 'N/A';
-                // $postdata['shipping']['address']['city'] = ($user_address) ? ($user_address->city != "") ? $user_address->city : 'N/A' : 'N/A';
-                // $postdata['shipping']['address']['state'] = ($user_address) ? ($user_address->state != "") ? $user_address->state : 'N/A' : 'N/A';
-                // $postdata['shipping']['address']['country'] = ($user_address) ? ($user_address->country != "") ? $user_address->country : 'N/A' : 'N/A';
-                // $postdata['shipping']['address']['postal_code'] = ($user_address) ? ($user_address->pincode != "") ? $user_address->pincode : 'N/A' : 'N/A';
-
-                $intent = \Stripe\PaymentIntent::create($postdata);
+                elseif($payment_form == 'giftCard'){
+                    $postdata['description'] = 'giftCard Checkout';
+                    $parameters['gift_card_id'] = $json_obj->gift_card_id;
+                    $postdata['metadata']['gift_card_id'] = $json_obj->gift_card_id;
+                    $sendor = [];
+                    //pr($json_obj->all());
+                    if(!empty($json_obj->send_card_to_name)){
+                        $sendor['send_card_to_name'] =  $json_obj->send_card_to_name;
+                    }
+                    if(!empty($json_obj->send_card_to_mobile)){
+                        $sendor['send_card_to_mobile'] = $json_obj->send_card_to_mobile;
+                    }
+                    if(!empty($json_obj->send_card_to_email)){
+                        $sendor['send_card_to_email'] = $json_obj->send_card_to_email;
+                    }
+                    if(!empty($json_obj->send_card_to_address)){
+                        $sendor['send_card_to_address'] = $json_obj->send_card_to_address;
+                    }
+                    
+                    $sendor['send_card_is_delivery'] = $json_obj->send_card_is_delivery ??0;
+                   
+                    $postdata['metadata']['senderData'] =!empty($sendor) ? json_encode($sendor) : '';
+                    $parameters['senderData'] = !empty($sendor) ? json_encode($sendor) : '';
+                }
+                 $intent = \Stripe\PaymentIntent::create($postdata);
             }
             if (isset($json_obj->payment_intent_id)) {
                 $intent = \Stripe\PaymentIntent::retrieve(
@@ -357,6 +377,17 @@ class StripeGatewayController extends FrontController
                 // $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
                 $message = __('Your subscription has been activated successfully.');
                 $returnUrl = route('user.subscription.plans');
+            }
+            elseif($payment_form == 'giftCard'){
+                // $gift_card_id = $parameters['gift_card_id'];
+                // $senderData = $parameters['senderData'];
+               
+                // $request = new Request(['payment_option_id' => 4, 'user_id' => $user->id,  'amount' => $amount, 'transaction_id' => $transactionId,'senderData'=>$senderData]);
+                
+                // $subscriptionController = new GiftcardController();
+                // $subscriptionController->purchaseGiftCard($request, '', $gift_card_id);
+                $message = __('Your giftCard has been activated successfully.');
+                $returnUrl = route('giftCard.index');
             }
             Session::put('success', $message);
             // return redirect($returnUrl);
@@ -1272,6 +1303,13 @@ class StripeGatewayController extends FrontController
                     $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
+                }
+                elseif($payment_form == 'giftCard'){
+                    $gift_card_id = $charges[0]->metadata->gift_card_id;
+                    $senderData =  $charges[0]->metadata->senderData;
+                    $request->request->add([ 'payment_option_id' => 4, 'user_id' => $user_id,  'amount' => $amount, 'transaction_id' => $transactionId,'senderData'=>$senderData]);
+                    $subscriptionController = new GiftcardController();
+                    $subscriptionController->purchaseGiftCard($request, '', $gift_card_id);
                 }
                 break;
             
