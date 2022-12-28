@@ -159,7 +159,7 @@ $timezone = Auth::user()->timezone;
                                             @if( ($vendor_order_status->order_status_option_id == 5) && (($order->luxury_option_id == 2) || ($order->luxury_option_id == 3)) )
                                                 <h5 class="mt-0 mb-1">{{__('Order Prepared')}}</h5>
                                             @else
-                                                <h5 class="mt-0 mb-1">{{$order_status}}</h5>
+                                                <h5 class="mt-0 mb-1">{{__($order_status)}}</h5>
                                             @endif
                                             <p class="text-muted" id="text_muted_{{$vendor_order_status->order_status_option_id}}">
                                                 @if($date)
@@ -194,13 +194,12 @@ $timezone = Auth::user()->timezone;
                                                     @if( ($order_status_option->id == 5) && (($order->luxury_option_id == 2) || ($order->luxury_option_id == 3)) )
                                                         <h5 class="mt-0 mb-1">{{__('Order Prepared')}}</h5>
                                                     @elseif($order_status_option->id == 2)
-                                                        <h5 style="padding: 2px 10px;" class="mt-0 mb-1 text-info">
-                                                           {{$order_status_option->title}}</h5>
+                                                        <h5 style="padding: 2px 10px;" class="mt-0 mb-1 text-info">{{__($order_status_option->title)}}</h5>
                                                     @elseif($order_status_option->id == 3)
                                                     <h5 style="padding: 2px 10px;" class="mt-0 mb-1 text-danger">
-                                                       {{$order_status_option->title}} </h5>
+                                                       {{__($order_status_option->title)}} </h5>
                                                     @else
-                                                    <h5 class="mt-0 mb-1">{{$order_status_option->title}}</h5>
+                                                    <h5 class="mt-0 mb-1">{{__($order_status_option->title)}}</h5>
                                                     @endif
                                                     <p class="text-muted" id="text_muted_{{$order_status_option->id}}">
                                                         @if($date)

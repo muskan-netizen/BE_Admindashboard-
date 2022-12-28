@@ -41,7 +41,7 @@
                                 <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
                                     <i class="mdi mdi-close"></i>
                                 </button>
-                                <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                                <input type="search" class="form-control" placeholder="{{ __('Search') }}..." id="search_via_keyword">
                             </div>
                         </div>
                     </div>
