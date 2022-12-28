@@ -901,7 +901,7 @@ class UserhomeController extends FrontController
 
             $single_category_product_ids = $this->getSingleCategoryProducts(); // get single selected category's products
             $single_category_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $single_category_product_ids);
-            
+            // dd($single_category_products);
             $selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
             $selected_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $selected_product_ids);
 

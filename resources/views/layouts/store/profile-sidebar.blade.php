@@ -32,8 +32,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
                                 <a href="{{route('userChat.UservendorChat')}}">{{ __('Vendor Chat') }}</a>
                             </li>
                             @if(p2p_module_status())
-                            <li  class="{{ (request()->is('user/chat/vendorUser')) ? 'active' : '' }}">
-                                <a href="{{route('userChat.vendorUserChat')}}">{{ __('User Chat') }}</a>
+                            <li  class="{{ (request()->is('user/chat/userToUser')) ? 'active' : '' }}">
+                                <a href="{{route('userChat.UserToUserChat')}}">{{ __('User Chat') }}</a>
                             </li>
                             @endif
                             <li  class="{{ (request()->is('user/chat/userAgent')) ? 'active' : '' }}">

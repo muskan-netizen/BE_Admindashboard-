@@ -1064,6 +1064,18 @@ if (!function_exists('getDollarCompareAmount')) {
     }
 }
 
+if (!function_exists('getPrimaryCurrencySymbol')) {
+    /* doller compare amount */
+    function getPrimaryCurrencySymbol()
+    {
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $currency = Currency::find($primaryCurrency->currency_id);
+
+        $currencySymbol = $currency->symbol;
+        return $currencySymbol;
+    }
+}
+
 if (!function_exists('getPrimaryCurrencyName')) {
     /* doller compare amount */
     function getPrimaryCurrencyName()

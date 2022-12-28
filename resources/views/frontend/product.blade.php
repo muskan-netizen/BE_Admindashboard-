@@ -112,7 +112,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                         </div>--}}
                         <section class="buy_details">
                             <div class="row">
-                                @if((!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8'))
+                                @if((!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id = '9')))
                                 <div class="col-md-1 pl-0">
                                     <div class="exzoom_nav side_nav_img">
                                        
@@ -280,7 +280,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-7'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
+                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-6'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -351,21 +351,21 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
                                             {{-- Chat Button --}}
                                             <hr>
-                                            @if(@$user_vendor->vendor_id &&  $vendor_info->id != $user_vendor->vendor_id)
+                                            {{--@if(@$user_vendor->vendor_id &&  $vendor_info->id != $user_vendor->vendor_id)--}}
                                                 <h6 class="sold-by">
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
                                             
                                                
                                                     <?php /*<span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
-                                                    <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
+                                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
                                                 
                                             @endif
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
                                             @endif
                                                 </h6>
-                                                @endif
+                                             {{--   @endif --}}
                                     @endif
 
 
@@ -976,7 +976,32 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         </div>
     </div>
 </div>
+@php
 
+$user_type = 'user';
+$to_message = 'to_user';
+$from_message = 'from_user';
+$chat_type = 'user_to_user';
+$startChatype = 'user_to_user';
+$apiPre = 'client';
+$rePre = 'user/chat/userToUser';
+$fetchDe = 'fetchRoomByUserIdUserToUser';
+@endphp
+
+@section('script')
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+{{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
 @endsection
 @section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
@@ -1325,5 +1350,5 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         });
             
         </script>
-<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
+
 @endsection
