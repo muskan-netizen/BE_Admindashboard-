@@ -351,7 +351,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
                                             {{-- Chat Button --}}
                                             <hr>
-                                            {{--@if(@$user_vendor->vendor_id &&  $vendor_info->id != $user_vendor->vendor_id)--}}
                                                 <h6 class="sold-by">
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
                                             
@@ -365,7 +364,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
                                             @endif
                                                 </h6>
-                                             {{--   @endif --}}
                                     @endif
 
 
@@ -614,7 +612,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                 </div>
                                 @if( !is_category_p2p($product->category) && @$set_template->template_id == '8' )
                                     @include('frontend.product-coupon')
-                                @endif
+                            @endif
                             </div>
                         </section>
                         <div class="row mt-1">
@@ -956,7 +954,6 @@ $rePre = 'user/chat/userToUser';
 $fetchDe = 'fetchRoomByUserIdUserToUser';
 @endphp
 
-@section('script')
 <script>
     var to_message = `<?php echo $to_message; ?>`;
     var user_type = `<?php echo $user_type; ?>`;

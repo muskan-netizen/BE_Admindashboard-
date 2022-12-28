@@ -1,4 +1,4 @@
-let vendor_id;
+
 $(function () {
     var slotValidater = 2;
    

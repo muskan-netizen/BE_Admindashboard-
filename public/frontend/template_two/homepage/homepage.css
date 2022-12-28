@@ -110,9 +110,10 @@
     margin: 0 !important;
 }
 
-.al_body_template_two footer#footer section.section-b-space.light-layout {
+
+/* .al_body_template_two footer#footer section.section-b-space.light-layout {
     background-color: #fff;
-}
+} */
 
 .al_body_template_two footer#footer .sub-footer {
     background-color: #f9f9f9;
@@ -451,4 +452,8 @@ body[dir=rtl] .slick-prev {
 
 body.al_body_template_two .slick-track {
     margin-left: 0 !important;
+}
+
+body.al_body_template_two ul.status_box a {
+    color: var(--theme-deafult);
 }
