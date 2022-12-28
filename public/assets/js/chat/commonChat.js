@@ -34,8 +34,6 @@
         var product_id = $(this).attr('data-product_id');
         var product_name = $(this).attr('data-product_name');
         var vendor_name = $(this).attr('data-vendor_name');
-        // console.log("product_id");
-        // console.log(product_id);
 
         if(chat_type=="userToUser"){
 
@@ -54,8 +52,6 @@
         var email = authDataParseData.email;
         $('#roomName').html(roomIDn);
        // socket.emit('joinRoom', { email: email, roomId: roomId, message: 'Join this room', created_date: new Date() });
-
-        console.log(chat_type);
         await fetchOderVendorDetails(OrdervendorID,order_id, product_id);
         if(chat_type=="userToUser"){
             await getALLchat(roomId,roomName);
@@ -167,12 +163,10 @@
                     
 
                     if(product_id){
-                        console.log("9999999999999999999999999999999999");
                         Chat.orderData.order_number  =  (data.title != undefined ) ? data.title : '';
                         Chat.orderData.payable_amount = (data.variant[0].price != undefined ) ? data.variant[0].price : '';
                         Chat.orderData.vendor_name = (data.vendor.name != undefined ) ? data.vendor.name : '';
                     }else{
-                        console.log("88888888888888888888888888888888888888");
                         Chat.orderData.order_number  =  (data.order_number != undefined ) ? data.order_number : '';
                         Chat.orderData.payable_amount = (data.vendors[0].payable_amount != undefined ) ? data.vendors[0].payable_amount : '';
                         Chat.orderData.vendor_name = (data.vendors[0].vendor.name != undefined ) ? data.vendors[0].vendor.name : '';
@@ -333,8 +327,6 @@
 
 
     async function newMessage(message){
-        console.log("asdfasd");
-        console.log(message);
         var data = message.message.chatData;
         var roomData = message.message.roomData;
         if(data.message ==  undefined || data.message ==  'undefined'){
@@ -641,14 +633,12 @@
             if(response.status == 200) {
                 if(response.data.roomData.length > 0) {
                     var productSelected = '';
-                    await response.data.roomData.reverse().forEach(async function (data,i) {
-                        console.log(data._id, "data.id");
-                        console.log(user_room_id, "user_room_id");
+                    await response.data.roomData.reverse().forEach(async function (data,i) 
+                        
                         if(data._id == user_room_id){
                             productSelected = data.product_id;
                         }
-                    console.log("data===================");
-                    console.log(data);
+                   
                     var renderUserd = await renderUser(data);
                     if(fetchDe=='fetchRoomByUserIdUserToUser'){
                         
