@@ -293,6 +293,13 @@
                             </div>
                         @endif
                     @endif
+
+                    <div class="col-md-12">
+                        <div class="form-group" id="social_link">
+                            {!! Form::label('title', '(%) Discount On Subscription',['class' => 'control-label']) !!}
+                            <input class="form-control" name="subscription_discount_percent" type="text" value="{{$vendor->subscription_discount_percent}}" >
+                        </div>
+                    </div>
                     {{-- <div class="col-md-12">
                         <div class="form-group" id="social_link">
                             {!! Form::label('title', 'Dynamic Html',['class' => 'control-label']) !!}
