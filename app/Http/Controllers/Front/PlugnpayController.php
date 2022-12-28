@@ -51,12 +51,16 @@ class PlugnpayController extends FrontController
 
     public function beforePayment(Request $request)
     {
-        $number =  $this->orderNumber($request);
-    	$response = $this->createPaymentRequest($request->all());
-        $dataResponse = json_decode($response);
+      $response = [];
+      \Log::info(json_encode($request->all()));
+
+      $number =  $this->orderNumber($request);
+
+    	$responsePay = $this->createPaymentRequest($request->all());
+        $dataResponse = json_decode($responsePay);
         \Log::info($dataResponse->FinalStatus);
 
-        if(isset($dataResponse->FinalStatus) && $dataResponse->FinalStatus == 'success')
+        if(isset($dataResponse->FinalStatus))
         {           
         \Log::info('Done');
 
@@ -73,7 +77,13 @@ class PlugnpayController extends FrontController
 
         }else{
             \Log::info('fail--'.$dataResponse->FinalStatus.'--');
-            return response($dataResponse->FinalStatus. ', Somthing went wrong.',400);
+            $returnUrl = route('order.return.success');
+            $response['status'] = 'Fail';
+            $response['msg'] = 'Failed.';
+            $response['payment_from'] = 'cart';
+            $response['route'] = $returnUrl;
+
+            return $response;
             // return Redirect::to(route('showCart'))->with('error',$request->FinalStatus. ', Somthing went wrong.');
         }
 
@@ -124,10 +134,21 @@ class PlugnpayController extends FrontController
 
           if(isset($request->auth_token) && !empty($request->auth_token))
           {
-           // $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=200&order='.$order->order_number;
-            return response('Done',200);
+            $returnUrl = route('order.return.success');
+            $response['status'] = 'Success';
+            $response['msg'] = 'Success Order.';
+            $response['payment_from'] = 'cart';
+            $response['route'] = $returnUrl;
+
+            return $response;
           }else{
-            return response('Done',200);
+            $returnUrl = route('order.return.success');
+            $response['status'] = 'Success';
+            $response['msg'] = 'Success Order.';
+            $response['payment_from'] = 'cart';
+            $response['route'] = $returnUrl;
+
+            return $response;
           }
 
           }else{
@@ -138,19 +159,27 @@ class PlugnpayController extends FrontController
             }
             if(isset($request->auth_token) && !empty($request->auth_token))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=00&order='.$order->order_number;
-            //  return Redirect::to($returnUrl);  
-            return response('Somthing went wrong.',400);
+              $returnUrl = route('order.return.success');
+              $response['status'] = 'Fail';
+              $response['msg'] = 'Failed Order.';
+              $response['payment_from'] = 'cart';
+              $response['route'] = $returnUrl;
+
+              return $response;
 
             }else{
-            return response('Somthing went wrong.',400);
+              
+              $returnUrl = route('order.return.success');
+              $response['status'] = 'Fail';
+              $response['msg'] = 'Failed Order.';
+              $response['payment_from'] = 'cart';
+              $response['route'] = $returnUrl;
+  
+              return $response;
 
-              //return Redirect::to(route('showCart'))->with('error',$request->message);
             }
 
           }
-
-        return $this->successResponse($request->getTransactionReference());
 
     }
 

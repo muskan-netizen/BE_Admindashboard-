@@ -2801,7 +2801,8 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
     
         // }
         data.push(
-            { name: 'payment_form', value: payment_form },
+            { name: 'from', value: payment_form },
+            { name: 'amt', value: total_amount },
             { name: 'amount', value: total_amount },
         );
 
@@ -2814,13 +2815,14 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
             success: function(response) {
                 console.log(response);
                 if (response.status == "Success") {
-
+                        window.location.replace(response.route);
                 } else {
-
+                    window.location.replace(response.route);
                 }
             },
             error: function(response) {
                 console.log(response);
+                window.location.replace(response.route);
                 // var error = response.responseJSON;
                 // console.log(error, 'Error');
             }
