@@ -239,9 +239,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('remove', 'Api\v1\GiftcardController@RemoveGiftCardCode');
         }); 
         Route::group(['prefix' => 'influencer'], function () {
-            Route::get('refer-earn', 'Front\InfluencerReferAndEarnController@index')->name('index');
-            Route::get('get-influencer-form/{id}', 'Front\InfluencerReferAndEarnController@getInfluencerForm')->name('form');
-            Route::post('save-refer-earn-form', 'Front\InfluencerReferAndEarnController@save')->name('save');
+            Route::get('refer-earn', 'Api\v1\InfluencerController@index')->name('index');
+            Route::get('get-influencer-form/{id}', 'Api\v1\InfluencerController@getInfluencerForm')->name('form');
+            Route::post('save-refer-earn-form', 'Api\v1\InfluencerController@save')->name('save');
         });
 
     });

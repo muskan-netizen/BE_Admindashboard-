@@ -8,10 +8,12 @@ use App\Models\InfluencerCategory;
 use App\Models\InfluencerUser;
 use Illuminate\Http\Request;
 use Auth;
+use App\Http\Traits\ApiResponser;
 use Session;
 
 class InfluencerController extends Controller
 {
+    use ApiResponser;
     function index(Request $request) {
         $user =  Auth::user();
         $influencer_user = [];
