@@ -1364,7 +1364,7 @@ trait cartManager{
             $cart->totalQuantity = $total_quantity;
             $cart->user_allAddresses = $user_allAddresses??[];
             $cart->guest_user = $guest_user??0;
-            $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $this->user_allAddresses??[], 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
+            $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $this->user_allAddresses??[], 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'processorProduct' => $processorProduct, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;

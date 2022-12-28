@@ -64,7 +64,7 @@
 </style>
 
 @php
-$serviceType = Session::get('vendorType');
+    $serviceType = Session::get('vendorType');
 @endphp
 
 @if ($cart_details->totalQuantity <= 0)
@@ -382,7 +382,8 @@ $serviceType = Session::get('vendorType');
                                                                 <h4 class="mt-0 mb-1"
                                                                     style="word-wrap: break-word; line-height:20px">
                                                                     <strong>{{ $vendor_product->cart_product_prescription }}
-                                                                        {{ __('Prescription Added') }}</strong></h4>
+                                                                        {{ __('Prescription Added') }}</strong>
+                                                                </h4>
                                                             @endif
                                                         @endif
                                                     @endif
@@ -648,7 +649,7 @@ $serviceType = Session::get('vendorType');
                                         @endif
                                     </div>
                                 @endif
-                                <div class="col-lg-6">
+                                <div class="col-md-12">
                                     @if ($product->delOptions)
                                         <div
                                             class="row mb-1 d-flex align-items-center   @if ($product->promo_free_deliver == 1) {{ $product->promo_free_deliver }} org_price @endif ">
@@ -663,6 +664,7 @@ $serviceType = Session::get('vendorType');
                                     @endif
 
                                     @if (!empty($product->processor_product) && $product->processor_product->is_processor_enable == 1)
+
                                         <div class="row mb-1 d-flex align-items-center">
                                             <div class="col-5 text-lg-right">
                                                 <label class="m-0 radio">
@@ -681,6 +683,15 @@ $serviceType = Session::get('vendorType');
                                                 {!! $product->processor_product->date !!}
                                             </div>
                                         </div>
+                                        {{-- <div class="row mb-1 d-flex align-items-center">
+                                            <div class="col-5 text-lg-right">
+                                                <label class="m-0 radio">
+                                                    {{ __('Processor Address') }} :</label>
+                                            </div>
+                                            <div class="col-7">
+                                                {!! $product->processor_product->address !!}
+                                            </div>
+                                        </div> --}}
                                     @endif
 
                                     @if ($product->vendor->fixed_fee_amount > 0)
@@ -1035,10 +1046,11 @@ $serviceType = Session::get('vendorType');
                                         <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
                                         <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                                     @else  --}}
-                                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">
-                                        {{ decimal_format($cart_details->gross_amount) }}
+                                    <div class="col-6 text-right"><b>{{ Session::get('currencySymbol') }}<span
+                                                id="gross_amount">
+                                                {{ decimal_format($cart_details->gross_amount) }}
                                         </b></span>
-                                            <span id="other_taxes" style="display:none;">{{$other_taxes}}</span>
+                                        <span id="other_taxes" style="display:none;">{{ $other_taxes }}</span>
                                     </div>
                                     {{-- @endif --}}
                                 </div>
@@ -1230,60 +1242,96 @@ $serviceType = Session::get('vendorType');
                                 </div>
                             </div>
 
-                            @if($serviceType == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) )
-                            <hr class="my-2">
-                            <div class="row">
-                                <div class="col-6">
-                                    <p class="total_amt m-0"> {{__('Advanced Token Amount')}}</p>
-                                </div>
-                                <div class="col-6 text-right">
-                                    @if($client_preference_detail->auto_implement_5_percent_tip == 1)
-                                        @if(decimal_format($cart_details->wallet_amount_used) > 0)
-                                            <p class="total_amt m-0 11" id="advance_cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent)) * $getAdditionalPreference['advance_booking_amount_percentage'] / 100)}}</p>
+                            @if ($serviceType == 'takeaway' &&
+                                !empty($getAdditionalPreference['advance_booking_amount']) &&
+                                !empty($getAdditionalPreference['advance_booking_amount_percentage']) &&
+                                $getAdditionalPreference['advance_booking_amount_percentage'] > 0 &&
+                                $getAdditionalPreference['advance_booking_amount_percentage'] < 101)
+                                <hr class="my-2">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="total_amt m-0"> {{ __('Advanced Token Amount') }}</p>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
+                                            @if (decimal_format($cart_details->wallet_amount_used) > 0)
+                                                <p class="total_amt m-0 11" id="advance_cart_total_payable_amount"
+                                                    data-cart_id="{{ $cart_details->id }}">
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                </p>
+                                            @else
+                                                <p class="total_amt m-0 22" id="advance_cart_total_payable_amount"
+                                                    data-cart_id="{{ $cart_details->id }}">
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                </p>
+                                            @endif
+                                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
+                                                value="{{ decimal_format($cart_details->tip_5_percent) }}">
+                                            <input type="hidden" name="cart_total_payable_amount"
+                                                value="{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}">
                                         @else
-                                            <p class="total_amt m-0 22" id="advance_cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format((decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage'] / 100)}}</p>
+                                            @if (decimal_format($cart_details->wallet_amount_used) > 0)
+                                                <p class="total_amt m-0 33" id="advance_cart_total_payable_amount"
+                                                    data-cart_id="{{ $cart_details->id }}">
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                </p>
+                                            @else
+                                                <p class="total_amt m-0 44" id="advance_cart_total_payable_amount"
+                                                    data-cart_id="{{ $cart_details->id }}">
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                </p>
+                                            @endif
+                                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
+                                                value="0">
+                                            <input type="hidden" name="cart_total_payable_amount"
+                                                value="{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}">
                                         @endif
-                                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="{{ decimal_format($cart_details->tip_5_percent) }}">
-                                            <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format((decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage'] / 100)}}" >
-                                    @else
-                                        @if(decimal_format($cart_details->wallet_amount_used) > 0)
-                                            <p class="total_amt m-0 33" id="advance_cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format((decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage'] / 100)}}</p>
-                                        @else
-                                            <p class="total_amt m-0 44" id="advance_cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format((decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage'] / 100)}}</p>
-                                        @endif
-                                        <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                        <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format((decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage'] / 100)}}" >
-                                    @endif
+                                    </div>
                                 </div>
-                            </div>
-                            <hr class="my-2">
-                            <div class="row">
-                                <div class="col-6">
-                                    <p class="total_amt m-0"> {{__('Pending Amount')}}</p>
-                                </div>
-                                <div class="col-6 text-right">
-                                    @if($client_preference_detail->auto_implement_5_percent_tip == 1)
-                                        @if(decimal_format($cart_details->wallet_amount_used) > 0)
-                                            <p class="total_amt m-0 11" id="pending_cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent)) - ((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent)) * $getAdditionalPreference['advance_booking_amount_percentage'] / 100))}}</p>
+                                <hr class="my-2">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="total_amt m-0"> {{ __('Pending Amount') }}</p>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
+                                            @if (decimal_format($cart_details->wallet_amount_used) > 0)
+                                                <p class="total_amt m-0 11" id="pending_cart_total_payable_amount"
+                                                    data-cart_id="{{ $cart_details->id }}">
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) - ((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                </p>
+                                            @else
+                                                <p class="total_amt m-0 22" id="pending_cart_total_payable_amount"
+                                                    data-cart_id="{{ $cart_details->id }}">
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) - ((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                </p>
+                                            @endif
                                         @else
-                                            <p class="total_amt m-0 22" id="pending_cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format((decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes)) - ((decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage'] / 100))}}</p>
+                                            @if (decimal_format($cart_details->wallet_amount_used) > 0)
+                                                <p class="total_amt m-0 33" id="pending_cart_total_payable_amount"
+                                                    data-cart_id="{{ $cart_details->id }}">
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes) - ((decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                </p>
+                                            @else
+                                                <p class="total_amt m-0 44" id="pending_cart_total_payable_amount"
+                                                    data-cart_id="{{ $cart_details->id }}">
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes) - ((decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                </p>
+                                            @endif
                                         @endif
-                                    @else
-                                        @if(decimal_format($cart_details->wallet_amount_used) > 0)
-                                            <p class="total_amt m-0 33" id="pending_cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format((decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)) - ((decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage'] / 100))}}</p>
-                                        @else
-                                            <p class="total_amt m-0 44" id="pending_cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format((decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)) - ((decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage'] / 100))}}</p>
-                                        @endif
-                                    @endif
+                                    </div>
                                 </div>
-                            </div>
                             @else
-                                @if($client_preference_detail->auto_implement_5_percent_tip == 1)
-                                    <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="{{ decimal_format($cart_details->tip_5_percent) }}">
-                                    <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes)}}" >
+                                @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
+                                    <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
+                                        value="{{ decimal_format($cart_details->tip_5_percent) }}">
+                                    <input type="hidden" name="cart_total_payable_amount"
+                                        value="{{ decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) }}">
                                 @else
-                                    <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                    <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}" >
+                                    <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
+                                        value="0">
+                                    <input type="hidden" name="cart_total_payable_amount"
+                                        value="{{ decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes) }}">
                                 @endif
                             @endif
                             <hr class="my-2">
@@ -1413,125 +1461,121 @@ $serviceType = Session::get('vendorType');
                 </div>
 
             </div>
-            @endif
-            @endif
-
-                    <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
-                        @if(isset($ageVerify->status) && $ageVerify->status == 1)
-                            {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
-                        @endif
-                        @if(!empty($cart_details->editing_order) && !empty($cart_details->editing_order->scheduled_date_time) && !empty($edit_order_schedule_datetime))
-                            <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
-                            <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
-                        @endif
-                            @if($cart_error_message=='')
-                                <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
-                            @else
-                            <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
-                        @endif
-
-                    </div>
-                @endif
-
-        </div>
-        {{-- -- End Right Section ---- --}}
-
-
-
-
-    </div>
-    {{-- Schedual code end at down --}}
-    </div>
-
-
-
-    <div class="container">
-
-        @if (count($cart_details->upSell_products) > 0)
-            <h3 class="mb-2 mt-4">{{ __('Frequently bought together') }}</h3>
-            <div class="row">
-                <div class="col-12 p-0">
-                    <div class="product-4 product-m">
-                        @foreach ($cart_details->upSell_products as $product)
-                            <a class="common-product-box scale-effect text-center"
-                                href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">
-                                <div class="img-outer-box position-relative">
-                                    <img class="blur-up lazyload" data-src="{{ $product->image_url }}"
-                                        alt="">
-                                    <div class="pref-timing">
-                                        <!--<span>5-10 min</span>-->
-                                    </div>
-                                    <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
-                                </div>
-                                <div class="media-body align-self-center">
-                                    <div class="inner_spacing px-0">
-                                        <div class="product-description">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="card_title ellips">{{ $product->translation_title }}</h6>
-                                                <!--<span class="rating-number">2.0</span>-->
-                                            </div>
-                                            <p>{{ $product->vendor_name }}</p>
-                                            <p class="border-bottom pb-1">In {{ $product->category_name }}</p>
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <b>
-                                                    @if ($product->inquiry_only == 0)
-                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($product->variant_price) }}
-                                                    @endif
-                                                </b>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        @if (count($cart_details->crossSell_products) > 0)
-            <h3 class="mb-2 mt-3">{{ __('You might be interested in') }}</h3>
-            <div class="row">
-                <div class="col-12 p-0">
-                    <div class="product-4 product-m">
-                        @foreach ($cart_details->crossSell_products as $product)
-                            <a class="common-product-box scale-effect text-center"
-                                href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">
-                                <div class="img-outer-box position-relative">
-                                    <img class="blur-up lazyload" data-src="{{ $product->image_url }}"
-                                        alt="">
-                                    <div class="pref-timing">
-                                    </div>
-                                    <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
-                                </div>
-                                <div class="media-body align-self-center">
-                                    <div class="inner_spacing px-0">
-                                        <div class="product-description">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="card_title ellips">{{ $product->translation_title }}</h6>
-                                            </div>
-                                            <p>{{ $product->vendor_name }}</p>
-                                            <p class="border-bottom pb-1">In {{ $product->category_name }}</p>
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <b>
-                                                    @if ($product->inquiry_only == 0)
-                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($product->variant_price) }}
-                                                    @endif
-                                                </b>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        @endif
-    </div>
-
 @endif
+<div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
+    @if (isset($ageVerify->status) && $ageVerify->status == 1)
+        {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
+    @endif
+    @if (!empty($cart_details->editing_order) &&
+        !empty($cart_details->editing_order->scheduled_date_time) &&
+        !empty($edit_order_schedule_datetime))
+        <input type="hidden" id="edit_order_schedule_datetime" value="{{ $edit_order_schedule_datetime }}">
+        <input type="hidden" id="edit_order_schedule_slot" value="{{ $schedule_slots_edit }}">
+    @endif
+    @if ($cart_error_message == '')
+        <button id="order_placed_btn" class="btn btn-solid d-none" type="button"
+            {{ count($cart_details->user_allAddresses) == 0 ? 'disabled' : '' }}>{{ __('Place Order') }}</button>
+    @else
+        <div class="alert p-0" role="alert">
+            <div class="alert-danger p-1">{{ $cart_error_message }}</div>
+        </div>
+    @endif
 
+</div>
+
+</div>
+{{-- -- End Right Section ---- --}}
+
+
+
+
+</div>
+{{-- Schedual code end at down --}}
+</div>
+
+
+
+<div class="container">
+    @if (count($cart_details->upSell_products) > 0)
+        <h3 class="mb-2 mt-4">{{ __('Frequently bought together') }}</h3>
+        <div class="row">
+            <div class="col-12 p-0">
+                <div class="product-4 product-m">
+                    @foreach ($cart_details->upSell_products as $product)
+                        <a class="common-product-box scale-effect text-center"
+                            href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">
+                            <div class="img-outer-box position-relative">
+                                <img class="blur-up lazyload" data-src="{{ $product->image_url }}" alt="">
+                                <div class="pref-timing">
+                                    <!--<span>5-10 min</span>-->
+                                </div>
+                                <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
+                            </div>
+                            <div class="media-body align-self-center">
+                                <div class="inner_spacing px-0">
+                                    <div class="product-description">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <h6 class="card_title ellips">{{ $product->translation_title }}</h6>
+                                            <!--<span class="rating-number">2.0</span>-->
+                                        </div>
+                                        <p>{{ $product->vendor_name }}</p>
+                                        <p class="border-bottom pb-1">In {{ $product->category_name }}</p>
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <b>
+                                                @if ($product->inquiry_only == 0)
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format($product->variant_price) }}
+                                                @endif
+                                            </b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if (count($cart_details->crossSell_products) > 0)
+        <h3 class="mb-2 mt-3">{{ __('You might be interested in') }}</h3>
+        <div class="row">
+            <div class="col-12 p-0">
+                <div class="product-4 product-m">
+                    @foreach ($cart_details->crossSell_products as $product)
+                        <a class="common-product-box scale-effect text-center"
+                            href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">
+                            <div class="img-outer-box position-relative">
+                                <img class="blur-up lazyload" data-src="{{ $product->image_url }}" alt="">
+                                <div class="pref-timing">
+                                </div>
+                                <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
+                            </div>
+                            <div class="media-body align-self-center">
+                                <div class="inner_spacing px-0">
+                                    <div class="product-description">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <h6 class="card_title ellips">{{ $product->translation_title }}</h6>
+                                        </div>
+                                        <p>{{ $product->vendor_name }}</p>
+                                        <p class="border-bottom pb-1">In {{ $product->category_name }}</p>
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <b>
+                                                @if ($product->inquiry_only == 0)
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format($product->variant_price) }}
+                                                @endif
+                                            </b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+</div>
 
 <script>
     $(document).ready(function() {
@@ -1570,4 +1614,3 @@ $serviceType = Session::get('vendorType');
 @section('script-bottom-js')
     <script defer type="text/javascript" src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
 @endsection
-
