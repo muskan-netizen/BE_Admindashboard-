@@ -2029,6 +2029,11 @@ body.dark.al_body_template_eight div#category_products_filter .media-body.align-
 body.dark.al_body_template_eight section.section-b-space.new-pages .custom-container {
     background-color: #232323;
 }
+body.al_body_template_eight.p2p-module section.section-b-space.alSingleProducts.product_ddetails_page .start_chat {
+    float: none;
+    margin: 0;
+    padding: 13px 29px;
+}
 /*--------------dark theme css----------*/
 body.dark.al_body_template_eight div#collapseOne {
     background-color: #232323;
