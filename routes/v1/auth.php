@@ -238,6 +238,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('apply', 'Api\v1\GiftcardController@postVerifyGiftCardCode');
             Route::post('remove', 'Api\v1\GiftcardController@RemoveGiftCardCode');
         }); 
+        Route::group(['prefix' => 'influencer'], function () {
+            Route::get('refer-earn', 'Front\InfluencerReferAndEarnController@index')->name('index');
+            Route::get('get-influencer-form/{id}', 'Front\InfluencerReferAndEarnController@getInfluencerForm')->name('form');
+            Route::post('save-refer-earn-form', 'Front\InfluencerReferAndEarnController@save')->name('save');
+        });
 
     });
 });
