@@ -160,6 +160,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">Order ID</th>
+                                                            <th scope="col">Customer Name</th>
                                                             <th scope="col">Product Name</th>
                                                             <th scope="col">Total Amount</th>
                                                             <th scope="col">User Discount</th>
@@ -168,46 +169,19 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td>13569983</td>
-                                                            <td>Bruschetta</td>
-                                                            <td>$500.00</td>
-                                                            <td>10%</td>
-                                                            <td>$50.00</td>
-                                                            <td>23/12/2022</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>04985599</td>
-                                                            <td>Baby Oil</td>
-                                                            <td>$600.00</td>
-                                                            <td>10%</td>
-                                                            <td>$60.00</td>
-                                                            <td>03/12/2022</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>99241181</td>
-                                                            <td>Baby Wipes</td>
-                                                            <td>$410.00</td>
-                                                            <td>10%</td>
-                                                            <td>$41.00</td>
-                                                            <td>23/12/2022</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>81598233</td>
-                                                            <td>Brown Bread</td>
-                                                            <td>$310.00</td>
-                                                            <td>10%</td>
-                                                            <td>$31.00</td>
-                                                            <td>13/12/2022</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>58351469</td>
-                                                            <td>Cheese</td>
-                                                            <td>$610.00</td>
-                                                            <td>10%</td>
-                                                            <td>$61.00</td>
-                                                            <td>03/12/2022</td>
-                                                        </tr>
+                                                        @if(!empty($order_user_promo_product) && $order_user_promo_product->count() > 0)
+                                                            @foreach($order_user_promo_product as $order)
+                                                                <tr>
+                                                                    <td>{{$order->orderDetail->order_number ?? ''}}</td>
+                                                                    <td>{{$order->user->name ?? ''}}</td>
+                                                                    <td>Bruschetta</td>
+                                                                    <td>{{Session::get('currencySymbol')}} {{$order->subtotal_amount??0}}</td>
+                                                                    <td>{{Session::get('currencySymbol')}} {{$order->discount_amount??0}}</td>
+                                                                    <td>{{$influencer_user->tier->commision}}</td>
+                                                                    <td>{{$order->created_at??0}}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        @endif
                                                     </tbody>
                                                 </table>
                                             </div>

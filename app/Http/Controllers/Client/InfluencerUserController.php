@@ -118,6 +118,7 @@ class InfluencerUserController extends Controller
                 'amount' => $influencer_tier->commision??0,
                 'promo_type_id' => $influencer_tier->commision_type,
                 'limit_per_user' => 1,
+                'limit_total' => 1,
                 'added_by' => 1,
                 'promo_visibility' => 'private',
                 'promo_type' => 1,
