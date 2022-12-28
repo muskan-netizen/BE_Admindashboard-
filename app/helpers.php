@@ -16,7 +16,15 @@ use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditio
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Redis;
 
+function setUserCode(){
+    $userCode = session()->has('userCode');
+    if(!$userCode){
+        $user = ClientData::first();
+        session()->put('userCode', $user->code);
+    }
+}
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {
@@ -42,18 +50,12 @@ if (!function_exists('getAdditionalPreference')) {
      * @return void
      */
     function getAdditionalPreference($key=array()){
-        $user = ClientData::first();
+        setUserCode();
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => $user->code])->get() : [];
+            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => session()->get('userCode')])->get() : [];
             $return = array_column($result->toArray(), 'key_value', 'key_name');
-            // foreach($return as $k => $ret){
-            //     if (preg_match('/(\.jpg|\.png|\.bmp)$/i', $ret)) {
-            //         $cc = getAdditionalImageAttribute($ret);
-            //         pr($cc);
-            //     }
-            // }
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
             }
@@ -86,6 +88,30 @@ if (!function_exists('getAdditionalPreference')) {
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
         return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
+    }
+}
+
+if (!function_exists('getInToken')) {
+    function getInToken($amount = 1){
+        setUserCode();
+        $redis = Redis::connection();
+        $compareCurrency = session()->has('compareCurrency');
+        if(!$compareCurrency){
+            $currency_id = session()->get('customerCurrency');
+            $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+            session()->put('compareCurrency', $clientCurrency->doller_compare);
+        }
+        
+        $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
+        $tokenCurrency = json_decode($tokenCurrency);
+        if($tokenCurrency == null){
+            $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
+            $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
+        }
+        // $currency_id = session()->get('customerCurrency');
+        // $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+
+        return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * ($tokenCurrency ?? 1));
     }
 }
 
@@ -1035,6 +1061,18 @@ if (!function_exists('getDollarCompareAmount')) {
         $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
         $amount = number_format($amount, 2,'.','');
         return $amount;
+    }
+}
+
+if (!function_exists('getPrimaryCurrencySymbol')) {
+    /* doller compare amount */
+    function getPrimaryCurrencySymbol()
+    {
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $currency = Currency::find($primaryCurrency->currency_id);
+
+        $currencySymbol = $currency->symbol;
+        return $currencySymbol;
     }
 }
 

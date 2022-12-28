@@ -689,7 +689,7 @@ td.items-details h4 {
     line-height: 30px !important;
     padding: 0 8px;
     cursor: pointer;
-    color: var(--theme-deafult)
+    color: var(--theme-deafult) !important;
 }
 
 .number input {
@@ -11108,4 +11108,8 @@ body.al_body_template_nine .toggle-password,
 
 body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
     margin-bottom: 0;
+}
+
+body.al_body_template_nine.p2p-module.dark .sub-footer {
+    background-color: #000;
 }

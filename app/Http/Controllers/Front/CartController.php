@@ -712,7 +712,6 @@ class CartController extends FrontController
         }
 
 
-
         return response()->json([
             'message' => "No product found in cart",
             'data' => $cart_details,

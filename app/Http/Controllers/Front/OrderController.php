@@ -1609,11 +1609,7 @@ class OrderController extends FrontController
                     $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                 }
             }
-            $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
-
-            $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
-
-            
+            // ------------ move up
             $tip_amount = 0;
             if (isset($request->tip)) {
                 $request->tip = str_replace(',', '', $request->tip);
@@ -1622,14 +1618,31 @@ class OrderController extends FrontController
                     $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                     $order->tip_amount = $tip_amount;
                 }
-
+                
             }
+            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+            // ---------------------------------------
+            $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+
+            $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
+
+            
+            // $tip_amount = 0;
+            // if (isset($request->tip)) {
+            //     $request->tip = str_replace(',', '', $request->tip);
+            //     $tip_amount = floatval($request->tip);
+            //     if( ($tip_amount != '') && ($tip_amount > 0) ){
+            //         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
+            //         $order->tip_amount = $tip_amount;
+            //     }
+
+            // }
             //echo  " Total payable_amount1=".$payable_amount."; <br>";
             //echo  " tip_amount=".$tip_amount." fixed_fee_amount=".$fixed_fee_amount." total_taxable_amount=".$total_taxable_amount."; <br>";
 
             
             // $payable_amount = $payable_amount + $tip_amount + $total_taxable_amount+$total_other_taxes;
-            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+            // $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
 
             $wallet_amount_used = 0;
             if ($user) {
@@ -1704,7 +1717,7 @@ class OrderController extends FrontController
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;
             }
-            //dd("order:".$order);
+            // dd($order);
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
 
@@ -1866,6 +1879,7 @@ class OrderController extends FrontController
         $notification_content = NotificationTemplate::where('id', 4)->first();
         if ($notification_content) {
             $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+            dd($body_content);
             $data = [
                 "registration_ids" => $devices,
                 "notification" => [

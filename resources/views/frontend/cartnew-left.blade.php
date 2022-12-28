@@ -21,12 +21,26 @@
     </div>
 </div>
 @if($action != 'delivery' && $action != 'on_demand' )
-    @if(isset($vendor_details['vendor_address']))
+    @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
+        <div>
+            <input type="hidden" id="latitude" value="{{ $processorProduct->latitude }}">
+            <input type="hidden" id="longitude" value="{{ $processorProduct->longitude }}">
+        </div>
+        <label>{{ $processorProduct->address }}</label>
+        <div class="row mt-3 mb-3" id="address_template_main_div">
+            <div class="col-12">
+                <div id="vendor-address-map-container" style="height: 200px;">
+                    <div id="vendor-address-map" style="height:100%"></div>
+                </div>
+            </div>
+        </div>
+    @else
+    @if (isset($vendor_details['vendor_address']))
         <div>
             <input type="hidden" id="latitude" value="{{ $vendor_details['vendor_address']->latitude }}">
             <input type="hidden" id="longitude" value="{{ $vendor_details['vendor_address']->longitude }}">
         </div>
-        <label>{{$vendor_details['vendor_address']->address}}</label>
+        <label>{{ $vendor_details['vendor_address']->address }}</label>
         <div class="row mt-3 mb-3" id="address_template_main_div">
             <div class="col-12">
                 <div id="vendor-address-map-container" style="height: 200px;">
@@ -35,6 +49,7 @@
             </div>
         </div>
     @endif
+@endif
     @if(isset($vendor_details['vendor_tables']))
         <div class="vendor_tables">
             <h4>Book a table</h4>

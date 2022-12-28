@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' => 'My Wallet'])
+@extends('layouts.store', ['title' => 'My Token'])
 @section('css')
 <style type="text/css">
     .main-menu .brand-logo {
@@ -13,7 +13,6 @@
 $user = Auth::user();
 $timezone = $user->timezone;
 $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurrency->doller_compare ?? 1) ) : 0;
-$additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
 @endphp
 
 <style type="text/css">
@@ -100,65 +99,19 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h2 class="">{{__('My Wallet')}}</h2>
+                            <h2 class="">{{__('My Tokens')}}</h3>
                         </div>
                         <div class="box-account box-info">
                             <div class="card-box mb-0">
                                 <div class="row align-items-center">
-                                    <div class="col-md-4 text-md-left text-center mb-md-0 mb-4">
+                                    <div class="col-md-6 text-md-left text-center mb-md-0 mb-4">
                                         <h5 class="text-17 mb-2 mt-0">{{__('Available Balance')}}</h5>
-                                        <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format(Auth::user()->balanceFloat * ( $clientCurrency->doller_compare ?? 1))}}</span></div>
+                                        <div class="text-36"><i class="fa fa-btc"></i><span class="wallet_balance">
+                                            {{getInToken(Auth::user()->balanceFloat )}}</span></div>
                                     </div>
-                                    <div class="col-md-4 text-md-left text-center">
-                                        @if( $additionalPreference["is_token_currency_enable"])
-                                        <h5 class="text-17 mb-2 mt-0">{{__('Token Balance')}}</h5>
-                                        <div class="text-36 mb-md-0 mb-4"><span class="wallet_balance">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format(Auth::user()->balanceFloat * ( $clientCurrency->doller_compare ?? 1)))}}</span></div>
-                                        @endif
-                                    </div>
-                                    <div class="col-md-4 text-md-right text-center">
+                                    <div class="col-md-6 text-md-right text-center">
                                         <button type="button" class="btn btn-solid" id="topup_wallet_btn" data-toggle="modal" data-target="#topup_wallet">{{__('Topup Wallet')}}</button>
-                                        <button type="button" class="btn btn-solid" id="transfer_wallet_btn" data-toggle="modal" data-target="#transfer_wallet">{{__('Transfer Funds')}}</button>
                                     </div>
-                                </div>
-                            </div>
-                            <h6>{{__('Transaction History')}}</h6>
-                            <div class="card-box" id="wallet_transactions_history">
-                                <div class="table-responsive table-responsive-xs">
-                                  <table class="table wallet-transactions border">
-                                    <thead>
-                                        <tr class="table-head">
-                                            <th>{{__('Date')}}</th>
-                                            <th>{{__('Description')}}</th>
-                                            <th class="text-right" style="white-space:nowrap"><span class="text-success">{{__('Credit')}}</span> / <span class="text-danger">{{__('Debit')}}</span></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    @forelse($user_transactions as $ut)
-                                    @php
-                                    $reason = json_decode($ut->meta);
-                                    $amount = ($ut->amount / 100) * ( $clientCurrency->doller_compare ?? 1);
-                                    @endphp
-                                    <tr>
-                                        <td> {{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
-                                        <td  class="name_">{!! $reason->description ?? $reason[0]!!}</td>
-                                        <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}">
-                                            @if($ut->type == 'deposit')
-                                            {{ Session::get('currencySymbol').decimal_format($amount)}}
-                                            @else
-                                            <b>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($amount)) : Session::get('currencySymbol').decimal_format($amount)}}</b>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr><td align="center" colspan="4">{{__('No Transaction History Exists')}}</td></tr>
-                                    @endforelse
-                                    </tbody>
-                                  </table>
-                                </div>
-                                <div class="pagination pagination-rounded justify-content-end mb-0">
-                                    @if(!empty($user_transactions))
-                                        {{ $user_transactions->links() }}
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -226,10 +179,12 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                 <span class="error-msg" id="wallet_amount_error"></span>
             </div>
             <div class="form-group">
-                <div><label for="custom_amount">{{__('Recommended')}}</label></div>
-                <button type="button" class="btn btn-solid mb-2 custom_amount">+10</button>
-                <button type="button" class="btn btn-solid mb-2 custom_amount">+20</button>
-                <button type="button" class="btn btn-solid mb-2 custom_amount">+50</button>
+                <div>
+                    <label for="custom_amount">{{__('Token')}}</label>
+                    <i class="fa fa-btc"></i>
+                    <span id="token_currency">0</span>
+                </div>
+
             </div>
             <hr class="mt-0 mb-1" />
             <div class="payment_response">
@@ -252,69 +207,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     </div>
   </div>
 </div>
-<div class="modal fade" id="transfer_wallet" tabindex="-1" aria-labelledby="transfer_walletLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="max-width: 400px;">
-        <div class="modal-header border-bottom">
-          <h5 class="modal-title text-17 mb-0 mt-0" id="transfer_walletLabel">{{__('Transfer Funds')}}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <form action="" id="wallet_transfer_form">
-          @csrf
-          @method('POST')
-          <div class="modal-body pb-0">
-              <div class="form-group">
-                <h5 class="text-17 mb-2">{{__('Available Balance')}}</h5>
-              </div>
-              <div class="form-group">
-                  <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format($user_wallet_balance)}}</span></div>
-              </div>
 
-              @if($user_wallet_balance <= 0)
-                <div class="alert alert-danger">
-                    <span>{{ __('Insufficient funds in wallet') }}</span>
-                </div>
-              @else
-              <div id="error_dev"></div>
-              <div class="form-group" id="wallet_transfer_amountInput">
-                <label for="wallet_transfer_amount">{{__('Amount to transfer')}}</label>
-                <input class="form-control" name="wallet_transfer_amount" id="wallet_transfer_amount" type="text" placeholder="{{__('Enter Amount')}}">
-                <span class="invalid-feedback" role="alert">
-                    <strong></strong>
-                </span>
-              </div>
-              <div class="form-group" id="wallet_transfer_userInput">
-                <label for="wallet_transfer_user">{{__('Transfer to')}}</label>
-                <input class="form-control" name="wallet_transfer_user" id="wallet_transfer_user" type="text" placeholder="{{__('Enter Email or Phone Number with Country Code')}}">
-                <span class="invalid-feedback" role="alert">
-                    <strong></strong>
-                </span>
-                <span class="valid-feedback" role="alert">
-                    <strong></strong>
-                </span>
-              </div>
-              <div class="form-group" id="user_profile">
-
-              </div>
-              <span class="error-msg pl-0" id="wallet_transfer_error_msg"></span>
-              @endif
-          </div>
-          <div class="modal-footer d-block text-center">
-              <div class="row">
-                  <div class="col-sm-12 p-0 d-flex justify-space-around">
-                    @if($user_wallet_balance > 0)
-                      <button type="button" class="btn btn-block btn-solid mr-1 mt-2 transfer_wallet_confirm">{{__('Confirm')}}</button>
-                      <button type="button" class="btn btn-block btn-solid ml-1 mt-2" data-dismiss="modal">{{__('Cancel')}}</button>
-                    @endif
-                  </div>
-              </div>
-          </div>
-        </form>
-      </div>
-    </div>
-</div>
 <script type="text/template" id="user_profile_template">
     <% if(profile != '') { %>
         <label>
@@ -369,7 +262,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                               <!-- A Stripe Element will be inserted here. -->
                             </div>
                         </div>
-
+                       
                         <span class="error text-danger"id="error-message"></span>
                     </div>
                 <% } %>
@@ -391,7 +284,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                             <!-- form will be added here -->
                         </div>
                         <span class="error text-danger" id="checkout_card_error"></span>
-                    </div>
+                    </div>  
                 <% } %>
                 <% if(payment_option.slug == 'payphone') { %>
                     <div id="pp-button"></div>
@@ -476,10 +369,16 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 
 
     var inline='';
+    var tokenCon='';
+    $('#wallet_amount').keyup(function(event) {
+        tokenCon = $(this).val() * "{{$additionalPreference['token_currency'] ?? 1}}";
+        $("#token_currency").text(tokenCon);
+    });
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();
         }
+
     });
     $('.verifyEmail').click(function() {
         verifyUser('email');
@@ -554,121 +453,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         // }
     });
 
-    $(document).on('blur', '#wallet_transfer_user', function() {
-        var username = $(this).val();
-        if(username != ''){
-            ajaxCall = $.ajax({
-                type: "post",
-                dataType: "json",
-                url: "{{ route('wallet.transfer.user.verify') }}",
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "username": username,
-                },
-                beforeSend: function() {
-                    if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
-                        ajaxCall.abort();
-                    }
-                },
-                success: function(response) {
-                    if(response.status == 'Success'){
-                        $("#wallet_transfer_userInput input").removeClass("is-invalid").addClass('valid');
-                        $("#wallet_transfer_userInput span.invalid-feedback").children("strong").text('');
-                        // $("#wallet_transfer_userInput span.valid-feedback").children("strong").text(response.message);
-                        $("#wallet_transfer_userInput span.invalid-feedback").hide();
-                        // $("#wallet_transfer_userInput span.valid-feedback").show();
 
-                        $("#user_profile").html('');
-                        let user_profile_template = _.template($('#user_profile_template').html());
-                        $("#user_profile").append(user_profile_template({ profile: response.data}));
-                    }
-                },
-                error: function(response) {
-                    let error = response.responseJSON;
-                    if (response.status === 422) {
-                        $("#user_profile").html('');
-                        $("#wallet_transfer_userInput input").removeClass("valid").addClass("is-invalid");
-                        $("#wallet_transfer_userInput span.invalid-feedback").children("strong").text(error.message);
-                        $("#wallet_transfer_userInput span.invalid-feedback").show();
-                        $("#wallet_transfer_userInput span.valid-feedback").hide();
-                    }
-                },
-            });
-        }
-    });
-
-    $(document).on('blur', '#wallet_transfer_amount', function() {
-        var amount = $(this).val();
-        if((amount <= 0) || (amount > user_wallet_balance)){
-            if(amount <= 0){
-                var msg = 'Invalid amount';
-            }else{
-                var msg = wallet_balance_insufficient_msg;
-            }
-            $("#wallet_transfer_amountInput input").removeClass("valid").addClass("is-invalid");
-            $("#wallet_transfer_amountInput span.invalid-feedback").children("strong").text(msg);
-            $("#wallet_transfer_amountInput span.invalid-feedback").show();
-        }else{
-            $("#wallet_transfer_amountInput input").removeClass("is-invalid").addClass('valid');
-            $("#wallet_transfer_amountInput span.invalid-feedback").children("strong").text('');
-            $("#wallet_transfer_amountInput span.invalid-feedback").hide();
-        }
-    });
-
-    $(document).on('focus', '#wallet_transfer_form input', function(){
-        $("#wallet_transfer_error_msg").text('').hide();
-    });
-
-    $(document).on('click', '.transfer_wallet_confirm', function() {
-        var _that = $(this);
-        var amount = $("#wallet_transfer_amount").val();
-        var username = $("#wallet_transfer_user").val();
-        if((amount != '') && (username != '')){
-            $("#error_dev").hide();
-            var is_valid = true;
-            $('#wallet_transfer_form input').each(function(index, el) {
-                if($(el).hasClass("is-invalid")){
-                    $(el).trigger('focus');
-                    is_valid = false;
-                    return false;
-                }
-            });
-            if(!is_valid){
-                return false;
-            }
-
-            ajaxCall = $.ajax({
-                type: "post",
-                dataType: "json",
-                url: "{{ route('wallet.transfer.confirm') }}",
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "username": username,
-                    "amount": amount
-                },
-                beforeSend: function() {
-                    if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
-                        ajaxCall.abort();
-                    }
-                },
-                success: function(response) {
-                    if(response.status == 'Success'){
-                        $("#wallet_transfer_error_msg").text('').hide();
-                        window.location.reload();
-                    }
-                },
-                error: function(response) {
-                    let error = response.responseJSON;
-                    if (response.status === 422) {
-                        $("#wallet_transfer_error_msg").text(error.message).show();
-                    }
-                },
-            });
-        }else{
-            var html ='<div class="alert alert-danger"><span>{{ __("All fields are required") }}</span></div>'
-            $("#error_dev").html(html).show();
-        }
-    });
 </script>
 <script>
     var loadFile = function(event) {

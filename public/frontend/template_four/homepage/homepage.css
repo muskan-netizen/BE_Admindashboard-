@@ -4101,6 +4101,7 @@ body.al_body_template_four.p2p-module .tab-product {
     padding: 0 10px 0
   }
 
+
   #cart_main_page .card-box {
     padding: 20px 10px
   }
@@ -4258,3 +4259,45 @@ body.al_body_template_four .slick-track{
 }
   /* car bar css end */
 
+
+  /*--fourth template search icon space css--*/
+ .al_searchType button i{margin-right:10px;}
+  /*----arabic homepage design css start here----*/
+  body[dir=rtl] .dark-light{right:auto;left:0px;border-top-right-radius: 16px;border-bottom-right-radius: 16px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;  }
+  body[dir=rtl] .tap-top {left: 30px;right: auto;}
+  body[dir=rtl] .al_searchType button i{margin-left:10px; margin-right:auto;}
+  /*----arabic user profile design css start here----*/
+  body[dir=rtl] .dashboard-right .dashboard .page-title h2{text-align: right;}
+  body[dir=rtl] .dashboard-right .col-sm-6.text-right.mt-0.mt-md-0 {text-align: left !important;}
+  body[dir=rtl]  .progress-order{left: 0px; right: -24px;}
+  body[dir=rtl] .order_detail_data h5.m-0{text-align: right;}
+  body[dir=rtl] .status_box{text-align: right;}
+  body[dir=rtl] .order_detail:before{left: auto; right: -1px;}
+  body[dir=rtl] .order_detail_data .pulse{left:auto;right:-4px;}
+  body[dir=rtl]  button.reschedule_order.btn.btn-solid{float: left !important;}
+  body[dir=rtl] .price_box_bottom .rating-star{left: 10px !important;}
+  body[dir=rtl] .order-page .order_head .ellipsis {text-align: right;padding-right: 10px;}
+  body[dir=rtl] .wishlist-table .addWishlistToCart{float:right;}
+  body[dir=rtl] .al_inner_card .offset-md-3.col-md-6{margin-left: 0px;margin-right: 25%;}
+  body[dir=rtl] .box-account.box-info h5.text-17 {text-align: right;}
+  body[dir=rtl] .box-account.box-info .text-36 {text-align: right;}
+  body[dir=rtl] .box-account.box-info .col-md-6.text-md-right {text-align: left !important;}
+  body[dir=rtl] .wallet-transactions tr.table-head th {text-align: right;}
+  body[dir=rtl] .wallet-transactions tr.table-head th.text-right {text-align: left !important;}
+  body[dir=rtl] .scrolling_section h2.category-head{text-align: right;}
+  body[dir=rtl] .dashboard-left .block-content ul li:before{left: 10px;position: absolute;transform: rotate(180deg);transform-origin: 20px 10px;}
+  body[dir=rtl] .footer-theme .sub-title li {text-align: right;}
+
+
+
+  /*---vendor form page arabic language  css start here----*/
+body[dir=rtl] .main-top-heading h2 {text-align: right;}
+body[dir=rtl] .main-top-heading p {text-align: right;}
+body[dir=rtl] .vendor-signup h2 {text-align: right;}
+body[dir=rtl] .vendor-signup label {text-align: right;}
+body[dir=rtl] .needs-validation div#phone_numberInput input#phone {padding-left: 0px !important;padding-right: 90px;}
+body[dir=rtl] .checkbox-input label {padding-left: 0px !important;padding-right: 25px;}
+body[dir=rtl] .checkbox-input input {right: 0px;left: auto;}
+body[dir=rtl]  .al_details_vendor .mt-md-1{text-align: right;}
+body[dir=rtl] .al_details_vendor button.btn.btn-solid {float: right;}
+body[dir=rtl]  span.invalid-feedback {display: block;text-align: right;}

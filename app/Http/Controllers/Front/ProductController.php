@@ -339,11 +339,9 @@ class ProductController extends FrontController{
                     }
                 }
             }
-
             $user_vendor = [];
-            if($user){
-
-                $user_vendor =  UserVendor::where('user_id', $user->id)->first();
+            if(@$user->id){
+                $user_vendor = UserVendor::where('user_id', $user->id)->first();
             }
 
             
