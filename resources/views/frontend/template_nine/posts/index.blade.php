@@ -40,6 +40,8 @@
         line-height: 2;
         color: rgba(0,47,52,.64);
         border: 1px solid rgba(14,4,5,.2);
+        padding: 10px;
+        height: 135px;
     }
     .alPostBoxOuter ul li a:hover{text-decoration: none;background: linear-gradient(180deg, #e1dfdf 0%, #efe7e7 100%);}
     .alPostBoxOuter a:hover{text-decoration: none;}
