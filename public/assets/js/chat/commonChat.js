@@ -640,12 +640,9 @@
                         }
                    
                     var renderUserd = await renderUser(data);
+                    var last_message_name = data.chat_Data[0]!=undefined?data.chat_Data[0].username : '';
                     if(fetchDe=='fetchRoomByUserIdUserToUser'){
-                        
-                        var last_message_name = data.vendor_name!=undefined?(data.vendor_name + ' (' +   data.product_name +')' ): '';
-                    }else{
-                        
-                        var last_message_name = data.chat_Data[0]!=undefined?data.chat_Data[0].username : '';
+                        last_message_name = data.vendor_name!=undefined?(data.vendor_name + ' (' +   data.product_name +')' ): '';
                     }
                     var last_message =  data.chat_Data[0]!=undefined?data.chat_Data[0].message:'';
                     
