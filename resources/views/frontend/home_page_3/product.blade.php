@@ -26,7 +26,7 @@
                         </p>
                     </div>
                     <div class="d-flex align-items-center justify-content-between al_clock pt-2">
-                        <b>{{$product["price"] ?? ''}} </b>
+                        <b>{!!$product["price"] ?? ''!!} </b>
                     </div>
                 </div>
             </div>

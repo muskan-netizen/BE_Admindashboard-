@@ -11,7 +11,9 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @section('content')
-
+@php
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+@endphp
 <!-- section start -->
 <section class="section-b-space ratio_asos al_vendor_product_page">
     <div class="collection-wrapper">
@@ -212,7 +214,7 @@
                                                                 <b>
                                                                     @if($new['inquiry_only'] == 0)
                                                                         <?php $multiply = $new['variant_multiplier']; ?>
-                                                                        {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                        {{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                     @endif
                                                                 </b>
 
@@ -351,7 +353,7 @@
 
                                                                     <div class="d-flex align-items-center justify-content-between">
                                                                         @if($data['inquiry_only'] == 0)
-                                                                            <h4 class="mt-0">{{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                            <h4 class="mt-0">{{$additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                         @endif
                                                                       <!--   @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)

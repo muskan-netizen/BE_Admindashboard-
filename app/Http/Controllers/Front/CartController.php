@@ -322,7 +322,9 @@ class CartController extends FrontController
                     $sel->groupBy('product_id');
                 }
             ])->find($request->product_id);
-           
+
+            //items already ordered in case order is being edit in cart
+            $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
              /** if product is not lonf term */ 
             if(checkColumnExists('products','is_long_term_service') && $productDetail->is_long_term_service !=1){
                 /** if product type is not equal to on demand and appointment
@@ -330,18 +332,18 @@ class CartController extends FrontController
                         
                 if( ( !in_array($productDetail->category->categoryDetail->type_id,[8,12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
                     if(!empty($already_added_product_in_cart)){
-                        if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
+                        if(($productDetail->variant[0]->quantity + $order_edit_qty) <= $already_added_product_in_cart->quantity){
                             return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your carts')]);
                         }
-                        if($productDetail->variant[0]->quantity <= ($already_added_product_in_cart->quantity + $request->quantity)){
-                            $request->quantity = $productDetail->variant[0]->quantity - $already_added_product_in_cart->quantity;
+                        if(($productDetail->variant[0]->quantity + $order_edit_qty) <= ($already_added_product_in_cart->quantity + $request->quantity)){
+                            $request->quantity = $productDetail->variant[0]->quantity + $order_edit_qty - $already_added_product_in_cart->quantity;
                         }
                     }
-                    if($productDetail->variant[0]->quantity < $request->quantity){
+                    if(($productDetail->variant[0]->quantity + $order_edit_qty) < $request->quantity){
                         if($productDetail->variant[0]->quantity == 0){
                             $productDetail->variant[0]->quantity = 1;
                         }
-                        $request->quantity = $productDetail->variant[0]->quantity;
+                        $request->quantity = $productDetail->variant[0]->quantity + $order_edit_qty;
                     }
                 }
             }
@@ -708,7 +710,6 @@ class CartController extends FrontController
                 'data' => $cart_details,
             ]);
         }
-
 
 
         return response()->json([
