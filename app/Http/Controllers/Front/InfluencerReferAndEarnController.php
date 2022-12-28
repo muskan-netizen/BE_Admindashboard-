@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\InfluencerUser;
 use Illuminate\Http\Request;
-use App\Models\{InfluencerCategory, InfluencerAttribute, ReferEarnDetail};
+use App\Models\{InfluencerCategory, InfluencerAttribute, ReferEarnDetail, OrderVendor};
 use Auth;
 use Session;
+use Validator;
+
 class InfluencerReferAndEarnController extends Controller
 {
     function index(Request $request) {
@@ -15,12 +17,15 @@ class InfluencerReferAndEarnController extends Controller
         $influencer_user = [];
         $influencer_category = [];
         if (checkTableExists('influencer_users')) {
-            $influencer_user = InfluencerUser::with('user')->where('user_id', $user->id)->first();
+            $influencer_user = InfluencerUser::with('user', 'tier', 'promo')->where('user_id', $user->id)->first();
         }
         if (checkTableExists('influencer_categories')) {
             $influencer_category = InfluencerCategory::get();
         }
-        return view('frontend/account/referAndEarn')->with(['influencer_category' => $influencer_category, 'influencer_user' => $influencer_user]);
+
+        $order_user_promo_product = OrderVendor::with(['user', 'orderDetail'])->where(['coupon_id' => $influencer_user->promo->id])->get();
+
+        return view('frontend/account/referAndEarn')->with(['influencer_category' => $influencer_category, 'influencer_user' => $influencer_user, 'order_user_promo_product' => $order_user_promo_product]);
     }
 
     function getReferEarnForm(Request $request, $domain, $id) {
@@ -89,12 +94,26 @@ class InfluencerReferAndEarnController extends Controller
                 }
                 ReferEarnDetail::insert($insert_arr);
                 Session::flash('success', 'Thanks for registering with us');
-                return redirect()->back();
+                // return redirect()->back();
+                return redirect()->route('refer-earn.index');
             }
         } catch (\Exception $e) {
             Session::flash('danger', 'Something went wrong');
-            return redirect()->back();
+            return redirect()->route('refer-earn.index');
         }
         
+    }
+
+    public function updateRefferalCode(Request $request){
+        $validator = Validator::make($request->all(), [
+            'refferal_code' => 'required|unique:influencer_users,reffered_code,'.$request->influencer_user_id,
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->all()]);
+        }
+
+        InfluencerUser::where('id', $request->influencer_user_id)->update(['reffered_code' => $request->refferal_code]);
+        return response()->json(['success' => 'Refferal code updated successfully.']);
     }
 }

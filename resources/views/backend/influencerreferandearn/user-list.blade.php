@@ -61,10 +61,10 @@
                                     <td> {{ $influencer_user->tier->name ?? '' }} </td>
                                     <td> {{ $influencer_user->reffered_code ?? '' }} </td>
                                     <td>
-                                        {{($influencer_user->commision_type==1)?'Percentage':(($influencer_user->commision_type==2)?'Fixed':'')}}
+                                        {{(!empty($influencer_user->commision_type) && $influencer_user->commision_type==1)?'Percentage':((!empty($influencer_user->commision_type) && $influencer_user->commision_type==2)?'Fixed':'-')}}
                                     </td>
                                     <td>
-                                        {{$influencer_user->commision}}
+                                        {{$influencer_user->commision??'-'}}
                                     </td>
                                     <td> @if($influencer_user->is_approved == 1)<!--  Approved --->
                                             {{_('Approved')}}
@@ -77,9 +77,10 @@
                                                     </a>
                                         @endif
                                 </td>
-                                <td> {{ (@$influencer_user->status)?'Active':'Inactive' }} </td>
+                                <td> {{(!empty($influencer_user->is_approved) && $influencer_user->is_approved==0)?'Inactive':((!empty($influencer_user->is_approved) && $influencer_user->is_approved==1)?'Active':'-')}} </td>
                                     <td> 
-                                        {{-- <a href="{{ route('influencer-refer-earn.edit', ['id' => $influencer_user->id]) }}"><i class="fas fa-eye"></i></a> --}}
+                                        {{-- {{ route('influencer-refer-earn.edit', ['id' => $influencer_user->id]) }} --}}
+                                        <a href="javascript:void(0);" data-id="{{$influencer_user->id}}" class="influencer_user_edit"><i class="fas fa-edit"></i></a>
                                     </td>
                                 </tr>
                                @endforeach
@@ -89,12 +90,9 @@
                     <div class="pagination pagination-rounded justify-content-end mb-0">
                         {{$influencer_users->links()}}
                     </div>
-
-                    
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
         </div> <!-- end col -->
-
     </div>
 </div>
 <div id="approveRejectmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -107,13 +105,32 @@
             <div class="outter-loader d-none"><div class="css-loader"></div></div>
             <form id="approveRejectForm" method="post" enctype="multipart/form-data">
                 @csrf
-               
                 <div class="modal-body" id="approveRejectBox">
 
                 </div>
                 <div class="modal-footer">
                     <button type="submit" name="approveRejectSubmit" value="1" class="btn btn-info waves-effect waves-light approveRejectSubmit">{{ __("Approve") }}</button>
                     <button type="button" name="approveRejectSubmit" value="2" class="btn btn-info waves-effect waves-light approveRejectSubmit rejectBtn">{{ __("Reject") }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="editInfluencerUser" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Edit ".getNomenclatureName('Influencer')) }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <form action="{{route('influencer-refer-earn.update-user-commision')}}" method="post">
+                @csrf
+                <div class="modal-body" id="editInfluencerUserBox">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="editInfluencerUser_btn" value="" class="btn btn-info waves-effect waves-light editInfluencerUserBtn">{{ __("Update") }}</button>
                 </div>
             </form>
         </div>
@@ -169,6 +186,30 @@ $('.approveRejectTierBtn').on('click', function(e) {
     });
 });
 
-
+$(document).on('click', '.influencer_user_edit', function(){
+    var influencer_user_id = $(this).data('id');
+    $.ajax({
+        headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') },
+        url: "{{ route('influencer-refer-earn.editInfluencerUser') }}",
+        type: 'GET',
+        cache: false,
+        data: { 'influencer_user_id': influencer_user_id}, //see the $_token
+        datatype: 'html',
+        beforeSend: function() {
+            //something before send
+        },
+        success: function(data) {
+            if(data.success == true) {
+              $('#editInfluencerUser').modal();  
+              $('#editInfluencerUserBox').html(data.html);
+            } else {
+                $('#editInfluencerUserBox').text('Something went wrong');
+            }
+        },
+        error: function(xhr,textStatus,thrownError) {
+            alert(xhr + "\n" + textStatus + "\n" + thrownError);
+        }
+    });
+});
 </script>
 @endsection

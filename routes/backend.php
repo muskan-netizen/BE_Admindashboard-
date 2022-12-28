@@ -535,6 +535,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
                 Route::post('store', 'Client\InfluencerReferAndEarnController@store')->name('store');
                 Route::post('update', 'Client\InfluencerReferAndEarnController@update')->name('update');
                 Route::get('list', 'Client\InfluencerReferAndEarnController@userList')->name('list');
+                Route::post('update-user-commision', 'Client\InfluencerReferAndEarnController@updateUserCommision')->name('update-user-commision');
+                Route::get('editInfluencerUser', 'Client\InfluencerReferAndEarnController@editInfluencerUser')->name('editInfluencerUser');
             });
             Route::prefix('attribute')->group(function () {
                 Route::name('attribute-influencer-refer-earn.')->group(function () {

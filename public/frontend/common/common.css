@@ -1924,4 +1924,37 @@ body.dark.al_body_template_four section.section-b-space.ratio_asos {
 }
 .morelink {
     display: inline-block;
+
+
+
+/*-------------refer code css------------------*/
+
+.total_amount_details .total-amount {
+    float: left;
+    width: 48%;
+}
+.total_amount_details .Earning-amount {
+    float: right;
+    width: 48%;
+}
+.total_amount_details h3 {
+    font-size: 16px;
+    background: #f1f5f4;
+    padding:10px;
+}
+.custom-table table.table.table-responsive thead th {
+    width: 300px;
+}
+.refer_code strong {
+    border: 1px solid#ccc;
+    padding: 5px 10px;
+    border-radius: 3px;
+    background: #f1f5f4;
+    margin: 0 10px;
+}
+.profile-page .custom-table .group-item input {
+    padding: 5px 20px;
+    border: 1px solid #d5d5d5;
+    margin-bottom: 20px;
+    border-radius: 4px;
 }

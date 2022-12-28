@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\InfluencerTier;
 use App\Models\InfluencerUser;
 use App\Models\ReferEarnDetail;
+use App\Models\Promocode;
 use Illuminate\Http\Request;
 use Session;
+use Carbon\Carbon;
 
 class InfluencerUserController extends Controller
 {
@@ -107,16 +109,28 @@ class InfluencerUserController extends Controller
 
     public function approveReject(Request $request)
     {
-        
         if($request->approveRejectSubmit){ //Approve
             $promo = 'Promo'.rand(1000,9999);
-            InfluencerUser::where('id', $request->id)->update(['is_approved'=> 1, 'reffered_code' => $promo]);
+            $influencer_tier = InfluencerTier::find($request->tier);
+            $expiryDateTime = Carbon::now()->addYear(5);
+            $promo_data = [
+                'name' => $promo,
+                'amount' => $influencer_tier->commision??0,
+                'promo_type_id' => $influencer_tier->commision_type,
+                'limit_per_user' => 1,
+                'limit_total' => 1,
+                'added_by' => 1,
+                'promo_visibility' => 'private',
+                'promo_type' => 1,
+                'expiry_date' => $expiryDateTime
+            ];
+            InfluencerUser::where('id', $request->id)->update(['is_approved'=> 1, 'reffered_code' => $promo, 'influencer_tier_id' => $request->tier, 'commision_type' => $influencer_tier->commision_type, 'commision' => $influencer_tier->commision]);
+            Promocode::create($promo_data);
             Session::flash('success', 'Influencer request approved');
         }else{ //Reject
             InfluencerUser::where('id', $request->id)->update(['is_approved'=> 2]);
             Session::flash('success', 'Influencer request rejected');
         }
-        
-                return redirect()->back();
+        return redirect()->back();
     }
 }

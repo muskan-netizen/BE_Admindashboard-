@@ -11112,3 +11112,12 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
 body.al_body_template_nine.p2p-module.dark .sub-footer {
     background-color: #000;
 }
+/* Pick & drop map Css (26-12-22) */
+
+section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center {
+    display: flex;
+    margin: 10px;
+}
+section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center label {
+    padding: 10px;
+}

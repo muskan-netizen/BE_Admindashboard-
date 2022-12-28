@@ -82,7 +82,26 @@ class InfluencerReferAndEarnController extends BaseController
 
     function userList(Request $request) {
         $influencer_users = InfluencerUser::with(['user', 'tier'])->paginate(10);
-        
         return view('backend.influencerreferandearn.user-list')->with(['influencer_users' => $influencer_users]);
+    }
+
+    function editInfluencerUser(Request $request){
+        if($request->ajax()){
+            $influencer_users = InfluencerUser::with(['user', 'tier'])->where('id', $request->influencer_user_id)->first();
+            $returnHTML = view('backend.influencerreferandearn.edit-influencer-user-ajax')->with('influencer_users', $influencer_users)->render();
+            return response()->json(array('success' => true, 'html'=>$returnHTML));
+        }
+    }
+
+    function updateUserCommision(Request $request){
+        $influencer_user_id = $request->influencer_user_id;
+        $commision_type = $request->commision_type;
+        $commision = $request->commision;
+        $updateInfluencerUser = InfluencerUser::where('id', $influencer_user_id)->update(['commision_type' => $commision_type,'commision' => $commision]);
+        if($updateInfluencerUser){
+            return redirect()->back()->withSuccess('User updated successfully');
+        }else{
+            return redirect()->back()->withError('Something went wrong');
+        }
     }
 }
