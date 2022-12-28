@@ -117,7 +117,7 @@
                             </div>
                         </div>
             </div>
-            
+
             <div class="row border-bottom product_title_add py-1 no-gutters">
                     <div class="col-md-4 col">
                         <span>{{ __('Product Details') }}</span>
@@ -281,7 +281,7 @@
                                                 $dura = getHoursMinutes($vendor_product->total_booking_time);
                                             @endphp
                                             <p class="mb-0">{{$dura}}</p>
-                                           
+
                                         </div>
                                     </div>
 
@@ -389,7 +389,7 @@
                                             if($vendor_product->product->container_charges_tax_id==$index){
                                                 $product_container_charges_tax_amount+=$vendor_product->quantity_container_charges*$tax->tax_rate/100;
                                                $incTax = 1;
-                                            }                                           
+                                            }
                                       }
                                     }
                                     @endphp
@@ -450,7 +450,7 @@
                         @if( $vendor_product->product->is_long_term_service ==  1)
                         @include('frontend.cart.longTermTimeSelection')
                         @endif
-                    
+
                     </div>
 
                     @if( ($vendor_product->product->delay_order_time->delay_order_hrs != '' && $vendor_product->product->delay_order_time->delay_order_min != '' ) &&  (($vendor_product->product->delay_order_time->delay_order_hrs != 0) || ($vendor_product->product->delay_order_time->delay_order_hrs != 0)))
@@ -529,6 +529,36 @@
                                 </div>
                             </div>
                        @endif
+                       @if (!empty($product->processor_product) && $product->processor_product->is_processor_enable == 1)
+
+                            <div class="row mb-1 d-flex align-items-center">
+                                <div class="col-5 text-lg-right">
+                                    <label class="m-0 radio">
+                                        {{ __('Processor Name') }} :</label>
+                                </div>
+                                <div class="col-7">
+                                    {!! $product->processor_product->name !!}
+                                </div>
+                            </div>
+                            <div class="row mb-1 d-flex align-items-center">
+                                <div class="col-5 text-lg-right">
+                                    <label class="m-0 radio">
+                                        {{ __('Processor Date') }} :</label>
+                                </div>
+                                <div class="col-7">
+                                    {!! $product->processor_product->date !!}
+                                </div>
+                            </div>
+                            {{-- <div class="row mb-1 d-flex align-items-center">
+                                <div class="col-5 text-lg-right">
+                                    <label class="m-0 radio">
+                                        {{ __('Processor Address') }} :</label>
+                                </div>
+                                <div class="col-7">
+                                    {!! $product->processor_product->address !!}
+                                </div>
+                            </div> --}}
+                        @endif
                        @if($product->vendor->fixed_fee_amount>0)
                             <div class="row mb-1 d-flex align-items-center">
                                 <div class="col-5 text-lg-right">
@@ -609,7 +639,7 @@
         </div>
 
 
-           
+
 
 
 
@@ -623,7 +653,7 @@
 
     {{-- Start Right Section --}}
     <div class="col-lg-4">
-        
+
         <div class="row m-0">
          <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
@@ -795,8 +825,8 @@
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 @else  --}}
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">           
-                    {{ decimal_format($cart_details->gross_amount) }} 
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">
+                    {{ decimal_format($cart_details->gross_amount) }}
                 </b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 {{-- @endif --}}
@@ -899,7 +929,7 @@
             @endif
             <div class="row">
                 <div class="col-6 d-flex">
-                    <p class="total_amt m-0">{{__('Amount Payable')}} 
+                    <p class="total_amt m-0">{{__('Amount Payable')}}
                         @if($other_taxes)<small>({{__('incl. tax')}})</small>@endif </p>
                         @if($cart_details->conversion_rate>0 && $cart_details->currency_code=="MXN")
                         <div class="ml-2 alInfoIocn position-relative">
@@ -968,11 +998,11 @@
                                 <li class="close-window">
                                     <i class="fa fa-times cross" style="display:none!important"  aria-hidden="true"></i>
                                 </li>
-                               @endif                        
+                               @endif
                         </ul>
                         <div class=" col-sm-10 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
-                        
-                        
+
+
                         @if($cart_details->slotsCnt == 0)
                             @if($cart_details->delay_date != 0)
                                 <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="{{(($cart_details->schedule_type == 'schedule') ? $cart_details->scheduled_date_time : '') }}"
@@ -993,7 +1023,7 @@
                                 @endforeach
                             </select>
                         @endif
-                    
+
 
                 </div>
                     </div>
@@ -1016,7 +1046,7 @@
                             @else
                             <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
                         @endif
-                        
+
                     </div>
                 @endif
 
