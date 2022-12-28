@@ -56,15 +56,12 @@ if (!function_exists('getAdditionalPreference')) {
         if(sizeof($key)){
             $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => session()->get('userCode')])->get() : [];
             $return = array_column($result->toArray(), 'key_value', 'key_name');
-<<<<<<< HEAD
             $addImageArr = ['seller_platform_logo'];
             foreach($result as $res){
                 if(in_array($res->key_name, $addImageArr)){
                     $res->key_value = getAdditionalImageAttribute($res->key_value);
                 }
             }
-=======
->>>>>>> pre_dev
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
             }
