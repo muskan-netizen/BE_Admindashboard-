@@ -10,7 +10,7 @@ use App\Http\Traits\GlobalFunction;
 use Illuminate\Support\Facades\Http;
 
 
-use App\Models\{Client, UserVendor};
+use App\Models\{Client, Product, UserVendor, Vendor};
 
 class ChatController extends BaseController
 {
@@ -174,12 +174,22 @@ class ChatController extends BaseController
             $product_id = $data['product_id'] ?? null;
 
             $socket_url = $this->client_data->socket_url;
+            $c_type = $data['type'] ?? null;
+            $p2p_id = null;
+            $vendor_name = null;
+            $product_name = null;
+            $product_price = null;
             // dd(is_null($order_id));
             // check order_vendor_id and order_id is empty then it is called for p2p chat
-            if( empty($vendor_order_id) && empty($order_id) && !empty($product_id) ) {
+            if( $c_type == 'user_to_user' ) {
                 $room_name = $room_id = 'p2p-productId-'.$product_id.'-vendorId-'.$vendor_id.'-currentUser-'.Auth::id();
                 $orderby_user_id = Auth::id();
-               
+                $p2p_id = $vendor_id;
+                $vendor = Vendor::where('id', $vendor_id)->first();
+                $vendor_name = $vendor->name;
+                $product = Product::with('variant')->where('id', $product_id)->first();
+                $product_name = $product->title;
+                $product_price = $product->variant[0]->price;
             }
             else {
 
@@ -206,7 +216,12 @@ class ChatController extends BaseController
                 'order_user_id' =>$orderby_user_id,
                 'type'=>$data['type'],
                 'db_name'=>$this->client_data->database_name,
-                'client_id'=>$this->client_data->id
+                'client_id'=>$this->client_data->id,
+                'p2p_id'=>$p2p_id,
+                'product_id'=>$product_id, 
+                'vendor_name' => $vendor_name,
+                'product_name' => $product_name,
+                'product_price' => $product_price
             ]);
             \Log::info("================================");
             \Log::info($response);
@@ -235,7 +250,11 @@ class ChatController extends BaseController
      */
     public function fetchOrderDetail(Request $request){
         try {
-            $orderData = $this->OrderVendorDetail($request);
+            if(@$request->product_id){
+                $orderData = $this->ProductDetail($request);
+            }else{
+                $orderData = $this->OrderVendorDetail($request);
+            }
             return response()->json(['status' => true, 'orderData' => $orderData , 'message' => __('Data fetched !!!')]);
             
             //code...
