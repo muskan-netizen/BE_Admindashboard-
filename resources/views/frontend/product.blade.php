@@ -308,9 +308,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
                                                     @if($additionalPreference ['is_token_currency_enable'])
-                                                        <b class="mr-1"><span class="product_fixed_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",","))}}</span></b>
+                                                        <b class="mr-1"><span class="product_fixed_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
                                                     @else
-                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
+                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier,2)}}</span></b>
                                                         @if($product->variant[0]->compare_at_price > 0 )
                                                             <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
                                                         @endif
