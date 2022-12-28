@@ -964,11 +964,12 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var rePre = `<?php echo $rePre; ?>`;
     var fetchDe = `<?php echo $fetchDe; ?>`;
 </script>
+
+@endsection
+@section('js-script')
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 {{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
 <script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
-@endsection
-@section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
