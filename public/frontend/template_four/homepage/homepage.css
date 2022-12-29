@@ -2464,10 +2464,10 @@ span.alFourTempTitle {
 
 .al_body_template_four .btn.btn-solid {
     border-radius: 40px;
-    padding: 7px 20px;
+    padding: 7px 12px;
     background-color: var(--theme-deafult);
     color: #fff;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {
@@ -3651,10 +3651,10 @@ body[dir=rtl] .alFourThLogo {
     body.al_body_template_four .al_count_tabs_fourdesign {
         overflow-x: scroll;
     }
-    ::-webkit-scrollbar {
+     ::-webkit-scrollbar {
         height: 3px;
     }
-    ::-webkit-scrollbar-track {
+     ::-webkit-scrollbar-track {
         background: transparent;
     }
     body.al_body_template_four .al_count_tabs_fourdesign::-webkit-scrollbar-track {
@@ -3978,7 +3978,7 @@ body[dir=rtl] .alFourThLogo {
      ::-webkit-scrollbar {
         height: 3px;
     }
-    ::-webkit-scrollbar-track {
+     ::-webkit-scrollbar-track {
         background: transparent;
     }
     body.al_body_template_four .al_count_tabs_fourdesign::-webkit-scrollbar-track {
