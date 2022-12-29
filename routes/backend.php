@@ -521,6 +521,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::name('influencer-user.')->group(function () {
                 Route::resource('influencer-user', 'Client\InfluencerUserController');
                 Route::get('getUploadedData', 'Client\InfluencerUserController@getUploadedData')->name('getUploadedData');
+                Route::get('getkycData', 'Client\InfluencerUserController@getkycData')->name('getkycData');
                 Route::post('approveReject', 'Client\InfluencerUserController@approveReject')->name('approveReject');
                
             });

@@ -3,6 +3,25 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<style>
+    div#kycmodal div#kycData .col-sm-6 img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+div#kycmodal div#kycData  span {
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom:15px;
+    color:#222;
+}
+div#kycmodal div#kycData span:last-child {
+    float: right;
+    font-weight: bold;
+    color: #000;
+}
+</style>
 @endsection
 
 @section('content')
@@ -49,6 +68,7 @@
                                     <th>Refferal Code</th>
                                     <th>Commision Type</th>
                                     <th>Commision</th>
+                                    <th>Kyc</th>
                                     <th>Approval</th>
                                     <th>Status</th>
                                     <th>Action</th>
@@ -66,24 +86,34 @@
                                     <td>
                                         {{$influencer_user->commision??'-'}}
                                     </td>
-                                    <td> @if($influencer_user->is_approved == 1)<!--  Approved --->
-                                            {{_('Approved')}}
-                                        @elseif($influencer_user->is_approved == 2) <!--  Rejected --->
-                                            {{_('Rejected')}}   
-                                        @else <!--  Pending --->
-                                            {{--_('Pending')--}} 
-                                            <a class="action-icon approveRejectTierBtn" dataid="{{$influencer_user->id}}" href="javascript:void(0);">
-                                                            <i class="mdi mdi-square-edit-outline"></i>
-                                                    </a>
+                                    <td>
+                                        @if(@$influencer_user->kyc)
+                                        <a class="action-icon KycBtn" dataid="{{$influencer_user->id}}" href="javascript:void(0);">
+                                            <i class="mdi mdi-square-edit-outline"></i>
+                                        </a>
                                         @endif
-                                </td>
-                                <td> {{(!empty($influencer_user->is_approved) && $influencer_user->is_approved==0)?'Inactive':((!empty($influencer_user->is_approved) && $influencer_user->is_approved==1)?'Active':'-')}} </td>
-                                    <td> 
+                                    </td>
+                                    <td> @if($influencer_user->is_approved == 1)
+                                        <!--  Approved --->
+                                        {{_('Approved')}}
+                                        @elseif($influencer_user->is_approved == 2)
+                                        <!--  Rejected --->
+                                        {{_('Rejected')}}
+                                        @else
+                                        <!--  Pending --->
+                                        {{--_('Pending')--}}
+                                        <a class="action-icon approveRejectTierBtn" dataid="{{$influencer_user->id}}" href="javascript:void(0);">
+                                            <i class="mdi mdi-square-edit-outline"></i>
+                                        </a>
+                                        @endif
+                                    </td>
+                                    <td> {{(!empty($influencer_user->is_approved) && $influencer_user->is_approved==0)?'Inactive':((!empty($influencer_user->is_approved) && $influencer_user->is_approved==1)?'Active':'-')}} </td>
+                                    <td>
                                         {{-- {{ route('influencer-refer-earn.edit', ['id' => $influencer_user->id]) }} --}}
                                         <a href="javascript:void(0);" data-id="{{$influencer_user->id}}" class="influencer_user_edit"><i class="fas fa-edit"></i></a>
                                     </td>
                                 </tr>
-                               @endforeach
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -102,7 +132,9 @@
                 <h4 class="modal-title">{{ __("Edit ".getNomenclatureName('Attribute')) }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
-            <div class="outter-loader d-none"><div class="css-loader"></div></div>
+            <div class="outter-loader d-none">
+                <div class="css-loader"></div>
+            </div>
             <form id="approveRejectForm" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body" id="approveRejectBox">
@@ -113,6 +145,22 @@
                     <button type="button" name="approveRejectSubmit" value="2" class="btn btn-info waves-effect waves-light approveRejectSubmit rejectBtn">{{ __("Reject") }}</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+<div id="kycmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Edit ".getNomenclatureName('Attribute')) }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="outter-loader d-none">
+                <div class="css-loader"></div>
+            </div>
+                <div class="modal-body" id="kycData">
+
+                </div>
         </div>
     </div>
 </div>
@@ -141,75 +189,117 @@
 @section('script')
 
 <script type="text/javascript">
-$('.rejectBtn').on('click', function(e) {
-    $('#tierdata').removeAttr('required');
-    
-    $('#approveRejectForm').submit();
-    
-});
-    // Edit Influencer Attribute
-$('.approveRejectTierBtn').on('click', function(e) {
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    e.preventDefault();
-    var did = $(this).attr('dataid');
-    $.ajax({
-        type: "get",
-        url: "{{url('client/influencer-user/getUploadedData')}}" ,
-        data: {'did':did},
-        dataType: 'json',
-        beforeSend: function() {
-            $(".loader_box").show();
-        },
-        success: function(data) {
-            $('#approveRejectmodal').modal({
-                backdrop: 'static',
-                keyboard: false
-            });
-            
-            $('#approveRejectForm #approveRejectBox').html(data.html);
-           
-            $('.selectize-select').selectize();
-           
-            
-            document.getElementById('approveRejectForm').action = data.submitUrl;
-        },
-        error: function(data) {
-            console.log('data2');
-        },
-        complete: function() {
-            $('.loader_box').hide();
-        }
-    });
-});
+    $('.rejectBtn').on('click', function(e) {
+        $('#tierdata').removeAttr('required');
 
-$(document).on('click', '.influencer_user_edit', function(){
-    var influencer_user_id = $(this).data('id');
-    $.ajax({
-        headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') },
-        url: "{{ route('influencer-refer-earn.editInfluencerUser') }}",
-        type: 'GET',
-        cache: false,
-        data: { 'influencer_user_id': influencer_user_id}, //see the $_token
-        datatype: 'html',
-        beforeSend: function() {
-            //something before send
-        },
-        success: function(data) {
-            if(data.success == true) {
-              $('#editInfluencerUser').modal();  
-              $('#editInfluencerUserBox').html(data.html);
-            } else {
-                $('#editInfluencerUserBox').text('Something went wrong');
-            }
-        },
-        error: function(xhr,textStatus,thrownError) {
-            alert(xhr + "\n" + textStatus + "\n" + thrownError);
-        }
+        $('#approveRejectForm').submit();
+
     });
-});
+    $('.KycBtn').on('click', function(e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var did = $(this).attr('dataid');
+        $.ajax({
+            type: "get",
+            url: "{{url('client/influencer-user/getkycData')}}",
+            data: {
+                'did': did
+            },
+            dataType: 'json',
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            success: function(data) {
+                $('#kycmodal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+
+                $('#kycData').html(data.html);
+
+                $('.selectize-select').selectize();
+            },
+            error: function(data) {
+                console.log('data2');
+            },
+            complete: function() {
+                $('.loader_box').hide();
+            }
+        });
+    });
+    // Edit Influencer Attribute
+    $('.approveRejectTierBtn').on('click', function(e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var did = $(this).attr('dataid');
+        $.ajax({
+            type: "get",
+            url: "{{url('client/influencer-user/getUploadedData')}}",
+            data: {
+                'did': did
+            },
+            dataType: 'json',
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            success: function(data) {
+                $('#approveRejectmodal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+
+                $('#approveRejectForm #approveRejectBox').html(data.html);
+
+                $('.selectize-select').selectize();
+
+
+                document.getElementById('approveRejectForm').action = data.submitUrl;
+            },
+            error: function(data) {
+                console.log('data2');
+            },
+            complete: function() {
+                $('.loader_box').hide();
+            }
+        });
+    });
+
+    $(document).on('click', '.influencer_user_edit', function() {
+        var influencer_user_id = $(this).data('id');
+        $.ajax({
+            headers: {
+                'X-CSRF-Token': $('meta[name=_token]').attr('content')
+            },
+            url: "{{ route('influencer-refer-earn.editInfluencerUser') }}",
+            type: 'GET',
+            cache: false,
+            data: {
+                'influencer_user_id': influencer_user_id
+            }, //see the $_token
+            datatype: 'html',
+            beforeSend: function() {
+                //something before send
+            },
+            success: function(data) {
+                if (data.success == true) {
+                    $('#editInfluencerUser').modal();
+                    $('#editInfluencerUserBox').html(data.html);
+                } else {
+                    $('#editInfluencerUserBox').text('Something went wrong');
+                }
+            },
+            error: function(xhr, textStatus, thrownError) {
+                alert(xhr + "\n" + textStatus + "\n" + thrownError);
+            }
+        });
+    });
 </script>
 @endsection

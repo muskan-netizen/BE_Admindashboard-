@@ -56,6 +56,7 @@ class InfluencerReferAndEarnController extends BaseController
         try {
             InfluencerCategory::create([
                 'name' => $request->name,
+                'kyc' => ($request->kyc)?1:0,
                 'is_active' => 1
             ]);
 
@@ -71,6 +72,7 @@ class InfluencerReferAndEarnController extends BaseController
         try {
             InfluencerCategory::where('id', $request->id)->update([
                 'name' => $request->name,
+                'kyc' => ($request->kyc)?1:0,
                 'is_active' => 1
             ]);
             return redirect()->route('influencer-refer-earn.index');
@@ -81,7 +83,7 @@ class InfluencerReferAndEarnController extends BaseController
     }
 
     function userList(Request $request) {
-        $influencer_users = InfluencerUser::with(['user', 'tier'])->paginate(10);
+        $influencer_users = InfluencerUser::with(['user', 'tier', 'kyc'])->paginate(10);
         return view('backend.influencerreferandearn.user-list')->with(['influencer_users' => $influencer_users]);
     }
 

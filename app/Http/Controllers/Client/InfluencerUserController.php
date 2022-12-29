@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\InfluencerKyc;
 use App\Models\InfluencerTier;
 use App\Models\InfluencerUser;
 use App\Models\ReferEarnDetail;
@@ -132,5 +133,15 @@ class InfluencerUserController extends Controller
             Session::flash('success', 'Influencer request rejected');
         }
         return redirect()->back();
+    }
+
+    public function getKycData(Request $request)
+    {
+        // $request 
+        $influencer_user  = InfluencerUser::with('kyc')->where('id', $request->did)->first();
+        
+        $returnHTML = view('backend.influencer.kyc_modal_data')->with(['influencer_user' => $influencer_user])->render();
+        return response()->json(array('success' => true, 'html'=>$returnHTML));
+        // dd($influencer_uploaded_detail);
     }
 }

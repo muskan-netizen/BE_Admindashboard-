@@ -36,6 +36,15 @@
                             <div class="error">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="form-group">
+                            <label for="">KYC</label>
+                            
+                            <input type="checkbox" name="kyc" id="kyc"  value="1" @if(@$influence_edit->kyc) checked @endif/>
+                            @error('kyc')
+                            <div class="error">{{ $message }}</div>
+                            @enderror
+                        </div>
                         <button type="submit" class="btn btn-primary btn-sm">Save</button>
                         <a href="{{ route('influencer-refer-earn.index') }}" class="btn btn-primary btn-sm">Cancel</a>
                     </form>

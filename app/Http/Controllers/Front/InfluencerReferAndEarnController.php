@@ -8,10 +8,12 @@ use Illuminate\Http\Request;
 use App\Models\{InfluencerCategory, InfluencerAttribute, ReferEarnDetail, OrderVendor};
 use Auth;
 use Session;
-use Validator;
+use App\Http\Traits\InfluencerTrait;
+use Illuminate\Support\Facades\Validator;
 
 class InfluencerReferAndEarnController extends Controller
 {
+    use InfluencerTrait;
     function index(Request $request) {
         $user =  Auth::user();
         $influencer_user = [];
@@ -23,7 +25,7 @@ class InfluencerReferAndEarnController extends Controller
             $influencer_category = InfluencerCategory::get();
         }
 
-        $order_user_promo_product = OrderVendor::with(['user', 'orderDetail'])->where(['coupon_id' => $influencer_user->promo->id])->get();
+        $order_user_promo_product = OrderVendor::with(['user', 'orderDetail'])->where(['coupon_id' => @$influencer_user->promo->id])->get();
 
         return view('frontend/account/referAndEarn')->with(['influencer_category' => $influencer_category, 'influencer_user' => $influencer_user, 'order_user_promo_product' => $order_user_promo_product]);
     }
@@ -31,6 +33,7 @@ class InfluencerReferAndEarnController extends Controller
     function getReferEarnForm(Request $request, $domain, $id) {
         
         $productAttributes = [];
+        $influencer_category = InfluencerCategory::find($id);
         if( checkTableExists('influ_attributes') ) {
             // , 'varcategory.cate.primary'
             $productAttributes = InfluencerAttribute::with('option')
@@ -41,12 +44,33 @@ class InfluencerReferAndEarnController extends Controller
                 ->orderBy('position', 'asc')->get();
         }
         
-        return view('frontend/account/referAndEarnForm')->with(['productAttributes' => $productAttributes]);
+        
+        return view('frontend/account/referAndEarnForm')->with(['productAttributes' => $productAttributes, 'influencer_category' => $influencer_category]);
     }
 
     function save(Request $request) {
         try {
-            if( !empty($request->attribute) ) {
+            if(@$request->kyc){
+                $validator = Validator::make($request->all(), [
+                    'adhar_front' => 'required',
+                    'adhar_back' => 'required',
+                    'adhar_number' => 'required',
+                    'upi_id' => 'required',
+                    'account_name' => 'required',
+                    'bank_name' => 'required',
+                    'account_number' => 'required',
+                    'ifsc_code' => 'required',
+                ]);
+        
+                if ($validator->fails()) {
+                    foreach ($validator->errors()->toArray() as $error_key => $error_value) {
+                        $errors['error'] = __($error_value[0]);
+                        return response()->json($errors, 422);
+                    }
+                }
+                InfluencerTrait::saveKycData($request);
+            }
+            if(@$request->attribute && !empty($request->attribute) ) {
             
                 $insert_arr = [];
                 $insert_count = 0;
@@ -95,8 +119,10 @@ class InfluencerReferAndEarnController extends Controller
                 ReferEarnDetail::insert($insert_arr);
                 Session::flash('success', 'Thanks for registering with us');
                 // return redirect()->back();
-                return redirect()->route('refer-earn.index');
+               
             }
+            
+            return redirect()->route('refer-earn.index');
         } catch (\Exception $e) {
             Session::flash('danger', 'Something went wrong');
             return redirect()->route('refer-earn.index');

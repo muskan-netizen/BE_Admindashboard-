@@ -10,11 +10,13 @@ use Illuminate\Http\Request;
 use Auth;
 use App\Http\Traits\ApiResponser;
 use App\Models\ReferEarnDetail;
+use App\Http\Traits\InfluencerTrait;
+use Illuminate\Support\Facades\Validator;
 use Session;
 
 class InfluencerController extends Controller
 {
-    use ApiResponser;
+    use ApiResponser, InfluencerTrait;
     function index(Request $request) {
         $user =  Auth::user();
         $influencer_user = [];
@@ -47,6 +49,28 @@ class InfluencerController extends Controller
     function save(Request $request) {
         try {
             \Log::info($request->all());
+            if(@$request->kyc){
+                $validator = Validator::make($request->all(), [
+                    'adhar_front' => 'required',
+                    'adhar_back' => 'required',
+                    'adhar_number' => 'required',
+                    'upi_id' => 'required',
+                    'account_name' => 'required',
+                    'bank_name' => 'required',
+                    'account_number' => 'required',
+                    'ifsc_code' => 'required',
+                    
+                    
+                ]);
+        
+                if ($validator->fails()) {
+                    foreach ($validator->errors()->toArray() as $error_key => $error_value) {
+                        $errors['error'] = __($error_value[0]);
+                        return response()->json($errors, 422);
+                    }
+                }
+                InfluencerTrait::saveKycData($request);
+            }
             if( !empty($request->attribute) ) {
             
                 $insert_arr = [];
@@ -94,9 +118,11 @@ class InfluencerController extends Controller
                 
                 }
                 ReferEarnDetail::insert($insert_arr);
-                return $this->successResponse('', 'Thanks for registering with us');
+                
                 
             }
+            
+            return $this->successResponse('', 'Thanks for registering with us');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
