@@ -160,6 +160,15 @@ pr($products->toArray());
                                 </a>
                             </li>
                         @endif
+
+                         @if(@getAdditionalPreference(['is_bid_enable'])['is_bid_enable'] == 1)
+                            <li class="nav-item">
+                                <a href="{{ route('vendor.bid.request', $vendor->id) }}" aria-expanded="false"
+                                    class="nav-link">
+                                    {{ __('Bid Requests') }}
+                                </a>
+                            </li>
+                         @endif
                         
                     </ul>
                     <div class="row mt-4">

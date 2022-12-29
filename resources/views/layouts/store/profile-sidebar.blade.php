@@ -49,6 +49,8 @@ $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
             <li class="{{ (request()->is('user/wishlists')) ? 'active' : '' }}"><a href="{{route('user.wishlists')}}">{{ __(getNomenclatureName('Wishlist', true) )}}</a></li>
             <li class="{{ (request()->is('user/loyalty')) ? 'active' : '' }}"><a href="{{route('user.loyalty')}}">{{ __('My Loyalty') }}</a></li>
             <li class="{{ (request()->is('user/wallet')) ? 'active' : '' }}"><a href="{{route('user.wallet')}}">{{ __('My Wallet') }}</a></li>
+            <li class="{{ (request()->is('user/bidRequest') || request()->is('bid/Details') ) ? 'active' : '' }}"><a href="{{route('user.bidRequest')}}">{{ __('Bid Request') }}</a></li>
+          
             @if( (isset($client_preference_detail->subscription_mode)) && ($client_preference_detail->subscription_mode == 1) )
                 <li class="{{ (request()->is('user/subscription*')) ? 'active' : '' }}"><a href="{{route('user.subscription.plans')}}">{{ __('My Subscriptions') }}</a></li>
             @endif

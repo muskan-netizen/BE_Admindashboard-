@@ -9,11 +9,11 @@ class Bid extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['vendor_id', 'discount', 'prescription_id','bid_total', 'final_amount'];
+    protected $fillable = ['vendor_id', 'discount', 'bid_req_id','bid_total', 'final_amount'];
 
     public function bidRequests()
     {
-        return $this->belongsTo(BidRequest::class, 'id');
+        return $this->belongsTo(BidRequest::class, 'bid_req_id','id');
     }
 
     public function bidProducts()

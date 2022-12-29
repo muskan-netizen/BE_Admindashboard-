@@ -9,7 +9,7 @@ class BidRequest extends Model
 {
     use HasFactory;
     //protected $appends = array('image');
-    protected $fillable = ['user_id', 'prescription'];
+    protected $fillable = ['user_id', 'prescription','description','status'];
 
     public function user(){
         return $this->belongsTo(User::class, 'id');
@@ -17,7 +17,7 @@ class BidRequest extends Model
 
     public function bids()
     {
-        return $this->hasMany(Bid::class, 'prescription_id');
+        return $this->hasMany(Bid::class, 'bid_req_id');
     }
 
     // public function getImageAttribute()

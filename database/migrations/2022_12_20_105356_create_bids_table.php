@@ -15,7 +15,7 @@ class CreateBidsTable extends Migration
     {
         Schema::create('bids', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('prescription_id')->nullable();
+            $table->unsignedBigInteger('bid_req_id')->nullable();
             $table->bigInteger('vendor_id')->nullable();
             $table->string('bid_total')->nullable();
             $table->string('discount')->nullable();
@@ -23,7 +23,7 @@ class CreateBidsTable extends Migration
             $table->tinyInteger('status')->default(0)->comment('0 Pending 1 Accepted 2 Rejected');
             $table->timestamps();
 
-            $table->foreign('prescription_id')->references('id')->on('bid_requests')->onDelete('cascade');
+            $table->foreign('bid_req_id')->references('id')->on('bid_requests')->onDelete('cascade');
         });
     }
 

@@ -37,9 +37,8 @@ if(session()->has('applocale')){
                     </div>
                     @auth
                         @if(@getAdditionalPreference(['is_bid_enable'])['is_bid_enable'] == 1)
-                        <a type="button" href="{{route('bid.index')}}"
-                            class="float-left btn btn-solid bid_prescription_btn ml-2">{{ __('Place bid request') }}</a>
-                        @endif
+                            @include('frontend.bidding_module.modal')
+                        @endif 
                     @endauth
 
                 </div>

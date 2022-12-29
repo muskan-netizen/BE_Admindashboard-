@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Traits\{ApiResponser,BiddingCartTrait};
 use App\Models\Bid;
@@ -26,11 +27,33 @@ class BidController extends FrontController
     public function index(Request $request)
     {
         $user = Auth::user();
-        $prescriptions = BidRequest::where('id', $user->id)->where('status' , '=' , 0)
+        $prescriptions = BidRequest::where('user_id', $user->id)->where('status' , '=' , 0)
         ->with('bids')->get();
+        // dd($prescriptions[0]->bids[0]->bidProducts);
         $bids = Bid::with('bidProducts','vendor')->get();
         
-        return view('frontend.bidding_module.index', compact('prescriptions','bids'));
+        return view('frontend.bidding_module.biddingRequest', compact('prescriptions','bids'));
+    }
+
+
+    public function bidDetails(Request $request,$domain = '',$id=null)
+    {
+        // dd($request->all());
+        $activeOrders = Bid::where('bid_req_id', $id);
+        // foreach($bids->bidProducts as $k=> $details)
+        // {
+        //         $data[$k] = array(
+        //                     'vendor_name' => $bids->vendor->name,
+        //                     'prod_name' => $details->product->title,
+        //                     'price' => $details->price,
+        //                     'quantity' => $details->quantity,
+        //                     'discount' => $bids->discount,
+        //             );
+        //     }
+        // return response()->json($data);
+        $activeOrders = $activeOrders->orderBy('id', 'DESC')->paginate(10);
+        return view('frontend.bidding_module.bid-lists', compact('activeOrders'));
+
     }
 
     public function create()
@@ -38,6 +61,17 @@ class BidController extends FrontController
         $prescriptions = BidRequest::where('status' , '=' , 0)->get();
         //dd($prescriptions->toArray());
         return view('frontend.bidding_module.create', compact('prescriptions'));
+    }
+
+    public function bidAccept(Request $request,$domain ="",$id = null,$vid = null)
+    {
+        $prescriptions = Bid::with('bidProducts')->where(['bid_req_id'=>$id,'id'=>$vid])->first();
+        // dd($prescriptions);
+
+        $cartAdd =  new  CartController();
+        $cartAdd->addToCart();
+        // $prescriptions->update(['status'=>1]);
+        // return $this->successResponse(__('Status Updated Successfully'),'200');
     }
 
     public function store(Request $request)
@@ -67,7 +101,7 @@ class BidController extends FrontController
         }
         $amountPayable = $total - ($total * ($discount/ 100));
         $data = [
-            'prescription_id' => (int) $prescription_id,
+            'bid_req_id' => (int) $prescription_id,
             'vendor_id'    => $prod_vendor,
             'discount'     => $discount,
             'bid_total'    => $total,
@@ -89,7 +123,8 @@ class BidController extends FrontController
 
        }
 
-       Session::flash('success', 'Bid Placed Successfully');
+    //    Session::flash('success', 'Bid Placed Successfully');
+       return redirect()->back()->with('success','Bid Placed Successfully');
     }
 
 
@@ -115,10 +150,11 @@ class BidController extends FrontController
 
     public function uploadPrescription(Request $request, $domain = '')
     {
-        // dd($request->prescriptions);
+        // dd($request->description);
         $user = Auth::user();
         $doc_name = 'prescription';
         $folderName = 'prescriptions';
+        $description = $request->description??null;
         if ($user) {
             if ($request->hasFile($doc_name)) {
                 $filePath = $folderName . '/' . Str::random(40);
@@ -126,17 +162,20 @@ class BidController extends FrontController
                 $orignal_name = $request->file($doc_name)->getClientOriginalName();
                 $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
                 $url = Storage::disk('s3')->url($file_name);
-                BidRequest::updateOrCreate(
-                    ['user_id' => $user->id],
-                    ['prescription' => $url]
+                BidRequest::Create(
+                    [   'user_id' => $user->id,
+                        'prescription' => $url,
+                        'description'=>$description,
+                        'bid_number'=>time()
+                    ]
                 );
             }
 
         }
 
-        $previousUrl = url('/index');
-        return redirect()->to($previousUrl.'?'. http_build_query(['success'=>'done']));
-        //return redirect()->back()->with(['status' => 'success', 'message' => "Uploaded Successfully"]);
+        // $previousUrl = url('/index');
+        // return redirect()->to($previousUrl.'?'. http_build_query(['success'=>'done']));
+        return redirect()->back()->with(['success' => "Uploaded Successfully"]);
     }
 
     public function getPrescription(Request $request){

@@ -598,9 +598,12 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
 
     //bidding system
-    Route::get('index', [BidController::class, 'index'])->name('bid.index');
-    Route::get('create', [BidController::class, 'create'])->name('bid.create');
+	Route::get('user/bidRequest', [BidController::class, 'index'])->name('user.bidRequest');
+	Route::POST('user/bidUpdatePdf', [BidController::class, 'uploadPrescription'])->name('bid.update_pdf');
+    Route::get('bidding/make', [BidController::class, 'index'])->name('bid.index');
+    Route::get('bid/accept/{id?}/{vid?}', [BidController::class, 'bidAccept'])->name('bid.accept');
     Route::post('store', [BidController::class, 'store'])->name('bid.store');
+    Route::get('bid/Details/{id?}', [BidController::class, 'bidDetails'])->name('bid.details');
     Route::post('add/bid/prescription', [BidController::class, 'uploadPrescription'])->name('bid.uploadPrescription');  //add bidding prescription
     Route::post('get/bid/prescription', [BidController::class, 'getPrescription'])->name('getPrescription'); //get bedding prescription
     Route::get('product-search', [BidController::class, 'search'])->name('searchProduct'); //vendor product search
