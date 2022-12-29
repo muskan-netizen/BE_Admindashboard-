@@ -1808,6 +1808,70 @@ body.al_body_template_two .box-account.box-info button.repeat-order-product.btn.
     float: none !important;
 }
 
+.al_body_template_three .alRentalSinglePageView .single_cart-temp_label label {
+    width: 45% !important;
+}
+
+.al_body_template_three .alRentalSinglePageView .single_cart-temp_label {
+    width: 100% !important;
+}
+
+.al_body_template_one .alRentalSinglePageView .single_cart-temp_label label {
+    width: 45% !important;
+}
+
+.al_body_template_one .alRentalSinglePageView .single_cart-temp_label {
+    width: 100% !important;
+}
+
+.al_body_template_two .alRentalSinglePageView .single_cart-temp_label label {
+    width: 45% !important;
+}
+
+.al_body_template_two .alRentalSinglePageView .single_cart-temp_label {
+    width: 100% !important;
+}
+
+.al_body_template_four .alRentalSinglePageView .single_cart-temp_label label {
+    width: 45% !important;
+}
+
+.al_body_template_four .alRentalSinglePageView .single_cart-temp_label {
+    width: 100% !important;
+}
+
+.al_body_template_six .alRentalSinglePageView .single_cart-temp_label label {
+    width: 45% !important;
+}
+
+.al_body_template_six .alRentalSinglePageView .single_cart-temp_label {
+    width: 100% !important;
+}
+
+.al_body_template_six .alRentalSinglePageView .single_product-input {
+    width: 100% !important;
+}
+
+.al_body_template_one .alRentalSinglePageView .single_product-input {
+    width: 100% !important;
+}
+
+.al_body_template_two .alRentalSinglePageView .single_product-input {
+    width: 100% !important;
+}
+
+.al_body_template_three .alRentalSinglePageView .single_product-input {
+    width: 100% !important;
+}
+
+.al_body_template_four .alRentalSinglePageView .single_product-input {
+    width: 100% !important;
+}
+
+.al_body_template_five .alRentalSinglePageView .single_product-input {
+    width: 100% !important;
+}
+
 
 /*------------template_1 css----------*/
 
