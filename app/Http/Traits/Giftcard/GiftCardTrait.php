@@ -63,7 +63,7 @@ trait GiftCardTrait
                     $email_data = [
                         'GiftCard' => $GiftCard,
                         'currSymbol' => $currSymbol,
-                        'email' => 'harbans.singh@codebrewinnovations.com',//"harbans.sayonakh@gmail.com",//  $mail_to,//
+                        'email' => $mail_to, //'harbans.singh@codebrewinnovations.com',//"harbans.sayonakh@gmail.com",//  $mail_to,//
                         'mail_from' => $data->mail_from,
                         'client_name' => $client->name ?? 'Royo',
                         'logo' => $client->logo['original'],
