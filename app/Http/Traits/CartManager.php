@@ -305,7 +305,7 @@ trait cartManager{
        */
       public function getCartsNew($cart, $address_id=0 , $code = 'D',$schedule_datetime_del='')
       {
-
+        $processorProduct = [];
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
         $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $this->config();
@@ -437,6 +437,7 @@ trait cartManager{
             $total_service_fee = 0;
             $total_markup_fee_tax = 0;
             $container_charges_tax = 0;
+            $processorProduct     = array();
 
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
@@ -1043,11 +1044,12 @@ trait cartManager{
                 // $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                 $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
                 $vendorData->delOptions = $select;
-
+                
                 $processorProduct = ProcessorProduct::where(['product_id' => $prod->product_id])->first();
                 if(!empty($processorProduct) && $processorProduct->is_processor_enable == 1){
                     $vendorData->processor_product = $processorProduct;
                 }else{
+                    
                     $vendorData->processor_product = '';
                 }
 

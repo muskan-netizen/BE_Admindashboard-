@@ -7588,9 +7588,10 @@ body .theme-card h5.title-border {
     letter-spacing: 0
 }
 
-.collection-collapse-block-content {
+
+/* .collection-collapse-block-content {
     padding: 0 20px
-}
+} */
 
 .name_location {
     margin-bottom: 20px;

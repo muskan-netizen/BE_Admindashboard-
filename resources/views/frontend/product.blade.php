@@ -308,9 +308,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
                                                     @if($additionalPreference ['is_token_currency_enable'])
-                                                        <b class="mr-1"><span class="product_fixed_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",","))}}</span></b>
+                                                        <b class="mr-1"><span class="product_fixed_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
                                                     @else
-                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
+                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier,2)}}</span></b>
                                                         @if($product->variant[0]->compare_at_price > 0 )
                                                             <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
                                                         @endif
@@ -351,7 +351,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
                                             {{-- Chat Button --}}
                                             <hr>
-                                            {{--@if(@$user_vendor->vendor_id &&  $vendor_info->id != $user_vendor->vendor_id)--}}
                                                 <h6 class="sold-by">
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
                                             
@@ -365,7 +364,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
                                             @endif
                                                 </h6>
-                                             {{--   @endif --}}
                                     @endif
 
 
@@ -612,40 +610,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                     </div>
 
                                 </div>
-                                @if( !is_category_p2p($product->category) )
-                                @if( !empty($coupon_list) )
-                                <div class="col-md-3">
-                                    <div class="aside_bar">
-                                        <h5>Available offers</h5>
-                                            <div class="discriptions">
-                                                @foreach($coupon_list as $m_key => $m_val)
-                                                <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
-                                                   <p> <small> Description :</small> <span>{{ $m_val['short_desc'] ?? '' }} </span> </p>
-                                                   
-                                                   <p>  <small>Coupon Type :  </small><span>{{ $m_val['promo_type_title'] ?? '' }} </span> </p>
-                                                   <p> 
-                                                    <small>
-                                                    @if($m_val['promo_type_id'] == 1)
-                                                         Amount : 
-                                                    @else
-                                                        Percentage : 
-                                                    @endif
-                                                    </small>
-                                                    <span>{{decimal_format($m_val['amount'])}}</span>
-                                                    </p>
-                                                    <hr>
-                                                @endforeach
-                                            </div>
-                                        
-                                        <!-- <form>
-                                            <div class="form-group">
-                                                <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
-                                                <button type="submit" class="btn btn-primary">Apply</button>
-                                            </div>
-                                        </form> -->
-                                    </div>
-                                </div>
-                            @endif
+                                @if( !is_category_p2p($product->category) && @$set_template->template_id == '8' )
+                                    @include('frontend.product-coupon')
                             @endif
                             </div>
                         </section>
@@ -988,7 +954,6 @@ $rePre = 'user/chat/userToUser';
 $fetchDe = 'fetchRoomByUserIdUserToUser';
 @endphp
 
-@section('script')
 <script>
     var to_message = `<?php echo $to_message; ?>`;
     var user_type = `<?php echo $user_type; ?>`;
@@ -999,11 +964,12 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var rePre = `<?php echo $rePre; ?>`;
     var fetchDe = `<?php echo $fetchDe; ?>`;
 </script>
+
+@endsection
+@section('js-script')
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 {{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
 <script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
-@endsection
-@section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>

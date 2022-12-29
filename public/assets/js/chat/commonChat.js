@@ -633,19 +633,16 @@
             if(response.status == 200) {
                 if(response.data.roomData.length > 0) {
                     var productSelected = '';
-                    await response.data.roomData.reverse().forEach(async function (data,i) 
+                    await response.data.roomData.reverse().forEach(async function (data,i) {
                         
                         if(data._id == user_room_id){
                             productSelected = data.product_id;
                         }
                    
                     var renderUserd = await renderUser(data);
+                    var last_message_name = data.chat_Data[0]!=undefined?data.chat_Data[0].username : '';
                     if(fetchDe=='fetchRoomByUserIdUserToUser'){
-                        
-                        var last_message_name = data.vendor_name!=undefined?(data.vendor_name + ' (' +   data.product_name +')' ): '';
-                    }else{
-                        
-                        var last_message_name = data.chat_Data[0]!=undefined?data.chat_Data[0].username : '';
+                        last_message_name = data.vendor_name!=undefined?(data.vendor_name + ' (' +   data.product_name +')' ): '';
                     }
                     var last_message =  data.chat_Data[0]!=undefined?data.chat_Data[0].message:'';
                     

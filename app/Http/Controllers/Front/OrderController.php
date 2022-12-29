@@ -1879,7 +1879,7 @@ class OrderController extends FrontController
         $notification_content = NotificationTemplate::where('id', 4)->first();
         if ($notification_content) {
             $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
-            dd($body_content);
+          //  dd($body_content);
             $data = [
                 "registration_ids" => $devices,
                 "notification" => [
