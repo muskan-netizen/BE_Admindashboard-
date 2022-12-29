@@ -36,10 +36,10 @@ class GiftcardController extends FrontController
         $GiftCard       = GiftCard::first();
         $code =$this->getGiftCardCode('harbans');
         $GiftCard->userCode =  $code;
-      
+        $mail_to_name = 'Harbans';
         $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
-        $res =  $this->GiftCardMail('harbans.singh@codebrewinnovations.com', $GiftCard ,Auth::user() ,$currSymbol);
-        pr( $res );
+        $res =  $this->GiftCardMail('harbans.singh@codebrewinnovations.com', $mail_to_name ,$GiftCard ,Auth::user() ,$currSymbol);
+        exit();
         $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',  'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_from) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
@@ -148,7 +148,8 @@ class GiftcardController extends FrontController
         }
         $GiftCard       = GiftCard::where('id', $gift_card_id)->first();
         $senderData = !empty($request->senderData) ? json_decode($request->senderData) : '';
-       $sendToMail = '';
+        $sendToMail = '';
+        $sendToName = (isset($senderData->send_card_to_name) && !empty($senderData->send_card_to_name) ) ?  $senderData->send_card_to_name : '';
         if(isset($senderData->send_card_to_email) && !empty($senderData->send_card_to_email)){
            $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
            $sendToMail =$senderData->send_card_to_email;
@@ -167,9 +168,10 @@ class GiftcardController extends FrontController
                 $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : ''; 
                 $UserGiftCard->save();
                 if($sendToMail != ''){
+                    Log::info('GiftCardMail');
                     $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
                     $GiftCard->userCode =  $code;
-                    $this->GiftCardMail($sendToMail, $GiftCard ,$user ,$currSymbol);
+                    $this->GiftCardMail($sendToMail,$sendToName, $GiftCard ,$user ,$currSymbol);
                 }
                 $payment                        = new Payment;
                 $payment->user_id               = $user->id;
