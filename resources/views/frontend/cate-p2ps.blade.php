@@ -11,7 +11,7 @@
 .main-fillter .side_fillter {
     background: transparent !important;
     border-top: 1px solid #D9D9D9;
-    margin-top: 18px !important;
+    /* margin-top: 18px !important; */
     overflow-y: auto !important;
     border-right: 1px solid #D9D9D9;
     height: 600px;
@@ -107,7 +107,7 @@
  .custom_filtter ul li a.active:after {
     content: '';
     background: #E9248D;
-    width: 70px;
+    width: 50px;
     height: 2px;
     position: absolute;
     left: 0;
