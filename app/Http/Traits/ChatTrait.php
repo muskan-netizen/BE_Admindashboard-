@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Traits;
-use App\Models\{Order,OrderVendor,UserDevice,ClientPreference};
+use App\Models\{Order,OrderVendor,UserDevice,ClientPreference, Product};
 use Auth;
 use GuzzleHttp\Client as GCLIENT;
 //use Log;
@@ -33,6 +33,26 @@ trait ChatTrait{
             },'vendors.vendor'
         ))->findOrFail($order_id);
         return  $order;
+    }
+
+    /**
+     * OrderVendorDetail
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function ProductDetail($request)
+    {
+        $data = $request->all();
+        $pid  = $data['product_id'];
+        $product = Product::with([
+        'category.categoryDetail', 'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell']);
+   
+        $product = $product->select('id', 'title', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min',  'is_long_term_service','service_duration');
+   
+        $product = $product->where('id', $pid)
+        ->first();
+        return  $product;
     }
     
     /**

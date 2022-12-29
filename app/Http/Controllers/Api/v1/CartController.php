@@ -79,7 +79,22 @@ class CartController extends BaseController
        
             if ($cart) {
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
-               
+                if(isset($cart->editingOrder) && !empty($cart->editingOrder))
+                {
+                    $editlimit_datetime = Carbon::now()->toDateTimeString();
+                    $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+                    $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+                    $cartData->cart_error_message = '';
+                    if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
+                        $cartData->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
+                    }
+                    $VendorOrderStatus = VendorOrderStatus::where('order_id', $cart->editingOrder->id)->whereNotIn('order_status_option_id', [1, 2])->count();
+                    if($VendorOrderStatus > 0){
+                        $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
+                    }
+                }else{
+                    $cartData->cart_error_message = '';
+                }
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
                                 $q->where('age_restriction',1);
@@ -160,10 +175,30 @@ class CartController extends BaseController
             if (!$productVariant) {
                 return $this->errorResponse(__('Invalid product variant.'), 404);
             }
+
+            $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $cart_detail = [
+                'is_gift' => 0,
+                'status' => '0',
+                'item_count' => 0,
+                'user_id' => $user->id,
+                'created_by' => $user->id,
+                'unique_identifier' => $unique_identifier,
+                'currency_id' => $client_currency->currency_id,
+            ];
+            if (!empty($user_id)) {
+                $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
+                $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+            } else {
+                $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
+                $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+            }
+
+            $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
             if(checkColumnExists('products','is_long_term_service') && $product->is_long_term_service !=1){
                 if ($product->category->categoryDetail->type_id == 8) {
                 } else {
-                    if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity && $product->has_inventory == 1) ) {
+                    if ( ($product->sell_when_out_of_stock == 0) && (($productVariant->quantity + $order_edit_qty) < $request->quantity && $product->has_inventory == 1) ) {
                         return $this->errorResponse('You Can not order more than ' . $productVariant->quantity . ' quantity.', 404);
                     }
                 }
@@ -228,21 +263,7 @@ class CartController extends BaseController
                     ], 404);
                 }
             }
-            $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
-            $cart_detail = [
-                'is_gift' => 0,
-                'status' => '0',
-                'item_count' => 0,
-                'user_id' => $user->id,
-                'created_by' => $user->id,
-                'unique_identifier' => $unique_identifier,
-                'currency_id' => $client_currency->currency_id,
-            ];
-            if (!empty($user_id)) {
-                $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
-            } else {
-                $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
-            }
+            
             /** delete is long term is added from cart */
             if($isLongTermService || ($isLongTermService ==1) ){
                 if(CartProduct::where('cart_id', $cart_detail->id)->count() > 1 ){
@@ -740,7 +761,7 @@ class CartController extends BaseController
                     }
                 }
 
-                $ttAddon = $payable_amount = $is_coupon_applied = $coupon_removed = 0;
+                $ttAddon = $payable_amount = $is_coupon_applied = $coupon_removed = $only_products_amount= 0;
                 $coupon_removed_msg = '';
                 $deliver_charge = 0;
                 $deliveryCharges = 0;
@@ -883,6 +904,7 @@ class CartController extends BaseController
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
                             $variantsData['quantity_container_charges'] = $quantity_container_charges;
+                            $only_products_amount += $quantity_price;
                             $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges; 
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
@@ -1068,7 +1090,6 @@ class CartController extends BaseController
                             if (isset($vendorData->coupon->promo->maximum_spend)) {
                                 $maximum_spend = $vendorData->coupon->promo->maximum_spend * $clientCurrency->doller_compare;
                             }
-
                             if( ($minimum_spend <= $payable_amount ) && ($maximum_spend >= $payable_amount)    )
                             {
                                 $dis_amt =0;
@@ -1078,8 +1099,8 @@ class CartController extends BaseController
                                    // $payable_amount -= $total_discount_percent;
                                     $discount_amount = $total_discount_percent;
                                 } else {
-                                    $dis_amt = $percentage_amount = ($payable_amount * $vendorData->coupon->promo->amount / 100);
-                                   // $payable_amount -= $percentage_amount;
+                                    $dis_amt = $percentage_amount = ($only_products_amount * $vendorData->coupon->promo->amount / 100);
+                                    // $payable_amount -= $percentage_amount;
                                     $discount_amount = $percentage_amount;
                                 }
 
@@ -1404,8 +1425,9 @@ class CartController extends BaseController
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
-        $cart->total_tax = decimal_format($total_taxable_amount + $total_fixed_fee_tax + $total_service_fee_tax + $deliver_fee_charges_tax + $total_markup_fee_tax + $container_charges_tax);
+        $cart->total_tax = decimal_format($total_fixed_fee_tax + $total_service_fee_tax + $deliver_fee_charges_tax + $total_markup_fee_tax + $container_charges_tax);
         $cart->tax_details = $tax_details;
+        $cart->total_taxable_amount = decimal_format($total_taxable_amount);
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
@@ -1428,7 +1450,7 @@ class CartController extends BaseController
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = ($total_paying  + $total_tax) - ($total_disc_amount + $loyalty_amount_saved); 
+            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) - ($total_disc_amount + $loyalty_amount_saved); 
         }
         if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
@@ -1464,7 +1486,7 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-        $cal_tip_value_total = ($cart->total_payable_amount - $cart->total_tax);  
+        $cal_tip_value_total =  $cart->total_tax;  
         $cart->tip = array(
             ['label' => '5%', 'value' => decimal_format(0.05 * $cal_tip_value_total)],
             ['label' => '10%', 'value' => decimal_format(0.1 * $cal_tip_value_total)],

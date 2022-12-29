@@ -158,7 +158,7 @@ $timezone = Auth::user()->timezone;
                                     @endIf
                                 </div>
                             </div>
-                           
+
                             @if (!in_array($order->luxury_option_id, [6, 8]) && $order->is_long_term !=1 )
                             @if (isset($order->vendors) &&
                             empty($order->vendors->first()->dispatch_traking_url) &&
@@ -752,34 +752,37 @@ $timezone = Auth::user()->timezone;
                 <p class="mb-2"><span class="fw-semibold me-2">{{ __('Address') }}:</span>
                     {{ $order->address ? $order->address->house_number . ',' : '' }}
                     {{ $order->address ? $order->address->address : '' }}
+                    {{ (isset($processorProduct) && !empty($processorProduct->address )) ?  $processorProduct->address : ''}}
+
                 </p>
                 @if (isset($order->address) && !empty($order->address->street))
-                <p class="mb-2"><span class="fw-semibold me-2">{{ __('Street') }}:</span>
-                    {{ $order->address ? $order->address->street : '' }}
-                </p>
+                    <p class="mb-2"><span class="fw-semibold me-2">{{ __('Street') }}:</span>
+                        {{ $order->address ? $order->address->street : '' }}
+                    </p>
                 @endif
                 <p class="mb-2"><span class="fw-semibold me-2">{{ __('City') }}:</span>
                     {{ $order->address ? $order->address->city : '' }}
                 </p>
                 @if (isset($order->address) && !empty($order->address->state))
-                <p class="mb-2"><span class="fw-semibold me-2">{{ __('State') }}:</span>
-                    {{ $order->address ? $order->address->state : '' }}
-                </p>
+                    <p class="mb-2"><span class="fw-semibold me-2">{{ __('State') }}:</span>
+                        {{ $order->address ? $order->address->state : '' }}
+                    </p>
                 @endif
-                <p class="mb-0"><span class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>
+                <p class="mb-0"><span
+                        class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>
                     {{ $order->address ? $order->address->pincode : '' }}
                 </p>
             </div>
             @if (isset($driver_data->name))
-            <div class="col-lg-6 card-body">
-                <h4 class="header-title mb-3">{{ __('Driver Information') }}</h4>
-                <p class="mb-2"><span class="fw-semibold me-2">{{ __('Name') }}:</span>
-                    {{ $driver_data->name ? $driver_data->name : '' }}
-                </p>
-                <p class="mb-2"><span class="fw-semibold me-2">{{ __('Contact Number') }}:</span>
-                    {{ $driver_data->phone ? $driver_data->phone : '' }}
-                </p>
-            </div>
+                <div class="col-lg-6 card-body">
+                    <h4 class="header-title mb-3">{{ __('Driver Information') }}</h4>
+                    <p class="mb-2"><span class="fw-semibold me-2">{{ __('Name') }}:</span>
+                        {{ $driver_data->name ? $driver_data->name : '' }}
+                    </p>
+                    <p class="mb-2"><span class="fw-semibold me-2">{{ __('Contact Number') }}:</span>
+                        {{ $driver_data->phone ? $driver_data->phone : '' }}
+                    </p>
+                </div>
             @endif
 
             @if (in_array(6, $vendor_order_status_option_ids))

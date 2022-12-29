@@ -1012,16 +1012,15 @@ trait OrderTrait{
                 endif;
                 foreach($orderdata->vendors as $ordervendorproducts):
                     //Order_vendors---------------
-                    //id, order_id, vendor_id, vendor_dinein_table_id, user_id, delivery_fee, status, coupon_id, coupon_code, taxable_amount, subtotal_amount, payable_amount, discount_amount, web_hook_code, admin_commission_percentage_amount, admin_commission_fixed_amount, coupon_paid_by, payment_option_id, dispatcher_status_option_id, order_status_option_id, created_at, updated_at, dispatch_traking_url, order_pre_time, user_to_vendor_time, reject_reason, service_fee_percentage_amount, cancelled_by, lalamove_tracking_url, shipping_delivery_type, courier_id, ship_order_id, ship_shipment_id, ship_awb_id, total_container_charges, accepted_by, driver_id, scheduled_date_time, schedule_slot, is_restricted, total_markup_price, fixed_fee, additional_price, fixed_service_charge_amount, toll_amount, return_reason_id, is_exchanged_or_returned, exchange_order_vendor_id
                     foreach($ordervendorproducts->products as $orderproduct):
                         //Order_vendor_products-------------
-                        //id, order_id, product_id, order_vendor_id, quantity, product_name, image, price, taxable_amount, vendor_id, created_by, variant_id, tax_category_id, created_at, updated_at, category_id, product_dispatcher_tag, schedule_type, scheduled_date_time, product_variant_sets, user_product_order_form, container_charges, markup_price, additional_increments_hrs_min, start_date_time, end_date_time, schedule_slot, dispatch_agent_id, incremental_price, total_booking_time, toll_price, product_delivery_fee, no_seats_for_pooling, is_cab_pooling, available_for_pooling
                         $cart_product_detail = [
                             'status'                        => '0',
                             'is_tax_applied'                => '1',
                             'created_by'                    => $user->id,
                             'cart_id'                       => $cart_data->id,
                             'quantity'                      => $orderproduct->quantity ?? 1,
+                            'order_quantity'                => $orderproduct->quantity ?? 1,
                             'vendor_id'                     => $ordervendorproducts->vendor_id,
                             'product_id'                    => $orderproduct->product_id,
                             'variant_id'                    => $orderproduct->variant_id,

@@ -28,6 +28,12 @@ class UserhomeController extends FrontController
     use ApiResponser, OrderTrait,ProductActionTrait, HomePageTrait;
     private $field_status = 2;
     public $cities = [];
+    public $additionalPreference =[];
+    
+    public function __construct(Request $request)
+    {
+     //   $this->additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency']);
+    }
 
 
     public function setTheme(Request $request)
@@ -590,7 +596,7 @@ class UserhomeController extends FrontController
      */
     public function postHomePageData(Request $request)
     {
-
+        $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service']);
         $vendor_ids = [];
         $new_products = [];
         $feature_products = [];
@@ -839,7 +845,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
+                'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
         }
@@ -857,7 +863,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $feature_product_detail->inquiry_only,
                 'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                 'vendor' => $feature_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply,',')),
+                'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$feature_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply,',')),
                 'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
             );
         }
@@ -876,7 +882,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $on_sale_product_detail->inquiry_only,
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
+                'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$on_sale_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (!empty($on_sale_product_detail->category) && !empty($on_sale_product_detail->category->categoryDetail) 
                 && !empty($on_sale_product_detail->category->categoryDetail->translation)) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
@@ -885,7 +891,7 @@ class UserhomeController extends FrontController
 
          //get long term service 
         $long_term_service_products =[];
-        if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
+        if( @$additionalPreference['is_long_term_service'] == 1){
             $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type,$p_dim);
         }
           
@@ -895,7 +901,7 @@ class UserhomeController extends FrontController
 
             $single_category_product_ids = $this->getSingleCategoryProducts(); // get single selected category's products
             $single_category_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $single_category_product_ids);
-            
+            // dd($single_category_products);
             $selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
             $selected_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $selected_product_ids);
 
@@ -1811,6 +1817,7 @@ class UserhomeController extends FrontController
 
     public function setSessionIndex(Request $request, $domain='')
     {
+        
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
 

@@ -157,11 +157,11 @@
             </div>
             <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter">
-                        <ul class="breadcrumb p-0 mb-2">
+                        <!-- <ul class="breadcrumb p-0 mb-2">
                             <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
                                 </span><span class="active">Healthcare Device</span></a>
                             </li>
-                        </ul>
+                        </ul> -->
                     <aside class="side_fillter">
                        
                     <!-- side-bar colleps block stat -->
@@ -411,13 +411,14 @@
                                             <ul>
                                                 <input type="hidden" name="order_type" id='order_type' class="sortingFilter" />
                                                 <li><span>{{__('Sort By:')}}</span></li>
+                                                <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="newly_added">{{__('Newest Arrivals')}}</a></li>
                                                 <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="featured">{{__('Featured')}}</a></li>
                                                 <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="a_to_z">{{__('A to Z')}}</a></li>
                                                 <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="z_to_a">{{__('Z to A')}}</a></li>
                                                 <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="low_to_high">{{__('Cost : Low to High')}}</a></li>
                                                 <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="high_to_low">{{__('Cost : High to Low')}}</a></li>
                                                 <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="rating">{{__('Avg. Customer Review')}}</a></li>
-                                                <li><a href="javascript:void(0)" class="sortingFilterOther" data-value="newly_added">{{__('Newest Arrivals')}}</a></li>
+                                                
                                             </ul>
                                         </div>
                                         <div class="product-wrapper-grid">
@@ -501,6 +502,10 @@
     @endif
 </script>
 <script>
+    $(document).ready(function() {
+        $('.sortingFilter').val('newly_added');
+        filterProducts();
+    });
     $(document).on("change",".attr_radio", function() {
         
         var parentClass = $(this).parent().prop('className');

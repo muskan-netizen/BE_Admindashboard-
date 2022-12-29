@@ -1459,7 +1459,7 @@
                                     </div>
                                 @endforeach
 
-                                <div class="col-md-4">
+                                <div class="form-group mb-2 mt-2">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="is_same_day_delivery_switch"
                                             class="mr-2 mb-0">{{ __('Same Day Delivery') }}<small
@@ -1476,7 +1476,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="form-group mb-2 mt-2">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="is_next_day_delivery_switch"
                                             class="mr-2 mb-0">{{ __('Next Day Delivery') }}<small
@@ -1493,7 +1493,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="form-group mb-2 mt-2">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="is_hyper_local_delivery_switch"
                                             class="mr-2 mb-0">{{ __('Hyper Local Delivery') }}<small
@@ -1510,7 +1510,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="form-group mb-2 mt-2">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="is_cod_payment_switch"
                                             class="mr-2 mb-0">{{ __('COD Payment') }}<small
@@ -1527,7 +1527,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="form-group mb-2 mt-2">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="is_prepaid_payment_switch"
                                             class="mr-2 mb-0">{{ __('Prepaid Payment') }}<small
@@ -1544,7 +1544,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="form-group mb-2 mt-2">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="is_partial_payment_switch"
                                             class="mr-2 mb-0">{{ __('Partial Payment') }}<small
@@ -2019,7 +2019,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                    <label for="db_audit_logs"
+                                    <label for="is_service_area_for_banners"
                                         class="mr-2 mb-0">{{ __('Service Area For Banners') }}<small
                                             class="d-block pr-5">{{ __('Enable service area for banners.') }}</small></label>
                                     <span> <input type="checkbox" data-plugin="switchery"
@@ -2067,7 +2067,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                    <label for="stop_order_acceptance_for_users"
+                                    <label for="is_price_by_role_switch"
                                         class="mr-2 mb-0">{{ __('Price By Role') }}<small
                                             class="d-block pr-5">{{ __("Enable to show price by role on edit's vendor screen.") }}</small></label>
                                     <span>
@@ -2084,7 +2084,7 @@
 
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                    <label for="stop_order_acceptance_for_users"
+                                    <label for="is_attribute_switch"
                                         class="mr-2 mb-0">{{ __('Attribute') }}<small
                                             class="d-block pr-5">{{ __('Enable to show attribute on catalog screen.') }}</small></label>
                                     <span>
@@ -2102,7 +2102,7 @@
                             @if (checkColumnExists('products', 'is_long_term_service'))
                                 <div class="col-md-4 ">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="is_long_term_service"
+                                        <label for="is_long_term_service_switch"
                                             class="mr-2 mb-0">{{ __('Long Term Service') }}<small
                                                 class="d-block pr-5">{{ __('Enable to add long term service.') }}</small></label>
                                         <span>
@@ -2312,7 +2312,7 @@
 
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                    <label for="is_tracking_url_switch"
+                                    <label for="is_tracking_url_sms_switch"
                                         class="mr-2 mb-0">{{ __('Tracking Url Sms Enable') }}<small
                                             class="d-block pr-5">{{ __('Enable to access guest customers to tracking url via sms otp.') }}</small></label>
                                     <span> <input type="checkbox" data-plugin="switchery"
@@ -2326,8 +2326,23 @@
                                         name="is_tracking_sms_url" id="is_tracking_sms_url" />
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                   <label for="is_place_order_delivery_zero_switch" class="mr-2 mb-0">{{__('Place Order To Dispatcher even if delivery fee is zero')}}<small class="d-block pr-5">{{__("Enable to place order To dispatcher even if delivery fee is zero.")}}</small></label>
+                                  <span> <input type="checkbox" data-plugin="switchery" name="is_place_order_delivery_zero_switch" id="is_place_order_delivery_zero_switch" class="form-control checkbox_change" data-className="is_place_order_delivery_zero"  data-color="#43bee1" @if( @getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'] == '1') checked='checked' @endif>
+                                   </span>
+                                   <input type="hidden"  @if(@getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'] == 1) value="1" @else value="0" @endif  name="is_place_order_delivery_zero"  id="is_place_order_delivery_zero"/>
+                                </div>
+                            </div>
 
-
+                            <div class="col-md-4">
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                   <label for="is_cust_success_signup_email_switch" class="mr-2 mb-0">{{__('Customer Successfull Signup Email')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
+                                  <span> <input type="checkbox" data-plugin="switchery" name="is_cust_success_signup_email_switch" id="is_cust_success_signup_email_switch" class="form-control checkbox_change" data-className="is_cust_success_signup_email"  data-color="#43bee1" @if( @getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == '1') checked='checked' @endif>
+                                   </span>
+                                   <input type="hidden"  @if(@getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == 1) value="1" @else value="0" @endif  name="is_cust_success_signup_email"  id="is_cust_success_signup_email"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
