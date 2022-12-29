@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Api\v1;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
-use Session,Auth,DB,Timezonelist;
+use Session,Auth,DB,Timezonelist,Log;
 use App\Http\Traits\Giftcard\GiftCardTrait;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;

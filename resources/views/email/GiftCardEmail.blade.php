@@ -36,7 +36,7 @@
             text-align: left;
          }
          table th,table td{
-            padding: 10px 30px;
+            padding: 2px 2px;
             border: 0 !important;
          }
          ul {
