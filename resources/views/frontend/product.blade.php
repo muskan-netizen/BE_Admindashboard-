@@ -351,7 +351,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
                                             {{-- Chat Button --}}
                                             <hr>
-                                            {{--@if(@$user_vendor->vendor_id &&  $vendor_info->id != $user_vendor->vendor_id)--}}
                                                 <h6 class="sold-by">
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
                                             
@@ -365,7 +364,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
                                             @endif
                                                 </h6>
-                                             {{--   @endif --}}
                                     @endif
 
 
@@ -614,7 +612,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                 </div>
                                 @if( !is_category_p2p($product->category) && @$set_template->template_id == '8' )
                                     @include('frontend.product-coupon')
-                                @endif
+                            @endif
                             </div>
                         </section>
                         <div class="row mt-1">
@@ -956,7 +954,6 @@ $rePre = 'user/chat/userToUser';
 $fetchDe = 'fetchRoomByUserIdUserToUser';
 @endphp
 
-@section('script')
 <script>
     var to_message = `<?php echo $to_message; ?>`;
     var user_type = `<?php echo $user_type; ?>`;
@@ -967,11 +964,12 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var rePre = `<?php echo $rePre; ?>`;
     var fetchDe = `<?php echo $fetchDe; ?>`;
 </script>
+
+@endsection
+@section('js-script')
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 {{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
 <script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
-@endsection
-@section('js-script')
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>

@@ -3452,6 +3452,10 @@ body.al_body_template_one .product-card-box.position-relative.alInnerBox {
     padding: 0 10px;
 }
 
+.al_body_template_three .displayProducts .product-card-box ul.timing-box_al li {
+    margin: 10px 0;
+}
+
 
 /*-----all template using read more css------*/
 
