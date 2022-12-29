@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail; 
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{GiftCard,UserGiftCard,User, Cart, ClientPreference, Client, ClientCurrency , Payment, PaymentOption};
+    use App\Models\{GiftCard,UserGiftCard,User, Cart, ClientPreference, Client, ClientCurrency , Payment, PaymentOption};
 
 class GiftcardController extends FrontController
 {
@@ -32,7 +32,14 @@ class GiftcardController extends FrontController
         }
     }
     public function textGiftMail(){
+
         $GiftCard       = GiftCard::first();
+        $code =$this->getGiftCardCode('harbans');
+        $GiftCard->userCode =  $code;
+      
+        $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
+        $res =  $this->GiftCardMail('harbans.singh@codebrewinnovations.com', $GiftCard ,Auth::user() ,$currSymbol);
+        pr( $res );
         $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',  'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_from) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
@@ -55,6 +62,8 @@ class GiftcardController extends FrontController
             //dispatch(new \App\Jobs\GiftCardEmailJob($email_data))->onQueue('verify_email');
         }
     }
+
+   
 
     /**
      * get user subscriptions.
@@ -139,23 +148,29 @@ class GiftcardController extends FrontController
         }
         $GiftCard       = GiftCard::where('id', $gift_card_id)->first();
         $senderData = !empty($request->senderData) ? json_decode($request->senderData) : '';
-       
+       $sendToMail = '';
         if(isset($senderData->send_card_to_email) && !empty($senderData->send_card_to_email)){
-           // pr($senderData->send_card_to_email);
-           
+           $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
+           $sendToMail =$senderData->send_card_to_email;
+           $this->GiftCardMail($senderData->send_card_to_email, $GiftCard ,$user ,$currSymbol);
         }
        // pr( $request->all());
         if( $GiftCard ){
             if(Payment::where('transaction_id',$request->transaction_id)->count() ==0){
+                $code =$this->getGiftCardCode($GiftCard->title);
                 $UserGiftCard               = new UserGiftCard();
                 $UserGiftCard->user_id      = $user->id;
                 $UserGiftCard->gift_card_id = $GiftCard->id;
                 $UserGiftCard->amount       = $GiftCard->amount;
                 $UserGiftCard->expiry_date  = $GiftCard->expiry_date;
-                $UserGiftCard->gift_card_code = $this->getGiftCardCode($GiftCard->title);
+                $UserGiftCard->gift_card_code = $code;
                 $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : ''; 
                 $UserGiftCard->save();
-    
+                if($sendToMail != ''){
+                    $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
+                    $GiftCard->userCode =  $code;
+                    $this->GiftCardMail($sendToMail, $GiftCard ,$user ,$currSymbol);
+                }
                 $payment                        = new Payment;
                 $payment->user_id               = $user->id;
                 $payment->balance_transaction   = $request->amount;
