@@ -1801,6 +1801,7 @@ body.al_body_template_two .box-account.box-info .btn-solid {
 
 body.al_body_template_two .box-account.box-info .btn.btn-solid {
     padding: 6px 15px !important;
+    font-size: 12px;
 }
 
 body.al_body_template_two .box-account.box-info button.repeat-order-product.btn.btn-solid.mr-2 {
@@ -1809,6 +1810,10 @@ body.al_body_template_two .box-account.box-info button.repeat-order-product.btn.
 
 
 /*------------template_1 css----------*/
+
+body.al_body_template_one section.section-b-space.ratio_asos.alPageSearchView .product-box.scale-effect.mt-0 {
+    box-shadow: none;
+}
 
 body.al_body_template_one .row.mobile-header.align-items-center.justify-content-between.my-sm-2 {
     margin: 0 !important;

@@ -124,7 +124,7 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                                     @foreach($listData as $key => $result)
                                     @if(@$result['title'])
                                     <div class="row margin-res">
-                                    <div class="col-md-12 col-12 col-grid-box mt-3">
+                                    <div class="col-md-12 col-12 mt-3">
                                         <!-- <div class="product-box scale-effect mt-0">
                                             
                                             <div class="product-detail"> -->

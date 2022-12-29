@@ -1031,7 +1031,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                 </li>
                                @endif
                         </ul>
-                        <div class=" col-sm-10 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
+                        <div class=" col-sm-12 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="{{(($cart_details->schedule_type == 'schedule') ? '' : 'display:none!important')}}">
 
 
                         @if($cart_details->slotsCnt == 0)
