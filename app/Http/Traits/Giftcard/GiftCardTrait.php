@@ -4,7 +4,7 @@ namespace App\Http\Traits\Giftcard;
 
 use App\Models\{UserGiftCard ,ClientPreference, Client,EmailTemplate};
 use Carbon\Carbon;
-use Session, DB , Authm,Log;
+use Session, DB , Auth,Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail; 
 
