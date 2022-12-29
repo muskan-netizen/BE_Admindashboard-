@@ -769,8 +769,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                 <div class="row">
                     <div class="col-12 alFourSpecificInstructions mt-2">
                         <span class="pb-1"> {{__('Gift Card')}}</span>
+                        {{-- http://local.myorder.com/assets/images/discount_icon.svg --}}
                        <div class="order-user-name">
-                            <p class="mb-0"><img class="blur-up lazyloaded" data-src="http://local.myorder.com/assets/images/discount_icon.svg" src="http://local.myorder.com/assets/images/discount_icon.svg"> {{ $cart_details->gift_card->title }}</p>
+                            <p class="mb-0"><img class="blur-up lazyloaded" data-src="{{asset('assets/images/discount_icon.svg')}}" src="{{asset('assets/images/discount_icon.svg')}}"> {{ $cart_details->gift_card->title }}</p>
                             <a href="javascript:void(0);" data-giftcard_id='{{ $cart_details->gift_card->id }}' class="float-right remove_giftCard"> <i class="fa fa-times" aria-hidden="true"></i></a>
                        </div>
                     </div>
