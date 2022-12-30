@@ -14,7 +14,7 @@ class AddQuantityToProductVariantByRoles extends Migration
     public function up()
     {
         Schema::table('product_variant_by_roles', function (Blueprint $table) {
-            $table->integer('quantity')->nullable();
+             $table->integer('quantity')->nullable();
         });
     }
 

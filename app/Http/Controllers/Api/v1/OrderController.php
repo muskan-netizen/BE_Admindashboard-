@@ -197,6 +197,7 @@ class OrderController extends BaseController
 
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+
                     $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon','vendorProducts.productVariantByRoles')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
@@ -317,7 +318,7 @@ class OrderController extends BaseController
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
-                            // @dd($vendor_cart_product->productVariantByRoles);
+                            // @dd($vendor_cart_product->productVariantByRoles); 
                             if( !empty($vendor_cart_product->slot_price) ) {
                                 $slot_based_price += $vendor_cart_product->slot_price;
                             }

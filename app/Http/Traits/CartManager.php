@@ -346,7 +346,7 @@ trait cartManager{
             'vendor','vendor.slots','vendor.slot.day', 'vendor.slotsForPickup', 'vendor.slotsForDropoff', 'vendor.slotDate',  'coupon' => function ($qry) use ($cart_id) {
                 $qry->where('cart_id', $cart_id);
             }, 'vendorProducts.pvariant.media.pimage.image', 'vendorProducts.product.media.image',
-            'vendorProducts.productDeliverySlot','vendorProducts.productVariantByRoles',
+            'vendorProducts.productDeliverySlot', 'vendorProducts.productVariantByRoles',
             'vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
@@ -636,6 +636,7 @@ trait cartManager{
                     if ((@Auth::user()->role_id == 3)) {
                         $quantity_role_price = $this->calculatePrice($prod->productVariantByRoles, $prod->quantity);
                     }
+
                     if(@$quantity_role_price['quantity_price'] != 0 ) {
                             $quantity_price = $quantity_role_price['quantity_price'];
                     } else {
@@ -1462,6 +1463,7 @@ trait cartManager{
     function calculatePrice($productVariantByRoles, $prodQuantity) {
         $quantity_price = 0;
         $current_price = 0;
+        
         if( ( Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) && !empty($productVariantByRoles))  {
             $amount = 0;
             $quantity = 0;

@@ -994,7 +994,7 @@ class OrderController extends FrontController
             }
 
             /* Get all products blongs to cart */
-            $cart_products = CartProduct::select('*')->with(['vendor', 'vendor.slot.geos.serviceArea', 'vendor.slotDate.geos.serviceArea',  'product.pimage', 'product.variants', 'product.taxCategory.taxRate','vendorProducts.productVariantByRoles', 'coupon' => function ($query) use ($cart) {
+            $cart_products = CartProduct::select('*')->with(['vendor', 'vendor.slot.geos.serviceArea', 'vendor.slotDate.geos.serviceArea',  'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'vendorProducts.productVariantByRoles', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
             }, 'coupon.promo', 'product.addon','LongTermProducts.addons'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
 
@@ -1073,6 +1073,7 @@ class OrderController extends FrontController
         
                 foreach ($vendor_cart_products as $vendor_cart_product) {
                     // @dd($vendor_cart_product->productVariantByRoles);
+
                     if( !empty($vendor_cart_product->slot_price) ) {
                         $slot_based_price += $vendor_cart_product->slot_price;
                     }
@@ -1110,6 +1111,7 @@ class OrderController extends FrontController
                     $price_container_charges = $variant->container_charges;
                     $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
                     $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
+
                     if ( (Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) ) {
                         $quantity_role_price = $this->calculatePrice($vendor_cart_product->productVariantByRoles, $vendor_cart_product->quantity);
                     }
@@ -3496,8 +3498,10 @@ class OrderController extends FrontController
         $quantity_price = 0;
         $current_price = 0;
         if( ( Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) && !empty($productVariantByRoles))  {
+
             $amount = 0;
             $quantity = 0;
+            
             foreach($productVariantByRoles->reverse() as $inn_key => $inn_val) {
                 if($inn_val->role_id == Auth::user()->role_id ) {
                     if($quantity < $inn_val->quantity && $inn_val->quantity <= $prodQuantity) {

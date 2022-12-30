@@ -244,6 +244,7 @@ class ProductController extends FrontController{
                 $product_page = "product";
             }
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
+            
             $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles']);
             if( !empty($product->category->category_id) ) {
                 $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);

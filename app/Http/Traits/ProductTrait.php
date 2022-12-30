@@ -48,7 +48,7 @@ trait ProductTrait{
                 $q2->where('apt.language_id', $langId);
             },
             'category.categoryDetail.allParentsAccount',
-            'ServicePeriod','productVariantByRoles',
+            'ServicePeriod', 'productVariantByRoles',
             
         ];
         

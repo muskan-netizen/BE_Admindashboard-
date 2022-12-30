@@ -27,6 +27,7 @@ class AddProductVariantByRoleIdToCartProductsTable extends Migration
      */
     public function down()
     {
+        
         Schema::table('cart_products', function (Blueprint $table) {
             $table->dropColumn('product_variant_by_role_id');
         });

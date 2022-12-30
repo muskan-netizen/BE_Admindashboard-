@@ -80,6 +80,7 @@ class ProductVariant extends Model
 
     public function productVariantByRole(){
         if(auth()->user() !=null){
+
             return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', Auth::user()->role_id);
         }else{
             return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', 1);
@@ -129,6 +130,7 @@ class ProductVariant extends Model
 
         //  price based on role
         if(auth()->user() !=null){
+
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
             if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
                 return $this->productVariantByRole->amount;
@@ -168,6 +170,7 @@ class ProductVariant extends Model
             return $value + $this->markup_price??0;
         }
 
+        
         //  price based on role
         if(auth()->user() !=null){
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);

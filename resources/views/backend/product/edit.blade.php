@@ -417,6 +417,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                         @foreach ($roles as $key => $_role)
                                             @if( $_role['role'] === 'Corporate_user')
                                                 <div class="col-12">
+                                                    
                                                     <div class="field_wrapper">
                                                         @foreach ($product->productVariantByRoles as $role)
                                                             @if($role->role_id == 3)

@@ -523,6 +523,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <div class="border-product">
                                                 <h6 class="product-title">{{ __('Bulk Order')}}</h6>
                                                 <div id="bulk-order-table">
+                                                    
                                                     @foreach ($product->productVariantByRoles as $key => $data)
                                                         @if($data->role_id == 3)
                                                             <h6 bulk_id="{{$data->id}}" class="header-title productAddonSet mb-1">{{__('Greater than or equal to quantity ').$data->quantity.' ( price '.Session::get('currencySymbol').''.$data->amount.' )'}}

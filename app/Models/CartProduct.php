@@ -82,6 +82,6 @@ class CartProduct extends Model{
     }
 
     public function productVariantByRoles(){
-      return $this->hasMany('App\Models\ProductVariantByRole','product_id','product_id');
+       return $this->hasMany('App\Models\ProductVariantByRole','product_id','product_id');
     }
 }

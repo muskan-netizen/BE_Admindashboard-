@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons,DeliverySlot, Pincode};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq,ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons,DeliverySlot, Pincode};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -182,7 +182,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
+        $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities', 'productVariantByRoles'];
         if( checkTableExists('product_attributes') ) {
             $with_array[] = 'ProductAttribute';
         }
@@ -635,10 +635,12 @@ class ProductController extends BaseController
                             $product_variant_by_roles[$key]['quantity'] = $minimum_order_count[$key];
                         }
                     }
+
                     $delete = ProductVariantByRole::where('product_id', $product->id)->where('role_id', 3)->delete();
                     foreach($product_variant_by_roles as $key => $data){
                         ProductVariantByRole::create($data);
                     }
+
                 }
 
 
@@ -695,6 +697,7 @@ class ProductController extends BaseController
                     // Save Product Variant By Roles without product_variant_id and amount
                     // Product Variant By Roles (START)
                     if( $request->has('role_id') && !$request->has('corporate_user_price') && !$request->has('minimum_order_count_corporate_user')){
+                        
                         foreach ($request->role_id as $key => $value) {
                             $productVariantByRole = ProductVariantByRole::where('product_id', $product->id)->where('role_id',$value)->first();
                             if (!$productVariantByRole) {
@@ -1427,6 +1430,7 @@ class ProductController extends BaseController
     {
         try{
             if($request->has('role_id')){
+                
                 foreach ($request->role_id as $key => $value) {
                     $productVariantByRole = ProductVariantByRole::where('product_id', $request->product_id)->where('product_variant_id',$request->variant_id)->where('role_id',$value)->first();
                     if (!$productVariantByRole) {
