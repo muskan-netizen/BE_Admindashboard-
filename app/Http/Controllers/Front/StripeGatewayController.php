@@ -385,7 +385,7 @@ class StripeGatewayController extends FrontController
                 // $request = new Request(['payment_option_id' => 4, 'user_id' => $user->id,  'amount' => $amount, 'transaction_id' => $transactionId,'senderData'=>$senderData]);
                 
                 // $subscriptionController = new GiftcardController();
-                // $subscriptionController->purchaseGiftCard($request, '', $gift_card_id);
+                /// $subscriptionController->purchaseGiftCard($request, '', $gift_card_id);
                 $message = __('Your giftCard has been activated successfully.');
                 $returnUrl = route('giftCard.index');
             }
