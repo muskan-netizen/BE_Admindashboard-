@@ -119,39 +119,43 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                                     </div>
                                 </div>
                                 @endif
-                                <div class="row margin-res">
+                                
                                     @if(!empty($listData))
                                     @foreach($listData as $key => $result)
                                     @if(@$result['title'])
-                                    <div class="col-md-12 col-12 col-grid-box mt-3">
-                                        <div class="product-box scale-effect mt-0">
+                                    <div class="row margin-res">
+                                    <div class="col-md-12 col-12 mt-3">
+                                        <!-- <div class="product-box scale-effect mt-0">
                                             
-                                            <div class="product-detail">
-                                                <div class="inner_spacing">
+                                            <div class="product-detail"> -->
+                                                <div class="inner_spacing search-heading">
                                                         <h3>{{__($result['title'])}}</h3>
-                                                </div>
-                                            </div>
+                                                <!-- </div>
+                                            </div> -->
                                         </div>
+                                    </div>
                                     </div>
                                     @endif
-                                    @foreach($result['result'] as $data)
-                                    <div class="col-md-2 col-6 col-grid-box mt-3">
-                                        <div class="product-box scale-effect mt-0">
-                                            <div class="img-wrapper">
-                                                <div class="front">
-                                                    <a href="{{$data['redirect_url']}}"><img class="img-fluid blur-up lazyload" src="{{$data['image_url']}}" alt=""></a>
+                                    <div class="row margin-res mt-3">
+                                        @foreach($result['result'] as $data)
+                                        <div class="col-md-2 col-6 col-grid-box mt-3">
+                                            <div class="product-box scale-effect mt-0">
+                                                <div class="img-wrapper">
+                                                    <div class="front">
+                                                        <a href="{{$data['redirect_url']}}"><img class="img-fluid blur-up lazyload" src="{{$data['image_url']}}" alt=""></a>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="product-detail">
-                                                <div class="inner_spacing">
-                                                    <a href="{{$data['redirect_url']}}">
-                                                        <h3>{{__($data['name'])}}</h3>
-                                                    </a>
+                                                <div class="product-detail">
+                                                    <div class="inner_spacing">
+                                                        <a href="{{$data['redirect_url']}}">
+                                                            <h3>{{__($data['name'])}}</h3>
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        @endforeach
                                     </div>
-                                    @endforeach
                                     @endforeach
                                     @else
                                     <div class="col-xl-12 col-12 mt-4">

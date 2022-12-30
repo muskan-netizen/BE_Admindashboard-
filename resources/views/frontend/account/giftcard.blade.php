@@ -84,7 +84,7 @@ form#giftCard_payment_form input.form-control {
                         <div class="row">
                           
                             @if(!empty($active_giftcards))
-                            @foreach ($active_giftcards  as $active_giftcard)
+                            @forelse ($active_giftcards  as $active_giftcard)
                             
                             <div class="col-12 mb-4">
                                 <div class="card subscript-box">
@@ -120,12 +120,12 @@ form#giftCard_payment_form input.form-control {
                                     
                                 </div>
                             </div>
-                                
-                            @endforeach
-                            @else
+                            @empty
                             <div class="no_gift text-center py-3 col-12">
                                 <h4>{{ __('You dont have Gift Card') }}</h4>
                             </div>
+                            @endforelse
+                           
                             @endif
                             <div class="page-title col-12">
                                 <h2>{{ __('Gift Card List') }}</h2>
@@ -153,6 +153,10 @@ form#giftCard_payment_form input.form-control {
                                     </div>
                                 </div>
                                 @endforeach
+                            @else
+                            <div class="no_gift text-center py-3 col-12">
+                                <h4>{{ __('Empty Gift Card') }}</h4>
+                            </div>    
                             @endif
                         </div>
                     </div>

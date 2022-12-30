@@ -201,7 +201,7 @@
                                     </div>
                                     <div class="displayProducts">
                                         <div class="product-wrapper-grid card-product">
-                                            <div class="row margin-res mt-3">
+                                            <div class="row margin-res">
                                                 @if(!empty($category->childs) && count($category->childs) > 0)
                                                     @foreach($category->childs->toArray() as $cate)
                                                     <div class="col-md-3 col-6 col-grid-box">
