@@ -95,12 +95,15 @@ class EmailTemplateSeeder extends Seeder{
                 'tags' => '{name},{client_name}', 
                 'content'=>'<table style="width: 100%; background-color:#fff;"> <thead> <tr> <th colspan="2" style="text-align: center;"> <a style="display: block;margin-bottom: 10px;" href="#"><img src="images/logo.png" alt=""> </a> <h3 style="margin: 0 0 10px;font-weight:400;">Hi {name}</h1> <p style="margin: 0 0 20px;font-weight:300;">Thanks for signing up with {client_name}. We are delighted to serve you. </p> </th> </tr> </thead>  <tr> <td colspan="2" style="padding: 0;"> <table style="width:100%;"> <tbody>  </tbody> <tfoot> <tr> <td colspan="2" style="background-color: #8142ff;color: #fff; border-top: 1px solid rgb(221 221 221 / 41%);text-align: center;"> <b>Powered By Royo</b> </td> </tr> </tfoot> </table> </td> </tr> </tbody> </table> </td> </tr> </tbody></table>'
             ],
+            [
+                'tags' => '{GiftCard},{customer_name},{sender_name},{gift_amount}',
+                'label' =>'GiftCard',
+                'subject' => 'Gift Card',
+                'content' => '<tbody><tr><td><table style="background-color: #f2f3f8; max-width:670px; margin:0 auto;" width="100%" border="0" align="center" cellpadding="0" cellspacing="0"><tr><td><table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);"><tr><td style="height:20px;">&nbsp;</td></tr><tr><td style="padding:0 35px;"> <h1 style="color:rgb(51,51,51);font-weight:500;line-height:27px;font-size:21px">Hello {customer_name}</h1><span style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span><p style="color:#455056; font-size:15px;line-height:24px; margin:0;"> A gift from {sender_name}: for an amount of {gift_amount} has been presented to you.<br>
+                {GiftCard}</p></td></tr><tr><td style="height:20px;">&nbsp;</td></tr></table></td><tr><td style="height:20px;">&nbsp;</td></tr></table></td></tr></tbody>'
+            ],
         ];
-        /* EmailTemplate::truncate();
-        foreach ($create_array as $key => $array) {
-            EmailTemplate::create(['label' => $array['label'], 'slug' => Str::slug($array['label'], "-"),'content' => $array['content'], 'subject' => $array['subject'], 'tags' => $array['tags']]);
-        } */
-
+     
         foreach ($create_array as $key => $array) {
             $slug = Str::slug($array['label'], "-");
             if(!EmailTemplate::where('slug', $slug)->exists()){

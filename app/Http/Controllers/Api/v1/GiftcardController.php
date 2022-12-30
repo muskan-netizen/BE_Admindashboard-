@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Api\v1;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
-use Session,Auth,DB,Timezonelist;
+use Session,Auth,DB,Timezonelist,Log;
 use App\Http\Traits\Giftcard\GiftCardTrait;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -64,21 +64,29 @@ class GiftcardController extends BaseController
         }
         $GiftCard       = GiftCard::where('id', $gift_card_id)->first();
         $senderData = !empty($request->senderData) ? json_decode($request->senderData) : '';
-       
-        if(isset($senderData->send_card_to_email) && !empty($senderData->send_card_to_email)){
-           // pr($senderData->send_card_to_email);
-           
-        }
+
+        $sendToMail = (isset($senderData->send_card_to_email) && !empty($senderData->send_card_to_email) ) ?  $senderData->send_card_to_email : '';
+        $sendToName = (isset($senderData->send_card_to_name) && !empty($senderData->send_card_to_name) ) ?  $senderData->send_card_to_name : '';
+     
        // pr( $request->all());
         if( $GiftCard ){
+            $code =$this->getGiftCardCode($GiftCard->title);
             $UserGiftCard               = new UserGiftCard();
             $UserGiftCard->user_id      = $user->id;
             $UserGiftCard->gift_card_id = $GiftCard->id;
             $UserGiftCard->amount       = $GiftCard->amount;
             $UserGiftCard->expiry_date  = $GiftCard->expiry_date;
+            $UserGiftCard->gift_card_code = $code;
             $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : ''; 
             $UserGiftCard->save();
-
+            if($sendToMail != ''){
+                $currency_id = isset($user->currency) ? $user->currency : 1;
+                Log::info('GiftCardMail');
+                $clientCurrency = ClientCurrency::where('currency_id', $currency_id )->first();
+                $currSymbol = (isset($clientCurrency->currency->symbol)) ? $clientCurrency->currency->symbol : '$';
+                $GiftCard->userCode =  $code;
+                $this->GiftCardMail($sendToMail,$sendToName, $GiftCard ,$user ,$currSymbol);
+            }
             $payment                        = new Payment;
             $payment->user_id               = $user->id;
             $payment->balance_transaction   = $request->amount;
