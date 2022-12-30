@@ -46,7 +46,6 @@ class CartProduct extends Model{
     public function currency(){
       return $this->hasOne('App\Models\Currency', 'vendor_id', 'vendor_id');
     }
-
     public function productDeliverySlot(){
       return $this->belongsTo('App\Models\DeliverySlot', 'slot_id', 'id');
     }
