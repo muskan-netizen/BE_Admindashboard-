@@ -196,12 +196,12 @@ body.al_body_template_nine.p2p-module .product-buttons {
 }
 
 .p2p-module .custom_filtter ul li a.active {
-    color: #E9248D !important;
+    color: var(--theme-deafult) !important;
 }
 
 .p2p-module .custom_filtter ul li a.active:after {
     content: '';
-    background: #E9248D;
+    background: var(--theme-deafult);
     width: 70px;
     height: 2px;
     position: absolute;
