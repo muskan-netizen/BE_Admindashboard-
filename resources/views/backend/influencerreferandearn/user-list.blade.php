@@ -152,7 +152,7 @@ div#kycmodal div#kycData span:last-child {
     <div class="modal-dialog modal-dialog-centered  modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">{{ __("Edit ".getNomenclatureName('Attribute')) }}</h4>
+                <h4 class="modal-title">{{ __(getNomenclatureName('KYC')) }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="outter-loader d-none">
