@@ -13,6 +13,7 @@ class CreateDeliverySlotsTable extends Migration
      */
     public function up()
     {
+        
         Schema::create('delivery_slots', function (Blueprint $table) {
             $table->id();
             $table->string('title');
