@@ -110,7 +110,7 @@
                                     @endphp
                                     @if($getAdditionalPreference['is_corporate_user'] == 1)
                                         <div class="col-sm-12 custom_select mb-2">
-                                            {!! Form::label('title', __('Role Type'),['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __(' Role Type'),['class' => 'control-label']) !!}
                                             <select class="selectizeInput form-control" id="role_id" name="role_id">
                                                 <option value="">Select Role</option>
                                                 <option value="1">Buyer</option>
