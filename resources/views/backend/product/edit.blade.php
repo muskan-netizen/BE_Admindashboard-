@@ -415,7 +415,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 <div class="row mb-2">
                                     @if (isset($roles))
                                         @foreach ($roles as $key => $_role)
-                                            @if($_role['role'] === 'Corporate_user')
+                                            @if( $_role['role'] === 'Corporate_user')
                                                 <div class="col-12">
                                                     <div class="field_wrapper">
                                                         @foreach ($product->productVariantByRoles as $role)
@@ -931,7 +931,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                         $label_min = 'Minimum Order Count ['.$role->role.']';
                                         $input_min = 'minimum_order_count['.$role->role.']';
                                     @endphp
-                                    @if($role->role != 'Corporate_user')
+                                    @if( $role->role != 'Corporate_user')
                                         <div class="col-md-6 mb-2">
                                             {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
 
@@ -2333,7 +2333,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             var maxField = 10; //Input fields increment limitation
             var addButton = $('.add_button'); //Add button selector
             var wrapper = $('.field_wrapper'); //Input field wrapper
-            var fieldHTML = '<div class="row corporate-row"><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" id="corporate_user_price" onkeyup="isNumberKey(event)" placeholder="Corporate User Price" name="corporate_user_price[]" value=""></div></div><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="Quantity" name="minimum_order_count_corporate_user[]" value=""></div></div><div class="col-md-2"><a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a></div></div>'; //New input field html 
+            var fieldHTML = '<div class="row corporate-row"><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" id="corporate_user_price" onkeyup="isNumberKey(event)" placeholder="Corporate User Price"  name="corporate_user_price[]" value=""></div></div><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="Quantity" name="minimum_order_count_corporate_user[]" value=""></div></div><div class="col-md-2"><a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a></div></div>'; //New input field html 
             var x = $("div.corporate-row").length; //Initial field counter is 1
             
             //Once add button is clicked

@@ -622,7 +622,7 @@ class ProductController extends BaseController
 
 
                 
-                if ($request->has('corporate_user_price') && $request->has('minimum_order_count_corporate_user')) {
+                if ( $request->has('corporate_user_price') && $request->has('minimum_order_count_corporate_user')) {
                     $corporate_user_price   = $request->corporate_user_price;
                     $minimum_order_count    = $request->minimum_order_count_corporate_user;
 
@@ -694,7 +694,7 @@ class ProductController extends BaseController
 
                     // Save Product Variant By Roles without product_variant_id and amount
                     // Product Variant By Roles (START)
-                    if($request->has('role_id') && !$request->has('corporate_user_price') && !$request->has('minimum_order_count_corporate_user')){
+                    if( $request->has('role_id') && !$request->has('corporate_user_price') && !$request->has('minimum_order_count_corporate_user')){
                         foreach ($request->role_id as $key => $value) {
                             $productVariantByRole = ProductVariantByRole::where('product_id', $product->id)->where('role_id',$value)->first();
                             if (!$productVariantByRole) {
