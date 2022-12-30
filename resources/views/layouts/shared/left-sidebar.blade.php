@@ -203,6 +203,11 @@
                                                     <a href="{{route('account.redeemedcard')}}">{{ __('Gift Cards') }}</a>
                                                 </li>
                                             @endif
+                                            @if( Auth::user()->is_superadmin == 1)
+                                                <li>
+                                                    <a href="{{route('account.userSubscription')}}">{{ __('Subscription Discount') }}</a>
+                                                </li>
+                                            @endif
                                         </ul>
                                     </div>
                                 </li>

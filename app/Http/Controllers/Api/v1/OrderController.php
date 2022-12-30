@@ -681,6 +681,16 @@ class OrderController extends BaseController
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
+
+                        $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
+                        $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $delivery_fee, ($vendor_payable_amount - $delivery_fee), $vendor_subs_disc_percent);
+                        $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
+                        $subs_discount_vendor           = $subs_discount_arr['vendor'];
+
+                        if(checkColumnExists('order_vendors', 'subscription_discount_admin')){
+                            $OrderVendor->subscription_discount_admin  = $subs_discount_admin;
+                            $OrderVendor->subscription_discount_vendor = $subs_discount_vendor;
+                        }
                         $order_vendor->is_restricted = $is_restricted;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
