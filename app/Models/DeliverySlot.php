@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DeliverySlot extends Model
 {
     use HasFactory;
-
+    
     protected $fillable = ['title', 'start_time', 'end_time', 'price', 'status'];
     
 }
