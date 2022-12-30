@@ -41,7 +41,7 @@ if(session()->has('applocale')){
                     <ul class="header-dropdown ml-auto">
                         @if($client_preference_detail->header_quick_link == 1)
                         @if( p2p_module_status() )
-                            <li><a href="{{route('posts.index', ['fullPage'=>1])}}">{{ __('Add Post') }}</a></li>
+                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Sell') }}</span></a></li>
                         @endif
                         <li class="onhover-dropdown quick-links quick-links">
                             <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>

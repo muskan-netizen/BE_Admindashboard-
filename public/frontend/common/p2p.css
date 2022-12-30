@@ -784,7 +784,7 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a.btn.btn
     margin-left: 20px;
     position: absolute;
     right: -67px;
-    top: 5px;
+    top: 15px;
 }
 
 body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center span#cart_qty_span {
@@ -869,6 +869,14 @@ body.al_body_template_nine.p2p-module li.onhover-dropdown.quick-links.quick-link
     top: 3px;
 }
 
+body.dark.al_body_template_nine.p2p-module .product-description_list.border-bottom span.flag-discount:hover {
+    color: var(--theme-deafult);
+}
+
+body.dark.al_body_template_nine.p2p-module .product-description_list.border-bottom span.flag-discount {
+    color: var(--theme-deafult);
+}
+
 
 /*-------------------dark theam css-----------*/
 
@@ -938,6 +946,29 @@ body.dark.al_body_template_nine .collection-wrapper.al .product-right.inner_spac
 body.dark.al_body_template_nine .al_details_vendor,
 .al_vendor_signup {
     background-color: transparent !important;
+}
+
+body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn i {
+    color: var(--theme-deafult) !important;
+    margin-right: 5px;
+}
+
+body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn {
+    /* background: linear-gradient(to right, #6d8629, #ffce32, #3a77ff); */
+    border-radius: 30px;
+    display: inline-block;
+    padding: 3px 0px 3px 3px;
+    text-decoration: none;
+}
+
+body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn span {
+    color: var(--theme-deafult) !important;
+    padding: 6px 20px;
+    font-weight: bold;
+    background: #fff;
+    display: block;
+    border-radius: 30px;
+    margin-right: 3px;
 }
 
 
