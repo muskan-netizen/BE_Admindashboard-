@@ -1846,6 +1846,7 @@
                                                     @if (isset($preference) && $preference->celebrity_check == '1') checked='checked' @endif></span>
                                         </div>
                                     </div>
+                                    
                                     <div class="col-md-4">
                                         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                             <label for="pharmacy_check" class="mr-2 mb-0">{{ __('Pharmacy Mod') }}
