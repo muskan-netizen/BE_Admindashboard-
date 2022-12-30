@@ -1462,7 +1462,7 @@ trait cartManager{
     function calculatePrice($productVariantByRoles, $prodQuantity) {
         $quantity_price = 0;
         $current_price = 0;
-        if( (Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) && !empty($productVariantByRoles))  {
+        if( ( Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) && !empty($productVariantByRoles))  {
             $amount = 0;
             $quantity = 0;
             foreach($productVariantByRoles->reverse() as $inn_key => $inn_val) {

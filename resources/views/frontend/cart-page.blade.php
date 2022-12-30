@@ -248,7 +248,7 @@
                                 @endif
                             </div>
                             @php
-                                $getAdditionalPreference = getAdditionalPreference(['is_corporate_user']);
+                                $getAdditionalPreference = getAdditionalPreference(['is_corporate_user' ]);
                                 $corporate_user_price = 0;
                             @endphp
                             @if( (@Auth::user()->role_id == 3) && ($getAdditionalPreference['is_corporate_user'] == 1) && !empty($vendor_product->product_variant_by_roles) && !empty($vendor_product->quantity_role_price) && $vendor_product->quantity_role_price->quantity_price != 0 )
