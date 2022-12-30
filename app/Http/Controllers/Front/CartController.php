@@ -283,7 +283,7 @@ class CartController extends FrontController
 
 
     public function postAddToCart(Request $request, $domain = '')
-    {
+    {   
 
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
@@ -433,6 +433,14 @@ class CartController extends FrontController
                 'service_period'      => $request->has('service_period') ? $request->service_period : null,
                 'service_start_date'  => @$service_start_date,
             ];
+
+            //Check if BidId and bid dicount coulmn exists in table
+            if(checkColumnExists('cart_products','bid_number')){
+                $cart_product_detail['bid_number'] =@$request->bid_number??null;
+                $cart_product_detail['bid_discount'] =@$request->bid_discount??null;
+                // dd($request->bid_number);
+            }
+
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
             /** check is long term is added to cart */

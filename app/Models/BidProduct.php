@@ -13,7 +13,7 @@ class BidProduct extends Model
 
     public function bids()
     {
-        return $this->belongsTo(Bid::class, 'id');
+        return $this->hasOne(Bid::class, 'id','bid_id');
     }
 
     public function product()

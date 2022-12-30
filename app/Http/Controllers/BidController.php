@@ -65,13 +65,20 @@ class BidController extends FrontController
 
     public function bidAccept(Request $request,$domain ="",$id = null,$vid = null)
     {
-        $prescriptions = Bid::with('bidProducts')->where(['bid_req_id'=>$id,'id'=>$vid])->first();
-        // dd($prescriptions);
+        // $prescriptions = Bid::with('bidProducts')->where(['bid_req_id'=>$id,'id'=>$vid])->first();
+        
+        $bid_products = BidProduct::where('bid_id', $vid)->with('product.variant')->get();
+        // $bid_vendors = Bid::where('id',$id)->first();
+        // $currency = ClientCurrency::where('is_primary', '=', 1)->first();
 
-        $cartAdd =  new  CartController();
-        $cartAdd->addToCart();
-        // $prescriptions->update(['status'=>1]);
-        // return $this->successResponse(__('Status Updated Successfully'),'200');
+        $CartController  = new CartController();
+        foreach($bid_products as $product) {
+            $newRequest = new Request();
+            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>$vid,'bid_discount'=>$product->bids->discount]);
+            $data = $CartController->postAddToCart($newRequest);
+
+        }
+
     }
 
     public function store(Request $request)
