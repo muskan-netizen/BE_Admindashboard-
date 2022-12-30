@@ -1607,7 +1607,7 @@
                   @foreach($allRoles as $allRole)
                   <div class="form-group mb-2 mt-2">
                      <label for="fb_client_id">{{ $allRole->role }}</label>
-                     <input type="checkbox" data-plugin="switchery" id="is_free_delivery_by_roles" class="form-control checkbox_change" name="apply_free_del[{{$allRole->id}}]" data-className="is_free_delivery_by_roles_hidden" data-color="#43bee1" value="{{$allRole->id}}">
+                     <input type="checkbox" data-plugin="switchery" id="apply_free_del" class="form-control checkbox_change" name="apply_free_del[{{$allRole->id}}]" data-className="apply_free_del_hidden" data-color="#43bee1" value="{{$allRole->id}}" @if(in_array($allRole->id, $productDeliveryFeeByRole)) checked @endif>
                   </div>
                   @endforeach
                </div>

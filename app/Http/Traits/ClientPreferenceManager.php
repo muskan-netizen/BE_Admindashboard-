@@ -76,8 +76,9 @@ trait ClientPreferenceManager{
       $products = Product::where('is_live', 1)->get();
 
       $save_data = [];
+      ProductDeliveryFeeByRole::where('is_free_delivery', 1)->delete();
       foreach($apply_free_del_arr as $apply_free_del){
-        ProductDeliveryFeeByRole::where('role_id', $apply_free_del)->delete();
+        
 
         foreach($products as $product){
           array_push($save_data,[ 'product_id' => $product->id, 'role_id' => $apply_free_del, 'is_free_delivery' => 1 ] );

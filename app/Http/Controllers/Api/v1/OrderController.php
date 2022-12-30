@@ -2134,6 +2134,7 @@ class OrderController extends BaseController
                     ['label' => '15%', 'value' => decimal_format(0.15 * ($order->payable_amount - $order->total_discount_calculate))]
                 );
                 $total_markup_Price = 0;
+                $slot_based_Price = 0;
                 foreach ($order->vendors as $vendor) {
                     $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
                     if ($vendor_order_status) {
@@ -2149,7 +2150,6 @@ class OrderController extends BaseController
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
-                        
                         $product->longTermSchedule = array();
                         if($product->product->is_long_term_service ==1){
                             $product->longTermSchedule =  OrderLongTermServices::with(['schedule','product.primary','addon.set','addon.option','addon.option.translation' => function ($q) use ($language_id) {
@@ -2211,6 +2211,7 @@ class OrderController extends BaseController
                                 // $product_addons[$k]['multiplier'] = $clientCurrency->doller_compare;
                             }
                         }
+
                         $product->product_addons = $product_addons;
                         if(auth()->user()->is_admin){
                             $product->price = $product->price - $product->markup_price;
@@ -2219,6 +2220,9 @@ class OrderController extends BaseController
                         }
                         
                         $total_markup_Price += $product->markup_price;
+                        if($product->slot_id != '' && $product->delivery_date != '' && $product->slot_price != ''){
+                            $slot_based_Price += $product->slot_price;
+                        }
                     }
                     if ($vendor->delivery_fee > 0) {
                         $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
@@ -2345,6 +2349,7 @@ class OrderController extends BaseController
             $order->total_other_taxes =  $total_other_taxes??0;
             $order['user_document_list'] =  $user_registration_documents;
             $order['category_KYC_document'] = $category_KYC_document??null;
+            $order->slot_based_Price =  $slot_based_Price??0;
 
             return $this->successResponse($order, null, 201);
         } catch (Exception $e) {

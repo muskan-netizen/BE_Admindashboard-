@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Models\ProductDeliveryFeeByRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -64,7 +65,7 @@ class ClientPreferenceController extends BaseController{
             }
         }
 
-
+        $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
                                                 'slots'=>$slots,
@@ -79,7 +80,8 @@ class ClientPreferenceController extends BaseController{
                                                 'vendor_registration_documents' => $vendor_registration_documents,
                                                 'driver_registration_documents' => $driver_registration_documents,
                                                 'file_types_driver' => $file_types_driver,
-                                                'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm
+                                                'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
+                                                'productDeliveryFeeByRole'=> $productDeliveryFeeByRole
                                             ]);
     }
 
@@ -177,6 +179,7 @@ class ClientPreferenceController extends BaseController{
             $this->updatePreferenceAdditional($request);
 
             if($request->has('apply_free_del')){
+                // dd($request->all());
                 $this->updateFreeDeliveryForRoles($request->apply_free_del);
             }
             return redirect()->back()->with('success', 'Client settings updated successfully!');
