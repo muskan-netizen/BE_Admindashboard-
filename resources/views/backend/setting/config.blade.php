@@ -2328,22 +2328,6 @@
                   </div>
                </div>
 
-               </div>
-            </div>
-         </form>
-         <!-- Custom Mods end -->
-      </div>
-   </div>
-</div>
-<div class="col-md-4">
-   <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-      <label for="stop_order_acceptance_for_users" class="mr-2 mb-0">{{__('Price By Role')}}<small class="d-block pr-5">{{__("Enable to show price by role on edit's vendor screen.")}}</small></label>
-      <span>
-         <input type="checkbox" data-plugin="switchery" name="is_price_by_role_switch" id="is_price_by_role_switch" class="form-control checkbox_change" data-className="is_price_by_role" data-color="#43bee1" @if( $getAdditionalPreference['is_price_by_role']=='1' ) checked='checked' @endif>
-         <input type="hidden" @if($getAdditionalPreference['is_price_by_role']==1) value="1" @else value="0" @endif name="is_price_by_role" id="is_price_by_role" />
-      </span>
-   </div>
-</div>
                             <div class="col-md-4" id="slots_with_service_area_div">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                     <label for="slots_with_service_area"
@@ -2353,22 +2337,6 @@
                                             name="slots_with_service_area" id="slots_with_service_area"
                                             class="form-control" data-color="#43bee1"
                                             @if (isset($preference) && $preference->slots_with_service_area == '1') checked='checked' @endif>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                    <label for="stop_order_acceptance_for_users"
-                                        class="mr-2 mb-0">{{ __('Price By Role') }}<small
-                                            class="d-block pr-5">{{ __("Enable to show price by role on edit's vendor screen.") }}</small></label>
-                                    <span>
-                                        <input type="checkbox" data-plugin="switchery" name="is_price_by_role_switch"
-                                            id="is_price_by_role_switch" class="form-control checkbox_change"
-                                            data-className="is_price_by_role" data-color="#43bee1"
-                                            @if ($getAdditionalPreference['is_price_by_role'] == '1') checked='checked' @endif>
-                                        <input type="hidden"
-                                            @if ($getAdditionalPreference['is_price_by_role'] == 1) value="1" @else value="0" @endif
-                                            name="is_price_by_role" id="is_price_by_role" />
                                     </span>
                                 </div>
                             </div>
