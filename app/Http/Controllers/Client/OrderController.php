@@ -774,7 +774,8 @@ class OrderController extends BaseController
         $vendor_order_statuses = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->get();
         $prod = $order['products']['0'];
         //  dd($prod->pluck('product_id')->toArray());
-        $processorProduct = ProcessorProduct::whereIn('product_id', $prod->pluck('product_id')->toArray())->first();
+        $processorProduct = [];
+        // $processorProduct = ProcessorProduct::whereIn('product_id', $prod->pluck('product_id')->toArray())->first();
         foreach ($vendor_order_statuses as $vendor_order_status) {
             $vendor_order_status_created_dates[$vendor_order_status->order_status_option_id] = $vendor_order_status->created_at;
             $vendor_order_status_option_ids[] = $vendor_order_status->order_status_option_id;
@@ -1943,7 +1944,7 @@ class OrderController extends BaseController
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             $user = Auth::user();
             $timezone = $user->timezone;
-            $orders_list = OrderReturnRequest::with('product')->orderBy('updated_at', 'DESC');
+            $orders_list = OrderReturnRequest::with('product', 'order')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -1990,9 +1991,9 @@ class OrderController extends BaseController
             $accepted_orders = $accepted_orders->where('status','Accepted')->paginate(20);
             $rejected_orders = $rejected_orders->where('status','Rejected')->paginate(20);
 
-            $Pending['Pending'] = $pending_orders;
-            $Accepted['Accepted'] = $accepted_orders;
-            $Rejected['Rejected'] = $rejected_orders;
+            $Pending = $pending_orders;
+            $Accepted = $accepted_orders;
+            $Rejected = $rejected_orders;
             $pending_html = view('backend.order.return-data')->with(['orders'=>$Pending,'status'=>'Pending','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
             $accepted_html = view('backend.order.return-data')->with(['orders'=>$Accepted,'status'=>'Accepted','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
             $rejected_html = view('backend.order.return-data')->with(['orders'=>$Rejected,'status'=>'Rejected','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();

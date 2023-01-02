@@ -142,7 +142,7 @@ class ReturnOrderController extends FrontController{
                 $q1->where('id', $request->replace_id);
             }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
             'products' => function ($q1)use($request){
-                $q1->where('id', $request->replace_id);
+                $q1->where('product_id', $request->replace_ids);
             },'products.productRating', 'user', 'address'])
             ->whereHas('vendors.products',function($q)use($request){
                 $q->where('id', $request->replace_id);
@@ -249,9 +249,6 @@ class ReturnOrderController extends FrontController{
                     $addresses = UserAddress::where('user_id', $user->id)->where('status',1)->orderBy('is_primary','Desc')->get();
 
 
-
-
-
                 return view('frontend.account.replace-order')->with(['addresses' => $addresses, 'product' => $product,'is_available'=>$is_available,'order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
             }
             return $this->errorResponse('Invalid order', 404);
@@ -295,12 +292,16 @@ class ReturnOrderController extends FrontController{
         try {
             DB::beginTransaction();
            
-            $orderVendorProductOld = OrderProduct::find($request->order_vendor_product_id); // get exchanged order product
+            $orderVendorProductOld = OrderProduct::with('addon', 'addon.option', 'variant')->where('id',$request->order_vendor_product_id)->first(); // get exchanged order product
             
             $orderVendorOld = OrderVendor::with('products')->where('id',$orderVendorProductOld->order_vendor_id)
                                         ->whereHas('products', function ($q) use($orderVendorProductOld){
                                             $q->where('product_id', $orderVendorProductOld->product_id);
                                         })->first();
+                                        // $this->checkreplaceProduct($request, $orderVendorProductOld);
+                                       
+                                        
+            
             if(round($orderVendorOld->subtotal_amount/$orderVendorOld->products[0]->quantity)  != round($request->product_a_price)){
                 return $this->errorResponse('Please select product with same price', 200);
             }
@@ -483,7 +484,7 @@ class ReturnOrderController extends FrontController{
     {
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-        try {
+        // try {
             $vendor_id = $request->vendor_id;
             $orderData = Order::with(array('luxury_option', 
                 'vendors' => function ($query) use ($vendor_id) {
@@ -603,13 +604,13 @@ class ReturnOrderController extends FrontController{
                     'message' => __('Order Cancelled Successfully.')
                 ]);
             }
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
     }
 
     public function vendorOrderForCancelReq(Request $request){

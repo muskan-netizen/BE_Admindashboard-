@@ -509,5 +509,35 @@ trait ReturnExchangeTrait{
         return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'data' => $data));
     }
 
+
+    public function checkreplaceProduct($request, $orderVendorProductOld)
+    {
+
+        $oldPrice =  $this->oldOrderedProductPrice($orderVendorProductOld);
+        return $oldPrice;
+        // if(@$request->variant_id && $request->variant_id == $orderVendorProductOld->variant_id){
+        //     return true;
+        // }
+        // return false;
+    }
+
+    public function oldOrderedProductPrice($orderVendorProductOld)
+    {
+        $price = $orderVendorProductOld->variant[0]->price;
+        foreach($orderVendorProductOld->addon as  $addon){
+            $price += $addon->option->price;
+        }
+        return $price;
+    }
+
+    public function oldNewSelectedProductPrice($orderVendorProductOld)
+    {
+        $price = $orderVendorProductOld->variant[0]->price;
+        foreach($orderVendorProductOld->addon as  $addon){
+            $price += $addon->option->price;
+        }
+        return $price;
+    }
+
    
 }
