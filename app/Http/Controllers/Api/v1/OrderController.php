@@ -688,8 +688,8 @@ class OrderController extends BaseController
                         $subs_discount_vendor           = $subs_discount_arr['vendor'];
 
                         if(checkColumnExists('order_vendors', 'subscription_discount_admin')){
-                            $OrderVendor->subscription_discount_admin  = $subs_discount_admin;
-                            $OrderVendor->subscription_discount_vendor = $subs_discount_vendor;
+                            $order_vendor->subscription_discount_admin  = $subs_discount_admin;
+                            $order_vendor->subscription_discount_vendor = $subs_discount_vendor;
                         }
                         $order_vendor->is_restricted = $is_restricted;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
