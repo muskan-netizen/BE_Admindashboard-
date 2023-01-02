@@ -2039,6 +2039,7 @@
         var check_pickup_schedule_slots = "{{route('cart.check_pickup_schedule_slots')}}";
         var check_dropoff_schedule_slots = "{{route('cart.check_dropoff_schedule_slots')}}";
         var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+        var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
     </script>
 
     <script type="text/javascript">

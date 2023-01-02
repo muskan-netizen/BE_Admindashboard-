@@ -2780,31 +2780,87 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
     }
 
     ///////////////////////////Plugnpay payment Gateway //////////////////////////////
-    window.paymentViaplugnpay = function paymentViaplugnpay(address_id='', order='') {
+    window.paymentViaplugnpay = function paymentViaplugnpay(address_id='', payment_option_id='',order='') {
         cno = $('#plugnpay-card-element').val();
-        dt = $('#plugnpay-date-element').val();
-        cv = $('#plugnpay-cvv-element').val();
+        dt  = $('#plugnpay-date-element').val();
+        cv  = $('#plugnpay-cvv-element').val();
+        let total_amount    = 0;
+        let cartElement     = $("input[name='cart_total_payable_amount']");
+        let walletElement   = $("input[name='wallet_amount']");
+        let tipElement      = $("#cart_tip_amount");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let data            = [];
+        let payment_from    = '';
+        if (path.indexOf("cart") !== -1) {
 
-        let cartElement = $("input[name='cart_total_payable_amount']");
+          
 
-        let data = [];
-
-        // if (path.indexOf("cart") !== -1) {
-            payment_form = 'cart';
-            total_amount = cartElement.val();
+            // if (path.indexOf("cart") !== -1) {
+                payment_form = 'cart';
+                total_amount = cartElement.val();
+                data.push(
+                    { name: 'order_number', value: order.order_number },
+                    { name: 'cno', value: cno },
+                    { name: 'dt', value: dt },
+                    { name: 'cv', value: cv }
+                );
+        
+            // }
             data.push(
-                { name: 'order_number', value: order.order_number },
+                { name: 'from', value: payment_form },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+        else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            
+             data.push(
                 { name: 'cno', value: cno },
                 { name: 'dt', value: dt },
-                { name: 'cv', value: cv }
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
             );
-    
-        // }
-        data.push(
-            { name: 'from', value: payment_form },
-            { name: 'amt', value: total_amount },
-            { name: 'amount', value: total_amount },
-        );
+        }
+
+        else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            payment_from = 'subscription';
+            data.push(
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name: 'subsid', value: subscription_id.val() },
+            );
+           
+        } 
+
+        else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+
+             data.push(
+                { name: 'order_number', value: $("#order_number").val() },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+       
+
+
 
         $.ajax({
             type: "POST",
@@ -2814,8 +2870,9 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
             data: data,
             success: function(response) {
                 console.log(response);
+
                 if (response.status == "Success") {
-                        window.location.replace(response.route);
+                    window.location.replace(response.route);
                 } else {
                     window.location.replace(response.route);
                 }

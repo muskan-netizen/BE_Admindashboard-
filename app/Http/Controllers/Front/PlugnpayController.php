@@ -16,6 +16,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\UserVendor;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 class PlugnpayController extends FrontController
 {
@@ -44,7 +45,7 @@ class PlugnpayController extends FrontController
         {
             $time = time();
             Payment::create(['amount'=>0,'transaction_id'=>$request->subsid.'_'.$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
-            
+
         }
         return $time;
    }
@@ -52,27 +53,49 @@ class PlugnpayController extends FrontController
     public function beforePayment(Request $request)
     {
       $response = [];
-      \Log::info(json_encode($request->all()));
 
       $number =  $this->orderNumber($request);
+      if($request->from=='wallet'){
+        $number =  $this->orderNumber($request);
+        $request->request->add(['order_number' => $number,'amount'=>$request->amount]);
+      }
+      if($request->from=='subscription'){
+        $number =  $this->orderNumber($request);
+        $request->request->add(['order_number' => $number,'amount'=>$request->amount]);
+      }
+
+
 
     	$responsePay = $this->createPaymentRequest($request->all());
+
+        \Log::info(json_encode($responsePay));
         $dataResponse = json_decode($responsePay);
         \Log::info($dataResponse->FinalStatus);
 
         if(isset($dataResponse->FinalStatus))
-        {           
+        {
         \Log::info('Done');
 
+
+        if($request->from=='tip'){
+            $payment = Payment::where('transaction_id',$dataResponse->address2.'_'.$number)->first();
+        }else if($request->from=='subscription'){
+            $payment = Payment::where('transaction_id',$request->subsid.'_'.$number)->first();
+        }
+        else{
             $payment = Payment::where('transaction_id',$dataResponse->address2)->first();
+        }
+
+
+
             if($payment->type=='cart'){
             return $this->completeOrderCart($dataResponse,$payment);
             }elseif($payment->type=='wallet'){
-                return $this->completeOrderWallet($dataResponse,$payment);
+                return $this->completeOrderWallet($dataResponse,$payment,$request->amount);
             }elseif($payment->type=='tip'){
-                return $this->completeOrderTip($dataResponse,$payment);
+                return $this->completeOrderTip($dataResponse,$payment,$request->amount);
             }elseif($payment->type=='subscription'){
-                return $this->completeOrderSubs($dataResponse,$payment);
+                return $this->completeOrderSubs($dataResponse,$payment,$request);
             }
 
         }else{
@@ -97,7 +120,6 @@ class PlugnpayController extends FrontController
           if(isset($request->FinalStatus) && $request->FinalStatus == 'success')
           {
             $order->payment_status = '1';
-            $order->order_id = $order->id;
             $order->save();
 
             // Auto accept order
@@ -115,10 +137,10 @@ class PlugnpayController extends FrontController
             CartCoupon::where('cart_id', $cartid)->delete();
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
-            
-            // send sms 
+
+            // send sms
             $this->sendSuccessSMS($request, $order);
-            
+
              // Send Notification
              if (!empty($order->vendors)) {
               foreach ($order->vendors as $vendor_value) {
@@ -168,19 +190,92 @@ class PlugnpayController extends FrontController
               return $response;
 
             }else{
-              
+
               $returnUrl = route('order.return.success');
               $response['status'] = 'Fail';
               $response['msg'] = 'Failed Order.';
               $response['payment_from'] = 'cart';
               $response['route'] = $returnUrl;
-  
+
               return $response;
 
             }
 
           }
 
+    }
+
+    public function completeOrderWallet($request,$payment,$amount){
+
+
+        if(isset($request->FinalStatus) && $request->FinalStatus == 'success')
+        {
+
+            $data['wallet_amount'] =  $amount;
+            $data['transaction_id'] =  $payment->transaction_id;
+            $request = new \Illuminate\Http\Request($data);
+            $walletController = new WalletController();
+            $walletController->creditWallet($request);
+
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=plugnpay'.'&status=200&transaction_id='.$payment->transaction_id;
+                $response['route'] = $returnUrl;
+            }else{
+                $returnUrl = route('user.wallet');
+                $response['route'] = $returnUrl;
+            }
+            return $response;
+        }
+    }
+
+    public function completeOrderTip($request,$payment,$amount){
+        if(isset($request->FinalStatus) && $request->FinalStatus == 'success')
+        {
+            $data['tip_amount']     =  $amount;
+            $data['order_number']   =  $request->address2;
+            $data['transaction_id'] =  $payment->transaction_id;
+
+            $request = new \Illuminate\Http\Request($data);
+
+            $orderController = new OrderController();
+            $orderController->tipAfterOrder($request);
+            if($request['from'] == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=plugnpay'.'&status=200&transaction_id='. $payment->transaction_id;
+                $response['route'] = $returnUrl;
+            }else{
+                $returnUrl = route('user.orders');
+                $response['route'] = $returnUrl;
+            }
+            return $response;
+        }
+    }
+
+    public function completeOrderSubs($request,$payment,$requestdata){
+        if(isset($request->FinalStatus) && $request->FinalStatus == 'success')
+        {
+
+            $data['transaction_id']      = $payment->transaction_id;
+            $data['payment_option_id']   = 49;
+            $data['subsid']              = $requestdata['subsid'];
+            $data['subscription_id']     = $requestdata['subsid'];
+            $data['amount']              = $requestdata['amt'];
+
+            $request = new \Illuminate\Http\Request($data);
+
+            $subscriptionController = new UserSubscriptionController();
+            $subscriptionController->purchaseSubscriptionPlan($request, '', $requestdata->subsid);
+            if($request['from'] == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=plugnpay'.'&status=200&transaction_id='.$payment->transaction_id;
+                $response['route'] = $returnUrl;
+            }else{
+                $returnUrl = route('user.subscription.plans');
+                $response['route'] = $returnUrl;
+            }
+            return $response;
+        }
     }
 
 

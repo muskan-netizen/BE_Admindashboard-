@@ -11,11 +11,18 @@ trait PlugnpaypaymentManager{
 
   public function __construct()
   {
-    $plugnpay_creds = PaymentOption::select('credentials')->where('code', 'plugnpay')->where('status', 1)->first();
+    $plugnpay_creds = PaymentOption::select('credentials','test_mode')->where('code', 'plugnpay')->where('status', 1)->first();
     $creds_arr = isset($plugnpay_creds->credentials) ? json_decode($plugnpay_creds->credentials) : null;
     $this->plugnpay_publisher_name = $creds_arr->plugnpay_publisher_name??'';
     $this->api_url = "https://pay1.plugnpay.com/payment/pnpremote.cgi";
     // $this->api_url = "https://pay1.plugnpay.com/payment/pay.cgi";
+
+    if ($plugnpay_creds->test_mode == '1') {
+
+        $this->environment  = 'sandbox';
+    }else{
+        $this->environment = 'live';
+    }
   }
 
 
@@ -42,7 +49,13 @@ trait PlugnpaypaymentManager{
         $card_cvv = $data['cv'];
         $card_exp = $data['dt'];
         $card_amount = $data['amount'];
-        $card_name = auth()->user()->name;
+        //$card_name = auth()->user()->name;
+        if($this->environment == 'sandbox'){
+            $card_name   = 'cardtest';
+        }else{
+            $card_name   = auth()->user()->name;
+        }
+
         $email = auth()->user()->email??"Delivadrinks@gmail.com";
         // billing address info
         $card_address1 = "";

@@ -75,27 +75,27 @@ class MtnMomoController extends FrontController
          $request->amt = $amt;
          $time = $request->order_number;
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d')]);
-   
+
         }elseif($request->from == 'pickup_delivery')
         {
          $request->amt = $amt;
          $time = $request->order_number;
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'pickup_delivery','date'=>date('Y-m-d'),'user_id'=>auth()->id(),'payment_from'=>$request->device??'web']);
-   
+
         }elseif($request->from == 'wallet')
         {
          $time = ($request->transaction_id)??'W_'.time();
          //Save transaction before payment success for get information only
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'wallet','date'=>date('Y-m-d')]);
          $request->amt = $amt;
-   
+
         }elseif($request->from == 'tip')
         {
          $time = 'T_'.time().'_'.$request->order_number;
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'tip','date'=>date('Y-m-d')]);
-        
+
          $request->amt = $amt;
-         
+
         }elseif($request->from == 'subscription')
         {
             $time = 'S_'.time().'_'.(!empty($request->subsid)? $request->subsid : $request->subscription_id);
@@ -107,7 +107,7 @@ class MtnMomoController extends FrontController
     }
 
     public function createTocken(Request $request, UrlGenerator $url)
-    {   
+    {
             $data                   = [];
             if($request->from == 'cart'){
                 $data['amt']            = $request->amt;
@@ -122,13 +122,13 @@ class MtnMomoController extends FrontController
                 $data['from']           = $request->from;
                 $data['subsid']         = $request->subsid;
             }
-            
+
             else if($request->from == 'tip'){
                 $data['amt']            = $request->amt;
                 $data['from']           = $request->from;
                 $data['order_number']   = $request->order_number;
-            }  
-           
+            }
+
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
@@ -149,17 +149,17 @@ class MtnMomoController extends FrontController
 
             $response = curl_exec($curl);
             $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-           
+
             curl_close($curl);
 
             if($status == 200){
                 $result = json_decode($response,true);
-              
+
                 if($result['token_type'] == 'access_token'){
                     $token = $result['access_token'];
                     return self::RequestToPay($token,$data);
                 }
-                
+
             }else if($status == 401){
                 return json_encode(['status'=>401,'message'=>'Unauthorized.']);
             }else if($status == 500){
@@ -169,7 +169,7 @@ class MtnMomoController extends FrontController
 
     public function RequestToPay($token,$data)
     {
-       
+
         if($data['from'] == 'cart'){
             $amount         = $data['amt'];
             $from           = $data['from'];
@@ -183,15 +183,15 @@ class MtnMomoController extends FrontController
             $from           = $data['from'];
             $subsid         = $data['subsid'];
             $order_number   = 'subscription';
-        } 
+        }
         else if($data['from'] == 'tip'){
             $amount         = $data['amt'];
             $from           = $data['from'];
             $order_number   = $data['order_number'];
-        } 
-        
-        
-        
+        }
+
+
+
         $payOpt         = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')->where('status', 1)->first();
         if ($payOpt->test_mode == '1') {
             $currency   = 'EUR';
@@ -231,10 +231,10 @@ class MtnMomoController extends FrontController
             'Content-Type: application/json'
         ),
         ));
-       
+
         $response = curl_exec($curl_1);
         $status = curl_getinfo($curl_1, CURLINFO_HTTP_CODE);
-      
+
         curl_close($curl_1);
         if($status == '202'){
             return self::GetpaymentTransaction($token,$this->reference_id,$data);
@@ -272,13 +272,13 @@ class MtnMomoController extends FrontController
                 return self::sucessPayment($data,$transactionId);
             }
         }
-       
+
 
     }
 
     public function sucessPayment($request, $transactionId)
     {
-       
+
         if($request['from'] == "app")
         {
             $user = User::where('auth_token', $request->auth_token)->first();
@@ -335,15 +335,15 @@ class MtnMomoController extends FrontController
                 }else{
                     $returnUrl = route('order.return.success');
                 }
-                
+
                 return $returnUrl;
             }
         } elseif($request['from']  == 'wallet'){
             $request['wallet_amount'] =  $request['amt'];
             $request['transaction_id'] =  $transactionId;
-           
+
             $request = new \Illuminate\Http\Request($request);
-           
+
             $walletController = new WalletController();
             $walletController->creditWallet($request);
             if($request['from'] == 'app')
@@ -360,12 +360,12 @@ class MtnMomoController extends FrontController
             $request['order_number']    =   $request['order_number'];
             $request['transaction_id']  =   $transactionId;
             $request = new \Illuminate\Http\Request($request);
-           
+
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
             if($request['from'] == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=mtn_momo'.'&status=200&transaction_id='.$transactionId; 
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=mtn_momo'.'&status=200&transaction_id='.$transactionId;
             }else{
                 $returnUrl = route('user.orders');
             }
@@ -377,14 +377,14 @@ class MtnMomoController extends FrontController
             $request['subsid']              = $request['subsid'];
             $request['subscription_id']     = $request['subsid'];
             $request['amount']              = $request['amt'];
-          
+
             $request = new \Illuminate\Http\Request($request);
-          
+
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             if($request['from'] == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=mtn_momo'.'&status=200&transaction_id='.$transactionId; 
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=mtn_momo'.'&status=200&transaction_id='.$transactionId;
             }else{
                 $returnUrl = route('user.subscription.plans');
             }
@@ -392,6 +392,6 @@ class MtnMomoController extends FrontController
         }
         return route('order.return.success');
     }
-   
+
 
 }
