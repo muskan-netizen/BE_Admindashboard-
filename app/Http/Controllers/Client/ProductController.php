@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq,ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons,DeliverySlot, Pincode};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -182,11 +182,13 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        
-
-        $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
+        $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities', 'productVariantByRoles'];
         if( checkTableExists('product_attributes') ) {
             $with_array[] = 'ProductAttribute';
+        }
+
+        if( checkTableExists('delivery_slots_product') ) {
+            $with_array[] = 'syncProductDeliverySlot';
         }
 
         $product = Product::with($with_array)->where('id', $id)->firstOrFail();
@@ -320,7 +322,7 @@ class ProductController extends BaseController
         if(checkColumnExists('roles','is_enable_pricing')){
             $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
         }
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
 
         $allRoles = Role::where('status',1)->get();
         
@@ -331,8 +333,16 @@ class ProductController extends BaseController
                 $selectedRoles[] = $querySelectedRole->role_id;
             }
         }
+        $delivery_slots = [];
+        if(checkTableExists('delivery_slots')){
+            $delivery_slots = DeliverySlot::where('status', 0)->get();
+        }
 
-        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value]);
+        $pincodes = [];
+        if(checkTableExists('pincodes')){
+            $pincodes = Pincode::where('is_disabled', 0)->get();
+        }
+        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'delivery_slots' => $delivery_slots, 'pincodes' => $pincodes]);
     }
 
     /**
@@ -344,6 +354,7 @@ class ProductController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
+        // dd($request->all());
         DB::beginTransaction();
         try {
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
@@ -511,8 +522,20 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
-
+            if(checkColumnExists('products', 'same_day_delivery')){
+                $product->same_day_delivery = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
+            }
+            if (checkColumnExists('products', 'next_day_delivery')) {
+                $product->next_day_delivery = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
+            }
+            if (checkColumnExists('products', 'hyper_local_delivery')) {
+                $product->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
+            }
             $product->save();
+
+            if($request->has('slot_ids') && $request->slot_ids != ''){
+                $product->syncProductDeliverySlot()->sync($request->slot_ids);
+            }
 
             if ($product->id > 0) {
                 $trans = ProductTranslation::where('product_id', $product->id)->where('language_id', $request->language_id)->first();
@@ -598,7 +621,27 @@ class ProductController extends BaseController
                 }
 
 
+                
+                if ( $request->has('corporate_user_price') && $request->has('minimum_order_count_corporate_user')) {
+                    $corporate_user_price   = $request->corporate_user_price;
+                    $minimum_order_count    = $request->minimum_order_count_corporate_user;
 
+                    $product_variant_by_roles = [];
+                    foreach($corporate_user_price as $key => $val) {
+                        if($val != ''){
+                            $product_variant_by_roles[$key]['product_id'] = $product->id;
+                            $product_variant_by_roles[$key]['role_id'] = $request->role_id['corporate_user'];
+                            $product_variant_by_roles[$key]['amount'] = $val;
+                            $product_variant_by_roles[$key]['quantity'] = $minimum_order_count[$key];
+                        }
+                    }
+
+                    $delete = ProductVariantByRole::where('product_id', $product->id)->where('role_id', 3)->delete();
+                    foreach($product_variant_by_roles as $key => $data){
+                        ProductVariantByRole::create($data);
+                    }
+
+                }
 
 
                 $existv = array();
@@ -653,7 +696,8 @@ class ProductController extends BaseController
 
                     // Save Product Variant By Roles without product_variant_id and amount
                     // Product Variant By Roles (START)
-                    if($request->has('role_id')){
+                    if( $request->has('role_id') && !$request->has('corporate_user_price') && !$request->has('minimum_order_count_corporate_user')){
+                        
                         foreach ($request->role_id as $key => $value) {
                             $productVariantByRole = ProductVariantByRole::where('product_id', $product->id)->where('role_id',$value)->first();
                             if (!$productVariantByRole) {
@@ -668,7 +712,7 @@ class ProductController extends BaseController
                     }
                     // Product Variant By Roles (END)
                 }
-
+                
                 // min order count
                 if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == 1){
                     $minimum_order_count_arr = $request->minimum_order_count_arr;
@@ -1386,6 +1430,7 @@ class ProductController extends BaseController
     {
         try{
             if($request->has('role_id')){
+                
                 foreach ($request->role_id as $key => $value) {
                     $productVariantByRole = ProductVariantByRole::where('product_id', $request->product_id)->where('product_variant_id',$request->variant_id)->where('role_id',$value)->first();
                     if (!$productVariantByRole) {

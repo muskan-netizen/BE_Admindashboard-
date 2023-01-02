@@ -1,5 +1,5 @@
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_seller_module']);
+    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card']);
 @endphp
 <div class="left-side-menu">
     <div class="logo-box m-hide d-lg-block">
@@ -198,6 +198,11 @@
                                                     <a href="{{route('backend.order.refund')}}">{{ __('Order Refunds') }}</a>
                                                 </li>
                                             @endif
+                                            @if( Auth::user()->is_superadmin == 1 && @$getAdditionalPreference['is_gift_card']==1)
+                                                <li>
+                                                    <a href="{{route('account.redeemedcard')}}">{{ __('Gift Cards') }}</a>
+                                                </li>
+                                            @endif
                                         </ul>
                                     </div>
                                 </li>
@@ -233,6 +238,15 @@
                                     <a href="{{route('customer.index')}}">
                                         <span class="icon-customer-2"></span>
                                         <span> {{ __('Customers') }} </span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if(Auth::user()->is_superadmin == 1)
+                                <li>
+                                    <a href="{{route('delivery-slot.index')}}">
+                                        <span class="icon-customer-2"></span>
+                                        <span> {{ __('Slots') }} </span>
                                     </a>
                                 </li>
                             @endif
@@ -511,6 +525,15 @@
                             <span>{{ __("EXTRA") }}</span>
                         </a>
                         <ul class="nav-second-level p-0 mx-2">
+                            
+                            @if( Auth::user()->is_superadmin == 1 && @$getAdditionalPreference['is_gift_card']==1)
+                            <li>
+                                <a href="{{route('giftCart.index')}}">
+                                    <span class="icon-settings-1-1"></span>
+                                    <span> {{ __('Gift Card') }} </span>
+                                </a>
+                            </li>
+                            @endif
                             @if(Auth::user()->is_superadmin == 1 && $client_preference->celebrity_check == 1)
                                 @if(in_array('celebrity',$allowed) || Auth::user()->is_superadmin == 1)
                                     <li>

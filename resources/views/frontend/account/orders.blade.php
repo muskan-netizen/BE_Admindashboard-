@@ -136,7 +136,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                 <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . getNomenclatureName($ordertitle, true)) }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ getNomenclatureName($ordertitle, true). __('Rejected/Cancel ')  }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if($show_long_term ==1)
@@ -595,7 +595,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                 </div>
                                                                                 
                                                                                             <div class="step-indicator step-indicator-order">
-
+                                                                                                @if(!empty($vendor->dispatcher_status_icons))
                                                                                                     @foreach ($vendor->dispatcher_status_icons as $key => $icons)
                                                                                                         @if(isset($vendor['vendor_dispatcher_status'][$key]) && !empty($vendor['vendor_dispatcher_status'][$key]))
                                                                                                         <div class="step step{{$key+1}} active">
@@ -622,7 +622,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                         @endif
                                                                                                         @endif
                                                                                                     @endforeach
-
+                                                                                                @endif
                                                                                             </div>
                                                                                            
 
@@ -653,6 +653,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                               
                                                                                 @if ($order->loyalty_amount_saved > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -753,6 +754,17 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                                @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                 
                                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
@@ -1226,6 +1238,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                                @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
                                                                                 <li
                                                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
@@ -1615,6 +1637,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                 $clientCurrency->doller_compare)}}</span>
                                                                                         </li>
                                                                                     @endif
+                                                                                    @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                        <li
+                                                                                            class="d-flex align-items-center justify-content-between">
+                                                                                            <label
+                                                                                                class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
+                                                                                                *
+                                                                                                $clientCurrency->doller_compare)}}</span>
+                                                                                        </li>
+                                                                                    @endif
                                                                                     <li
                                                                                         class="grand_total d-flex align-items-center justify-content-between">
                                                                                         <label
@@ -1949,6 +1981,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         <label
                                                                                             class="m-0">{{ __('Delivery Fee') }}</label>
                                                                                         <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>

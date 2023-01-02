@@ -114,6 +114,9 @@
 .alNewShopingCart svg path {
     fill: var(--theme-deafult)
 }
+body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
+    margin-bottom: 0;
+}
 /*----------ipad view css--------*/
 @media (max-width:991px) {
     body.al_body_template_two.p2p-module ul#main-menu {

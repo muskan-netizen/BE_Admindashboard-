@@ -20,7 +20,7 @@ use GuzzleHttp\Client;
 use App\Models\Client as CP;
 use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser, WhatsappApi};
 use Log;
 use Carbon\Carbon;
 use App\Models\{LoyaltyCard, VendorOrderCancelReturnPayment};
@@ -29,7 +29,7 @@ class OrderController extends BaseController
 {
     private $folderName = '/order/reports';
 
-    use ApiResponser;
+    use ApiResponser, WhatsappApi;
     use \App\Http\Traits\OrderTrait;
     /**
      * Display a listing of the resource.
@@ -94,8 +94,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38]) // 1 for cod ,38 for offline manual by harbans
                     ->orWhere(function($q3) {
-                        $q3->where('is_postpay', 1) // 1 for order is post pay. 
-                            ->whereNotIn('payment_option_id', [1, 38]);
+                        if(checkColumnExists('orders', 'is_postpay'))
+                        {
+                            $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                               ->whereNotIn('payment_option_id', [1, 38]);
+                        }
                     });
             });
         })->count();
@@ -119,8 +122,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    $q3->where('is_postpay', 1) // 1 for order is post pay. 
-                        ->whereNotIn('payment_option_id', [1, 38]);
+                    if(checkColumnExists('orders', 'is_postpay'))
+                    {
+                        $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                            ->whereNotIn('payment_option_id', [1, 38]);
+                    }
                 });
             });
         })->count();
@@ -145,8 +151,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    $q3->where('is_postpay', 1) // 1 for order is post pay. 
-                        ->whereNotIn('payment_option_id', [1, 38]);
+                    if(checkColumnExists('orders', 'is_postpay'))
+                    {
+                        $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                            ->whereNotIn('payment_option_id', [1, 38]);
+                    }
                 });
             });
         })->count();
@@ -177,6 +186,7 @@ class OrderController extends BaseController
         $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
+        $HasGiftCard = 0;
         $orders = Order::with(['vendors.products' => function ($q) {
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
@@ -196,8 +206,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    $q3->where('is_postpay', 1) // 1 for order is post pay
-                        ->whereNotIn('payment_option_id', [1, 38]);
+                    if(checkColumnExists('orders', 'is_postpay'))
+                    {
+                        $q3->where('is_postpay', 1) // 1 for order is post pay
+                            ->whereNotIn('payment_option_id', [1, 38]);
+                    }
                 });
             });
         })->orderBy('id', 'asc');
@@ -222,6 +235,10 @@ class OrderController extends BaseController
             $order_count->whereHas('vendors', function ($query)  use ($request) {
                 $query->where('vendor_id', $request->get('vendor_id'));
             });
+        }
+        if( checkColumnExists('orders', 'gift_card_id') ){
+            $HasGiftCard = 1;
+            $orders  = $orders->with(['giftCard']);
         }
         //Search by keyword
         if (!empty($request->search_keyword)) {
@@ -349,8 +366,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                     ->orWhere(function($q3) {
-                        $q3->where('is_postpay', 1)
-                            ->whereNotIn('payment_option_id', [1, 38]);
+                        if(checkColumnExists('orders', 'is_postpay'))
+                        {
+                            $q3->where('is_postpay', 1)
+                                ->whereNotIn('payment_option_id', [1, 38]);
+                        }
                     });
             });
         });
@@ -480,6 +500,17 @@ class OrderController extends BaseController
 
 
         foreach ($orders as $key => $order) {
+
+            $giftCardUsed = 0; 
+            $giftCardName = ''; 
+            if($HasGiftCard ==1 ){
+                if($order->gift_card_id!='' && !empty($order->giftCard)){
+                    $giftCardUsed =1;
+                    $giftCardName = $order->giftCard ? $order->giftCard->name : 'NA';
+                }
+            }
+            $order->giftCardUsed = $giftCardUsed; 
+            $order->giftCardName = $giftCardName; 
             // $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, h:i A');
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
@@ -974,6 +1005,7 @@ class OrderController extends BaseController
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
                 $customer = User::find($orderData->user_id);
+                $this->customEvents($request->status_option_id, $orderData);
                 if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
                      $this->sendTrackingUrlSMS($customer,$orderData);
                 }
@@ -1037,10 +1069,12 @@ class OrderController extends BaseController
     public function placeOrderRequestShippo($request)
     {
         $ship = new ShippoController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
             //\Log::info($order_ship);
         }
@@ -1081,10 +1115,12 @@ class OrderController extends BaseController
     public function placeOrderRequestShiprocket($request)
     {
         $ship = new ShiprocketController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_ship = $ship->createOrderRequestShiprocket($checkOrder->user_id, $checkdeliveryFeeAdded);
         }
         if ($order_ship->order_id) {
@@ -1104,10 +1140,12 @@ class OrderController extends BaseController
     {
 
         $data = new AhoyController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Ahoy place order request for Ahoy
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_det = $data->createPreOrderRequestAhoy($checkOrder->user_id, $checkdeliveryFeeAdded);
         }
 
@@ -1127,10 +1165,12 @@ class OrderController extends BaseController
     {
 
         $data = new DunzoController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_lalamove = $data->createOrderRequestDunzo($checkOrder->user_id, $checkdeliveryFeeAdded);
         }
 
@@ -1150,10 +1190,12 @@ class OrderController extends BaseController
     public function placeOrderRequestlalamove($request)
     {
         $lala = new LalaMovesController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id, $checkOrder->user_id, $checkOrder->id);
         }
         if (isset($order_lalamove->orderRef)) {
@@ -1172,7 +1214,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         // pr( $checkdeliveryFeeAdded);
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
-
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
@@ -1251,8 +1293,7 @@ class OrderController extends BaseController
         \Log::info("asdf");
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
-                \Log::info("asdf inner");
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
 

@@ -199,6 +199,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span>
                                                     </li>
                                                     <% } %>
+
                                                     <% if(vendor.additional_price > 0 ) { %>
                                                         <li class="d-flex align-items-center justify-content-between">
                                                             <label class="m-0">{{ __('Additional Price') }}</label>
@@ -340,13 +341,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Total') }}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_amount) %></span>
                                     </li>
-
                                     <% if(order.additional_price > 0 || order.additional_price < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                                  <label class="m-0">{{ __('Tax') }}</label>
                                                  <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.additional_price) %></span>
                                          </li>
-                                      <% } %>
+                                    <% } %>
 
                                     <% if(order.total_other_taxes_amount > 0 || order.total_other_taxes_amount < 0) { %>
                                        <li class="d-flex align-items-center justify-content-between">
@@ -386,6 +386,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{__('Delivery Fee')}}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_delivery_fee) %></span>
                                     </li>
+                                    <% } %>
+                                    <% if(order.giftCardUsed == 1 ) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                                 <label class="m-0">{{ __('gift card') }}</label>
+                                                 <span>-{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.gift_card_amount) %></span>
+                                         </li>
                                     <% } %>
                                     <% if(order.total_container_charges > 0 || order.total_container_charges < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">

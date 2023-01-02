@@ -254,7 +254,7 @@ class CustomerAuthController extends FrontController
             $email = (!empty($req->email)) ? $req->email : '';//('ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com');
             $user->type = 1;
             $user->status = 1;
-            $user->role_id = 1;
+            $user->role_id = ($req->has('role_id') && $req->role_id != '') ? $req->role_id : 1;
             $user->name = $req->name;
             $user->email = $email;
             $user->is_email_verified = 0;

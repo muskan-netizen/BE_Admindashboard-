@@ -2,7 +2,7 @@
 .al_body_template_two .scale-effect {
     border-color: #e8e8e8!important;
     box-shadow: rgb(28 28 28 / 3%) 0 .4rem 0.8rem!important;
-    background-color: #fff!important;
+    background-color: #fff;
     box-sizing: border-box!important;
     border: 1px solid #e8e8e8!important;
     display:block;
@@ -55,7 +55,6 @@
 .al_body_template_two .product-box,
 .al_body_template_two .product-card-box,
 .al_body_template_two .suppliers-box {
-    border-bottom: 0 !important;
     position: relative;
     border-radius: 0;
     overflow: hidden;
@@ -468,4 +467,7 @@ body[dir=rtl] .slick-prev {
 }
 .royo_whatsapp_img img {
     width: 50px;
+}
+body.al_body_template_two .slick-track{
+    margin-left:0 !important;
 }

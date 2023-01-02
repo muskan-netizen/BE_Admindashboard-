@@ -24,6 +24,11 @@ class RoleSeeder extends Seeder
                 'role' => 'Seller',
                 'status' => '1'
             ),
+            array(
+                'id' => 3,
+                'role' => 'Corporate_user',
+                'status' => '1'
+            )  
         ); 
         \DB::table('roles')->insert($maps);
     }

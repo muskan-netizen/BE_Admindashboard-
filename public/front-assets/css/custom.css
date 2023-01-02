@@ -7494,11 +7494,11 @@ body.dark .suppliers-box h6 {
 }
 
 /*.sm li:hover ul{display:block}*/
-.top-banner-wrapper {
+/* .top-banner-wrapper {
     background-color: #fff;
     box-shadow: 0 0 10px rgb(0 0 0 / 10%);
     border-radius: 0 0 10px 10px
-}
+} */
 
 .top-banner-content.small-section h4:empty {
     display: none;
@@ -10242,13 +10242,7 @@ body.al_body_template_one .footer-theme .sub-title li {
   .al_body_template_one .theme-card.custom-inner-card::-webkit-scrollbar-thumb {
     background-color: #e9248d;
 }
-.al_body_template_one .theme-card.custom-inner-card {
-    height: 370px;
-    overflow-y: scroll;
-    border: 1px solid#ccc;
-    padding: 20px;
-    border-radius: 10px;
-}
+
 .al_body_template_one section.section-b-space.ratio_asos .collection-filter.col-lg-3 {
     padding: 20px;
 }
@@ -10272,9 +10266,10 @@ body.al_body_template_one .footer-theme .sub-title li {
     right: 12px;
 }
 .al_body_template_one .outter-fillter-data .custom_filtter {
-    border-bottom: 1px solid #D9D9D9;
-    border-top: 1px solid #D9D9D9;
+    /* border-bottom: 1px solid #D9D9D9;
+    border-top: 1px solid #D9D9D9; */
     padding-top: 10px;
+    margin-bottom: 15px;
 }
 .al_body_template_one .outter-fillter-data .custom_filtter ul {
     display: flex;
@@ -10520,7 +10515,7 @@ body.al_body_template_one .vender-peragraph {
     margin: 0;
 }
 .al_body_template_one .theme-card.custom-inner-card {
-    height: 370px;
+    height: auto;
     overflow-y: scroll;
     border: 1px solid#ccc;
     padding: 20px;
@@ -10646,4 +10641,7 @@ section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center {
 }
 section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center label {
     padding: 10px;
+}
+body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
+    margin-bottom: 0;
 }

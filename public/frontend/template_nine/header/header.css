@@ -360,6 +360,7 @@ body.al_body_template_nine.p2p-module .al_custom_head_map_box {
     border-radius: 5px;
     width: 100%;
 }
+body.dark.al_body_template_eight .pixelstrap a, .pixelstrap a:active, .pixelstrap a:hover{color:#fff;}
 /*---------------mobile view media css----------*/
 @media(max-width:767px){
 .al_body_template_eight .menu-slider.slick-slider {

@@ -1,6 +1,9 @@
 @php
 $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
 $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
+
+$getAdditionalPreference = getAdditionalPreference(['is_gift_card']);
+
 @endphp
 @switch($client_preference_detail->business_type)
     @case('taxi')
@@ -30,7 +33,11 @@ $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
                             <li  class="{{ (request()->is('user/chat/userVendor')) ? 'active' : '' }}">
                                 <a href="{{route('userChat.UservendorChat')}}">{{ __('Vendor Chat') }}</a>
                             </li>
-
+                            @if(p2p_module_status())
+                            <li  class="{{ (request()->is('user/chat/vendorUser')) ? 'active' : '' }}">
+                                <a href="{{route('userChat.vendorUserChat')}}">{{ __('User Chat') }}</a>
+                            </li>
+                            @endif
                             <li  class="{{ (request()->is('user/chat/userAgent')) ? 'active' : '' }}">
                                 <a href="{{route('userChat.UserAgentChat')}}">{{ __('Driver Chat') }}</a>
                             </li>
@@ -53,7 +60,10 @@ $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
                 <li class="{{ (request()->is('user/subscription*')) ? 'active' : '' }}"><a href="{{route('user.subscription.plans')}}">{{ __('My Subscriptions') }}</a></li>
             @endif
             @if(is_p2p_vendor())
-                <li class=""><a href="{{route('vendor.index')}}">{{ __('Add Post') }}</a></li>
+                <li class=""><a href="{{route('posts.index', ['fullPage'=>1])}}">{{ __('Add Post') }}</a></li>
+            @endif
+            @if(@getAdditionalPreference(['is_gift_card'])['is_gift_card']==1)
+                <li class="{{ (request()->is('user/giftCard')) ? 'active' : '' }}"><a href="{{route('giftCard.index')}}">{{ __('Gift Card') }}</a></li>
             @endif
             <li class="{{ (request()->is('user/changePassword')) ? 'active' : '' }}"><a href="{{route('user.changePassword')}}">{{ __('Change Password') }}</a></li>
             <li class="last {{ (request()->is('user/logout')) ? 'active' : '' }}"><a href="{{route('user.logout')}}">{{ __('Log Out') }}</a></li>

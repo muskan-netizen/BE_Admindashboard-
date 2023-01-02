@@ -649,9 +649,12 @@ body.al_body_template_nine.p2p-module section.p2p-categories .cate-item h3 {
     margin-bottom: 0;
 }
 body.al_body_template_nine.p2p-module section.p2p-categories .cate-item img {
-    width: 150px;
+    width: 100%;
     height: 100px;
     object-fit: contain;
+}
+body.al_body_template_nine section.main-product.mb-0.render_full_on_sale {
+    padding-top: 30px !important;
 }
 body.al_body_template_nine .product-card-box.position-relative.al_box_third_template.al img {
     width: 100%;

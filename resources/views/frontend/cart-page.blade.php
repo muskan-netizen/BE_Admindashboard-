@@ -43,9 +43,18 @@
     .cross-sell .slick-slide>div {
         margin: 0 12px;
     }
+    .order-user-name p {
+    display: inline-block;
+}
+.order-user-name {
+    background: #eeeeee;
+    padding: 6px 6px;
+    border-radius: 4px;
+}
     </style>
 
-@php $serviceType =  Session::get('vendorType'); @endphp
+@php $serviceType =  Session::get('vendorType');
+ @endphp
 
 @if($cart_details->totalQuantity<=0)
     <div class="container" >
@@ -148,11 +157,12 @@
     $incTax = 0;
     $product_container_charges_tax_amount=0;
 
+    $tax_container_charges_percentage=$cart_details->container_charges_tax;
     $other_taxes=$cart_details->other_taxes;
     $other_taxes_string=$cart_details->other_taxes_string;
     @endphp
+    {{-- @dd($cart_details->products) --}}
     @foreach($cart_details->products as $product)
-
             {{-- @php
             dd($product->is_vendor_closed.' -- '.$product->closed_store_order_scheduled);
             @endphp --}}
@@ -204,10 +214,11 @@
 
 
         {{-- Product Detail Loop --}}
-
+        
         <div id="tbody_{{$product->vendor->id}}">
 
             @foreach($product->vendor_products as $vendor_product)
+            {{-- @dd($vendor_product) --}}
             {{-- @php
             pr($vendor_product);
             @endphp --}}
@@ -236,12 +247,22 @@
                                 @endforeach
                                 @endif
                             </div>
+                            @php
+                                $getAdditionalPreference = getAdditionalPreference(['is_corporate_user' ]);
+                                $corporate_user_price = 0;
+                            @endphp
+                            @if( (@Auth::user()->role_id == 3) && ($getAdditionalPreference['is_corporate_user'] == 1) && !empty($vendor_product->product_variant_by_roles) && !empty($vendor_product->quantity_role_price) && $vendor_product->quantity_role_price->quantity_price != 0 )
+                                <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->quantity_role_price->amount) }}</div>
+                                </div>
+                            @else
+                                @if(isset($vendor_product->pvariant->actual_price))
+                                <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
+                                    <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
+                                </div>
+                                @endif
+                            @endif                            
 
-                            @if(isset($vendor_product->pvariant->actual_price))
-                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
-                            </div>
-                            @endif
                             @if(!empty($vendor_product->quantity_price))
                             <div class="col-6 col-md-2 text-left order-md-4">
                                 @if($serviceType ==  'rental')
@@ -253,7 +274,12 @@
                                 @endphp
                                     <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price + ($additionalPrice )) }}</div>
                                 @else
-                                <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                    @if( $corporate_user_price != 0 )
+                                        <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($corporate_user_price) * $vendor_product->quantity }}</div>
+                                    @else
+                                        <div class="items-price">{{Session::get('currencySymbol')}}{{decimal_format($vendor_product->quantity_price) }}</div>
+                                    @endif
+                                
                                 @endif
                             </div>
                             @endif
@@ -440,6 +466,10 @@
                         @if( $vendor_product->product->is_long_term_service ==  1)
                         @include('frontend.cart.longTermTimeSelection')
                         @endif
+
+                        @if( $vendor_product->product->same_day_delivery ==  1 && $vendor_product->product->next_day_delivery ==  1)
+                            @include('frontend.cart.deliverySlotSelection')
+                        @endif
                     
                     </div>
 
@@ -618,6 +648,9 @@
          <div class="cart-summary p-2 pb-4">
             <div class="col-12 mb-2">
                 <h5 class="order_text">{{ __('Order Summary') }}</h5>
+                @if(array_key_exists('gift_card_id', $cart_details) && empty($cart_details->gift_card) )
+                    <a id='open_gift_card' href="javascript:void(0)" class="btn btn-solid w-100">{{ __("open gift Card") }}</a>
+                @endif
             </div>
         <input type="hidden" name="without_category_kyc" value="{{$cart_details->without_category_kyc}}">
         @if($client_preference_detail->category_kyc_documents ==1)
@@ -704,8 +737,17 @@
                     <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart_details->specific_instructions??''}}"  name="specific_instructions">
                 </div>
             </div>
-
-
+            @if((isset($cart_details->gift_card_id) )&& (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
+                <div class="row">
+                    <div class="col-12 alFourSpecificInstructions mt-2">
+                        <span class="pb-1"> {{__('Gift Card')}}</span>
+                       <div class="order-user-name">
+                            <p class="mb-0"><img class="blur-up lazyloaded" data-src="http://local.myorder.com/assets/images/discount_icon.svg" src="http://local.myorder.com/assets/images/discount_icon.svg"> {{ $cart_details->gift_card->title }}</p>
+                            <a href="javascript:void(0);" data-giftcard_id='{{ $cart_details->gift_card->id }}' class="float-right remove_giftCard"> <i class="fa fa-times" aria-hidden="true"></i></a>
+                       </div>
+                    </div>
+                </div>
+            @endif
 
             @endif  {{--//isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry' --}}
 
@@ -720,6 +762,15 @@
                 </div>
                 <hr class="my-2">
             @endif
+            
+            @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
+                <div class="row">
+                    <div class="col-6">{{__('Delivery Slot Fees')}}</div>
+                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+        
         @if($cart_details->total_service_fee > 0 && $price_bifurcation!=1)
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
@@ -750,10 +801,9 @@
                 $other_taxes = $other_taxes+$product_container_charges_tax_amount;
                 $other_taxes_string=$other_taxes_string.',tax_product_container_charges:'.$product_container_charges_tax_amount;
                 $incTax = 1;
-            }else if($tax_container_charges_percentage>0){
-
-                $other_taxes=$other_taxes+($cart_details->$total_container_charges*$tax_container_charges_percentage/100);
-                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'+($cart_details.$total_container_charges*$tax_container_charges_percentage/100);
+            }else if($tax_container_charges_percentage > 0){
+                $other_taxes=$other_taxes+$tax_container_charges_percentage;
+                $other_taxes_string=$other_taxes_string.',tax_vendor_container_charges:'.$tax_container_charges_percentage;
                 $incTax = 1;
             }
             @endphp
@@ -774,7 +824,9 @@
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 @else  --}}
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount)}}</b></span>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">           
+                    {{ decimal_format($cart_details->gross_amount) }} 
+                </b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 {{-- @endif --}}
             </div>
@@ -793,6 +845,14 @@
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
                     <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="total_subscription_discount">{{ decimal_format($cart_details->total_subscription_discount)}}<span></b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+            @if((isset($cart_details->gift_card_id) )&& (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
+
+                <div class="row">
+                    <div class="col-6">{{__('Gift Card Used Amount')}}</div>
+                    <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="loyalty_amount">{{ decimal_format($cart_details->giftCardUsedAmount) }}</span></b></div>
                 </div>
                 <hr class="my-2">
             @endif
@@ -878,7 +938,6 @@
                         @endif
                 </div>
 
-
                 <div class="col-6 text-right">
                     @if($client_preference_detail->auto_implement_5_percent_tip == 1)
                         @if(decimal_format($cart_details->wallet_amount_used) > 0)
@@ -909,8 +968,8 @@
 
                     {{-- Schedual code Start at down --}}
         @if( !((($product->vendor->order_min_amount) > 0) &&  (($product->product_total_amount + $product->vendor->fixed_fee_amount) < ($product->vendor->order_min_amount))) )
-            @if(($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1 && (!in_array($serviceType ,['appointment','on_demand']) ) )
-                @if($client_preference_detail->business_type != 'laundry')
+            @if(($cart_details->is_long_term_service != 1 ) && ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) && $cart_details->vendorCnt==1 && (!in_array($serviceType ,['appointment','on_demand']) ) )
+                @if($client_preference_detail->business_type != 'laundry' )
             <div class="row arabic-lng position-relative my-3" id="dateredio">
                 <div class=" col-md-12 mb-2 mb-md-0 text-right">
                     <div class="login-form col schedule_btn">
@@ -977,9 +1036,15 @@
                             {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
                         @endif
                         @if(!empty($cart_details->editing_order) && !empty($cart_details->editing_order->scheduled_date_time) && !empty($edit_order_schedule_datetime))
-                        <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
+                            <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
+                            <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
                         @endif
-                        <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                            @if($cart_error_message=='')
+                                <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                            @else
+                            <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
+                        @endif
+                        
                     </div>
                 @endif
 
@@ -1111,3 +1176,7 @@
         });
     });
 </script>
+
+@section('script-bottom-js')
+<script defer type="text/javascript"  src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
+@endsection

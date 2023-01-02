@@ -905,6 +905,7 @@ class UserhomeController extends FrontController
             $top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
             $top_rated_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $top_rated_products_ids);
         }
+        // dd($popular_products);
         /**  Recent order */
             $activeOrders = [];
             $user = Auth::user();
@@ -1811,6 +1812,7 @@ class UserhomeController extends FrontController
 
     public function setSessionIndex(Request $request, $domain='')
     {
+        
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
 
