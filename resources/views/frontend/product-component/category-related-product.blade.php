@@ -21,7 +21,7 @@
                             @endphp
                                 @if(!is_null($img))
                                 <span class="">
-                                    <img class="blur-up lazyloaded pro_imgs myimage1"
+                                    <img class="blur-up lazyloaded pro_imgs myimage1 dfasdfasdf"
                                         data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
                                         width="60" height="60"
                                         src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
@@ -35,13 +35,20 @@
                                     src="{{loadDefaultImage()}}">
                             </span>
                             
-                        @endif
+                            @endif
                         </div>
                         <p class="exzoom_btn">
                             <a href="javascript:void(0);" class="exzoom_prev_btn">
                                 < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
                             </a>
                         </p>
+                        @else
+                            <span class="">
+                                <img class="blur-up lazyloaded pro_imgs myimage1"
+                                    data-src="{{loadDefaultImage()}}"
+                                    width="60" height="60"
+                                    src="{{loadDefaultImage()}}">
+                            </span>
                         @endif
 
                     <div class="pref-timing"> </div>
