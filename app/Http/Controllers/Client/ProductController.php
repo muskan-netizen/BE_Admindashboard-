@@ -335,7 +335,7 @@ class ProductController extends BaseController
         }
         $delivery_slots = [];
         if(checkTableExists('delivery_slots')){
-            $delivery_slots = DeliverySlot::where('status', 0)->get();
+            $delivery_slots = DeliverySlot::where(['status' => 0, 'parent_id' => 0])->get();
         }
 
         $pincodes = [];

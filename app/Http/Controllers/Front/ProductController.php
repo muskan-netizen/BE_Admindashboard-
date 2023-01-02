@@ -9,7 +9,7 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot};
 
 use Carbon\Carbon;
 use App\Http\Traits\{ProductActionTrait, ProductTrait};
@@ -351,7 +351,6 @@ class ProductController extends FrontController{
             if( $parsed_cutoff_time->gt($current_time) ) {
                 $current_time_response = true;
             }
-            
             return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response]);
 
         }
@@ -551,6 +550,13 @@ class ProductController extends FrontController{
                 $product_delivery_slots = $product_delivery_slots->get();
             }            
             return view('frontend.shipping-method-slots-ajax')->with(['product_delivery_slots' => $product_delivery_slots]);
+        }
+    }
+
+    public function getShippingSlotsInterval(Request $request){
+        if($request->ajax()){
+            $product_delivery_slots_interval = DeliverySlot::where('parent_id', $request->slot_id)->get();            
+            return view('frontend.shipping-method-slots-interval-ajax')->with(['product_delivery_slots_interval' => $product_delivery_slots_interval]);
         }
     }
 

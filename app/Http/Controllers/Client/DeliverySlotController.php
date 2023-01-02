@@ -16,7 +16,7 @@ class DeliverySlotController extends Controller
      */
     public function index(Request $request)
     {
-        $deliverySlot = DeliverySlot::all();
+        $deliverySlot = DeliverySlot::where('parent_id', 0);
         if ($request->ajax()) {
             return Datatables::of($deliverySlot)
                 ->addIndexColumn()
@@ -32,14 +32,16 @@ class DeliverySlotController extends Controller
                 ->addColumn('price', function ($deliverySlot) {
                     return $deliverySlot->price;
                 })
+                ->addColumn('slot_interval', function ($deliverySlot) {
+                    return $deliverySlot->slot_interval??'-';
+                })
                 ->addColumn('action', function ($deliverySlot) use ($request) {
                     $delete_url = route('delivery-slot.destroy', $deliverySlot->id);
                     $action = '<div class="form-ul" style="width: 60px;">
                     <div class="inner-div" style="float: left;">
                         <a class="action-icon addSlotBtn"
                             href="javascript:void(0);"
-                            data-id="'.$deliverySlot->id.'" data-title="'.$deliverySlot->title.'" data-start-time="'.$deliverySlot->start_time.'" data-end-time="'.$deliverySlot->end_time.'" data-price="'.$deliverySlot->price.'"><i
-                                class="mdi mdi-square-edit-outline"></i></a>
+                            data-id="'.$deliverySlot->id.'" data-title="'.$deliverySlot->title.'" data-start-time="'.$deliverySlot->start_time.'" data-end-time="'.$deliverySlot->end_time.'" data-price="'.$deliverySlot->price.'" data-slot-duration="'.$deliverySlot->slot_interval.'"><i class="mdi mdi-square-edit-outline"></i></a>
                     </div>
                     <div class="inner-div">
                         <form id="deleteproduct_'.$deliverySlot->id.'" method="POST"
@@ -86,13 +88,43 @@ class DeliverySlotController extends Controller
      */
     public function store(Request $request)
     {
+        $starttime = $request->start_time;  // your start time
+        $endtime = $request->end_time;  // End time
+        $duration = $request->slot_minutes??0;
+        
         $data = [
             'title' => $request->slot_title,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'price' => $request->price
+            'start_time' => $starttime,
+            'end_time' => $endtime,
+            'price' => $request->price,
+            'slot_interval' => $duration
         ];
+
         $deliverySlot = DeliverySlot::updateOrCreate([ 'id'   => $request->slot_id, ], $data);
+        
+        $time_interval = $this->timeInterval($starttime, $endtime, $duration);
+
+        if (!empty($time_interval)) {
+            $previous_time = '';
+            if($request->slot_id != ''){
+                DeliverySlot::where('parent_id', $request->slot_id)->delete();
+            }
+            foreach ($time_interval as $key => $time) {
+                if($key == 0){
+                    $previous_time = $time;
+                    continue;
+                }
+                $slot_interval = [
+                    'title' => $request->slot_title,
+                    'start_time' => $previous_time,
+                    'end_time' => $time,
+                    'price' => $request->price,
+                    'parent_id' => $deliverySlot->id
+                ];
+                DeliverySlot::create($slot_interval);
+                $previous_time = $time;
+            }
+        }
         if($request->slot_id != ''){
             return redirect()->back()->with('success', 'Slot updated successfully');
         }
@@ -144,5 +176,18 @@ class DeliverySlotController extends Controller
         $deliverySlots = DeliverySlot::find($id);
         $deliverySlots->delete();
         return redirect()->back()->with('success', 'Slot deleted successfully');
+    }
+
+    public function timeInterval($starttime, $endtime, $duration){
+        $array_of_time = array ();
+        $start_time    = strtotime ($starttime); //change to strtotime
+        $end_time      = strtotime ($endtime); //change to strtotime
+        $add_mins  = $duration * 60;
+        while ($start_time <= $end_time) // loop between time
+        {
+            $array_of_time[] = date ("H:i", $start_time);
+            $start_time += $add_mins; // to check endtie=me
+        }
+        return $array_of_time;
     }
 }

@@ -1251,6 +1251,22 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     // });
 
     $(document).on('change', '#delivery_form .delivery_slot', function(){
+        $.ajax({
+            url: "{{route('product.getShippingSlotsInterval')}}",
+            type: "get",
+            datatype: "html",
+            data: {slot_id:$(this).val()},
+            success: function(data){
+                $('#delivery_form .modal-title').text('Select Delivery Slots');
+                $("#delivery_option").empty().html(data);
+            },
+            error: function() {
+                $("#delivery_option").empty().html('Something went wrong');
+            }
+        });
+    });
+
+    $(document).on('change', '#delivery_form .delivery_slot_interval', function(){
         var slot_price = $(this).data('price');
         var slot_id = $(this).val();
         var slot_text = $(this).data('slot-text');

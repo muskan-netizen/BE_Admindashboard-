@@ -56,6 +56,7 @@
                                         <th>{{ __('Start Time') }}</th>
                                         <th>{{ __('End Time') }}</th>
                                         <th>{{ __('Price') }}</th>
+                                        <th>{{ __('Duration In Minute') }}</th>
                                         <th>{{ __('Status') }}</th>
                                         <th>{{ __('Action') }}</th>
                                     </tr>
@@ -107,6 +108,21 @@
                                     <input type="time" class="form-control" name="end_time" id="end_time" placeholder="Enter End Time" value="" required>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group w-100">
+                                {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
+                                    <select class="form-control" name="slot_minutes" id="slot_minutes" required>
+                                        <option value="">{{__('Slot Duration')}}</option>
+                                        <option value="15">15 {{__(' Minutes')}}</option>
+                                        <option value="30">30 {{__(' Minutes')}}</option>
+                                        {{-- <option value="45">45 {{__(' Minutes')}}</option> --}}
+                                        @for($i=1;$i<=3;$i++)
+                                            <option value="{{$i*60}}">{{ $i. __(' Hour')}}</option>
+                                        @endfor
+                                        {{--  {{$vendor->slot_minutes == ($i*60)? 'selected':''}} --}}
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -155,6 +171,7 @@
                         {data: 'start_time',name: 'start_time',orderable: false,searchable: false},
                         {data: 'end_time',name: 'end_time',orderable: false,searchable: false},
                         {data: 'price',name: 'price',orderable: false,searchable: false},
+                        {data: 'slot_interval',name: 'slot_interval',orderable: false,searchable: false},
                         {data: 'status',name: 'status',orderable: false,searchable: false},
                         {data: 'action',name: 'action',orderable: false,searchable: false}
                     ]
@@ -168,6 +185,7 @@
                     $('#start_time').val($(this).data('start-time'));
                     $('#end_time').val($(this).data('end-time'));
                     $('#price').val($(this).data('price'));
+                    $("select#slot_minutes").val($(this).data('slot-duration')).attr('selected','selected');
                     $('#add-edit-slot .modal-title').text("Edit Slot");
                 }else{
                     $('#slot_id').val('');
@@ -175,6 +193,7 @@
                     $('#start_time').val('');
                     $('#end_time').val('');
                     $('#price').val('');
+                    $("select#slot_minutes").val('');
                     $('#add-edit-slot .modal-title').text("Add Slot");
                 }
                 $('#add-edit-slot').modal();

@@ -461,6 +461,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::get('getShippingProductDeliverySlots', 'Front\ProductController@getShippingProductDeliverySlots')->name('product.getShippingProductDeliverySlots');
 
+	Route::get('getShippingSlotsInterval', 'Front\ProductController@getShippingSlotsInterval')->name('product.getShippingSlotsInterval');
+
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 	Route::get('firebase-messaging-sw.js', 'Front\FirebaseController@service_worker');
