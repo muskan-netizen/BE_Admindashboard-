@@ -1337,7 +1337,7 @@ class OrderController extends FrontController
                             if($vendor_cart_product->service_date == 0){
 
                                 $startdate =  Carbon::now()->endOfMonth()->format('Y-m-d');
-                                echo $startdate . ' ';
+                                //echo $startdate . ' ';
                                 if(strtotime($startdate) < strtotime($start_service_date))
                                 $startdate = Carbon::now()->addMonths(1);
 
