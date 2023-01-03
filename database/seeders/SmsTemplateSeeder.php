@@ -42,8 +42,14 @@ class SmsTemplateSeeder extends Seeder
                 $find = SmsTemplate::where('id',$option['id'])->first();
                 if(!$find){
                     $newUser = SmsTemplate::Create($option);
+                }else if($option['id'] == 7 ){
+                    $newUser = SmsTemplate::where('id',7)->update([
+                        'tags' => $option['tags']
+                     ]);
                 }
             }
+
+
         }
 
     }
