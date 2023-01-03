@@ -145,11 +145,13 @@ div#attribute_section .col-sm-9 .form-check-inline.w-100 {
   100% { transform: rotate(360deg); }
 }
 .field_wrapper a.add_button i {
+
     font-size: 30px;
     margin-top: -4px;
     display: inline-block;
 }
 .field_wrapper a.remove_button i {
+    
     font-size: 30px;
     margin-top: -4px;
     display: inline-block;
