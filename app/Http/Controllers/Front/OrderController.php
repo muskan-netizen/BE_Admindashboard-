@@ -3388,10 +3388,10 @@ class OrderController extends FrontController
         $language_id         = Session::get('customerLanguage');
         $navCategories       = $this->categoryNav($language_id);
         $showPage            = 'd-block';
+        $verifyPage          = 'd-none';
         if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1 && getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 0){
             $showPage    = 'd-block';
             $verifyPage  = 'd-none';
-
         }else{
             if(getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1){
 
