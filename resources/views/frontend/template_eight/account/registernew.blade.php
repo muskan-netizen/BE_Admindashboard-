@@ -135,7 +135,7 @@
                                         </div>
                                     </div>
                                     @if( $getAdditionalPreference['is_user_kyc_for_registration'] == 1)
-                                        
+                                       @include('frontend.account.registerKycForm') 
                                     @endif
                                 </div>
 

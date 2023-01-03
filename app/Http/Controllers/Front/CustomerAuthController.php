@@ -218,6 +218,7 @@ class CustomerAuthController extends FrontController
     /**     * Display register Form     */
     public function register(SignupRequest $req, $domain = ''){
         try {
+            dd($req->all());
             $phonenumber= str_replace('-', '', $req->phone_number);
             $req->phone_number = str_replace(' ', '', $phonenumber);
             if( (empty($req->email)) && (empty($req->phone_number)) ){
