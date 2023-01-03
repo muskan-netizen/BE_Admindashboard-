@@ -298,13 +298,14 @@ class ReturnOrderController extends FrontController{
                                         ->whereHas('products', function ($q) use($orderVendorProductOld){
                                             $q->where('product_id', $orderVendorProductOld->product_id);
                                         })->first();
-                                        // $this->checkreplaceProduct($request, $orderVendorProductOld);
-                                       
+                                        
                                         
             
-            if(round($orderVendorOld->subtotal_amount/$orderVendorOld->products[0]->quantity)  != round($request->product_a_price)){
+            if(round($this->checkreplaceProduct($request, $orderVendorProductOld))  != round($request->product_a_price)){
+                // if(round($orderVendorOld->subtotal_amount/$orderVendorOld->products[0]->quantity)  != round($request->product_a_price)){
                 return $this->errorResponse('Please select product with same price', 200);
             }
+            
             $type = 2; // type = exchange
             $this->saveReturnExchangeRequest($request, $orderVendorProductOld, $type);
             /****** create new exchange order Start ******************/
