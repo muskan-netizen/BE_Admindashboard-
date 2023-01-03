@@ -933,7 +933,7 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
 
 .al_body_template_eight .top-header .header-dropdown li i {
     font-size: 18px;
-    color: #e09378;
+    color: var(--theme-deafult);
 }
 
 .al_body_template_eight li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
@@ -983,7 +983,7 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
 .al_body_template_eight span#cart_qty_span {
     width: 20px;
     height: 20px;
-    background: #e09378;
+    background: var(--theme-deafult);
     color: #fff;
     border-radius: 50%;
     position: absolute;
