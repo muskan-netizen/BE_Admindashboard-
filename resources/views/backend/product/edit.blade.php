@@ -775,8 +775,39 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </div>
                         </div>
                         @endif
+                        @if($product->vendor->same_day_delivery == 1 && $getAdditionalPreference['is_same_day_delivery'])
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Same Day Delivery'),['class' => 'control-label']) !!}
+                                <input type="checkbox" id="same_day_delivery" data-plugin="switchery" name="same_day_delivery" class="chk_box" data-color="#43bee1" @if($product->same_day_delivery == 1) checked @endif>
+                            </div>
+                        @endif
+                        @if($product->vendor->next_day_delivery == 1 && $getAdditionalPreference['is_next_day_delivery'])
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Next Day Delivery'),['class' => 'control-label']) !!}
+                                <input type="checkbox" id="next_day_delivery" data-plugin="switchery" name="next_day_delivery" class="chk_box" data-color="#43bee1" @if($product->next_day_delivery == 1) checked @endif>
+                            </div>
+                        @endif
+                        @if($product->vendor->hyper_local_delivery == 1 && $getAdditionalPreference['is_hyper_local_delivery'])
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Hyper Local Delivery'),['class' => 'control-label']) !!}
+                                <input type="checkbox" id="hyper_local_delivery" data-plugin="switchery" name="hyper_local_delivery" class="chk_box" data-color="#43bee1" @if($product->hyper_local_delivery == 1) checked @endif>
+                            </div>
+                        @endif
 
-                        
+                        @if($product->vendor->next_day_delivery == 1 || $product->vendor->same_day_delivery == 1)
+                            @php
+                                $pro_delivery_slot_ids = $product->syncProductDeliverySlot->pluck('id')->toArray();
+                            @endphp
+                            <div class="col-sm-12 custom_select">
+                                {!! Form::label('title', __('Choose Slots'),['class' => 'control-label']) !!}
+                                <select class="selectizeInput form-control" id="select_slot" name="slot_ids[]" multiple>
+                                    <option value="">Choose Slots</option>
+                                    @foreach ($delivery_slots as $slot)
+                                        <option value="{{$slot->id}}" @if(in_array($slot->id, $pro_delivery_slot_ids)) selected @endif>{{$slot->title.' ( '.$slot->start_time.'-'.$slot->end_time.' )'}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
 
                         @if(($configData->need_dispacher_home_other_service == 1 && ($product->category->categoryDetail->type_id == 8)) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 ) )
                         @if($product->Requires_last_mile == 1 )

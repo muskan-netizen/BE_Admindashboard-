@@ -462,6 +462,41 @@
                             </div>
                         </div>
                         @endif
+                        <div class="card-box">                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-md-6">
+                                            <h3 class="page-title">{{ getNomenclatureName(__('Pincode'), true) }}</h3>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="al_new_export_table royo_customber_btn table_customber_add">
+                                                <div class="position-absolute mb-2">
+                                                    <button class="btn btn-info waves-effect waves-light text-sm-right importPincodeModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import CSV') }}</button>
+                                                    <button type="button" class="btn btn-info waves-effect waves-light text-sm-right addPincodeBtn" data-pincode=""><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Pincode') }}</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table id="pincode_table" class="table table-centered table-nowrap table-striped" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>{{ __('Pincode') }}</th>
+                                                    <th>{{ __('Type') }}</th>
+                                                    <th>{{ __('Status') }}</th>
+                                                    <th>{{ __('Action') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="review_table_tbody_list">
+            
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @if($vendor->show_slot == 0)
                         @if($client_preferences->scheduling_with_slots != 1)
                         @if($client_preference_detail->business_type != 'laundry')
