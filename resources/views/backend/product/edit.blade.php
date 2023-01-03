@@ -775,7 +775,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </div>
                         </div>
                         @endif
-
                         @if($product->vendor->same_day_delivery == 1 && $getAdditionalPreference['is_same_day_delivery'])
                             <div class="col-md-6 d-flex justify-content-between mb-2">
                                 {!! Form::label('title', __('Same Day Delivery'),['class' => 'control-label']) !!}
