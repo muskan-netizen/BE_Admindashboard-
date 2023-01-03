@@ -112,7 +112,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                         </div>--}}
                         <section class="buy_details">
                             <div class="row">
-                                @if((!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id = '9')))
+                                @if((!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9')))
                                 <div class="col-md-1 pl-0">
                                     <div class="exzoom_nav side_nav_img">
                                        
