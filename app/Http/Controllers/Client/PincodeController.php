@@ -16,6 +16,7 @@ class PincodeController extends Controller
      */
     public function index(Request $request)
     {
+        
         $search = $request->search??'';
         $pincode = Pincode::with('deliveryOptions')->where('vendor_id', $request->vendor_id);
         if(!empty($search)){
@@ -79,6 +80,7 @@ class PincodeController extends Controller
             'pincode' => $request->pincode,
             'vendor_id' => $request->vendor_id
         ]);
+
         if($request->pincode_id != ''){
             PincodeDeliveryOption::where('pincode_id', $request->pincode_id)->delete();
         }
@@ -103,12 +105,14 @@ class PincodeController extends Controller
      */
     public function destroy(Pincode $pincodes, $domain = '', $id)
     {
-        $returnReason = Pincode::find($id);
+
+        $returnReason = Pincode::find($id); 
         $returnReason->delete();
         return redirect()->back()->with('success', 'Pincode deleted successfully');
     }
 
     public function pincodeData(Request $request){
+
         if($request->ajax()){
             $pincode = Pincode::with('deliveryOptions')->where('id', $request->id)->first();
             return view('backend.pincode.edit-pincode-ajax')->with('pincode', $pincode); 

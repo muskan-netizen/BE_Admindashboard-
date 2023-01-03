@@ -295,6 +295,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('seller/catalogs/{id}', 'Client\SellerController@sellerCatalog')->name('seller.catalogs');
 
         Route::resource('pincode', 'Client\PincodeController');
+        
         Route::get('pincodeData', 'Client\PincodeController@pincodeData')->name('pincode.pincodeData');
 
         Route::resource('delivery-slot', 'Client\DeliverySlotController');
