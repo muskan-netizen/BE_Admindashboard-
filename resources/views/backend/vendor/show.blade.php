@@ -1744,6 +1744,7 @@
                 "serverSide": true,
                 "iDisplayLength": 10,
                 ajax: {
+                    
                     url: "{{ url('client/pincode') }}",
                     data: function (d) {
                         d.search = $('input[type="search"]').val();
