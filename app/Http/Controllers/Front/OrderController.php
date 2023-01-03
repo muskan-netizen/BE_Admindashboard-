@@ -3387,13 +3387,14 @@ class OrderController extends FrontController
         $order               = Order::where(['user_id'=>$user_id,'order_number'=>$order_id])->with('orderStatusVendor','ordervendor')->first();
         $language_id         = Session::get('customerLanguage');
         $navCategories       = $this->categoryNav($language_id);
-
+        $showPage            = 'd-block';
         if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1 && getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 0){
             $showPage    = 'd-block';
             $verifyPage  = 'd-none';
 
         }else{
             if(getAdditionalPreference(['is_tracking_sms_url'])['is_tracking_sms_url'] == 1){
+
                 if (isset($_COOKIE['tracking_url_'.$order_id]) || $request->verified == 1) {
                     if($_COOKIE['tracking_url_'.$order_id] == $request->ip()){
                         $showPage    = 'd-block';
