@@ -26,18 +26,18 @@ trait OrderTrait{
             foreach ($order->vendors as $vendor) {
                 foreach ($vendor->products as $product) {
                     $ProductVariant = ProductVariant::find($product->variant_id);
-                   
+
                     if ($ProductVariant) {
-                            
+
                             $update_quantity  = $ProductVariant->quantity - $product->quantity;
                             if($update_quantity < 0)
                             $update_quantity  = 0;
-                            
+
                             $ProductVariant->quantity  = $update_quantity;
                             $ProductVariant->save();
-                        
+
                     }
-                    
+
                 }
             }
         }
@@ -65,10 +65,10 @@ trait OrderTrait{
     }
 
     public function GetVendorReturnAmount($request, $order){
-       
+
         $order_vendor_paybel_amount = OrderVendor::where('order_id',$order->id)->where('order_status_option_id',"!=",'3')->select(DB::raw('sum(payable_amount) AS sum_of_order_payable_amount'))->first();
         $order_total_amount=  $order_vendor_paybel_amount->sum_of_order_payable_amount;
-        
+
         $canceld_order_payments =VendorOrderCancelReturnPayment::where('order_id',$order->id)->select(DB::raw('sum(wallet_amount) AS sum_of_wallet_amount'),DB::raw('sum(online_payment_amount) AS sum_of_online_payment_amount'))->first();
         //pr($canceld_order_payments->toArray());
         $vendor_payble_amount = $order->vendors->first()->payable_amount;
@@ -78,18 +78,18 @@ trait OrderTrait{
             $vendor_contribution_percentage = ($vendor_payble_amount / $order_total_amount) * 100;
         }
 
-        $vendor_loyalty_amount =  $vendor_loyalty_points = $vendor_wallet_amount = $vendor_loyalty_points_earned = $vendor_online_payment_amount = 0;   
+        $vendor_loyalty_amount =  $vendor_loyalty_points = $vendor_wallet_amount = $vendor_loyalty_points_earned = $vendor_online_payment_amount = 0;
 
         if($order->loyalty_points_used > 0){
             // get loyalty for vendor
             $total_loyalty_amount = $order->loyalty_amount_saved ;
-          
+
             // get loyalty points as pr 1 rup (primery Currency)
             $redeem_points_per_primary_currency = 0;
             if($order->loyalty_amount_saved > 0){
                 $redeem_points_per_primary_currency =  $order->loyalty_points_used /  $order->loyalty_amount_saved;
             }
-            
+
             // vendot loyalty amount in order
             $vendor_loyalty_amount =  ($total_loyalty_amount * $vendor_contribution_percentage ) / 100;
 
@@ -98,7 +98,7 @@ trait OrderTrait{
         }
         if($order->loyalty_points_earned > 0){
             $total_loyalty_points_earned = $order->loyalty_points_earned ;
-            // get perticuler vendor loyalty point earnd 
+            // get perticuler vendor loyalty point earnd
             $vendor_loyalty_points_earned   =($total_loyalty_points_earned * $vendor_contribution_percentage ) / 100;
         }
 
@@ -116,8 +116,8 @@ trait OrderTrait{
             //vendo online payment contributuin in order
             $vendor_online_payment_amount = ($order_total_payable_amount * $vendor_contribution_percentage ) / 100;
         }
-        
-        $vendor_total_sum = $vendor_loyalty_amount +  $vendor_wallet_amount +  $vendor_online_payment_amount ;  
+
+        $vendor_total_sum = $vendor_loyalty_amount +  $vendor_wallet_amount +  $vendor_online_payment_amount ;
 
         $vendor_return_amount = $vendor_wallet_amount + $vendor_online_payment_amount;
 
@@ -135,7 +135,7 @@ trait OrderTrait{
             //COD cancellation charges deduct from user wallet
             else{
                 $order_total_payable_amount =  $order->payable_amount;
- 
+
                 // deduction canceld order online payment  amount
                 $order_total_payable_amount = $order_total_payable_amount - $canceld_order_payments->sum_of_online_payment_amount;
 
@@ -170,7 +170,7 @@ trait OrderTrait{
      // place Request To Dispatch for Appointment , OnDemand
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain,$request)
     {
-       
+
         try {
 
             $order = Order::find($order);
@@ -182,9 +182,9 @@ trait OrderTrait{
             $return_response = 2;
             $paymentSentAlready = 0;
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-         
+
             $order_vendor = OrderVendor::with('products.product')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-       
+
             foreach( $order_vendor->products as $product){
                 $allocation_type = 'a';
                 $agent = '';
@@ -195,10 +195,10 @@ trait OrderTrait{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
                 }
-               
+
                 $tasks = array();
                 $meta_data = '';
-    
+
                 $unique = Auth::user()->code;
                 $team_tag = $unique . "_" . $vendor;
                 if(!empty($product->scheduled_date_time) && $product->scheduled_date_time > 0){
@@ -206,7 +206,7 @@ trait OrderTrait{
                     $user = Auth::user();
                     $selectedDate = dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone);
                     $slot = trim(explode("-",$product->schedule_slot)[0]);
-    
+
                     $slotTime = date('H:i:s', strtotime("$slot"));
                     $selectedDate = date('Y-m-d',strtotime($selectedDate));
                     $scheduleDateTime = $selectedDate.' '.$slotTime;
@@ -248,18 +248,18 @@ trait OrderTrait{
                         'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
                     );
                 }
-               
+
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                     $customerno = "0" . $customer->phone_number;
-                } else {                
+                } else {
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-               
+
                 $client = CP::orderBy('id', 'asc')->first();
                 for ($x = 1; $x <= $product->quantity; $x++) {
-                    //  send all payment to fist order 
+                    //  send all payment to fist order
                     if( $paymentSentAlready == 0){
                         $paymentSentAlready =1;
                     }else{
@@ -267,7 +267,7 @@ trait OrderTrait{
                         $payable_amount = 0.00;
                     }
                     $dynamic = uniqid($order->id . $vendor . $product->product_id.$x);
-               
+
                     $call_back_url = route('dispatch-order-product-status-update', $dynamic);
                     $postdata =  [
                         'order_number'  =>  $order->order_number,
@@ -297,15 +297,15 @@ trait OrderTrait{
                         'task_type_id' =>$task_type_id, //  for add agent booking in case of appointment
                         'service_time' =>  $service_time
                     ];
-                  
-                    
+
+
                     if($order_vendor->is_restricted == 1)
                     {
                         $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
                         $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
                     }
-                  
-        
+
+
                     $client = new Client([
                         'headers' => [
                             'personaltoken' => $dispatch_domain['service_key'],
@@ -313,7 +313,7 @@ trait OrderTrait{
                             'content-type'  => 'application/json'
                         ]
                     ]);
-                    
+
                     $url = $dispatch_domain['service_key_url'];
                     $res = $client->post(
                         $url . '/api/task/create',
@@ -322,7 +322,7 @@ trait OrderTrait{
                     $response = json_decode($res->getBody(), true);
                     if ($response && $response['task_id'] > 0) {
                         $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
-    
+
                         $dispatch_route                                 = new OrderProductDispatchRoute();
                         $dispatch_route->order_id                       = $request->order_id ;
                         $dispatch_route->order_vendor_id                = $product->order_vendor_id ;
@@ -332,18 +332,18 @@ trait OrderTrait{
                         $dispatch_route->dispatcher_status_option_id    = 1 ;
                         $dispatch_route->order_status_option_id         = 1 ;
                         $dispatch_route->save();
-                        
+
                         $update = VendorOrderProductDispatcherStatus::updateOrCreate([
                             'dispatcher_id' => null,
                             'order_id' =>  $request->order_id,
                             'dispatcher_status_option_id' => 1,
                             'vendor_id' =>  $request->vendor_id,
-                            'order_product_route_id' => $dispatch_route->id 
+                            'order_product_route_id' => $dispatch_route->id
                         ]);
-                       
+
                         $return_response = 1;
                     }
-              
+
                 }
             }
             return $return_response;
@@ -355,22 +355,22 @@ trait OrderTrait{
             ]);
         }
     }
-   
+
 
     public function bookingSlot($request)
     {
 
         $request = (object) $request;
-       
+
         try {
             DB::beginTransaction(); //Initiate transaction
-             
+
               $start_time = date("Y-m-d H:i:s",strtotime($request->start_date));
               $end_time = date("Y-m-d H:i:s",strtotime($request->end_date));
-             
-              
+
+
               $start_end_block_time = $start_time;
-    
+
               $status = ProductBooking::Create([
                                 'memo'=>$request->memo,
                                 'variant_id'=>$request->variant_id,
@@ -395,11 +395,11 @@ trait OrderTrait{
      */
     public function updateVendorRating($vendor_id){
         $vendor_rating = 0;
-        
+
         if($vendor_id != null & $vendor_id > 0){
             $vendor_rating = Product::where('vendor_id', $vendor_id)
                             ->avg('averageRating');
-        } 
+        }
 
         if($this->checkColumnExists('vendors', 'rating')){
             Vendor::where('id', $vendor_id)->update(['rating' => $vendor_rating]);
@@ -419,7 +419,7 @@ trait OrderTrait{
         $vendor = Vendor::find($vendor_id);
 
         if($vendor && $vendor->rating == null){
-            
+
             $vendor_rating = $this->updateVendorRating($vendor_id);
             return number_format($vendor_rating, 1);
 
@@ -456,10 +456,10 @@ trait OrderTrait{
             ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
            // pr($longTermOrders->toArray());
         foreach ($longTermOrders as $order) {
-          
+
             $orderStatus = '';
             foreach ($order->vendors as $vendor) {
-              
+
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
 
                 $vendor->order_status =ucfirst( $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '');
@@ -472,11 +472,11 @@ trait OrderTrait{
                                     $q->groupBy('addon_option_translations.addon_opt_id', 'addon_option_translations.language_id');
                                 }])->where('order_product_id',$product->id)->first();
                       if(isset($product->longTermSchedule->addon) && !empty($product->longTermSchedule->addon)){
-                          
+
                           foreach ($product->longTermSchedule->addon as $ck => $addons) {
                               $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
                           }
-                    }         
+                    }
                     if ( isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
                     } elseif ($product->media->isNotEmpty() && !is_null($product->media->first()->image)) {
@@ -514,7 +514,7 @@ trait OrderTrait{
 
     public function checkIfanyServiceProductLastMileon($request)
     {
-    
+
         $order_dispatchs = 2;
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         // pr( $checkdeliveryFeeAdded);
@@ -525,15 +525,15 @@ trait OrderTrait{
         $product_dispatcher_tag  = @$checkdeliveryFeeAdded->products->first()->LongTermService->product->tags;
         $product_category_type_id  = @$checkdeliveryFeeAdded->products->first()->LongTermService->product->category->categoryDetail->type_id ?? 0;
         $preference = ClientPreference::first();
-       
+
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type
-            
+
             if ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key_code) && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_url))
                 $Appointment = 0;
-             
+
                 /**if its not long_term_service */
-                   
+
                     if ( isset($product_dispatcher_tag) && !empty($product_dispatcher_tag) ) {
                         if ( $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
 
@@ -543,7 +543,7 @@ trait OrderTrait{
                                 'service_key_url'  => $preference->appointment_service_key_url,
                                 'service_type'     => 'appointment'
                             ];
-                            
+
                             $order_dispatchs = $this->placeRequestToDispatchServiceProduct($request->order_id, $request->vendor_id,$dispatch_domain ,$request);
                             if ($order_dispatchs && $order_dispatchs == 1) {
                                 $Appointment = 1;
@@ -551,26 +551,26 @@ trait OrderTrait{
                             }
                         }
                     }
-                
-            
+
+
         }
-      
+
         if ($luxury_option_id == 6) { // only for on_demand type
             if ($preference->need_dispacher_home_other_service == 1 && !empty($preference->dispacher_home_other_service_key) && !empty($preference->dispacher_home_other_service_key_code) && !empty($preference->dispacher_home_other_service_key_url))
             {
-              
+
                 $OnDemand = 0;
-            
+
                 if ( isset($product_dispatcher_tag) && !empty($product_dispatcher_tag) && $product_category_type_id == 8 ) {
                     if ( $checkdeliveryFeeAdded->delivery_fee > 0) {
-                        
+
                         $dispatch_domain=[
                             'service_key'      => $preference->dispacher_home_other_service_key,
                             'service_key_code' => $preference->dispacher_home_other_service_key_code,
                             'service_key_url'  => $preference->dispacher_home_other_service_key_url,
                             'service_type'     => 'on_demand'
                         ];
-                     
+
                         $order_dispatchs = $this->placeRequestToDispatchServiceProduct($request->order_id, $request->vendor_id, $dispatch_domain ,$request);
                         if ($order_dispatchs && $order_dispatchs == 1) {
                             $OnDemand = 1;
@@ -578,13 +578,13 @@ trait OrderTrait{
                         }
                     }
                 }
-                   
-                
+
+
             }
         }
-        
+
         if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)){
-            
+
             $dispatch_domain=[
                 'service_key'      => $preference->delivery_service_key   ,
                 'service_key_code' => $preference->delivery_service_key_code,
@@ -595,7 +595,7 @@ trait OrderTrait{
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
                 $order_dispatchs = $this->placeRequestToDispatchServiceProduct($request->order_id, $request->vendor_id, $dispatch_domain,$request);
             }
-        
+
 
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
@@ -609,16 +609,16 @@ trait OrderTrait{
      *
      * @param  mixed $request
      * @return void
-     * place Request To Dispatch for LongTerm Service 
+     * place Request To Dispatch for LongTerm Service
      */
-     // place Request To Dispatch for LongTerm Service 
+     // place Request To Dispatch for LongTerm Service
     public function placeRequestToDispatchServiceProduct($order, $vendor, $dispatch_domain,$request)
     {
-       
+
         try {
- 
-             $order = Order::find($order); 
-          
+
+             $order = Order::find($order);
+
              $customer = User::find($order->user_id);
              $cus_address = UserAddress::find($order->address_id);
              $tasks = array();
@@ -627,12 +627,12 @@ trait OrderTrait{
              $return_response = 2;
              $paymentSentAlready = 0;
              $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-          
+
              $order_vendor = OrderVendor::with('products.product','products.LongTermService.schedule')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
              $product =$order_vendor->products->first();
              $schedules = $order_vendor->products->first()->LongTermService->schedule;
-             
-             
+
+
                  $allocation_type = 'a';
                  $agent = '';
                  if ($order->payment_option_id == 1 ) {
@@ -645,14 +645,14 @@ trait OrderTrait{
                // pr($payable_amount);
                  $tasks = array();
                  $meta_data = '';
-     
+
                  $unique = Auth::user()->code;
                  $team_tag = $unique . "_" . $vendor;
-               
- 
+
+
                  $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
                  $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
-             
+
                  $tasks[] = array(
                      'task_type_id' => $task_type_id,
                      'latitude'     => $vendor_details->latitude ?? '',
@@ -688,15 +688,15 @@ trait OrderTrait{
                  if ($customer->dial_code == "971") {
                      // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                      $customerno = "0" . $customer->phone_number;
-                 } else {                
+                 } else {
                      // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                      $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                  }
                  $client = CP::orderBy('id', 'asc')->first();
-                
-                //  send all payment to fist order 
-            
-              
+
+                //  send all payment to fist order
+
+
                 $postdata =  [
                     'order_number'  =>  $order->order_number,
                     'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -725,8 +725,8 @@ trait OrderTrait{
                     'task_type_id' =>$task_type_id, //  for add agent booking in case of appointment
                     'service_time' =>  $service_time
                 ];
-            
-                
+
+
                 if($order_vendor->is_restricted == 1)
                 {
                     $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -735,7 +735,7 @@ trait OrderTrait{
                 //pr($postdata);
                  $paymentSentAlready = 0;
                  foreach($schedules as $key => $schedule){
-                   
+
                     if( $paymentSentAlready == 0){
                         $paymentSentAlready =1;
                     }else{
@@ -743,12 +743,12 @@ trait OrderTrait{
                         $payable_amount = 0.00;
                     }
                     $dynamic = uniqid($order->id . $vendor . $product->product_id.($key=1));
-        
+
                     $call_back_url = route('dispatch-order-service-status-update', $dynamic);
                     $postdata['call_back_url'] = $call_back_url;
                     $postdata['schedule_time'] = $schedule->schedule_date;
                     $postdata['cash_to_be_collected'] = $payable_amount;
-                   
+
 
                     $client = new Client([
                         'headers' => [
@@ -757,7 +757,7 @@ trait OrderTrait{
                             'content-type'  => 'application/json'
                         ]
                     ]);
-                     
+
                     $url = $dispatch_domain['service_key_url'];
                     $res = $client->post(
                         $url . '/api/task/create',
@@ -766,14 +766,14 @@ trait OrderTrait{
                     $response = json_decode($res->getBody(), true);
                     if ($response && $response['task_id'] > 0) {
                         $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
-    
-                    
+
+
                         $schedule->web_hook_code                  = $dynamic;
                         $schedule->dispatch_traking_url           = $dispatch_traking_url ;
                         $schedule->dispatcher_status_option_id    = 1 ;
                         $schedule->order_status_option_id         = 1 ;
                         $schedule->save();
-                        
+
                         $update = VendorOrderProductDispatcherStatus::updateOrCreate([
                             'dispatcher_id' => null,
                             'order_id' =>  $request->order_id,
@@ -781,10 +781,10 @@ trait OrderTrait{
                             'vendor_id' =>  $request->vendor_id,
                             'long_term_schedule_id' =>$schedule->id
                         ]);
-                    
+
                     }
                  }
-            
+
              return 1;
          } catch (\Exception $e) {
              //return 2;
@@ -794,13 +794,13 @@ trait OrderTrait{
              ]);
          }
     }
-    
+
     /**
      * updateBooking
      *
      * @param  mixed $request
      * @return void
-     * update long term order booking  update 
+     * update long term order booking  update
      */
     public function updateLongTermBooking($request){
 
@@ -810,31 +810,31 @@ trait OrderTrait{
                 // cancel order to dispatcher
                 $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $BookingSchedule->dispatch_traking_url);
                 $response = Http::get($dispatch_traking_url);
-                //order cancelled 
+                //order cancelled
                 $orderUserId[]              =  @$BookingSchedule->OrderService->orderProduct->order->user_id ?? 0;
                 $order_number               =  @$BookingSchedule->OrderService->orderProduct->order->order_number ?? '';
                 $BookingSchedule->status    = 1;
-                $BookingSchedule->save(); 
+                $BookingSchedule->save();
                 $this->sendOrderBookingNotification( $orderUserId,$order_number);
             }
            return $BookingSchedule;
          } catch (Exception $e) {
              return $this->errorResponse([], $e->getMessage());
          }
-    }  
+    }
     public function sendOrderBookingNotification($user_ids, $order_number, $NotificationTemplateId='1')
     {
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
-       
+
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            
+
             $body_content ="Your Long term Booking no:({order_id}) has been Completed";
             $body_content = str_ireplace("{order_id}", "#" . $order_number, $body_content);
             $subject = 'Long term booking Completed';
             if ($body_content) {
-               
+
                 $data = [
                     "registration_ids" => $devices,
                     "notification" => [
@@ -842,7 +842,7 @@ trait OrderTrait{
                         'body'  => $body_content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                    
+
                         "android_channel_id" => "sound-channel-id"
                     ],
                     "data" => [
@@ -856,8 +856,9 @@ trait OrderTrait{
         }
     }
 
-    public function sendTrackingUrlSMS($user, $order, $vendor_id = '')
+    public function sendTrackingUrlSMS($order, $vendor_id = '')
     {
+        $user = User::find($order['user_id']);
         $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','currency_id')->first();
         if ($user['dial_code'] == "971") {
             $to = '+' . $user['dial_code'] . "0" . $user['phone_number'];
@@ -865,25 +866,45 @@ trait OrderTrait{
             $to = '+' . $user['dial_code'] . $user['phone_number'];
         }
         $provider = $prefer['sms_provider'];
-      
+        $order    = Order::where(['user_id'=>$order['user_id'],'order_number'=>$order['order_number']])->with('orderStatusVendor','ordervendor')->first();
+        if(isset($order->orderStatusVendor)){
+            $order_status = '';
+            foreach ($order->orderStatusVendor as $key =>$status){
+                if($status->order_status_option_id  == 1){
+                    $order_status = "Placed";
+                }
+                if($status->order_status_option_id  == 2){
+                    $order_status = "Accepted";
+                }
+                if($status->order_status_option_id  == 4){
+                    $order_status = "Processing";
+                }
+                if($status->order_status_option_id  == 5){
+                    $order_status = "Out For Delivery";
+                }
+                if($status->order_status_option_id  == 6){
+                    $order_status = "Delivered";
+                }
+            }
+        }
 
         $tracking_url = url('/order/track/'.$user['id'].'/'.$order['order_number'].'');
         $tracking_url = get_tiny_url($tracking_url);
-       
-        $keyData = ['{user_name}'=>$user['name']??'','{order_number}'=>$order['order_number']??'','{track_url}'=>$tracking_url??''];
-        \Log::info($keyData);
-        
+
+        $keyData = ['{user_name}'=>$user['name']??'','{order_number}'=>$order['order_number']??'','{track_url}'=>$tracking_url??'','{order_status}'=>$order_status??''];
+        //\Log::info($keyData);
+
         $checkSeeder = SmsTemplate::where('slug','order-tracking-url')->count();
         if($checkSeeder > 0){
             $body = sendSmsTemplate('order-tracking-url',$keyData);
 
             if (!empty($prefer['sms_provider'])) {
-                
+
                 $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 //\Log::info($send);
             }
         }
-        
+
     }
 
     public function sendAccessTrackingUrlSMS($user, $order,$vendor_id = '')
@@ -895,7 +916,7 @@ trait OrderTrait{
             $to = '+' . $user['dial_code'] . $user['phone_number'];
         }
         $provider = $prefer['sms_provider'];
-      
+
         $phoneCode = mt_rand(100000, 999999);
         $sendTime  = Carbon::now()->addMinutes(10)->toDateTimeString();
 
@@ -906,23 +927,23 @@ trait OrderTrait{
             $user->save();
         }
 
-        
+
 
         $keyData = ['{otp_code}'=>$phoneCode??''];
-        \Log::info($keyData);
-        
+       // \Log::info($keyData);
+
         $checkSeeder = SmsTemplate::where('slug','otp-sms-tracking-url')->count();
         if($checkSeeder > 0){
             $body = sendSmsTemplate('otp-sms-tracking-url',$keyData);
-            
+
             if (!empty($prefer['sms_provider'])) {
-        
+
                 $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 //\Log::info($send);
             }
         }
     }
-        
+
     /**
      * check order days of return / replace
      */
@@ -932,7 +953,7 @@ trait OrderTrait{
         }
         $date = Carbon::parse($order->created_at)->addDays($days);// enddate for return
         $today = $dt = Carbon::now();
-       
+
         if($date >= $today){
             return true;
         }

@@ -138,37 +138,37 @@ ul.timeline-3 li.last-active::before{top: -18px;}
                     @if(isset($order->orderStatusVendor))
                         <ul class="timeline-3 d-flex align-items-center justify-content-around">
                             @php $count = count($order->orderStatusVendor); $num = 0; @endphp
-                        
+
                             @foreach ($order->orderStatusVendor as $key =>$status)
                             @if($status->order_status_option_id  == 1)
-                                    @php 
+                                    @php
                                         $title = "Order Placed";
                                     @endphp
                             @endif
                             @if($status->order_status_option_id  == 2)
-                                    @php 
+                                    @php
                                         $title = "Order Accepted";
                                     @endphp
                             @endif
                             @if($status->order_status_option_id  == 4)
-                                    @php 
+                                    @php
                                         $title = "Order Processing";
                                     @endphp
                             @endif
                             @if($status->order_status_option_id  == 5)
-                                    @php 
+                                    @php
                                         $title = "Order Out For Delivery";
                                     @endphp
                             @endif
                             @if($status->order_status_option_id  == 6)
-                                    @php 
+                                    @php
                                         $title = "Delivered";
                                     @endphp
                                 @endif
 
                                 <li <?php if($num == $count-1){ ?> class="last-active" <?php } ?>>
                                     <a href="#!">{{ $title }}</a>
-                                    <a href="#!" class="d-block">{{ $status->updated_at }}</a> 
+                                    <a href="#!" class="d-block">{{ $status->updated_at }}</a>
                                 </li>
                                 @php  $num++;  @endphp
                             @endforeach
@@ -194,7 +194,7 @@ ul.timeline-3 li.last-active::before{top: -18px;}
             @endif
             </div>
         </div>
-      
+
         <div class="row justify-content-center {{ $verifyPage }}" id="verify-phone-section">
             <div class="verify-login-code">
                 <form id="verify-otp-form" class="px-lg-4" method="post" >
@@ -223,7 +223,7 @@ ul.timeline-3 li.last-active::before{top: -18px;}
         </div>
     </div>
 </section>
-@php 
+@php
  $url = url('order/track/'.$order->user_id.'/'.$order->order_number.'?verified=1');
 @endphp
 @endsection
@@ -238,9 +238,9 @@ ul.timeline-3 li.last-active::before{top: -18px;}
     }
 
     $( document ).ready(function() {
-       
+
         $("#verify_phone_token").click(function(event) {
-           
+
             $("#invalid_phone_otp_error").empty();
             if($("#digit-1").val() == '' || $("#digit-2").val() == '' || $("#digit-3").val() == '' || $("#digit-4").val() == '' || $("#digit-5").val() == '' || $("#digit-6").val() == ''){
                 $("#invalid_phone_otp_error").html('Please enter otp');
@@ -251,19 +251,19 @@ ul.timeline-3 li.last-active::before{top: -18px;}
                         verifyToken +=  $(this).val();
                     }
                 });
-        
-               
+
+
                 $.ajax({
                     type: "POST",
                     dataType: "json",
                     url: "{{ route('track.order.token.verify') }}",
-                    data: {'verifyToken':verifyToken,data:'{{ $order->user_id }}'},
+                    data: {'verifyToken':verifyToken,data:'{{ $order->user_id }}',order_number:'{{ $order->order_number }}'},
                     success: function(response) {
                         $("#phone_otp_success_msg").removeClass('d-none').addClass('d-block');
                         $("#phone_otp_success_msg").html(response.success);
                         $(".invalid_phone_otp_error").empty();
                         var redirectUrl = "{{ $url }}";
-                        
+
 
                        setTimeout(function(){window.location.href = redirectUrl }, 2000);
                     },
@@ -298,9 +298,9 @@ ul.timeline-3 li.last-active::before{top: -18px;}
                 });
 
         });
-        
+
     });
 
-   
-    
+
+
 </script>
