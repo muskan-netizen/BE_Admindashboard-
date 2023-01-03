@@ -9,10 +9,13 @@ use Illuminate\Support\Facades\Validator;
 
 trait InfluencerTrait
 {
-    public static function saveKycData($request)
+    public static function saveKycData($request, $user_id = 0)
     {
+        if($user_id == 0){
+            $user_id = Auth::user()->id;
+        }
         \Log::info("asdfads");
-        $folder = str_pad(Auth::user()->id, 8, '0', STR_PAD_LEFT);
+        $folder = str_pad($user_id, 8, '0', STR_PAD_LEFT);
         $folder = 'client_' . $folder;
         $adhar_front = '';
         if ($request->hasFile('adhar_front')) {
@@ -32,7 +35,7 @@ trait InfluencerTrait
         }
         $influencer_kyc = new InfluencerKyc;
 
-        $influencer_kyc->user_id = Auth::user()->id;
+        $influencer_kyc->user_id = $user_id;
         $influencer_kyc->account_name = $request->account_name;
         $influencer_kyc->bank_name = $request->bank_name;
         $influencer_kyc->account_number = $request->account_number;

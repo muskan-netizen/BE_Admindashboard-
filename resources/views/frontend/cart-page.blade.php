@@ -320,7 +320,7 @@
                                                 <i class="fa fa-minus" aria-hidden="true"></i>
                                             </span>
                                             <input placeholder="1" type="text" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
-                                            data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" readonly>
+                                            data-batch_count="{{$vendor_product->product->batch_count }}" value="{{$vendor_product->quantity }}" class="input-number" step="0.01" id="quantity_{{$vendor_product->id }}" data-id="{{$vendor_product->id }}" data-base_price="{{!empty($vendor_product->pvariant->price)?$vendor_product->pvariant->price:'' }}">
                                             <span class="plus qty-plus" data-minimum_order_count="{{$vendor_product->product->minimum_order_count }}"
                                                 data-batch_count="{{$vendor_product->product->batch_count }}" data-id="{{$vendor_product->id }}" data-base_price="{{!empty($vendor_product->pvariant->price)?$vendor_product->pvariant->price:'' }}">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>

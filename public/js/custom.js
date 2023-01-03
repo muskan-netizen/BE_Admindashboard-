@@ -2667,6 +2667,28 @@ $(document).ready(function () {
         updateQuantity(cartproduct_id, increvalue, base_price);
     });
 
+    $(document).on('blur', 'input.input-number', function(){
+        let base_price = $(this).data('base_price');
+        let cartproduct_id = $(this).attr("data-id");
+        let qty = $(this).val();
+        let minimum_order_count = $(this).attr("data-minimum_order_count");
+        let batch_count = $(this).attr("data-batch_count");
+        if (batch_count > 0)
+            batch_count = batch_count;
+        else
+            batch_count = 1;
+
+        if (minimum_order_count > 0)
+            minimum_order_count = minimum_order_count;
+        else
+            minimum_order_count = 1;
+
+        let increvalue = parseInt(qty);
+
+        $('#quantity_' + cartproduct_id).val(increvalue);
+        updateQuantity(cartproduct_id, increvalue, base_price);
+    });
+
     $(document).on('change', '.delivery-fee', function () {
         let code = $(this).val();
         let address_id = $("input[type='radio'][name='address_id']:checked").val();
