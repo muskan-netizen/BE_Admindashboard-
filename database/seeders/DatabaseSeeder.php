@@ -46,7 +46,8 @@ class DatabaseSeeder extends Seeder
               VendorProductTempleteSeeder::class,
               WebStylingSeeder::class,
               WebStylingOptionSeeder::class,
-              ExchangeReasonSeeder::class
+              ExchangeReasonSeeder::class,
+              PanelAuthUserSeeder::class
           ]);
         // $this->call(UsersTableSeeder::class);
        // $this->call(AppStylingOptionsTableSeeder::class);

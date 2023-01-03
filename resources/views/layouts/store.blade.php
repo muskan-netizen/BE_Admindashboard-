@@ -64,9 +64,9 @@ if(isset($set_template))
     
   }
   elseif($set_template->template_id == 8)
-    $body_class = "al_body_template_eight";
+    $body_class = "al_body_template_eight p2p-module"; //p2p-module class is required because in template 8 css fixed using this class
   elseif($set_template->template_id == 9)
-    $body_class = "al_body_template_nine";
+    $body_class = "al_body_template_nine p2p-module";
 }
 
 
@@ -103,7 +103,7 @@ if(isset($set_template))
 </script>
 @include('layouts.language')
 @yield('headerJs')
-<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}} {{p2p_module_status() ? 'p2p-module' : ''}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
+<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}} " dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
 <article id="page-container">
   <article id="content-wrap">
   @if(isset($set_template)  && ($set_template->template_id == 3 || $set_template->template_id == 6 || $set_template->template_id == 1 ))

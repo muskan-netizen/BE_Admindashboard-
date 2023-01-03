@@ -208,6 +208,15 @@ class HomePageLabelSeeder extends Seeder
                 'created_at' => Carbon::now(),
             ]);
         }
+        $already = HomePageLabel::where('slug', 'banner')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Banner',
+                'slug'       => 'banner',
+                'order_by'   => 18,
+                'created_at' => Carbon::now(),
+            ]);
+        }
         
     }
 }

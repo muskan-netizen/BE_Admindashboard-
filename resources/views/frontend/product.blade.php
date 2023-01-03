@@ -4,7 +4,9 @@
 'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
 'meta_description'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description:'',
 ])
-
+@php
+$clientData = \App\Models\Client::select('socket_url')->first();
+@endphp
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
     <link rel="stylesheet" href="{{ asset('front-assets/css/swiper.min.css') }}" />
@@ -66,6 +68,7 @@
 @endif
 @php
   $img = '';
+  $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
 <!-- <div class="toast">
     <div class="toast-header">
@@ -109,7 +112,41 @@
                         </div>--}}
                         <section class="buy_details">
                             <div class="row">
-                                <div class="col-lg-5 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                                @if((!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id = '9')))
+                                <div class="col-md-1 pl-0">
+                                    <div class="exzoom_nav side_nav_img">
+                                       
+                                        @if(!empty($product->media) && count($product->media) > 0)
+                                        
+                                        @foreach($product->media as $k => $image)
+                                        @php
+                                                        if(isset($image->pimage)){
+                                                            $img = $image->pimage->image;
+                                                        }else{
+                                                            $img = $image->image;
+                                                        }
+                                                    @endphp
+                                            @if(!is_null($img))
+                                            <span class="img_active">
+                                                <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                    data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
+                                                    width="60" height="60"
+                                                    src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
+                                            </span>
+                                            @endif
+                                        @endforeach
+                                        @else
+                                        <span class="img_active">
+                                                <img class="blur-up lazyloaded pro_imgs myimage1"
+                                                    data-src="{{loadDefaultImage()}}"
+                                                    width="60" height="60"
+                                                    src="{{loadDefaultImage()}}">
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+                                <div class="{{(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id != '8') ? 'col-lg-5' : 'col-lg-4'}}  p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                     {{-- <div class="product__carousel">
                                         <div class="gallery-parent">
                                             @php
@@ -133,7 +170,9 @@
 
                                             <div class="swiper-container gallery-top">
                                                 <div class="swiper-wrapper">
-                                                @if(!empty($product->media))
+                                               
+                                                @if(!empty($product->media) && count($product->media) > 0)
+                                                
                                                     @foreach($product->media as $k => $image)
                                                         @php
                                                             if(isset($image->pimage)){
@@ -148,6 +187,14 @@
                                                             </a>
                                                         </div>
                                                     @endforeach
+                                                @else
+                                                
+                                                    <div class="swiper-slide easyzoom easyzoom--overlay">
+                                                            <a href="{{loadDefaultImage()}}">
+                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                            </a>
+                                                        </div>
+
                                                 @endif
                                                 </div>
 
@@ -156,7 +203,7 @@
                                             </div>
                                             <div class="swiper-container gallery-thumbs">
                                                 <div class="swiper-wrapper">
-                                                    @if(!empty($product->media))
+                                                    @if(!empty($product->media) && count($product->media) > 0)
                                                         @foreach($product->media as $k => $image)
                                                         @php
                                                             if(isset($image->pimage)){
@@ -165,10 +212,12 @@
                                                                 $img = $image->image;
                                                             }
                                                         @endphp
-                                                        <div class="swiper-slide">
-                                                            <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" alt="">
-                                                        </div>
+                                                        
                                                         @endforeach
+                                                    @else
+                                                        <div class="swiper-slide">
+                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                        </div>
                                                     @endif
                                                 </div>
                                             </div>
@@ -178,7 +227,7 @@
                                     <div class="exzoom hidden w-100">
                                         <div class="exzoom_img_box mb-2">
                                             <ul class='exzoom_img_ul img-sidebar'>
-                                            @if(!empty($product->media))
+                                            @if(!empty($product->media) && count($product->media) > 0)
                                             
                                                 @foreach($product->media as $k => $image)
                                                         @php
@@ -192,6 +241,10 @@
                                                 @if(!is_null($img))
                                                 <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
                                                 @endif
+                                                @else
+                                                        
+                                                    <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                        
                                             @endif
                                             </ul>
                                         </div>
@@ -227,21 +280,15 @@
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
+                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-6'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                         </h2>
                                         <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                        @if($product->vendor->is_seller == 1)
-                                            <h6 class="sold-by">
-                                                <b> <img class="blur-up lazyload" data-src="{{$favicon}}" alt="{{$product->vendor->Name}}"></b> <b> Order by clickokart </b>
-                                            </h6>
-                                        @else
-                                            <h6 class="sold-by">
-                                                <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
-                                            </h6>
-                                        @endif
+                                        <h6 class="sold-by">
+                                            <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                                        </h6>
                                         @if($client_preference_detail)
                                             @if($client_preference_detail->rating_check == 1)
                                                 @if($product->averageRating > 0)
@@ -260,9 +307,13 @@
                                             <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
-                                                    <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
-                                                    @if($product->variant[0]->compare_at_price > 0 )
-                                                        <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                    @if($additionalPreference ['is_token_currency_enable'])
+                                                        <b class="mr-1"><span class="product_fixed_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
+                                                    @else
+                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier,2)}}</span></b>
+                                                        @if($product->variant[0]->compare_at_price > 0 )
+                                                            <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                        @endif
                                                     @endif
                                                 </h3>
                                             @endif
@@ -273,6 +324,56 @@
                                             {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                                 $product->translation[0]->body_html : ''!!}
                                         </div>
+
+
+                                        @if( is_category_p2p($product->category) )
+                                        
+                                            @if( !empty($attr_array) )
+                                                @foreach($attr_array as $attr_key => $attr_val)
+                                                    <div class="container-badge">
+                                                        <div class="value-badge">{{ $attr_key }} : </div>
+                                                        @if( !empty($attr_val) )
+                                                            <div class="container-badge-value">
+                                                                @foreach($attr_val as $inn_key => $inn_val)
+
+                                                                @if($inn_val['type'] == 2) <!--- for color---->
+                                                                    <span style="background-color: {{$inn_val['hexacode']}}; width: 20px;height: 20px;margin-left: 5px;display: inline-block;border: 1px solid #ccc;"></span>
+                                                                @else
+                                                                    <span>{{$inn_val['value']}}</span>
+                                                                @endif
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                        
+                                                    </div>
+                                                @endforeach
+                                            @endif
+
+                                            {{-- Chat Button --}}
+                                            <hr>
+                                                <h6 class="sold-by">
+                                            @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
+                                            
+                                               
+                                                    <?php /*<span>Sold by : </span>
+                                                    <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
+                                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
+                                                
+                                            @endif
+                                            @if(getAdditionalPreference(['call_button'])['call_button'])
+                                                <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
+                                            @endif
+                                                </h6>
+                                    @endif
+
+
+                                        @if(((@$product->returnable && @$product->vendor->return_request) || $product->replaceable) && ($product->return_days > 0))
+                                            <div class="discriptions">
+                                                <h3>Return Policy</h3>
+                                                <p>  <span>{{ $product->return_days }} days return policy is applicable on this product </span> </p>
+                                            
+                                            </div>
+                                            @endif
                                         <div id="product_variant_options_wrapper">
                                             @if(!empty($product->variantSet))
                                                 @php
@@ -406,6 +507,8 @@
                                             else
                                                 $checkSlot = 0;
                                         @endphp
+                                        
+                                        @if( !is_category_p2p($product->category) )
                                         <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
@@ -445,7 +548,10 @@
                                                 @endif
 
                                             </div>
+                                           
                                             <div class="product-buttons">
+
+                                                
                                                 @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                                 @if($is_inwishlist_btn && $is_available)
                                                 <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
@@ -461,11 +567,11 @@
                                                 else
                                                 $product_quantity_in_cart = $product_in_cart->quantity??0;
 
-                                        @endphp
-                                        @if($is_available == 1)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->has_inventory && $product->variant[0]->quantity <= $product_quantity_in_cart)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
-                                        @endif
 
+                                                @endphp
+                                                @if($is_available == 1)
+                                                    <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                                @endif
 
                                                     @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
                                                     <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
@@ -477,7 +583,9 @@
                                                 @endif
                                                 @endif
                                             </div>
+                                            
                                         </div>
+                                        @endif
                                         {{-- @dump($product) --}}
                                         <!-- <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
@@ -502,10 +610,13 @@
                                     </div>
 
                                 </div>
+                                @if( !is_category_p2p($product->category) && @$set_template->template_id == '8' )
+                                    @include('frontend.product-coupon')
+                            @endif
                             </div>
                         </section>
                         <div class="row mt-1">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1)
                                 <section class="tab-product custom-tabs">
                                     <div class="row">
@@ -574,49 +685,22 @@
                                 </section>
                                 @endif
                             </div>
-                            @if( !empty($coupon_list) )
-                                <div class="col-md-4">
-                                    <div class="aside_bar">
-                                        <h5>Available offers</h5>
-                                            <div class="discriptions">
-                                                @foreach($coupon_list as $m_key => $m_val)
-                                                   <p> <small> Description :</small> <span>{{ $m_val['short_desc'] ?? '' }} </span> </p>
-                                                   <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
-                                                   <p>  <small>Coupon Type :  </small><span>{{ $m_val['promo_type_title'] ?? '' }} </span> </p>
-                                                   <p> 
-                                                    <small>
-                                                    @if($m_val['promo_type_id'] == 1)
-                                                         Amount : 
-                                                    @else
-                                                        Percentage : 
-                                                    @endif
-                                                    </small>
-                                                    <span>{{decimal_format($m_val['amount'])}}</span>
-                                                    </p>
-                                                    <hr>
-                                                @endforeach
-                                            </div>
-                                        
-                                        <!-- <form>
-                                            <div class="form-group">
-                                                <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
-                                                <button type="submit" class="btn btn-primary">Apply</button>
-                                            </div>
-                                        </form> -->
-                                    </div>
-                                </div>
-                            @endif
+                            
+
+                       
                             </div>
                     </div>
 
                     {{-- Related Products --}}
+                    @if(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8')
                     <div class="row">
                         <div class="col-md-12">
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Realted Product'])
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Realted Product'])
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Vendor Realted Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Related Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Related Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Vendor Related Product'])
                         </div>
                     </div>
+                    @endif
                     {{-- End of Related Products --}}
 
                     
@@ -858,9 +942,34 @@
         </div>
     </div>
 </div>
+@php
+
+$user_type = 'user';
+$to_message = 'to_user';
+$from_message = 'from_user';
+$chat_type = 'user_to_user';
+$startChatype = 'user_to_user';
+$apiPre = 'client';
+$rePre = 'user/chat/userToUser';
+$fetchDe = 'fetchRoomByUserIdUserToUser';
+@endphp
+
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
 
 @endsection
 @section('js-script')
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+{{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
@@ -952,6 +1061,8 @@
 
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
+    var additionalPreference = "{{$additionalPreference['is_token_currency_enable']}}";
+    var token_currency = "{{getAdditionalPreference(['token_currency'])['token_currency']}}";
     var vendor_id = "{{ $product->vendor_id }}";
     var product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
@@ -998,7 +1109,9 @@
                             $('.incremental-left-minus').click();
                             //$('#blocktime, #blocktime2').change();
                         }
-
+                        if(additionalPreference != 0){
+                            response.variant.productPrice = token_currency * response.variant.productPrice;
+                        }
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
@@ -1183,7 +1296,6 @@
             infinite: true,
             slidesToShow: 4,
             slidesToScroll: 1,
-            centerMode: false,
             responsive: [
             { breakpoint: 1199, settings: { slidesToShow: 3, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
             { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } },

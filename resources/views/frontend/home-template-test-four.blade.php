@@ -358,8 +358,8 @@
 				</div>
 			</section>
 		@else
-			@if(count($homePageData[$homePageLabel->slug]) != 0)
-			<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+			@if(!empty($homePageData[$homePageLabel->slug]) && count($homePageData[$homePageLabel->slug]) != 0)
+			<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug??''}}" id="{{$homePageLabel->slug.$key}}">
 					<div class=" col-lg-10 offset-lg-1 top-heading d-flex align-items-center justify-content-between">
 					<h2 class="h2-heading mb-3 "> @php echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);@endphp </h2></div>
 

@@ -631,7 +631,7 @@ height: auto;
                             </div>
                         </section>
                     @else
-                    @if(count($homePageData[$homePageLabel->slug]) != 0)
+                    @if(!empty($homePageData[$homePageLabel->slug]) && count($homePageData[$homePageLabel->slug]) != 0)
                     <div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}">
                         @foreach ($homePageData[$homePageLabel->slug] as $product )
                         @include('frontend.home_page_2.product')

@@ -20,10 +20,9 @@ class TaxCategoryController extends BaseController
     public function index()
     {
         $taxCates = TaxCategory::orderBy('id', 'desc')->get();
-        $preferences = ClientPreference::select('is_tax_price_inclusive')->first();
+
+        $preferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
         $taxRates = TaxRate::with('category')->orderBy('id', 'desc')->get();
-       // dd($taxRates->toArray());
-        
         return view('backend/tax/index')->with(['taxCates' => $taxCates, 'taxRates' => $taxRates,'preference'=>$preferences]);
     }
     /**

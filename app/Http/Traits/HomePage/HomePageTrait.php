@@ -75,6 +75,7 @@ trait HomePageTrait
 
     public function getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim)
     {
+        $spotlight_products = [];
         $products = Product::with([
             'category.categoryDetail.translation' => function ($q) use ($language_id) {
                 $q->where('category_translations.language_id', $language_id);
@@ -121,7 +122,8 @@ trait HomePageTrait
                     'vendor_name' => $product->vendor ? $product->vendor->name : '',
                     'vendor' => $product->vendor,
                     'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$product->variant->first()->price * $multiply, ',')),
-                    'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
+                    'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug,
+                    'categoryDetail' => (@$product->category->categoryDetail) ? @$product->category->categoryDetail: []
                 );
             }
         }
@@ -162,10 +164,11 @@ trait HomePageTrait
             ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
 
 
-            $products = $products->whereHas('vendor', function ($q) use ($vendor_ids) {
-                $q->where('status', 1);
-                $q->whereIn('vendors.id', $vendor_ids);
-            })->where('is_live', 1);
+            $products = $products->where('is_live', 1);
+            // ->whereHas('vendor', function ($q) use ($vendor_ids) {
+            //     $q->where('status', 1);
+            //     $q->whereIn('vendors.id', $vendor_ids);
+            // });
             $products = $products->whereIn('id', $product_ids)
                 ->take(8)->get();
 
@@ -190,6 +193,7 @@ trait HomePageTrait
                         'vendor_name' => $product->vendor ? $product->vendor->name : '',
                         'vendor' => $product->vendor,
                         'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$product->variant->first()->price * $multiply, ',')),
+                        'categoryDetail' => (@$product->category->categoryDetail) ? @$product->category->categoryDetail: [],
                         'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
                     );
                 }

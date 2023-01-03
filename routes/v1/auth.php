@@ -53,7 +53,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('chat/userAgentChatRoom', 'Api\v1\ChatController@userAgentChatRoom');
         Route::post('chat/sendNotificationToUser', 'Api\v1\ChatController@sendNotificationToUser');
         
-
+        Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+        Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
 
           
         Route::get('profile', 'Api\v1\ProfileController@profile');
@@ -109,6 +110,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('mystore/product/addProductAttribute', 'Api\v1\StoreController@addProductAttribute');
         Route::get('mystore/product/getProductAttribute', 'Api\v1\StoreController@getProductAttribute');
         Route::get('mystore/product/availableListOfAttribute', 'Api\v1\StoreController@availableListOfAttribute');
+        Route::post('mystore/product/addProductWithAttribute', 'Api\v1\StoreController@addProductWithAttribute');
         
         Route::post('mystore/product/getProductImages', 'Api\v1\StoreController@getProductImages');
         Route::post('mystore/product/deleteimage', 'Api\v1\StoreController@deleteProductImage');
@@ -139,6 +141,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/schedule/update','Api\v1\CartController@updateSchedule');
         Route::post('repeatOrder', 'Api\v1\CartController@repeatOrder');
         Route::get('order/orderDetails_for_notification/{order_id}', 'Api\v1\OrderController@orderDetails_for_notification');
+
+        Route::post('user/editorder', 'Api\v1\OrderController@editOrderByUser');
+	    Route::post('user/discardeditorder', 'Api\v1\OrderController@discardEditOrderByUser');
         
         // Rating & review 
         Route::group(['prefix' => 'rating'], function () {
@@ -179,7 +184,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('promo-code/verify', 'Api\v1\PickupDeliveryController@postVerifyPromoCode');
             Route::post('promo-code/remove', 'Api\v1\PickupDeliveryController@postRemovePromoCode');
             Route::post('order-tracking-details', 'Api\v1\PickupDeliveryController@getOrderTrackingDetails');
-            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');            
+            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');   
+            
+            Route::post('edit-order', 'Api\v1\PickupDeliveryController@updatePickupDeliveryOrderByCustomer');
         });
 
         // user subscription 
@@ -223,6 +230,14 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         }); 
 
         Route::post('/create-contact', 'Hubspot\HubspotApiController@create');
+
+
+        // gift Card Order
+        Route::group(['prefix' => 'giftCard'], function () {
+            Route::get('list', 'Api\v1\GiftcardController@getGiftCard');
+            Route::post('apply', 'Api\v1\GiftcardController@postVerifyGiftCardCode');
+            Route::post('remove', 'Api\v1\GiftcardController@RemoveGiftCardCode');
+        }); 
 
     });
 });

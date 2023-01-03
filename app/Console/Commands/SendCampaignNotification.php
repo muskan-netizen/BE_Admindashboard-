@@ -153,9 +153,10 @@ class SendCampaignNotification extends Command
                                 }
                                 break;
                             case '3':
-                                //send push                                
-                                //$redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/viewcart";
+                                //send push                             
                                 $redirect_URL = $singlenotification->campaign->push_url_option_value;
+                                $attachmentImg = (!empty($singlenotification->campaign->push_image['proxy_url'])) ? $singlenotification->campaign->push_image['proxy_url'] . '200/200' . $singlenotification->campaign->push_image['image_path'] : '';
+
                                 $data = [
                                     "registration_ids" => [$singlenotification->device_token],
                                     "notification" => [
@@ -169,7 +170,8 @@ class SendCampaignNotification extends Command
                                     "data" => [
                                         'title' => $singlenotification->campaign->push_title,
                                         'body'  => $singlenotification->campaign->push_message_body,
-                                        'type' => "reminder_notification"
+                                        'type' => "reminder_notification",
+                                        'click_action' => $redirect_URL,
                                     ],
                                     "priority" => "high"
                                 ];

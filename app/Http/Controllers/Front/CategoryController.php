@@ -162,7 +162,7 @@ class CategoryController extends FrontController{
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
 
-                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling']]);
+                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'], 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
 
@@ -172,7 +172,7 @@ class CategoryController extends FrontController{
                 foreach($cartDataGet['cartData'] as $cp){
                     if(count($cp->product->addOn) > 0)
                     $addos = 1;
-               }
+                }
                if($addos == 1){
                 $name = \Request::route()->getName();
                 $new_url = $request->path()."?step=1&addons=1";
@@ -545,6 +545,7 @@ class CategoryController extends FrontController{
             
             // Dynamic search fields
             if($getAdditionalPreference['is_attribute']) {
+                \Log::info(json_encode($request->dynamic_options));
                 if( !empty($request->dynamic_options) ) {
                     foreach($request->dynamic_options as $key => $val) {
                         foreach($val as $inn_key => $inn_val) {

@@ -45,13 +45,13 @@
         <div id="wrapper">
             @include('layouts.shared/topbar')
             
-            @if( !is_p2p_vendor() )
-                @include('layouts.shared/left-sidebar')
-            @endif
+            
+            @include('layouts.shared/left-sidebar')
+            
 
         <!-- Start Page Content here -->
 
-        <div class="content-page {{(is_p2p_vendor()) ? 'full-width-area' : ''}}">
+        <div class="content-page {{(is_p2p_vendor()) ? '' : ''}}">
             <div class="content">
                <!-- @php
                     $style = "";

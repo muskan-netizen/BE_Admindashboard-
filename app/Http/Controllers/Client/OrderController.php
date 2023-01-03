@@ -12,8 +12,9 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
+use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency};
+use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -91,7 +92,14 @@ class OrderController extends BaseController
         $pending_order_count = $pending_order_count->where(function ($q1) {
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
+                $q2->whereIn('payment_option_id', [1, 38]) // 1 for cod ,38 for offline manual by harbans
+                    ->orWhere(function($q3) {
+                        if(checkColumnExists('orders', 'is_postpay'))
+                        {
+                            $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                               ->whereNotIn('payment_option_id', [1, 38]);
+                        }
+                    });
             });
         })->count();
 
@@ -112,7 +120,14 @@ class OrderController extends BaseController
         $past_order_count = $past_order_count->where(function ($q1) {
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]); // 1 for cod ,38 for offline manual by harbans
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                ->orWhere(function($q3) {
+                    if(checkColumnExists('orders', 'is_postpay'))
+                    {
+                        $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                            ->whereNotIn('payment_option_id', [1, 38]);
+                    }
+                });
             });
         })->count();
 
@@ -134,7 +149,14 @@ class OrderController extends BaseController
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                ->orWhere(function($q3) {
+                    if(checkColumnExists('orders', 'is_postpay'))
+                    {
+                        $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                            ->whereNotIn('payment_option_id', [1, 38]);
+                    }
+                });
             });
         })->count();
 
@@ -164,6 +186,7 @@ class OrderController extends BaseController
         $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
+        $HasGiftCard = 0;
         $orders = Order::with(['vendors.products' => function ($q) {
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
@@ -181,7 +204,14 @@ class OrderController extends BaseController
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                ->orWhere(function($q3) {
+                    if(checkColumnExists('orders', 'is_postpay'))
+                    {
+                        $q3->where('is_postpay', 1) // 1 for order is post pay
+                            ->whereNotIn('payment_option_id', [1, 38]);
+                    }
+                });
             });
         })->orderBy('id', 'asc');
         if ($user->is_superadmin == 0) {
@@ -205,6 +235,10 @@ class OrderController extends BaseController
             $order_count->whereHas('vendors', function ($query)  use ($request) {
                 $query->where('vendor_id', $request->get('vendor_id'));
             });
+        }
+        if( checkColumnExists('orders', 'gift_card_id') ){
+            $HasGiftCard = 1;
+            $orders  = $orders->with(['giftCard']);
         }
         //Search by keyword
         if (!empty($request->search_keyword)) {
@@ -330,7 +364,14 @@ class OrderController extends BaseController
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
-                $q2->whereIn('payment_option_id', [1, 38]);
+                $q2->whereIn('payment_option_id', [1, 38])
+                    ->orWhere(function($q3) {
+                        if(checkColumnExists('orders', 'is_postpay'))
+                        {
+                            $q3->where('is_postpay', 1)
+                                ->whereNotIn('payment_option_id', [1, 38]);
+                        }
+                    });
             });
         });
 
@@ -459,6 +500,17 @@ class OrderController extends BaseController
 
 
         foreach ($orders as $key => $order) {
+
+            $giftCardUsed = 0; 
+            $giftCardName = ''; 
+            if($HasGiftCard ==1 ){
+                if($order->gift_card_id!='' && !empty($order->giftCard)){
+                    $giftCardUsed =1;
+                    $giftCardName = $order->giftCard ? $order->giftCard->name : 'NA';
+                }
+            }
+            $order->giftCardUsed = $giftCardUsed; 
+            $order->giftCardName = $giftCardName; 
             // $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, h:i A');
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
@@ -718,7 +770,11 @@ class OrderController extends BaseController
         $dispatcher_status_options = DispatcherStatusOption::with(['vendorOrderDispatcherStatus' => function ($q) use ($order_id, $vendor_id) {
             $q->where(['order_id' => $order_id, 'vendor_id' => $vendor_id]);
         }])->get();
+
         $vendor_order_statuses = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->get();
+        $prod = $order['products']['0'];
+        //  dd($prod->pluck('product_id')->toArray());
+        $processorProduct = ProcessorProduct::whereIn('product_id', $prod->pluck('product_id')->toArray())->first();
         foreach ($vendor_order_statuses as $vendor_order_status) {
             $vendor_order_status_created_dates[$vendor_order_status->order_status_option_id] = $vendor_order_status->created_at;
             $vendor_order_status_option_ids[] = $vendor_order_status->order_status_option_id;
@@ -743,10 +799,12 @@ class OrderController extends BaseController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
+
         //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
             'order' => $order,
+            'processorProduct' => $processorProduct,
             'vendor_order_statuses' => $vendor_order_statuses,
             'vendor_order_status_option_ids' => $vendor_order_status_option_ids,
             'order_status_options' => $order_status_options,
@@ -774,7 +832,6 @@ class OrderController extends BaseController
         $orderPlaced = true;
         $orderPlacedNo = '';
         DB::beginTransaction();
-        \Log::info('11');
         $client_preferences = ClientPreference::first();
          try {
 
@@ -828,6 +885,10 @@ class OrderController extends BaseController
                         //Create Shipping place order request for Lalamove
                         //$orderPlaced = $this->placeOrderRequestlalamove($request);
 
+                    } elseif ($orderData->shipping_delivery_type == 'K') {
+                        //Create Shipping place order request for Kwik
+                        $orderPlaced = $this->placeOrderRequestKwikApi($request);
+
                     } elseif ($orderData->shipping_delivery_type == 'SR') {
                         //Create Shipping place order request for Shiprocket
                         $orderPlaced = $this->placeOrderRequestShiprocket($request);
@@ -875,7 +936,11 @@ class OrderController extends BaseController
                             //Cancel Shipping place order request for Lalamove
                             $lala = new LalaMovesController();
                             $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
-                        } elseif ($orderData->shipping_delivery_type == 'SR') {
+                        }elseif ($orderData->shipping_delivery_type == 'K') {
+                            //Cancel Shipping place order request for KwikApi
+                            $lala = new QuickApiController();
+                            $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
+                        }elseif ($orderData->shipping_delivery_type == 'SR') {
                             //Cancel Shipping place order request for Shiprocket
                             $ship = new ShiprocketController();
                             $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
@@ -1009,10 +1074,12 @@ class OrderController extends BaseController
     public function placeOrderRequestShippo($request)
     {
         $ship = new ShippoController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
             //\Log::info($order_ship);
         }
@@ -1028,13 +1095,37 @@ class OrderController extends BaseController
         return 2;
     }
 
-    public function placeOrderRequestShiprocket($request)
+    public function placeOrderRequestKwikApi($request)
     {
-        $ship = new ShiprocketController();
-        //Create Shipping place order request for Shiprocket
+        $kwik = new QuickApiController();
+        //Create Shipping place order request for KwikApi
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
         if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            $order_ship = $kwik->placeOrderToKwikApi($request->vendor_id, $request->order_id);
+        }
+        if ($order_ship) {
+            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'delivery_response' => json_encode($order_ship),
+                    'dispatch_traking_url'=>$order_ship->pickups[0]->result_tracking_link,
+                    'web_hook_code' => $order_ship->unique_order_id
+                ]);
+            return 1;
+        }
+
+        return false;
+    }
+
+    public function placeOrderRequestShiprocket($request)
+    {
+        $ship = new ShiprocketController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
+        //Create Shipping place order request for Shiprocket
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_ship = $ship->createOrderRequestShiprocket($checkOrder->user_id, $checkdeliveryFeeAdded);
         }
         if ($order_ship->order_id) {
@@ -1054,10 +1145,12 @@ class OrderController extends BaseController
     {
 
         $data = new AhoyController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Ahoy place order request for Ahoy
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_det = $data->createPreOrderRequestAhoy($checkOrder->user_id, $checkdeliveryFeeAdded);
         }
 
@@ -1077,10 +1170,12 @@ class OrderController extends BaseController
     {
 
         $data = new DunzoController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_lalamove = $data->createOrderRequestDunzo($checkOrder->user_id, $checkdeliveryFeeAdded);
         }
 
@@ -1100,10 +1195,12 @@ class OrderController extends BaseController
     public function placeOrderRequestlalamove($request)
     {
         $lala = new LalaMovesController();
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id, $checkOrder->user_id, $checkOrder->id);
         }
         if (isset($order_lalamove->orderRef)) {
@@ -1122,7 +1219,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         // pr( $checkdeliveryFeeAdded);
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
-
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
@@ -1201,8 +1298,7 @@ class OrderController extends BaseController
         \Log::info("asdf");
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
-            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
-                \Log::info("asdf inner");
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
 
@@ -1285,7 +1381,6 @@ class OrderController extends BaseController
     public function placeRequestToDispatch($order, $vendor, $dispatch_domain)
     {
         try {
-            \Log::info("asdf innerrrrrr");
             $order = Order::find($order);
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
@@ -1294,12 +1389,30 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
-            $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
+            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
+            if(!empty($orderVendorDetails->web_hook_code))
+            {
+                $dynamic = $orderVendorDetails->web_hook_code;
+            }
+            $call_back_url = route('dispatch-order-update', $dynamic);
+            
             $tasks = array();
             $meta_data = '';
 
@@ -1313,7 +1426,6 @@ class OrderController extends BaseController
                 $task_type = 'now';
             }
 
-            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
             if (!empty($orderVendorDetails->scheduled_date_time) && $orderVendorDetails->scheduled_date_time > 0) {
                 $task_type = 'schedule';
                 $user = Auth::user();
@@ -1411,7 +1523,6 @@ class OrderController extends BaseController
             );
 
             $response = json_decode($res->getBody(), true);
-           \Log::info("dafsdffffffff". json_encode($response));
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
@@ -1445,8 +1556,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
@@ -1569,8 +1692,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
 
 
@@ -1946,8 +2081,20 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                $cash_to_be_collected = 'No';
-                $payable_amount = 0.00;
+                if(checkColumnExists('orders', 'is_postpay'))
+                {
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);

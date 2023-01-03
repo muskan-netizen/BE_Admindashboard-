@@ -10,7 +10,7 @@ use App\Http\Traits\GlobalFunction;
 use Illuminate\Support\Facades\Http;
 
 
-use App\Models\{Client, UserVendor};
+use App\Models\{Client, Product, UserVendor, Vendor};
 
 class ChatController extends BaseController
 {
@@ -166,50 +166,76 @@ class ChatController extends BaseController
         try {
             $data = $request->all();
 
+            
             $vendor_id = $data['vendor_id'];
-            $vendor_order_id = $data['order_vendor_id'];
-            $order_id = $data['order_id'];
-            $order = $this->OrderVendorDetail($request);
-            if($order){
-                $socket_url = $this->client_data->socket_url;
-                $room_id = $order->order_number;
-                if($data['type']=='agent_to_user'){
-                    $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id.'-agentId-'.@$data['agent_id'];
-                } else {
-                    $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
-                }
-                
-                $order_vendor_id = $vendor_order_id;
-                $order_id = $order->id;
-                $vendor_id = $vendor_id;
-                $orderby_user_id = $order->user_id;
-             
-                $response =   Http::post($socket_url.'/api/room/createRoom', [
-                    'room_id' => $room_id, 
-                    'room_name' => $room_name,
-                    'order_vendor_id'=>$order_vendor_id,
-                    'order_id'=>$order_id,
-                    'vendor_id'=>$vendor_id,
-                    'sub_domain' =>$data['sub_domain'],
-                    'vendor_user_id' =>$data['user_id'],
-                    'order_user_id' =>$orderby_user_id,
-                    'type'=>$data['type'],
-                    'db_name'=>$data['db_name'],
-                    'client_id'=>$data['client_id'],
-                    'agent_db'=>@$data['agent_db'],
-                    'agent_id'=>@$data['agent_id'],
-                ]);
-                $statusCode = $response->getStatusCode();
-                if($statusCode == 200) {
-                    $roomData = $response['roomData'];
-                    return response()->json(['status' => true, 'roomData' => $roomData , 'message' => __('Room created successfully !!!')]);
-                } else {
+            $vendor_order_id = $data['order_vendor_id'] ?? '';
+            $order_id = $data['order_id'] ?? '';
+            $server_name = $_SERVER['SERVER_NAME'];
+            $product_id = $data['product_id'] ?? null;
 
+            $socket_url = $this->client_data->socket_url;
+            $c_type = $data['type'] ?? null;
+            $p2p_id = null;
+            $vendor_name = null;
+            $product_name = null;
+            $product_price = null;
+            // dd(is_null($order_id));
+            // check order_vendor_id and order_id is empty then it is called for p2p chat
+            if( $c_type == 'user_to_user' ) {
+                $room_name = $room_id = 'p2p-productId-'.$product_id.'-vendorId-'.$vendor_id.'-currentUser-'.Auth::id();
+                $orderby_user_id = Auth::id();
+                $p2p_id = $vendor_id;
+                $vendor = Vendor::where('id', $vendor_id)->first();
+                $vendor_name = $vendor->name;
+                $product = Product::with('variant')->where('id', $product_id)->first();
+                $product_name = $product->title;
+                $product_price = $product->variant[0]->price;
+            }
+            else {
+
+                $order = $this->OrderVendorDetail($request);
+                if(@$order){
+                    $room_id = $order->order_number;
+                    $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
+                    $orderby_user_id = $order->user_id;
+                   
+                } else {
                     return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
                 }
+            }
+          
+
+            $response =   Http::post($socket_url.'/api/room/createRoom', [
+                'room_id' => $room_id,
+                'room_name' => $room_name,
+                'order_vendor_id'=> $vendor_order_id,
+                'order_id'=>$order_id,
+                'vendor_id'=>$vendor_id,
+                'sub_domain' =>$server_name,
+                'vendor_user_id' =>$data['user_id'],
+                'order_user_id' =>$orderby_user_id,
+                'type'=>$data['type'],
+                'db_name'=>$this->client_data->database_name,
+                'client_id'=>$this->client_data->id,
+                'p2p_id'=>$p2p_id,
+                'product_id'=>$product_id, 
+                'vendor_name' => $vendor_name,
+                'product_name' => $product_name,
+                'product_price' => $product_price
+            ]);
+            \Log::info("================================");
+            \Log::info($response);
+
+
+            $statusCode = $response->getStatusCode();
+            if($statusCode == 200) {
+                $roomData = $response['roomData'];
+                return response()->json(['status' => true, 'roomData' => $roomData , 'message' => __('Room created successfully !!!')]);
             } else {
+
                 return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
             }
+            
 
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
@@ -224,7 +250,11 @@ class ChatController extends BaseController
      */
     public function fetchOrderDetail(Request $request){
         try {
-            $orderData = $this->OrderVendorDetail($request);
+            if(@$request->product_id){
+                $orderData = $this->ProductDetail($request);
+            }else{
+                $orderData = $this->OrderVendorDetail($request);
+            }
             return response()->json(['status' => true, 'orderData' => $orderData , 'message' => __('Data fetched !!!')]);
             
             //code...

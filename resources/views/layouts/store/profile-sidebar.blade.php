@@ -1,6 +1,7 @@
 @php
 $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
 $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
+$getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_currency_enable']);
 @endphp
 @switch($client_preference_detail->business_type)
     @case('taxi')
@@ -30,7 +31,11 @@ $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
                             <li  class="{{ (request()->is('user/chat/userVendor')) ? 'active' : '' }}">
                                 <a href="{{route('userChat.UservendorChat')}}">{{ __('Vendor Chat') }}</a>
                             </li>
-
+                            @if(p2p_module_status())
+                            <li  class="{{ (request()->is('user/chat/userToUser')) ? 'active' : '' }}">
+                                <a href="{{route('userChat.UserToUserChat')}}">{{ __('User Chat') }}</a>
+                            </li>
+                            @endif
                             <li  class="{{ (request()->is('user/chat/userAgent')) ? 'active' : '' }}">
                                 <a href="{{route('userChat.UserAgentChat')}}">{{ __('Driver Chat') }}</a>
                             </li>
@@ -48,12 +53,15 @@ $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
             <li class="{{ (request()->is('user/orders*')) ? 'active' : '' }}"><a href="{{route('user.orders')}}">{{ __('My '.getNomenclatureName($ordertitle, true) )}}</a></li>
             <li class="{{ (request()->is('user/wishlists')) ? 'active' : '' }}"><a href="{{route('user.wishlists')}}">{{ __(getNomenclatureName('Wishlist', true) )}}</a></li>
             <li class="{{ (request()->is('user/loyalty')) ? 'active' : '' }}"><a href="{{route('user.loyalty')}}">{{ __('My Loyalty') }}</a></li>
-            <li class="{{ (request()->is('user/wallet')) ? 'active' : '' }}"><a href="{{route('user.wallet')}}">{{ __('My Wallet') }}</a></li>
+            <li class="{{ (request()->is('user/wallet')) ? 'active' : '' }}"><a href="{{route('user.wallet')}}">{{ $getAdditionalPreference['is_token_currency_enable'] ? __('My Wallet/Token') : __('My Wallet') }}</a></li>
             @if( (isset($client_preference_detail->subscription_mode)) && ($client_preference_detail->subscription_mode == 1) )
                 <li class="{{ (request()->is('user/subscription*')) ? 'active' : '' }}"><a href="{{route('user.subscription.plans')}}">{{ __('My Subscriptions') }}</a></li>
             @endif
             @if(is_p2p_vendor())
                 <li class=""><a href="{{route('vendor.index')}}">{{ __('Add Post') }}</a></li>
+            @endif
+            @if(@getAdditionalPreference(['is_gift_card'])['is_gift_card']==1)
+                <li class="{{ (request()->is('user/giftCard')) ? 'active' : '' }}"><a href="{{route('giftCard.index')}}">{{ __('Gift Card') }}</a></li>
             @endif
             <li class="{{ (request()->is('user/changePassword')) ? 'active' : '' }}"><a href="{{route('user.changePassword')}}">{{ __('Change Password') }}</a></li>
             <li class="last {{ (request()->is('user/logout')) ? 'active' : '' }}"><a href="{{route('user.logout')}}">{{ __('Log Out') }}</a></li>

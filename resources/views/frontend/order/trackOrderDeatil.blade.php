@@ -168,7 +168,7 @@ ul.timeline-3 li.last-active::before{top: -18px;}
 
                                 <li <?php if($num == $count-1){ ?> class="last-active" <?php } ?>>
                                     <a href="#!">{{ $title }}</a>
-                                    <a href="#!" class="d-block">{{ $status->updated_at }}</a>
+                                    <a href="#!" class="d-block">{{ convertDateTimeInClientTimeZone($status->updated_at) }}</a>
                                 </li>
                                 @php  $num++;  @endphp
                             @endforeach

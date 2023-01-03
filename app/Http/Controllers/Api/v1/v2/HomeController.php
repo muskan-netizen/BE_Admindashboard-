@@ -364,12 +364,15 @@ class HomeController extends BaseController{
             $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
 
 
-            $home_page_labels = CabBookingLayout::where('is_active', 1)->where('for_no_product_found_html',0)->orderBy('order_by');
+            $home_page_labels = CabBookingLayout::where('is_active', 1)->app()->where('for_no_product_found_html',0)->orderBy('order_by');
 
+            
+            
             if (isset($langId) && !empty($langId))
-                $home_page_labels = $home_page_labels->with(['translations' => function ($q) use ($langId) {
+                $home_page_labels = $home_page_labels->with(['banner_images','translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }]);
+                
 
             $home_page_labels = $home_page_labels->get();
 
@@ -380,7 +383,8 @@ class HomeController extends BaseController{
             $homePageData = $this->postHomePageData($request);
         // dd($navCategories);
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData,$navCategories) {
-                if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' && $da->slug!='nav_categories'){
+                if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' && $da->slug!='nav_categories' && $da->slug!='banner'){
+                   
                     $da['data'] = $homePageData[$da->slug];
                 }
                 if( $da->slug == 'nav_categories'  ){
@@ -398,12 +402,15 @@ class HomeController extends BaseController{
             $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
             
 
-            $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',0)->orderBy('order_by')->get();
+            $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->app()->where('for_no_product_found_html',0)->orderBy('order_by')->get();
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
 
-            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
-            $enable_layout = CabBookingLayout::where('is_active',1)->orderBy('order_by','asc')->pluck('slug')->toArray();
+            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->app()->where('for_no_product_found_html',1)->orderBy('order_by')->get();
+            $enable_layout = CabBookingLayout::where('is_active',1)->app();
+
+            $enable_layout = $enable_layout->orderBy('order_by','asc')->pluck('slug')->toArray();
+
             $categories = [];
             if(isset($set_template)  && $set_template->template_id == 8){
                 $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
@@ -489,8 +496,9 @@ class HomeController extends BaseController{
         $trending_vendors_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','trending');})->value('title');
 
         $recent_orders_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
-
-        $enable_layout = CabBookingLayout::where('is_active',1)->pluck('slug')->toArray();
+         
+        $enable_layout = CabBookingLayout::where('is_active',1)->app();
+        $enable_layout = $enable_layout->pluck('slug')->toArray();
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
             $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
@@ -711,6 +719,10 @@ class HomeController extends BaseController{
             $multiply = $on_sale_product_detail->variant->first()->multiplier ?? 1;
             $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
             $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $cat_name = '';
+            if(@$on_sale_product_detail->category->categoryDetail->translation){
+                $cat_name =  $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug;
+            }
             $on_sale_products[] = array(
                 'id' => $on_sale_product_detail->id,
                 'tag_title' => $on_sale_title??'0',
@@ -725,9 +737,11 @@ class HomeController extends BaseController{
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
-                'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
+                'category' => $cat_name
             );
         }
+
+        $top_rated_products = $popular_products = $selected_products = $single_category_products = $spot_light_products =  [];
 
          //get long term service 
          $long_term_service_products =[];

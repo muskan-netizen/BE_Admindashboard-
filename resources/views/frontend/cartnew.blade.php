@@ -206,6 +206,9 @@ $client_preferences = \App\Models\ClientPreference::first();
     <div id="mycart"></div>
     <div class="container">
         @if($cartData)
+      
+        <input type="hidden" id='cart_id' value="{{ isset($cartData['0']) ?  $cartData['0']->cart_id : '' }}">
+
         <form method="post" action="" id="placeorder_form">
             @csrf
             <div class="card-box bg-transparent">
@@ -400,6 +403,43 @@ $client_preferences = \App\Models\ClientPreference::first();
         </div>
     </div>
 </div>
+
+<div class="modal fade giftCard_modal" id="giftCard-modal" tabindex="-1" aria-labelledby="giftCard-modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="giftCard-modalLabel">{{__('Apply Gift Card Code')}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mt-0 pb-0 ">
+                <div class="row validate_giftCard_div border-bottom">
+                    <div class="col-9">
+                        <div class="form-group" >
+                            <input class="form-control manual_giftCard_input" name="name" type="text" placeholder="{{ __('Enter a Gift Cardcode')}}" >
+                            <button class="btn btn-solid apply_giftCard_code__btn" data-user_id="" data-cart_id=""
+                            data-giftCard_id="" data-amount="" style="display:none">Apply</button>
+                            <span class="invalid-feedback manual_giftCard" role="alert">
+
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-3 pl-0">
+                        <button class="btn btn-solid w-100 validate_giftCard_code_btn" data-cart_id=""
+                            data-giftCard_id="" data-amount="" style="cursor: pointer;">Apply</button>
+                    </div>
+                </div>
+                <div class="coupon-box">
+                    <div class="row mb-0" id="giftCard_code_list_main_div">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade remove-item-modal" id="remove_item_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_itemLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -828,22 +868,6 @@ $client_preferences = \App\Models\ClientPreference::first();
       </div>
     </div>
   </div>
-<?php ?>
-
-{{-- <form action="{{ route('payment.razorpayCompletePurchase',[app('request')->input('amount'),app('request')->input('order')]) }}" method="POST" id="razorpay_gateway">
-    @csrf
-    <script src="https://checkout.razorpay.com/v1/checkout.js"
-        data-key="<?php echo app('request')->input('api_key'); ?>"
-        data-amount="<?php echo app('request')->input('amount'); ?>"
-        data-buttontext="Pay"
-        data-name="Razorpay Payment gateway"
-        data-description="Rozerpay"
-        data-prefill.name="name"
-        data-prefill.email="email"
-        data-theme.color="#ff7529">
-    </script>
-</form> --}}
-
 @endsection
 
 @section('script')
@@ -899,53 +923,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 
        $('.time').removeClass("d-none");
     }
-    // setTimeout(function () {
-    //     $('.standard').clockTimePicker();
-    //     $('.required').clockTimePicker({
-    //         required: true
-    //     });
-    //     $('.separatorTime').clockTimePicker({
-    //         separator: '.'
-    //     });
-    //     $('.precisionTime5').clockTimePicker({
-    //         precision: 5
-    //     });
-    //     $('.precisionTime10').clockTimePicker({
-    //         precision: 10
-    //     });
-    //     $('.precisionTime15').clockTimePicker({
-    //         precision: 15
-    //     });
-    //     $('.precisionTime30').clockTimePicker({
-    //         precision: 30
-    //     });
-    //     $('.precisionTime60').clockTimePicker({
-    //         precision: 60
-    //     });
-    //     $('.simpleTime').clockTimePicker({
-    //         onlyShowClockOnMobile: true
-    //     });
-    //     $('.duration').clockTimePicker({
-    //         duration: true,
-    //         maximum: '80:00'
-    //     });
-    //     $('.durationNegative').clockTimePicker({
-    //         duration: true,
-    //         durationNegative: true
-    //     });
-    //     $('.durationMinMax').clockTimePicker({
-    //         duration: true,
-    //         minimum: '1:00',
-    //         maximum: '5:30'
-    //     });
-    //     $('.durationNegativeMinMax').clockTimePicker({
-    //         duration: true,
-    //         durationNegative: true,
-    //         minimum: '-5:00',
-    //         maximum: '5:00',
-    //         precision: 5
-    //     });
-    // }, 2500);
+  
 </script>
 <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
@@ -1091,6 +1069,17 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Slot_is_required = "{{__('Slot is required')}}";
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
+    var error_unchanged_schedule_date = "{{__('Schedule date can not be changed')}}";
+    var discard_order_editing_url = "{{route('user.discardeditorder')}}";
+    var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
+    var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
+    var success_error_container = ".cart_response";
+    
+    @if(!empty($client_preference_detail->is_postpay_enable))
+        var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
+    @else
+        var post_pay_edit_order = 0;
+    @endif
 
     if(!latitude){
         @if(!empty($client_preference_detail->Default_latitude))
@@ -1319,14 +1308,14 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         var method = $(this).attr('id');
         var code = method.replace('radio-', '');
 
-        if (code != '') {
+        if (code != '' && post_pay_edit_order == 0) {
             $("#cart_payment_form .option-wrapper").addClass('d-none');
             $("#cart_payment_form ."+code+"_element_wrapper").removeClass('d-none');
         } else {
             $("#cart_payment_form .option-wrapper").addClass('d-none');
         }
 
-        if (code == 'yoco') {
+        if (code == 'yoco' && post_pay_edit_order == 0) {
             // $("#cart_payment_form .yoco_element_wrapper").removeClass('d-none');
             // Create a new dropin form instance
 
@@ -1343,7 +1332,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         //     $("#cart_payment_form .yoco_element_wrapper").addClass('d-none');
         // }
 
-        if (code == 'checkout') {
+        if (code == 'checkout' && post_pay_edit_order == 0) {
             // $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
             Frames.init(checkout_public_key);
         }
@@ -1792,4 +1781,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 <script src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
 
+@endsection
+@section('script-bottom-js')
+<script defer type="text/javascript"  src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
 @endsection

@@ -42,6 +42,8 @@ trait WebStylingTrait
 
     public function updateSingleCategoryProductsToDb($request)
     {
+
+        
         if (checkTableExists('home_products')) {
             $insert = ['slug' => 'single_category_products', 'product_category' => $request->product_category];
             HomeProduct::updateOrCreate(

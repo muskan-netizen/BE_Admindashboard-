@@ -557,9 +557,9 @@
 		@elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
 		@elseif($homePageLabel->slug == 'brands' && (count($homePageData['brands']) != 0))
 		<section class="container popular-brands left-shape_ position-relative">
-			<div class="al_top_heading text-center d-flex align-items-center">
+			<div class="top-heading al_top_heading text-center d-flex align-items-center">
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
-				<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+				<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
 			</div>
 			<div class="row">
 				<div class=" col-12 al_custom_brand">
@@ -606,7 +606,7 @@
 				<div class="col-md-3">
 					<div class=" top-heading mt-5 pt-5">
 					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Vendor', true)}}</h2>
-				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
+				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <i class="fa fa-angle-right" aria-hidden="true"></i></a>
 					</div>
 				</div>
 				<div class="col-md-9">
@@ -657,7 +657,7 @@
 				<div class="col-md-3">
 					<div class=" top-heading mt-4 pt-5">
 						<h2 class="h2-heading">{{$homePageLabel->slug=='recently_viewed' ? __('Recently')." ".getNomenclatureName('Viewed', true) : __($homePageLabel->title)}}</h2>
-						<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
 					</div>
 				</div>
 				<div class="col-md-9 p-0 mb-4">
@@ -676,7 +676,7 @@
 					<div class="col-md-12">
 						<div class=" top-heading text-center">
 							<h2 class="h2-heading">{{$homePageLabel->slug=='top_rated' ? __('Top')." ".getNomenclatureName('Rated', true) : __($homePageLabel->title)}}</h2>
-							<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+							<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
 						</div>
 					</div>
 					<div class="col-md-12 mb-4">
@@ -720,7 +720,7 @@
 					<h2 class="h2-heading"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
 				</div>
 				<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					<div class="row">
@@ -755,7 +755,7 @@
 				<h2 class="h2-heading mb-3"> @php
 					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 					@endphp </h2>
-					<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+					<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
 			</div>
 			<div class="row">
 				<div class="col-12">
@@ -778,7 +778,7 @@
 					<h2 class="h2-heading mb-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
 				</div>
 				<div class="row">
 					<div class="col-12">
@@ -800,7 +800,7 @@
 					<h2 class="h2-heading mb-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i></a> 
 				</div>
 				<div class="row">
 					<div class="col-12">
@@ -839,7 +839,7 @@
 							<h2 class="h2-heading"> @php
 								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 								@endphp </h2>
-								<a class="" href="">See All  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+								<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
 						</div>
 					</div>
 				</div>

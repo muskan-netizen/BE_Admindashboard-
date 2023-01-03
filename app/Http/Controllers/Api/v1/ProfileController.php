@@ -301,6 +301,7 @@ class ProfileController extends BaseController{
                 $to = $request->phone_number;
                 $provider = $prefer->sms_provider;
                 $body = "Dear ".ucwords($request->phone_number).", Please enter OTP ".$phoneCode." to verify your account.";
+                // $body = 
                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 $response['send_otp'] = 1;
             }

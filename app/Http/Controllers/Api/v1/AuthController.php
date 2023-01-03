@@ -24,10 +24,12 @@ use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
 use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, Permissions, UserPermissions, Type, Category, VendorCategory};
 use Log;
+use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 
 class AuthController extends BaseController
 {
     use ApiResponser;
+    use CustomerSignupSuccessEmailTrait;
     /**
      * Get Country List
      * * @return country array
@@ -584,8 +586,9 @@ class AuthController extends BaseController
                 $vendor->logo = 'default/default_logo.png';
                 $vendor->banner = 'default/default_image.png';
             
-                $vendor->status = 0;
+                $vendor->status = 1;
                 $vendor->name = $user->name;
+                $vendor->p2p = 1;
                 $vendor->email = $user->email ?? '';
                 $vendor->phone_no = $user->phone_number ?? '';
                 $vendor->slug = Str::slug($user->name, "-");
@@ -598,12 +601,19 @@ class AuthController extends BaseController
                 foreach ($permission_details as $permission_detail) {
                     UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
                 }
+
+                $response['vendor_id'] = $vendor->id;
                 $p2p_type = Type::where('service_type', 'p2p')->first();
                 if( !empty($p2p_type) ) {
-                    $category_id = Category::where('type_id', $p2p_type->id)->first();
+                    $category_id = Category::where('type_id', $p2p_type->id)->get();
+                    $categories_ids = [];
                     
-                    $data[0] = $category_id->id ?? '';
-                    $signReq->request->add(['selectedCategories'=> $data ?? '']);
+                    if( !empty($category_id) ) {
+                        foreach($category_id as $key => $val) {
+                            $categories_ids[] = $val->id;
+                        }
+                    }
+                    $signReq->request->add(['selectedCategories'=> $categories_ids]);
                     
                 }
 
@@ -767,6 +777,7 @@ class AuthController extends BaseController
                 $user->save();
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             }
+            $this->sendCustomerSignupSuccessEmail($user);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -1009,6 +1020,12 @@ class AuthController extends BaseController
             } else {
                 Cart::where('unique_identifier', $req->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
             }
+
+            if( getClientPreferenceDetail()->p2p_check ) {
+                $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
+                $data['vendor_id'] = $vendorUser->vendor_id ?? '';
+                
+             }
             $checkSystemUser = $this->checkCookies($user->id);
             $data['id'] = $user->id;
             $data['name'] = $user->name;
@@ -1240,6 +1257,15 @@ class AuthController extends BaseController
                 } else {
                     Cart::where('unique_identifier', $request->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
                 }
+
+                if( getClientPreferenceDetail()->p2p_check ) {
+                   $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
+                   $data['vendor_id'] = $vendorUser->vendor_id ?? '';
+                }
+
+                   
+                
+                    
                 $checkSystemUser = $this->checkCookies($user->id);
                 $data['id'] = $user->id;
                 $data['name'] = $user->name;
@@ -1306,6 +1332,7 @@ class AuthController extends BaseController
                     return $this->errorResponse(__('User is Inactive.'), 404);
                 }
             }
+            
             
             $request->request->add(['phone_number' => $phone_number]);
             return $this->proceedToPhoneLogin($request);

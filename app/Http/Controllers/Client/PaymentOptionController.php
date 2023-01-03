@@ -128,6 +128,12 @@ class PaymentOptionController extends BaseController
                             ));
                             break;
                         
+                        case 'cod':
+                            $json_creds = json_encode(array(
+                                'cod_min_amount' => $request->cod_min_amount
+                            ));
+                        break;
+
                         case 'stripe':
                             $validatedData = $request->validate([
                                 'stripe_api_key'        => 'required',

@@ -17,5 +17,4 @@ class CampaignRoster extends Model
     public function campaign(){
         return $this->hasOne('App\Models\Campaign','id','campaign_id');
     }
-
 }
