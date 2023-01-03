@@ -973,6 +973,14 @@ $('.addUsersBtn').click(function() {
     });
 });
 
+$('.timepicker').timepicker({
+    timeFormat: 'h:mm p',
+    interval: 60,
+    defaultTime: '12 AM',
+    dynamic: false,
+    dropdown: true,
+    scrollbar: true
+}).val("{{$vendor->cutOff_time??''}}");
 
 $( document ).ready(function() {
     @if($client_preference_detail->business_type != 'taxi')
