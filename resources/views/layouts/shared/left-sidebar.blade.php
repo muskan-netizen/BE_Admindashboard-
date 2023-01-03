@@ -247,7 +247,15 @@
                                 </li>
                             @endif
 
-                            
+                            @if(Auth::user()->is_superadmin == 1)
+                                <li>
+                                    <a href="{{route('delivery-slot.index')}}">
+                                        <span class="icon-customer-2"></span>
+                                        <span> {{ __('Slots') }} </span>
+                                    </a>
+                                </li>
+                            @endif
+
                             @if(Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="#sidebarreports" data-toggle="collapse">
