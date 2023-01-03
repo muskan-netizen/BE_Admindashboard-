@@ -973,6 +973,7 @@ $('.addUsersBtn').click(function() {
 });
 
 $('.timepicker').timepicker({
+    
     timeFormat: 'h:mm p',
     interval: 60,
     defaultTime: '12 AM',
