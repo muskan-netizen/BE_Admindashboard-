@@ -1547,6 +1547,15 @@ class OrderController extends FrontController
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
+                $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
+                $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $delivery_fee, ($vendor_payable_amount - $delivery_fee), $vendor_subs_disc_percent);
+                $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
+                $subs_discount_vendor           = $subs_discount_arr['vendor'];
+
+                if(checkColumnExists('order_vendors', 'subscription_discount_admin')){
+                    $OrderVendor->subscription_discount_admin  = $subs_discount_admin;
+                    $OrderVendor->subscription_discount_vendor = $subs_discount_vendor;
+                }
                 $OrderVendor->is_restricted = $is_restricted;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
@@ -1575,7 +1584,7 @@ class OrderController extends FrontController
             //echo "loop end";
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('',$payable_amount);
 
-            // calculate subscription discount
+            // calculate subscription discount on admin and vendor
             if ($user_subscription) {
                 foreach ($user_subscription->features as $feature) {
                     if ($feature->feature_id == 1) {
