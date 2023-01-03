@@ -346,6 +346,10 @@ class ProductController extends FrontController{
                 $user_vendor = UserVendor::where('user_id', $user->id)->first();
             }
 
+            // Date Time Comparison
+            $cutoff_time            = $product->vendor->cutOff_time??'';
+            $current_time           = Carbon::now()->toTimeString();
+            
             $parsed_cutoff_time     = Carbon::parse($cutoff_time);
             $current_time_response  = false;
 
