@@ -113,7 +113,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                                 </div>
                             </div>
                             </div>
-                            <h6>{{__('Transaction History')}}</h6>
+                            
                             <div class="card-box" >
                                 <div class="table-responsive table-responsive-xs">
                                      <table class="table table-centered table-nowrap table-striped" id="client_customer_table" width="100%">

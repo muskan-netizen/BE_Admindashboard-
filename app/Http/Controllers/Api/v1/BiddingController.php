@@ -32,7 +32,8 @@ class BiddingController extends Controller
                     $BidRequest = new BidRequest();
                     $BidRequest->user_id   =  $user->id; 
                     $BidRequest->description = $request->description;
-                    $BidRequest->prescription =  $url ;
+                    $BidRequest->prescription =  $url;
+                    $BidRequest->bid_number = time();
                     $BidRequest->save();
                // }
             }
@@ -45,16 +46,21 @@ class BiddingController extends Controller
             BidRequest::where('id', $request->prescriptionId)->delete();
             return response()->json(['status' => 'success', 'message' => "Prescription remove Successfully"]);
         }
-        $bidPrescription = bidRequest::get();
+        $bidPrescription = BidRequest::get();
         return response()->json($bidPrescription);
     }
 
 
     public function getUserPrescription(Request $request){
         $user = Auth::user();
-        $bidPrescription = bidRequest::where('user_id' ,$user->id)->withCount('bids')->with('bids.vendor')->get();
+        $langId     = Auth::user()->language;
+        $bidPrescription = BidRequest::where('user_id' ,$user->id)->withCount('bids')->with(['bids.vendor','bids.bidProducts.product.translation_one' => function ($q) use ($langId) {
+            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+            $q->where('language_id', $langId);
+        }])->get();
         return response()->json($bidPrescription);
     }
+
     public function getbidList($bid_id){
         $user       = Auth::user();
         $langId     = Auth::user()->language;

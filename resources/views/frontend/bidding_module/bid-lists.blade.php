@@ -133,7 +133,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                 <div class="row no-gutters order_head">
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Bid Number') }}</h4>
-                                                                        <span>#{{ $order->bidRequests->bid_number }}</span>   
+                                                                        <span>#{{ $order->bid_order_number }}</span>   
                                                                     </div>
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Date & Time') }}</h4>
@@ -145,12 +145,24 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                     </div>
 
                                                                     <div class="col-md-3 alOrderStatus">
-                                                                        <span>
-                                                                        <a href="{{route('bid.accept',[$order->bid_req_id,$order->id])}}" class="btn btn-primary btn-sm m-2" >{{ __('Accept Request') }}</a>
-                                                                        </span>
-                                                                         <span>
-                                                                        <a href="javascript:;" class="btn btn-primary btn-sm acceptBtn ml-2" data-accept-req-id="{{$order->bid_req_id}}" data-accept-id="{{$order->id}}" >{{ __('Reject Request') }}</a>
-                                                                        </span>
+                                                                        
+                                                                        @if(@$order->status == 0)
+                                                                            <span>
+                                                                                <a href="{{route('bid.accept',[$order->bid_req_id,$order->id])}}" class="btn btn-primary btn-sm m-2" onclick="return confirm('Are you sure?')" >{{ __('Accept Request')}}</a>
+                                                                            </span>
+                                                                            <span>
+                                                                                <a href="{{route('bid.reject',[$order->bid_req_id,$order->id])}}" class="btn btn-danger btn-sm m-2" onclick="return confirm('Are you sure?')" >{{ __('Bid Reject')}}</a>
+                                                                            </span>
+                                                                        @elseif(@$order->status == 1)
+                                                                            <span>
+                                                                                <a href="#" class="btn btn-success btn-sm m-2" >{{ __('Accepted')  }}</a>
+                                                                            </span>
+                                                                        @else
+                                                                            <span>
+                                                                                <a href="#" class="btn btn-danger btn-sm m-2" >{{ __('Rejected')  }}</a>
+                                                                            </span>
+                                                                        @endif
+                                                                        
                                                                     </div>
 
                                                                 </div>
@@ -188,7 +200,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                         </div>
 
                                                                          @php
-                                                                            $disTotalPrice = $products->product->variant[0]->price*$order->discount/100;
+                                                                            $disTotalPrice = $totalPrice*$order->discount/100;
                                                                         @endphp
 
                                                                     <div class="col-md-3 mb-3 pl-lg-0">
@@ -198,7 +210,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Discount') }}</label>
-                                                                                    <span>{{$order->discount}}</span>
+                                                                                    <span>{{$order->discount}}%</span>
                                                                                 </li>
                                                                                 
                                                                                 

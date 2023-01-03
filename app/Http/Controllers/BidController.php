@@ -38,19 +38,7 @@ class BidController extends FrontController
 
     public function bidDetails(Request $request,$domain = '',$id=null)
     {
-        // dd($request->all());
         $activeOrders = Bid::where('bid_req_id', $id);
-        // foreach($bids->bidProducts as $k=> $details)
-        // {
-        //         $data[$k] = array(
-        //                     'vendor_name' => $bids->vendor->name,
-        //                     'prod_name' => $details->product->title,
-        //                     'price' => $details->price,
-        //                     'quantity' => $details->quantity,
-        //                     'discount' => $bids->discount,
-        //             );
-        //     }
-        // return response()->json($data);
         $activeOrders = $activeOrders->orderBy('id', 'DESC')->paginate(10);
         return view('frontend.bidding_module.bid-lists', compact('activeOrders'));
 
@@ -65,20 +53,25 @@ class BidController extends FrontController
 
     public function bidAccept(Request $request,$domain ="",$id = null,$vid = null)
     {
-        // $prescriptions = Bid::with('bidProducts')->where(['bid_req_id'=>$id,'id'=>$vid])->first();
-        
         $bid_products = BidProduct::where('bid_id', $vid)->with('product.variant')->get();
-        // $bid_vendors = Bid::where('id',$id)->first();
-        // $currency = ClientCurrency::where('is_primary', '=', 1)->first();
-
         $CartController  = new CartController();
         foreach($bid_products as $product) {
             $newRequest = new Request();
             $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>$vid,'bid_discount'=>$product->bids->discount]);
             $data = $CartController->postAddToCart($newRequest);
-
         }
 
+        // $accept = Bid::where('id', $vid)->update(['status'=>1]);
+        return redirect('viewcart');
+
+    }
+
+
+    public function bidReject(Request $request,$domain ="",$id = null,$vid = null)
+    {
+        // $bid_products = BidProduct::where('bid_id', $vid)->with('product.variant')->get();
+        $accept = Bid::where('id', $vid)->update(['status'=>2]);
+        return redirect()->back()->with('success','Bid updated successfuly.');
     }
 
     public function store(Request $request)
@@ -113,6 +106,7 @@ class BidController extends FrontController
             'discount'     => $discount,
             'bid_total'    => $total,
             'final_amount' => $amountPayable,
+            'bid_order_number'   => time()
         ];
 
         $vendor_bids = Bid::create($data);

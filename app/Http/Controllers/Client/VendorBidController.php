@@ -65,6 +65,7 @@ class VendorBidController extends BaseController{
                     'discount'     => $discount,
                     'bid_total'    => $total,
                     'final_amount' => $amountPayable,
+                    'bid_order_number'=> time()
                 ];
 
                 $vendor_bids = Bid::create($data);

@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
+use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -1433,6 +1433,26 @@ if( !function_exists('get_tiny_url') ) {
         $data = curl_exec($ch);
         curl_close($ch);
         return $data;
+    }
+}
+
+
+if( !function_exists('makeCartEmpty') ) {
+    function makeCartEmpty()
+    {
+        $cart = Cart::where('user_id',auth()->id())->select('id')->first();
+        $cartid = $cart->id;
+        Cart::where('id', $cartid)->update([
+        'schedule_type' => null, 'scheduled_date_time' => null,
+        'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
+        ]);
+        CaregoryKycDoc::where('cart_id',$cartid)->delete();
+        CartAddon::where('cart_id', $cartid)->delete();
+        CartCoupon::where('cart_id', $cartid)->delete();
+        CartProduct::where('cart_id', $cartid)->delete();
+        CartProductPrescription::where('cart_id', $cartid)->delete();
+
+        return true;
     }
 }
 

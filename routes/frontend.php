@@ -602,6 +602,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::POST('user/bidUpdatePdf', [BidController::class, 'uploadPrescription'])->name('bid.update_pdf');
     Route::get('bidding/make', [BidController::class, 'index'])->name('bid.index');
     Route::get('bid/accept/{id?}/{vid?}', [BidController::class, 'bidAccept'])->name('bid.accept');
+    Route::get('bid/reject/{id?}/{vid?}', [BidController::class, 'bidReject'])->name('bid.reject');
     Route::post('store', [BidController::class, 'store'])->name('bid.store');
     Route::get('bid/Details/{id?}', [BidController::class, 'bidDetails'])->name('bid.details');
     Route::post('add/bid/prescription', [BidController::class, 'uploadPrescription'])->name('bid.uploadPrescription');  //add bidding prescription

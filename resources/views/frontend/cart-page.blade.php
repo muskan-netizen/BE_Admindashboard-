@@ -223,7 +223,6 @@
                     </div>
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
-
                             <div class="col-md-3 order-md-1">
                                 <h4 class="cart_product_name">{{@$vendor_product->product->category_name->name }}</h4>
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong>{{@$vendor_product->product->translation_one ?@ $vendor_product->product->translation_one->title :  @$vendor_product->product->sku }}</strong></h4>
@@ -574,17 +573,31 @@
                                 @endif
                             </div>
                         </div>
+                        
+                         @if($product->bid_vendor_discount>0)
+                        <div class="row">
+                                <div class="col-5 text-lg-right">
+                                    <label class="m-0 radio">{{__('Bid Discount')}} :</label>
+                                </div>
+                                <div class="col-7 text-right">
+                                    <p class="total_amt m-0">{{Session::get('currencySymbol')}} {{decimal_format($product->bid_vendor_discount)}}</p>
+                                </div>
+                        </div>
+                        @endif
 
                         <div class="row">
-                            @if($cart_details->vendorCnt>1)
+                            {{-- @if($cart_details->vendorCnt>1) --}}
                                 <div class="col-5 text-lg-right">
                                     <label class="m-0 radio">{{__('Sub Total')}} :</label>
                                 </div>
                                 <div class="col-7 text-right">
-                                    <p class="total_amt m-0">{{Session::get('currencySymbol')}} {{decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount)}}</p>
+                                    <p class="total_amt m-0">{{Session::get('currencySymbol')}} {{decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount??0)}}</p>
                                 </div>
-                            @endif
+                            {{-- @endif --}}
                         </div>
+                        
+
+
                 </div>
             </div>
         </div>
@@ -717,7 +730,7 @@
             @if($cart_details->sub_total > 0 )
                 <div class="row">
                     <div class="col-6">{{__('Sub Total')}}</div>
-                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total)}}</b></div>
+                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div>
                 </div>
                 <hr class="my-2">
             @endif
@@ -775,7 +788,7 @@
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 @else  --}}
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount)}}</b></span>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount - $cart_details->bid_total_discount)}}</b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
                 {{-- @endif --}}
             </div>
@@ -891,14 +904,13 @@
                                 <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes)}}" >
 
                         @else
-
-                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}</p>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">{{Session::get('currencySymbol')}}{{ decimal_format(($cart_details->total_payable_amount - $cart_details->bid_total_discount)+($other_taxes))}}</p>
 
                                     <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
                                     <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}" >
                         @endif
                         <div>
-                        <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes)}}">
+                        <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="{{decimal_format($cart_details->total_payable_amount - $cart_details->bid_total_discount)+decimal_format($other_taxes)}}">
                     </div>
 
 

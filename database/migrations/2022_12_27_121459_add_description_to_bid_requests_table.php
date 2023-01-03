@@ -17,6 +17,10 @@ class AddDescriptionToBidRequestsTable extends Migration
             $table->string('bid_number');
             $table->string('description')->nullable();
         });
+
+        Schema::table('bids', function (Blueprint $table) {
+            $table->string('bid_order_number');
+        });
     }
 
     /**
@@ -29,6 +33,10 @@ class AddDescriptionToBidRequestsTable extends Migration
         Schema::table('bid_requests', function (Blueprint $table) {
             $table->dropColumn('description');
             $table->dropColumn('bid_number');
+        });
+
+        Schema::table('bids', function (Blueprint $table) {
+            $table->dropColumn('bid_order_number');
         });
     }
 }
