@@ -601,6 +601,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         @endif
                                         
                                         @if($product->same_day_delivery == 1 && $product->next_day_delivery == 1 && $product->hyper_local_delivery == 1)
+
                                         <div class="enterPincodeMsg desktop-pin-message">
                                             <strong> Enter correct Pincode for hassle free timely delivery.</strong>
                                         </div>
@@ -611,6 +612,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     <span class="pincode-err text-danger" style="font-size: 14px;"></span>
                                                 </div>
                                             </div>
+                                            
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <input class="flatpickr flatpickr-input form-control" type="text" placeholder="Select Date.." data-id="minDate" name="date_input" id="date_input" readonly="readonly" disabled>
