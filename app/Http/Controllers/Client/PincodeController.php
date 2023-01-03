@@ -16,7 +16,7 @@ class PincodeController extends Controller
      */
     public function index(Request $request)
     {
-        
+
         $search = $request->search??'';
         $pincode = Pincode::with('deliveryOptions')->where('vendor_id', $request->vendor_id);
         if(!empty($search)){

@@ -9,6 +9,7 @@ use App\Models\Pincode;
 class PincodeController extends Controller
 {
     public function checkVendorPincode(Request $request){
+
         if($request->ajax()){
             $vendor_id = $request->vendor_id;
             $pincode = $request->pincode;
@@ -28,6 +29,7 @@ class PincodeController extends Controller
     }
 
     public function getShippingMethod(Request $request){
+        
         if ($request->ajax()) {
             return view('frontend.shipping-method-option-ajax');
         }
