@@ -903,6 +903,92 @@
     </div>
 </div>
 
+<div id="add-edit-pincode" class="modal fade add_reason" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __('Add Pincode') }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <form id="save_reason_form" method="post" enctype="multipart/form-data" action="{{ route('pincode.store') }}">
+                @csrf
+                <input type="hidden" name="pincode_id" id="pincode_id" value="">
+                <input type="hidden" name="vendor_id" id="vendor_id" value="{{$vendor->id}}">
+                <div class="modal-body pb-0">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="title">Pincode</label>
+                                <input type="number" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6" class="form-control" name="pincode" id="pincode" placeholder="Enter Pincode" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Select Delivery Option</label>
+                                <select class="selectizeInput form-control" id="select_delivery_option" name="delivery_option_ids[]" placeholder="Select Delivery Option" multiple required>
+                                    <option value="1">Same Day Delivery</option>
+                                    <option value="2">Next Day Delivery</option>
+                                    <option value="3">Hyper Local Delivery</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info waves-effect waves-light submitPincode">{{ __('Submit') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="import-form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __('Import Pincode') }} </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <form method="post" enctype="multipart/form-data" id="save_imported_pincode">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <a href="{{url('/sample_customer.csv')}}">{{ __("Download Sample file here!") }}</a>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row mb-2">
+                                <div class="col-md-12">
+                                    <input type="file" accept=".csv" onchange="submitImportPincodeForm()" data-plugins="dropify" name="pincode_csv" class="dropify" data-default-file="" required/>
+                                    <p class="text-muted text-center mt-2 mb-0">{{ __("Upload") }} CSV</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="edit-pincode-form" class="modal fade add_reason" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">    
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __('Edit Pincode') }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <form id="save_reason_form" method="post" enctype="multipart/form-data" action="{{ route('pincode.store') }}">
+                @csrf
+                <div class="modal-body pb-0" id="edit-pincode-body">
+    
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info waves-effect waves-light submitPincode">{{ __('Submit') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <form name="noPurpose" id="noPurpose"> @csrf </form>
 
 @include('backend.vendor.profile-modals')

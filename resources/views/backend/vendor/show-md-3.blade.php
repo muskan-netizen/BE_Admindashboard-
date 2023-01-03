@@ -213,6 +213,36 @@
                         {!! Form::label('title', __('Return Auto Approve'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="return_auto_approve" class="form-control" data-color="#43bee1" @if($vendor->return_auto_approve == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    
+                    @if(isset($getAdditionalPreference['is_same_day_delivery']) && $getAdditionalPreference['is_same_day_delivery'] == '1')
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Same Day Delivery'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="same_day_delivery" class="form-control" data-color="#43bee1" @if($vendor->same_day_delivery == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    @endif
+
+                    @if(isset($getAdditionalPreference['is_next_day_delivery']) && $getAdditionalPreference['is_next_day_delivery'] == '1')
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Next Day Delivery'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="next_day_delivery" class="form-control" data-color="#43bee1" @if($vendor->next_day_delivery == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    @endif
+
+                    @if(isset($getAdditionalPreference['is_hyper_local_delivery']) && $getAdditionalPreference['is_hyper_local_delivery'] == '1')
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Hyper Local Delivery'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="hyper_local_delivery" class="form-control" data-color="#43bee1" @if($vendor->hyper_local_delivery == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    @endif
+                    
+                    @if($getAdditionalPreference['is_same_day_delivery'] == '1' || $getAdditionalPreference['is_next_day_delivery'] == '1')                    
+                        <div class="col-md-12" id="cutOff_timeInput">
+                            <div class="form-group">
+                                {!! Form::label('title', __('Cut Off Time'),['class' => 'control-label']) !!}
+                                <input class="form-control timepicker" name="cutoff_time" type="text" placeholder="Cut off time" value="" min="0" {{$vendor->status == 1 ? '' : 'disabled'}} >
+                            </div>
+                        </div>
+                    @endif
 
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
