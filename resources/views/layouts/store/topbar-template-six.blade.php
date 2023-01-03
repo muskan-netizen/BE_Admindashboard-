@@ -9,6 +9,7 @@ $applocale = 'en';
 if(session()->has('applocale')){
 $applocale = session()->get('applocale');
 }
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 @endphp
 
 
@@ -32,9 +33,11 @@ $applocale = session()->get('applocale');
                <li>
                   <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
                </li>
+               @if($getAdditionalPreference['is_phone_signup'] != 1)
                <li>
                   <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
                </li>
+               @endif
                @endif
                @if($client_preference_detail->show_wishlist == 1)
                <li class="onhover-dropdown_al mobile-wishlist_al">

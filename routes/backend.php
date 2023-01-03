@@ -18,6 +18,7 @@ use App\Http\Controllers\Client\CategoryKycDocumentController;
 use App\Http\Controllers\Client\Accounting\PromoCodeController;
 use App\Http\Controllers\Client\UserRegistrationDocumentController;
 use App\Http\Controllers\Client\VendorRegistrationDocumentController;
+use App\Http\Controllers\Client\SubscriptionPlansUserController;
 use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
@@ -293,11 +294,6 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('seller/filterdata', 'Client\SellerController@getFilterData')->name('seller.filterdata');
         Route::resource('seller', 'Client\SellerController');
         Route::get('seller/catalogs/{id}', 'Client\SellerController@sellerCatalog')->name('seller.catalogs');
-
-        Route::resource('pincode', 'Client\PincodeController');
-        Route::get('pincodeData', 'Client\PincodeController@pincodeData')->name('pincode.pincodeData');
-
-        Route::resource('delivery-slot', 'Client\DeliverySlotController');
 
         Route::get('calender/pickup/data/{id}', 'Client\Laundry\PickupSlotController@returnJson')->name('vendor.calender.pickup'); // Added by Ovi
         Route::post('calender/pickup/slot/{id}', 'Client\Laundry\PickupSlotController@store')->name('vendor.pickup.saveSlot'); // Added by Ovi
@@ -577,6 +573,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::get('account/redeemedcard', [GiftcardController::class, 'redeemedCard'])->name('account.redeemedcard');
         Route::get('giftcard/list/filter', [GiftcardController::class, 'filter'])->name('gift.card.list.filter');
+
+        Route::get('account/usersubscriptions', [SubscriptionPlansUserController::class, 'userSubscriptionReport'])->name('account.userSubscription');
+        Route::get('usersubscriptions/list/filter', [SubscriptionPlansUserController::class, 'subscriptionfilter'])->name('subscription.list.filter');
 
     });
 });

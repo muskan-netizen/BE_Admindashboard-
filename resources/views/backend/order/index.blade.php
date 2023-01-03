@@ -199,7 +199,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span>
                                                     </li>
                                                     <% } %>
-
                                                     <% if(vendor.additional_price > 0 ) { %>
                                                         <li class="d-flex align-items-center justify-content-between">
                                                             <label class="m-0">{{ __('Additional Price') }}</label>
@@ -341,6 +340,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Total') }}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_amount) %></span>
                                     </li>
+                                    
                                     <% if(order.additional_price > 0 || order.additional_price < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                                  <label class="m-0">{{ __('Tax') }}</label>
@@ -420,6 +420,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{__('Wallet Amount Used')}}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.wallet_amount_used) %></span>
+                                    </li>
+                                    <% } %>
+                                    <% if(order.total_discount > 0 || order.total_discount < 0) { %>
+                                    <li class="d-flex align-items-center justify-content-between">
+                                        <label class="m-0">{{__('Total Discount')}}</label>
+                                        <span>-{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_discount) %></span>
                                     </li>
                                     <% } %>
                                     <% if(order.total_discount_calculate > 0 || order.total_discount_calculate < 0) { %>

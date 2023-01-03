@@ -1,5 +1,7 @@
-jQuery(document).ready(function () {
+
+$(function () {
     var slotValidater = 2;
+   
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
@@ -915,6 +917,10 @@ $(document).ready(function () {
             return false;
         }
         var delivery_type = 'D';
+        var other_taxes_string='';
+        if($("#other_taxes_string").val()!=null){
+            other_taxes_string=$("#other_taxes_string").val();
+        }
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
             delivery_type = selected.value;
@@ -1067,7 +1073,7 @@ $(document).ready(function () {
             // Save Cart Page Detail Forcely If user is paying from his cart.
             var checkParam = saveCartPageDetails(params);
             if (checkParam != false) {
-                placeOrder(address, 1, '', tip, delivery_type); // Adready Added
+                placeOrder(address, 1, '', tip, delivery_type, other_taxes_string); // Adready Added
                 return false;
             }
         } else {
@@ -2171,7 +2177,7 @@ $(document).ready(function () {
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
-
+                    // console.log(cart_details);
                     if (cart_details!= undefined) {
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
@@ -2558,6 +2564,7 @@ $(document).ready(function () {
         // var other_taxes                 =initialize_values($('#other_taxes').text());
         var other_taxes                 =0;
         var loyalty_amount              =initialize_values($('#loyalty_amount').text());
+        var token_currency              =initialize_values($('#token_currency').text());
         var wallet_amount_available     =initialize_values($('#wallet_amount_available').text());
         var wallet_amount_used_fixed    =initialize_values($('#wallet_amount_used_fixed').text());
         var gross_amount                =initialize_values($('#gross_amount').text());
@@ -2575,11 +2582,14 @@ $(document).ready(function () {
         $("#cart_tip_amount").val(tip.toFixed(parseInt(digit_count)));
         // $("#cart_total_payable_amount").html(currency + (amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         // $("input[name='cart_total_payable_amount']").val((amount_payable+other_taxes).toFixed(parseInt(digit_count)));
-
+        if(token_currency>0){
+            currency = '';
+            $("#cart_tip_amount").val(tip/token_currency);
+        }
         if(wallet_amount_available>0){
             if(wallet_amount_available >= wallet_amount_used_fixed+tip){
                 /* Paid amount is less then available wallet amount*/
-                $("#wallet_amount_used").text(" - "+currency+ " "+(wallet_amount_used_fixed+tip).toFixed(parseInt(digit_count)));
+                $("#wallet_amount_used").text(" - "+currency+ " "+(token_currency*(wallet_amount_used_fixed+(tip/token_currency))).toFixed(parseInt(digit_count)));
             }else{
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+wallet_amount_available.toFixed(parseInt(digit_count)));
@@ -2818,12 +2828,37 @@ $(document).ready(function () {
         });
         return resp;
     }
-
+    async function showRemoveCart(modelText){
+        var start_date =  $('#start_time').val();
+        var end_date =  $('#end_time').val();
+        var incremental_hrs =  $('#incremental_hrs').val();
+        var total_booking_time =  $('#total_hrs').val();
+        $("#single_vendor_order_modal_text").html(modelText);
+        $("#single_vendor_remove_cart_btn").attr({
+            'data-product_id': product_id,
+            'data-variant_id': $('#prod_variant_id').val(),
+            'data-quantity': $('.quantity_count').val(),
+            'data-vendor_id': vendor_id,
+            'data-page': 'productDetail',
+            'data-start_time':start_date,
+            'data-end_time':end_date,
+            'data-incremental_hrs':incremental_hrs,
+            'data-service_period':service_period,
+            'data-service_day':service_day,
+            'data-service_date':service_date,
+            'data-service_start_time':service_start_time,
+            'data-total_hrs':total_booking_time
+        });
+        $("#single_vendor_order_modal").modal('show');
+    }
 
     function addToCart() {
+
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
         var addLongTerm = 0;
+        vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
+
         if (Product_quantity <= 0) {
             Swal.fire({
                 // title: "Warning!",
@@ -2837,33 +2872,6 @@ $(document).ready(function () {
             return false;
 
         }
-
-        if($('#pincode').val() == ''){
-            Swal.fire({
-                text: _language.getLanString('Please enter pincode to continue'),
-                icon: "warning",
-                button: "OK",
-            });
-            return false;
-        }
-
-        if($('#date_input').val() == ''){
-            Swal.fire({
-                text: _language.getLanString('Please select delivery date to continue'),
-                icon: "warning",
-                button: "OK",
-            });
-            return false;
-        }
-
-        if($('#sele_slot_id').val() == ''){
-            Swal.fire({
-                text: _language.getLanString('Please select delivery slot to continue'),
-                icon: "warning",
-                button: "OK",
-            });
-            return false;
-        }
     
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
@@ -2875,6 +2883,7 @@ $(document).ready(function () {
                 });
                 return false;
             }
+         
 
             var service_start_time  =  $('#service_start_time').val();
             if(service_start_time == '' || service_start_time== undefined){
@@ -2887,29 +2896,7 @@ $(document).ready(function () {
             }
         }
 
-       async function showRemoveCart(modelText){
-            var start_date =  $('#start_time').val();
-            var end_date =  $('#end_time').val();
-            var incremental_hrs =  $('#incremental_hrs').val();
-            var total_booking_time =  $('#total_hrs').val();
-            $("#single_vendor_order_modal_text").html(modelText);
-            $("#single_vendor_remove_cart_btn").attr({
-                'data-product_id': product_id,
-                'data-variant_id': $('#prod_variant_id').val(),
-                'data-quantity': $('.quantity_count').val(),
-                'data-vendor_id': vendor_id,
-                'data-page': 'productDetail',
-                'data-start_time':start_date,
-                'data-end_time':end_date,
-                'data-incremental_hrs':incremental_hrs,
-                'data-service_period':service_period,
-                'data-service_day':service_day,
-                'data-service_date':service_date,
-                'data-service_start_time':service_start_time,
-                'data-total_hrs':total_booking_time
-            });
-            $("#single_vendor_order_modal").modal('show');
-        }
+       
         $(".productAddonSetOptions").each(function (index) {
             var min_select = $(this).attr("data-min");
             var max_select = $(this).attr("data-max");
@@ -2959,17 +2946,13 @@ $(document).ready(function () {
                     var incremental_hrs =  $('#incremental_hrs').val();
                     var total_booking_time =  $('#total_hrs').val();
 
-                    var sele_slot_id = $("#sele_slot_id").val();
-                    var sele_slot_price = $("#sele_slot_price").val();
-                    var delivery_date = $("#date_input").val();
-
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date,sele_slot_id,sele_slot_price,delivery_date);
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='',sele_slot_id='',sele_slot_price='',delivery_date='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2990,10 +2973,7 @@ $(document).ready(function () {
                 "service_period":service_period,
                 "service_day":service_day,
                 "service_date":service_date,
-                "service_start_time":service_start_time,
-                "sele_slot_id":sele_slot_id,
-                "delivery_date":delivery_date,
-                "sele_slot_price":sele_slot_price
+                "service_start_time":service_start_time
             },
             success: function (response) {
                 if (response.status == 'success') {

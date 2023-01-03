@@ -118,6 +118,7 @@
                                             </select>
                                         </div>
                                     @endif
+
                                     <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'12' }}">
                                         <label for="">{{ __('Password') }}</label>
                                         <div class="position-relative">

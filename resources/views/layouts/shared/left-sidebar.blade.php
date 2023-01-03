@@ -203,6 +203,11 @@
                                                     <a href="{{route('account.redeemedcard')}}">{{ __('Gift Cards') }}</a>
                                                 </li>
                                             @endif
+                                            @if( Auth::user()->is_superadmin == 1)
+                                                <li>
+                                                    <a href="{{route('account.userSubscription')}}">{{ __('Subscription Discount') }}</a>
+                                                </li>
+                                            @endif
                                         </ul>
                                     </div>
                                 </li>
@@ -238,15 +243,6 @@
                                     <a href="{{route('customer.index')}}">
                                         <span class="icon-customer-2"></span>
                                         <span> {{ __('Customers') }} </span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if(Auth::user()->is_superadmin == 1)
-                                <li>
-                                    <a href="{{route('delivery-slot.index')}}">
-                                        <span class="icon-customer-2"></span>
-                                        <span> {{ __('Slots') }} </span>
                                     </a>
                                 </li>
                             @endif

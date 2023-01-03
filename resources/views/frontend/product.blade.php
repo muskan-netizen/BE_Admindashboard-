@@ -14,7 +14,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
     <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style type="text/css">
     /* .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
     #number{display:block}#exzoom{display:none}.exzoom .exzoom_btn a.exzoom_next_btn{right:-12px} .exzoom .exzoom_nav .exzoom_nav_inner{-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}
@@ -58,17 +57,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         display: none;
     }
 
-    /* Chrome, Safari, Edge, Opera */
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    /* Firefox */
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
     </style>
 
 @endsection
@@ -80,6 +68,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 @endif
 @php
   $img = '';
+  $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
 <!-- <div class="toast">
     <div class="toast-header">
@@ -89,9 +78,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
       Some text inside the toast body
     </div>
   </div> -->
-@php
-  $getAdditionalPreference = getAdditionalPreference(['seller_sold_title','seller_platform_logo']);
-@endphp
+
 <section class="section-b-space alSingleProducts product_ddetails_page">
     <div class="collection-wrapper al">
         <div class="container">
@@ -125,7 +112,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                         </div>--}}
                         <section class="buy_details">
                             <div class="row">
-                                @if((!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8'))
+                                @if((!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id = '9')))
                                 <div class="col-md-1 pl-0">
                                     <div class="exzoom_nav side_nav_img">
                                        
@@ -159,7 +146,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                     </div>
                                 </div>
                                 @endif
-                                <div class="{{(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id != '8') ? 'col-lg-5' : 'col-lg-4'}}  p-0 @php if(count($product->media) == 0){  echo 'dd-none'; } @endphp ">
+                                <div class="{{(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id != '8') ? 'col-lg-5' : 'col-lg-4'}}  p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                     {{-- <div class="product__carousel">
                                         <div class="gallery-parent">
                                             @php
@@ -236,6 +223,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             </div>
                                         </div>
                                     </div> --}}
+
                                     <div class="exzoom hidden w-100">
                                         <div class="exzoom_img_box mb-2">
                                             <ul class='exzoom_img_ul img-sidebar'>
@@ -292,21 +280,15 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-7'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
+                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-6'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                         </h2>
                                         <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                        @if($product->vendor->is_seller == 0)
-                                            <h6 class="sold-by">
-                                                <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
-                                            </h6>
-                                        @else
-                                            <h6 class="sold-by">
-                                                <b> <img class="blur-up lazyload" data-src="{{$getAdditionalPreference['seller_platform_logo']['proxy_url'] . '90/90' . $getAdditionalPreference['seller_platform_logo']['image_path']}}" alt="{{$getAdditionalPreference['seller_sold_title']??''}}"></b><b> {{$getAdditionalPreference['seller_sold_title']??''}} </b>
-                                            </h6>
-                                        @endif
+                                        <h6 class="sold-by">
+                                            <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                                        </h6>
                                         @if($client_preference_detail)
                                             @if($client_preference_detail->rating_check == 1)
                                                 @if($product->averageRating > 0)
@@ -325,9 +307,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
-                                                    <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
-                                                    @if($product->variant[0]->compare_at_price > 0 )
-                                                        <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                    @if($additionalPreference ['is_token_currency_enable'])
+                                                        <b class="mr-1"><span class="product_fixed_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
+                                                    @else
+                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier,2)}}</span></b>
+                                                        @if($product->variant[0]->compare_at_price > 0 )
+                                                            <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                        @endif
                                                     @endif
                                                 </h3>
                                             @endif
@@ -365,21 +351,19 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
                                             {{-- Chat Button --}}
                                             <hr>
-                                            @if(@$user_vendor->vendor_id &&  $vendor_info->id != $user_vendor->vendor_id)
                                                 <h6 class="sold-by">
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
                                             
                                                
                                                     <?php /*<span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
-                                                    <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
+                                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
                                                 
                                             @endif
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
                                             @endif
                                                 </h6>
-                                                @endif
                                     @endif
 
 
@@ -516,6 +500,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             </table>--}}
                                         </div>
                                         @endif
+<<<<<<< HEAD
 
 
 
@@ -621,6 +606,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             </div>
                                         </div>
                                         @endif
+=======
+>>>>>>> pre_dev
                                         @php
                                             // check if vendor is closed or not, if closed then get slots otherwise no need.
                                             if($vendor_info->is_vendor_closed == 1)
@@ -731,40 +718,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                     </div>
 
                                 </div>
-                                @if( !is_category_p2p($product->category) )
-                                @if( !empty($coupon_list) )
-                                <div class="col-md-3">
-                                    <div class="aside_bar">
-                                        <h5>Available offers</h5>
-                                            <div class="discriptions">
-                                                @foreach($coupon_list as $m_key => $m_val)
-                                                <p> <small> Coupon Code :  </small><span>{{ $m_val['name'] ?? '' }} </span> </p>
-                                                   <p> <small> Description :</small> <span>{{ $m_val['short_desc'] ?? '' }} </span> </p>
-                                                   
-                                                   <p>  <small>Coupon Type :  </small><span>{{ $m_val['promo_type_title'] ?? '' }} </span> </p>
-                                                   <p> 
-                                                    <small>
-                                                    @if($m_val['promo_type_id'] == 1)
-                                                         Amount : 
-                                                    @else
-                                                        Percentage : 
-                                                    @endif
-                                                    </small>
-                                                    <span>{{decimal_format($m_val['amount'])}}</span>
-                                                    </p>
-                                                    <hr>
-                                                @endforeach
-                                            </div>
-                                        
-                                        <!-- <form>
-                                            <div class="form-group">
-                                                <input type="text" class="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Promo Code">
-                                                <button type="submit" class="btn btn-primary">Apply</button>
-                                            </div>
-                                        </form> -->
-                                    </div>
-                                </div>
-                            @endif
+                                @if( !is_category_p2p($product->category) && @$set_template->template_id == '8' )
+                                    @include('frontend.product-coupon')
                             @endif
                             </div>
                         </section>
@@ -1095,29 +1050,37 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         </div>
     </div>
 </div>
+@php
 
-<div class="modal fade" id="delivery_form" tabindex="-1" aria-labelledby="delivery_formLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title" id="delivery_formLabel">{{__('Select Delivery Slot')}}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="delivery_option">
-                
-            </div>
-        </div>
-    </div>
-</div>
+$user_type = 'user';
+$to_message = 'to_user';
+$from_message = 'from_user';
+$chat_type = 'user_to_user';
+$startChatype = 'user_to_user';
+$apiPre = 'client';
+$rePre = 'user/chat/userToUser';
+$fetchDe = 'fetchRoomByUserIdUserToUser';
+@endphp
+
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
 
 @endsection
 @section('js-script')
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+{{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 @endsection
 @section('script')
 <script>
@@ -1157,6 +1120,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         });
     });
 
+<<<<<<< HEAD
     $("#pincode").blur(function(e){
         e.preventDefault();
         var vendor_id = $(this).data('vendor-id');
@@ -1295,6 +1259,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
             dateFormat: "Y-m-d" //H:i
         });
     });
+=======
+>>>>>>> pre_dev
 
     var valueHover = 0;
 
@@ -1344,6 +1310,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
+    var additionalPreference = "{{$additionalPreference['is_token_currency_enable']}}";
+    var token_currency = "{{getAdditionalPreference(['token_currency'])['token_currency']}}";
     var vendor_id = "{{ $product->vendor_id }}";
     var product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
@@ -1390,7 +1358,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                             $('.incremental-left-minus').click();
                             //$('#blocktime, #blocktime2').change();
                         }
-
+                        if(additionalPreference != 0){
+                            response.variant.productPrice = token_currency * response.variant.productPrice;
+                        }
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
@@ -1583,6 +1553,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         ]
         });
 
+
+      
+
         $(document).ready(function() {
             $(".img_active").click(function(){
                
@@ -1590,18 +1563,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                 $(this).find('img').addClass("active");
             });
         });
-
-        // $('.bulk_order').change(function() {
-        //     var quantity = $(this).data('quantity');
-        //     var amount = $(this).data('price');
-        //     if(quantity != '' && amount != ''){
-        //         $('#quantity').val(quantity);
-        //         $('#productPriceValue .product_fixed_price').text(amount);
-        //         $('button.btn.quantity-left-minus').prop("disabled", true);
-        //         $('button.btn.quantity-right-plus').prop("disabled", true);
-        //     }
-        // });
             
         </script>
-<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
+
 @endsection

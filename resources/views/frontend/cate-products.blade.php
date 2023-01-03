@@ -15,6 +15,9 @@
 @if(!empty($category))
 @include('frontend.included_files.categories_breadcrumb')
 @endif
+@php
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+@endphp
 <section class="section-b-space ratio_asos">
     <div class="collection-wrapper">
         <div class="container">
@@ -53,11 +56,11 @@
             </div>
             <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter">
-                        <ul class="breadcrumb p-0 mb-2 mt-3">
+                        <!-- <ul class="breadcrumb p-0 mb-2 mt-3">
                             <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
                                 </span><span class="active">Healthcare Device</span></a>
                             </li>
-                        </ul>
+                        </ul> -->
                     <aside class="side_fillter mt-2">
                     <!-- side-bar colleps block stat -->
                     @if( count($category->brands) > 0 || count($variantSets) > 0 )
@@ -173,7 +176,7 @@
                                                                     <b>
                                                                         @if($new['inquiry_only'] == 0)
                                                                             <?php $multiply = $new['variant_multiplier']; ?>
-                                                                            {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                            {{ $additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                         @endif
                                                                     </b>
 
@@ -284,13 +287,13 @@
                                         <div class="col-12 custom_filtter mt-2">
                                         <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
-                                                <option value="featured">{{__('Featured')}}</option>
-                                                <option value="a_to_z">{{__('A to Z')}}</option>
-                                                <option value="z_to_a">{{__('Z to A')}}</option>
-                                                <option value="low_to_high">{{__('Cost : Low to High')}}</option>
-                                                <option value="high_to_low">{{__('Cost : High to Low')}}</option>
-                                                <option value="rating">{{__('Avg. Customer Review')}}</option>
-                                                <option value="newly_added">{{__('Newest Arrivals')}}</option>
+                                                <option value="featured">{{_('Featured')}}</option>
+                                                <option value="a_to_z">{{_('A to Z')}}</option>
+                                                <option value="z_to_a">{{_('Z to A')}}</option>
+                                                <option value="low_to_high">{{_('Cost : Low to High')}}</option>
+                                                <option value="high_to_low">{{_('Cost : High to Low')}}</option>
+                                                <option value="rating">{{_('Avg. Customer Review')}}</option>
+                                                <option value="newly_added">{{_('Newest Arrivals')}}</option>
                                             </select>
                                             <!-- <ul>
                                                 <li><span>{{__('Sort By:')}}</span></li>
@@ -336,11 +339,8 @@
                                                                     <span class="flag-discount">30% Off</span>
                                                                     <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
                                                                     @if(@$data->vendor->is_seller == 1)
-                                                                    @php  $getAdditionalPreference = getAdditionalPreference(['seller_platform_logo', 'seller_platform_title']); 
-                                                                    dd($seller);
-                                                                    @endphp
                                                                         <h6 class="sold-by d-flex">
-                                                                            <b> <img class="blur-up lazyload" data-src="@if(!empty($getAdditionalPreference['seller_platform_logo'])) {{$getAdditionalPreference['seller_platform_logo']['proxy_url'] . '90/90' . $getAdditionalPreference['seller_platform_logo']['image_path']}} @else {{$favicon}} @endif" alt="{{$data->vendor->Name}}" style="width: 25px !important; height: 25px;"></b> <b> {{$getAdditionalPreference['seller_platform_title'] ?? ''}} </b>
+                                                                            <b> <img class="blur-up lazyload" data-src="{{$favicon}}" alt="{{$data->vendor->Name}}" style="width: 25px !important; height: 25px;"></b> <b> Order by clickokart </b>
                                                                         </h6>
                                                                     @endif
                                                                     @if (strlen($data->translation_description) >= 65)
@@ -350,7 +350,7 @@
                                                                     @endif
                                                                     </div>
                                                                     @if($data->inquiry_only == 0)
-                                                                        <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        <h4 class="mt-1">{{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                     @endif
                                                                 
                                                             </div>

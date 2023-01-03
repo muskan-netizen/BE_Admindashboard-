@@ -9,7 +9,7 @@ class CartProduct extends Model{
 
     use HasFactory;
 
-    protected $fillable = ['cart_id','product_id', 'vendor_id', 'vendor_dinein_table_id', 'quantity', 'status', 'variant_id', 'is_tax_applied', 'tax_rate_id', 'currency_id', 'tax_category_id', 'luxury_option_id','schedule_type','scheduled_date_time','scheduled_slot','start_date_time','end_date_time','additional_increments_hrs_min','total_booking_time','service_day','service_date','service_period','service_start_date','slot_id','delivery_date','slot_price'];
+    protected $fillable = ['cart_id','product_id', 'vendor_id', 'vendor_dinein_table_id', 'quantity', 'status', 'variant_id', 'is_tax_applied', 'tax_rate_id', 'currency_id', 'tax_category_id', 'luxury_option_id','schedule_type','scheduled_date_time','scheduled_slot','start_date_time','end_date_time','additional_increments_hrs_min','total_booking_time','service_day','service_date','service_period','service_start_date'];
 
     protected $touches = ['cart'];
 
@@ -23,12 +23,12 @@ class CartProduct extends Model{
 
 
  	public function product(){
-      return $this->belongsTo('App\Models\Product')->select('id','title', 'sku', 'url_slug','description', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id','Requires_last_mile','pharmacy_check','tags','mode_of_service','delay_order_hrs','delay_order_min','delay_order_hrs_for_dine_in','delay_order_min_for_dine_in','delay_order_hrs_for_takeway','delay_order_min_for_takeway','pickup_delay_order_hrs','pickup_delay_order_min','dropoff_delay_order_hrs','dropoff_delay_order_min','id as delay_hrs_min','id as pickup_delay_hrs_min','id as dropoff_delay_hrs_min','id as delay_order_time','sell_when_out_of_stock','minimum_order_count','batch_count','has_inventory','category_id','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id','age_restriction','markup_price','additional_increments','additional_increments_min','minimum_duration_min','minimum_duration','is_slot_from_dispatch','is_show_dispatcher_agent','individual_delivery_fee','is_long_term_service','service_duration','same_day_delivery', 'next_day_delivery', 'hyper_local_delivery');
+      return $this->belongsTo('App\Models\Product')->select('id','title', 'sku', 'url_slug','description', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id','Requires_last_mile','pharmacy_check','tags','mode_of_service','delay_order_hrs','delay_order_min','delay_order_hrs_for_dine_in','delay_order_min_for_dine_in','delay_order_hrs_for_takeway','delay_order_min_for_takeway','pickup_delay_order_hrs','pickup_delay_order_min','dropoff_delay_order_hrs','dropoff_delay_order_min','id as delay_hrs_min','id as pickup_delay_hrs_min','id as dropoff_delay_hrs_min','id as delay_order_time','sell_when_out_of_stock','minimum_order_count','batch_count','has_inventory','category_id','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id','age_restriction','markup_price','additional_increments','additional_increments_min','minimum_duration_min','minimum_duration','is_slot_from_dispatch','is_show_dispatcher_agent','individual_delivery_fee','is_long_term_service','service_duration');
     
   }
 
     public function vendor(){
-        return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'latitude', 'longitude', 'order_pre_time', 'auto_reject_time', 'order_min_amount', 'show_slot', 'dine_in', 'delivery', 'takeaway', 'service_fee_percent','address','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','closed_store_order_scheduled','shiprocket_pickup_name','ahoy_location','fixed_fee','fixed_fee_amount','price_bifurcation','service_charges_tax','delivery_charges_tax','container_charges_tax','service_charges_tax_id'	,'delivery_charges_tax_id'	,'container_charges_tax_id'	, 'fixed_fee_tax','fixed_fee_tax_id','pincode','rental','pick_drop','on_demand','laundry','appointment','markup_price_tax_id','add_markup_price','slug');
+        return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'latitude', 'longitude', 'order_pre_time', 'auto_reject_time', 'order_min_amount', 'show_slot', 'dine_in', 'delivery', 'takeaway', 'service_fee_percent','address','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','closed_store_order_scheduled','shiprocket_pickup_name','ahoy_location','fixed_fee','fixed_fee_amount','price_bifurcation','service_charges_tax','delivery_charges_tax','container_charges_tax','service_charges_tax_id'	,'delivery_charges_tax_id'	,'container_charges_tax_id'	, 'fixed_fee_tax','fixed_fee_tax_id','pincode','rental','pick_drop','on_demand','laundry','appointment','markup_price_tax_id','add_markup_price','slug', 'subscription_discount_percent');
     }
 
     public function slotCounts(){
@@ -46,12 +46,13 @@ class CartProduct extends Model{
     public function currency(){
       return $this->hasOne('App\Models\Currency', 'vendor_id', 'vendor_id');
     }
+
     public function productDeliverySlot(){
       return $this->belongsTo('App\Models\DeliverySlot', 'slot_id', 'id');
     }
 
     public function vendorProducts(){
-      return $this->hasMany(CartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'cart_products.currency_id')->select('cart_products.id', 'cart_products.cart_id', 'cart_products.product_id', 'cart_products.quantity', 'cart_products.variant_id', 'cart_products.is_tax_applied', 'cart_products.tax_category_id', 'cart_products.currency_id', 'cc.doller_compare', 'cart_products.vendor_id', 'cart_products.scheduled_date_time','cart_products.user_product_order_form','cart_products.start_date_time','cart_products.end_date_time','cart_products.additional_increments_hrs_min','cart_products.total_booking_time','cart_products.schedule_slot','cart_products.total_booking_time','cart_products.luxury_option_id','cart_products.service_day','cart_products.service_date','cart_products.service_period','cart_products.slot_id','cart_products.delivery_date','cart_products.slot_price')->orderBy('cart_products.created_at', 'asc')->orderBy('cart_products.vendor_id', 'asc');
+      return $this->hasMany(CartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'cart_products.currency_id')->select('cart_products.id', 'cart_products.cart_id', 'cart_products.product_id', 'cart_products.quantity', 'cart_products.variant_id', 'cart_products.is_tax_applied', 'cart_products.tax_category_id', 'cart_products.currency_id', 'cc.doller_compare', 'cart_products.vendor_id', 'cart_products.scheduled_date_time','cart_products.user_product_order_form','cart_products.start_date_time','cart_products.end_date_time','cart_products.additional_increments_hrs_min','cart_products.total_booking_time','cart_products.schedule_slot','cart_products.total_booking_time','cart_products.luxury_option_id','cart_products.service_day','cart_products.service_date','cart_products.service_period')->orderBy('cart_products.created_at', 'asc')->orderBy('cart_products.vendor_id', 'asc');
     }
 
 

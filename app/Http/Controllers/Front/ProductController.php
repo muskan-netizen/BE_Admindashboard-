@@ -9,8 +9,7 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot};
-
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute, UserVendor,DeliverySlotProduct, DeliverySlot};
 use Carbon\Carbon;
 use App\Http\Traits\{ProductActionTrait, ProductTrait};
 class ProductController extends FrontController{
@@ -30,8 +29,10 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, $domain = '',$vendor,$url_slug){
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
         
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+
         $user = Auth::user();
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
@@ -75,6 +76,8 @@ class ProductController extends FrontController{
 
         $p_id = $product->id;
         $product =  $this->getProduct($p_id,$vendor,$url_slug,$user,$langId);
+       
+        
        
         if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
@@ -178,6 +181,7 @@ class ProductController extends FrontController{
             }
             if($request->step == 2 && empty($request->addons))
             {
+
                 if ($request->session()->has('skip_addons')) {
                     $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
                     return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
@@ -186,6 +190,7 @@ class ProductController extends FrontController{
                 $new_url = $request->path()."?step=2";
                 return redirect($new_url);
             }
+
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
             return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }
@@ -246,6 +251,7 @@ class ProductController extends FrontController{
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
             
             $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles']);
+
             if( !empty($product->category->category_id) ) {
                 $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
                 $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->orderby('id', 'desc')->limit(20)->get();
@@ -335,16 +341,11 @@ class ProductController extends FrontController{
                     }
                 }
             }
-
             $user_vendor = [];
-            if($user){
-                $user_vendor =  UserVendor::where('user_id', $user->id)->first();
+            if(@$user->id){
+                $user_vendor = UserVendor::where('user_id', $user->id)->first();
             }
 
-            // Date Time Comparison
-            $cutoff_time            = $product->vendor->cutOff_time??'';
-            $current_time           = Carbon::now()->toTimeString();
-            
             $parsed_cutoff_time     = Carbon::parse($cutoff_time);
             $current_time_response  = false;
 
@@ -527,7 +528,6 @@ class ProductController extends FrontController{
 
 
     }
-
     public function getShippingProductDeliverySlots(Request $request){
         if($request->ajax()){
             $product_id = $request->product_id;
@@ -559,5 +559,4 @@ class ProductController extends FrontController{
             return view('frontend.shipping-method-slots-interval-ajax')->with(['product_delivery_slots_interval' => $product_delivery_slots_interval]);
         }
     }
-
 }

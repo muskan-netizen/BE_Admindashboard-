@@ -40,6 +40,8 @@
         line-height: 2;
         color: rgba(0,47,52,.64);
         border: 1px solid rgba(14,4,5,.2);
+        padding: 10px;
+        height: 135px;
     }
     .alPostBoxOuter ul li a:hover{text-decoration: none;background: linear-gradient(180deg, #e1dfdf 0%, #efe7e7 100%);}
     .alPostBoxOuter a:hover{text-decoration: none;}
@@ -115,11 +117,11 @@ body.al_body_template_four.p2p-module .input-group.mb-2 input {
 }
 .select2-results__option{display: block;}
 body.al_body_template_nine .alPostBoxOuter ul li a.active {
-    background: #4297fc;
-    border: 1px solid #4297fc;
+    background: #efe7e7;
+    border: 1px solid #ccc;
 }
 body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
-    color: #fff;
+    color: #000;
 }
 </style>
 @endsection
@@ -129,7 +131,7 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
     
     <div class="wrapper">
         <div class="alPostHead text-center bg-light position-relative py-3">
-            <a href="#" class="backArroww position-absolute"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg></a>
+            <!-- <a href="#" class="backArroww position-absolute"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg></a> -->
             <h3>Post Your Ad</h3>
         </div>
         <div class="container">
@@ -145,7 +147,7 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
                         <ul class="row p-0 m-0 no-gutters">
                             @if(@$categories)
                             @foreach($categories as $key=>$category)
-                            @php  $icon = $category['icon']['proxy_url'] . '30/30' . $category['icon']['image_path'];  @endphp
+                            @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
                             
                             <li class="col-3 px-1 category-list @if($key>3) view-all_cats @endif" id="category_{{$category->id}}" @if($key>3) style="display:none;" @endif>
                                 <a class="cate-item text-center w-100 py-3 mb-4 rounded select-category" data-name="{{$category['translation_one']["name"]}}" data-id="{{$category['id']}}" href="#">
@@ -219,7 +221,7 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
                                         <label>Price *</label>
                                         <div class="input-group mb-2">
                                             <div class="input-group-prepend">
-                                              <div class="input-group-text">₹</div>
+                                              <div class="input-group-text">{{getPrimaryCurrencySymbol()}}</div>
                                             </div>
                                             <input type="text" class="form-control" required name="price" id="" placeholder="">
                                           </div>

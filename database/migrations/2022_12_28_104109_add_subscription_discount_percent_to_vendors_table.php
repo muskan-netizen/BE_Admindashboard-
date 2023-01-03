@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIsDisabledToPincodeTable extends Migration
+class AddSubscriptionDiscountPercentToVendorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddIsDisabledToPincodeTable extends Migration
      */
     public function up()
     {
-        Schema::table('pincodes', function (Blueprint $table) {
-            $table->tinyInteger('is_disabled')->default(0)->comment('0 for enabled, 1 for disabled');
+        Schema::table('vendors', function (Blueprint $table) {
+            $table->decimal('subscription_discount_percent', 5, 2)->default(0);
         });
     }
 
@@ -25,8 +25,8 @@ class AddIsDisabledToPincodeTable extends Migration
      */
     public function down()
     {
-        Schema::table('pincodes', function (Blueprint $table) {
-            $table->dropColumn('is_disabled');
+        Schema::table('vendors', function (Blueprint $table) {
+            //
         });
     }
 }

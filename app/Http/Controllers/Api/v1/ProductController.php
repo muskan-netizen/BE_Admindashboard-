@@ -8,7 +8,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag};
 use Validation;
 use DB;
 use App\Http\Traits\{ApiResponser,ProductTrait};
@@ -155,9 +155,9 @@ class ProductController extends BaseController
 
                     ]);
                     if(checkColumnExists('products', 'returnable')){
-                        $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','same_day_delivery', 'next_day_delivery', 'hyper_local_delivery');
+                        $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration');
                     }else{
-                        $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min',  'is_long_term_service','service_duration', 'next_day_delivery', 'hyper_local_delivery');
+                        $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min',  'is_long_term_service','service_duration');
                     }
                         
                     $product = $product->where('id', $pid)
@@ -551,43 +551,5 @@ class ProductController extends BaseController
         return response()->json([
             'data' => $product_faqs,
         ]);
-    }
-
-    public function getShippingProductDeliverySlots(Request $request){
-        try {
-            $request->validate(
-                [
-                    'delivery_date' => 'required',
-                    'product_id' => 'required',
-                    'vendor_cutoff_time' => 'required'
-                ], 
-                [
-                    'vendor_id.required' => 'Delivery date is required',
-                    'pincode.required' => 'Product id is required',
-                    'vendor_cutoff_time.required' => 'Vendor cutoff time is required'
-                ]
-            );
-            $product_id = $request->product_id;
-            $delivery_date = $request->delivery_date;
-            $mytime = Carbon::now();
-            $current_date = $mytime->format('Y-m-d');
-            $current_time = $mytime->format('H:i');
-            $vendor_cut_off_time = Carbon::parse($request->vendor_cutoff_time)->format('H:i');
-            $product_delivery_slots = DeliverySlotProduct::with('deliverySlot')->where('product_id', $product_id);
-            if($current_date == $delivery_date){
-                $product_delivery_slots = $product_delivery_slots->whereHas('deliverySlot' ,function ($q) use ($current_time, $vendor_cut_off_time) {
-                    $q->whereTime('start_time', '>', $current_time)->whereTime('end_time', '<', $vendor_cut_off_time);
-                })->get();
-            }else{
-                $product_delivery_slots = $product_delivery_slots->get();
-            }  
-            return response()->json([
-                'status' => 200,
-                'message' => 'success',
-                'data' => $product_delivery_slots
-            ]);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode());
-        }
     }
 }

@@ -99,7 +99,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 
                         <div class="login-with-username">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="username" placeholder="{{ __('Email or Phone Number') }}" required="" name="username" value="{{ old('username')}}">
+                                <input type="text" class="form-control" id="username" placeholder="{{ ($getAdditionalPreference['is_phone_signup'] == 1) ?  __('Phone Number'):  __('Email or Phone Number') }}" required="" name="username" value="{{ old('username')}}">
                             </div>
                             <div class="form-group" id="password-wrapper" style="display:none; position:relative">
                                 <input id="password-field" type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}">
@@ -131,7 +131,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
             @endif
         </div>
         <div class="row justify-content-center" id="verify-phone-section" style="display:none">
-            <div class="verify-login-code">
+            <div class="verify-login-code col-4">
                 <form id="verify-otp-form" class="px-lg-4" action="">
                 <h3 class="mb-2 text-center">{{ __('Verify OTP') }}</h3>
                 <div method="get" class="digit-group otp_inputs d-flex justify-content-between" data-group-name="digits" data-autosubmit="false" autocomplete="off">

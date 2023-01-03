@@ -154,7 +154,6 @@ class CartController extends BaseController
     public function add(Request $request)
     {
         try {
-            // \Log::info($request->all());
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
             $user = Auth::user();
@@ -176,10 +175,30 @@ class CartController extends BaseController
             if (!$productVariant) {
                 return $this->errorResponse(__('Invalid product variant.'), 404);
             }
+
+            $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $cart_detail = [
+                'is_gift' => 0,
+                'status' => '0',
+                'item_count' => 0,
+                'user_id' => $user->id,
+                'created_by' => $user->id,
+                'unique_identifier' => $unique_identifier,
+                'currency_id' => $client_currency->currency_id,
+            ];
+            if (!empty($user_id)) {
+                $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
+                $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+            } else {
+                $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
+                $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+            }
+
+            $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
             if(checkColumnExists('products','is_long_term_service') && $product->is_long_term_service !=1){
                 if ($product->category->categoryDetail->type_id == 8) {
                 } else {
-                    if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity && $product->has_inventory == 1) ) {
+                    if ( ($product->sell_when_out_of_stock == 0) && (($productVariant->quantity + $order_edit_qty) < $request->quantity && $product->has_inventory == 1) ) {
                         return $this->errorResponse('You Can not order more than ' . $productVariant->quantity . ' quantity.', 404);
                     }
                 }
@@ -244,21 +263,7 @@ class CartController extends BaseController
                     ], 404);
                 }
             }
-            $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
-            $cart_detail = [
-                'is_gift' => 0,
-                'status' => '0',
-                'item_count' => 0,
-                'user_id' => $user->id,
-                'created_by' => $user->id,
-                'unique_identifier' => $unique_identifier,
-                'currency_id' => $client_currency->currency_id,
-            ];
-            if (!empty($user_id)) {
-                $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
-            } else {
-                $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
-            }
+            
             /** delete is long term is added from cart */
             if($isLongTermService || ($isLongTermService ==1) ){
                 if(CartProduct::where('cart_id', $cart_detail->id)->count() > 1 ){
@@ -313,9 +318,6 @@ class CartController extends BaseController
                     'service_date'        => $request->has('service_date') ? $request->service_date : null,
                     'service_period'      => $request->has('service_period') ? $request->service_period : null,
                     'service_start_date'  => @$service_start_date,
-                    'slot_id'  => $request->has('sele_slot_id') ? $request->sele_slot_id : null,
-                    'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
-                    'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
                 ];
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
@@ -611,7 +613,7 @@ class CartController extends BaseController
             'vendor', 'coupon' => function ($qry) use ($cartID) {
                 $qry->where('cart_id', $cartID);
             }, 'coupon.promo.details', 'vendorProducts.pvariant.media.image', 'vendorProducts.product.media.image',
-            'vendorProducts.productDeliverySlot','vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
+            'vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
             'vendorProducts.pvariant.vset.optionData.trans' => function ($qry) use ($langId) {
@@ -709,7 +711,6 @@ class CartController extends BaseController
             $total_markup_charges = 0 ;
             $deliver_fee_charges = 0;
             $total_fixed_fee_tax = 0;
-            $delivery_slot_amount = 0;
       
             foreach ($cartData as $ven_key => $vendorData) {
                 $deliver_fee_charges = 0;
@@ -1314,11 +1315,7 @@ class CartController extends BaseController
             }
             
             } //End Tax Code
-            
-            // Add Delivery Slot Price In total amount
-            if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
-                $delivery_slot_amount += decimal_format($prod->slot_price);
-            }
+
 
             }//End cart Vendor loop
             ++$vondorCnt;
@@ -1333,7 +1330,7 @@ class CartController extends BaseController
                     $subscription_discount = $subscription_discount + $total_delivery_amount;
                 }
                 elseif ($feature->feature_id == 2) {
-                    $off_percentage_discount = ($feature->percent_value * $total_paying / 100);
+                    $off_percentage_discount = ($feature->percent_value * ($total_paying - $total_delivery_amount) / 100);
                     $subscription_discount = $subscription_discount + $off_percentage_discount;
                 }
             }
@@ -1443,7 +1440,6 @@ class CartController extends BaseController
         $cart->products = $cartData;
         $cart->item_count = $item_count;
         $cart->is_long_term_added = $is_long_term;
-        $cart->delivery_slot_amount = $delivery_slot_amount;
         $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
         if ($cart->user_id > 0) {
             //$loyalty_amount_saved = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);

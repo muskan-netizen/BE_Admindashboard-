@@ -16,7 +16,15 @@ use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditio
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Redis;
 
+function setUserCode(){
+    $userCode = session()->has('userCode');
+    if(!$userCode){
+        $user = ClientData::first();
+        session()->put('userCode', $user->code);
+    }
+}
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {
@@ -42,18 +50,12 @@ if (!function_exists('getAdditionalPreference')) {
      * @return void
      */
     function getAdditionalPreference($key=array()){
-        $user = ClientData::first();
+        setUserCode();
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => $user->code])->get() : [];
+            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => session()->get('userCode')])->get() : [];
             $return = array_column($result->toArray(), 'key_value', 'key_name');
-            $addImageArr = ['seller_platform_logo'];
-            foreach($result as $res){
-                if(in_array($res->key_name, $addImageArr)){
-                    $res->key_value = getAdditionalImageAttribute($res->key_value);
-                }
-            }
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
             }
@@ -65,27 +67,51 @@ if (!function_exists('getAdditionalPreference')) {
     }
 }
 
-if (!function_exists('getAdditionalImageAttribute')) {
-    function getAdditionalImageAttribute($value)
-    {
-        $values = array();
-        $img = 'default/default_image.png';
-        if(!empty($value)){
-            $img = $value;
-        }
-        $ex = checkImageExtension($img);
-        $values['proxy_url'] = \Config::get('app.IMG_URL1');
-        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
-        $values['image_fit'] = \Config::get('app.FIT_URl');
+// if (!function_exists('getAdditionalImageAttribute')) {
+//     function getAdditionalImageAttribute($value)
+//     {
+//         $values = array();
+//         $img = 'default/default_image.png';
+//         if(!empty($value)){
+//             $img = $value;
+//         }
+//         $ex = checkImageExtension($img);
+//         $values['proxy_url'] = \Config::get('app.IMG_URL1');
+//         $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+//         $values['image_fit'] = \Config::get('app.FIT_URl');
 
-        //$values['small'] = url('showImage/small/' . $img);
-        return $values;
-    }
-}
+//         //$values['small'] = url('showImage/small/' . $img);
+//         return $values;
+//     }
+// }
 
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
         return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
+    }
+}
+
+if (!function_exists('getInToken')) {
+    function getInToken($amount = 1){
+        setUserCode();
+        $redis = Redis::connection();
+        $compareCurrency = session()->has('compareCurrency');
+        if(!$compareCurrency){
+            $currency_id = session()->get('customerCurrency');
+            $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+            session()->put('compareCurrency', $clientCurrency->doller_compare);
+        }
+        
+        $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
+        $tokenCurrency = json_decode($tokenCurrency);
+        if($tokenCurrency == null){
+            $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
+            $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
+        }
+        // $currency_id = session()->get('customerCurrency');
+        // $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+
+        return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * ($tokenCurrency ?? 1));
     }
 }
 
@@ -143,17 +169,6 @@ if (! function_exists('orderProductDetails')) {
 }
 
 
-
-if (! function_exists('loadDefaultImage')) {
-    function loadDefaultImage()
-    {
-        $proxy_url = \Config::get('app.IMG_URL1');
-        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
-        $image_fit = \Config::get('app.FIT_URl');
-        $default_url = $image_fit .'300/300'. $image_path.'@webp';
-        return $default_url;
-    }
-}
 
 if (! function_exists('EasebuzzSubMerchent')) {
     function EasebuzzSubMerchent()
@@ -457,6 +472,15 @@ if (!function_exists('getDefaultImagePath')) {
         $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
         $values['image_fit'] = \Config::get('app.FIT_URl');
         return $values;
+    }
+}
+if (!function_exists('loadDefaultImage')) {
+    function loadDefaultImage(){
+        $proxy_url = \Config::get('app.IMG_URL1');
+        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
+        $image_fit = \Config::get('app.FIT_URl');
+        $default_url = $image_fit .'300/300'. $image_path.'@webp';
+        return $default_url;
     }
 }
 
@@ -1040,6 +1064,18 @@ if (!function_exists('getDollarCompareAmount')) {
     }
 }
 
+if (!function_exists('getPrimaryCurrencySymbol')) {
+    /* doller compare amount */
+    function getPrimaryCurrencySymbol()
+    {
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $currency = Currency::find($primaryCurrency->currency_id);
+
+        $currencySymbol = $currency->symbol;
+        return $currencySymbol;
+    }
+}
+
 if (!function_exists('getPrimaryCurrencyName')) {
     /* doller compare amount */
     function getPrimaryCurrencyName()
@@ -1291,7 +1327,7 @@ if (!function_exists('inventorySyncOnOff')) {
         if (!empty($vendor_id) && checkColumnExists('client_preferences', 'inventory_service_key_url')) {
             
             $client_preferences = ClientPreference::first();
-            if(isset($$client_preferences) && ($client_preferences->inventory_service_key_url !='')){
+            if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
 
                 $client = new \GuzzleHttp\Client([
                     'headers' => [

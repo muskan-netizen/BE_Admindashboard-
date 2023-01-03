@@ -43,7 +43,7 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role','seller_sold_title','seller_platform_logo', 'is_seller_module']);
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role']); //,'seller_sold_title','saller_platform_logo'
 @endphp
    <!--Localization start -->
     <div class="row">
@@ -270,16 +270,15 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             </form>
             {{-- @endif --}}
         </div>
-        @if($getAdditionalPreference['is_seller_module'] == 1)
-        <div class="col-xl-3 col-lg-3 mb-3">
+
+        {{-- <div class="col-xl-3 col-lg-3 mb-3">
             <div class="page-title-box">
                 <h4 class="page-title text-uppercase">{{ __("Seller Platform") }}</h4>
             </div>
-            {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' ) --}}
             @php
                 $typeArray = getCategoryTypes();
             @endphp
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}" enctype="multipart/form-data">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 <div class="card-box mb-2 h-100">
@@ -289,20 +288,18 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                     </div>
                     <div class="col-md-6">
                         <label>{{ __('Upload Logo') }} </label>
-                        <input type="file" accept="image/*" data-plugins="dropify" name="seller_platform_logo" class="dropify" data-default-file="@if(!empty($getAdditionalPreference['seller_platform_logo'])) {{$getAdditionalPreference['seller_platform_logo']['proxy_url'] . '90/90' . $getAdditionalPreference['seller_platform_logo']['image_path']}} @endif" />
+                        <input type="file" accept="image/*" data-plugins="dropify" name="saller_platform_logo" class="dropify" data-default-file="" />
                         <label class="logo-size text-right w-100">{{ __('Logo Size') }} 170x96</label>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="seller_sold_title">Sold Title</label>
-                            <input type="text" name="seller_sold_title" id="seller_sold_title" value=" @if( @$getAdditionalPreference['seller_sold_title'] != '') {{$getAdditionalPreference['seller_sold_title']??''}} @endif" class="form-control" placeholder="Seller Sold Title" />
+                            <input type="text" name="seller_sold_title" id="seller_sold_title" value=" @if( @$getAdditionalPreference['seller_sold_title'] != '') {{$getAdditionalPreference['seller_sold_title']??''}} @endif" class="form-control" placeholder="Sold Title" />
                         </div>
                     </div>
                 </div>
             </form>
-            {{-- @endif --}}
-        </div>
-        @endif
+        </div> --}}
         <!--Vendor Type &  Distance to Time Calculator end -->
 
         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry' && $client_preference_detail->on_demand_check == 1)
@@ -2240,18 +2237,19 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 <div class="col-xl-12 my-2 p-0" id="">
                                     <div class="row">
                                         <div class="col-12">
-                                            @if (isset($roles))
-                                                @foreach ($roles as $key => $_role)
-                                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <div class="form-group mb-0 switchery-demo">
+                                                @if (isset($roles))
+                                                    @foreach ($roles as $key => $_role)
 
-                                                        <input type="text" name="role[{{ $_role['id'] }}]" class="form-control" id="role{{ $_role['id'] }}" value="{{ $_role['role'] }}" style="width:75%;">
+                                                        <input type="text" name="role[{{ $_role['id'] }}]" id="role{{ $_role['id'] }}" value="{{ $_role['role'] }}">
                                                         <input type="hidden" name="role_id[{{ $_role['id'] }}]" value="{{ $_role['id'] }}">
 
-                                                        <span> <input type="checkbox" data-plugin="switchery" name="is_enable_pricing[{{ $_role['id'] }}]" id="is_enable_pricing[{{ $_role['id'] }}]" class="form-control" data-color="#43bee1" @if(@$_role['is_enable_pricing'] == '1') checked='checked' value="1" @endif>
-                                                        </span>
-                                                    </div>
-                                                @endforeach
-                                            @endif
+                                                        <input type="checkbox"  name="is_enable_pricing[{{ $_role['id'] }}]" data-plugin="switchery" id="is_enable_pricing" class="form-control checkbox_change" data-className="is_enable_pricing_hidden" data-color="#43bee1"
+                                                        @if(@$_role['is_enable_pricing'] == '1') checked='checked' value="1"  @endif data-role-id={{$_role['id']}}>
+                                                        <br>
+                                                    @endforeach
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
