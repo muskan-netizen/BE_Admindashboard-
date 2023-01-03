@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\InfluencerTrait;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\SignupRequest;
 use Illuminate\Support\Facades\Hash;
@@ -35,7 +36,7 @@ use App\Http\Traits\ProductActionTrait;
 class CustomerAuthController extends FrontController
 {
     use ApiResponser;
-    use ProductActionTrait;
+    use ProductActionTrait, InfluencerTrait;
 
     private $folderName = '/vendor/extra_docs';
 
@@ -270,6 +271,12 @@ class CustomerAuthController extends FrontController
             $user->timezone = $client_timezone;
             $user->password = Hash::make($req->password);
             $user->save();
+
+            // Save User Kyc Details
+            if(@$req->kyc){
+                InfluencerTrait::saveKycData($req, $user->id);
+            }
+
             $wallet = $user->wallet;
             $userRefferal = new UserRefferal();
             $userRefferal->refferal_code = $this->randomData("user_refferals", 8, 'refferal_code');
