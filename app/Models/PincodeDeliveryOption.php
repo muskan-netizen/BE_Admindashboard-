@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class PincodeDeliveryOption extends Model
 {
     use HasFactory;
-
     protected $fillable = ['pincode_id', 'delivery_option_type'];
 
     protected $appends = ['delivery_option_type_text'];
