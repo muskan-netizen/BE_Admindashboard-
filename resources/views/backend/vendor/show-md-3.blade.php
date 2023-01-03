@@ -110,6 +110,7 @@
     </div>
 </div> -->
 @php
+
     $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
 @endphp
 @if( !p2p_module_status() )
