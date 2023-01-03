@@ -106,7 +106,7 @@
                                     </div>
                                     @endif
                                     @php
-                                        $getAdditionalPreference = getAdditionalPreference(['is_corporate_user']);
+                                        $getAdditionalPreference = getAdditionalPreference(['is_corporate_user', 'is_user_kyc_for_registration']);
                                     @endphp
                                     @if( $getAdditionalPreference['is_corporate_user'] == 1)
                                         <div class="col-sm-12 custom_select mb-2">
@@ -134,6 +134,9 @@
                                             @enderror
                                         </div>
                                     </div>
+                                    @if( $getAdditionalPreference['is_user_kyc_for_registration'] == 1)
+                                        
+                                    @endif
                                 </div>
 
                                 <div class="form-row ">
