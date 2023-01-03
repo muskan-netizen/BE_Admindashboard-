@@ -37,15 +37,14 @@ class SmsTemplateSeeder extends Seeder
                 DB::table('sms_templates')->insert($sms_templates);
             }
         else{
-            $optionSlugArr = ['order-tracking-url'];
             foreach ($sms_templates as $option) {
 
                 $find = SmsTemplate::where('id',$option['id'])->first();
-                if(!$find){
-                    $newUser = SmsTemplate::Create($option);
+                if ($find !== null) {
+                    $find->update(['tags' => $option['tags']]);
                 }
-                if(in_array($option['slug'],$optionSlugArr)){
-                    SmsTemplate::where('slug',$option['slug'])->update($option);
+                else{
+                    $newUser = SmsTemplate::Create($option);
                 }
 
 
