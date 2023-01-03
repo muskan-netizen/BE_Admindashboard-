@@ -790,18 +790,21 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                         @endif
                         @if($product->vendor->same_day_delivery == 1 && $getAdditionalPreference['is_same_day_delivery'])
+
                             <div class="col-md-6 d-flex justify-content-between mb-2">
                                 {!! Form::label('title', __('Same Day Delivery'),['class' => 'control-label']) !!}
                                 <input type="checkbox" id="same_day_delivery" data-plugin="switchery" name="same_day_delivery" class="chk_box" data-color="#43bee1" @if($product->same_day_delivery == 1) checked @endif>
                             </div>
                         @endif
                         @if($product->vendor->next_day_delivery == 1 && $getAdditionalPreference['is_next_day_delivery'])
+
                             <div class="col-md-6 d-flex justify-content-between mb-2">
                                 {!! Form::label('title', __('Next Day Delivery'),['class' => 'control-label']) !!}
                                 <input type="checkbox" id="next_day_delivery" data-plugin="switchery" name="next_day_delivery" class="chk_box" data-color="#43bee1" @if($product->next_day_delivery == 1) checked @endif>
                             </div>
                         @endif
                         @if($product->vendor->hyper_local_delivery == 1 && $getAdditionalPreference['is_hyper_local_delivery'])
+
                             <div class="col-md-6 d-flex justify-content-between mb-2">
                                 {!! Form::label('title', __('Hyper Local Delivery'),['class' => 'control-label']) !!}
                                 <input type="checkbox" id="hyper_local_delivery" data-plugin="switchery" name="hyper_local_delivery" class="chk_box" data-color="#43bee1" @if($product->hyper_local_delivery == 1) checked @endif>
@@ -809,6 +812,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         @endif
 
                         @if($product->vendor->next_day_delivery == 1 || $product->vendor->same_day_delivery == 1)
+                        
                             @php
                                 $pro_delivery_slot_ids = $product->syncProductDeliverySlot->pluck('id')->toArray();
                             @endphp

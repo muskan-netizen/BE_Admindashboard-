@@ -461,7 +461,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::post('/updateCartBookingSlot', 'Front\CartController@updateCartBookingSlot')->name('updateCartBookingSlot');
 
-	Route::get('getShippingProductDeliverySlots', 'Front\ProductController@getShippingProductDeliverySlots')->name('product.getShippingProductDeliverySlots');
+	Route::get('getShippingProductDeliverySlots', 'Front\ProductController@getShippingProductDeliverySlots')
+	->name('product.getShippingProductDeliverySlots');
 
 	Route::get('getShippingSlotsInterval', 'Front\ProductController@getShippingSlotsInterval')->name('product.getShippingSlotsInterval');
 
