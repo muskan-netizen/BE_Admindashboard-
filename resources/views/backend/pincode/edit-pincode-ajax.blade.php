@@ -1,4 +1,5 @@
 <div class="row">
+    
     <div class="col-12">
         <input type="hidden" name="pincode_id" id="pincode_id" value="{{$pincode->id}}">
         <input type="hidden" name="vendor_id" id="vendor_id" value="{{$pincode->vendor_id}}">
