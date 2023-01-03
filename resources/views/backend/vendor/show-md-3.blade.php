@@ -963,7 +963,8 @@
     </div>
 </div>
 {{-- <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script> --}}
-<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js">
+</script>
 <script type="text/javascript">
 
 $('.addUsersBtn').click(function() {
