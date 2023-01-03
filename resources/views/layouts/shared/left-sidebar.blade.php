@@ -244,6 +244,7 @@
 
                             
                             @if(Auth::user()->is_superadmin == 1)
+                            
                                 <li>
                                     <a href="{{route('delivery-slot.index')}}">
                                         <span class="icon-customer-2"></span>
