@@ -261,7 +261,6 @@
         {{-- @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
 =======
 =======
->>>>>>> pre_dev
 
         <div class="row">
 

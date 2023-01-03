@@ -500,9 +500,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             </table>--}}
                                         </div>
                                         @endif
-<<<<<<< HEAD
-
-
 
                                         @if(@Auth::user()->role_id == 3)
                                             <div class="border-product">
@@ -606,8 +603,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             </div>
                                         </div>
                                         @endif
-=======
->>>>>>> pre_dev
                                         @php
                                             // check if vendor is closed or not, if closed then get slots otherwise no need.
                                             if($vendor_info->is_vendor_closed == 1)
@@ -1120,7 +1115,6 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         });
     });
 
-<<<<<<< HEAD
     $("#pincode").blur(function(e){
         e.preventDefault();
         var vendor_id = $(this).data('vendor-id');
@@ -1259,8 +1253,6 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
             dateFormat: "Y-m-d" //H:i
         });
     });
-=======
->>>>>>> pre_dev
 
     var valueHover = 0;
 

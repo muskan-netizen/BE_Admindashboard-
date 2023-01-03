@@ -1634,6 +1634,103 @@
         });
     });
 
+    $('.importPincodeModal').click(function(){
+        $('#import-form').modal('show');
+        $('.dropify').dropify();
+    });
+
+    $(document).ready(function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        initDataTable();
+        function initDataTable() {
+            $('#pincode_table').DataTable({
+                "lengthChange": false,
+                "searching": true,
+                "destroy": true,
+                "scrollX": true,
+                "processing": true,
+                "serverSide": true,
+                "iDisplayLength": 10,
+                ajax: {
+                    url: "{{ url('client/pincode') }}",
+                    data: function (d) {
+                        d.search = $('input[type="search"]').val();
+                        d.vendor_id = "{{$vendor->id}}";
+                    }
+                },
+                drawCallback: function() {
+                    $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+                },
+                language: {
+                    search: "",
+                    info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
+                    paginate: {
+                        previous: "<i class='mdi mdi-chevron-left'>",
+                        next: "<i class='mdi mdi-chevron-right'>"
+                    },
+                    searchPlaceholder: '{{__("Search By Pincode")}}'
+                },
+                columns: [
+                    {
+                        data: 'id',
+                        name: 'id',
+                        //orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'pincode',
+                        name: 'pincode',
+                        orderable: false,
+                        searchable: false,
+                    },
+                    {
+                        data: 'type',
+                        name: 'type',
+                        orderable: false,
+                        searchable: false,
+                    },
+                    {
+                        data: 'status',
+                        name: 'status',
+                        orderable: false,
+                        searchable: false,
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
+        }
+    });
+
+    $(document).on('click', '.addPincodeBtn', function(){
+        $('#add-edit-pincode').modal();
+    });
+
+    $(document).on('click', '.editPincodeBtn', function(){
+        $.ajax({
+            url: "{{route('pincode.pincodeData')}}",
+            type: "get",
+            datatype: "html",
+            data: {id:$(this).data('id')},
+            success: function(data){
+                $('#edit-pincode-form').modal();
+                $("#edit-pincode-body").empty().html(data);
+                $('#edit-pincode-form .selectizeInput').selectize();
+            },
+            error: function() {
+                $("#data-loaded").empty().html('Something went wrong');
+            }
+        });
+    });
+
     $(function() {
         $('#save').click(function() {
             //iterate polygon latlongs?
