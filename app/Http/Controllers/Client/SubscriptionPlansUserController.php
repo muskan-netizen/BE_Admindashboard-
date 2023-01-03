@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use DB;
-use Session;
+use Session, DataTables;
 use \DateTimeZone;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, SmsProvider, Currency, Language, Country, User, SubscriptionPlansUser, SubscriptionPlanFeaturesUser, ShowSubscriptionPlanOnSignup, SubscriptionFeaturesListUser, SubscriptionInvoicesUser};
+use App\Models\{Client, ClientPreference, SmsProvider, Currency, Language, Country, User, SubscriptionPlansUser, SubscriptionPlanFeaturesUser, ShowSubscriptionPlanOnSignup, SubscriptionFeaturesListUser, SubscriptionInvoicesUser, Order, OrderVendor};
 use Carbon\Carbon;
 
 class SubscriptionPlansUserController extends BaseController
@@ -213,6 +213,89 @@ class SubscriptionPlansUserController extends BaseController
             return redirect()->back()->with('success', 'Subscription has been deleted successfully.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Subscription cannot be deleted.');
+        }
+    }
+
+    //Customer Subscription Report
+    public function userSubscriptionReport(Request $request, $domain = '')
+    {
+        $admin_subs_discount = OrderVendor::whereIn('order_status_option_id', array(1,2,4,5,6))->sum('subscription_discount_admin');
+        $vendor_subs_discount = OrderVendor::whereIn('order_status_option_id', array(1,2,4,5,6))->sum('subscription_discount_vendor');
+        return view('backend/accounting/usersubscriptions')->with(['admin_subs_discount'=>$admin_subs_discount, 'vendor_subs_discount'=>$vendor_subs_discount]);
+    }
+
+
+    public function subscriptionfilter(Request $request){
+        try {
+            $user = Auth::user();
+            $search_value = $request->get('search');
+            $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
+   
+            $vendor_orders_query = OrderVendor::with(['orderDetail.user', 'vendor'])->whereIn('order_status_option_id', array(1,2,4,5,6))
+                ->whereHas('orderDetail', function($q){
+                    $q->where('subscription_discount', '>', 0);
+                });
+
+            if (!empty($request->get('date_filter'))) {
+                $date_date_filter = explode(' to ', $request->get('date_filter'));
+                $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
+                $from_date = $date_date_filter[0];
+                $vendor_orders_query = $vendor_orders_query->between($from_date." 00:00:00", $to_date." 23:59:59");
+            }
+            
+            $vendor_orders = $vendor_orders_query->orderBy('id', 'desc');
+            return Datatables::of($vendor_orders)
+                ->addColumn('admin_subscription_amount', function($vendor_orders) {
+                    return decimal_format($vendor_orders->subscription_discount_admin??0);
+                })
+                ->addColumn('vendor_subscription_amount', function($vendor_orders) {
+                    return decimal_format($vendor_orders->subscription_discount_vendor??0);
+                })
+                ->addColumn('total_subscription_amount', function($vendor_orders) {
+                    return decimal_format(($vendor_orders->subscription_discount_vendor + $vendor_orders->subscription_discount_admin)??0);
+                })
+                ->addColumn('order_number', function($vendor_orders) {
+                    return $vendor_orders->orderDetail ? $vendor_orders->orderDetail->order_number : '';
+                })
+                ->addColumn('vendor_view_url', function($vendor_orders) {
+                    if(!empty($vendor_orders->order_id) && !empty($vendor_orders->vendor_id)){
+                        return route('vendor.catalogs', [$vendor_orders->vendor_id]);
+                    }else{
+                        return '#';
+                    }
+                })
+                ->addColumn('view_url', function($vendor_orders) {
+                    if(!empty($vendor_orders->order_id) && !empty($vendor_orders->vendor_id)){
+                        return route('order.show.detail', [$vendor_orders->order_id, $vendor_orders->vendor_id]);
+                    }else{
+                        return '#';
+                    }
+                })
+                ->addColumn('customer', function($vendor_orders) {
+                    return $vendor_orders->user ? $vendor_orders->user->name : '';
+                })
+                ->addColumn('vendor_name',function($vendor_orders){
+                    return $vendor_orders->vendor ? __($vendor_orders->vendor->name) : '';
+                })
+                ->addIndexColumn()
+                ->filter(function ($instance) use ($request) {
+                    if (!empty($request->get('search'))) {
+                        $search = $request->get('search');
+                        $instance->where(function($query) use($search){
+                            $query->whereHas('orderDetail', function($q) use($search){
+                                $q->where('order_number', 'LIKE', '%'.$search.'%');
+                            })
+                            ->orWhereHas('user', function($q) use($search){
+                                $q->where('name', 'LIKE', '%'.$search.'%');
+                            })
+                            ->orWhereHas('vendor', function($q) use($search){
+                                $q->where('name', 'LIKE', '%'.$search.'%');
+                            });
+                        });
+                    }
+                })->make(true);
+        } catch (Exception $e) {
+
         }
     }
 }

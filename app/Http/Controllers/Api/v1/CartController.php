@@ -1326,7 +1326,7 @@ class CartController extends BaseController
                     $subscription_discount = $subscription_discount + $total_delivery_amount;
                 }
                 elseif ($feature->feature_id == 2) {
-                    $off_percentage_discount = ($feature->percent_value * $total_paying / 100);
+                    $off_percentage_discount = ($feature->percent_value * ($total_paying - $total_delivery_amount) / 100);
                     $subscription_discount = $subscription_discount + $off_percentage_discount;
                 }
             }
