@@ -155,6 +155,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/gcash','Front\GCashController@beforePayment')->name('payment.gcash.beforePayment');
 	Route::get('payment/gcash/view','Front\GCashController@webView')->name('payment.gcash.webView');
 
+	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
+	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
 
 	//Simplify
 	Route::match(['get','post'],'payment/simplify/page','Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
