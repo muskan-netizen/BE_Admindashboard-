@@ -905,6 +905,7 @@
 </div>
 
 <div id="add-edit-pincode" class="modal fade add_reason" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom">
@@ -943,6 +944,7 @@
 
 <div id="import-form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
     <div class="modal-dialog modal-dialog-centered modal-lg">
+
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __('Import Pincode') }} </h4>
@@ -971,6 +973,7 @@
 </div>
 
 <div id="edit-pincode-form" class="modal fade add_reason" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom">
