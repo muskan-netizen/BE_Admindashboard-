@@ -527,7 +527,7 @@
 
 
     async function newChatGroup(message){
-       
+       //alert();
         //var data = message.message.chatData;
         //console.log('lp',message);
          var roomData = message.roomData[0];
