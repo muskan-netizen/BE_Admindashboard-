@@ -27,7 +27,7 @@ body .alFullMapForm .scheduled-footer .btn {
         <div id="booking-map" style="width: 100%; height: 100%;"></div>
         <input id="booking-latitude" type="hidden" value="-34">
         <input id="booking-longitude"  type="hidden" value="151">
-       
+
     </div>
     <div class="alFullMapForm col-md-12 p-0 position-absolute">
         <div class="booking-experienceNew ds bc">
@@ -202,7 +202,7 @@ body .alFullMapForm .scheduled-footer .btn {
 
                     </div>
             </div>
-            
+
             <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
 
             <div class="promo-box style-4 d-none">
@@ -265,7 +265,7 @@ body .alFullMapForm .scheduled-footer .btn {
                         <div class="col ride-price pl-2 text-right">
                             <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
                         </div>
-                    
+
                     </div>
                 </div>
             </label>
@@ -339,7 +339,7 @@ body .alFullMapForm .scheduled-footer .btn {
                 <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
                 ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
             <% } %>
-            
+
             <% if(result.service_charge_amount > 0){ %>
                 <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
                 ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
@@ -465,6 +465,9 @@ body .alFullMapForm .scheduled-footer .btn {
                             <span class="error text-danger" id="yoco_card_error"></span>
                         </div>
                     <% } %>
+
+
+
                 </div>
             <% }); %>
             {{-- <div>
@@ -563,6 +566,41 @@ body .alFullMapForm .scheduled-footer .btn {
     </div>
 </div>
 
+
+<!-- Plugandpay Modal -->
+<div class="modal fade payment-modal payment-modal-width" id="plugpaymethod" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="plugpaymethodLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header pb-0">
+                <h5 class="modal-title" id="payment_modalLabel">{{__('PlugPay Credit Card')}}</h5>
+                <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body booking_mayment_method">
+                <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper">
+                    <div class="row no-gutters">
+                        <div class="col-6">
+                            <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" required />
+                        </div>
+                        <div class="col-3">
+                            <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY" required />
+                        </div>
+                        <div class="col-3">
+                            <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" required />
+                        </div>
+                    </div>
+
+                    <span class="error text-danger" id="plugnpay_card_error"></span>
+                    <a class="btn btn-solid w-100 mt-2" id="paywithplugpay">Pay
+                        <img style="width:5%; display:none;" id="proceed_to_pay_loader" src="{{asset('assets/images/loader.gif')}}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Select Payment Option -->
 <div class="modal fade select-payment-option payment-modal-width" id="select_payment_option" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="select_payment_optionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -638,6 +676,7 @@ body .alFullMapForm .scheduled-footer .btn {
         <h6>{{__('Payment Options Not Avaialable')}}</h6>
     <% }else{ %>
         <% _.each(payment_options, function(payment_option, k){%>
+
             <% if( (payment_option.slug != 'cash_on_delivery') && (payment_option.slug != 'loyalty_points') ) { %>
                 <label class="radio mt-2">
                     <%= payment_option.title %>
@@ -656,6 +695,24 @@ body .alFullMapForm .scheduled-footer .btn {
                 <% } %>
                 <% if(payment_option.slug == 'payphone') { %>
                     <div id="pp-button"></div>
+                <% } %>
+
+                <% if(payment_option.slug == 'plugnpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="plugnpay_card_error"></span>
+                    </div>
                 <% } %>
             <% } %>
         <% }); %>
@@ -783,6 +840,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var initial_country_code = "{{ Session::get('default_country_code','US') }}";
     var add_rider_url = "{{route('rider.create')}}";
     var remove_rider_url = "{{route('rider.remove')}}";
+    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
     @if($client_preference_detail->distance_unit_for_time == "mile")
     var distance_unit = "IMPERIAL";
     @else

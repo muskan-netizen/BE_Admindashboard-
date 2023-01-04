@@ -13,6 +13,7 @@
                 if(response.status == 'Success'){
                     $("#payment_modal .modal-body").html('');
                     let payment_methods_template = _.template($('#payment_methods_template').html());
+
                     $("#payment_modal .modal-body").append(payment_methods_template({payment_options: response.data}));
                     var selected = $('#pickup_now').attr("data-payment_method");
                     $("#payment_modal .select_cab_payment_method[value='"+selected+"']").prop("checked", true);
@@ -37,7 +38,12 @@
             if (payment_method == 4) {
                 stripeInitialize();
                 $("#cab_payment_method_form .stripe_element_wrapper").removeClass('d-none');
-            }else {
+            }
+            else if (payment_method == 49) {
+                console.log(49)
+                 $("#cab_payment_method_form .plugnpay_element_wrapper").removeClass('d-none');
+            }
+            else {
                 $("#cab_payment_method_form .stripe_element_wrapper").addClass('d-none');
             }
     //    if(payment_method == 2)
@@ -145,8 +151,47 @@ $(document).ready(function () {
         initMap2();
     });
 
+    // PlugPay payment
+
+    $(document).on("click", "#paywithplugpay",function() {
+
+        cno = $('#plugnpay-card-element').val();
+        dt  = $('#plugnpay-date-element').val();
+        cv  = $('#plugnpay-cvv-element').val();
+        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+        {
+            success_error_alert('error', 'Please Fill Details', "#plugnpay_card_error");
+            return false;
+        }else{
+            $("#pickup_now, #pickup_later").trigger('click');
+            $('#paywithplugpay').prop('disabled',true);
+        }
+
+    });
     // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_later",function() {
+
+        var payid = $(this).attr('data-payment_method');
+        if(payid == 49){
+
+            cno = $('#plugnpay-card-element').val();
+            dt  = $('#plugnpay-date-element').val();
+            cv  = $('#plugnpay-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                $('#plugpaymethod').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $("#proceed_to_pay_loader").hide();
+                $('#paywithplugpay').prop('disabled',false);
+                return false;
+            }else{
+                $("#proceed_to_pay_loader").show();
+            }
+        }
+        
+       
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
         if($(this).data('rel') =='pickup_later'){
@@ -282,6 +327,9 @@ $(document).ready(function () {
                         payWithDpo(response.data);
                     }else if(payment_option_id == 30){
                         payWithFlutterWave(response.data);
+                    }else if(payment_option_id == 49){
+                        
+                        paymentViaplugnpay(reload_route,'',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{

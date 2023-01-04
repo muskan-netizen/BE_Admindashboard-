@@ -2781,6 +2781,8 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
 
     ///////////////////////////Plugnpay payment Gateway //////////////////////////////
     window.paymentViaplugnpay = function paymentViaplugnpay(address_id='', payment_option_id='',order='') {
+
+
         cno = $('#plugnpay-card-element').val();
         dt  = $('#plugnpay-date-element').val();
         cv  = $('#plugnpay-cvv-element').val();
@@ -2792,9 +2794,9 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
         let subscription_id = $("input[name='subscription_id']");
         let data            = [];
         let payment_from    = '';
-        if (path.indexOf("cart") !== -1) {
 
-          
+        let cabElement = $("#pickup_now");
+        if (path.indexOf("cart") !== -1) {
 
             // if (path.indexOf("cart") !== -1) {
                 payment_form = 'cart';
@@ -2842,7 +2844,20 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
             );
            
         } 
-
+        else if (cabElement.length > 0) {
+             total_amount = cabElement.data('amount');
+             payment_from = 'pickup_delivery';
+              data.push(
+                { name: 'order_number', value: order.order_number },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name: 'reload_route', value: address_id },
+            );
+        }
         else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
             total_amount = tipElement.val();
             payment_from = 'tip';
@@ -2858,6 +2873,7 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
             );
         }
 
+
        
 
 
@@ -2869,17 +2885,51 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
             url: payment_plugnpay_url,
             data: data,
             success: function(response) {
-                console.log(response);
-
-                if (response.status == "Success") {
+                
+                if (response.status == "Fail") {
+                     if(response.payment_from == 'wallet'){
+                         $("#wallet_payment_methods_error").html(response.msg);
+                         $("#wallet_payment_methods_error").css("color",'red');
+                         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'pickup_delivery'){
+                         $("#plugnpay_card_error").html(response.msg);
+                         $("#plugnpay_card_error").css("color",'red');
+                         $("#proceed_to_pay_loader").hide();
+                         $('#paywithplugpay').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'subscription'){
+                         $("#plugnpay_card_error").html(response.msg);
+                         $("#plugnpay_card_error").css("color",'red');
+                         $(document).find('.subscription_confirm_btn').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'cart'){
+                         $("#plugnpay_card_error").html(response.msg);
+                         $("#plugnpay_card_error").css("color",'red');
+                         $("#proceed_to_pay_loader").hide();
+                         $(document).find('.proceed_to_pay').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'tip'){
+                         $("#wallet_payment_methods_error").html(response.msg);
+                         $("#wallet_payment_methods_error").css("color",'red');
+                         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                         return false;
+                     }
+                    
+                }
+                else if(response.status == "Success") {
                     window.location.replace(response.route);
                 } else {
                     window.location.replace(response.route);
                 }
             },
             error: function(response) {
-                console.log(response);
-                window.location.replace(response.route);
+               
+                window.location.replace(response.route);  
                 // var error = response.responseJSON;
                 // console.log(error, 'Error');
             }

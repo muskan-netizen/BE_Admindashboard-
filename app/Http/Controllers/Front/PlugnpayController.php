@@ -46,6 +46,11 @@ class PlugnpayController extends FrontController
             $time = time();
             Payment::create(['amount'=>0,'transaction_id'=>$request->subsid.'_'.$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
 
+        }else if($request->from == 'pickup_delivery')
+        {
+            $time = $request->order_number;
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d'),'user_id'=>auth()->user()->id]);
+
         }
         return $time;
    }
@@ -64,17 +69,22 @@ class PlugnpayController extends FrontController
         $request->request->add(['order_number' => $number,'amount'=>$request->amount]);
       }
 
-
-
     	$responsePay = $this->createPaymentRequest($request->all());
-
-        \Log::info(json_encode($responsePay));
+        //\Log::info(json_encode($responsePay));
         $dataResponse = json_decode($responsePay);
-        \Log::info($dataResponse->FinalStatus);
+
+        if($dataResponse->FinalStatus == 'badcard'){
+            $response['status']         = 'Fail';
+            $response['msg']            = 'Invalid Card Details.';
+            $response['payment_from']   = $request->from;
+            $response['route']          = '';
+            return $response;
+        }
+        //\Log::info($dataResponse->FinalStatus);
 
         if(isset($dataResponse->FinalStatus))
         {
-        \Log::info('Done');
+        //\Log::info('Done');
 
 
         if($request->from=='tip'){
@@ -86,7 +96,7 @@ class PlugnpayController extends FrontController
             $payment = Payment::where('transaction_id',$dataResponse->address2)->first();
         }
 
-
+       // \Log::info(json_encode($request->all()));
 
             if($payment->type=='cart'){
             return $this->completeOrderCart($dataResponse,$payment);
@@ -98,8 +108,12 @@ class PlugnpayController extends FrontController
                 return $this->completeOrderSubs($dataResponse,$payment,$request);
             }
 
+            elseif($payment->type=='pickup_delivery'){
+                return $this->completePickupDelivery($dataResponse,$payment,$request);
+            }
+
         }else{
-            \Log::info('fail--'.$dataResponse->FinalStatus.'--');
+            //\Log::info('fail--'.$dataResponse->FinalStatus.'--');
             $returnUrl = route('order.return.success');
             $response['status'] = 'Fail';
             $response['msg'] = 'Failed.';
@@ -207,7 +221,6 @@ class PlugnpayController extends FrontController
 
     public function completeOrderWallet($request,$payment,$amount){
 
-
         if(isset($request->FinalStatus) && $request->FinalStatus == 'success')
         {
 
@@ -226,7 +239,10 @@ class PlugnpayController extends FrontController
                 $response['route'] = $returnUrl;
             }
             return $response;
+        }else{
+            //dd($request->FinalStatus);
         }
+
     }
 
     public function completeOrderTip($request,$payment,$amount){
@@ -276,6 +292,31 @@ class PlugnpayController extends FrontController
             }
             return $response;
         }
+    }
+
+    public function completePickupDelivery($request,$payment,$requestdata){
+        if(isset($request->FinalStatus) && $request->FinalStatus == 'success')
+        {
+
+            $data['payment_option_id']   = 49;
+            $data['transaction_id']      = $payment->transaction_id;
+            $data['amount']              = $requestdata['amt'];
+            $data['order_number']        = $requestdata['order_number'];
+            $data['reload_route']        = $requestdata['reload_route'];
+            $request = new \Illuminate\Http\Request($data);
+            $plaseOrderForPickup = new PickupDeliveryController();
+            $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+            $returnUrl = $request->reload_route;
+            $response['route'] = $returnUrl;
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=plugnpay'.'&status=200&transaction_id='.$payment->transaction_id;
+                $response['route'] = $returnUrl;
+            }
+
+            return $response;
+        }
+
     }
 
 
