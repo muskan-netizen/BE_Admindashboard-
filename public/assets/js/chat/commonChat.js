@@ -635,9 +635,9 @@
                     var productSelected = '';
                     await response.data.roomData.reverse().forEach(async function (data,i) {
                         
-                        if(data._id == user_room_id){
-                            productSelected = data.product_id;
-                        }
+                        // if(data._id == user_room_id){
+                        //     productSelected = data.product_id;
+                        // }
                    
                     var renderUserd = await renderUser(data);
                     var last_message_name = data.chat_Data[0]!=undefined?data.chat_Data[0].username : '';
@@ -672,11 +672,11 @@
                           
                         //}
                     });
-                    if(user_room_id){
-                        await fetchOderVendorDetails('','', productSelected);
-                        await getALLchat(user_room_id,user_room_id);
-                        await getAllUser(user_room_id,user_room_id);
-                    }
+                    // if(user_room_id){
+                    //     await fetchOderVendorDetails('','', productSelected);
+                    //     await getALLchat(user_room_id,user_room_id);
+                    //     await getAllUser(user_room_id,user_room_id);
+                    // }
                     
                     
                 } else {
@@ -699,7 +699,8 @@
             user_ids: user_ids,
             text_message:message,
             roomId:roomId,
-            roomIdText:roomIdText
+            roomIdText:roomIdText,
+            auth_id:Auth.auth_id
         })
         .then(async response => {
         })
