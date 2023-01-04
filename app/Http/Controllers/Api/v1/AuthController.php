@@ -24,10 +24,11 @@ use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
 use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, Permissions, UserPermissions, Type, Category, VendorCategory};
 use Log;
+use App\Http\Traits\InfluencerTrait;
 
 class AuthController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser, InfluencerTrait;
     /**
      * Get Country List
      * * @return country array
@@ -296,7 +297,6 @@ class AuthController extends BaseController
      */
     public function signup(Request $signReq)
     {
-
         $preferences = ClientPreference::first();
         $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         $rules = [
@@ -411,6 +411,11 @@ class AuthController extends BaseController
             }
         }
         $user_id = $user->id;
+
+        if(@$signReq->kyc){
+            InfluencerTrait::saveKycData($signReq, $user_id);
+        }
+        
         $user_registration_documents = UserRegistrationDocuments::with(['user_document' =>function($q) use($user_id){
             $q->where('user_id', $user_id);
         },'primary'])->get();

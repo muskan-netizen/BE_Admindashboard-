@@ -65,6 +65,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->is_cab_pooling = (int) getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
             $homeData['profile']->preferences->chat_button = (int) getAdditionalPreference(['chat_button'])['chat_button'];
             $homeData['profile']->preferences->call_button = (int) getAdditionalPreference(['call_button'])['call_button'];
+            $homeData['profile']->preferences->is_user_kyc_for_registration = (int) getAdditionalPreference(['is_user_kyc_for_registration'])['is_user_kyc_for_registration'];
             //dd($homeData['profile']);
             $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
             $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
@@ -72,6 +73,16 @@ class HomeController extends BaseController
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
             $sellers_nomenclature = $this->getNomenclatureName('sellers', $langId, false);
+
+            $account_name = $this->getNomenclatureName('Account Name', $langId, false);
+            $bank_name = $this->getNomenclatureName('Bank Name', $langId, false);
+            $account_number = $this->getNomenclatureName('Account Number', $langId, false);
+            $ifsc_code = $this->getNomenclatureName('IFSC Code', $langId, false);
+            $aadhaar_front = $this->getNomenclatureName('Aadhaar Front', $langId, false);
+            $aadhaar_back = $this->getNomenclatureName('Aadhaar Back', $langId, false);
+            $aadhaar_number = $this->getNomenclatureName('Aadhaar Number', $langId, false);
+            $upi_id = $this->getNomenclatureName('UPI Id', $langId, false);
+
             $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
             $referral_code = $this->getNomenclatureName('Referral Code', $langId, false);
             $want_to_tip = $this->getNomenclatureName('want_to_tip', $langId, false);
@@ -92,6 +103,15 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->referral_code = $referral_code;
             $homeData['profile']->preferences->seller_sold_title = $getAdditionalPreference['seller_sold_title'];
             $homeData['profile']->preferences->seller_platform_logo = $getAdditionalPreference['seller_platform_logo'];
+            $homeData['profile']->preferences->account_name = $account_name;
+            $homeData['profile']->preferences->bank_name = $bank_name;
+            $homeData['profile']->preferences->account_number = $account_number;
+            $homeData['profile']->preferences->ifsc_code = $ifsc_code;
+            $homeData['profile']->preferences->aadhaar_front = $aadhaar_front;
+            $homeData['profile']->preferences->aadhaar_back = $aadhaar_back;
+            $homeData['profile']->preferences->aadhaar_number = $aadhaar_number;
+            $homeData['profile']->preferences->upi_id = $upi_id;
+
             if(!is_null($passbase))
             {
                 $homeData['profile']->preferences->passbase_check = 1;

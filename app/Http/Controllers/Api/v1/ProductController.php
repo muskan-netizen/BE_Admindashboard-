@@ -8,7 +8,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot};
 use Validation;
 use DB;
 use App\Http\Traits\{ApiResponser,ProductTrait};
@@ -585,6 +585,30 @@ class ProductController extends BaseController
                 'status' => 200,
                 'message' => 'success',
                 'data' => $product_delivery_slots
+            ]);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function getProductDeliverySlotsInterval(Request $request){
+        try {
+            $request->validate(
+                [
+                    'slot_id' => 'required'
+                ], 
+                [
+                    'slot_id.required' => 'Slot Id is required'
+                ]
+            );
+            $product_delivery_slots_interval = [];
+            if (checkTableExists('product_attributes')) {
+                $product_delivery_slots_interval = DeliverySlot::where('parent_id', $request->slot_id)->get();
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'success',
+                'data' => $product_delivery_slots_interval
             ]);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
