@@ -583,10 +583,21 @@ $timezone = Auth::user()->timezone;
                         @endif
                         @endif
                         @endforeach
+
+                        @php
+                                    $sub_total = $sub_total - $vendor->orderDetail->bid_discount;
+                        @endphp
+
                         @if($container_charges > 0)
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Container Charges") }} :</th>
                             <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
+                        </tr>
+                        @endif
+                        @if($vendor->orderDetail->bid_discount > 0)
+                        <tr>
+                            <th scope="row" colspan="4" class="text-end">{{ __("Bid Discount") }} :</th>
+                            <td>{{$clientCurrency->currency->symbol}}@money($vendor->orderDetail->bid_discount)</td>
                         </tr>
                         @endif
                         <tr>
@@ -651,6 +662,8 @@ $timezone = Auth::user()->timezone;
                             <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
                         </tr>
                         @endif
+
+                        
                         @if($client_preference_detail->is_tax_price_inclusive)
 
                         @php //taxable_amount
@@ -708,7 +721,7 @@ $timezone = Auth::user()->timezone;
                             <td>
                                 {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}
                     </div> --}}
-                    <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount,2)}}</div>
+                    <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
                     </td>
                     </tr>
                     </tbody>

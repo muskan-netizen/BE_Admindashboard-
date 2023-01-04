@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\{BidRequest,Bid};
+use App\Models\{BidRequest,Bid, BidProduct};
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\Vendor;
@@ -125,9 +125,32 @@ class BiddingController extends Controller
     }
     public function addBidProductToCart(Request $request)
     {
-        $this->biddingCart($request->bid_id);
+        $this->biddingCart($request->bid);
         return response()->json(['status' => 'success', 'message' => __("Bid  product Added successfully")]);
        
+    }
+
+    public function bidReject(Request $request)
+    {
+        $accept = Bid::where('id', $request->bid)->update(['status'=>2]);
+        return response()->json(['status' => 'success', 'message' => __("Bid  reject successfully")]);
+    }
+
+    public function bidAccept(Request $request,$domain="",$id)
+    {
+        \Log::info('$request->bid--'.$id);
+        $bid_products = BidProduct::where('bid_id', $request->bid)->with('product.variant')->get();
+        \Log::info($request->all());
+        \Log::info(json_encode($bid_products));
+        $CartController  = new CartController();
+        foreach($bid_products as $product) {
+            $newRequest = new Request();
+            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>$vid,'bid_discount'=>$product->bids->discount]);
+            $data = $CartController->postAddToCart($newRequest);
+        }
+
+        return response()->json(['status' => 'success', 'message' => __("Bid accept successfully")]);
+
     }
 
 }

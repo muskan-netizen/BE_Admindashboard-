@@ -368,7 +368,7 @@ class OrderController extends FrontController
             }]);
         }
         $order =    $order->findOrfail($request->order_id);
-
+        // dd($order->vendors);
 
         $fixedFeeNomenclatures = $this->fixedFee($langId);
         $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
@@ -809,7 +809,7 @@ class OrderController extends FrontController
         try {
             $latitude = '';
             $longitude = '';
-
+            $Order_bid_discount = 0;
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             if ($action == 'takeaway' || $action == 'dine_in' || $action == 'appointment') {
                 $latitude = Session::get('latitude') ?? '';
@@ -1030,6 +1030,7 @@ class OrderController extends FrontController
                 //
 
                 $vendorProductIds = array();
+                $bid_vendor_discount = 0;
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
                     //pr($vendor_cart_product->toArray());
@@ -1145,9 +1146,15 @@ class OrderController extends FrontController
                      * for rental case total_booking_time as a total time
                      * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity
                      */
-                    if($vendor_cart_product->bid_number)
-                    Bid::where('id', $vendor_cart_product->bid_number)->update(['status'=>1]);
 
+
+                    if(@$vendor_cart_product->bid_number)
+                    {
+                        Bid::where('id', $vendor_cart_product->bid_number)->update(['status'=>1]);
+
+                        $bid_vendor_discount += (($order_product->price * $vendor_cart_product->bid_discount)/100);
+                    
+                    }
 
                     $order_product->total_booking_time = @$vendor_cart_product->total_booking_time;
 
@@ -1394,20 +1401,11 @@ class OrderController extends FrontController
                     // array_push($addonArray, $vendor_cart_product->vendor_id);
                     if (isset($vendor_cart_product->product->taxCategory)) {
                         foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
-                            //         if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
-                            //             $tax_category_ids[] = $tax_rate_detail->id;
-                            //         }
                             $rate = $tax_rate_detail->tax_rate;
-
-                            //         $tax_amount = ($price_in_dollar_compare * $rate) / 100;
-                            //         $product_tax = $quantity_price * $rate / 100;
-                            //         $product_taxable_amount += $product_tax;
-                            //         $payable_amount = $payable_amount + $product_tax;
                         }
                     }
-                    //  $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
-                    //echo  "    payable_amount==".$payable_amount;
-                }
+                  
+                } //End products loop
 
                 $payable_amount += $vendor_total_container_charges;
                 //dump("+Container_charges ".$vendor_total_container_charges."/- ---".$payable_amount);
@@ -1499,10 +1497,13 @@ class OrderController extends FrontController
                 $OrderVendor->additional_price = $additionalPrice;
                 $OrderVendor->taxable_amount = number_format($total_other_taxes, 2);;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
-                $OrderVendor->payable_amount = $vendor_payable_amount;
+                $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
+                $OrderVendor->payable_amount = $vendor_payable_amount - $bid_vendor_discount;
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
                 $OrderVendor->is_restricted = $is_restricted;
+                $OrderVendor->bid_discount = $bid_vendor_discount??0;
+                $Order_bid_discount += $bid_vendor_discount??0;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
@@ -1546,7 +1547,7 @@ class OrderController extends FrontController
             //echo "total_discount:" .$total_discount." total_subscription_discount: " .$total_subscription_discount;
             $total_discount = $total_discount + $total_subscription_discount;
 
-            $order->total_amount = $total_amount;
+            $order->total_amount = $total_amount - $Order_bid_discount??0;
             $order->total_discount = $total_discount;
             // $order->taxable_amount = $taxable_amount;
             //$new_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
@@ -1616,7 +1617,7 @@ class OrderController extends FrontController
             $order->scheduled_slot = (($cart->scheduled_slot) ? $cart->scheduled_slot : null);
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot) ? $cart->dropoff_scheduled_slot : null);
             $order->luxury_option_id = $luxury_option->id;
-
+            $payable_amount = $payable_amount - $Order_bid_discount??0;
             if (!$additionalPreferences->is_tax_price_inclusive) {
                 $order->payable_amount = decimal_format($payable_amount);
             } else {
@@ -1630,7 +1631,7 @@ class OrderController extends FrontController
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;
             }
-            //dd("order:".$order);
+            $order->bid_discount  = $Order_bid_discount??0;
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
 

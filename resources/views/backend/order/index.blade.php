@@ -193,10 +193,17 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                             </div>
                                             <div class="col-md-3 mt-md-0 mt-sm-2">
                                                 <ul class="price_box_bottom m-0 p-0">
+                                                   
                                                     <% if(vendor.subtotal_amount > 0 || vendor.subtotal_amount < 0) { %>
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Total') }}</label>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span>
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.subtotal_amount) + parseFloat(vendor.bid_discount)) %></span>
+                                                    </li>
+                                                    <% } %>
+                                                     <% if(vendor.bid_discount > 0) { %>
+                                                    <li class="d-flex align-items-center justify-content-between">
+                                                        <label class="m-0">{{ __('Bid Discount') }}</label>
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.bid_discount) %></span>
                                                     </li>
                                                     <% } %>
                                                     <% if(vendor.additional_price > 0 ) { %>
@@ -338,10 +345,17 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 <ul class="price_box_bottom m-0 pl-0 pt-1">
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Total') }}</label>
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_amount) %></span>
+                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.total_amount) + parseFloat(order.bid_discount)) %></span>
                                     </li>
 
-                                    <% if(order.additional_price > 0 || order.additional_price < 0) { %>
+                                    <% if(order.bid_discount > 0) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                                 <label class="m-0">{{ __('Bid Discount') }}</label>
+                                                 <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.bid_discount) %></span>
+                                         </li>
+                                      <% } %>
+
+                                      <% if(order.additional_price > 0 || order.additional_price < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                                  <label class="m-0">{{ __('Tax') }}</label>
                                                  <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.additional_price) %></span>

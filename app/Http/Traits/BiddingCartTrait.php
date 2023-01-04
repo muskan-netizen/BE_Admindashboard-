@@ -18,19 +18,16 @@ trait biddingCartTrait{
         $cartInfo = ' ';
         $user = Auth::user();
         $bid_products = BidProduct::where('bid_id', $id)->with('product.variant')->get();
-        // $bid_vendors = Bid::where('id',$id)->first();
-        // $currency = ClientCurrency::where('is_primary', '=', 1)->first();
-
         $CartController  = new CartController();
         foreach($bid_products as $product) {
             $newRequest = new Request();
-
-            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id]);
+            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>$id,'bid_discount'=>$product->bids->discount]);
             $data = $CartController->postAddToCart($newRequest);
         }
 
         return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!',]);
     }
+
     public function searchProduct($language_id=1,$keyword='',$vendor_ids=[]){
         
         $products = Product::with(['media', 'vendor','variant'])->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id', 'products.vendor_id')
