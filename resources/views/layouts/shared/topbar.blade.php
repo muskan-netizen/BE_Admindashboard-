@@ -15,7 +15,7 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
     <source src="{{ asset('assets/sounds/notification.mp3')}}" type="audio/mpeg">
     Your browser does not support the audio element.
 </audio>
-<div class="navbar-custom">
+<div class="navbar-custom {{(is_p2p_vendor()) ? '' : ''}}">
 
     <div class="col d-flex align-items-center justify-content-between justify-content-lg-end">
 
@@ -70,6 +70,9 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
             </li>
             <li class="m-hide"><label class="site-name m-0">{{ucFirst($clientData->custom_domain)}}</label></li>
             <li class="m-hide"><a href="{{route('userHome')}}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __("View Website") }}</span></a></li>
+           @if(App\Services\InventoryService::checkIfInventoryOn())
+            <li class="m-hide" ><a href="javascript:;"id="inventoryModalShow" ><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __("View Inventory") }}</span></a></li>
+            @endif
             <!-- <li class="m-hide"><a href="#" target="_blank"><i class="fab fa-apple" aria-hidden="true"></i><span class="align-middle">iOS App</span></a></li>
             <li class="m-hide"><a href="#" target="_blank"><i class="fab fa-android" aria-hidden="true"></i><span class="align-middle">Android App</span></a></li> -->
 

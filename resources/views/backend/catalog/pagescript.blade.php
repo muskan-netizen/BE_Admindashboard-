@@ -433,5 +433,256 @@
     });
     //End Product Tag Script
 
-    
+    // Attribute script
+    $(".addAttributbtn").click(function(e) {
+        console.log('click function called');
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var did = $(this).attr('dataid');
+        $.ajax({
+            type: "get",
+            url: "{{route('attribute.create')}}",
+            data: '',
+            dataType: 'json',
+            success: function(data) {
+                $('#addAttributemodal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#addAttributeForm #AddAttributeBox').html(data.html);
+                $('.dropify').dropify();
+                $('.selectize-select').selectize();
+
+                var picker = new jscolor('#add-hexa-colorpicker-1', options);
+            },
+            error: function(data) {
+                console.log('data2');
+            }
+        });
+
+    });
+
+
+    $('.editAttributeBtn').on('click', function(e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var did = $(this).attr('dataid');
+        $.ajax({
+            type: "get",
+            url: "{{url('client/attribute')}}" + '/' + did + '/edit',
+            data: '',
+            dataType: 'json',
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            success: function(data) {
+                $('#editAttributemodal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                
+                $('#editAttributeForm #editAttributeBox').html(data.html);
+                $('.dropify').dropify();
+                $('.selectize-select').selectize();
+                $("#editAttributeForm .hexa-colorpicker").each(function() {
+                    var ids = $(this).attr('id');
+                    try {
+                        var picker = new jscolor('#' + ids, options);
+                    } catch (err) {
+                        console.log(err.message);
+                    }
+                });
+                var getURI = document.getElementById('submitEditHidden').value;
+                document.getElementById('editAttributeForm').action = data.submitUrl;
+            },
+            error: function(data) {
+                console.log('data2');
+            },
+            complete: function() {
+                $('.loader_box').hide();
+            }
+        });
+    });
+
+    $(document).on('click', '.addOptionRow-attribute-edit', function(e) {
+        var d = new Date();
+        var n = d.getTime();
+        var $tr = $('.optionTableEditAttribute tbody>tr:first').next('tr');
+        var $clone = $tr.clone();
+        $clone.find(':text').val('');
+        $clone.find(':hidden').val('');
+        $clone.find('.hexa-colorpicker').attr("id", "hexa-colorpicker-" + n);
+        $clone.find('.lasttd').html('<a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a>');
+        $('.optionTableEditAttribute').append($clone);
+        var picker = new jscolor("#hexa-colorpicker-" + n, options);
+    });
+
+    $("#addAttributemodal").on('click', '.deleteCurRow', function() {
+        $(this).closest('tr').remove();
+    });
+
+    $("#editAttributemodal").on('click', '.deleteCurRow', function() {
+        var delete_attr_id = $(this).data('delete_attr_id');
+        var closet_tr = $(this).closest('tr');
+
+        if( delete_attr_id != 'undefined' && delete_attr_id != undefined ) {
+            $.ajax({
+                type: "POST",
+                url : "{{route('deleteAttribute')}}",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "id": delete_attr_id
+                },
+                beforeSend: function() {
+                    $(".editAttributeSubmit").attr("disabled", true);
+                },
+                success: function (response) {
+                    
+                    if(response.success) {
+                        closet_tr.remove();
+                    } else {
+                        $('.delete_options').removeClass('d-none');
+                    }
+                },
+                error: function(error) {
+                    $('.delete_options').removeClass('d-none');
+                },
+                complete: function() {
+                    $(".editAttributeSubmit").attr("disabled", false);
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '.deleteAttribute', function() {
+        var did = $(this).attr('dataid');
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete this attribute.')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $('#attrDeleteForm' + did).submit();
+            }
+        });
+        return false;
+    });
+
+    $(document).on('change', '.dropDownTypeAttr', function() {
+        var did = $(this).val();
+        var dataFor = $(this).attr('dataFor');
+        
+        if (did == 1) {
+            $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).hide();
+        } else if(did == 2){
+            $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).show();
+        }else if(did == 3) {
+            $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).hide();
+            $('.radio-div').removeClass('d-none');
+        } else if(did == 4) {
+            $('.attr-text-box').removeAttr('required');
+        }
+    });
+    $(document).ready(function(){
+        
+        // hide alert
+        if( $('.alert.alert-success').length ) {
+            setTimeout(function(){
+                $('.alert.alert-success').hide();
+            }, 5000);
+        }
+
+        // add attribute from product edit page
+        // Add option 
+        $(document).on('click', '.add_attr_options', function(e){
+
+            e.preventDefault();
+            
+            var attr_id = $(this).data('attribute_id');
+            if( attr_id != 'undefined' && attr_id != undefined ) {
+                // console.log('if paryt here');
+                $.ajax({
+                    type: "GET",
+                    url : "{{url('client/attribute')}}" + '/' + attr_id + '/edit',
+                    success: function(data) {
+                        $('#editAttributemodal').modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        });
+                        $('#editAttributeForm #editAttributeBox').html(data.html);
+                        $('#editAttributeForm #editAttributeBox').append('<input type="hidden" name="id" value="'+attr_id+'" />');
+                        $('#editAttributeForm .editAttributeSubmit').addClass('save-dynamic-options');
+                        $('.dropify').dropify();
+                        $('.selectize-select').selectize();
+                        $("#editAttributeForm .hexa-colorpicker").each(function() {
+                            var ids = $(this).attr('id');
+                            try {
+                                var picker = new jscolor('#' + ids, options);
+                            } catch (err) {
+                                console.log(err.message);
+                            }
+                        });
+                    },
+                    error: function() {
+
+                    },
+                    complete: function() {
+
+                    }
+                });
+            }
+        });
+    });
+
+    // when attribute update from product edit page
+    $(document).on('click', '.save-dynamic-options', function(e){
+        e.preventDefault();
+        $('.outter-loader').removeClass('d-none');
+        $('.save-dynamic-options').attr("disabled", true);
+
+        // get attribute id
+        var seariali_arr = $('#editAttributeForm').serializeArray();
+        var last_length = seariali_arr[seariali_arr.length - 1]
+        if(last_length['value'] != 'undefined' && last_length['value'] != undefined) {
+            
+            var product_id = $("input[name=product_id]").val();
+            // Serialize form data to save
+            var serailaize = $('#editAttributeForm').serializeArray();
+            serailaize.push({ name: "product_id", value: product_id });
+            
+            $.ajax({
+                url : "{{ route('updateAttributeOption') }}",
+                data: serailaize,
+                success: function(response) {
+                    
+                    if( response.success ) {
+                        var attr_value = $('.attribute_option_id_'+last_length['value']).val();
+                        var attr_html = response.html;
+                        $("#attribute_section").html(attr_html);
+                        $('.select2-multiple').select2();
+                        $('#editAttributemodal').modal('hide');
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                },
+                complete: function() {
+                    $('.save-dynamic-options').attr("disabled", false);
+                }
+            });
+        }
+
+        
+    });
 </script>

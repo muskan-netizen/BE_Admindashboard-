@@ -3,7 +3,7 @@
 @section('content')
     <!-- Start Content-->
     <div class="container-fluid">
-        
+
         <!-- start page title -->
         <div class="row">
             <div class="col-12">
@@ -18,8 +18,8 @@
                     <h4 class="page-title">Order Detail</h4>
                 </div>
             </div>
-        </div>     
-        <!-- end page title --> 
+        </div>
+        <!-- end page title -->
 
         <div class="row">
             <div class="col-lg-4">
@@ -125,7 +125,7 @@
                                         <th scope="row" colspan="4" class="text-right">Total :</th>
                                         <td><div class="font-weight-bold">$213</div></td>
                                     </tr>
-                                    
+
                                 </tbody>
                             </table>
                         </div>
@@ -142,7 +142,7 @@
                         <h4 class="header-title mb-3">Delivery Information</h4>
 
                         <h5 class="font-family-primary font-weight-semibold">Brent Jones</h5>
-                        
+
                         <p class="mb-2"><span class="font-weight-semibold mr-2">Address:</span> 3559 Roosevelt Wilson Lane San Bernardino, CA 92405</p>
                         <p class="mb-2"><span class="font-weight-semibold mr-2">Phone:</span> (123) 456-7890</p>
                         <p class="mb-0"><span class="font-weight-semibold mr-2">Mobile:</span> (+01) 12345 67890</p>
@@ -150,7 +150,7 @@
                     </div>
                 </div>
             </div> <!-- end col -->
-        
+
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-body">
@@ -186,6 +186,6 @@
 
         </div>
         <!-- end row -->
-        
+
     </div> <!-- container -->
 @endsection

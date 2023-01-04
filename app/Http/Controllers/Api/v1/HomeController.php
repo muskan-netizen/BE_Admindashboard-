@@ -12,7 +12,7 @@ use Carbon\CarbonPeriod;
 use ConvertCurrency;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,ProductActionTrait};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +26,7 @@ use DateTimeZone;
 
 class HomeController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser,ProductActionTrait;
 
     private $curLang = 0;
     private $field_status = 2;
@@ -37,9 +37,9 @@ class HomeController extends BaseController
         try {
             $homeData = array();
             $client_language = ClientLanguage::select('language_id')->where(['is_primary' => 1, 'is_active' => 1])->first();
-            
+
             $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
-            $homeData['profile'] = $preferences = Client::with(['preferences', 'preferences.additional_preferences', 'country:id,name,code,phonecode'])->select('id','country_id', 'company_name', 'code', 'sub_domain','database_name', 'logo','dark_logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number','socket_url')->first();
+            $homeData['profile'] = $preferences = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('id','country_id', 'company_name', 'code', 'sub_domain','database_name', 'logo','dark_logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number','socket_url')->first();
             //dd(Client::with('getPreference')->first()->getPreference->auto_implement_5_percent_tip);
             $app_styling_detail = AppStyling::getSelectedData();
             foreach ($app_styling_detail as $app_styling) {
@@ -56,18 +56,22 @@ class HomeController extends BaseController
                         $vendorData["icon"] = config('constants.VendorTypesIcon.'.$vendor_typ_key);
                         //$vendorData["name"] = $clientVendorTypes;
                         $vendorData["type"] = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
-                        
+
                         $vendorMode[] = $vendorData;
                     }
             }
             //pr($vendorMode);
             $homeData['profile']->preferences->vendorMode = $vendorMode;
+            $homeData['profile']->preferences->is_cab_pooling = (int) getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+            $homeData['profile']->preferences->chat_button = (int) getAdditionalPreference(['chat_button'])['chat_button'];
+            $homeData['profile']->preferences->call_button = (int) getAdditionalPreference(['call_button'])['call_button'];
             //dd($homeData['profile']);
             $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
             $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
             $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
+            $sellers_nomenclature = $this->getNomenclatureName('sellers', $langId, false);
             $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
             $referral_code = $this->getNomenclatureName('Referral Code', $langId, false);
             $want_to_tip = $this->getNomenclatureName('want_to_tip', $langId, false);
@@ -80,18 +84,19 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
             $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
             $homeData['profile']->preferences->vendors_nomenclature = $vendors_nomenclature;
+            $homeData['profile']->preferences->sellers_nomenclature = $sellers_nomenclature;
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
             $homeData['profile']->preferences->want_to_tip_nomenclature = $want_to_tip;
             $homeData['profile']->preferences->referral_code = $referral_code;
             if(!is_null($passbase))
             {
-                $homeData['profile']->preferences->passbase_check = 1; 
+                $homeData['profile']->preferences->passbase_check = 1;
                 $passbase_creds = json_decode($passbase->credentials);
                 $homeData['profile']->preferences->passbase_api_key = $passbase_creds->publish_key;
             }else{
                 $homeData['profile']->preferences->passbase_check = 0;
             }
-            
+
 
 
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
@@ -229,10 +234,10 @@ class HomeController extends BaseController
             else
                 $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
             $homeData['domain_link'] = $domain_link;
-
+            $homeData['profile']->preferences->is_postpay_enable = (int) @getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
+            $homeData['profile']->preferences->is_order_edit_enable = (int) @getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
             return $this->successResponse($homeData);
         } catch (Exception $e) {
-            \Log::info($e->getMessage());
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
@@ -259,14 +264,15 @@ class HomeController extends BaseController
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
             $type = $request->has('type') ? $request->type : 'delivery';
-
+            \Log::info($request->all());
+            \Log::info($type);
             if (empty($type))
             $type = 'delivery';
 
 
             $categoryTypes = getServiceTypesCategory($type);
-            
-           
+
+
             $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
@@ -290,7 +296,7 @@ class HomeController extends BaseController
                     $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
                 //}
             }
-           
+
             //filter on ratings
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
@@ -298,7 +304,7 @@ class HomeController extends BaseController
             $allVendorData = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
-            
+
             // \Log::info($vendorData->toSql());
             // \Log::info($venderIds);
             // \Log::info($ses_vendors);
@@ -308,7 +314,7 @@ class HomeController extends BaseController
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
             $start_date =  $start_date->format('Y-m-d');
             $end_date = Date('Y-m-d', strtotime('+13 days'));
-            
+
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
@@ -384,7 +390,7 @@ class HomeController extends BaseController
             if($venderFilterOpen && ($venderFilterOpen == 1) ){
                 $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
             }
-           
+
             $vendorData =   $vendorData->take(5);
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -445,10 +451,10 @@ class HomeController extends BaseController
             //         'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
             //     );
             // }
-           
+
 
             $isVendorArea = 0;
-            
+
             // Start Mobile Banners
             $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
             ->where('status', 1)->where('validity_on', 1)
@@ -499,7 +505,7 @@ class HomeController extends BaseController
                     unset($value->redirect_vendor_id);
                 }
             }
-           
+
 
             // End Mobile Banners
             $categories = $this->categoryNav($langId,  $venderIds,$type);
@@ -524,6 +530,14 @@ class HomeController extends BaseController
             $homeData['brands'] = $brands;
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+            // long term service 
+            $long_term_service_products =[];
+            if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
+                $requestFrom='app';
+                $long_term_service_products = $this->longTermServiceProducts($venderIds, $langId, $clientCurrency,'', $type,'', $requestFrom);
+            }
+            $homeData['long_term_service'] = $long_term_service_products;
+            \Log::info($homeData['categories']);
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -595,7 +609,7 @@ class HomeController extends BaseController
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
             $start_date =  $start_date->format('Y-m-d');
             $end_date = Date('Y-m-d', strtotime('+13 days'));
-            
+
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
@@ -688,7 +702,7 @@ class HomeController extends BaseController
             ])
             ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products','sub_cat_banners')
             ->where('id', $cid)->first();//->toArray();
-            
+
             // print_r($categories);die;
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories->childs;
@@ -731,14 +745,14 @@ class HomeController extends BaseController
             ->select('id','order_number')
             ->get();
         }
-        
+
 
         return $this->successResponse($temp_orders, '', 200);
     }
 
     public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type)
     {
-        $products = Product::byProductCategoryServiceType($type)->with([
+        $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
@@ -770,7 +784,7 @@ class HomeController extends BaseController
         if ($pndCategories) {
             $products = $products->whereNotIn('category_id', $pndCategories);
         }
-        $products = $products->whereNotNull('category_id')->where('is_live', 1)->take(10)->inRandomOrder()->get();
+        $products = $products->whereNotNull('category_id')->take(10)->inRandomOrder()->get(); //->where('is_live', 1) set in byProductWhereCheck
         if (!empty($products)) {
             foreach ($products as $key => $value) {
                 foreach ($value->variant as $k => $v) {

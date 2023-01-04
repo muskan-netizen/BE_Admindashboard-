@@ -22,9 +22,10 @@ use App\Models\EmailTemplate;
 use App\Models\UserAddress;
 use App\Models\{Product, OrderProductRating, ClientPreference,UserDevice, NotificationTemplate};
 use Twilio\Rest\Client as TwilioClient;
-
+use App\Http\Traits\smsManager;
 trait ApiResponser
 {
+	use  smsManager;
 
 	protected function successResponse($data, $message = null, $code = 200)
 	{
@@ -533,6 +534,9 @@ trait ApiResponser
         }
         return '1';
 	}
+
+	
+	
 
 
 }

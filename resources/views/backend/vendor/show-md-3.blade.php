@@ -8,7 +8,7 @@
     <div class="background pt-3 pb-2 px-2" style="background:url({{$vendor->banner['proxy_url'] . '200/100' . $vendor->banner['image_path']}}) no-repeat center center;background-size:cover;">
         <div class="vendor_text">
             <img src="{{$vendor->logo['proxy_url'] . '90/90' . $vendor->logo['image_path']}}" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image">
-            <h4 class="mb-0 text-white">{{ucfirst($vendor->name)}}</h4>
+            <h4 class="mb-0 text-white">{{ucfirst(@$vendor->name)}}</h4>
             <p class="text-white">{{$vendor->address}}</p>
             <button type="button" class="btn btn-success btn-sm waves-effect mb-2 waves-light openEditModal" data-toggle="modal" data-target="#exampleModal"> {{ __("Edit") }} </button>
             @if($vendor->status == 0 && Auth::user()->is_superadmin == 1)
@@ -108,6 +108,7 @@
         </div>
     </div>
 </div> -->
+
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -189,6 +190,7 @@
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
@@ -201,6 +203,17 @@
                             <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if($vendor->return_request == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     @endif
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Cancel Order In Processing'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="cancel_order_in_processing" class="form-control" data-color="#43bee1" @if($vendor->cancel_order_in_processing == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Return Auto Approve'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="return_auto_approve" class="form-control" data-color="#43bee1" @if($vendor->return_auto_approve == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
                             {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}
@@ -209,12 +222,28 @@
                     </div>
                     @endif
 
-                     <div class="col-md-12">
-                        <div class="form-group" id="order_min_amountInput">
-                            {!! Form::label('title',  __('Absolute Min Order Value [AMOV]'),['class' => 'control-label']) !!}
-                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
+                        @if(isset($roles))
+                            @foreach($roles as $role)
+                                <div class="col-md-12">
+                                    <div class="form-group" id="order_min_amountInput">
+                                        @php
+                                            $label = 'Absolute Min Order Value ['.$role->role.']';
+                                        @endphp
+                                        {!! Form::label('title',  $label,['class' => 'control-label']) !!}
+                                        <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount_arr[{{$role->id}}]" type="text" value="{{$role->order_min_amount ?? '0.00' }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    @else
+                        <div class="col-md-12">
+                            <div class="form-group" id="order_min_amountInput">
+                                {!! Form::label('title',  __('Absolute Min Order Value [AMOV]'),['class' => 'control-label']) !!}
+                                <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
 
                     @if($client_preference_detail->static_delivey_fee == 1)
@@ -256,7 +285,7 @@
                                     {!! Form::label('title', 'Vendor Tags',['class' => 'control-label']) !!}
                                     <select class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." id="facilty_list" name="facilty_ids[]">
                                         @foreach ($facilties as $facilty)
-                                        <option value="{{ $facilty->id }}" {{ in_array($facilty->id, $vendor_facilty_ids) ? "selected" : '' }}>{{ $facilty->primary->name }}</option>
+                                        <option value="{{ $facilty->id }}" {{ in_array($facilty->id, $vendor_facilty_ids) ? "selected" : '' }}>{{ @$facilty->primary->name }}</option>
                                         @endforeach
 
                                     </select>
@@ -264,6 +293,13 @@
                             </div>
                         @endif
                     @endif
+
+                    <div class="col-md-12">
+                        <div class="form-group" id="social_link">
+                            {!! Form::label('title', '(%) Discount On Subscription',['class' => 'control-label']) !!}
+                            <input class="form-control" name="subscription_discount_percent" type="text" value="{{$vendor->subscription_discount_percent}}" >
+                        </div>
+                    </div>
                     {{-- <div class="col-md-12">
                         <div class="form-group" id="social_link">
                             {!! Form::label('title', 'Dynamic Html',['class' => 'control-label']) !!}
@@ -502,8 +538,18 @@
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="commission_monthly" type="text" value="{{$vendor->commission_monthly}}">
                         </div>
                     </div> -->
-                    <div class="col-md-12">
-                        <div class="form-group" id="service_fee_percentInput">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Fixed Service Fee'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="fixed_service_charge" class="form-control" data-color="#43bee1" @if($vendor->fixed_service_charge == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12" id="fixed_service_charge_div" style="display:{{$vendor->fixed_service_charge == 1 ? 'block' : 'none'}}">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Service Fee'),['class' => 'control-label']) !!}
+                            <input class="form-control" name="service_charge_amount" type="text" value="{{$vendor->service_charge_amount}}" min="0" {{$vendor->status == 1 ? '' : 'disabled'}} >
+                        </div>
+                    </div>
+                    <div class="col-md-12" id="service_fee_percentInput" style="display:{{$vendor->fixed_service_charge == 1 ? 'none' : 'block'}}">
+                        <div class="form-group">
                             {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
                             <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
                         </div>
@@ -651,7 +697,7 @@
     }
 </style>
 
-
+@if( !p2p_module_status() )
  <div class="card-box">
     <h4 class="header-title mb-0 mt-2 d-inline-block align-middle">{{ __('Users') }}</h4>
     <h4 class="header-title mb-0 float-right"><a class="btn addUsersBtn" dataid="0" href="javascript:void(0);"><i class="mdi mdi-plus-circle mr-1" ></i> {{ __("Add Users") }}
@@ -664,7 +710,7 @@
                     <div class="inbox-item-img">
                         <img src="{{$users->user ? $users->user->image['proxy_url'].'40/40'.$users->user->image['image_path'] : asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt="">
                     </div>
-                    <p class="inbox-item-author">{{ $users->user->name??'' }}  </p>
+                    <p class="inbox-item-author">{{ @$users->user->name??'' }}  </p>
                     <p class="inbox-item-text"><label class="d-block"><i class="fa fa-envelope mr-1" aria-hidden="true"></i> {{ $users->user->email??'' }}
                         @if($users->user)
                         </label><label class="d-block"><i class="fa fa-phone mr-1" aria-hidden="true"></i> {{ $users->user->phone_number??'' }}</label> </p>
@@ -672,18 +718,17 @@
                     </p>
                     @if($users->user && $users->user->id != Auth::id())
                     <form class="delete-user position-absolute" method="POST" action="{{route('user.vendor.permission.destroy', $users->id)}}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
-
-                            </form>
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
+                    </form>
                     @endif
                 </div>
             @endif
         @endforeach
     </div>
 </div>
-
+@endif
 <div id="manageSocialMedia" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg social_manage">
         <div class="modal-content">
@@ -752,34 +797,35 @@
                             $mediaIcons = [];
                             @endphp
 
-                            @forelse($socialMediaUrls as $socialMediaUrl)
+                            @if (isset($socialMediaUrls))
+                                @forelse($socialMediaUrls as $socialMediaUrl)
 
-                            <tr align="center">
-                            @php
-                            $mediaIcons[] = $socialMediaUrl->icon;
-                            @endphp
-                                <td>
-                                    <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
-                                </td>
-                                <td>
-                                    <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
-                                </td>
-                                <td>
-                                    <div>
-                                        <div class="inner-div">
-                                            <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
-                                                <i class="mdi mdi-delete"></i>
-                                            </button>
+                                <tr align="center">
+                                @php
+                                $mediaIcons[] = $socialMediaUrl->icon;
+                                @endphp
+                                    <td>
+                                        <i class="fab fa-{{$socialMediaUrl->icon}}  social-media-{{$socialMediaUrl->icon}}" aria-hidden="true"></i>
+                                    </td>
+                                    <td>
+                                        <a href="{{$socialMediaUrl->url}}" class="social-media-url-{{$socialMediaUrl->icon}}" target="_blank">{{$socialMediaUrl->url}}</a>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <div class="inner-div">
+                                                <button type="button" class="btn btn-primary-outline action-icon delete_vendor_social_media_option_btn" data-social_media_detail_id="{{$socialMediaUrl->id}}">
+                                                    <i class="mdi mdi-delete"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr align="center">
-                                <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-                            </tr>
-                            @endforelse
-
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr align="center">
+                                    <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                                </tr>
+                                @endforelse
+                            @endif
                             </tbody>
                         </table>
                         <input type="hidden" id="added-icons" value="{{ json_encode($mediaIcons) }}">
@@ -944,21 +990,26 @@ $( document ).ready(function() {
             },
             success: (res) => {
                 if(res.status == 'Success'){
-                    var icon = "success";
-                    var addedIcon = 'social-media-' + res.message.icon;
+                    $.NotificationApp.send("Success", res.message, "top-right", "#5ba035", "success");
+                    $('#manageSocialMedia').modal('hide');
+                    setTimeout(function() {
+                        location.reload()
+                    }, 2000);
+                     var icon = "success";
+                    // var addedIcon = 'social-media-' + res.message.icon;
 
-                    console.log('addedIcon', addedIcon);
-                    if ( $('.'+addedIcon).length ) {
-                        var addedurl = 'social-media-url-'+ res.message.icon;
-                        $("."+addedurl).text(res.message.url);
-                        $("."+addedurl).attr('href', res.message.url);
-                    }else{
-                        $('#social-media-datatable tr:last').after('<tr><td><i class="fab fa-'+res.message.icon+'  social-media-'+res.message.icon+'" aria-hidden="true"></i></td>'+
-                                '<td><a href="'+res.message.url+'" class="social-media-url-'+res.message.icon+'" target="_blank">'+res.message.url+'</a></td>'+
-                                '<td><div><div class="inner-div"><button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="'+res.message.media+'"><i class="mdi mdi-delete"></i></button></div></div></td></tr>');
-                    }
+                    // console.log('addedIcon', addedIcon);
+                    // if ( $('.'+addedIcon).length ) {
+                    //     var addedurl = 'social-media-url-'+ res.message.icon;
+                    //     $("."+addedurl).text(res.message.url);
+                    //     $("."+addedurl).attr('href', res.message.url);
+                    // }else{
+                    //     $('#social-media-datatable tr:last').after('<tr><td><i class="fab fa-'+res.message.icon+'  social-media-'+res.message.icon+'" aria-hidden="true"></i></td>'+
+                    //             '<td><a href="'+res.message.url+'" class="social-media-url-'+res.message.icon+'" target="_blank">'+res.message.url+'</a></td>'+
+                    //             '<td><div><div class="inner-div"><button type="button" class="btn btn-primary-outline action-icon delete_vendor_social_media_option_btn" data-social_media_detail_id="'+res.message.media+'"><i class="mdi mdi-delete"></i></button></div></div></td></tr>');
+                    // }
 
-                    $('#social_url').val('');
+                    // $('#social_url').val('');
 
 
                 }else{
@@ -979,6 +1030,37 @@ $( document ).ready(function() {
             }
         });
     });
+
+    $(document).on("click", ".delete_vendor_social_media_option_btn", function() {
+            var social_media_detail_id = $(this).data('social_media_detail_id');
+            Swal.fire({
+                title: "{{__('Are you Sure?')}}",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: "{{ route('vendor.social.media.delete') }}",
+                        data: {
+                            social_media_detail_id: social_media_detail_id
+                        },
+                        success: function(response) {
+                            if (response.status == "Success") {
+                                $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                                $('#manageSocialMedia').modal('hide');
+                                setTimeout(function() {
+                                    location.reload()
+                                }, 2000);
+                            }
+                        }
+                    });
+                }
+            });
+        });
 
     // $(".addUrlSubmit").click(function(e) {
     //     e.preventDefault();
@@ -1186,72 +1268,87 @@ $( document ).ready(function() {
     });
 });
 
-    $("input[name='auto_accept_order']").change(function() {
-        if($(this).prop('checked')){
-            $("#auto_reject_timeInput").css("display", "none");
-        } else {
-            $("#auto_reject_timeInput").css("display", "block");
-        }
-    })
+$("input[name='auto_accept_order']").change(function() {
+    if($(this).prop('checked')){
+        $("#auto_reject_timeInput").css("display", "none");
+    } else {
+        $("#auto_reject_timeInput").css("display", "block");
+    }
+});
 
-    $("input[name='show_slot']").change(function() {
-        if($(this).prop('checked')){
-            $("#sch_vendor_close").css("display", "none");
-        } else {
-            $("#sch_vendor_close").css("display", "block");
-        }
-    })
+$("input[name='show_slot']").change(function() {
+    if($(this).prop('checked')){
+        $("#sch_vendor_close").css("display", "none");
+    } else {
+        $("#sch_vendor_close").css("display", "block");
+    }
+})
 
-    $("input[name='fixed_fee']").change(function() {
-        if($(this).prop('checked')){
-            $("#fixed_fee_amount").css("display", "block");
-        } else {
-            $("#fixed_fee_amount").css("display", "none");
-        }
-    })
+$("input[name='fixed_fee']").change(function() {
+    if($(this).prop('checked')){
+        $("#fixed_fee_amount").css("display", "block");
+    } else {
+        $("#fixed_fee_amount").css("display", "none");
+    }
+})
 
-    $("input[name='delivery_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#delivery_charges_tax_id").css("display", "block");
-        } else {
-            $("#delivery_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='service_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#service_charges_tax_id").css("display", "block");
-        } else {
-            $("#service_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='container_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#container_charges_tax_id").css("display", "block");
-        } else {
-            $("#container_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='fixed_fee_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#fixed_fee_tax_id").css("display", "block");
-        } else {
-            $("#fixed_fee_tax_id").css("display", "none");
-        }
-    })
+$("input[name='delivery_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#delivery_charges_tax_id").css("display", "block");
+    } else {
+        $("#delivery_charges_tax_id").css("display", "none");
+    }
+})
 
-    $("input[name='markup_fee_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#markup_fee_tax_id").css("display", "block");
-        } else {
-            $("#markup_fee_tax_id").css("display", "none");
-        }
-    })
+$("input[name='service_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#service_charges_tax_id").css("display", "block");
+    } else {
+        $("#service_charges_tax_id").css("display", "none");
+    }
+})
 
-    $("input[name='need_container_charges']").change(function() {
+
+$("input[name='container_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#container_charges_tax_id").css("display", "block");
+    } else {
+        $("#container_charges_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='fixed_fee_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#fixed_fee_tax_id").css("display", "block");
+    } else {
+        $("#fixed_fee_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='markup_fee_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#markup_fee_tax_id").css("display", "block");
+    } else {
+        $("#markup_fee_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='need_container_charges']").change(function() {
+    if($(this).prop('checked')){
+        $("#need_container_charges").css("display", "none");
+    } else {
+        $("#need_container_charges").css("display", "block");
+    }
+})
+    $("input[name='fixed_service_charge']").change(function() {
         if($(this).prop('checked')){
-            $("#need_container_charges").css("display", "none");
+            $("#fixed_service_charge_div").css("display", "block");
+            $("#service_fee_percentInput").css("display", "none");
+            $("input[name='service_fee_percent']").val(0.00);
         } else {
-            $("#need_container_charges").css("display", "block");
+            $("#fixed_service_charge_div").css("display", "none");
+            $("input[name='service_charge_amount']").val(0.00);
+            $("#service_fee_percentInput").css("display", "block");
         }
     })
 </script>

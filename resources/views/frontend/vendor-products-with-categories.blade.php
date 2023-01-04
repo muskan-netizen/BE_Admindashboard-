@@ -16,7 +16,11 @@
 .al_body_template_six.homeHeader .vendor-stories{background: transparent;}
 .vendor-description .vendor-details-left .vendor-location a {position: inherit !important;}
 .al_body_template_six .vendor-description .vendor-info .vendor-location{margin-bottom:10px;}
-
+.line_diff_between_products{border-top: 1px dotted rgb(61, 60, 60)}
+span.alPriceValue, span.alPriceValue i {
+    display: inline-flex;
+    align-items: baseline;
+}
 </style>
 @endsection
 @section('css-links')
@@ -73,7 +77,7 @@
 
                                                     <li class="d-block vendor-location">
                                                         <a href="javascript:void(0)" onclick="copyToClipboard('#p1')" >
-                                                            <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt=""> 
+                                                            <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
                                                             <span class="copied_txt" id="show_copy_msg_on_click_copy">{{ __('Copy') }}</span>
                                                             <span class="copied_txt" id="show_copy_msg_on_click_copied" style="display:none;">{{ __('Copied') }}</span>
                                                         </a>
@@ -155,7 +159,7 @@
                                 <span class="bar-line"></span>
                                 <span class="bar-line"></span>
                             </div>
-                            <span>{{ _('Menu') }}</span>
+                            <span>{{ __('Menu') }}</span>
                         </a>
 
                         <div class="row">
@@ -200,7 +204,7 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6 alScrollspyProduct">
-                                        
+
                                         <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
                                             @if (isset($tags) && !empty($tags))
                                                 @foreach ($tags as $key => $tag)
@@ -230,12 +234,15 @@
                                                         ({{ $data->products_count }})
                                                     </h2>
                                                     @forelse($data->products as $prod)
+                                                    @php
+                                                        $product_url =  route('productDetail', [$prod->vendor->slug, $prod->url_slug]);
+                                                    @endphp
                                                         <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-gutters mb-2 pb-2 border-bottom"
                                                             data-p_sku="{{ $prod->sku }}"
                                                             data-slug="{{ $prod->url_slug }}">
                                                             <div class=" col-sm-2 col-4 mb-2">
                                                                 <a target="_blank"
-                                                                    href="{{ route('productDetail', [$prod->vendor->slug, $prod->url_slug]) }}">
+                                                                    href="{{ $product_url }}">
                                                                     <div class="class_img product_image">
                                                                         <img src="{{ $prod->product_image }}"
                                                                             alt="{{ $prod->translation_title }}">
@@ -253,187 +260,189 @@
 
                                                                             </h5>
                                                                             <div class="product_variant_quantity_wrapper">
-                                                                                @php
-                                                                                    $data = $prod;
-                                                                                    $productVariantInCart = 0;
-                                                                                    $productVariantIdInCart = 0;
-                                                                                    $productVariantInCartWithDifferentAddons = 0;
-                                                                                    $cartProductId = 0;
-                                                                                    $cart_id = 0;
-                                                                                    $vendor_id = 0;
-                                                                                    $product_id = $data->id;
-                                                                                    $variant_id = $data->variant[0] ? $data->variant[0]->id : 0;
-                                                                                    $variant_price = 0;
-                                                                                    $variant_quantity = $prod->variant_quantity;
-                                                                                    $isAddonExist = 0;
-                                                                                    $minimum_order_count = $data->minimum_order_count == 0 ? 1 : $data->minimum_order_count;
-                                                                                    $batch_count = $data->batch_count;
-                                                                                    if (count($data->addOn) > 0) {
-                                                                                        $isAddonExist = 1;
-                                                                                    }
-                                                                                   //pr($data->toArray());
-                                                                                @endphp
+                                                                               
+                                                                                    @php
+                                                                                        $data = $prod;
+                                                                                        $productVariantInCart = 0;
+                                                                                        $productVariantIdInCart = 0;
+                                                                                        $productVariantInCartWithDifferentAddons = 0;
+                                                                                        $cartProductId = 0;
+                                                                                        $cart_id = 0;
+                                                                                        $vendor_id = 0;
+                                                                                        $product_id = $data->id;
+                                                                                        $variant_id = $data->variant[0] ? $data->variant[0]->id : 0;
+                                                                                        $variant_price = 0;
+                                                                                        $variant_quantity = $prod->variant_quantity;
+                                                                                        $isAddonExist = 0;
+                                                                                        $minimum_order_count = $data->minimum_order_count == 0 ? 1 : $data->minimum_order_count;
+                                                                                        $batch_count = $data->batch_count;
+                                                                                        if (count($data->addOn) > 0) {
+                                                                                            $isAddonExist = 1;
+                                                                                        }
+                                                                                    //pr($data->toArray());
+                                                                                    @endphp
+                                                                                @if($prod->category_type_id !=10)
+                                                                                    @foreach ($data->variant as $var)
+                                                                                        @if (isset($var->checkIfInCart) && count($var->checkIfInCart) > 0)
+                                                                                            @php
+                                                                                                //dd($var->_markup_price);
+                                                                                                $productVariantInCart = 1;
+                                                                                                $productVariantIdInCart = $var->checkIfInCart['0']['variant_id'];
+                                                                                                $cartProductId = $var->checkIfInCart['0']['id'];
+                                                                                                $cart_id = $var->checkIfInCart['0']['cart_id'];
+                                                                                                // $variant_quantity = $var->checkIfInCart['0']['quantity'];
+                                                                                                $variant_quantity = 0;
+                                                                                                $vendor_id = $data->vendor_id;
+                                                                                                $product_id = $data->id;
+                                                                                                $batch_count = $data->batch_count;
+                                                                                                $variant_price = decimal_format($var->price * $data->variant_multiplier);
+                                                                                                if (count($var->checkIfInCart) > 1) {
+                                                                                                    $productVariantInCartWithDifferentAddons = 1;
+                                                                                                }
+                                                                                                foreach ($var->checkIfInCart as $cartVar) {
+                                                                                                    $variant_quantity = $variant_quantity + $cartVar['quantity'];
+                                                                                                }
+                                                                                            @endphp
+                                                                                            @break;
+                                                                                        @endif
+                                                                                    @endforeach
 
-                                                                                @foreach ($data->variant as $var)
-                                                                                    @if (isset($var->checkIfInCart) && count($var->checkIfInCart) > 0)
+                                                                                    @if ($vendor->is_vendor_closed == 0 || ($vendor->closed_store_order_scheduled != 0 && $checkSlot != 0)   )
                                                                                         @php
-                                                                                            //dd($var->_markup_price);
-                                                                                            $productVariantInCart = 1;
-                                                                                            $productVariantIdInCart = $var->checkIfInCart['0']['variant_id'];
-                                                                                            $cartProductId = $var->checkIfInCart['0']['id'];
-                                                                                            $cart_id = $var->checkIfInCart['0']['cart_id'];
-                                                                                            // $variant_quantity = $var->checkIfInCart['0']['quantity'];
-                                                                                            $variant_quantity = 0;
-                                                                                            $vendor_id = $data->vendor_id;
-                                                                                            $product_id = $data->id;
-                                                                                            $batch_count = $data->batch_count;
-                                                                                            $variant_price = decimal_format($var->price * $data->variant_multiplier);
-                                                                                            if (count($var->checkIfInCart) > 1) {
-                                                                                                $productVariantInCartWithDifferentAddons = 1;
-                                                                                            }
-                                                                                            foreach ($var->checkIfInCart as $cartVar) {
-                                                                                                $variant_quantity = $variant_quantity + $cartVar['quantity'];
+                                                                                            $is_customizable = false;
+                                                                                            if ($isAddonExist > 0 && ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)) {
+                                                                                                $is_customizable = true;
                                                                                             }
                                                                                         @endphp
-                                                                                    @break
 
-                                                                                    ;
-                                                                                @endif
-                                                                            @endforeach
-
-                                                                            @if ($vendor->is_vendor_closed == 0 || ($vendor->closed_store_order_scheduled != 0 && $checkSlot != 0))
-                                                                                @php
-                                                                                    $is_customizable = false;
-                                                                                    if ($isAddonExist > 0 && ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)) {
-                                                                                        $is_customizable = true;
-                                                                                    }
-                                                                                @endphp
-
-                                                                                @if ($productVariantInCart > 0)
-                                                                                    {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                                                                    <a class="add-cart-btn add_vendor_product"
-                                                                                        style="display:none;"
-                                                                                        id="add_button_href{{ $cartProductId }}"
-                                                                                        data-variant_id="{{ $productVariantIdInCart }}"
-                                                                                        data-add_to_cart_url="{{ route('addToCart') }}"
-                                                                                        data-vendor_id="{{ $vendor_id }}"
-                                                                                        data-product_id="{{ $product_id }}"
-                                                                                        data-addon="{{ $isAddonExist }}"
-                                                                                        data-minimum_order_count="{{ $minimum_order_count }}"
-                                                                                        data-batch_count="{{ $batch_count }}"
-                                                                                        href="javascript:void(0)">{{ __('Add') }}
-                                                                                        @if ($minimum_order_count > 0)
-                                                                                            ({{ $minimum_order_count }})
-                                                                                        @endif
-                                                                                    </a>
-                                                                                    @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
-                                                                                    <div class="number"
-                                                                                        id="show_plus_minus{{ $cartProductId }}">
-                                                                                        <span
-                                                                                            class="minus qty-minus-product {{ $productVariantInCartWithDifferentAddons ? 'remove-customize' : '' }}"
-                                                                                            data-variant_id="{{ $productVariantIdInCart }}"
-                                                                                            data-parent_div_id="show_plus_minus{{ $cartProductId }}"
-                                                                                            data-id="{{ $cartProductId }}"
-                                                                                            data-base_price="{{ $variant_price }}"
-                                                                                            data-vendor_id="{{ $vendor_id }}"
-                                                                                            data-product_id="{{ $product_id }}"
-                                                                                            data-cart="{{ $cart_id }}"
-                                                                                            data-addon="{{ $isAddonExist }}"
-                                                                                            data-minimum_order_count="{{ $minimum_order_count }}"
-                                                                                            data-batch_count="{{ $batch_count }}">
-                                                                                            <i class="fa fa-minus"
-                                                                                                aria-hidden="true"></i>
-                                                                                        </span>
-                                                                                        <input
-                                                                                            style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
-                                                                                            placeholder="1" type="text"
-                                                                                            value="{{ $variant_quantity }}"
-                                                                                            class="input-number"
-                                                                                            id="quantity_ondemand_{{ $cartProductId }}"
-                                                                                            readonly>
-                                                                                        <span
-                                                                                            class="plus qty-plus-product {{ $is_customizable ? 'repeat-customize' : '' }}"
-                                                                                            data-variant_id="{{ $productVariantIdInCart }}"
-                                                                                            data-id="{{ $cartProductId }}"
-                                                                                            data-base_price="{{ $variant_price }}"
-                                                                                            data-vendor_id="{{ $vendor_id }}"
-                                                                                            data-product_id="{{ $product_id }}"
-                                                                                            data-cart="{{ $cart_id }}"
-                                                                                            data-addon="{{ $isAddonExist }}"
-                                                                                            data-batch_count="{{ $batch_count }}">
-                                                                                            <i class="fa fa-plus"
-                                                                                                aria-hidden="true"></i>
-                                                                                        </span>
-                                                                                    </div>
-                                                                                    @else
-                                                                                    <a class="btn btn-solid " id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
-                                                                                    @endif
-                                                                                @else
-                                                                                    @if ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1))
-                                                                                        {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                                                                        <a class="add-cart-btn add_vendor_product"
-                                                                                            id="aadd_button_href{{ $data->id }}"
-                                                                                            data-variant_id="{{ $data->variant[0]->id }}"
-                                                                                            data-add_to_cart_url="{{ route('addToCart') }}"
-                                                                                            data-vendor_id="{{ $data->vendor_id }}"
-                                                                                            data-product_id="{{ $data->id }}"
-                                                                                            data-addon="{{ $isAddonExist }}"
-                                                                                            data-batch_count="{{ $batch_count }}"
-                                                                                            data-minimum_order_count="{{ $minimum_order_count }}"
-                                                                                            href="javascript:void(0)">{{ __('Add') }}
-                                                                                            @if ($minimum_order_count > 1)
-                                                                                                ({{ $minimum_order_count }})
-                                                                                            @endif
-                                                                                        </a>
-                                                                                        @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
-                                                                                            <div class="number"
+                                                                                        @if ($productVariantInCart > 0)
+                                                                                            {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
+                                                                                            <a class="add-cart-btn add_vendor_product as"
                                                                                                 style="display:none;"
-                                                                                                id="ashow_plus_minus{{ $data->id }}">
+                                                                                                id="add_button_href{{ $cartProductId }}"
+                                                                                                data-variant_id="{{ $productVariantIdInCart }}"
+                                                                                                data-add_to_cart_url="{{ route('addToCart') }}"
+                                                                                                data-vendor_id="{{ $vendor_id }}"
+                                                                                                data-product_id="{{ $product_id }}"
+                                                                                                data-addon="{{ $isAddonExist }}"
+                                                                                                data-minimum_order_count="{{ $minimum_order_count }}"
+                                                                                                data-batch_count="{{ $batch_count }}"
+                                                                                                href="javascript:void(0)">{{ __('Add') }}
+                                                                                                @if ($minimum_order_count > 0)
+                                                                                                    ({{ $minimum_order_count }})
+                                                                                                @endif
+                                                                                            </a>
+                                                                                            @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
+                                                                                            <div class="number"
+                                                                                                id="show_plus_minus{{ $cartProductId }}">
                                                                                                 <span
-                                                                                                    class="minus qty-minus-product"
-                                                                                                    data-parent_div_id="show_plus_minus{{ $data->id }}"
-                                                                                                    data-id="{{ $data->id }}"
-                                                                                                    data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
-                                                                                                    data-vendor_id="{{ $data->vendor_id }}"
-                                                                                                    data-batch_count="{{ $batch_count }}"
-                                                                                                    data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                                    class="minus qty-minus-product {{ $productVariantInCartWithDifferentAddons ? 'remove-customize' : '' }}"
+                                                                                                    data-variant_id="{{ $productVariantIdInCart }}"
+                                                                                                    data-parent_div_id="show_plus_minus{{ $cartProductId }}"
+                                                                                                    data-id="{{ $cartProductId }}"
+                                                                                                    data-base_price="{{ $variant_price }}"
+                                                                                                    data-vendor_id="{{ $vendor_id }}"
+                                                                                                    data-product_id="{{ $product_id }}"
+                                                                                                    data-cart="{{ $cart_id }}"
+                                                                                                    data-addon="{{ $isAddonExist }}"
+                                                                                                    data-minimum_order_count="{{ $minimum_order_count }}"
+                                                                                                    data-batch_count="{{ $batch_count }}">
                                                                                                     <i class="fa fa-minus"
                                                                                                         aria-hidden="true"></i>
                                                                                                 </span>
                                                                                                 <input
                                                                                                     style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
-                                                                                                    id="quantity_ondemand_d{{ $data->id }}"
-                                                                                                    readonly
-                                                                                                    placeholder="{{ $minimum_order_count }}"
-                                                                                                    type="text"
-                                                                                                    value="{{ $minimum_order_count }}"
-                                                                                                    class="input-number input_qty"
-                                                                                                    step="0.01">
+                                                                                                    placeholder="1" type="text"
+                                                                                                    value="{{ $variant_quantity }}"
+                                                                                                    class="input-number"
+                                                                                                    id="quantity_ondemand_{{ $cartProductId }}"
+                                                                                                    readonly>
                                                                                                 <span
-                                                                                                    class="plus qty-plus-product"
-                                                                                                    data-id=""
-                                                                                                    data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
-                                                                                                    data-vendor_id="{{ $data->vendor_id }}"
-                                                                                                    data-batch_count="{{ $batch_count }}"
-                                                                                                    data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                                    class="plus qty-plus-product {{ $is_customizable ? 'repeat-customize' : '' }}"
+                                                                                                    data-variant_id="{{ $productVariantIdInCart }}"
+                                                                                                    data-id="{{ $cartProductId }}"
+                                                                                                    data-base_price="{{ $variant_price }}"
+                                                                                                    data-vendor_id="{{ $vendor_id }}"
+                                                                                                    data-product_id="{{ $product_id }}"
+                                                                                                    data-cart="{{ $cart_id }}"
+                                                                                                    data-addon="{{ $isAddonExist }}"
+                                                                                                    data-batch_count="{{ $batch_count }}">
                                                                                                     <i class="fa fa-plus"
                                                                                                         aria-hidden="true"></i>
                                                                                                 </span>
                                                                                             </div>
+                                                                                            @else
+                                                                                            <a class="btn btn-solid " id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                                            @endif
                                                                                         @else
-                                                                                            <a class="btn btn-solid "  style="display:none;" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                                            @if ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1))
+                                                                                                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
+                                                                                                <a class="add-cart-btn add_vendor_product"
+                                                                                                    id="aadd_button_href{{ $data->id }}"
+                                                                                                    data-variant_id="{{ $data->variant[0]->id }}"
+                                                                                                    data-add_to_cart_url="{{ route('addToCart') }}"
+                                                                                                    data-vendor_id="{{ $data->vendor_id }}"
+                                                                                                    data-product_id="{{ $data->id }}"
+                                                                                                    data-addon="{{ $isAddonExist }}"
+                                                                                                    data-batch_count="{{ $batch_count }}"
+                                                                                                    data-minimum_order_count="{{ $minimum_order_count }}"
+                                                                                                    href="javascript:void(0)">{{ __('Add') }}
+                                                                                                    @if ($minimum_order_count > 1)
+                                                                                                        ({{ $minimum_order_count }})
+                                                                                                    @endif
+                                                                                                </a>
+                                                                                                @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
+                                                                                                    <div class="number"
+                                                                                                        style="display:none;"
+                                                                                                        id="ashow_plus_minus{{ $data->id }}">
+                                                                                                        <span
+                                                                                                            class="minus qty-minus-product"
+                                                                                                            data-parent_div_id="show_plus_minus{{ $data->id }}"
+                                                                                                            data-id="{{ $data->id }}"
+                                                                                                            data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
+                                                                                                            data-vendor_id="{{ $data->vendor_id }}"
+                                                                                                            data-batch_count="{{ $batch_count }}"
+                                                                                                            data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                                            <i class="fa fa-minus"
+                                                                                                                aria-hidden="true"></i>
+                                                                                                        </span>
+                                                                                                        <input
+                                                                                                            style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
+                                                                                                            id="quantity_ondemand_d{{ $data->id }}"
+                                                                                                            readonly
+                                                                                                            placeholder="{{ $minimum_order_count }}"
+                                                                                                            type="text"
+                                                                                                            value="{{ $minimum_order_count }}"
+                                                                                                            class="input-number input_qty"
+                                                                                                            step="0.01">
+                                                                                                        <span
+                                                                                                            class="plus qty-plus-product"
+                                                                                                            data-id=""
+                                                                                                            data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
+                                                                                                            data-vendor_id="{{ $data->vendor_id }}"
+                                                                                                            data-batch_count="{{ $batch_count }}"
+                                                                                                            data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                                            <i class="fa fa-plus"
+                                                                                                                aria-hidden="true"></i>
+                                                                                                        </span>
+                                                                                                    </div>
+                                                                                                @else
+                                                                                                    <a class="btn btn-solid "  style="display:none;" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                                                @endif
+                                                                                            @else
+                                                                                                <span
+                                                                                                    class="text-danger">{{ __('Out of stock') }}</span>
+                                                                                            @endif
                                                                                         @endif
-                                                                                    @else
-                                                                                        <span
-                                                                                            class="text-danger">{{ __('Out of stock') }}</span>
+                                                                                        @if ($is_customizable)
+                                                                                            <div class="customizable-text">
+                                                                                                {{ __('customizable') }}
+                                                                                            </div>
+                                                                                        @endif
                                                                                     @endif
+                                                                                @else
+                                                                                    <a class="btn btn-solid"  href="{{  $product_url }}">{{ __('View') }}</a>
                                                                                 @endif
-                                                                                @if ($is_customizable)
-                                                                                    <div class="customizable-text">
-                                                                                        {{ __('customizable') }}
-                                                                                    </div>
-                                                                                @endif
-                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                     @if ($prod->averageRating > 0)
@@ -450,7 +459,8 @@
                                                                         <p class="mb-1 product_price">   {{__('Batch') }} : {{ $prod->batch_count }} </p> --}}
                                                                     @endif
 
-                                                                    <p class="mb-1 product_price ">
+                                                                    <p class="mb-1 product_price">
+
                                                                         {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                             <span
@@ -568,11 +578,13 @@
 
                         <span class="ellips"><%= vendor_product.quantity %>x <%=
                         vendor_product.product.translation_one ? translationOneTitle :  vendor_product.product.sku %></span>
-                        <span>
-
-                            {{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %>
-
-                        </span>
+                        
+                            <% if(cart_details.is_token_enable == 1) { %>
+                                <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%=  Helper.formatPrice(vendor_product.quantity_price * cart_details.tokenAmount) %></span>
+                                <% }else{ %>
+                                <span>{{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %></span>
+                            <% } %>
+                        
                         <a class="action-icon remove_product_via_cart text-danger" style="cursor: pointer;" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
                             </a>
@@ -593,25 +605,42 @@
                         <p class="m-0 font-14 p-0"><%= vendor_product.quantity %>x <%= addon.option.title %></p>
                     </div>
                     <div class="col-md-3 col-sm-4 text-center">
-                        <div class="extra-items-price font-14">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
+                        <div class="extra-items-price font-14">
+                            <% if(cart_details.is_token_enable == 1) { %>
+                                    <i class='fa fa-money' aria-hidden='true'></i><%=  Helper.formatPrice(addon.option.price_in_cart * cart_details.tokenAmount) %>
+                                <% }else{ %>
+                                    {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.price_in_cart) %>
+                            <% } %>
+                        </div>
                     </div>
                     <div class="col-md-3 col-sm-4 text-right">
-                        <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
+                        <div class="extra-items-price font-14 mr-xl-3">
+                            <% if(cart_details.is_token_enable == 1) { %>
+                                <i class='fa fa-money' aria-hidden='true'></i><%=  Helper.formatPrice(addon.option.quantity_price * cart_details.tokenAmount) %>
+                            <% }else{ %>
+                            {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
-                <!-- <hr class="my-2"> -->
                 <% }); %>
             <% } %>
-
+            <hr class="my-2 mt-3 line_diff_between_products">
             <% }); %>
             <% if(cart_details.delivery_charges > 0) { %>
-                <hr class="my-2">
+                {{-- <hr class="my-2"> --}}
                 <div class="row justify-content-between">
                     <div class="col-md-6 col-sm-6 text-left">
                         <h6 class="m-0 font-14">{{ __('Delivery fee') }}</h6>
                     </div>
                     <div class="col-md-6 col-sm-6 text-right">
-                        <div class="font-14 mr-xl-2">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.delivery_charges) %></div>
+                        <div class="font-14 mr-xl-2">
+                            <% if(cart_details.is_token_enable == 1) { %>
+                                <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%=  Helper.formatPrice(cart_details.delivery_charges * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                                {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.delivery_charges) %>
+                            <% } %>
+                            </div>
                     </div>
                 </div>
             <% } %>
@@ -623,26 +652,39 @@
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">
                         <span class="ellips">{{ __('Total') }}</span>
-                        <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.gross_amount) %></span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= Helper.formatPrice(cart_details.gross_amount * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                                <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.gross_amount) %></span>
+                            <% } %>
                     </h6>
                 </div>
             </li>
-
+            <% if((cart_details.total_taxable_amount != undefined) && (cart_details.total_taxable_amount > 0)) { %>
             <li class="p-0 alSixCart">
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">
                         <span class="ellips">{{ __('Tax') }}</span>
-                        <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_taxable_amount %></span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= (cart_details.total_taxable_amount * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_taxable_amount %></span>
+                        <% } %>
                     </h6>
                 </div>
             </li>
+            <% } %>
 
-            <% if(cart_details.total_subscription_discount != undefined) { %>
+            <% if((cart_details.total_subscription_discount != undefined) && (cart_details.total_subscription_discount > 0)) { %>
                 <li class="p-0 alSixCart">
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">
                         <span class="ellips"> {{ __('Subscription Discount') }}</span>
-                            <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= (cart_details.total_subscription_discount * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                            <% } %>
                     </h6>
                 </div>
             </li>
@@ -653,7 +695,11 @@
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">
                         <span class="ellips"> {{ __('Loyalty Amount') }} </span>
-                            <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= (cart_details.loyalty_amount * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                            <% } %>
                     </h6>
                 </div>
             </li>
@@ -664,7 +710,11 @@
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">
                         <span class="ellips"> {{ __('Wallet Amount') }} </span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= (cart_details.wallet_amount_used * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                            <% } %>
                     </h6>
                 </div>
             </li>
@@ -672,7 +722,11 @@
         </ul>
         <div class="cart-sub-total d-flex align-items-center justify-content-between">
             <span>{{ __('Total') }}</span>
-            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_payable_amount %></span>
+            <% if(cart_details.is_token_enable == 1) { %>
+                <span class="alPriceValue"><i class='fa fa-money' aria-hidden='true'></i> <%= (cart_details.total_payable_amount * cart_details.tokenAmount) %></span>
+                <% }else{ %>
+                <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_payable_amount %></span>
+                <% } %>
         </div>
         <a class="checkout-btn text-center d-block" href="{{ route('showCart') }}">{{ __('Checkout') }}</a>
     </script>
@@ -689,9 +743,18 @@
                             </script>
     <script type="text/template" id="variant_template">
         <% if(variant.product.inquiry_only == 0) { %>
-            <%= variant.productPrice %>
+            <% if(is_token_enable == 1) { %>
+                <i class='fa fa-money' aria-hidden='true'></i> <%= (variant.productPrice * tokenAmount)%>
+                <% }else{ %>
+                    {{ Session::get('currencySymbol') }}<%= variant.productPrice %>
+                <% } %>
             <% if(variant.compare_at_price > 0 ) { %>
-                <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') }}<%= variant.compare_at_price %></span>
+                <% if(is_token_enable == 1) { %>
+                    <span class="org_price ml-1 font-14"><i class='fa fa-money' aria-hidden='true'></i> <%= (variant.compare_at_price* tokenAmount) %></span>
+                    <% }else{ %>
+                        <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') }}<%= variant.compare_at_price %></span>
+                    <% } %>
+                
             <% } %>
         <% } %>
     </script>
@@ -1030,10 +1093,15 @@
             } else {
                 $(this).addClass("less");
                 $(this).html(lesstext);
+                
             }
             $(this).parent().prev().toggle();
             $(this).prev().toggle();
             return false;
+        });
+
+        $(document).ready(function(){
+            vendorProductsSearchResults();
         });
 
         $(document).delegate(".product_tag_filter", "change", function() {
@@ -1109,6 +1177,7 @@
                 success: function(response) {
                     if (response.status == 'Success') {
                         response = response.data;
+                        // console.log(response);
                         $(that).parents('.product_row').find(".variant_response span").html('');
                         if (response.variant != '') {
 
@@ -1119,7 +1188,7 @@
                             let variant_template = _.template($('#variant_template').html());
                             $(that).parents('.product_row').find('.product_price').append(
                                 variant_template({
-                                    variant: response.variant
+                                    variant: response.variant, tokenAmount: response.tokenAmount, is_token_enable: response.is_token_enable
                                 }));
 
                             $(that).parents('.product_row').find('.product_variant_quantity_wrapper')
@@ -1182,6 +1251,11 @@
             });
             var checkedvalus = checkboxesChecked.length > 0 ? checkboxesChecked : null;
             // if (keyword.length > 2 || keyword.length == 0) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
             ajaxCall = $.ajax({
                 type: "post",
                 dataType: 'json',

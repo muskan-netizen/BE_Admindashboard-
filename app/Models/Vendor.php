@@ -11,13 +11,16 @@ class Vendor extends Model implements Auditable{
   use \OwenIt\Auditing\Auditable;
 
   //use Searchable;
-    protected $fillable = ['name','slug','desc','short_desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country','fixed_fee','fixed_fee_amount','price_bifurcation','instagram_url','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id', 'cron_for_service_area','markup_price_tax_id'];
+    protected $fillable = ['name','slug','desc','short_desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country','fixed_fee','fixed_fee_amount','price_bifurcation','instagram_url','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id', 'cron_for_service_area','markup_price_tax_id','razorpay_bank_json','razorpay_contact_json', 'is_seller', 'fixed_service_charge', 'service_charge_amount'];
 
     public function serviceArea(){
        return $this->hasMany('App\Models\ServiceArea')->select('vendor_id', 'geo_array', 'name');
     }
 
     public function products(){
+      if(checkColumnExists('products','is_long_term_service')){
+        return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_long_term_service',0);
+      }
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
     }
 
@@ -184,6 +187,20 @@ class Vendor extends Model implements Auditable{
      }
      return $value;
 
+    }
+
+    public function getVendorContactJsonAttribute()
+    {
+          return json_decode($this->razorpay_contact_json)->id;
+    }
+
+    public function getVendorBankJsonAttribute()
+    {
+          return json_decode($this->razorpay_bank_json);
+    }
+
+    public function VendorAdditionalInfo(){
+      return $this->hasOne(\App\Models\VendorAdditionalInfo::class);
     }
 
 }

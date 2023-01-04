@@ -4,6 +4,32 @@
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <style type="text/css">
+
+.datepicker_filter {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.datepicker_filter .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: -23px;
+    left: 16px;
+}
+
+.datepicker_filter:hover .tooltiptext {
+  visibility: visible;
+}
 .iti__flag-container li,
 .flag-container li {display: block;}
 .iti.iti--allow-dropdown,
@@ -166,6 +192,8 @@
                             <button class="btn btn-info waves-effect waves-light text-sm-right sync_hubspot" userId="0"><i class="mdi mdi-sync mr-1"></i>{{ __('Sync with hubspot') }}
                             </button>
                         @endif
+                        <button class="btn btn-info waves-effect waves-light text-sm-right exportUserModal" data-url="{{ route('customer.export') }}" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
+                        </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                         </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
@@ -209,7 +237,13 @@
                                                                     <th>{{ __('User Type')}}</th>
                                                                     <th>{{ __('Login Type') }}</th>
                                                                     <th>{{ __('Signup Date')}}</th>
-                                                                    <th>{{ __('Last Login') }}</th>
+                                                                    <th class="d-flex">{{ __('Last Login') }} 
+                                                                    <div class="datepicker_filter d-flex ml-1 mt-1">
+                                                                        <span class="tooltiptext">No orders placed</span>
+                                                                        <i class="fa fa-calendar" title="No orders placed" data-original-title="No orders placed" data-toggle="tooltip" data-placement="top" data-title="No orders placed"></i>
+                                                                        <input type="hidden" id="range-datepicker" >
+                                                                    </div>
+                                                                </th>
                                                                     <th>{{ __('Email/Auth-id')}}</th>
                                                                     <th>{{ __('Phone')}}</th>
                                                                     <th>{{ __("Email OTP") }}</th>
@@ -293,6 +327,7 @@
 @include('backend.users.modals')
 <script type="text/javascript">
     $(document).ready(function() {
+       
         var table;
         $.ajaxSetup({
             headers: {
@@ -584,6 +619,8 @@
                 });
             }
         }
+
+        
     });
 
     $(document).delegate(".customer_wallet_link", "click", function() {
@@ -749,6 +786,285 @@
     //     var code = $(this).attr('data-country-code');
     //     document.getElementById('addCountryData').value = code;
     // })
+
+    $('.datepicker_filter i').click(function(){
+        var start   = moment().subtract(29, 'days');
+        var end     = moment();
+        $('.datepicker_filter').daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        }, cb);
+
+
+    });
+    function cb(start, end) {
+        $('.datepicker_filter i').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        var start_date  = start.format('Y-M-D');
+        var end_date    = end.format('Y-M-D');
+        var datesearch  = start_date+','+end_date;
+        var exporturl   = $(".exportUserModal").attr('data-url');
+        exporturl  = exporturl+'?start_date='+start_date+'&end_date='+end_date;
+        $(".exportUserModal").attr('data-url',exporturl);
+       
+
+        $('#user_datatable').DataTable({
+                    "dom": '<"toolbar">Bfrtip',
+                    "responsive": true,
+                    "searching": true,
+                    "destroy": true,
+                    "scrollX": true,
+                    "processing": true,
+                    "serverSide": true,
+                    "iDisplayLength": 10,
+                    language: {
+                        search: "",
+                        info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
+                        paginate: {
+                            previous: "<i class='mdi mdi-chevron-left'>",
+                            next: "<i class='mdi mdi-chevron-right'>"
+                        },
+                        searchPlaceholder: '{{__("Search ")}}'
+                    },
+                    drawCallback: function(data) {
+                        $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+                       
+                    },
+                    buttons: [{
+                        className: 'btn btn-success waves-effect waves-light',
+                        text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>{{__("Export CSV")}}',
+                        action: function(e, dt, node, config) {
+                            window.location.href = "{{ route('customer.export') }}";
+                        }
+                    }],
+                    ajax: {
+                        url: "{{route('user.filterdata')}}",
+                        data: function(d) {
+                            d._token = "{{ csrf_token() }}";
+                            d.search = $('input[type="search"]').val();
+                            d.date_filter = datesearch;
+                            d.payment_option = $('#payment_option_select_box option:selected').val();
+                            d.tax_type_filter = $('#tax_type_select_box option:selected').val();
+                        }
+                    },
+                    "initComplete": function(settings, json) {
+                        // var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
+                        // elems.forEach(function(html) {
+                        //     var switchery = new Switchery(html);
+                        // });
+                        $('.dataTables_filter input[type="search"]').css({
+                            'width': '280px',
+                            'display': 'inline-block'
+                        });
+                        $("#user_datatable_wrapper").find($(".dt-buttons.btn-group.flex-wrap")).css({
+                            'right': '320px'
+                        });
+                    },
+                    columns: [
+                        {
+                            data: 'id',
+                            name: 'id',
+                            orderable: false,
+                            searchable: false,
+                            "mRender": function(data, type, nRow, meta) {
+                                return meta.row + meta.settings._iDisplayStart + 1;
+                            }
+                        },
+                        {
+                            data: 'image_url',
+                            name: 'image_url',
+                            orderable: false,
+                            searchable: false,
+                            "mRender": function(data, type, full) {
+                                return "<img src='" + full.image_url + "' class='rounded-circle' alt='" + full.id + "' >";
+                            }
+                        },
+                        {
+                            data: 'name',
+                            name: 'name',
+                            orderable: false,
+                            searchable: false,
+                            "mRender": function(data, type, full) {
+                                var improtId = '';
+                                if(full.import_user_id){
+                                    improtId = "<br>("+ full.import_user_id +")";
+                                }
+                                return "<a href='" + full.edit_url + "'>" + full.name + "</a>"+ improtId;
+                            }
+                        },
+                        {
+                            data: 'user_type',
+                            name: 'user_type',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'login_type',
+                            name: 'login_type',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'signup_date',
+                            name: 'signup_date',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'last_login',
+                            name: 'last_login',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'login_type_value',
+                            name: 'login_type_value',
+                            orderable: false,
+                            searchable: false,
+                            "mRender": function(data, type, full) {
+                                if (full.is_email_verified == 1) {
+                                    return "<i class='mdi mdi-email-check mr-1 mdi-icons'></i>" + full.login_type_value;
+                                } else {
+                                    return "<i class='mdi mdi-email-sync mr-1 mdi-icons'></i>" + full.login_type_value;
+                                }
+                            }
+                        },
+                        {
+                            data: 'is_phone_verified',
+                            name: 'is_phone_verified',
+                            orderable: false,
+                            searchable: true,
+                            "mRender": function(data, type, full) {
+                                if(full.dial_code){
+                                var dialcode = full.dial_code;
+                                full.phone_number = '+'+ dialcode + full.phone_number;
+                                }else{
+                                    full.phone_number =  full.phone_number;
+                                }
+
+                                if (full.is_phone_verified == 1) {
+                                    if (full.phone_number) {
+                                        return "<i class='mdi mdi-phone-check mr-1 mdi-icons'></i>" + full.phone_number;
+                                    } else {
+                                        return "";
+                                    }
+                                } else {
+                                    if (full.phone_number) {
+                                        return "<i class='mdi mdi-phone mr-1 mdi-icons'></i>" + full.phone_number;
+                                    } else {
+                                        return "";
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            data: 'email_token',
+                            name: 'email_token',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'phone_token',
+                            name: 'phone_token',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'balanceFloat',
+                            name: 'balanceFloat',
+                            orderable: false,
+                            searchable: false,
+                            "mRender": function(data, type, full) {
+                                return "<a href='javascript:void(0)' class='customer_wallet_link' data-id='" + full.wallet_id + "'>" + data + "</a>";
+                            }
+                        },
+                        {
+                            data: 'orders_count',
+                            name: 'orders_count',
+                            orderable: false,
+                            searchable: false,
+                            "mRender": function(data, type, full) {
+
+                                return "<a href='javascript:void(0)' class='customer_order_link'  data-id='" + full.id + "'>" + data + "</a>";
+                            }
+                        },
+                         {
+                            data: 'loyalty_name',
+                            name: 'loyalty_name',
+                            orderable: false,
+                            searchable: false,
+                            "mRender": function(data, type, full) {
+                                return  data.loyalty_name +" ("+ data.count_loyalty_points_earned+")" ;
+                            }
+                        },
+                        {
+                            data: 'currently_working_orders_count',
+                            name: 'currently_working_orders_count',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'total_order_value',
+                            name: 'total_order_value',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'total_discount_value',
+                            name: 'total_discount_value',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'status',
+                            name: 'status',
+                            orderable: false,
+                            searchable: false,
+                            "mRender": function(data, type, full) {
+                                if (full.status == 1) {
+                                    return "<input type='checkbox' data-id='" + full.id + "' id='cur_" + full.id + "' data-plugin='switchery' name='userAccountStatus' class='chk_box' data-color='#43bee1' checked>";
+                                } else {
+                                    return "<input type='checkbox' data-id='" + full.id + "' id='cur_" + full.id + "' data-plugin='switchery' name='userAccountStatus' class='chk_box' data-color='#43bee1'>";
+                                }
+                            }
+                        },
+                        {
+                            data: 'is_superadmin',
+                            name: 'is_superadmin',
+                            orderable: false,
+                            searchable: false,
+                            "mRender": function(data, type, full) {
+                                if (full.is_superadmin == 1) {
+                                    return "<div class='form-ul'><div class='inner-div'><a href='" + full.edit_url + "' class='action-icon editIconBtn'><i class='mdi mdi-square-edit-outline'></i></a><a href='" + full.delete_url + "' class='action-icon delete_customer'><i class='mdi mdi-delete' title='Delete user'></i></a></div></div>";
+                                }
+                            }
+                        },
+                    ],
+                    "drawCallback": function (settings, json) {
+                        var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
+                        elems.forEach(function(html) {
+                            var switchery = new Switchery(html);
+                        });
+
+                        
+                        $('.dataTables_filter input[type="search"]').css({
+                            'width': '280px',
+                            'display': 'inline-block'
+                        });
+                        $("#user_datatable_wrapper").find($(".dt-buttons.btn-group.flex-wrap")).css({
+                            'right': '320px'
+                        });
+                    }
+                });
+       // console.log('start_date',start_date,'end_date',end_date);
+    }
 </script>
 @include('backend.users.pagescript')
 @endsection

@@ -10,7 +10,7 @@ class CartCoupon extends Model
     use HasFactory;
 
     public function promo(){
-      return $this->belongsTo('App\Models\Promocode', 'coupon_id', 'id')->select('id', 'name', 'amount', 'promo_type_id', 'expiry_date', 'allow_free_delivery', 'minimum_spend', 'maximum_spend', 'first_order_only', 'limit_total', 'restriction_on','restriction_type');
+      return $this->belongsTo('App\Models\Promocode', 'coupon_id', 'id')->select('id', 'name', 'amount', 'promo_type_id', 'expiry_date', 'allow_free_delivery', 'minimum_spend', 'maximum_spend', 'first_order_only', 'paid_by_vendor_admin','limit_total', 'restriction_on','restriction_type');
     }
 
     public static function getDetails($vendor_id, $user_id){

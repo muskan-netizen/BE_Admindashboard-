@@ -16,6 +16,10 @@
             .primary_bg_color{
                 background-color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;
             }
+            
+            body.authentication-bg-pattern {
+                background-image: url('https://images.royoorders.com/insecure/fill/600/400/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/{{ getAdditionalPreference(['admin_signin_image'])['admin_signin_image'] }}');
+            }
         </style>
     
     </head>

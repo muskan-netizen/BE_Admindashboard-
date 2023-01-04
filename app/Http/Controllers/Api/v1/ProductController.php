@@ -3,19 +3,20 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Controllers\Front\PromoCodeController;
 use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductFaqSelectOption, TagTranslation,Tag};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag};
 use Validation;
 use DB;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,ProductTrait};
 
 class ProductController extends BaseController
 {
     private $field_status = 2;
-    use ApiResponser;
+    use ApiResponser,ProductTrait;
     /**
      * Get Company ShortCode
      *
@@ -118,10 +119,11 @@ class ProductController extends BaseController
                             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                             ->where('category_translations.language_id', $langId);
                         },
-                        'variant' => function($v){
-                            $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','barcode','tax_category_id')
-                            ->groupBy('product_id'); // return first variant
-                        },
+                        // 'variant' => function($v){
+                        //     $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','cost_price','barcode','tax_category_id')
+                        //     ->groupBy('product_id'); // return first variant
+                        // },
+                        
                         'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell',
                         'addOn' => function($q1) use($langId){
                             $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
@@ -150,8 +152,15 @@ class ProductController extends BaseController
                             $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                             $q2->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                         },
-                        ])->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count')
-                        ->where('id', $pid)
+
+                    ]);
+                    if(checkColumnExists('products', 'returnable')){
+                        $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration');
+                    }else{
+                        $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min',  'is_long_term_service','service_duration');
+                    }
+                        
+                    $product = $product->where('id', $pid)
                         ->first();
 
             if(!$product){
@@ -184,7 +193,7 @@ class ProductController extends BaseController
             }
 
 
-            $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+            $product->is_wishlist = @$product->category->categoryDetail->show_wishlist;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             foreach ($product->variant as $key => $value) {
                 $product->variant[$key]->multiplier = $clientCurrency->doller_compare;
@@ -235,13 +244,83 @@ class ProductController extends BaseController
                     }
                 }
             }
+          
             $product->product_media = $data_image;
             $product->share_link = getServerURL() . $product->vendor->slug . '/product/' . $product->url_slug;
+
+            $promoCodeController = new PromoCodeController();
+            $coupon_list = $promoCodeController->coupon_code_list($product->id, $product->vendor_id);
+
+
+            $response['coupon_list'] = $coupon_list;
+            if( checkColumnExists('products','is_long_term_service') && $product->is_long_term_service == 1){
+                $product_id = $product->LongTermProducts->product_id;
+                $url_slug   = $product->LongTermProducts->product->url_slug;
+                $vendor_slug   = $product->vendor->slug;
+                
+                $LongTermProducts                    = $this->getProduct($product->LongTermProducts->product_id,$vendor_slug,$url_slug,$user,$langId);
+                $LongTermProducts->long_term_product = $product->LongTermProducts;
+                $addon =  $product->LongTermProducts->addons->pluck('option_id','addon_id')->toArray() ?? [];
+                if($product->ServicePeriod){
+                    $product->ServicePeriods = $product->ServicePeriod->pluck('service_period')->toArray();
+                }
+                $LongTermProducts->period =config('constants.Period');
+            
+                $LongTermProducts->product_addon     =  $addon;
+                $product->longTermServiceProduct     = $LongTermProducts;
+                $response['products'] = $product;
+                return response()->json([
+                    'data' => $response,
+                ]);
+            }
+            // Product Attribute
+            $product_attr = [];
+            if( !empty($product->ProductAttribute) ) {
+                foreach( $product->ProductAttribute as $key => $value ) {
+                    if( !empty($value->attribute) && !empty($value->attribute->status) && $value->attribute->status == 1 ) {
+                        $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
+                        $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
+                        
+                        if( !empty($value->attribute) && $value->attribute->type != 4) {
+                            $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
+                        }
+                        else {
+                            $product_attr[$key]['value'] = $value['key_value'] ?? '';
+                        }
+                    }
+                }
+            }
+
+            $attr_id = '';
+            $attr_array = [];
+            foreach($product_attr as $pro_att_key => $pro_att_val) {
+                
+                if( empty($attr_id) || ($pro_att_val['attribute_id'] != $attr_id) ) {
+                    $attr_id = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                }
+                else {
+                    $attr_id = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
+                    $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
+                }
+            }
+           
             $response['products'] = $product;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
             $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell);
+            $response['product_attribute'] = $product_attr;
+            // $response['product_variant'] = ProductVariant::select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','cost_price','barcode','tax_category_id')->where('product_id',$pid)->get();
             /* group by in query return data only for key - 0 so using 0 */
+            $is_return_days = 0;
+            if(((@$product->returnable && @$product->vendor->return_request) || $product->replaceable) && ($product->return_days > 0)){
+                $is_return_days = 1;
+                $product->is_return_days = $is_return_days;
+            }
             if(isset($product->variant[0]->media) && !empty($product->variant[0]->media)){
                 unset($product->variant[0]->media);
             }
@@ -259,6 +338,38 @@ class ProductController extends BaseController
         }
 
 
+    }
+
+    public function checkProductAvailibility(Request $request)
+    {
+      try {
+          $block_time = explode('-', $request->blocktime);
+          $start_time = date("Y-m-d H:i:s",strtotime($request->selectedStartDate));
+          $end_time = date("Y-m-d H:i:s",strtotime($request->selectEndDate));
+          $product_variant_data = array();
+          $product_variant_id =  ProductVariantSet::where(['variant_option_id'=>$request->variant_option_id,'product_id'=>$request->product_id])->pluck('product_variant_id');
+          $product_variant_id = $product_variant_id->toArray();
+          $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
+                              ->where(function ($query) use ($start_time , $end_time ){
+                                  $query->where('start_date_time', '<=', $end_time)
+                                        ->where('end_date_time', '>=', $start_time);
+                              })->pluck('variant_id')->toArray();
+          $available_product_variant = array_values(array_diff($product_variant_id, $ProductBooking));
+          if(isset($available_product_variant[0])){
+            $product_variant_data =  ProductVariant::where('id',$available_product_variant[0])->with(['product','checkIfInCart'])->first();
+          }
+          $returnarr =  array();
+          $returnarr['available_product_variant'] =  @$available_product_variant[0];
+          $returnarr['product_variant_data'] = $product_variant_data;
+          $returnarr['product_id'] =  $request->product_id;
+          $returnarr['start_time'] =  $start_time;
+          $returnarr['end_time'] =  $end_time;
+          $returnarr['variant_option_id'] = $request->variant_option_id;
+          return response()->json(array('success' => true, 'variant_data'=>$returnarr ,'message'=>'Available product data.'));
+        } catch (\Exception $e) {
+          return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
+        }
+     
     }
 
     public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [])
@@ -351,14 +462,15 @@ class ProductController extends BaseController
             if(empty($pv_ids)){
                 return $this->errorResponse('Invalid product sets or product has been removed.', 404, ['variant_empty'=>true]);
             }
+         
 
             $variantData = ProductVariant::join('products as pro', 'product_variants.product_id', 'pro.id')
-                        ->with(['wishlist', 'product.media.image', 'media.pimage.image', 'translation' => function($q) use($langId){
+                        ->with(['set','wishlist', 'product.media.image', 'media.pimage.image', 'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $langId);
                         },'wishlist' =>  function($q) use($userid){
                             $q->where('user_id', $userid);
-                        }])->select('product_variants.id','product_variants.sku', 'product_variants.quantity', 'product_variants.price',  'product_variants.barcode', 'product_variants.product_id', 'pro.sku', 'pro.url_slug', 'pro.weight', 'pro.weight_unit', 'pro.vendor_id', 'pro.is_new', 'pro.is_featured', 'pro.is_physical', 'pro.has_inventory', 'pro.has_variant', 'pro.sell_when_out_of_stock', 'pro.requires_shipping', 'pro.Requires_last_mile', 'pro.averageRating')->where('product_variants.id', $pv_ids[0])->first();
+                        }])->select('product_variants.id','product_variants.sku', 'product_variants.quantity', 'product_variants.price','product_variants.incremental_price',  'product_variants.barcode', 'product_variants.product_id', 'pro.sku', 'pro.url_slug', 'pro.weight', 'pro.weight_unit', 'pro.vendor_id', 'pro.is_new', 'pro.is_featured', 'pro.is_physical', 'pro.has_inventory', 'pro.has_variant', 'pro.sell_when_out_of_stock', 'pro.requires_shipping', 'pro.Requires_last_mile', 'pro.averageRating')->where('product_variants.id', $pv_ids[0])->first();
             if($variantData->sell_when_out_of_stock == 1){
                 $variantData->stock_check = '1';
             }elseif($variantData->quantity > 0){
@@ -366,6 +478,8 @@ class ProductController extends BaseController
             }else{
                 $variantData->stock_check = 0;
             }
+
+            
             $data_image = array();
             $variantData->inwishlist = $variantData->wishlist;
             $variantData->is_wishlist = $product->category->categoryDetail->show_wishlist;

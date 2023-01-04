@@ -56,7 +56,7 @@ use Illuminate\Support\Arr;
 
                         @endif
 
-                        <div class="card-box">
+                        <div class="card-box side-card">
                                      <!-- static html -->
 
                                 @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))

@@ -53,7 +53,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('chat/userAgentChatRoom', 'Api\v1\ChatController@userAgentChatRoom');
         Route::post('chat/sendNotificationToUser', 'Api\v1\ChatController@sendNotificationToUser');
         
-
+        Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+        Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
 
           
         Route::get('profile', 'Api\v1\ProfileController@profile');
@@ -105,6 +106,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('mystore/product/delete', 'Api\v1\StoreController@deleteProduct');
         Route::post('mystore/product/deletevariant', 'Api\v1\StoreController@deleteProductVariant');
         Route::post('mystore/product/addProductImage', 'Api\v1\StoreController@productImages');
+        # Attribute related api
+        Route::post('mystore/product/addProductAttribute', 'Api\v1\StoreController@addProductAttribute');
+        Route::get('mystore/product/getProductAttribute', 'Api\v1\StoreController@getProductAttribute');
+        Route::get('mystore/product/availableListOfAttribute', 'Api\v1\StoreController@availableListOfAttribute');
+        Route::post('mystore/product/addProductWithAttribute', 'Api\v1\StoreController@addProductWithAttribute');
+        
         Route::post('mystore/product/getProductImages', 'Api\v1\StoreController@getProductImages');
         Route::post('mystore/product/deleteimage', 'Api\v1\StoreController@deleteProductImage');
         Route::post('mystore/vendor/product/list', 'Api\v1\StoreController@getVendorProductList');
@@ -114,6 +121,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('vendor-dasboard-data', 'Api\v1\RevenueController@getDashboardDetails');
         Route::post('get-vendor-profile', 'Api\v1\VendorController@getVendorDetails');
+        
         Route::post('update-vendor-profile', 'Api\v1\VendorController@updateVendorDetails');
         Route::post('get-vendor-transactions', 'Api\v1\VendorController@getVendorTransactions');
         //Route::post('get-vendor-transactions', 'Api\v1\VendorController@getOrdersList');
@@ -133,12 +141,17 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/schedule/update','Api\v1\CartController@updateSchedule');
         Route::post('repeatOrder', 'Api\v1\CartController@repeatOrder');
         Route::get('order/orderDetails_for_notification/{order_id}', 'Api\v1\OrderController@orderDetails_for_notification');
+
+        Route::post('user/editorder', 'Api\v1\OrderController@editOrderByUser');
+	    Route::post('user/discardeditorder', 'Api\v1\OrderController@discardEditOrderByUser');
         
         // Rating & review 
         Route::group(['prefix' => 'rating'], function () {
             Route::post('update-product-rating', 'Api\v1\RatingController@updateProductRating');
             Route::get('get-product-rating', 'Api\v1\RatingController@getProductRating');
             Route::post('update-driver-rating', 'Api\v1\RatingController@updateDriverRating');
+            Route::get('get-driver-rating', 'Api\v1\RatingController@getDriverRating');
+            // Route::post('driver-agent-rating', 'Api\v1\RatingController@driverAgentRating');
         });
         Route::post('upload-file', 'Api\v1\RatingController@uploadFile');
          // Return order
@@ -147,6 +160,18 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-return-products', 'Api\v1\ReturnOrderController@getReturnProducts');
             Route::post('update-product-return', 'Api\v1\ReturnOrderController@updateProductReturn');
             Route::post('vendor-order-for-cancel', 'Api\v1\ReturnOrderController@vendorOrderForCancel');
+        });
+
+        // Return order
+        Route::group(['prefix' => 'replace-order'], function () {
+            Route::get('get-replace-order-data-in-model', 'Api\v1\ReturnOrderController@getReplaceOrderDataInModel');
+            Route::get('get-replace-products', 'Api\v1\ReturnOrderController@getReplaceProducts');
+            Route::post('update-product-replace', 'Api\v1\ReturnOrderController@updateProductReplace');
+        });
+
+        // Cancel order
+        Route::group(['prefix' => 'cancel-order'], function () {
+            Route::get('get-cancel-order-reason', 'Api\v1\CancelOrderController@getCancelOrderReason');
         });
 
         // pickup & delivery 
@@ -159,7 +184,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('promo-code/verify', 'Api\v1\PickupDeliveryController@postVerifyPromoCode');
             Route::post('promo-code/remove', 'Api\v1\PickupDeliveryController@postRemovePromoCode');
             Route::post('order-tracking-details', 'Api\v1\PickupDeliveryController@getOrderTrackingDetails');
-            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');            
+            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');   
+            
+            Route::post('edit-order', 'Api\v1\PickupDeliveryController@updatePickupDeliveryOrderByCustomer');
         });
 
         // user subscription 
@@ -203,6 +230,14 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         }); 
 
         Route::post('/create-contact', 'Hubspot\HubspotApiController@create');
+
+
+        // gift Card Order
+        Route::group(['prefix' => 'giftCard'], function () {
+            Route::get('list', 'Api\v1\GiftcardController@getGiftCard');
+            Route::post('apply', 'Api\v1\GiftcardController@postVerifyGiftCardCode');
+            Route::post('remove', 'Api\v1\GiftcardController@RemoveGiftCardCode');
+        }); 
 
     });
 });

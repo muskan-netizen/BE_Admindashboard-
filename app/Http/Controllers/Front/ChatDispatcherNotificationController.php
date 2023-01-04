@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use DB;
+use Log;
 use Auth;
 use Session;
 use DataTables;
