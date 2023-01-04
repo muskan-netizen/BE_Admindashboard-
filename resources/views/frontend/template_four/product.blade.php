@@ -85,7 +85,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                             </div>
                         </div>--}}
                         <div class="row no-gutters">
-                            <div class="col-lg-5 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                            <div class="col-lg-5 @php if(count($product->media) == 0){  echo 'd-block'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -154,20 +154,24 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                 <div class="exzoom hidden w-100" id="exzoom">
                                     <div class="exzoom_img_box mb-2">
                                         <ul class='exzoom_img_ul'>
-                                        @if(!empty($product->media))
-                                        @foreach($product->media as $k => $image)
-                                        @php
-                                                        if(isset($image->pimage)){
-                                                            $img = $image->pimage->image;
-                                                        }else{
-                                                            $img = $image->image;
-                                                        }
-                                                    @endphp
-                                            @if(!is_null($img))
-                                            <li><img class="" src="{{$img->path['image_fit'].'1000/1000'.$img->path['image_path']}}" /></li>
+                                        @if(!empty($product->media) && count($product->media) > 0)
+                                                @foreach($product->media as $k => $image)
+                                                        @php
+                                                            if(isset($image->pimage)){
+                                                                $img = $image->pimage->image;
+                                                            }else{
+                                                                $img = $image->image;
+                                                            }
+                                                        @endphp
+                                                @endforeach
+                                                @if(!is_null($img))
+                                                <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
+                                                @endif
+                                                @else
+                                                        
+                                                    <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                        
                                             @endif
-                                        @endforeach
-                                        @endif
                                         </ul>
                                     </div>
                                     @if(count($product->media) > 1)
