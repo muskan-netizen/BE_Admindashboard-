@@ -19,7 +19,7 @@ class AddCoulmnInOrderTable extends Migration
         });
 
         Schema::table('order_vendors', function (Blueprint $table) {
-            $table->integer('bid_number')->nullable();
+            $table->integer('bid_discount')->nullable();
         });
     }
 
@@ -35,7 +35,7 @@ class AddCoulmnInOrderTable extends Migration
             $table->dropColumn('bid_number');
         });
         Schema::table('order_vendors', function (Blueprint $table) {
-            $table->dropColumn('bid_number');
+            $table->dropColumn('bid_discount');
         });
 
 
