@@ -53,7 +53,7 @@ class SmsProviderSeeder extends Seeder
                     'status' => '1'
             ),
         );
-        if($sms_count == 5)
+        if($sms_count == 0)
         {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
             DB::table('sms_providers')->truncate();
