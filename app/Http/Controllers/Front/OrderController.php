@@ -873,7 +873,7 @@ class OrderController extends FrontController
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
              //Get earn and used loyalty amount
-            $loyaltyCheck = $this->getOrderLoyalityAmount($user,$customerCurrency);
+            $loyaltyCheck = $this->getOrderLoyalityAmount($user, $customerCurrency);
             $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
             $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
 
