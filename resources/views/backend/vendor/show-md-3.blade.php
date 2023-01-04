@@ -161,7 +161,7 @@
 
                     <div class="col-md-12 mb-2">
                         <div class="form-group" id="orders_per_slotInput">
-                            {!! Form::label('title', 'Maximum Orders Per Slot',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Maximum Orders Per Slot'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="orders_per_slot" type="text" value="{{$vendor->orders_per_slot}}">
                         </div>
                     </div>
@@ -177,7 +177,7 @@
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="fixed_fee_amount" type="text" value="{{$vendor->fixed_fee_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between inline-toltip">
-                        <label class="position-relative control-label" >Hide Price Bifurcation
+                        <label class="position-relative control-label" >{{ __('Hide Price Bifurcation') }}
                             <div class="alInfoIocn">
                                 <i class="fa fa-info-circle"></i>
                                 <span class="tooltiptext">Hide Fixed Price, Service Fee, Container Charges, Taxes, Subtotal</span>
@@ -647,7 +647,7 @@
         <div class="col-md-12 mb-3">
             <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' : 'disabled'}}>
                 @foreach($templetes as $templete)
-                    <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{$templete->title}}</option>
+                    <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{ __($templete->title)}}</option>
                 @endforeach
             </select>
         </div>

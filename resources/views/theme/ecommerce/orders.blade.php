@@ -30,7 +30,7 @@
                                 <form class="form-inline">
                                     <div class="form-group mb-2">
                                         <label for="inputPassword2" class="sr-only">Search</label>
-                                        <input type="search" class="form-control" id="inputPassword2" placeholder="Search...">
+                                        <input type="search" class="form-control" id="inputPassword2" placeholder="{{ __('Search') }}...">
                                     </div>
                                     <div class="form-group mx-sm-3 mb-2">
                                         <label for="status-select" class="mr-2">Status</label>
