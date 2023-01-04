@@ -19,7 +19,7 @@
                 <p>{{ $value["vendor_name"] }}</p>
                 <h4>
                     @if($value["inquiry_only"] == 0)
-                    {{$value["price"]}}
+                    {!!$value["price"] ?? ''!!}
                     @endif
                 </h4>
             </div>

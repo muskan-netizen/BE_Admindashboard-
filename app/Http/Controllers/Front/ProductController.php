@@ -356,7 +356,7 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function getVariantData(Request $request, $domain = '', $sku){
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_token_currency_enable']);
 
         $customerCurrency = Session::get('customerCurrency');
         if(isset($customerCurrency) && !empty($customerCurrency)){
@@ -490,7 +490,15 @@ class ProductController extends FrontController{
                 }else{
                     $variantData = array();
                 }
+                $tokenAmount = 1;
+                $is_token_enable = $getAdditionalPreference['is_token_currency_enable'];
+                if($is_token_enable){
+                    $tokenAmount = getJsToken();
+                }
+                
                 $data['variant'] = $variantData;
+                $data['tokenAmount'] = $tokenAmount;
+                $data['is_token_enable'] = $is_token_enable;
                 
                 return response()->json(array('status' => 'Success', 'data' => $data));
             }

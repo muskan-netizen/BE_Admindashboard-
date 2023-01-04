@@ -259,6 +259,7 @@ trait ProductActionTrait{
                 }
                 return $products;
             }
+            $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
             foreach ($products as $key => $value) {
                 $multiply = Session::get('currencyMultiplier') ?? 1;
                 $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
@@ -273,7 +274,7 @@ trait ProductActionTrait{
                     'inquiry_only' => $value->inquiry_only,
                     'vendor_name' => $value->vendor ? $value->vendor->name : '',
                     'vendor' => $value->vendor,
-                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price * $multiply,',')),
+                    'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$value->variant->first()->price * $multiply) : Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price * $multiply)),
                     'category' => ''
                 );
             }
