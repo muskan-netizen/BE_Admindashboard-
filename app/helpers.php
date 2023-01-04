@@ -108,10 +108,22 @@ if (!function_exists('getInToken')) {
             $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
             $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
         }
-        // $currency_id = session()->get('customerCurrency');
-        // $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
 
         return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * ($tokenCurrency ?? 1));
+    }
+}
+
+if (!function_exists('getJsToken')) {
+    function getJsToken(){
+        setUserCode();
+        $redis = Redis::connection();        
+        $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
+        $tokenCurrency = json_decode($tokenCurrency);
+        if($tokenCurrency == null){
+            $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
+            $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
+        }
+        return decimal_format($tokenCurrency ?? 1);
     }
 }
 

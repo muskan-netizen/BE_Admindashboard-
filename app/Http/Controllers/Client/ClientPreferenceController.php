@@ -191,6 +191,7 @@ class ClientPreferenceController extends BaseController{
                 $client = Client::first();
                 $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
                 Redis::set($client->code, json_encode($tokenCurrency), 'EX', 36000);
+                Redis::set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
             }
             // $validated_keys = $request->only($this->client_preference_fillable_key);
             // $client = Client::first();

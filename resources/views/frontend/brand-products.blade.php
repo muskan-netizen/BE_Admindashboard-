@@ -3,7 +3,9 @@
 @section('css')
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
-
+@php
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+@endphp
 @section('content')
 <style type="text/css">
     .main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
@@ -331,7 +333,11 @@
                                                                         <p>{{ $data->translation_description }}</p>
                                                                     @endif
                                                                     @if($data->inquiry_only == 0)
+                                                                        @if ($additionalPreference ['is_token_currency_enable'])
+                                                                        <h4 class="mt-1"> <i class='fa fa-money' aria-hidden='true'></i> {{(getInToken($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        @else
                                                                         <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        @endif
                                                                     @endif
                                                                 </div>
                                                             </div>
