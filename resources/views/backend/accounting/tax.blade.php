@@ -91,7 +91,6 @@
                                     <th>{{ __("Customer Name") }}</th>
                                     <th>{{ __("Final Amount") }}</th>
                                     <th>{{ __("Tax Amount") }}</th>
-                                    <th>{{ __("Tax Types") }}</th>
                                     <th>{{ __("Payment Method") }}</th>
                                 </tr>
                             </thead>
@@ -172,7 +171,6 @@
                             {data: 'customer_name', name: 'customer_name', orderable: false, searchable: false},
                             {data: 'payable_amount', name: 'payable_amount', orderable: false, searchable: false},
                             {data: 'taxable_amount', name: 'taxable_amount', orderable: false, searchable: false},
-                            {data: 'tax_types', name: 'tax_types', orderable: false, searchable: false},
                             {data: 'payment_method', name: 'payment_method', orderable: false, searchable: false},
                         ]
                     });

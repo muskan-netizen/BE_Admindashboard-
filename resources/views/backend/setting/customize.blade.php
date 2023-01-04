@@ -43,9 +43,8 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role']);
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role']); //,'seller_sold_title','saller_platform_logo'
 @endphp
-
    <!--Localization start -->
     <div class="row">
       <div class="col-12">
@@ -230,16 +229,12 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
     </div>
     <!--Localization end -->
 {{-- vendoe typs section aline by harbans singh :) --}}
-    <div class="row">
-        <div class="col-12">
-        <div class="page-title-box">
-            <h4 class="page-title text-uppercase">{{ __("Vendor Type") }}</h4>
-        </div>
-        </div>
-    </div>
     <div class="row col-spacing">
         <!--Vendor Type &  Distance to Time Calculator start -->
         <div class="col-xl-3 col-lg-3 mb-3">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __("Vendor Type") }}</h4>
+            </div>
             {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' ) --}}
             @php
                 $typeArray = getCategoryTypes();
@@ -253,8 +248,10 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
+             
                     <div class="row align-items-start">
                         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                        
                             @php
                                 $VendorTypesName = $vendor_typ_key.'_check';
                             @endphp
@@ -273,6 +270,36 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             </form>
             {{-- @endif --}}
         </div>
+
+        {{-- <div class="col-xl-3 col-lg-3 mb-3">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __("Seller Platform") }}</h4>
+            </div>
+            @php
+                $typeArray = getCategoryTypes();
+            @endphp
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box mb-2 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title mb-0">{{ __("Seller Platform") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-md-6">
+                        <label>{{ __('Upload Logo') }} </label>
+                        <input type="file" accept="image/*" data-plugins="dropify" name="saller_platform_logo" class="dropify" data-default-file="" />
+                        <label class="logo-size text-right w-100">{{ __('Logo Size') }} 170x96</label>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="seller_sold_title">Sold Title</label>
+                            <input type="text" name="seller_sold_title" id="seller_sold_title" value=" @if( @$getAdditionalPreference['seller_sold_title'] != '') {{$getAdditionalPreference['seller_sold_title']??''}} @endif" class="form-control" placeholder="Sold Title" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div> --}}
         <!--Vendor Type &  Distance to Time Calculator end -->
 
         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry' && $client_preference_detail->on_demand_check == 1)
@@ -899,6 +926,28 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Sellers") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="seller_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="seller_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('sellers'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('seller_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Loyalty Cards") }}</label>
                                 </div>
                             </div>
@@ -1330,7 +1379,31 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             </div>
                             @endforeach
                         </div>
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Variant") }}</label>
+                                </div>
+                            </div>
+                            @php
 
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="variant_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="variant_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Variant'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('referral_code_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </form>

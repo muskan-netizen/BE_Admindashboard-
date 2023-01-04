@@ -14,9 +14,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{Currency, Banner, Client, Category, Cart, Brand, Product, ClientLanguage, User, ClientCurrency, ClientPreference, Country, UserAddress, UserVerification,EmailTemplate, VerificationOption, WebStylingOption};
-
+use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 
 class UserController extends FrontController{
+    use CustomerSignupSuccessEmailTrait;
     private $field_status = 2;
     /**
      * Display a listing of the resource.
@@ -41,15 +42,19 @@ class UserController extends FrontController{
         {
             return redirect()->route('passbase.page');
         }elseif ($preference->verify_email == 0 && $preference->verify_phone == 0) {
+            $this->sendCustomerSignupSuccessEmail($user);
             return redirect()->route('userHome');
         }elseif (Auth::user()->is_email_verified == 1 && Auth::user()->is_phone_verified == 1) {
+            $this->sendCustomerSignupSuccessEmail($user);
             return redirect()->route('userHome');
         }elseif ($preference->verify_email == 1 && $preference->verify_phone == 0) {
+            $this->sendCustomerSignupSuccessEmail($user);
             if (Auth::user()->is_email_verified == 1) {
                 return redirect()->route('userHome');
             }
         } elseif ($preference->verify_email == 0 && $preference->verify_phone == 1) {
             if (Auth::user()->is_phone_verified == 1) {
+                $this->sendCustomerSignupSuccessEmail($user);
                 return redirect()->route('userHome');
             }
         }
@@ -70,6 +75,7 @@ class UserController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function sendToken(Request $request, $domain = '', $uid = 0){
+        try{
         $notified = 0;
         $user = User::where('id', Auth::user()->id)->first();
         if (!$user) {
@@ -95,10 +101,10 @@ class UserController extends FrontController{
                 $user->phone_token_valid_till = $newDateTime;
                 $provider = $data->sms_provider;
                 $to = '+'.$request->dial_code.str_replace(' ', '', $request->phone);
-                $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+               // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
                 $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp];
                 $body = sendSmsTemplate('verify-account',$keyData);
-                if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
+                 if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
                     $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                     if ($send) {
                         $notified = 1;
@@ -152,6 +158,12 @@ class UserController extends FrontController{
         } else {
             return redirect()->back()->with('err_user', __('Provider service is not configured. Please contact administration.'));
         }
+    }catch(\Execption $e)
+    {
+        Log::info('SMS logs');
+        Log::info($e->getMessage());
+        return response($e->getMessage(),400);
+    }
     }
 
     /**
@@ -202,6 +214,7 @@ class UserController extends FrontController{
             $user->email = $request->email;
             $user->email_token_valid_till = NULL;
         }
+        $this->sendCustomerSignupSuccessEmail($user);
         $user->save();
         return response()->json(['success' => __('OTP verified')], 202);
     }

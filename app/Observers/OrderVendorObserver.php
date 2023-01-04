@@ -30,11 +30,11 @@ class OrderVendorObserver
         // Log::info('### order side vendor called ###');
         // Log::info($orderVendor);
         
-        Log::info('### orderVendor status ###');
-        Log::info($orderVendor->order_status_option_id);
+        // Log::info('### orderVendor status ###');
+        // Log::info($orderVendor->order_status_option_id);
         if($orderVendor->order_status_option_id == 6 && inventorySyncOnOff($orderVendor->vendor_id))  // 6 = marked as delivered
         {
-            Log::info('inside the if part');
+          //  Log::info('inside the if part');
             $client_preferences = ClientPreference::first();
             $orders = Order::with(['vendors.products'=>function($q){
                 $q->withoutAppends();
@@ -42,7 +42,7 @@ class OrderVendorObserver
             ->where('id', $orderVendor->order_id)->get();
             // dd($orders->toArray());
             // $cart_details = Cart::with('cartProducts')->where('user_id', 2)->first();
-            Log::info($orders);
+            //Log::info($orders);
             $product_details = [];
             
             foreach($orders as $key => $val) {

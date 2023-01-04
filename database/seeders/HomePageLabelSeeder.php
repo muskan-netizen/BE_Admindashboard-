@@ -130,6 +130,14 @@ class HomePageLabelSeeder extends Seeder
             'slug' => 'cities',
             'order_by' => 11,
         ]);
+        
+        $already = HomePageLabel::where('slug', 'long_term_service')->count();
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Long Term Service',
+            'slug' => 'long_term_service',
+            'order_by' => 12,
+        ]);
 
         $already = HomePageLabel::where('slug', 'recently_viewed')->count();
 
@@ -150,5 +158,65 @@ class HomePageLabelSeeder extends Seeder
             'order_by'   => 13,
             'created_at' => Carbon::now(),
         ]);
+
+        $already = HomePageLabel::where('slug', 'top_rated')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title'      => 'Top Rated',
+            'slug'       => 'top_rated',
+            'order_by'   => 14,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $already = HomePageLabel::where('slug', 'nav_categories')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title'      => 'NavCategories',
+            'slug'       => 'nav_categories',
+            'order_by'   => 15,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $already = HomePageLabel::where('slug', 'single_category_products')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Single Category Products',
+                'slug'       => 'single_category_products',
+                'order_by'   => 16,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+
+        $already = HomePageLabel::where('slug', 'selected_products')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Selected Products',
+                'slug'       => 'selected_products',
+                'order_by'   => 16,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+
+        $already = HomePageLabel::where('slug', 'most_popular_products')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Most Popular Products',
+                'slug'       => 'most_popular_products',
+                'order_by'   => 17,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+        $already = HomePageLabel::where('slug', 'banner')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Banner',
+                'slug'       => 'banner',
+                'order_by'   => 18,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+        
     }
 }

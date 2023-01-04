@@ -22,14 +22,17 @@
 @php
     $user = Auth::user();
 @endphp
-<section class="section-b-space new-pages">
-    <div class="container">
+<section class="section-b-space new-pages mt-5 pt-5 custom-vender-outter">
+    <div class="container custom-container mb-4">
         <div class="row">
-            <div class="col-12 py-2">
+            <div class="col-12 main-top-heading">
                 <h2 class="mb-3">{{$page_detail->translations->first() ? $page_detail->translations->first()->title : $page_detail->primary->title}}</h2>
                 <p>{!!$page_detail->translations->first() ? $page_detail->translations->first()->description : $page_detail->primary->description !!}</p>
             </div>
         </div>
+        @php
+            $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
+        @endphp
         @if($page_detail->primary->type_of_form == 1)
 
             <form class="vendor-signup col-md-12" id="vendor_signup_form">
@@ -38,8 +41,8 @@
                 <!-- al_new_vendor_form -->
 
                 <!-- vendor_form other form-->
-                <div class="row justify-content-center ">
-                    <div class="col-lg-10">
+                <div class="row">
+                    <div class="col-lg-12">
                         <div class="alert alert-success" role="alert" id="success_msg" style="display: none;"></div>
                         <h2 class="mb-0">{{__('Personal Details')}}</h2>
                         {{--<div class="needs-validation vendor-signup ">
@@ -88,7 +91,7 @@
 
                         </div>--}}
                         <div class="needs-validation vendor-signup ">
-                            <div class="al_vendor_signup col-md-12 p-3 mb-3">
+                            <div class="al_vendor_signup col-md-12 p-2 mb-0 pb-0">
                                 <input type="hidden" name="user_id" value="{{$user ? $user->id : ''}}">
                                 <div class="form-row">
                                     <div class="col-md-3 mb-2" id="full_nameInput">
@@ -130,10 +133,52 @@
                                     @endif
                                 </div>
                             </div>
-
-
+                            @if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == '1')
+                            <h2 class="mb-0">{{getNomenclatureName('GST', true) .' '. __('Details')}}</h2>
+                            <div class="al_vendor_signup col-md-12 p-3 mb-3">
+                                <div class="form-row">
+                                    <div class="col-md-3 mb-2" id="company_nameInput">
+                                        <label for="companyname">{{__('Company Name')}}</label>
+                                        <input type="text" class="form-control" name="company_name" placeholder="Company Name" value="{{$user ? $user->name : ''}}" {{$user ? 'disabled' : ''}}>
+                                        <span class="invalid-feedback" id="company_name_error"><strong></strong></span>
+                                    </div>
+                                    <div class="col-md-3 mb-2" id="gst_noInput">
+                                        <label for="gstNoInput">{{__('GST Number')}}</label>
+                                        <input type="text" class="form-control" name="gst_num_Input" placeholder="GST Number" value="{{$user ? $user->title : ''}}">
+                                        <span class="invalid-feedback" id="title_error"><strong></strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            @if(@$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == '1')
+                            <h2 class="mb-0">{{getNomenclatureName('Banking', true) .' '. __('Details')}}</h2>
+                            <div class="al_vendor_signup col-md-12 p-3 mb-3">
+                                <div class="form-row">
+                                    <div class="col-md-3 mb-2" id="account_nameInput">
+                                        <label for="accountname">{{__('Account Name')}}</label>
+                                        <input type="text" class="form-control" name="account_name" placeholder="Account Name" value="{{$user ? $user->name : ''}}" {{$user ? 'disabled' : ''}}>
+                                        <span class="invalid-feedback" id="account_name_error"><strong></strong></span>
+                                    </div>
+                                    <div class="col-md-3 mb-2" id="bank_nameInput">
+                                        <label for="bankname">{{__('Bank Name')}}</label>
+                                        <input type="text" class="form-control" name="bank_name" placeholder="Bank Name" value="{{$user ? $user->title : ''}}" placeholder="">
+                                        <span class="invalid-feedback" id="title_error"><strong></strong></span>
+                                    </div>
+                                    <div class="col-md-3 mb-2" id="account_numberInput">
+                                        <label for="accountnumber">{{__('Account Number')}}</label>
+                                        <input type="text" class="form-control" name="account_number" placeholder="Account Number" value="{{$user ? $user->title : ''}}" placeholder="">
+                                        <span class="invalid-feedback" id="account_number_error"><strong></strong></span>
+                                    </div>
+                                    <div class="col-md-3 mb-2" id="ifsc_codeInput">
+                                        <label for="ifsccode">{{__('IFSC Code')}}</label>
+                                        <input type="text" class="form-control" name="ifsc_code" placeholder="IFSC Code" value="{{$user ? $user->title : ''}}" placeholder="">
+                                        <span class="invalid-feedback" id="ifsc_code_error"><strong></strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
                             <h2 class="mb-0">{{getNomenclatureName('Vendors', true) .' '. __('Details')}}</h2>
-                            <div class="al_details_vendor p-3 mb-3">
+                            <div class="al_details_vendor p-2 mb-3">
                                 <div class="form-row">
                                     <div class="col-md-4 mb-3">
 
@@ -164,17 +209,21 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="col-md-12 mb-3" id="nameInput">
+                                    <div class="col-md-6 mb-3" id="nameInput">
                                         <label for="validationCustom01">{{getNomenclatureName('Vendors', true) .' '. __('Name')}}</label>
                                         <input type="text" class="form-control" name="name" value="">
                                         <span class="invalid-feedback" id="name_error"><strong></strong></span>
                                     </div>
+                                    @if(@$getAdditionalPreference['is_seller_module'] == '1')
+                                        <div class="col-md-6 mb-3" id="nameInput">
+                                            <label for="vendortype">{{__('Vendor Type')}}</label>
+                                            <select name="vendor_type" id="vendor_type" class="form-control">
+                                                <option value="1">ClickOKartPartner</option>
+                                                <option value="0">Shopper</option>
+                                            </select>
+                                        </div>
+                                    @endif
                                     {{-- <div class="col-md-4 mb-3" id="nameInput">
-                                        <label for="validationCustom01">{{__('Email')}}</label>
-                                        <input type="text" class="form-control" name="email" value="">
-                                        <span class="invalid-feedback" id="email_error"><strong></strong></span>
-                                    </div>
-                                    <div class="col-md-4 mb-3" id="nameInput">
                                         <label for="validationCustom01">{{__('Phone Number')}}</label>
                                         <input type="text" class="form-control" name="phone_no" value="">
                                         <span class="invalid-feedback" id="phone_no_error"><strong></strong></span>
@@ -242,7 +291,7 @@
                                                 $vendor_DynamicTypeName = $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value ;
                                             @endphp
                                             @if($client_preferences->$clientVendorTypes == 1 )
-                                                <div class="col-md-2 col-4 mb-3">
+                                                <div class="col mb-3">
                                                     <label for="">{{getDynamicTypeName($vendor_DynamicTypeName)}}</label>
                                                     <div class="mt-md-1">
                                                         <input type="checkbox" data-plugin="switchery" checked data-color="#43bee1" id="{{$VendorTypesName}}" name="{{$VendorTypesName}}">
@@ -332,156 +381,159 @@
                                         @endif
                                     @endforeach
                                 </div>
-                                <div class="row">
-                                    <!-- al_custom_modal start ADVANCED DETAILS -->
-                                    <div class="al_custom_modal col-md-12 pt-2 border-top">
-                                            <h5 class="mb-2">{{__('ADVANCED DETAILS').' ('.__('Optional').')'}}</h5>
+                                    <div class="row">
+                                        <!-- al_custom_modal start ADVANCED DETAILS -->
+                                        <div class="al_custom_modal col-md-12 pt-2 border-top">
+                                                @if(@$getAdditionalPreference['is_vendor_category_required_for_vendor_registration'] == '1' || @$getAdditionalPreference['is_advance_details_required_for_vendor_registration'] == '1')
+                                                    <h5 class="mb-2">{{__('ADVANCED DETAILS').' ('.__('Optional').')'}}</h5>
+                                                @endif
+                                                <div class="row">
+                                                    @if(@$getAdditionalPreference['is_advance_details_required_for_vendor_registration'] == '1')
+                                                        <div class="col-md-4">
+                                                            <div class="al_advanced_details p-2">
+                                                                <p class="al_custom_title mb-1">{{__('Configuration')}}</p>
+                                                                    @if($client_preference_detail->business_type != 'taxi')
+                                                                        <div class="form-group">
 
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="al_advanced_details p-2">
-                                                        <p class="al_custom_title mb-1">{{__('Configuration')}}</p>
-                                                            @if($client_preference_detail->business_type != 'taxi')
-                                                                <div class="form-group">
-
-                                                                    {!! Form::label('title', __('Order Prepare Time(In minutes)'),['class' => 'control-label']) !!}
-                                                                    <div class="position-relative">
-                                                                        <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" id="Vendor_order_pre_time" type="text" value="{{ (isset($vendor)) ? @$vendor->order_pre_time : 0 }}" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}}>
-                                                                        <div class="time-sloat d-flex align-items-center"><span class="" id="Vendor_order_pre_time_show" ></span> </div>
-                                                                    </div>
-
-                                                                </div>
-                                                            @endif
-                                                            <div class="row">
-
-                                                                @if($client_preference_detail->business_type != 'taxi')
-                                                                <div class="col-md-4">
-                                                                    <div class="form-group">
-                                                                        {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
-                                                                        <div class="mt-md-1">
-                                                                            <input type="checkbox" data-plugin="switchery" data-color="#43bee1" name="show_slot" class="form-control"  @if(@$vendor->show_slot == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
-                                                                        </div>
-
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-md-4">
-                                                                    <div class="form-group">
-
-                                                                        {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
-                                                                        <div class="mt-md-1">
-                                                                            <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if(@$vendor->auto_accept_order == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
-                                                                        </div>
-
-                                                                    </div>
-                                                                </div>
-                                                                @endif
-                                                                @if(isset($user->is_superadmin) && ($user->is_superadmin == 1))
-                                                                <div class="col-md-4">
-                                                                    <div class="form-group">
-                                                                        {!! Form::label('title', __('Show Profile Details'),['class' => 'control-label']) !!}
-                                                                        <div class="mt-md-1">
-                                                                            <input type="checkbox" data-plugin="switchery" name="is_show_vendor_details" class="form-control" data-color="#43bee1" @if(@$vendor->is_show_vendor_details == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
+                                                                            {!! Form::label('title', __('Order Prepare Time(In minutes)'),['class' => 'control-label']) !!}
+                                                                            <div class="position-relative">
+                                                                                <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" id="Vendor_order_pre_time" type="text" value="{{ (isset($vendor)) ? @$vendor->order_pre_time : 0 }}" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}}>
+                                                                                <div class="time-sloat d-flex align-items-center"><span class="" id="Vendor_order_pre_time_show" ></span> </div>
+                                                                            </div>
 
                                                                         </div>
-                                                                    </div>
-                                                                </div>
-                                                                @endif
-                                                            </div>
-                                                            @if($client_preference_detail->business_type != 'taxi')
-                                                                <div class="form-group">
-                                                                    {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}
-                                                                    <input class="form-control" name="auto_reject_time" type="number" value="{{@$vendor->auto_reject_time}}" min="0" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}} >
-
-                                                                </div>
-
-                                                                <div class="form-group">
-                                                                    {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
-                                                                    <select class="form-control" name="slot_minutes">
-                                                                        <option value="">{{__('Slot Duration')}}</option>
-                                                                        <option value="15" {{ isset($vendor) ? ($vendor->slot_minutes == '15'? 'selected':'') : ''}}>15 {{__(' Minutes')}}</option>
-                                                                        <option value="30" {{ isset($vendor) ? ($vendor->slot_minutes == '30'? 'selected':'') : ''}}>30 {{__(' Minutes')}}</option>
-                                                                        <option value="45" {{ isset($vendor) ? ($vendor->slot_minutes == '45'? 'selected':'') : ''}}>45 {{__(' Minutes')}}</option>
-                                                                        @for($i=1;$i<=8;$i++)
-                                                                            <option value="{{$i*60}}" {{ isset($vendor) ? ($vendor->slot_minutes == ($i*60)? 'selected':'') : ''}}>{{ $i. __(' Hour')}}</option>
-                                                                        @endfor
-                                                                    </select>
-                                                                </div>
-
-                                                                    <div class="form-group" id="order_min_amountInput">
-                                                                        <label for="title" class="control-label">{{__('Absolute Min Order Value [AMOV]')}}  @include('backend.primary_currency')
-                                                                        </label>
-                                                                        <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{@$vendor->order_min_amount}}" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}}>
-                                                                    </div>
-
-                                                            @endif
-                                                    </div>
-                                                </div>
-                                                {{-- @if(isset($user->is_superadmin) && ($user->is_superadmin == 1))
-                                                    <div class="col-md-4">
-                                                        <div class="al_advanced_details p-2">
-                                                            <p class="al_custom_title mb-1"><span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</p>
-
-                                                                <div class="form-group">
-                                                                    {!! Form::label('title', __('Commission Percent'),['class' => 'control-label']) !!}
-                                                                    <input class="form-control" name="commission_percent" type="text" value="{{@$vendor->commission_percent}}" onkeypress="return isNumberKey(event)"  onkeydown="if(this.value.length > 6) return false;">
-
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    {!! Form::label('title', __('Commission Fixed Per Order'),['class' => 'control-label']) !!}
-                                                                    <input class="form-control" name="commission_fixed_per_order" type="text" value="{{@$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
-                                                                    <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{@$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
-
-                                                                </div>
-
-                                                        </div>
-                                                    </div>
-                                                @endif --}}
-                                                <div class="col-md-4">
-
-                                                    <div class="col-md-12">
-                                                        {!! Form::label('title', getNomenclatureName('Vendors', true) .' '. __('Category') ,['class' => 'control-label']) !!}
-                                                        <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
-                                                            <ol class="dd-list">
-                                                                @forelse($builds as $build)
-                                                                @if($build['translation_one'])
-                                                                <li class="dd-item dd3-item" data-category_id="{{$build['id']}}">
-                                                                    <div class="dd3-content">
-
-                                                                            <img class="rounded-circle mr-1" src="{{$build['icon']['proxy_url']}}30/30{{$build['icon']['image_path']}}">
-                                                                            {{$build['translation_one']['name']}}
-
-                                                                        <span class="inner-div text-right">
-                                                                            <a class="action-icon" data-id="3" href="javascript:void(0)">
-                                                                                @if(in_array($build['id'], $VendorCategory))
-                                                                                    <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1" class="form-control activeCategory" data-plugin="switchery" checked >
-                                                                                @else
-                                                                                    <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1" class="form-control activeCategory" data-plugin="switchery" >
-                                                                                @endif
-                                                                                <input type="hidden" value="{{ $build['id'] }}">
-                                                                            </a>
-                                                                        </span>
-                                                                    </div>
-                                                                    @if(isset($build['children']))
-                                                                        <x-category :categories="$build['children']" :vendorcategory="$VendorCategory" :vendor="@$vendor"/>
                                                                     @endif
+                                                                    <div class="row">
+
+                                                                        @if($client_preference_detail->business_type != 'taxi')
+                                                                        <div class="col-md-4">
+                                                                            <div class="form-group">
+                                                                                {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
+                                                                                <div class="mt-md-1">
+                                                                                    <input type="checkbox" data-plugin="switchery" data-color="#43bee1" name="show_slot" class="form-control"  @if(@$vendor->show_slot == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-md-4">
+                                                                            <div class="form-group">
+
+                                                                                {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
+                                                                                <div class="mt-md-1">
+                                                                                    <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if(@$vendor->auto_accept_order == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                        @endif
+                                                                        @if(isset($user->is_superadmin) && ($user->is_superadmin == 1))
+                                                                        <div class="col-md-4">
+                                                                            <div class="form-group">
+                                                                                {!! Form::label('title', __('Show Profile Details'),['class' => 'control-label']) !!}
+                                                                                <div class="mt-md-1">
+                                                                                    <input type="checkbox" data-plugin="switchery" name="is_show_vendor_details" class="form-control" data-color="#43bee1" @if(@$vendor->is_show_vendor_details == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        @endif
+                                                                    </div>
+                                                                    @if($client_preference_detail->business_type != 'taxi')
+                                                                        <div class="form-group">
+                                                                            {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}
+                                                                            <input class="form-control" name="auto_reject_time" type="number" value="{{@$vendor->auto_reject_time}}" min="0" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}} >
+
+                                                                        </div>
+
+                                                                        <div class="form-group">
+                                                                            {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
+                                                                            <select class="form-control" name="slot_minutes">
+                                                                                <option value="">{{__('Slot Duration')}}</option>
+                                                                                <option value="15" {{ isset($vendor) ? ($vendor->slot_minutes == '15'? 'selected':'') : ''}}>15 {{__(' Minutes')}}</option>
+                                                                                <option value="30" {{ isset($vendor) ? ($vendor->slot_minutes == '30'? 'selected':'') : ''}}>30 {{__(' Minutes')}}</option>
+                                                                                <option value="45" {{ isset($vendor) ? ($vendor->slot_minutes == '45'? 'selected':'') : ''}}>45 {{__(' Minutes')}}</option>
+                                                                                @for($i=1;$i<=8;$i++)
+                                                                                    <option value="{{$i*60}}" {{ isset($vendor) ? ($vendor->slot_minutes == ($i*60)? 'selected':'') : ''}}>{{ $i. __(' Hour')}}</option>
+                                                                                @endfor
+                                                                            </select>
+                                                                        </div>
+
+                                                                            <div class="form-group" id="order_min_amountInput">
+                                                                                <label for="title" class="control-label">{{__('Absolute Min Order Value [AMOV]')}}  @include('backend.primary_currency')
+                                                                                </label>
+                                                                                <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{@$vendor->order_min_amount}}" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}}>
+                                                                            </div>
+
+                                                                    @endif
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                    {{-- @if(isset($user->is_superadmin) && ($user->is_superadmin == 1))
+                                                        <div class="col-md-4">
+                                                            <div class="al_advanced_details p-2">
+                                                                <p class="al_custom_title mb-1"><span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</p>
+
+                                                                    <div class="form-group">
+                                                                        {!! Form::label('title', __('Commission Percent'),['class' => 'control-label']) !!}
+                                                                        <input class="form-control" name="commission_percent" type="text" value="{{@$vendor->commission_percent}}" onkeypress="return isNumberKey(event)"  onkeydown="if(this.value.length > 6) return false;">
+
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        {!! Form::label('title', __('Commission Fixed Per Order'),['class' => 'control-label']) !!}
+                                                                        <input class="form-control" name="commission_fixed_per_order" type="text" value="{{@$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
+                                                                        <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{@$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
+
+                                                                    </div>
+
+                                                            </div>
+                                                        </div>
+                                                    @endif --}}
+                                                    @if(@$getAdditionalPreference['is_vendor_category_required_for_vendor_registration'] == '1')
+                                                    <div class="col-md-4">
+
+                                                        <div class="col-md-12">
+                                                            {!! Form::label('title', getNomenclatureName('Vendors', true) .' '. __('Category') ,['class' => 'control-label']) !!}
+                                                            <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
+                                                                <ol class="dd-list">
+                                                                    @forelse($builds as $build)
+                                                                    @if($build['translation_one'])
+                                                                    <li class="dd-item dd3-item" data-category_id="{{$build['id']}}">
+                                                                        <div class="dd3-content">
+
+                                                                                <img class="rounded-circle mr-1" src="{{$build['icon']['proxy_url']}}30/30{{$build['icon']['image_path']}}">
+                                                                                {{$build['translation_one']['name']}}
+
+                                                                            <span class="inner-div text-right">
+                                                                                <a class="action-icon" data-id="3" href="javascript:void(0)">
+                                                                                    @if(in_array($build['id'], $VendorCategory))
+                                                                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1" class="form-control activeCategory" data-plugin="switchery" checked >
+                                                                                    @else
+                                                                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1" class="form-control activeCategory" data-plugin="switchery" >
+                                                                                    @endif
+                                                                                    <input type="hidden" value="{{ $build['id'] }}">
+                                                                                </a>
+                                                                            </span>
+                                                                        </div>
+                                                                        @if(isset($build['children']))
+                                                                            <x-category :categories="$build['children']" :vendorcategory="$VendorCategory" :vendor="@$vendor"/>
+                                                                        @endif
+                                                                        </li>
                                                                     </li>
-                                                                </li>
-                                                                @endif
-                                                                @empty
-                                                                @endforelse
-                                                            </ol>
+                                                                    @endif
+                                                                    @empty
+                                                                    @endforelse
+                                                                </ol>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    @endif
                                                 </div>
-
-
-                                            </div>
-                                        </div><!-- al_custom_modal end -->
-                                </div>
+                                            </div><!-- al_custom_modal end -->
+                                    </div>
                                 <div class="form-row">
                                     <div class="col-12 checkbox-input">
                                         <input type="checkbox" id="html" name="check_conditions" value="1">

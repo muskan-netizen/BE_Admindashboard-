@@ -21,7 +21,7 @@
   </div>
 </div>
 <script>
- var preference = <?php echo App\Services\InventoryService::checkIfInventoryOn(); ?>;
+ var preference = '<?php echo App\Services\InventoryService::checkIfInventoryOn(); ?>';
   $(document).on('click', '#inventoryModalShow', function() {
     $.ajaxSetup({
         headers: {
@@ -39,7 +39,6 @@
           $('#inventoryLogin').attr('href', preference.inventory_service_key_url+"/admin/invenory_login/"+response.data);
           $('#inventoryModal').modal('show');
         }
-        
       },
     });
   })

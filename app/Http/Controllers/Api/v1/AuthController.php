@@ -19,13 +19,17 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs};
+use App\Http\Controllers\Client\VendorController;
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, Permissions, UserPermissions, Type, Category, VendorCategory};
 use Log;
+use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 
 class AuthController extends BaseController
 {
     use ApiResponser;
+    use CustomerSignupSuccessEmailTrait;
     /**
      * Get Country List
      * * @return country array
@@ -51,17 +55,33 @@ class AuthController extends BaseController
      */
     public function login(LoginRequest $loginReq)
     {
-        //dd($loginReq->all());
+        $phoneCheck = 0;
         $errors = array();
+        if(!is_numeric($loginReq->email)){
         $user = User::with('country')->where('email', $loginReq->email)->first();
         if (!$user) {
             $errors['error'] = __('Invalid email');
             return response()->json($errors, 422);
         }
+
         if (!Auth::attempt(['email' => $loginReq->email, 'password' => $loginReq->password])) {
             $errors['error'] = __('Invalid password');
             return response()->json($errors, 422);
         }
+
+    }else{
+      
+        $user  = User::with('country')->where('phone_number', $loginReq->email)->first();
+        if (!$user) {
+            $errors['error'] = __('Invalid phone number');
+            return response()->json($errors, 422);
+        }
+        $phoneCheck = 1;
+        Auth::login($user);
+        $loginReq->merge(['type'=>'phone','dial_code'=>$loginReq->dialCode,'phone_number'=>$loginReq->email,'sendSms'=>1]);
+        $this->sendToken($loginReq);
+    }
+        
         $user = Auth::user();
         $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
         $verified['is_email_verified'] = $user->is_email_verified;
@@ -161,6 +181,7 @@ class AuthController extends BaseController
         $data['cca2'] = $user->country ? $user->country->code : '';
         $data['callingCode'] = $user->country ? $user->country->phonecode : '';
         $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code : '';
+        $data['is_phone'] = $phoneCheck??0;
         return response()->json(['data' => $data]);
     }
 
@@ -552,6 +573,53 @@ class AuthController extends BaseController
                 );
             }
 
+            ####################################################
+            ## if p2p is enable then register user as a admin ##
+            ####################################################
+            if( getClientPreferenceDetail()->p2p_check ) {
+
+                $user->is_admin = 1;
+                $user->save();
+            
+                // Create vendor with default images
+                $vendor = new Vendor();
+                $vendor->logo = 'default/default_logo.png';
+                $vendor->banner = 'default/default_image.png';
+            
+                $vendor->status = 1;
+                $vendor->name = $user->name;
+                $vendor->p2p = 1;
+                $vendor->email = $user->email ?? '';
+                $vendor->phone_no = $user->phone_number ?? '';
+                $vendor->slug = Str::slug($user->name, "-");
+                $vendor->save();
+            
+                $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+            
+                UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
+            
+                foreach ($permission_details as $permission_detail) {
+                    UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
+                }
+
+                $response['vendor_id'] = $vendor->id;
+                $p2p_type = Type::where('service_type', 'p2p')->first();
+                if( !empty($p2p_type) ) {
+                    $category_id = Category::where('type_id', $p2p_type->id)->get();
+                    $categories_ids = [];
+                    
+                    if( !empty($category_id) ) {
+                        foreach($category_id as $key => $val) {
+                            $categories_ids[] = $val->id;
+                        }
+                    }
+                    $signReq->request->add(['selectedCategories'=> $categories_ids]);
+                    
+                }
+
+                $this->addDataSaveVendor($signReq, $vendor->id);
+            }
+
             if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                 $response['send_otp'] = 1;
                 if ($user->dial_code == "971") {
@@ -560,12 +628,11 @@ class AuthController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                //$body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
-                
-                $keyData = ['{user_name}'=>ucwords($user->name)];
-                $body = sendSmsTemplate('user-signup-sms',$keyData);
-
-                $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+               // $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
+                // $keyData = ['{user_name}'=>ucwords($user->name)]; 
+                // $body = sendSmsTemplate('user-signup-sms',$keyData);
+                // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             }
 
             return response()->json(['data' => $response]);
@@ -594,18 +661,16 @@ class AuthController extends BaseController
             $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
             $newDateTime = Carbon::now()->addMinutes(10)->toDateTimeString();
             if ($request->type == "phone") {
-                if ($user->is_phone_verified == 0) {
+                if ($user->is_phone_verified == 0 || $request->sendSms == 1) {
                     $otp = mt_rand(100000, 999999);
                     $user->phone_token = $otp;
                     $user->phone_token_valid_till = $newDateTime;
                     $user->save();
                     $provider = $data->sms_provider;
                     $to = '+' . $request->dial_code . $request->phone_number;
-                    
-                    $app_hash_key = ((!empty($request->app_hash_key))?" ".$request->app_hash_key:'');
-                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp,'{app_hash_key}'=>$app_hash_key];
+                   // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp]; 
                     $body = sendSmsTemplate('verify-account',$keyData);
-
                     if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
                         $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                         if ($send ==1) {
@@ -712,6 +777,7 @@ class AuthController extends BaseController
                 $user->save();
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             }
+            $this->sendCustomerSignupSuccessEmail($user);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -954,6 +1020,12 @@ class AuthController extends BaseController
             } else {
                 Cart::where('unique_identifier', $req->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
             }
+
+            if( getClientPreferenceDetail()->p2p_check ) {
+                $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
+                $data['vendor_id'] = $vendorUser->vendor_id ?? '';
+                
+             }
             $checkSystemUser = $this->checkCookies($user->id);
             $data['id'] = $user->id;
             $data['name'] = $user->name;
@@ -1063,6 +1135,9 @@ class AuthController extends BaseController
                 $keyData = ['{user_name}'=>auth()->user()->name??'','{otp_code}'=>$phoneCode,'{app_hash_key}'=>$request->app_hash_key??''];
                 $body = sendSmsTemplate('verify-account',$keyData);
                 $provider = $prefer->sms_provider;
+                $body = "Please enter OTP " . $phoneCode . " to verify your account.";
+                $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
+                $body = sendSmsTemplate('verify-account',$keyData);
                 if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                     $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     if ($send) {
@@ -1182,6 +1257,15 @@ class AuthController extends BaseController
                 } else {
                     Cart::where('unique_identifier', $request->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
                 }
+
+                if( getClientPreferenceDetail()->p2p_check ) {
+                   $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
+                   $data['vendor_id'] = $vendorUser->vendor_id ?? '';
+                }
+
+                   
+                
+                    
                 $checkSystemUser = $this->checkCookies($user->id);
                 $data['id'] = $user->id;
                 $data['name'] = $user->name;
@@ -1248,6 +1332,7 @@ class AuthController extends BaseController
                     return $this->errorResponse(__('User is Inactive.'), 404);
                 }
             }
+            
             
             $request->request->add(['phone_number' => $phone_number]);
             return $this->proceedToPhoneLogin($request);
@@ -1609,5 +1694,41 @@ class AuthController extends BaseController
             
         }
 
+    }
+    /**
+     * Mark user as a vendor
+     */
+    public function addDataSaveVendor(Request $request, $vendor_id){
+
+        $vendor = Vendor::where('id', $vendor_id)->firstOrFail();
+        $VendorController = new VendorController();
+
+        $request->merge(["return_json"=>1]);
+        $VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
+       
+        if($request->has('can_add_category')){
+            $vendor->add_category = $request->can_add_category == 'on' ? 1 : 0;
+        }
+        if ($request->has('assignTo')) {
+            $vendor->vendor_templete_id = $request->assignTo;
+        }
+
+        $vendor->save();
+        if($request->has('category_ids')){
+            foreach($request->category_ids as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        if($request->has('selectedCategories')){
+            foreach($request->selectedCategories as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Vendor created Successfully!',
+            'data' => $VendorConfigrespons
+        ]);
+        // pr($VendorConfigrespons);
     }
 }

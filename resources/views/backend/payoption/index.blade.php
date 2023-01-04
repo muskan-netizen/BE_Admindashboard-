@@ -59,7 +59,9 @@
                 <?php
                 $creds = json_decode($opt->credentials);
                 $id = (isset($creds->id)) ? $creds->id : '';
+                $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
                 $token = (isset($creds->token)) ? $creds->token : '';
+                $cod_min_amount = (isset($creds->cod_min_amount)) ? $creds->cod_min_amount : '';
                 $username = (isset($creds->username)) ? $creds->username : '';
                 $password = (isset($creds->password)) ? $creds->password : '';
                 $signature = (isset($creds->signature)) ? $creds->signature : '';
@@ -141,6 +143,21 @@
                         </div>
                         @endif
                     </div>
+
+
+                    @if ( (strtolower($opt->code) == 'cod') )
+                    <div class="mt-2" id="cod_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="cod_min_amount" class="mr-3">{{ __("Minimum Amount For Cod") }}</label>
+                                    <input type="text" name="cod_min_amount" id="cod_min_amount" class="form-control" value="{{@$cod_min_amount}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    @endif
 
                     @if ( (strtolower($opt->code) == 'easypaisa') )
                     <div class="mt-2" id="easypaisa_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>

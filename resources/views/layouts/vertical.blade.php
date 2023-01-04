@@ -20,6 +20,7 @@
        <style type="text/css">
 .loader_box {position: fixed;width: 100%;height: 100%;background: #00000075;top: 0;z-index:99999;left: 0;}
 .spinner-border{color: <?php echo getClientPreferenceDetail()->web_color; ?> !important; position: absolute;top: 50%;left: 0;right: 0;margin: 0 auto !important;display: block;}
+.full-width-area {margin-left: 0;width: 100%}
        </style>
 
     </head>
@@ -43,11 +44,14 @@
         <!-- Begin page -->
         <div id="wrapper">
             @include('layouts.shared/topbar')
+            
+            
             @include('layouts.shared/left-sidebar')
+            
 
         <!-- Start Page Content here -->
 
-        <div class="content-page">
+        <div class="content-page {{(is_p2p_vendor()) ? '' : ''}}">
             <div class="content">
                <!-- @php
                     $style = "";

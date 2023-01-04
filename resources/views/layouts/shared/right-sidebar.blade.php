@@ -27,7 +27,7 @@
 
               <form class="search-bar p-3">
                   <div class="position-relative">
-                      <input type="text" class="form-control" placeholder="Search...">
+                      <input type="text" class="form-control" placeholder="{{ __('Search') }}...">
                       <span class="mdi mdi-magnify"></span>
                   </div>
               </form>

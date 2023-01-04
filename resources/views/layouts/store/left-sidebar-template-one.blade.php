@@ -148,7 +148,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
         <div class="container-fluid d-block p-0">
             <div class="container p-0 align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
-                    <div class="row mobile-header align-items-center justify-content-between my-sm-2">
+                    <div class="row mobile-header align-items-center justify-content-between">
                         {{-- @include('frontend.home_page_1.main_menu') --}}
                         <div class="logo">
                             <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a>
@@ -203,19 +203,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             autocomplete="off"> </div>
                                     <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
                                 </div>
-                                <script type="text/template" id="search_box_main_div_template">
-                                    <a class="text-right al_search_viewall d-block mr-2 mb-1" id="search_viewall" href="#">{{__("View All")}}</a>
-                                    <div class="row mx-0">
-                                        <% _.each(results, function(result, k){%>
-                                        <a class="col-12 text-center al_search_results list-items pt-2" href="<%=result.redirect_url %>">
-
-                                            <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt="">
-                                            <div class="result-item-name">
-                                                <b><%=result.name %></b>
-                                            </div>
-                                        </a> <%}); %>
-                                    </div>
-                                </script>
+                                @include('layouts.store.search_template')
                                 @if(auth()->user() && $client_preference_detail->show_wishlist==1)
                                 <div class="icon-nav mr-2 d-none d-sm-block"> <a class="fav-button" href="{{route('user.wishlists')}}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
                                 @endif
@@ -338,9 +326,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                         <div class="list-box style-4" style="display:none;"
                                                             id="search_box_main_div"> </div>
                                                     </div>
-                                                    <script type="text/template" id="search_box_main_div_template">
-                                                        <a class="text-right d-block mr-2 mb-1" id="search_viewall" href="#">{{ __('View All') }}</a> <div class="row mx-0"> <% _.each(results, function(result, k){%> <a class="col-12 text-center list-items pt-2" href="<%=result.redirect_url %>"> <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt=""> <div class="result-item-name"><b><%=result.name %></b> </div></a> <%}); %> </div>
-                                                    </script> @if (auth()->user())
+                                                    @include('layouts.store.search_template')
+                                                    @if (auth()->user())
                                                     @if ($client_preference_detail->show_wishlist == 1)
                                                     <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button"
                                                             href="{{ route('user.wishlists') }}"> <i class="fa fa-heart"

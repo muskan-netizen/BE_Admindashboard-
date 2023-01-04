@@ -236,13 +236,16 @@
                                         <h4 class="mb-0"> {{ __('Payout') }}</h4>
                                     </div>
                                     <div class="col-6 d-flex align-items-center justify-content-end mb-3">
-
+                                       @php 
+                                        $razorpayConnect = false;
+                                       @endphp
                                         @foreach ($payout_options as $opt)
                                             @if($opt->code != 'cash')
                                             @if($opt->is_connected == 1)
                                                 <h5 class="mr-2">
                                                     <i class="fa fa-check text-success mr-2"></i><b>{{ __('Connected to') .' '. __($opt->title) }}</b>
                                                 </h5>
+                                                @php $razorpayConnect =  true; @endphp
                                             @else
                                                 <button type="button" class="btn btn-info waves-effect text-sm-right connect_btn mr-2" id="{{$opt->code}}_connect_btn" 
                                                     @if($opt->code == 'stripe')
@@ -255,11 +258,13 @@
                                                 >
                                                     {{ __("Connect to") .' '. __($opt->title) }}
                                                 </button>
+                                               
                                             @endif
                                             @endif
                                         @endforeach
-
+                                       
                                         <button type="button" class="btn btn-info waves-effect text-sm-right" data-toggle="modal" data-target="#pay-receive-modal">{{ __("Payout") }}</button>
+                                        @if($razorpayConnect == true)<button type="button" class="btn btn-info waves-effect text-sm-right ml-2" data-toggle="modal" data-target="#razorpay-connect-modal">{{ __("Add New Bank") }}</button> @endif
                                     </div>
                                     <div class="col-md-12">
                                         <div class="table-responsive">

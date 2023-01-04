@@ -3685,6 +3685,8 @@ label.position-relative.control-label {
     overflow-x: visible;
 }
 
+#import-product .modal-dialog {max-width: 600px;}
+#import-product .modal-dialog .table-responsive {overflow-x: auto;}
 ul.nav-second-level.p-0.mx-2 span.mdi.mdi-book-outline,
 ul.nav-second-level.p-0.mx-2 span.mdi.mdi-chat-processing-outline {
     margin-top: -4px;
@@ -3860,6 +3862,14 @@ table.dataTable {
     overflow-x: visible;
 }
 
+table.dataTable {width: 100% !important;}
+.dataTables_scrollFootInner {width: 100% !important;}
+.dataTables_scrollFoot {width: 100% !important;}
+.dataTables_scrollHeadInner {width: 100% !important;}
+.dataTable {width: 100% !important;}
+.commonModalLabel {display: flex;}
+#import-product .modal-dialog {max-width: 600px;}
+#import-product .modal-dialog .table-responsive {overflow-x: auto;}
 span.mdichat,
 span.mdibookoutline,
 span.mdibookoutline svg {
@@ -4736,4 +4746,3 @@ body[dir=rtl] .modal-header .close {
 }
 
 
-/* Mtn mom payment gateway css*/

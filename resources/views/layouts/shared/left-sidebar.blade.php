@@ -1,3 +1,6 @@
+@php
+    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card']);
+@endphp
 <div class="left-side-menu">
     <div class="logo-box m-hide d-lg-block">
         @php
@@ -129,6 +132,22 @@
                                     </a>
                                 </li>
                             @endif
+
+                            @if(@$getAdditionalPreference['is_seller_module'] == '1')
+                                <li>
+                                    <a href="{{route('seller.index')}}">
+                                    <span class="icon-vendor"></span>
+                                    @php
+                                        $vendormenu = getNomenclatureName('Sellers', true);
+                                        $vendormenulabel = ($vendormenu=="Sellers")?__('Sellers'):__($vendormenu);
+
+                                    @endphp
+                                        {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
+                                        <span>{{ __($vendormenulabel) }}</span>
+                                    </a>
+                                </li>
+                            @endif
+
                             @if(count(array_intersect($accounting_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="#sidebaraccounting" data-toggle="collapse">
@@ -177,6 +196,16 @@
                                                 </li>
                                                 <li>
                                                     <a href="{{route('backend.order.refund')}}">{{ __('Order Refunds') }}</a>
+                                                </li>
+                                            @endif
+                                            @if( Auth::user()->is_superadmin == 1 && @$getAdditionalPreference['is_gift_card']==1)
+                                                <li>
+                                                    <a href="{{route('account.redeemedcard')}}">{{ __('Gift Cards') }}</a>
+                                                </li>
+                                            @endif
+                                            @if( Auth::user()->is_superadmin == 1)
+                                                <li>
+                                                    <a href="{{route('account.userSubscription')}}">{{ __('Subscription Discount') }}</a>
                                                 </li>
                                             @endif
                                         </ul>
@@ -338,9 +367,15 @@
                                             <a href="{{route('cms.sms')}}">{{ __('SMS') }}</a>
                                         </li>
                                     @endif
+                                    @if(in_array('reasons',$allowed) || Auth::user()->is_superadmin == 1)
+                                        <li>
+                                            <a href="{{route('reason.index')}}">{{ __('Reasons') }}</a>
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
                         </li>
+
                         @if(in_array('catalog',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('category.index')}}">
@@ -472,6 +507,15 @@
                             <span>{{ __("EXTRA") }}</span>
                         </a>
                         <ul class="nav-second-level p-0 mx-2">
+                            
+                            @if( Auth::user()->is_superadmin == 1 && @$getAdditionalPreference['is_gift_card']==1)
+                            <li>
+                                <a href="{{route('giftCart.index')}}">
+                                    <span class="icon-settings-1-1"></span>
+                                    <span> {{ __('Gift Card') }} </span>
+                                </a>
+                            </li>
+                            @endif
                             @if(Auth::user()->is_superadmin == 1 && $client_preference->celebrity_check == 1)
                                 @if(in_array('celebrity',$allowed) || Auth::user()->is_superadmin == 1)
                                     <li>

@@ -155,7 +155,6 @@
 
                                                     </label>
                                                 </div>
-
                                             </div>
                                         </div>
                                         <span class="alTemplateName mt-3 w-100">{{$homepage_style->name}}</span>
@@ -165,6 +164,7 @@
                             </div>
                         </div>
                     </div>
+                    
 
                     <div class="col-md-4 h-100">
                         <div class="card card-box h-100">
@@ -361,6 +361,57 @@
             </div>
         </div>
         <!-- Payment Method Icons end -->
+
+        <div class="col-md-6 mb-3">
+            <div class="card-box pb-2 h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                   <h4 class="header-title m-0">{{ __("Order Delivery Status Icons") }}</h4>
+                </div>
+                <form id="order-status-icon" method="post" enctype="multipart/form-data">
+                <div class="table-responsive mt-3 mb-1">
+                   <table class="table table-centered table-nowrap table-striped">
+                      <thead>
+                         <tr>
+                            <th>{{ __("Name") }}</th>
+                            <th>{{ __("Image") }}</th>
+                         </tr>
+                      </thead>
+                      <tbody id="post_list">
+                         @forelse($orderDeliveryIcons as $k=>$icon)
+
+                        @php
+                            $imgUrl = asset($icon->image);
+                            if(!empty($icon->image_url['proxy_url']))
+                            {
+                                $imgUrl = $icon->image_url['proxy_url'].'40/40'.$icon->image_url['image_path'];
+                            }
+                        @endphp
+                         <tr>
+                            <td>
+                               <a class="edit_payment_method_btn" data-payment_method_id="{{$icon->id}}" href="javascript:void(0)">
+                                  {{$icon->name }}
+                               </a>
+                            </td>
+                            <td>                            
+                                <input type="file" accept="image/*"  data-default-file="{{$imgUrl}}" data-plugins="dropify" name="image_{{ $icon->id }}" class="dropify order_status_icon" id="icon_image" width="40px" />
+                                <span class="invalid-feedback" role="alert">
+                                    <strong></strong>
+                                </span>
+                                <label class="logo-size d-block mt-1">{{ __("Icon Size") }} 34x26</label>
+                            </td>
+                         </tr>
+                         @empty
+                         <tr align="center">
+                            <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                         </tr>
+                         @endforelse
+                      </tbody>
+                   </table>
+                </div>
+            </form>
+            </div>
+        </div>
+
     </div>
 
 
@@ -440,6 +491,32 @@
                                 <a class="action-icon openBannerModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
+                                @endif
+
+                                @if($home_page_label->slug == 'selected_products')
+                                <a class="action-icon openProductsModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+                                @endif
+
+                                @if($home_page_label->slug == 'single_category_products')
+                                <div class="language-input style-4">
+                                <div class="row no-gutters flex-nowrap align-items-center my-2">
+                                <div class="col pl-1">
+                                    <select class="form-control" id='product_category' name="product_category"  data-placeholder="Choose ..." required>
+                                        <option value="">{{ __("Select Product Category") }}</option>
+                                        @foreach($single_category_products['categories'] as $category)
+                                        <option value="{{$category->id}}" @if(@$selected_single_category_products->category_id == $category->id) selected="selected" @endif>
+                                            @if(!is_null($category->parent) && $category->parent_id > 1)
+                                            {{@$category->parent->translation_one->name}}-> @endif
+                                            {{@$category->translation_one->name}}
+                                            @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                </div>
+                                </div>
                                 @endif
                                 @if($home_page_label->slug == 'dynamic_page')
                                 <a class="action-icon edit_dynamic_page" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
@@ -543,12 +620,83 @@
             </div>
             <form id="save_edit_banner_form" method="post" enctype="multipart/form-data">
                 @csrf
-                @method('PUT')
+                @method('POST')
                 <div class="modal-body" id="editCardBox">
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">{{ __("Submit") }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="home_products" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="home_productsLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Add Products") }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <form id="save_home_products_form" method="post" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="modal-body" >
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="row">
+
+                                <div class="col-md-5 col-5 mb-3">
+
+                                    <label>{{ __("Choose Categories") }}</label>
+                                    <select class="form-control" id='categoryForProducts' name="product_category" data-placeholder="Choose ..." required>
+                                        <option value="">{{ __("Select Product Category") }}</option>
+                                        @foreach($categories as $category)
+                                        <option value="{{$category->id}}" >
+                                            @if(!is_null($category->parent) && $category->parent_id > 1)
+                                            {{@$category->parent->translation_one->name}}-> @endif
+                                            {{@$category->translation_one->name}}
+                                            @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-5 col-5 mb-3">
+                                        <label>{{ __("Select Products") }}</label>
+                                        <div id="editProductsBox">
+                                            <select class="form-control" id='product_id' name="product_id" data-placeholder="Choose ..." required>
+                                                <option value="">{{ __("Select Product") }}</option>
+                                            </select>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12 col-12 mb-3">
+                                    <label>{{ __("Selected Products") }}</label>
+                                    <select class="form-control select2-multiple" id='product_ids' data-toggle="select2" name="product_ids[]" multiple data-placeholder="Choose ..." required>
+                                        <option value="">{{ __("Select Product") }}</option>
+                                        @foreach($products as $product)
+                                        <option value="{{$product->id}}" selected="selected">
+                                            {{$product->translation[0]->title ?? ''}}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info waves-effect waves-light submitHomeProductsForm">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -659,6 +807,7 @@ $(document).on('click', '.deletePickupSection', function() {
         zIndex: 9999
     }
     $(document).ready(function() {
+        $('.select2-multiple').select2();
         var color1 = new jscolor('#primary_color_option', options);
     });
 
@@ -807,6 +956,39 @@ $(document).on('click', '.deletePickupSection', function() {
         });
     }
 
+    $('.order_status_icon').change(function() {
+        var form = document.getElementById('order-status-icon');
+        for (instance in CKEDITOR.instances) {
+        CKEDITOR.instances[instance].updateElement();
+        }
+        var formData = new FormData(form);
+        var data_uri = "{{route('styling.updateOrderStatusIcons')}}";
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+
+
+        $.ajax({
+            type: "post",
+            url: data_uri,
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                Accept: "application/json"
+            },
+            success: function(response) {
+                if (response.status == 'success') {
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                    var r = document.querySelector(':root');
+                    r.style.setProperty('--theme-deafult', 'lightblue');
+                }
+            }
+        });
+    });
+
     function submitData() {
         var form = document.getElementById('favicon-form');
         for (instance in CKEDITOR.instances) {
@@ -834,7 +1016,6 @@ $(document).on('click', '.deletePickupSection', function() {
             },
             success: function(response) {
                 if (response.status == 'success') {
-                    console.log(response.message);
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                     var r = document.querySelector(':root');
                     r.style.setProperty('--theme-deafult', 'lightblue');
@@ -842,6 +1023,7 @@ $(document).on('click', '.deletePickupSection', function() {
             }
         });
     }
+
     $("#homepage_datatable ol").sortable({
         placeholder: "ui-state-highlight",
         update: function(event, ui) {
@@ -996,6 +1178,64 @@ $(document).on('click', '.deletePickupSection', function() {
         });
     });
 
+    $(".openProductsModal").click(function (e) {
+        $('#home_products').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+    $(document).on( 'change','#product_id', function (e) {
+        var productId  = $(this).val();
+        var text  = $("#product_id option:selected").text();
+        console.log(productId, ' ', text);
+        if ($('#product_ids').find("option[value='" + productId + "']").length) {
+           
+        } else { 
+            // Create a DOM Option and pre-select by default
+            var newOption = new Option(text, productId, true, true);
+
+            // Append it to the select
+            $('#product_ids').append(newOption).trigger('change');
+          
+        } 
+    });
+    $(document).on( 'change','#categoryForProducts', function (e) {
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    e.preventDefault();
+
+    var uri = "{{route('get-products-data-in-modal')}}";
+
+    var category_id = $(this).val();
+
+
+    $.ajax({
+        type: "get",
+        url: uri,
+        data: {category_id:category_id},
+        dataType: 'json',
+        beforeSend: function(){
+            $(".loader_box").show();
+        },
+        success: function (data) {
+            if(data.success){
+                $('#home_products #editProductsBox').html(data.html);
+            }
+           
+        },
+        error: function (data) {
+            console.log('data2');
+        },
+        complete: function(){
+            $('.loader_box').hide();
+        }
+    });
+    });
+
 
 
     $(document).on('click', '.submitEditForm', function(e) {
@@ -1003,6 +1243,15 @@ $(document).on('click', '.deletePickupSection', function() {
         var form =  document.getElementById('save_edit_banner_form');
         var formData = new FormData(form);
         var url =  "{{route('update-image-data-in-modal')}}";
+        saveData(formData, 'edit', url);
+
+    });
+
+    $(document).on('click', '.submitHomeProductsForm', function(e) {
+        e.preventDefault();
+        var form =  document.getElementById('save_home_products_form');
+        var formData = new FormData(form);
+        var url =  "{{route('update-products-data-in-modal')}}";
         saveData(formData, 'edit', url);
 
     });

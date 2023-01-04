@@ -5,6 +5,7 @@ use App\Http\Controllers\Client\CMS\PageController;
 use App\Http\Controllers\Client\CMS\EmailController;
 use App\Http\Controllers\Client\CMS\NotificationController;
 use App\Http\Controllers\Client\CMS\SmsController;
+use App\Http\Controllers\Client\CMS\ReasonController;
 use App\Http\Controllers\Client\SocialMediaController;
 use App\Http\Controllers\Client\VendorPayoutController;
 use App\Http\Controllers\Client\DownloadFileController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Client\CategoryKycDocumentController;
 use App\Http\Controllers\Client\Accounting\PromoCodeController;
 use App\Http\Controllers\Client\UserRegistrationDocumentController;
 use App\Http\Controllers\Client\VendorRegistrationDocumentController;
+use App\Http\Controllers\Client\SubscriptionPlansUserController;
 use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
@@ -24,6 +26,9 @@ use App\Http\Controllers\Client\ProductFaqController;
 use App\Http\Controllers\Client\EstimationController;
 use App\Http\Controllers\Client\RazorpayGatwayController;
 use App\Http\Controllers\Client\StaticDropoffController;
+
+use App\Http\Controllers\Client\GiftCard\GiftcardController;
+
 
 Route::get('email-test', function () {
     $details['email'] = 'testmail@yopmail.com';
@@ -67,6 +72,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('cms/sms/{id}', [SmsController::class, 'show'])->name('cms.sms.show');
         Route::post('cms/sms/update', [SmsController::class, 'update'])->name('cms.sms.update');
 
+        // Route::get('cms/reasons', [ReasonController::class, 'index'])->name('cms.reasons');
+        Route::resource('reason', 'Client\CMS\ReasonController');
+
         Route::get('account/orders', [OrderController::class, 'index'])->name('account.orders');
         Route::get('account/promo-code', [PromoCodeController::class, 'index'])->name('account.promo.code');
         Route::post('woocommerce/save', [ProductImportController::class, 'postWoocommerceDetail'])->name('woocommerce.save');
@@ -87,7 +95,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/payout/create-razorpay-details', [RazorpayGatwayController::class, 'razorpay_create_contact'])->name('vendor.razorpay_connect');
         Route::post('vendor/payout/create-razorpay-add-funds', [RazorpayGatwayController::class, 'razorpay_add_funds_accounts'])->name('vendor.add.fund.account');
 
-        
+
 
         Route::get('account/vendor/payout/requests', [VendorPayoutController::class, 'vendorPayoutRequests'])->name('account.vendor.payout.requests');
         Route::get('account/vendor/payout/requests/filter', [VendorPayoutController::class, 'vendorPayoutRequestsFilter'])->name('account.vendor.payout.requests.filter');
@@ -132,6 +140,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('mobilebanner/toggle', 'Client\MobileBannerController@toggleAllBanner')->name('mobilebanner.toggle');
         Route::get('web-styling', 'Client\WebStylingController@index')->name('webStyling.index')->middleware('onlysuperadmin');
         Route::post('web-styling/updateWebStyles', 'Client\WebStylingController@updateWebStyles')->name('styling.updateWebStyles');
+        Route::post('web-styling/updateOrderIcon', 'Client\WebStylingController@updateOrderStatusIcons')->name('styling.updateOrderStatusIcons');
         Route::post('web-styling/updatePaymentMethods', 'Client\WebStylingController@updatePaymentMethods')->name('styling.updatePaymentMethods');
         Route::post('web-styling/updatePaymentIcons', 'Client\WebStylingController@updatePaymentIcons')->name('styling.updatePaymentIcons');
         Route::post('web-styling/updateWebStylesNew', 'Client\WebStylingController@updateWebStylesNew')->name('styling.updateWebStylesNew');
@@ -154,6 +163,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
         Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');
         Route::post('app-styling/updateTabBar', 'Client\AppStylingController@updateTabBar')->name('styling.updateTabBar');
+        Route::post('app-styling/updateAppStylesNew', 'Client\AppStylingController@updateAppStylesNew')->name('styling.updateAppStylesNew');
+        Route::post('app-styling/pickup-append-section', 'Client\AppStylingController@appendPickupSection')->name('app.pickup.append.section');
         Route::post('app-styling/updateHomePage', 'Client\AppStylingController@updateHomePage')->name('styling.updateHomePage');
         Route::post('app-styling/updateSignupTagLine', 'Client\AppStylingController@updateSignupTagLine')->name('styling.updateSignupTagLine');
         Route::post('app-styling/addTutorials', 'Client\AppStylingController@addTutorials')->name('styling.addTutorials');
@@ -174,7 +185,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendorregistrationdocument/create', [VendorRegistrationDocumentController::class, 'store'])->name('vendor.registration.document.create');
         Route::post('vendorregistrationdocument/update', [VendorRegistrationDocumentController::class, 'update'])->name('vendor.registration.document.update');
         Route::post('vendor/registration/document/delete', [VendorRegistrationDocumentController::class, 'destroy'])->name('vendor.registration.document.delete');
-
+        // Attribute routes
+        Route::resource('attribute', 'Client\AttributeController');
+        Route::post('delete-attribute', 'Client\AttributeController@deleteAttribute')->name('deleteAttribute');
+        Route::any('updateAttributeOption', 'Client\AttributeController@updateAttributeOption')->name('updateAttributeOption');
 
         // user registreation document
         Route::resource('userregistrationdocument', 'Client\UserRegistrationDocumentController');
@@ -249,6 +263,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor/catalogs/{id}', 'Client\VendorController@vendorCatalog')->name('vendor.catalogs');
         Route::get('vendor/product/export/{id}', 'Client\VendorController@vendorProductExport')->name('vendor.product.export');
         Route::get('vendor/product/list/{id}', 'Client\VendorController@VendorProductFilter')->name('vendor.product');
+        Route::get('seller/product/list/{id}', 'Client\SellerController@SellerProductFilter')->name('seller.product');
         Route::get('global/product/list', 'Client\VendorController@VendorGlobalProductFilter')->name('vendor.global.product');
         Route::get('vendor/inventory-import/{id}', 'Client\VendorController@getInventoryImport')->name('get.inventory.import');
         Route::post('vendor/get-inventory-store-products', 'Client\VendorController@getInventoryStoreProducts')->name('get.inventory.store.products');
@@ -260,6 +275,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/saveConfig/{id}', 'Client\VendorController@updateConfig')->name('vendor.config.update');
         Route::post('vendor/saveConfig/profile/{id}', 'Client\VendorController@updateVendorConfigProfile')->name('vendor.config.update.profile');
         Route::post('vendor/social/media/urls', 'Client\VendorController@updateVendorSocialMediaUrls')->name('vendor.social.media.urls');
+        Route::post('vendor/social/media/delete', 'Client\VendorController@deleteVendorSocialMediaUrl')->name('vendor.social.media.delete');
         Route::post('vendor/saveLocation/{id}', 'Client\VendorController@updateLocation')->name('vendor.config.pickuplocation');
         Route::post('vendor/activeCategory/{id}', 'Client\VendorController@activeCategory')->name('vendor.category.update');
         Route::post('vendor/addCategory/{id}', 'Client\TableBookingController@storeCategory')->name('vendor.addCategory');
@@ -274,6 +290,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/table/delete/{id}', 'Client\TableBookingController@destroyTable')->name('vendor.table.delete');
         Route::post('vendor/parentStatus/{id}', 'Client\VendorController@checkParentStatus')->name('category.parent.status');
         Route::get('calender/data/{id}', 'Client\VendorSlotController@returnJson')->name('vendor.calender.data');
+
+        Route::get('seller/filterdata', 'Client\SellerController@getFilterData')->name('seller.filterdata');
+        Route::resource('seller', 'Client\SellerController');
+        Route::get('seller/catalogs/{id}', 'Client\SellerController@sellerCatalog')->name('seller.catalogs');
 
         Route::get('calender/pickup/data/{id}', 'Client\Laundry\PickupSlotController@returnJson')->name('vendor.calender.pickup'); // Added by Ovi
         Route::post('calender/pickup/slot/{id}', 'Client\Laundry\PickupSlotController@store')->name('vendor.pickup.saveSlot'); // Added by Ovi
@@ -366,6 +386,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('updateAll', 'Client\PaymentOptionController@updateAll')->name('payoption.updateAll');
         Route::post('shippment/updateAll', 'Client\ShippingOptionController@updateAll')->name('shipoption.updateAll');
         Route::post('shippo/updateAll', 'Client\ShippoController@updateAll')->name('shippo.updateAll');
+        Route::post('kwikapi/updateAll', 'Client\DeliveryOptionController@updateKwikapi')->name('kwikapi.updateAll');
         Route::post('payoutUpdateAll', 'Client\PaymentOptionController@payoutUpdateAll')->name('payoutOption.payoutUpdateAll');
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');
@@ -513,6 +534,22 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::post('mtn-mom-api-key', 'Client\PaymentOptionController@MtnmomoApiKey')->name('payoption.mtn_momo_api_key');
 
+        Route::post('long_term_service/updateBooking',     'Client\LongTermServiceController@updateBooking')->name("long_term_service.updateBooking");
+
+        /**
+         * Gift Card.
+         */
+        Route::get('gitcart',         'Client\GiftCard\GiftcardController@index')->name("giftCart.index");
+        Route::post('gitcart/store',   'Client\GiftCard\GiftcardController@store')->name("giftCart.store");
+        Route::get('gitcart/show/{id}',   'Client\GiftCard\GiftcardController@edit')->name("giftCart.show");
+        Route::post('gitcart/update/{id}',   'Client\GiftCard\GiftcardController@update')->name("giftCart.update");
+        Route::get('gitcart/delete/{id}',   'Client\GiftCard\GiftcardController@destroy')->name("giftCart.destroy");
+
+        Route::get('account/redeemedcard', [GiftcardController::class, 'redeemedCard'])->name('account.redeemedcard');
+        Route::get('giftcard/list/filter', [GiftcardController::class, 'filter'])->name('gift.card.list.filter');
+
+        Route::get('account/usersubscriptions', [SubscriptionPlansUserController::class, 'userSubscriptionReport'])->name('account.userSubscription');
+        Route::get('usersubscriptions/list/filter', [SubscriptionPlansUserController::class, 'subscriptionfilter'])->name('subscription.list.filter');
 
     });
 });

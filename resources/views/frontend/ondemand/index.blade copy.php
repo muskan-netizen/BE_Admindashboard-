@@ -56,7 +56,7 @@ use Illuminate\Support\Arr;
 
                         @endif
 
-                        <div class="card-box">
+                        <div class="card-box side-card">
                                      <!-- static html -->
 
                                 @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
@@ -71,7 +71,7 @@ use Illuminate\Support\Arr;
                                                     <div class='' id='section_set{{$key}}'>
                                                         @if(!empty($childs))
                                                         <div class="service-img mb-3">
-                                                            <img class="img-fluid" src="{{$childs->image['proxy_url'] . '1000/200' . $childs->image['image_path']}}" alt="">
+                                                            <img class="img-fluid" src="{{$childs->image['proxy_url'] . '1000/300' . $childs->image['image_path']}}" alt="">
                                                         </div>
                                                         @endif
 
@@ -177,7 +177,7 @@ use Illuminate\Support\Arr;
 
                                                 @if(!empty($category->image))
                                                 <div class="service-img mb-3">
-                                                    <img class="img-fluid" src="{{$category->image['proxy_url'] . '1000/200' . $category->image['image_path']}}" alt="">
+                                                    <img class="img-fluid" src="{{$category->image['proxy_url'] . '1000/300' . $category->image['image_path']}}" alt="">
                                                 </div>
                                                 @endif
                                                 @if($listData->isNotEmpty())

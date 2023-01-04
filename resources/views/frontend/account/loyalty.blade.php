@@ -15,7 +15,7 @@
 
 <section class="section-b-space">
     <div class="container">
-        <div class="row my-md-3">
+        <div class="row my-md-3 mt-5 pt-4">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
                 @include('layouts.store/profile-sidebar')
@@ -27,9 +27,9 @@
                             <h2>{{ __('My Loyalty') }}</h2>
                         </div>
                         <div class="card-box al_inner_card">
-                            @if($current_loyalty)
-                                <div class="row">
-                                    <div class="offset-md-3 col-md-6">
+                            <div class="row">
+                            <div class="offset-md-3 col-md-6">
+                                    @if($current_loyalty)
                                         <div class="card-box ">
                                             <div class="row align-items-center">
                                                 <div class="col-4">
@@ -45,6 +45,10 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        @else
+                                        <div class="text-center">{{__('Not Available')}}</div>
+                                    @endif
 
                                         <div class="row">
                                             <div class="col-md-6 text-center">
@@ -70,9 +74,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            @else
-                                <div class="text-center">{{__('Not Available')}}</div>
-                            @endif
+                          
 
                            <div class="row">
                                 <div class="offset-lg-1 col-lg-10">

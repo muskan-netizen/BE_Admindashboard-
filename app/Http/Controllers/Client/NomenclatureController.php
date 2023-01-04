@@ -17,8 +17,8 @@ class NomenclatureController extends BaseController
      */
     public function store(Request $request)
     {
-       // pr($request->all());exit();
         NomenClature::updateOrCreate(['label' => 'vendors'], ['label' => 'vendors']);
+        NomenClature::updateOrCreate(['label' => 'sellers'], ['label' => 'sellers']);
         NomenClature::updateOrCreate(['label' => 'Loyalty Cards'], ['label' => 'Loyalty Cards']);
         NomenClature::updateOrCreate(['label' => 'Takeaway'], ['label' => 'Takeaway']);
         NomenClature::updateOrCreate(['label' => 'Search'], ['label' => 'Search']);
@@ -46,14 +46,14 @@ class NomenclatureController extends BaseController
         NomenClature::updateOrCreate(['label' => 'Hold On! We are looking for drivers nearby!'], ['label' => 'Hold On! We are looking for drivers nearby!']);
         NomenClature::updateOrCreate(['label' => 'Product Name'], ['label' => 'Product Name']);
         NomenClature::updateOrCreate(['label' => 'Stock Status'], ['label' => 'Stock Status']);
+        NomenClature::updateOrCreate(['label' => 'Variant'], ['label' => 'Variant']);
 
 
+        $label_array = ['vendors','sellers','Loyalty Cards','Takeaway','Search','Wishlist','Dine-In','Delivery','Zip Code','Want To Tip','Fixed Fee','Royo Dispatcher', 'Referral Code',  'Orders', 'Rides','Rentals','Pick & Drop','Services','Laundry','Product Order Form','Appointment','Enter Drop Location','Vendor Name','Ride Accepted','Searching For Nearby Drivers','Hold On! We are looking for drivers nearby!','Product Name','Stock Status', 'Variant'];
+        $name_array = ['names','seller_names','loyalty_cards_names','takeaway_names','search_names','wishlist_names','dinein_names','delivery_names','zipCode_name','wantToTip_name','FixedFee_name','royo_dispatcher_names','referral_code_names', 'orders_names', 'rides_names','rentals_names','pick_drop_names','on_demand_names','laundry_names','product_order_form_names','appointment_names','enter_drop_location_names','enter_vendor_name_names','ride_accepted_names','search_nearby_driver_names','looking_driver_names','product_names','stock_status_names', 'variant_names'];
 
-        $label_array = ['vendors','Loyalty Cards','Takeaway','Search','Wishlist','Dine-In','Delivery','Zip Code','Want To Tip','Fixed Fee','Royo Dispatcher', 'Referral Code',  'Orders', 'Rides','Rentals','Pick & Drop','Services','Laundry','Product Order Form','Appointment','Enter Drop Location','Vendor Name','Ride Accepted','Searching For Nearby Drivers','Hold On! We are looking for drivers nearby!','Product Name','Stock Status'];
-        $name_array = ['names','loyalty_cards_names','takeaway_names','search_names','wishlist_names','dinein_names','delivery_names','zipCode_name','wantToTip_name','FixedFee_name','royo_dispatcher_names','referral_code_names', 'orders_names', 'rides_names','rentals_names','pick_drop_names','on_demand_names','laundry_names','product_order_form_names','appointment_names','enter_drop_location_names','enter_vendor_name_names','ride_accepted_names','search_nearby_driver_names','looking_driver_names','product_names','stock_status_names'];
+        $lang_id_array = ['language_ids','seller_language_ids','loyalty_cards_language_ids','takeaway_language_ids','search_language_ids','wishlist_language_ids','dinein_language_ids','delivery_language_ids','zipCode_language_ids','wantToTip_language_ids','FixedFee_language_ids','royo_dispatcher_language_ids','referral_code_language_ids', 'orders_language_ids', 'rides_language_ids','rentals_language_ids','pick_drop_language_ids','on_demand_language_ids','laundry_language_ids','product_order_form_language_ids','appointment_language_ids','enter_drop_location_language_ids','enter_vendor_name_language_ids','ride_accepted_language_ids','search_nearby_driver_language_ids','looking_driver_language_ids','product_name_language_ids','stock_status_language_ids', 'variant_language_ids'];
 
-
-        $lang_id_array = ['language_ids','loyalty_cards_language_ids','takeaway_language_ids','search_language_ids','wishlist_language_ids','dinein_language_ids','delivery_language_ids','zipCode_language_ids','wantToTip_language_ids','FixedFee_language_ids','royo_dispatcher_language_ids','referral_code_language_ids', 'orders_language_ids', 'rides_language_ids','rentals_language_ids','pick_drop_language_ids','on_demand_language_ids','laundry_language_ids','product_order_form_language_ids','appointment_language_ids','enter_drop_location_language_ids','enter_vendor_name_language_ids','ride_accepted_language_ids','search_nearby_driver_language_ids','looking_driver_language_ids','product_name_language_ids','stock_status_language_ids'];
         $newrequest = $request->toArray();  
             
         for($j=0;$j<count($label_array);$j++)
@@ -86,7 +86,8 @@ class NomenclatureController extends BaseController
     }
 
     public function store_backup(Request $request)
-    {       
+    {   
+        dd($request->all());    
         $names = $request->names;
         $loyalty_cards_language_ids = $request->loyalty_cards_language_ids;
         $loyalty_cards_names = $request->loyalty_cards_names;
