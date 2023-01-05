@@ -2840,7 +2840,7 @@ $(document).ready(function () {
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
         var addLongTerm = 0;
-        vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
+        //vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
 
         if (Product_quantity <= 0) {
             Swal.fire({
