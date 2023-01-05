@@ -189,7 +189,8 @@
             left: 0;
             height: 100%;
             overflow-x: hidden;
-            overflow-y: scroll
+            overflow-y: scroll;
+            width: 100%;
         }
     </style>
     <section id="alTaxiBookingWrapper" class="cab-booking pt-0 pb-0">
@@ -781,6 +782,13 @@
                     <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
                     <div class="row" id="cab_booking_promo_code_list_main_div">
 
+                    </div>
+                </div>
+        </div>
+
+    </div>
+
+</section>
 
 <!-- Plugandpay Modal -->
 <div class="modal fade payment-modal payment-modal-width" id="plugpaymethod" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="plugpaymethodLabel" aria-hidden="true">
@@ -822,16 +830,15 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="select_payment_optionLabel">{{__('Choose payment method')}}</h5>
-                <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                    </div>
-                </div>
+                <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
+            <div class="modal-body">
+                <h4 class="d-flex  justify-content-between mb-2 mt-3 select_cab_payment_methodx"><span ><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Cash')}}</span></h4>
+            </div>
+        </div>
+    </div>
+ </div>
 
-
-
-    </section>
 
     <!-- Paymentoption Modal -->
     <div class="modal fade payment-modal payment-modal-width" id="payment_modal" data-backdrop="static"
@@ -864,8 +871,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <h4 class="d-flex  justify-content-between mb-2 mt-3 select_cab_payment_methodx"><span><i
-                                class="fa fa-money mr-3" aria-hidden="true"></i> {{ __('Cash') }}</span></h4>
+                    <h4 class="d-flex  justify-content-between mb-2 mt-3 select_cab_payment_methodx"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{ __('Cash') }}</span></h4>
                 </div>
             </div>
         </div>

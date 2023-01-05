@@ -166,6 +166,20 @@ jQuery(function () {
         }
 
     });
+
+    
+    $(document).on("click", ".right-top",function() {
+        
+         var payment_option_id = $(".select_cab_payment_method:checked").val();
+         if(payment_option_id == 49){
+            $("#plugnpay_card_error").empty();
+            $("#proceed_to_pay_loader").hide();
+            $('#paywithplugpay').prop('disabled',false);
+            $('#plugnpay-card-element').val('');
+            $('#plugnpay-date-element').val('');
+            $('#plugnpay-cvv-element').val('');
+         }
+     });
     // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_later",function() {
 
