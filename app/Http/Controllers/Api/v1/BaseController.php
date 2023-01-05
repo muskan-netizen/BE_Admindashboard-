@@ -54,7 +54,13 @@ class BaseController extends Controller{
                 if( isset($send->code) && $send->code != 'ok'){
                     return '2';
                 }
-            }else{
+            }
+            elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
             }
@@ -94,7 +100,13 @@ class BaseController extends Controller{
                 if( isset($send->code) && $send->code != 'ok'){
                     return '2';
                 }
-            }else{
+            }
+            elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
             }

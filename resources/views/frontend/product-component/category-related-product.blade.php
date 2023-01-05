@@ -75,8 +75,13 @@
                                 @php
                                 $price = $scp->variant[0]->price ?? 0;
                                 $multiplier = $scp->variant[0]->multiplier  ?? 0;
+                                $priceVal = $price * $multiplier;
                                 @endphp
-                                <b>{{Session::get('currencySymbol')}} {{decimal_format($price * $multiplier)}} </b>
+                                @if($additionalPreference ['is_token_currency_enable'])
+                                    <b>{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!} {{getInToken($priceVal)}} </b>
+                                @else
+                                    <b>{{Session::get('currencySymbol')}} {{decimal_format($priceVal)}} </b>
+                                @endif
                             </div>
                         </div>
                     </div>

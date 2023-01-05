@@ -2177,15 +2177,20 @@ $(document).ready(function () {
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
+                    var is_token_enable = response.is_token_enable;
+                    var token_val = response.token_val;
                     // console.log(cart_details);
                     if (cart_details!= undefined) {
+                        // if((response.is_token_enable == 1) && (response.token_val > 0) ){
+                        //     response.token_val;
+                        // }
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
                             OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);
                             OrderStorage.setStorageSingle('LongTermServiceAdded',cart_details.products[0].is_long_term_service);
                             //map array  cart_details.products.map(checkIfInCart);
-                            var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
+                            var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
 
                              let header_cart_template = _.template($('#header_cart_template').html());
 

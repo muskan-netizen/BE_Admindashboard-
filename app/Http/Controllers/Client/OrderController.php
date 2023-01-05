@@ -193,7 +193,7 @@ class OrderController extends BaseController
         if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
             $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
         }
-        
+
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -265,13 +265,13 @@ class OrderController extends BaseController
         $active_orders = clone $order_count;
         $orders_history = clone $order_count;
 
-        
+
 
         $lux_id = 0;
         if (isset($request->order_type)) {
             $lux_id = LuxuryOption::where('title', $request->order_type)->value('id');
         }
-        
+
 
         if ($filter_order_status) {
             switch ($filter_order_status) {
@@ -532,7 +532,7 @@ class OrderController extends BaseController
                 if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
                     $vendor->exchanged_to_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_to_order->order_id, @$vendor->exchanged_to_order->vendor_id]);
                 }
-               
+
                 if(isset($vendor) && !empty($vendor->vendor_id && @$vendor->exchanged_of_order)){
                     $vendor->exchanged_of_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_of_order->order_id, @$vendor->exchanged_of_order->vendor_id]);
                 }
@@ -658,7 +658,7 @@ class OrderController extends BaseController
             'vendors.dineInTable.category',
             'vendors.cancel_request',
             'reports',
-            
+
         ));
         if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
             $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
@@ -687,12 +687,12 @@ class OrderController extends BaseController
             if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
                 $vendor->exchanged_to_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_to_order->order_id, @$vendor->exchanged_to_order->vendor_id]);
             }
-           
+
             if(isset($vendor) && !empty($vendor->vendor_id && @$vendor->exchanged_of_order)){
                 $vendor->exchanged_of_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_of_order->order_id, @$vendor->exchanged_of_order->vendor_id]);
             }
             foreach ($vendor->products as $key => $product) {
-             
+
                 $product->longTermSchedule = array();
                 if(@$product->product->is_long_term_service && $product->product->is_long_term_service ==1){
                     $product->longTermSchedule =  OrderLongTermServices::with(['schedule','product.primary','addon.set','addon.option','addon.option.translation' => function ($q) use ($langId) {
@@ -712,7 +712,7 @@ class OrderController extends BaseController
                         $addons->option->price_in_cart = $addons->option->price;
                         $addons->option->price = decimal_format($opt_price_in_currency);
                         $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
-                        
+
                     }
                 }
                 //pr($product->longTermSchedule->toArray());
@@ -829,7 +829,7 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
-       
+
         $orderPlaced = true;
         $orderPlacedNo = '';
         DB::beginTransaction();
@@ -846,19 +846,19 @@ class OrderController extends BaseController
             if ($currentOrderStatus->order_status_option_id == 3) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
-            
+
             if (!$vendor_order_status_check) {
                 if ($request->status_option_id == 2 || $request->status_option_id == 3) {
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
-                
+
 
                 $orderData = OrderVendor::with('orderDetail')->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 if(@$orderData->exchanged_of_order){
                     $return = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->first();
                     if (@$return && $request->status_option_id == 2) { //accept exchange
-                        
+
                         $returns = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->update(['status' => 'Accepted', 'reason_by_vendor' => $request->reject_reason ?? null]);
                     }
 
@@ -871,7 +871,7 @@ class OrderController extends BaseController
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type == 'D') {
                         //Create Shipping request for dispatcher
-                    
+
                         if( checkColumnExists('orders','is_long_term') &&   $orderData->orderDetail->is_long_term ==1){
                             $order_dispatch = $this->checkIfanyServiceProductLastMileon($request);
 
@@ -1013,7 +1013,7 @@ class OrderController extends BaseController
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
                 $customer = User::find($orderData->user_id);
                 if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
-                     $this->sendTrackingUrlSMS($customer,$orderData);
+                     $this->sendTrackingUrlSMS($orderData);
                 }
                 return response()->json([
                     'status' => 'success',
@@ -1251,9 +1251,9 @@ class OrderController extends BaseController
                         }
                     }
                     else{
-                        
+
                     }
-                   
+
                     //pr('ad');
                 }
             }
@@ -1341,7 +1341,7 @@ class OrderController extends BaseController
                     }
                 }
 
-               
+
                 if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
 
                     $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
@@ -1522,7 +1522,7 @@ class OrderController extends BaseController
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
             );
-            
+
             $response = json_decode($res->getBody(), true);
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
@@ -2125,7 +2125,7 @@ class OrderController extends BaseController
                 $scheduleDateTime = $selectedDate . ' ' . $slotTime;
                 $schedule_time =  $scheduleDateTime ?? null;
             }
-           
+
             $tasks[] = array(
                 'task_type_id' => 1,
                 'latitude' => $cus_address->latitude ?? '',
@@ -2507,8 +2507,8 @@ class OrderController extends BaseController
                     // order vendor table data
                     $product_details[$key]['subtotal_amount']   = $inn_val->subtotal_amount;
                     $product_details[$key]['payable_amount']    = $inn_val->payable_amount;
-                    $product_details[$key]['discount_amount']   = $inn_val->discount_amount;     
-                    $product_details[$key]['taxable_amount']   = $inn_val->taxable_amount;  
+                    $product_details[$key]['discount_amount']   = $inn_val->discount_amount;
+                    $product_details[$key]['taxable_amount']   = $inn_val->taxable_amount;
                     $product_details[$key]['order_status_option_id'] = $inn_val->order_status_option_id;
                     $product_details[$key]['order_side_vendor_id'] = $inn_val->vendor_id;
 
@@ -2563,5 +2563,5 @@ class OrderController extends BaseController
     }
 
 
-    
+
 }

@@ -947,6 +947,33 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- For afrTalk -->
+                            <div class="row sms_fields mx-0" id="afrTalk_fields" style="display : {{$preference->sms_provider == 6 ? 'flex' : 'none'}};">
+                                <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="afrTalk_api_key">{{ __("API Key") }}</label>
+                                    <input type="text" name="afrTalk_api_key" id="afrTalk_api_key" placeholder="" class="form-control" value="{{ old('afrTalk_api_key', $sms_crendential->api_key ?? '')}}">
+                                    @if($errors->has('afrTalk_api_key'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('afrTalk_api_key') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                                </div>
+                                <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="afrTalk_sender_id">{{ __("Sender ID") }}</label>
+                                    <input type="text" name="afrTalk_sender_id" id="afrTalk_sender_id" placeholder="" class="form-control" value="{{ old('afrTalk_sender_id', $sms_crendential->sender_id ?? '')}}">
+                                    @if($errors->has('afrTalk_sender_id'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('afrTalk_sender_id') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
                 </form><!-- SMS Configuration end -->

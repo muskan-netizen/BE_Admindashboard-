@@ -3211,6 +3211,14 @@ body.al_body_template_nine a#next-button-ondemand-2 {
     float: right;
 }
 
+body.al_body_template_eight.p2p-module .alRentalSinglePageView .single_product-input {
+    width: 100% !important;
+}
+
+body.al_body_template_eight.p2p-module .alRentalSinglePageView .single_cart-temp_label {
+    width: 87% !important;
+}
+
 
 /*------------------dark theme issues -------------*/
 

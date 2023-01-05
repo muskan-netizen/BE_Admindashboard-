@@ -1991,7 +1991,7 @@ class CartController extends FrontController
      */
     public function getCartData($domain = '', Request $request)
     {
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable']);
 
         $cart_details = null;
         $user = Auth::user();
@@ -2003,7 +2003,7 @@ class CartController extends FrontController
         $schedule_datetime_del = '';
         if ($user) {
             $cart = Cart::where('status', '0')->where('user_id', $user->id);
-            if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
+            if($getAdditionalPreference['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
                
                 $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id')->with('giftCard');
             }else{
@@ -2036,7 +2036,7 @@ class CartController extends FrontController
             $schedule_date_delivery_edit = Carbon::parse($cart->editingOrder->scheduled_date_time)->timezone($timezone)->format('Y-m-d H:i:s');
             $schedule_slots_edit = $cart->editingOrder->scheduled_slot;
             $editlimit_datetime = Carbon::now()->toDateTimeString();
-            $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+            $order_edit_before_hours = $getAdditionalPreference['order_edit_before_hours'];
             $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
             $error_message = '';
             if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
@@ -2100,7 +2100,14 @@ class CartController extends FrontController
 
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message]);
+        $tokenAmount = 1;
+        $is_token_enable = $getAdditionalPreference['is_token_currency_enable'];
+        if($is_token_enable){
+            $tokenAmount = getJsToken();
+            $cart_details->is_token_enable = $is_token_enable;
+            $cart_details->tokenAmount = $tokenAmount;
+        }
+        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message, 'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable]);
     }
 
 

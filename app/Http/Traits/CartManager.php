@@ -152,23 +152,31 @@ trait cartManager{
     return $user_subscription;
   }
 
-  public function calCulateSubscriptionDiscount($userId,$deliveryCharges=0,$payable_amount=0)
+  public function calCulateSubscriptionDiscount($userId, $deliveryCharges=0, $payable_amount=0, $vendor_subs_disc_percent)
   {
     $user_subscription = $this->userSubscription($userId);
-    $subscription_discount = 0;
+    $off_percent_discount_vendor_total = $off_percent_discount_admin_total = $delivery_discount_total = 0;
     if ($user_subscription) {
         foreach ($user_subscription->features as $feature) {
             if ($feature->feature_id == 1) {
-                $subscription_discount = $subscription_discount + $deliveryCharges;
+                $delivery_discount_total = $delivery_discount_total + $deliveryCharges;
             }
             elseif ($feature->feature_id == 2) {
-                $off_percentage_discount = ($feature->percent_value * $payable_amount / 100);
-                $subscription_discount = $subscription_discount + $off_percentage_discount;
+                if($vendor_subs_disc_percent > 0){
+                    $off_percent_discount_vendor_total = $off_percent_discount_vendor_total + ($vendor_subs_disc_percent * $payable_amount / 100);
+                }
+                $off_percent_discount_admin = ($feature->percent_value * $payable_amount / 100);
+                $off_percent_discount_admin_total = $off_percent_discount_admin_total + $off_percent_discount_admin;
             }
         }
+        if($off_percent_discount_vendor_total >= $off_percent_discount_admin_total){
+            $off_percent_discount_admin_total = 0;
+        }else{
+            $off_percent_discount_admin_total = $off_percent_discount_admin_total - $off_percent_discount_vendor_total;
+        }
     }
-    return $subscription_discount;
-
+    $subscription_discount_arr = array('admin' => $off_percent_discount_admin_total, 'vendor' => $off_percent_discount_vendor_total, 'delivery_discount' => $delivery_discount_total);
+    return $subscription_discount_arr;
   }
 
 
@@ -403,7 +411,7 @@ trait cartManager{
 
           $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
         }
-        $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = $total_fixed_fee_amount = 0.00;
+        $total_payable_amount = $total_subscription_discount_admin = $total_subscription_discount_vendor = $total_subscription_discount_delivery = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = $total_fixed_fee_amount = 0.00;
         /* If cart have data then getting total and other variable set */
         if ($cartData) {
             $addon_price=0;
@@ -458,6 +466,9 @@ trait cartManager{
                 $coupon_apply_price=0;
                 $slotsCnt = 0;
                 $PromoFreeDeliver = 0;
+                $subscription_discount_admin     = 0;
+                $subscription_discount_delivery  = 0;
+                $subscription_discount_vendor    = 0;
 
                 if(!empty($user)){
                     $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
@@ -481,7 +492,7 @@ trait cartManager{
 
                 $vendorData->slotsdate = $slotsdate;
                 $vendorData->slots = $slots;
-                $vendorData->slotsCnt =  $slotcount ;//count((array)$slots);
+                $vendorData->slotsCnt =  $slotcount ;
                 $vendorData->delay_date = date('Y-m-d');
 
                 if(session()->has('vendorTable')) {
@@ -583,7 +594,8 @@ trait cartManager{
                         $vendorData->vendorProducts[$ven_key]->cart_product_prescription = $cart_product_prescription;
 
                         if($cart_dinein_table_id > 0){
-                            $prod->update(['vendor_dinein_table_id' => $cart_dinein_table_id]);
+                            CartProduct::where('id', $prod->id)->update(['vendor_dinein_table_id' => $cart_dinein_table_id]);
+                            //$prod->update(['vendor_dinein_table_id' => $cart_dinein_table_id]);
                         }
 
                         $prod->product_out_of_stock =  $product_out_of_stock;
@@ -993,8 +1005,12 @@ trait cartManager{
                 }
 
                 if($user){
-                    // calculate subscription discount
-                    $subscription_discount = $this->calCulateSubscriptionDiscount($user->id,$deliveryCharges_real,$payable_amount);
+                    // calculate subscription discount On admin and vendor
+                    $vendor_subs_disc_percent       = isset($vendorData->vendor->subscription_discount_percent) ? $vendorData->vendor->subscription_discount_percent : 0;
+                    $subscription_discount_arr      = $this->calCulateSubscriptionDiscount($user->id, $deliveryCharges_real, $payable_amount, $vendor_subs_disc_percent);
+                    $subscription_discount_admin    = $subscription_discount_arr['admin'];
+                    $subscription_discount_vendor   = $subscription_discount_arr['vendor'];
+                    $subscription_discount_delivery = $subscription_discount_arr['delivery_discount'];
                 }
                 // add total delivery fee
                 if($vendorData->vendor->delivery_charges_tax_id)
@@ -1108,7 +1124,9 @@ trait cartManager{
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
-                $total_subscription_discount = $total_subscription_discount + $subscription_discount;
+                $total_subscription_discount_admin     = $total_subscription_discount_admin + $subscription_discount_admin;
+                $total_subscription_discount_vendor    = $total_subscription_discount_vendor + $subscription_discount_vendor;
+                $total_subscription_discount_delivery  = $total_subscription_discount_delivery + $subscription_discount_delivery;
                 $vendorData->is_promo_code_available = $is_promo_code_available;
 
 
@@ -1150,10 +1168,10 @@ trait cartManager{
                 }
                 $total_discount_amount = $total_discount_amount + $amount_value;
             }
-            if ($total_subscription_discount > 0) {
-                $total_discount_amount = $total_discount_amount + $total_subscription_discount;
-            }
-            $cart->total_subscription_discount = decimal_format($total_subscription_discount??0);
+            
+            $total_discount_amount = $total_discount_amount + $total_subscription_discount_admin + $total_subscription_discount_vendor + $total_subscription_discount_delivery;
+            
+            $cart->total_subscription_discount = decimal_format(($total_subscription_discount_admin + $total_subscription_discount_vendor + $total_subscription_discount_delivery)??0);
 
             $total_payable_amount = $total_payable_amount - $total_discount_amount;
             if ($loyalty_amount_saved > 0) {

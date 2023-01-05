@@ -18,6 +18,7 @@ use App\Http\Controllers\Client\CategoryKycDocumentController;
 use App\Http\Controllers\Client\Accounting\PromoCodeController;
 use App\Http\Controllers\Client\UserRegistrationDocumentController;
 use App\Http\Controllers\Client\VendorRegistrationDocumentController;
+use App\Http\Controllers\Client\SubscriptionPlansUserController;
 use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
@@ -573,6 +574,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::get('account/redeemedcard', [GiftcardController::class, 'redeemedCard'])->name('account.redeemedcard');
         Route::get('giftcard/list/filter', [GiftcardController::class, 'filter'])->name('gift.card.list.filter');
+
+        Route::get('account/usersubscriptions', [SubscriptionPlansUserController::class, 'userSubscriptionReport'])->name('account.userSubscription');
+        Route::get('usersubscriptions/list/filter', [SubscriptionPlansUserController::class, 'subscriptionfilter'])->name('subscription.list.filter');
 
     });
 });
