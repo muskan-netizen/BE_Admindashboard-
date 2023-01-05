@@ -1078,7 +1078,9 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var ajaxCall = 'ToCancelPrevReq';
     var is_token_currency_enable = "{{$additionalPreference['is_token_currency_enable']}}";
     var token_currency = "{{$additionalPreference['token_currency']}}";
-    var vendor_id = "{{ $product->vendor_id }}";
+    if (typeof vendor_id === 'undefined') {
+        var vendor_id = "{{ $product->vendor_id }}";
+    }
     var product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
     $('.changeVariant').click(function() {
