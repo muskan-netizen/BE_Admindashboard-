@@ -250,7 +250,7 @@ class ChatController extends BaseController
      */
     public function fetchOrderDetail(Request $request){
         try {
-            if(@$request->product_id){
+            if($request->product_id != "undefined"){
                 $orderData = $this->ProductDetail($request);
             }else{
                 $orderData = $this->OrderVendorDetail($request);

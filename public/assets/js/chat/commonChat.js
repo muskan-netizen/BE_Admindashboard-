@@ -158,11 +158,11 @@
          
             if(response.data.status) {
                 if(response.data.orderData != undefined) {
-                    console.log(response.data.orderData);
+                    console.log('hohohjo',response.data.orderData);
                     var data = response.data.orderData;
                     
 
-                    if(product_id){
+                    if(product_id!='undefined'){
                         Chat.orderData.order_number  =  (data.title != undefined ) ? data.title : '';
                         Chat.orderData.payable_amount = (data.variant[0].price != undefined ) ? data.variant[0].price : '';
                         Chat.orderData.vendor_name = (data.vendor.name != undefined ) ? data.vendor.name : '';
@@ -629,7 +629,7 @@
             p2p_id: p2p_id
         })
         .then(async response => {
-            console.log(response);
+            console.log('rpo',response);
             if(response.status == 200) {
                 if(response.data.roomData.length > 0) {
                     var productSelected = '';
