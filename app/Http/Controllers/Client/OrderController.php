@@ -1295,7 +1295,7 @@ class OrderController extends BaseController
                 }
             }
         }
-        \Log::info("asdf");
+        
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {

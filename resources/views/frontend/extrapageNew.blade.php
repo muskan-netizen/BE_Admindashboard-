@@ -63,7 +63,7 @@
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
-                                        <input type="text" class="form-control" name="title" value="{{$user ? $user->title : ''}}">
+                                        <input type="text" class="form-control" name="title" id="title" value="{{$user ? $user->title : ''}}">
                                         <span class="invalid-feedback" id="title_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="emailInput">
@@ -108,7 +108,7 @@
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
-                                        <input type="text" class="form-control" name="title" value="{{$user ? $user->title : ''}}" placeholder="{{__('Mr./Miss/Mrs.')}}">
+                                        <input type="text" class="form-control" name="title" id="title" value="{{$user ? $user->title : ''}}" placeholder="{{__('Mr./Miss/Mrs.')}}">
                                         <span class="invalid-feedback" id="title_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="emailInput">
@@ -259,22 +259,22 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="col-md-3 mb-3" >
+                                    <div class="col-md-3 mb-3" id="pincodeInput">
                                         <label for="validationCustom01">{{getNomenclatureName('Zip Code', true) }}</label>
                                         <input type="text" class="form-control" id="pincode" name="pincode" value="">
                                         <span class="invalid-feedback" id="pincode_error"><strong></strong></span>
                                     </div>
-                                    <div class="col-md-3 mb-3" >
+                                    <div class="col-md-3 mb-3" id="cityInput">
                                         <label for="validationCustom01">{{__('City')}}</label>
                                         <input type="text" class="form-control" id="city" name="city" value="">
                                         <span class="invalid-feedback" id="city_error"><strong></strong></span>
                                     </div>
-                                    <div class="col-md-3 mb-3" >
+                                    <div class="col-md-3 mb-3" id="stateInput">
                                         <label for="validationCustom01">{{__('State')}}</label>
                                         <input type="text" class="form-control" id="state" name="state" value="">
                                         <span class="invalid-feedback" id="state_error"><strong></strong></span>
                                     </div>
-                                    <div class="col-md-3 mb-3" >
+                                    <div class="col-md-3 mb-3" id="countryInput">
                                         <label for="validationCustom01">{{__('Country')}}</label>
                                         <input type="text" class="form-control" id="country" name="country" value="">
                                         <span class="invalid-feedback" id="country_error"><strong></strong></span>
@@ -535,9 +535,9 @@
                                             </div><!-- al_custom_modal end -->
                                     </div>
                                 <div class="form-row">
-                                    <div class="col-12 checkbox-input">
-                                        <input type="checkbox" id="html" name="check_conditions" value="1">
-                                        <label for="html">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy.')}}</a></label>
+                                    <div class="col-12 checkbox-input" id="check_conditionsCheckbox">
+                                        <input type="checkbox" id="check_conditions" name="check_conditions" value="1">
+                                        <label for="check_conditions">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy.')}}</a></label>
                                         <span class="invalid-feedback" id="check_conditions_error"><strong></strong></span>
                                     </div>
                                 </div>
@@ -829,6 +829,10 @@ function isNumberKey(evt) {
                             $("#" + key + "Input input").addClass("is-invalid");
                             $("#" + key + "_error").children("strong").text(errors[key][0]).show();
                             $("#" + key + "Input span.invalid-feedback").show();
+
+                            $("#" + key + "Checkbox input").addClass("is-invalid");
+                            $("#" + key + "_error").children("strong").text(errors[key][0]).show();
+                            $("#" + key + "Checkbox span.invalid-feedback").show();
                         });
                     } else {
                         $(".show_all_error.invalid-feedback").show();
