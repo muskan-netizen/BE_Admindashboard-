@@ -1,6 +1,16 @@
 @extends('layouts.vertical', ['demo' => 'Bid list', 'title' => 'Bid Requests - Vendors'])
 @section('css')
 {{-- <link href="{{asset('assets/libs/datatables/datatables.min.css')}}" rel="stylesheet" type="text/css" /> --}}
+<style>
+    .list-box.style-4{max-height:200px;overflow: auto;}
+    .product_list{cursor: pointer;}
+    .product_list:hover{background-color:#f5f5f5;}
+    .product_list:nth-child(odd){
+        border-width:1px 0px 1px 0px;
+        border-color: #eee;
+        border-style: solid;
+    }
+</style>
 @endsection
 @section('content')
 <div class="content">
@@ -42,11 +52,11 @@
                 </div>
             </div>
         </div>
-   
-                
+
+
         <div class="row">
             <div class="col-sm-12 col-lg-12 tab-product pt-0">
-                
+
                 <div class="tab-content nav-material pt-0" id="top-tabContent">
                     <div class="tab-pane fade past-order show active" id="pending_payouts" role="tabpanel" aria-labelledby="pending-payouts">
                         <div class="row">
@@ -55,7 +65,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="table-responsive">
-                                           
+
                                              <table class="table table-centered table-nowrap table-striped" id="client_customer_table" width="100%">
                                         <thead>
                                             <tr>
@@ -88,7 +98,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
 
 
                 </div>
@@ -101,25 +111,18 @@
 
 <div class="modal fade biddingModel"  tabindex="-1" aria-labelledby="profile-modalLabel" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
+
         <div class="modal-content">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <div class="row align-items-center px-2">
-                <div class="col-4">
-                    <div class="modal-header">
-                        <h5 class="modal-title d-block" id="profile-modalLabel">{{ __('Place Bid') }}</h5>
-
-                    </div>
-                </div>
-                <div class="col-md-8">
-                    <div class="vendor-search place-bid mb-sm-0 mb-2">
-                        <div class="col d-inline-flex align-items-center justify-content-start p-0 position-relative">
-                                @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
-                            <input class="form-control typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="search_box" autocomplete="off">
-                            <div class="list-box style-4" style="display:none;" id="search_box_div"> </div>
-                        </div>
-
+            <div class="modal-header">
+                <h5 class="modal-title d-block" id="profile-modalLabel">{{ __('Place Bid') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="vendor-search place-bid mb-sm-0 mb-2">
+                    <div class="p-0 position-relative">
+                            @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
+                        <input class="form-control typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="search_box" autocomplete="off">
+                        <div class="list-box style-4 mt-2" style="display:none"  id="search_box_div"></div>
                     </div>
                 </div>
 
@@ -148,7 +151,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-solid w-100">{{ __('Place Bid') }}</button>
+                    <button type="submit" class="btn btn-primary btn-solid">{{ __('Place Bid') }}</button>
                 </div>
             </form>
         </div>
@@ -290,8 +293,8 @@
 
             <%} %>
             <% _.each(data.result, function(result, k){%>
-            <a class="col-12 text-center list-items pt-2 product_list" data-pid="<%=result.id %>" data-price="<%=result.price%>">
-                <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt="">
+            <a class="col-12 list-items text-left py-1 product_list" data-pid="<%=result.id %>" data-price="<%=result.price%>">
+                <!-- <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt=""> -->
                 <div class="result-item-name">
                     <b><%=result.name %></b>
                 </div>
