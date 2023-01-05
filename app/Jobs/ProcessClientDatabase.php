@@ -9,7 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Config,Log;
+use Config;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
 
@@ -119,11 +119,6 @@ class ProcessClientDatabase implements ShouldQueue
                 'is_primary' => 1,
                 'is_active' => 1
             ];
-            Log::info('cli_langs' );
-            Log::info($cli_langs);
-            
-            Log::info('cli_currs' );
-            Log::info($cli_currs);
 
             Config::set("database.connections.$schemaName", $default);
             config(["database.connections.mysql.database" => $schemaName]);
@@ -169,7 +164,7 @@ class ProcessClientDatabase implements ShouldQueue
                 DB::connection($schemaName)->table('category_translations')->insert($main_category);
             }
             DB::disconnect($schemaName);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             print_r($ex->getMessage());die;
            return $ex->getMessage();
 
