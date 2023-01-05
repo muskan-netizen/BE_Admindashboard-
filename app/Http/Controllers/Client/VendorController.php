@@ -74,37 +74,83 @@ class VendorController extends BaseController
                 $query->where('user_id', Auth::user()->id);
             });
         }
+
         $vendors = $vendors->get();
-        foreach ($vendors as $vendor) {
-            $offers = [];
-            $vendor->show_url = route('vendor.catalogs', $vendor->id);
-            $vendor->destroy_url = route('vendor.destroy', $vendor->id);
-            $vendor->add_category_option = ($vendor->add_category == 0) ? __('No') : __('Yes');
-            if($vendor->show_slot == 1){
-                $vendor->show_slot_option ="Open";
-                $vendor->show_slot_label ="success";
-            }elseif ($vendor->slot->count() > 0) {
-                $vendor->show_slot_option = "Open";
-                $vendor->show_slot_label ="success";
-            }else{
-                $vendor->show_slot_label="danger";
-                $vendor->show_slot_option = "Closed";
-            }
-            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
-                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-                $clientVendorTypes = $vendor_typ_key.'_check';
-                $NomenclitureName =  $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value;
-                if($client_preference->$clientVendorTypes == 1 && $vendor->$VendorTypesName){
-                    $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
-                    $offers[]=  $vendor->$VendorTypesName == 1 ? getNomenclatureName($NomenclitureName) : $NomenclitureName;
-                }
-            }
-            $vendor->offers = $offers;
-        }
+        // $vendors = $vendors->get();
+        // foreach ($vendors as $vendor) {
+        //     $offers = [];
+        //     $vendor->show_url = route('vendor.catalogs', $vendor->id);
+        //     $vendor->destroy_url = route('vendor.destroy', $vendor->id);
+        //     $vendor->add_category_option = ($vendor->add_category == 0) ? __('No') : __('Yes');
+        //     if($vendor->show_slot == 1){
+        //         $vendor->show_slot_option ="Open";
+        //         $vendor->show_slot_label ="success";
+        //     }elseif ($vendor->slot->count() > 0) {
+        //         $vendor->show_slot_option = "Open";
+        //         $vendor->show_slot_label ="success";
+        //     }else{
+        //         $vendor->show_slot_label="danger";
+        //         $vendor->show_slot_option = "Closed";
+        //     }
+        //     foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+        //         $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+        //         $clientVendorTypes = $vendor_typ_key.'_check';
+        //         $NomenclitureName =  $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value;
+        //         if($client_preference->$clientVendorTypes == 1 && $vendor->$VendorTypesName){
+        //             $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
+        //             $offers[]=  $vendor->$VendorTypesName == 1 ? getNomenclatureName($NomenclitureName) : $NomenclitureName;
+        //         }
+        //     }
+        //     $vendor->offers = $offers;
+        // }
         return Datatables::of($vendors)
             ->addColumn('checkbox', function($row){
                 $btn = '<input type="checkbox" class="single_vendor_check" name="vendor_id[]" id="single_vendor" value="'.$row->id.'"></a>';
                 return $btn;
+            })
+            ->addColumn('show_url', function ($row) {
+                return route('vendor.catalogs', $row->id);
+            })
+            ->addColumn('destroy_url', function ($row) {
+                return route('vendor.destroy', $row->id);
+            })
+            ->addColumn('add_category_option', function ($row) {
+                return ($row->add_category == 0) ? __('No') : __('Yes');
+            })
+            ->addColumn('show_slot_option', function ($row) {
+
+                if($row->show_slot == 1){
+                    $show_slot_option ="Open";
+                    
+                }elseif ($row->slot->count() > 0) {
+                    $show_slot_option = "Open";
+                }else{
+                    $show_slot_option ="Closed";
+                }
+                return $show_slot_option;
+            })
+          
+            ->addColumn('show_slot_label', function ($row) {
+                if($row->show_slot == 1){
+                    $show_slot_label ="success";
+                }elseif ($row->slot->count() > 0) {
+                    $show_slot_label ="success";
+                }else{
+                    $show_slot_label = "Closed";
+                }
+                return $show_slot_label ;
+            }) 
+            ->addColumn('offers', function ($row) use ($client_preference) {
+                $offers  = [];
+                foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                    $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                    $clientVendorTypes = $vendor_typ_key.'_check';
+                    $NomenclitureName =  $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value;
+                    if($client_preference->$clientVendorTypes == 1 && $row->$VendorTypesName){
+                        $offers[]=   getNomenclatureName($NomenclitureName) ;
+                    }
+                }
+                return $offers ;
             })
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
@@ -117,7 +163,7 @@ class VendorController extends BaseController
                     });
                 }
             })
-            ->rawColumns(['checkbox'])
+            ->rawColumns(['checkbox','offers','show_slot_label','show_slot_option','add_category_option','show_url','destroy_url'])
             ->make(true);
     }
 
@@ -130,7 +176,7 @@ class VendorController extends BaseController
        // pr($csvVendors->toArray());
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
-        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->where('is_seller', 0)->with('slot')->orderBy('id', 'desc');
+        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->where('is_seller', 0)->orderBy('id', 'desc');
         if ($user->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -1362,7 +1408,9 @@ class VendorController extends BaseController
         if ($request->has('easebuzz_sub_merchent_id')) {
             $vendor->easebuzz_sub_merchent_id = $request->has('easebuzz_sub_merchent_id') ? $request->easebuzz_sub_merchent_id : NULL;
         }
-
+        if ($request->has('subscription_discount_percent')) {
+            $vendor->subscription_discount_percent = $request->has('subscription_discount_percent') ? $request->subscription_discount_percent : NULL;
+        }
 
        // $vendor->dynamic_html =  $request->has('dynamic_html') ? $request->dynamic_html : NULL;
         $vendor->save();

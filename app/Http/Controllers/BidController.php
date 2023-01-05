@@ -50,18 +50,26 @@ class BidController extends FrontController
 
     public function bidAccept(Request $request,$domain ="",$id = null,$vid = null)
     {
-        $is_bid_enable = @getAdditionalPreference(['is_bid_enable'])['is_bid_enable']??0;
-        $bid_products = BidProduct::where('bid_id', $vid)->with('product.variant')->get();
-        $CartController  = new CartController();
-        foreach($bid_products as $product) {
-            $newRequest = new Request();
-            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>(($is_bid_enable)?$vid:null),'bid_discount'=>(($is_bid_enable)?$product->bids->discount:null)]);
+        $accepted = Bid::whereHas('bidRequests',function($q)use($id)
+        {
+           return $q->where(['id'=>$id,'user_id'=>auth()->id()]);
+        })->where(['id'=> $vid])->where('status','==',0)->first();
+        if($accepted)
+        {
+            $is_bid_enable = @getAdditionalPreference(['is_bid_enable'])['is_bid_enable']??0;
+            $bid_products = BidProduct::where('bid_id', $vid)->with('product.variant')->get();
+            $CartController  = new CartController();
+            foreach($bid_products as $product) {
+                $newRequest = new Request();
+                $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>(($is_bid_enable)?$vid:null),'bid_discount'=>(($is_bid_enable)?$product->bids->discount:null)]);
 
-            $data = $CartController->postAddToCart($newRequest);
+                $data = $CartController->postAddToCart($newRequest);
+            }
+            return redirect('viewcart');
+
+        }else{
+            return redirect()->back()->withError('Already Accepted Bid Or Not your bid.');
         }
-
-        // $accept = Bid::where('id', $vid)->update(['status'=>1]);
-        return redirect('viewcart');
 
     }
 

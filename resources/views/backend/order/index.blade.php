@@ -354,13 +354,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                  <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.bid_discount) %></span>
                                          </li>
                                       <% } %>
-
-                                      <% if(order.additional_price > 0 || order.additional_price < 0) { %>
+                                    
+                                    <% if(order.additional_price > 0 || order.additional_price < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                                  <label class="m-0">{{ __('Tax') }}</label>
                                                  <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.additional_price) %></span>
                                          </li>
-                                      <% } %>
+                                    <% } %>
 
                                     <% if(order.total_other_taxes_amount > 0 || order.total_other_taxes_amount < 0) { %>
                                        <li class="d-flex align-items-center justify-content-between">
@@ -401,6 +401,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_delivery_fee) %></span>
                                     </li>
                                     <% } %>
+                                    <% if(order.giftCardUsed == 1 ) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                                 <label class="m-0">{{ __('gift card') }}</label>
+                                                 <span>-{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.gift_card_amount) %></span>
+                                         </li>
+                                    <% } %>
                                     <% if(order.total_container_charges > 0 || order.total_container_charges < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{ __('Total Container Charges') }}</label>
@@ -428,6 +434,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{__('Wallet Amount Used')}}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.wallet_amount_used) %></span>
+                                    </li>
+                                    <% } %>
+                                    <% if(order.total_discount > 0 || order.total_discount < 0) { %>
+                                    <li class="d-flex align-items-center justify-content-between">
+                                        <label class="m-0">{{__('Total Discount')}}</label>
+                                        <span>-{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_discount) %></span>
                                     </li>
                                     <% } %>
                                     <% if(order.total_discount_calculate > 0 || order.total_discount_calculate < 0) { %>
@@ -496,7 +508,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
                                     <i class="mdi mdi-close"></i>
                                 </button>
-                                <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                                <input type="search" class="form-control" placeholder="{{ __('Search') }}..." id="search_via_keyword">
                             </div>
                         </div>
                     </div>
@@ -543,7 +555,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             </div>
         </div>
         <!-- <div class="col-md-3 col-lg-2 mb-3">
-            <input type="search" class="form-control form-control-sm" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+            <input type="search" class="form-control form-control-sm" placeholder="{{ __('Search') }}..." id="search_via_keyword">
         </div> -->
     </div>
 </div>

@@ -248,8 +248,10 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
+             
                     <div class="row align-items-start">
                         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                        
                             @php
                                 $VendorTypesName = $vendor_typ_key.'_check';
                             @endphp

@@ -10,6 +10,7 @@ $applocale = 'en';
 if(session()->has('applocale')){
     $applocale = session()->get('applocale');
 }
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 @endphp
 <div class="top-header site-topbar al_custom_head">
     <nav class="navbar navbar-expand-lg p-0 ">
@@ -133,9 +134,11 @@ if(session()->has('applocale')){
                                 <li>
                                     <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
                                 </li>
+                                @if($getAdditionalPreference['is_phone_signup'] != 1)
                                 <li>
                                     <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
                                 </li>
+                                @endif
                                 @endif
                             </ul>
                         </li>

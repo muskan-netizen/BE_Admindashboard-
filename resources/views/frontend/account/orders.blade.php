@@ -10,6 +10,7 @@
 @php
 $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)?1:0;
     $clientData = \App\Models\Client::select('socket_url')->first();
+    $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
 @endphp
 @extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
@@ -136,7 +137,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                 <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . getNomenclatureName($ordertitle, true)) }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ getNomenclatureName($ordertitle, true). __('Rejected/Cancel ')  }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if($show_long_term ==1)
@@ -436,7 +437,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                         <span class="item_no position-absolute">x{{ $product->quantity }}</span>
                                                                                                     </li>
                                                                                                     <li>
-                                                                                                        <label class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
+                                                                                                        <label class="items_price">{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                                                     </li>
                                                                                                     @php
                                                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
@@ -455,7 +456,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                 class="d-flex align-items-center justify-content-between">
                                                                                                 <label
                                                                                                     class="m-0">{{ __('Product Total') }}</label>
-                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->subtotal_amount
+                                                                                                <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($vendor->subtotal_amount
+                                                                                                    *
+                                                                                                    $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($vendor->subtotal_amount
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
@@ -464,7 +467,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __('Coupon Discount') }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->discount_amount
+                                                                                                    <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($vendor->discount_amount
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($vendor->discount_amount
                                                                                                         *
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
@@ -474,7 +479,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __($fixedFee) }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->fixed_fee_amount
+                                                                                                    <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->fixed_fee_amount
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($order->fixed_fee_amount
                                                                                                         *
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
@@ -484,7 +491,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->delivery_fee
+                                                                                                    <span>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($vendor->delivery_fee
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($vendor->delivery_fee
                                                                                                         *
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
@@ -519,7 +528,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
                                                                                                     $subtotal_order_price += $product_subtotal_amount;
                                                                                                 @endphp
-                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount+$order->fixed_fee_amount
+                                                                                                <span>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($vendor->payable_amount+$order->fixed_fee_amount
+                                                                                                    *
+                                                                                                    $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($vendor->payable_amount+$order->fixed_fee_amount
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
@@ -639,7 +650,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Sub Total') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_amount
+                                                                                    <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->total_amount
+                                                                                        *
+                                                                                        $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->total_amount
                                                                                         *
                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                 </li>
@@ -648,17 +661,22 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Wallet') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->wallet_amount_used
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->wallet_amount_used
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->wallet_amount_used
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                               
                                                                                 @if ($order->loyalty_amount_saved > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Loyalty Used') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->loyalty_amount_saved
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->loyalty_amount_saved
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->loyalty_amount_saved
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
@@ -668,7 +686,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format(($order->taxable_amount)
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($order->taxable_amount+$total_other_taxes) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($order->taxable_amount+$total_other_taxes)
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
@@ -678,7 +696,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Container Charges') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format(($vendor->total_container_charges) * $clientCurrency->doller_compare)}}</span>
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($vendor->total_container_charges) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($vendor->total_container_charges) * $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
 
@@ -697,7 +715,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Service Fee') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_service_fee
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->total_service_fee
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->total_service_fee
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
@@ -708,7 +728,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __($fixedFee) }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->fixed_fee_amount
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->fixed_fee_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->fixed_fee_amount
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
@@ -718,7 +740,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tip Amount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->tip_amount
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->tip_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->tip_amount
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
@@ -728,7 +752,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Subscription Discount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->subscription_discount
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->subscription_discount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->subscription_discount
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
@@ -738,7 +764,9 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Discount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_discount_calculate
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->total_discount_calculate
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->total_discount_calculate
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
@@ -748,15 +776,28 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->total_delivery_fee
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->total_delivery_fee
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                                @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                 
                                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}
+                                                                                    <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->payable_amount+$order->fixed_fee_amount)) : Session::get('currencySymbol') .decimal_format($order->payable_amount+$order->fixed_fee_amount)}}
 
                                                                                     @if(!checkColumnExists('orders', 'is_postpay'))
                                                                                         $order->is_postpay = 0;
@@ -1226,6 +1267,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                                @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
                                                                                 <li
                                                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
@@ -1615,6 +1666,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                 $clientCurrency->doller_compare)}}</span>
                                                                                         </li>
                                                                                     @endif
+                                                                                    @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                        <li
+                                                                                            class="d-flex align-items-center justify-content-between">
+                                                                                            <label
+                                                                                                class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
+                                                                                                *
+                                                                                                $clientCurrency->doller_compare)}}</span>
+                                                                                        </li>
+                                                                                    @endif
                                                                                     <li
                                                                                         class="grand_total d-flex align-items-center justify-content-between">
                                                                                         <label
@@ -1949,6 +2010,16 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         <label
                                                                                             class="m-0">{{ __('Delivery Fee') }}</label>
                                                                                         <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Gift Card Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>

@@ -19,6 +19,7 @@ use App\Http\Controllers\Client\CategoryKycDocumentController;
 use App\Http\Controllers\Client\Accounting\PromoCodeController;
 use App\Http\Controllers\Client\UserRegistrationDocumentController;
 use App\Http\Controllers\Client\VendorRegistrationDocumentController;
+use App\Http\Controllers\Client\SubscriptionPlansUserController;
 use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
@@ -26,6 +27,9 @@ use App\Http\Controllers\Client\ProductFaqController;
 use App\Http\Controllers\Client\EstimationController;
 use App\Http\Controllers\Client\RazorpayGatwayController;
 use App\Http\Controllers\Client\StaticDropoffController;
+
+use App\Http\Controllers\Client\GiftCard\GiftcardController;
+
 
 Route::get('email-test', function () {
     $details['email'] = 'testmail@yopmail.com';
@@ -530,6 +534,22 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('long_term_service/edit/{id}',          'Client\LongTermServiceController@edit')->name('long_term_service.edit');
         Route::get('long_term_service/delete/{id}',        'Client\LongTermServiceController@destroy')->name("long_term_service.destroy");
         Route::post('long_term_service/updateBooking',     'Client\LongTermServiceController@updateBooking')->name("long_term_service.updateBooking");
+
+        /**  
+         * Gift Card.
+         */
+        Route::get('gitcart',         'Client\GiftCard\GiftcardController@index')->name("giftCart.index");
+        Route::post('gitcart/store',   'Client\GiftCard\GiftcardController@store')->name("giftCart.store");
+        Route::get('gitcart/show/{id}',   'Client\GiftCard\GiftcardController@edit')->name("giftCart.show");
+        Route::post('gitcart/update/{id}',   'Client\GiftCard\GiftcardController@update')->name("giftCart.update");
+        Route::get('gitcart/delete/{id}',   'Client\GiftCard\GiftcardController@destroy')->name("giftCart.destroy");
+
+        Route::get('account/redeemedcard', [GiftcardController::class, 'redeemedCard'])->name('account.redeemedcard');
+        Route::get('giftcard/list/filter', [GiftcardController::class, 'filter'])->name('gift.card.list.filter');
+
+        Route::get('account/usersubscriptions', [SubscriptionPlansUserController::class, 'userSubscriptionReport'])->name('account.userSubscription');
+        Route::get('usersubscriptions/list/filter', [SubscriptionPlansUserController::class, 'subscriptionfilter'])->name('subscription.list.filter');
+
     });
 });
 

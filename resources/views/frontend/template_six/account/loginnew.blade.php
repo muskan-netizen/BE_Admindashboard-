@@ -16,7 +16,10 @@ $sign_image_url = @$sign_image['image_fit'].'1920/1080'.@$sign_image['image_path
 @endsection
 
 @section('content')
-<article class="bgFourPage"><img class="LoginAreaBG" alt="" src="{{$sign_image_url}}"></article>
+@php
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
+@endphp
+<article class="bgFourPage"><img class="LoginAreaBG abc" alt="" src="{{$sign_image_url}}"></article>
 <section class="wrapper-main container-fluid">
     <article class="BGcenter">
         <div class="container">
@@ -39,10 +42,10 @@ $sign_image_url = @$sign_image['image_fit'].'1920/1080'.@$sign_image['image_path
 
                                 <div class="login-with-username">
                                     <div class="form-group">
-                                        <label for="">Email or Phone Number</label>
-                                        <input type="text" class="form-control" id="username" placeholder="{{ __('Email or Phone Number') }}" required="" name="username" value="{{ old('username')}}">
+                                        <label for="">{{ ($getAdditionalPreference['is_phone_signup'] == 1) ?  __('Phone Number'):  __('Email or Phone Number') }}</label>
+                                        <input type="text" class="form-control" id="username" placeholder="{{ ($getAdditionalPreference['is_phone_signup'] == 1) ?  __('Phone Number'):  __('Email or Phone Number') }}" required="" name="username" value="{{ old('username')}}">
                                     </div>
-                                    <div class="form-group mb-3" id="password-wrapper" style="position:relative">
+                                    <div class="form-group mb-3 {{ ($getAdditionalPreference['is_phone_signup'] == 1) ? 'd-none': '' }}" id="password-wrapper" style="position:relative">
                                         <label for="">Password</label>
                                         <input id="password-field" type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}">
                                         <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>
@@ -54,7 +57,7 @@ $sign_image_url = @$sign_image['image_fit'].'1920/1080'.@$sign_image['image_path
                                     </div>
                                     <div class="form-group mt-4 text-center">
                                         <button class="btn btn-solid w-100 login_continue_btn my-2" type="submit">{{__('Continue')}}</button>
-                                        <span class="registerLink">Don't Have An Account? <a href="{{route('customer.register')}}">Register</a> </span>
+                                        @if($getAdditionalPreference['is_phone_signup'] != 1) <span class="registerLink">Don't Have An Account? <a href="{{route('customer.register')}}">Register</a> </span>@endif
                                     </div>
                                 </div>
                         </form>

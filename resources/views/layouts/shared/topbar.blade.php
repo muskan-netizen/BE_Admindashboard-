@@ -34,9 +34,7 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
   color: white;
 }
 </style>
-
-
-<div class="navbar-custom {{(is_p2p_vendor()) ? 'full-width-area' : ''}}">
+<div class="navbar-custom {{(is_p2p_vendor()) ? '' : ''}}">
 
     <div class="col d-flex align-items-center justify-content-between justify-content-lg-end">
 
