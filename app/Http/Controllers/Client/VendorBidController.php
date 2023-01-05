@@ -24,7 +24,6 @@ class VendorBidController extends BaseController{
     public function bidRequests(Request $request,$domain = '',$id = null)
     {
         $prescriptions = BidRequest::where('status' , '=' , 0)->get();
-        //dd($prescriptions->toArray());
         return view('backend.bidding_module.vendorBidRequests', compact('prescriptions','id'));
     }
 
