@@ -18,11 +18,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
 
-function setUserCode(){
-    $userCode = session()->has('userCode');
-    if(!$userCode){
-        $user = ClientData::first();
-        session()->put('userCode', $user->code);
+if (!function_exists('setUserCode')) {
+    function setUserCode(){
+        $userCode = session()->has('userCode');
+        if(!$userCode){
+            $user = ClientData::first();
+            session()->put('userCode', $user->code);
+        }
     }
 }
 
@@ -1347,6 +1349,8 @@ if (!function_exists('inventorySyncOnOff')) {
         } else {
             return false;
         }
+    }
+}
 // Returns the values of the additional preferences.
 if (!function_exists('checkTableExists')) {
     /** check if column exits in table
@@ -1486,19 +1490,20 @@ if( !function_exists('is_category_p2p') ) {
 //     }
 // }
 
-
-function generateSlug($name)
-{
-    if (Product::whereSku($slug = $name)->exists()) {
-        $max = Product::whereSku($name)->latest('id')->value('sku');
-        if (isset($max[-1]) && is_numeric($max[-1])) {
-            return preg_replace_callback('/(\d+)$/', function($mathces) {
-                return $mathces[1] + 1;
-            }, $max);
+if( !function_exists('generateSlug') ) {
+    function generateSlug($name)
+    {
+        if (Product::whereSku($slug = $name)->exists()) {
+            $max = Product::whereSku($name)->latest('id')->value('sku');
+            if (isset($max[-1]) && is_numeric($max[-1])) {
+                return preg_replace_callback('/(\d+)$/', function($mathces) {
+                    return $mathces[1] + 1;
+                }, $max);
+            }
+            return $slug.'-'.rand();
         }
-        return $slug.'-'.rand();
+        return $slug;
     }
-    return $slug;
 }
 
 if( !function_exists('get_tiny_url') ) {
@@ -1513,4 +1518,5 @@ if( !function_exists('get_tiny_url') ) {
         return $data;
     }
 }
+
 
