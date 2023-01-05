@@ -17,7 +17,10 @@
 .vendor-description .vendor-details-left .vendor-location a {position: inherit !important;}
 .al_body_template_six .vendor-description .vendor-info .vendor-location{margin-bottom:10px;}
 .line_diff_between_products{border-top: 1px dotted rgb(61, 60, 60)}
-
+span.alPriceValue, span.alPriceValue i {
+    display: inline-flex;
+    align-items: baseline;
+}
 </style>
 @endsection
 @section('css-links')
@@ -575,11 +578,13 @@
 
                         <span class="ellips"><%= vendor_product.quantity %>x <%=
                         vendor_product.product.translation_one ? translationOneTitle :  vendor_product.product.sku %></span>
-                        <span>
-
-                            {{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %>
-
-                        </span>
+                        
+                            <% if(cart_details.is_token_enable == 1) { %>
+                                <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%=  Helper.formatPrice(vendor_product.quantity_price * cart_details.tokenAmount) %></span>
+                                <% }else{ %>
+                                <span>{{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %></span>
+                            <% } %>
+                        
                         <a class="action-icon remove_product_via_cart text-danger" style="cursor: pointer;" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
                             </a>
@@ -600,10 +605,22 @@
                         <p class="m-0 font-14 p-0"><%= vendor_product.quantity %>x <%= addon.option.title %></p>
                     </div>
                     <div class="col-md-3 col-sm-4 text-center">
-                        <div class="extra-items-price font-14">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
+                        <div class="extra-items-price font-14">
+                            <% if(cart_details.is_token_enable == 1) { %>
+                                    <i class='fa fa-money' aria-hidden='true'></i><%=  Helper.formatPrice(addon.option.price_in_cart * cart_details.tokenAmount) %>
+                                <% }else{ %>
+                                    {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.price_in_cart) %>
+                            <% } %>
+                        </div>
                     </div>
                     <div class="col-md-3 col-sm-4 text-right">
-                        <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
+                        <div class="extra-items-price font-14 mr-xl-3">
+                            <% if(cart_details.is_token_enable == 1) { %>
+                                <i class='fa fa-money' aria-hidden='true'></i><%=  Helper.formatPrice(addon.option.quantity_price * cart_details.tokenAmount) %>
+                            <% }else{ %>
+                            {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
                 <% }); %>
@@ -617,7 +634,13 @@
                         <h6 class="m-0 font-14">{{ __('Delivery fee') }}</h6>
                     </div>
                     <div class="col-md-6 col-sm-6 text-right">
-                        <div class="font-14 mr-xl-2">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.delivery_charges) %></div>
+                        <div class="font-14 mr-xl-2">
+                            <% if(cart_details.is_token_enable == 1) { %>
+                                <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%=  Helper.formatPrice(cart_details.delivery_charges * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                                {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.delivery_charges) %>
+                            <% } %>
+                            </div>
                     </div>
                 </div>
             <% } %>
@@ -629,26 +652,39 @@
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">
                         <span class="ellips">{{ __('Total') }}</span>
-                        <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.gross_amount) %></span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= Helper.formatPrice(cart_details.gross_amount * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                                <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.gross_amount) %></span>
+                            <% } %>
                     </h6>
                 </div>
             </li>
-
+            <% if((cart_details.total_taxable_amount != undefined) && (cart_details.total_taxable_amount > 0)) { %>
             <li class="p-0 alSixCart">
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">
                         <span class="ellips">{{ __('Tax') }}</span>
-                        <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_taxable_amount %></span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= (cart_details.total_taxable_amount * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_taxable_amount %></span>
+                        <% } %>
                     </h6>
                 </div>
             </li>
+            <% } %>
 
-            <% if(cart_details.total_subscription_discount != undefined) { %>
+            <% if((cart_details.total_subscription_discount != undefined) && (cart_details.total_subscription_discount > 0)) { %>
                 <li class="p-0 alSixCart">
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">
                         <span class="ellips"> {{ __('Subscription Discount') }}</span>
-                            <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= (cart_details.total_subscription_discount * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                            <% } %>
                     </h6>
                 </div>
             </li>
@@ -659,7 +695,11 @@
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">
                         <span class="ellips"> {{ __('Loyalty Amount') }} </span>
-                            <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= (cart_details.loyalty_amount * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                            <% } %>
                     </h6>
                 </div>
             </li>
@@ -670,7 +710,11 @@
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">
                         <span class="ellips"> {{ __('Wallet Amount') }} </span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= (cart_details.wallet_amount_used * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
                             <span>{{ '-'.Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                            <% } %>
                     </h6>
                 </div>
             </li>
@@ -678,7 +722,11 @@
         </ul>
         <div class="cart-sub-total d-flex align-items-center justify-content-between">
             <span>{{ __('Total') }}</span>
-            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_payable_amount %></span>
+            <% if(cart_details.is_token_enable == 1) { %>
+                <span class="alPriceValue"><i class='fa fa-money' aria-hidden='true'></i> <%= (cart_details.total_payable_amount * cart_details.tokenAmount) %></span>
+                <% }else{ %>
+                <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_payable_amount %></span>
+                <% } %>
         </div>
         <a class="checkout-btn text-center d-block" href="{{ route('showCart') }}">{{ __('Checkout') }}</a>
     </script>
@@ -695,9 +743,18 @@
                             </script>
     <script type="text/template" id="variant_template">
         <% if(variant.product.inquiry_only == 0) { %>
-            <%= variant.productPrice %>
+            <% if(is_token_enable == 1) { %>
+                <i class='fa fa-money' aria-hidden='true'></i> <%= (variant.productPrice * tokenAmount)%>
+                <% }else{ %>
+                    {{ Session::get('currencySymbol') }}<%= variant.productPrice %>
+                <% } %>
             <% if(variant.compare_at_price > 0 ) { %>
-                <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') }}<%= variant.compare_at_price %></span>
+                <% if(is_token_enable == 1) { %>
+                    <span class="org_price ml-1 font-14"><i class='fa fa-money' aria-hidden='true'></i> <%= (variant.compare_at_price* tokenAmount) %></span>
+                    <% }else{ %>
+                        <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') }}<%= variant.compare_at_price %></span>
+                    <% } %>
+                
             <% } %>
         <% } %>
     </script>
@@ -1120,6 +1177,7 @@
                 success: function(response) {
                     if (response.status == 'Success') {
                         response = response.data;
+                        // console.log(response);
                         $(that).parents('.product_row').find(".variant_response span").html('');
                         if (response.variant != '') {
 
@@ -1130,7 +1188,7 @@
                             let variant_template = _.template($('#variant_template').html());
                             $(that).parents('.product_row').find('.product_price').append(
                                 variant_template({
-                                    variant: response.variant
+                                    variant: response.variant, tokenAmount: response.tokenAmount, is_token_enable: response.is_token_enable
                                 }));
 
                             $(that).parents('.product_row').find('.product_variant_quantity_wrapper')

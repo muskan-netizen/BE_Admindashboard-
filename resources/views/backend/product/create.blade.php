@@ -109,7 +109,7 @@
                         <div class="col-4 p-2 mt-0" style="margin:auto; padding: 8px !important;">
                             <select class="selectize-select form-control" id="language_id" name="language_id">
                                 @foreach($languages as $lang)
-                                <option value="{{$lang->langId}}">{{$lang->langName}}</option>
+                                <option value="{{$lang->langId}}">{{__($lang->langName)}}</option>
                                 @endforeach
                             </select>
                         </div>

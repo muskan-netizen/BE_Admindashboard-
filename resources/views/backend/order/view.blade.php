@@ -237,7 +237,7 @@ $timezone = Auth::user()->timezone;
                                             ($order->luxury_option_id == 2 || $order->luxury_option_id == 3))
                                             <h5 class="mt-0 mb-1">{{ __('Order Prepared') }}</h5>
                                             @else
-                                            <h5 class="mt-0 mb-1">{{ $order_status }}</h5>
+                                                <h5 class="mt-0 mb-1">{{__($order_status)}}</h5>
                                             @endif
                                             <p class="text-muted" id="text_muted_{{ $vendor_order_status->order_status_option_id }}">
                                                 @if ($date)

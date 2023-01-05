@@ -108,8 +108,12 @@ class AppStylingController extends BaseController
                     $slug = 'single_category_products';
                     $single_category_products = $this->getCategories($slug); // get categories listing for single cat products  section 
                     $selected_single_category_products = $this->getSingleCategoryProducts($slug); // get categories listing for single cat products  section 
-                    $select_products=Product::where(['is_live'=>'1','is_long_term_service'=>'0'])->get();
-
+                   
+                    $select_products=Product::where(['is_live'=>'1']);
+                    if(checkColumnExists('products','is_long_term_service') ){
+                        $select_products = $select_products->where('is_long_term_service',0);
+                    }
+                    $select_products= $select_products->get();
         //end home page
 
       

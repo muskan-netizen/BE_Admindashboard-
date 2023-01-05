@@ -54,6 +54,11 @@
 
 @php $serviceType =  Session::get('vendorType');
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
+$hidden_token = '';
+if(isset($additionalPreference['is_token_currency_enable'])){
+    $hidden_token = 'd-none';
+}
+
  @endphp
 
 @if($cart_details->totalQuantity<=0)
@@ -957,7 +962,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                 </div>
                 <hr class="my-2">
             @endif
-            <div class="row">
+            <div class="row {{$hidden_token}}">
                 <div class="col-6 d-flex">
                     <p class="total_amt m-0">{{__('Amount Payable')}}
                         @if($other_taxes)<small>({{__('incl. tax')}})</small>@endif </p>
@@ -973,16 +978,16 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                 <div class="col-6 text-right">
                     @if($client_preference_detail->auto_implement_5_percent_tip == 1)
                         @if(decimal_format($cart_details->wallet_amount_used) > 0)
-                            <p class="total_amt m-0 a" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">@if( $additionalPreference["is_token_currency_enable"]) 
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">@if( $additionalPreference["is_token_currency_enable"]) 
                                 {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!} {{ getInToken(decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)))}} @else {{Session::get('currencySymbol'). decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent))}}@endif</p>
                         @else
-                            <p class="total_amt m-0 a2" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">@if( $additionalPreference["is_token_currency_enable"]) 
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">@if( $additionalPreference["is_token_currency_enable"]) 
                                 {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!} {{ getInToken(decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes)))}} @else {{Session::get('currencySymbol'). decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes))}}@endif</p>
                         @endif
                                 <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="{{ decimal_format($cart_details->tip_5_percent) }}">
                                 <input type="hidden" name="cart_total_payable_amount" value="{{decimal_format($cart_details->total_payable_amount)+decimal_format($cart_details->tip_5_percent)+decimal_format($other_taxes)}}" >
                     @else
-                                <p class="total_amt m-0 b" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">@if( $additionalPreference["is_token_currency_enable"]) 
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="{{$cart_details->id}}">@if( $additionalPreference["is_token_currency_enable"]) 
                                     {{ '' }} @else {{Session::get('currencySymbol').decimal_format(decimal_format($cart_details->total_payable_amount)+decimal_format($other_taxes))}}@endif</p>
 
                                     <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
@@ -1073,11 +1078,15 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                             <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
                             <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
                         @endif
-                            @if($cart_error_message=='')
-                                <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                            @if($cart_details->wallet_amount_used > 0)
+                                @if($cart_error_message=='')
+                                    <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                                @else
+                                    <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
+                                @endif
                             @else
-                            <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
-                        @endif
+                                <a class="btn shoping btn-danger" href="{{route('user.wallet')}}">{{__('Need Topup Wallet')}}</a>
+                            @endif
 
                     </div>
                 @endif
