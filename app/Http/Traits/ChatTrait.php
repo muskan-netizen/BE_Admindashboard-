@@ -71,11 +71,16 @@ trait ChatTrait{
         } else{
             $username =  Auth::user()->name;
             $auid =  Auth::user()->id;
-            
             $result = array_values(array_column($request->all()['user_ids'], 'auth_user_id'));
-            $removeAuth = array_values(array_diff($result, array($auid)));
+            $removeAuth = $result;
+            if(@$data['auth_id']==$auid){
+                $removeAuth = array_values(array_diff($result, array($auid)));
+            }
              /**dispacth noti */
-            $this->getDispacthUrl($data['order_vendor_id'],$data['order_id'],$data['vendor_id'],$data);
+             if(@$data['order_vendor_id']){
+                $this->getDispacthUrl($data['order_vendor_id'],$data['order_id'],$data['vendor_id'],$data);
+             }
+            
             /**end */
         }
        
