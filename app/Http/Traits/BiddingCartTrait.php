@@ -17,11 +17,12 @@ trait biddingCartTrait{
         $user_id = ' ';
         $cartInfo = ' ';
         $user = Auth::user();
+        $is_bid_enable = @getAdditionalPreference(['is_bid_enable'])['is_bid_enable']??0;
         $bid_products = BidProduct::where('bid_id', $id)->with('product.variant')->get();
         $CartController  = new CartController();
         foreach($bid_products as $product) {
             $newRequest = new Request();
-            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>$id,'bid_discount'=>$product->bids->discount]);
+            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>(($is_bid_enable)?$id:null),'bid_discount'=>(($is_bid_enable)?$product->bids->discount:null)]);
             $data = $CartController->postAddToCart($newRequest);
         }
 

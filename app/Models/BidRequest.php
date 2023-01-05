@@ -20,6 +20,11 @@ class BidRequest extends Model
         return $this->hasMany(Bid::class, 'bid_req_id');
     }
 
+    public function bidCounts()
+    {
+        return $this->hasMany(Bid::class, 'bid_req_id')->where('status',0);
+    }
+
     // public function getImageAttribute()
     // {
     //   $values = array();

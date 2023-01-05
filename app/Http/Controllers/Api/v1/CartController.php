@@ -515,10 +515,19 @@ class CartController extends BaseController
         if (!$cartProduct) {
             return response()->json(['error' => __('Product not exist in cart.')], 404);
         }
+        $cartProductBid_number = @$cartProduct->bid_number??null;
+        $cartProductVendor_id = @$cartProduct->vendor_id??null;
         $cartProduct->delete();
         $totalProducts = CartProduct::where('cart_id', $cart->id)->sum('quantity');
         if (!$totalProducts || $totalProducts < 1) {
             $cart->delete();
+
+            if(@$cartProductBid_number)
+            {
+                CartProduct::where('vendor_id',$cartProductVendor_id)->update(['bid_number'=>null,'bid_discount'=>null]);
+            }
+
+
             return response()->json([
                 "message" => __("Product removed from cart successfully."),
                 'data' => array(),

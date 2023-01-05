@@ -766,7 +766,6 @@ trait cartManager{
                                 $deliveriesNew = new CartController();
                                 
                                 $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del, $lastMileDate['tags'],$NumberOfroutes);
-                              //  pr($deliveries);
                                 if (isset($deliveries[0])) {
                                     $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                     if (count($deliveries)>1) {
@@ -787,6 +786,7 @@ trait cartManager{
                                         }
                                     }
                                     $select .= '</select>';
+
                                     if($code) {
                                         $new = array_filter($deliveries, function ($var) use ($code) {
                                             return ($var['code'] == $code);
@@ -886,6 +886,7 @@ trait cartManager{
                     if($cross_prods){
                         $crossSell_products->push($cross_prods);
                     }
+
                 }
 
                 // $couponGetAmount = $payable_amount ;

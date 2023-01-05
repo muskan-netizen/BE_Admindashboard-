@@ -100,7 +100,7 @@ class VendorBidController extends BaseController{
         $user = Auth::user();
         $keyword = $request->input('keyword');
         $vendorId[] = $request->input('vendor_id');
-        $language_id = Session()->get('customerLanguage');
+        $language_id = Session()->get('customerLanguage')??1;
         $area = new FrontController();
         $allowed_vendors = $area->getServiceAreaVendors();
         // $vendors = Vendor::where('status','1');

@@ -131,10 +131,10 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                                                     <tr>
                                                         <td>{{$loop->iteration}}</td>
                                                         <td><a target ="_blank" href="{{$prescription->prescription}}">View File</a></td>
-                                                        <td>{{$prescription->description??null}}</td>
+                                                        <td><span class="text-wrap">{{$prescription->description??null}}</span></td>
                                                         <td>{{$prescription->created_at}}</td>
                                                         <td>
-                                                            <a href="{{route('bid.details',['id'=>$prescription->id])}}" class="viewBids" data-id="{{$prescription->id}}"   >View Bids</a>
+                                                            <a href="{{route('bid.details',['id'=>$prescription->id])}}" class="viewBids" data-id="{{$prescription->id}}">View Bids ({{$prescription->bid_counts_count??0}})</a>
                                                         </td>
 
                                                     </tr>

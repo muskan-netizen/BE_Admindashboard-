@@ -71,7 +71,7 @@
                                             <tr>
                                                 <td>{{$loop->iteration}}</td>
                                                 <td> <a href="{{$prescription->prescription}}" target="_blank">View File</a></td>
-                                                <td>{{$prescription->description}}</td>
+                                                <td><span class="text-wrap">{{$prescription->description}}</span></td>
                                                 <td>{{$prescription->created_at}}</td>
                                                 <td>
                                                     <a href="{{$prescription->prescription}}" target="_blank"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>

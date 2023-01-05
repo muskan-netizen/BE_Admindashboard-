@@ -28,11 +28,8 @@ class BidController extends FrontController
     {
         $user = Auth::user();
         $prescriptions = BidRequest::where('user_id', $user->id)->where('status' , '=' , 0)
-        ->with('bids')->get();
-        // dd($prescriptions[0]->bids[0]->bidProducts);
-        $bids = Bid::with('bidProducts','vendor')->get();
-        
-        return view('frontend.bidding_module.biddingRequest', compact('prescriptions','bids'));
+        ->withCount('bidCounts')->get();
+        return view('frontend.bidding_module.biddingRequest', compact('prescriptions'));
     }
 
 
@@ -53,11 +50,13 @@ class BidController extends FrontController
 
     public function bidAccept(Request $request,$domain ="",$id = null,$vid = null)
     {
+        $is_bid_enable = @getAdditionalPreference(['is_bid_enable'])['is_bid_enable']??0;
         $bid_products = BidProduct::where('bid_id', $vid)->with('product.variant')->get();
         $CartController  = new CartController();
         foreach($bid_products as $product) {
             $newRequest = new Request();
-            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>$vid,'bid_discount'=>$product->bids->discount]);
+            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>(($is_bid_enable)?$vid:null),'bid_discount'=>(($is_bid_enable)?$product->bids->discount:null)]);
+
             $data = $CartController->postAddToCart($newRequest);
         }
 
