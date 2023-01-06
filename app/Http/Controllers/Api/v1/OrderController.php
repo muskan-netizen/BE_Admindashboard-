@@ -20,7 +20,8 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption, ProcessorProduct};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid,ProcessorProduct};
+
 use App\Models\AutoRejectOrderCron;
 
 use App\Models\{VendorOrderCancelReturnPayment};
@@ -125,6 +126,7 @@ class OrderController extends BaseController
             $language_id = $user->language ?? 1;
             $latitude = '';
             $longitude = '';
+            $Order_bid_discount = 0;
 
             if ($user) {
                 DB::beginTransaction();
@@ -300,6 +302,8 @@ class OrderController extends BaseController
                         $vendor_markup_amount = 0;
                         $vendor_discount_amount = 0;
                         $is_restricted = 0;
+                        $bid_vendor_discount = 0;
+
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
                         {
@@ -434,6 +438,8 @@ class OrderController extends BaseController
                             $order_product->order_vendor_id = $order_vendor->id;
                             $order_product->order_id = $order->id;
                             $order_product->price = $variant->price;
+                            $order_product->bid_number = @$vendor_cart_product->bid_number ?? null;
+                            $order_product->bid_discount = @$vendor_cart_product->bid_discount ?? null;
                             $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
                             $order_product->start_date_time = $vendor_cart_product->start_date_time;
                             $order_product->end_date_time = $vendor_cart_product->end_date_time;
@@ -449,6 +455,14 @@ class OrderController extends BaseController
                             $order_product->variant_id = $vendor_cart_product->variant_id;
                             $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                             $product_variant_sets = '';
+
+
+                            if(@$vendor_cart_product->bid_number)
+                            {
+                                Bid::where('id', $vendor_cart_product->bid_number)->update(['status'=>1]);
+                                $bid_vendor_discount += (($order_product->price * $vendor_cart_product->bid_discount)/100);
+                            }
+
                             if (isset($vendor_cart_product->variant_id) && !empty($vendor_cart_product->variant_id)) {
                                 $var_sets = ProductVariantSet::where('product_variant_id', $vendor_cart_product->variant_id)->where('product_id', $vendor_cart_product->product->id)
                                     ->with([
@@ -692,6 +706,8 @@ class OrderController extends BaseController
                             $order_vendor->subscription_discount_vendor = $subs_discount_vendor;
                         }
                         $order_vendor->is_restricted = $is_restricted;
+                        $order_vendor->bid_discount = $bid_vendor_discount??0;
+                        $Order_bid_discount += $bid_vendor_discount??0;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
                             if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -735,7 +751,8 @@ class OrderController extends BaseController
                     //     $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
                     // }
                     $total_discount = $total_discount + $total_subscription_discount;
-                    $order->total_amount = $total_amount+$total_container_charges;
+                    $order->total_amount = ($total_amount + $total_container_charges) - $Order_bid_discount??0;
+                    // $order->total_amount = $total_amount - $Order_bid_discount??0;
                     $order->total_discount = $total_discount;
                     //$order->taxable_amount = $taxable_amount;
                     $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
@@ -782,6 +799,7 @@ class OrderController extends BaseController
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
+                    $payable_amount = $payable_amount - $Order_bid_discount??0;
 
                     if (!$additionalPreferences->is_tax_price_inclusive) {
                         $order->payable_amount = $payable_amount;
@@ -805,6 +823,7 @@ class OrderController extends BaseController
                     if(checkColumnExists('orders','is_long_term')){
                         $order->is_long_term            = $is_long_term_order;
                     }
+                    $order->bid_discount  = $Order_bid_discount??0;
                     $order->save();
 
                     // pr($res);

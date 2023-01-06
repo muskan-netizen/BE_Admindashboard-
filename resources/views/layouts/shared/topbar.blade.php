@@ -15,6 +15,25 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
     <source src="{{ asset('assets/sounds/notification.mp3')}}" type="audio/mpeg">
     Your browser does not support the audio element.
 </audio>
+<style>
+ .notification {
+  text-decoration: none;
+  padding: 1px 2px;
+  position: relative;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.notification .badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  padding: 5px 10px;
+  border-radius: 50%;
+  background: rgb(189, 188, 188);
+  color: white;
+}
+</style>
 <div class="navbar-custom {{(is_p2p_vendor()) ? '' : ''}}">
 
     <div class="col d-flex align-items-center justify-content-between justify-content-lg-end">
@@ -311,3 +330,4 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
         </div>
     </div>
 </div>
+

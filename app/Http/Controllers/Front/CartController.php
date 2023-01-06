@@ -15,7 +15,7 @@ use App\Models\EstimatedProductCart;
 use App\Models\EstimatedProductAddons;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Traits\{ApiResponser,CartManager, KwikApi};
+use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
@@ -23,7 +23,7 @@ use Http\Message\Cookie;
 
 class CartController extends FrontController
 {
-    use ApiResponser,CartManager,KwikApi;
+    use ApiResponser,CartManager,KwikApi,BiddingCartTrait;
 
 
     private function randomString()
@@ -283,8 +283,7 @@ class CartController extends FrontController
 
 
     public function postAddToCart(Request $request, $domain = '')
-    {
-       // pr($request->all());
+    {   
 
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
@@ -437,6 +436,14 @@ class CartController extends FrontController
                 'service_start_date'  => @$service_start_date,
             ];
 
+            //Check if BidId and bid dicount coulmn exists in table
+            if(checkColumnExists('cart_products','bid_number')){
+                $cart_product_detail['bid_number'] =@$request->bid_number??null;
+                $cart_product_detail['bid_discount'] =@$request->bid_discount??null;
+                // dd($request->bid_number);
+            }
+
+
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
             /** check is long term is added to cart */
             $checkLongTermService = CartProduct::where('cart_id', $cart_detail->id)->with('product')->first();
@@ -511,6 +518,13 @@ class CartController extends FrontController
                 }
             }else{
                 $cartProduct->quantity = $cartProduct->quantity + $request->quantity;
+               
+                 //Check if BidId and bid dicount coulmn exists in table
+                if(checkColumnExists('cart_products','bid_number')){
+                    $cartProduct->bid_number = @$request->bid_number??null;
+                    $cartProduct->bid_discount = @$request->bid_discount??null;
+                }
+
                 $cartProduct->save();
             }
             $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
@@ -682,6 +696,14 @@ class CartController extends FrontController
         }
     }
 
+    //initialize bidding cart
+    public function initCart(Request $request)
+    {
+        $this->biddingCart($request->id);
+
+        return redirect()->route('showCart')->with('success', 'Product added successfully');
+
+    }
     /**
      * get products from cart
      *
@@ -1896,7 +1918,11 @@ class CartController extends FrontController
      */
     public function deleteCartProduct($domain = '', Request $request)
     {
-        $CartProductdata = CartProduct::where('id', $request->cartproduct_id)->first();
+        $cartProd =  CartProduct::where('id', $request->cartproduct_id)->select('vendor_id','bid_number')->first();
+        if($cartProd->bid_number)
+        {
+            CartProduct::where('vendor_id',$cartProd->vendor_id)->update(['bid_number'=>null,'bid_discount'=>null]);
+        }
         CartProduct::where('id', $request->cartproduct_id)->delete();
         CartCoupon::where('vendor_id', $request->vendor_id)->delete();
         CartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
@@ -2467,6 +2493,7 @@ class CartController extends FrontController
         }
         return response()->json(['status' => 'success', 'message' => "Uploaded Successfully"]);
     }
+
 
     public function addVendorTableToCart(Request $request, $domain = '')
     {

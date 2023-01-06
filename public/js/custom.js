@@ -4246,6 +4246,117 @@ $(document).ready(function () {
 
     });
 
+    //prescription upload for bidding
+
+    // $(document).on('click', '.prescription-doc-remove', function (e) {
+    //     var prescriptionId = $(this).data("prescription_id");
+    //     $.ajaxSetup({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('input[name="_token"]').val()
+    //         }
+    //     });
+    //     $.ajax({
+    //         type: "post",
+    //         headers: {
+    //             Accept: "application/json"
+    //         },
+    //         url: get_product_prescription,
+    //         dataType: 'json',
+    //         data: {prescriptionId:prescriptionId,requestType:'delete_prescription'},
+    //         beforeSend: function () {
+    //             $(".loader_box").show();
+    //         },
+    //         success: function (response) {
+    //             if (response.status == 'success') {
+    //                 $(".modal .close").click();
+    //                 location.reload();
+    //             }
+    //         },
+    //         complete: function () {
+    //             $('.loader_box').hide();
+    //         }
+    //     });
+    // });
+
+    // $(document).on('click', '.bid_prescription_btn', function (e) {
+    //     e.preventDefault();
+    //     $(".uploaded-bidding-prescription").html("");
+    //     $(".uploaded-bidding-prescription-img").val(null);
+    //     var ID = $(this).data("id");
+    //     $.ajaxSetup({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('input[name="_token"]').val()
+    //         }
+    //     });
+    //     $.ajax({
+    //         type: "post",
+    //         headers: {
+    //             Accept: "application/json"
+    //         },
+    //         url: get_bid_prescription,
+    //         dataType: 'json',
+    //         data: {id:ID},
+    //         beforeSend: function () {
+    //             $(".loader_box").show();
+    //         },
+    //         success: function (response) {
+
+    //             // show-prescription-doc
+    //             var showPrescriptionDoc = '';
+    //             $.each(response, function (key, res) {
+    //                 showPrescriptionDoc += '<div class="show-prescription-close"><i class="fa fa-times prescription-doc-remove" data-prescription_id="'+res.id+'" aria-hidden="true"></i><img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60"></div>'
+    //             });
+
+    //             $(".show-bid_prescription-doc").html(showPrescriptionDoc);
+    //             $('#bid_prescription_form').modal('show');
+    //         },
+    //         complete: function () {
+    //             $('.loader_box').hide();
+    //         }
+    //     });
+    // });
+
+    // $(document).on('click', '.submitBidPrescriptionForm', function (e) {
+    //     e.preventDefault();
+    //     var form = document.getElementById('savebidprescriptionform');
+    //     var formData = new FormData(form);
+    //     var route_uri = "add/bid/prescription";
+
+    //     $.ajaxSetup({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('input[name="_token"]').val()
+    //         }
+    //     });
+    //     $.ajax({
+    //         type: "post",
+    //         headers: {
+    //             Accept: "application/json"
+    //         },
+    //         url: route_uri,
+    //         data: formData,
+    //         contentType: false,
+    //         processData: false,
+    //         beforeSend: function () {
+    //             $(".loader_box").show();
+    //         },
+    //         success: function (response) {
+
+    //             if (response.status == 'success') {
+    //                 $(".modal .close").click();
+    //                 location.reload();
+    //             } else {
+    //                 $(".show_all_error.invalid-feedback").show();
+    //                 $(".show_all_error.invalid-feedback").text(response.message);
+    //             }
+    //             return response;
+    //         },
+    //         complete: function () {
+    //             $('.loader_box').hide();
+    //         }
+    //     });
+
+    // });
+
     $(document).on('click', '#tasknow', function () {
         //$('#schedule_div').attr("style", "display: none !important");
     });

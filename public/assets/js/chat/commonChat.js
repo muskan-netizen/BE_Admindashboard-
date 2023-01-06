@@ -1,14 +1,18 @@
 
 
     //await getALLchat();
+    let productIdC = '';
+    let OrdervendorID = '';
+    let order_id = '';
+    let vendoridC = '';
     $(document).on('click','.start_chat',async function(){
         var vendor_order_id = $(this).attr('data-vendor_order_id');
         var vendor_id = $(this).attr('data-vendor_id');
         var order_id = $(this).attr('data-order_id');
         var type = $(this).attr('data-chat_type');
-        product_id = '';
+        
         if(type == 'userToUser'){
-            product_id = $(this).attr('data-product_id');
+               product_id = $(this).attr('data-product_id');
                 //startChatype ='user_to_user';
                 if(!vendor_order_id && !vendor_id && !order_id){
                     return;
@@ -28,12 +32,13 @@
         var roomIdText = $(this).attr('data-roomid');
         var roomName = $(this).attr('data-roomName');
         var roomIDn = $(this).attr('data-roomID');
-        var OrdervendorID = $(this).attr('data-ordervendorid');
-        var order_id = $(this).attr('data-orderid');
+        OrdervendorID = $(this).attr('data-ordervendorid');
+        order_id = $(this).attr('data-orderid');
         var chat_type = $(this).attr('data-chat_type');
-        var product_id = $(this).attr('data-product_id');
+        var productIdC = $(this).attr('data-product_id');
         var product_name = $(this).attr('data-product_name');
         var vendor_name = $(this).attr('data-vendor_name');
+        vendoridC = $(this).attr('data-vendor_id');
 
         if(chat_type=="userToUser"){
 
@@ -52,7 +57,7 @@
         var email = authDataParseData.email;
         $('#roomName').html(roomIDn);
        // socket.emit('joinRoom', { email: email, roomId: roomId, message: 'Join this room', created_date: new Date() });
-        await fetchOderVendorDetails(OrdervendorID,order_id, product_id);
+        await fetchOderVendorDetails(OrdervendorID,order_id, productIdC);
         if(chat_type=="userToUser"){
             await getALLchat(roomId,roomName);
             await getAllUser(roomId,roomName);
@@ -100,7 +105,7 @@
         })
     });
 
-    async function startChat(vendor_order_id,vendor_id,order_id){
+    async function startChat(vendor_order_id,vendoridC,order_id){
         
 
         axios.post(`/${apiPre}/chat/startChat`, {
@@ -110,7 +115,7 @@
             user_id:  Auth.auth_id,   
             type:startChatype,
             vendor_order_id:vendor_order_id,
-            vendor_id:vendor_id,
+            vendor_id:vendoridC,
             order_id:order_id,
             product_id:product_id     
         })
@@ -158,11 +163,11 @@
          
             if(response.data.status) {
                 if(response.data.orderData != undefined) {
-                    console.log(response.data.orderData);
+                    console.log('hohohjo',response.data.orderData);
                     var data = response.data.orderData;
                     
 
-                    if(product_id){
+                    if(product_id!='undefined'){
                         Chat.orderData.order_number  =  (data.title != undefined ) ? data.title : '';
                         Chat.orderData.payable_amount = (data.variant[0].price != undefined ) ? data.variant[0].price : '';
                         Chat.orderData.vendor_name = (data.vendor.name != undefined ) ? data.vendor.name : '';
@@ -189,7 +194,7 @@
         })
     }
 
-    async function getALLchat(roomId,roomIdText){
+    async function getALLchat(roomId,roomIdText,OrdervendorID,order_id){
         var html='';
         toggleClass(roomId);
         axios.get(`${SocketConstants.Socket_url}/api/chat/${roomId}`)
@@ -294,7 +299,7 @@
 
                     });
                     if(notify) {
-                        sendNotification(response.data.userData,message,roomId,roomIdText)
+                        sendNotification(response.data.userData,message,roomId,roomIdText,OrdervendorID,order_id,vendoridC)
                     }
                    
                     // await response.data.userData.forEach(function (data) {
@@ -475,6 +480,7 @@
              console.log(response.data.status);
              if(response.data.status) {
                 var notify = 1;
+               
                 await getAllUser(room_id,roomIdText,notify,message);
                 //if($('#chatHistory >  div').length == 0){
                    // await getAllUser(room_id,roomIdText);
@@ -606,7 +612,7 @@
 
      async function fetchChatGroups(client_data){
         var client_data = JSON.parse(client_data);
-        
+        var chatType = '';
          if(client_data == undefined && client_data == 'undefined'){
             return;
          }
@@ -629,7 +635,7 @@
             p2p_id: p2p_id
         })
         .then(async response => {
-            console.log(response);
+            console.log('rpo',response);
             if(response.status == 200) {
                 if(response.data.roomData.length > 0) {
                     var productSelected = '';
@@ -643,12 +649,13 @@
                     var last_message_name = data.chat_Data[0]!=undefined?data.chat_Data[0].username : '';
                     if(fetchDe=='fetchRoomByUserIdUserToUser'){
                         last_message_name = data.vendor_name!=undefined?(data.vendor_name + ' (' +   data.product_name +')' ): '';
+                        chatType= 'userToUser';
                     }
                     var last_message =  data.chat_Data[0]!=undefined?data.chat_Data[0].message:'';
                     
                     var updateDate =  new Date(data.updated_date);
-                    html = `<div id="chatRooms_${data._id}" data-text="${data.room_id}" data-chat_type="userToUser" data-product_id="${data.product_id}"  data-sort="${i}" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
-                        <div id="room_${data._id}" data-orderid="${data.order_id}" data-chat_type="userToUser" data-ordervendorid="${data.order_vendor_id}" data-product_id="${data.product_id}"  data-id="${data._id}" data-roomid="${data.room_id}" data-roomname="${data.room_id}" class="chat-list-item row fetchChat">
+                    html = `<div id="chatRooms_${data._id}" data-text="${data.room_id}" data-chat_type="${chatType}" data-product_id="${data.product_id}"  data-sort="${i}" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
+                        <div id="room_${data._id}" data-orderid="${data.order_id}" data-chat_type="${chatType}" data-ordervendorid="${data.order_vendor_id}" data-vendor_id="${data.vendor_id}" data-product_id="${data.product_id}"  data-id="${data._id}" data-roomid="${data.room_id}" data-roomname="${data.room_id}" class="chat-list-item row fetchChat">
                             <div class="align-self-center col-4">
                                 <div class="user_show">
                                 ${renderUserd}
@@ -694,13 +701,17 @@
 
     }
 
-    function sendNotification(user_ids,message,roomId,roomIdText){
+    function sendNotification(user_ids,message,roomId,roomIdText,OrdervendorID='',order_id='',vendoridC=''){
         axios.post(`/common/chat/sendNotificationToUser`, {
             user_ids: user_ids,
             text_message:message,
             roomId:roomId,
             roomIdText:roomIdText,
-            auth_id:Auth.auth_id
+            auth_id:Auth.auth_id,
+            order_vendor_id:OrdervendorID,
+            order_id:order_id,
+            vendor_id:vendoridC,
+            web:'true'
         })
         .then(async response => {
         })
