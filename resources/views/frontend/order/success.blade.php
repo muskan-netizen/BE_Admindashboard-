@@ -51,32 +51,27 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                     <div class="col-lg-6">
                         <div class="product-order py-3 pro-scroller">
                             <h3>{{__('Your Order Details')}}</h3>
-<<<<<<< HEAD
 
-                            @foreach($order->products as $product)
-=======
-                         
                             @foreach($order->vendors as $vendor)
-                              <div class="row product-order-detail">      
+                              <div class="row product-order-detail">
                                     <div class="col-12">
                                             <h4>{{$vendor->vendor->name}}</h4>
                                     </div>
-                                
+
                                 @php
                                     $bid_vendor_discount = 0;
                                  @endphp
 
-                             @foreach($vendor->products as $product)
->>>>>>> pre_dev
-                            {{-- {{dd($product['vendor']->name)}} --}}
-                                @php
+                                @foreach($vendor->products as $product)
+                                {{-- {{dd($product['vendor']->name)}} --}}
+                                    @php
 
-                                    $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
-                                    $additional_price+= $product->incremental_price;
-                                @endphp
+                                        $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
+                                        $additional_price+= $product->incremental_price;
+                                    @endphp
 
-                                    
-                                        
+
+
                                         <div class="col-2">
                                             <img src="{{ $image }}" class="img-fluid blur-up lazyloaded">
                                         </div>
@@ -171,39 +166,33 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                                 @include('frontend.order.longTermDetails')
                                             @endif
                                         </div>
-<<<<<<< HEAD
-                                    </div>
 
-                            @endforeach
-=======
-
-                                         @php 
+                                         @php
                                             if(@$product->bid_discount){
                                                 $bid_vendor_discount += (($product->price * $product->bid_discount)/100);
                                              }
                                         @endphp
-                                    
-                                    @endforeach {{--  End vendor Products loop --}}
 
-                                    @if(@$bid_vendor_discount)
-                                        <div class="col-12 offset-6 border-top pt-1 mt-1">
-                                            <div class="row mr-0">  
-                                                <div class="col-md-3">
-                                                    {{__('Bid Discount')}}
-                                                </div> 
-                                                <div class="col-md-3 text-right"><b style="color:#000">
-                                                    {{Session::get('currencySymbol')}}{{decimal_format(($bid_vendor_discount) * @$clientCurrency->doller_compare)}}
-                                                </b></div>
+                                @endforeach {{--  End vendor Products loop --}}
+
+                                @if(@$bid_vendor_discount)
+                                    <div class="col-12 offset-6 border-top pt-1 mt-1">
+                                        <div class="row mr-0">
+                                            <div class="col-md-3">
+                                                {{__('Bid Discount')}}
                                             </div>
+                                            <div class="col-md-3 text-right"><b style="color:#000">
+                                                {{Session::get('currencySymbol')}}{{decimal_format(($bid_vendor_discount) * @$clientCurrency->doller_compare)}}
+                                            </b></div>
                                         </div>
-                                        @endif
-
                                     </div>
-                            
+                                    @endif
+
+                                </div>
+
                             @endforeach {{--  End vendor loop --}}
 
-                           
->>>>>>> pre_dev
+
                             <div class="total-sec row">
                                 <ul class="col-sm-6 offset-sm-6">
                                     @if($order->total_service_fee > 0)

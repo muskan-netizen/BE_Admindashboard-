@@ -193,7 +193,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                             </div>
                                             <div class="col-md-3 mt-md-0 mt-sm-2">
                                                 <ul class="price_box_bottom m-0 p-0">
-                                                   
+
                                                     <% if(vendor.subtotal_amount > 0 || vendor.subtotal_amount < 0) { %>
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Total') }}</label>
@@ -348,16 +348,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.total_amount) + parseFloat(order.bid_discount)) %></span>
                                     </li>
 
-<<<<<<< HEAD
-=======
                                     <% if(order.bid_discount > 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                                  <label class="m-0">{{ __('Bid Discount') }}</label>
                                                  <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.bid_discount) %></span>
                                          </li>
                                       <% } %>
-                                    
->>>>>>> pre_dev
+
                                     <% if(order.additional_price > 0 || order.additional_price < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                                  <label class="m-0">{{ __('Tax') }}</label>
