@@ -1385,6 +1385,16 @@ if( !function_exists('p2p_module_status') ) {
     }
 }
 
+if( !function_exists('check_influencer_enable') ) {
+    function check_influencer_enable() {
+        $additional_preference = getAdditionalPreference(['is_attribute']);
+        if(@$additional_preference['is_attribute']) {
+            return true;
+        }
+        return false;
+    }   
+}
+
 if( !function_exists('is_p2p_vendor') ) {
     function is_p2p_vendor($vendor_id = '') {
         $auth_user = auth()->user();
@@ -1474,6 +1484,30 @@ if( !function_exists('generateSlug') ) {
     }
 }
 
+if( !function_exists('printOldOrDbValue') ) {
+    function printOldOrDbValue($key, $data=null) {
+        
+        $value = '';
+
+        if( !empty($key) ) {
+            if( !empty(old($key)) ) {
+                // Return Old Value
+                $value = old($key);
+            }
+            elseif( !empty($data) ) {
+                // Return Value from db
+                if( is_object($data) ) {
+                    $value = $data->$key;
+                }
+                elseif( is_array($data) ) {
+                    $value = $data[$key];
+                }
+            }
+            return $value;
+        }
+        return $value;
+    }
+}
 if( !function_exists('get_tiny_url') ) {
     function get_tiny_url($url)  {
         $ch = curl_init();

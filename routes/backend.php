@@ -522,6 +522,41 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor_banner/store', 'Client\VendorMultiBannerController@store')->name("vendor_banner.store");
         Route::get('vendor_banner/destroy/{id}', 'Client\VendorMultiBannerController@destroy')->name("vendor_banner.destroy");
 
+        /** Refer and earn  */
+        Route::resource('tier', 'Client\TierController');
+
+        Route::prefix('influencer-user')->group(function () {
+            Route::name('influencer-user.')->group(function () {
+                Route::resource('influencer-user', 'Client\InfluencerUserController');
+                Route::get('getUploadedData', 'Client\InfluencerUserController@getUploadedData')->name('getUploadedData');
+                Route::get('getkycData', 'Client\InfluencerUserController@getkycData')->name('getkycData');
+                Route::post('approveReject', 'Client\InfluencerUserController@approveReject')->name('approveReject');
+               
+            });
+        });
+        Route::prefix('influencer-refer-earn')->group(function () {
+            
+            
+            Route::name('influencer-refer-earn.')->group(function () {
+                Route::get('index', 'Client\InfluencerReferAndEarnController@index')->name('index');
+                Route::get('create', 'Client\InfluencerReferAndEarnController@create')->name('create');
+                Route::get('edit/{id}', 'Client\InfluencerReferAndEarnController@edit')->name('edit');
+                Route::post('store', 'Client\InfluencerReferAndEarnController@store')->name('store');
+                Route::post('update', 'Client\InfluencerReferAndEarnController@update')->name('update');
+                Route::get('list', 'Client\InfluencerReferAndEarnController@userList')->name('list');
+                Route::post('update-user-commision', 'Client\InfluencerReferAndEarnController@updateUserCommision')->name('update-user-commision');
+                Route::get('editInfluencerUser', 'Client\InfluencerReferAndEarnController@editInfluencerUser')->name('editInfluencerUser');
+            });
+            Route::prefix('attribute')->group(function () {
+                Route::name('attribute-influencer-refer-earn.')->group(function () {
+                    Route::get('create', 'Client\InfluencerAttributeController@create')->name('create');
+                    Route::get('edit/{id}', 'Client\InfluencerAttributeController@edit')->name('edit');
+                    Route::post('store', 'Client\InfluencerAttributeController@store')->name('store');
+                    Route::put('update/{id}', 'Client\InfluencerAttributeController@update')->name('update');
+                    Route::delete('delete/{id}', 'Client\InfluencerAttributeController@delete')->name('delete');
+                });
+            });
+        });
 
         /**  Hubspot Create a contact.
          *

@@ -446,8 +446,9 @@ trait OrderTrait{
             //     $q->where('order_status_option_id', '!=', 6);
             //     $q->where('order_status_option_id', '!=', 3);
             // })
+            ->where('is_long_term',1)
             ->where(function ($q1) {
-                $q1->where('is_long_term',1);
+                
                 $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
                 $q1->orWhere(function ($q2) {
                     $q2->where('payment_option_id', 1);

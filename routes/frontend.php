@@ -528,6 +528,14 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/subscription/purchase/{slug}', 'Front\UserSubscriptionController@purchaseSubscriptionPlan')->name('user.subscription.plan.purchase');
 	Route::post('user/subscription/cancel/{slug}', 'Front\UserSubscriptionController@cancelSubscriptionPlan')->name('user.subscription.plan.cancel');
 	Route::get('user/subscription/checkActive/{slug}', 'Front\UserSubscriptionController@checkActiveSubscription')->name('user.subscription.plan.checkActive');
+
+	// Refer and Earn Module
+	Route::name('refer-earn.')->group(function () {
+		Route::get('user/refer-earn', 'Front\InfluencerReferAndEarnController@index')->name('index');
+		Route::get('user/get-refer-earn-form/{id}', 'Front\InfluencerReferAndEarnController@getReferEarnForm')->name('form');
+		Route::post('user/save-refer-earn-form', 'Front\InfluencerReferAndEarnController@save')->name('save');
+		Route::post('user/update-refer-code', 'Front\InfluencerReferAndEarnController@updateRefferalCode')->name('updateRefferalCode');
+	});
 	Route::post('user/save_fcm_token', 'Front\ProfileController@save_fcm')->name('user.save_fcm');
 	// Rating & review
 	Route::group(['prefix' => 'rating'], function () {
