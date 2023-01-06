@@ -39,6 +39,19 @@ function  layoutMode(){
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
     };
+    var sliderConfigEight = {
+        infinite: true,
+        speed: 300,
+        slidesToShow: 10,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 300,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
 
     if (
         (e(window).on("load", function () {
@@ -193,6 +206,8 @@ function  layoutMode(){
         e(".product-4-new_products").slick(sliderConfig),
         e(".product-4-best_sellers").slick(sliderConfig),
         e(".product-4-featured_products").slick(sliderConfig),
+        e(".p2p_eccomerce_slider").slick(sliderConfigEight),
+        e(".p2p_single_slider").slick(sliderConfig),
 
         e('.suppliers-slider').slick({
             dots: false,
@@ -229,7 +244,7 @@ function  layoutMode(){
                 }
               }
             ]
-        });
+        }),
         e(".recent-orders").slick({
             infinite: !0,
             speed: 300,
@@ -245,7 +260,7 @@ function  layoutMode(){
         e(".brand-slider").slick({
             infinite: !0,
             speed: 300,
-            slidesToShow: 5,
+            slidesToShow: 10,
             arrows:false,
             slidesToScroll: 1,
             autoplay: !0,
