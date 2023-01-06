@@ -3,24 +3,20 @@ namespace App\Http\Traits;
 use App\Models\PaymentOption;
 use Auth, Log, Config;
 trait MtnMomoPaymentManager{
-  public function __construct()
-    {
-      // $this->paytab_creds = PaymentOption::select('credentials')->where('code', 'paytab')->where('status', 1)->first();
-      // $this->creds_arr = json_decode($this->paytab_creds->credentials);
-      // $this->profile_id = $this->creds_arr->profile_id ?? '';
-      // $this->client_key = $this->creds_arr->client_key ?? '';
-      // $this->server_key = $this->creds_arr->server_key ?? '';
-      //   Config::set('Paytabs.profile_id', $this->profile_id);
-      //   Config::set('Paytabs.server_key', $this->server_key); 
-  }
 
 
   public function createApiUser($subscription_key,$reference_id){
+        $payOpt                 = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')->where('status', 1)->first();
+        if ($payOpt->test_mode == '1') {
+            $appUrl       = 'https://sandbox.momodeveloper.mtn.com/';
+        } else {
+            $appUrl       = 'https://payments.stabexinternational.com/api/mtn/Callback/';
+        }
         $site_url     = url('/');
         $domain_name  = self::getDomainName($site_url);
         $curl         = curl_init();
         curl_setopt_array($curl, array(
-          CURLOPT_URL => 'https://sandbox.momodeveloper.mtn.com/v1_0/apiuser',
+          CURLOPT_URL => $appUrl.'apiuser',
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_ENCODING => '',
           CURLOPT_MAXREDIRS => 10,
@@ -40,31 +36,37 @@ trait MtnMomoPaymentManager{
           ),
         ));
 
-      $response = curl_exec($curl);
-      $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-
-    curl_close($curl);
-    if($status == 201){
-      return json_encode(['status'=>201,'message'=>'Api User added.']);
-    }
-    else if($status == 409){
-      return json_encode(['status'=>409,'message'=>'Reference id already exist.please enter new reference id.']);
-    }
-    else if($status == 400){
-      return json_encode(['status'=>400,'message'=>'Invalid data was sent in the request.']);
-    }
-    else if($status == 500){
-      return json_encode(['status'=>500,'message'=>'Internal Server Error.']);
-    }
+        $response   = curl_exec($curl);
+        $status     = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+        if($status == 201){
+        return json_encode(['status'=>201,'message'=>'Api User added.']);
+        }
+        else if($status == 409){
+        return json_encode(['status'=>409,'message'=>'Reference id already exist.please enter new reference id.']);
+        }
+        else if($status == 400){
+        return json_encode(['status'=>400,'message'=>'Invalid data was sent in the request.']);
+        }
+        else if($status == 500){
+        return json_encode(['status'=>500,'message'=>'Internal Server Error.']);
+        }
+        else if($status == 404){
+            return json_encode(['status'=>404,'message'=>'Internal Server Error.']);
+        }
 
   }
 
   public function createApiKey($subscription_key,$reference_id){
-    
+    $payOpt                 = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')->where('status', 1)->first();
+    if ($payOpt->test_mode == '1') {
+        $appUrl       = 'https://sandbox.momodeveloper.mtn.com/';
+    } else {
+        $appUrl       = 'https://payments.stabexinternational.com/api/mtn/Callback/';
+    }
     $curl = curl_init();
     curl_setopt_array($curl, array(
-      CURLOPT_URL => 'https://sandbox.momodeveloper.mtn.com/v1_0/apiuser/'.$reference_id.'/apikey',
+      CURLOPT_URL => $appUrl.'apiuser/'.$reference_id.'/apikey',
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
@@ -82,7 +84,7 @@ trait MtnMomoPaymentManager{
     $response = curl_exec($curl);
 
     curl_close($curl);
-   
+
     return json_decode($response,true);
   }
 
@@ -109,7 +111,7 @@ trait MtnMomoPaymentManager{
     );
 }
 
-  function getDomainName($url) {
+function getDomainName($url) {
     $disallowed = array('http://', 'https://');
     foreach($disallowed as $d) {
        if(strpos($url, $d) === 0) {
@@ -131,14 +133,14 @@ trait MtnMomoPaymentManager{
   //       // ->sendCustomerDetails('Walaa Elsaeed', 'w.elsaeed@paytabs.com', '0101111111', 'test', 'Nasr City', 'Cairo', 'EG', '1234','100.279.20.10')
   //       ->sendCustomerDetails($user->name??'', $user->email??'', '0101111111', $address->address??'', $address->city??'', $address->state??'', $address->country_code??'', $address->pincode??'','100.279.20.11')
   //       ->sendShippingDetails('same as billing')
-  //       ->sendURLs(route('payment.paytab.return',['amount' => (int)$data['amount'], 'payment_from' => $data['payment_from'], 'come_from' => $data['come_from'], 'order_number' => $order_number,'auth_token'=>$user->auth_token]), route('payment.paytab.callback')) 
-  //       // ->sendURLs('https://619a-112-196-88-218.ngrok.io/payment/paytab/return?amount='.(int)$data['amount'].'&payment_from='.$data['payment_from'].'&come_from='.$data['come_from'].'&order_number='.$order_number.'&auth_token='.$user->auth_token, 'https://619a-112-196-88-218.ngrok.io/payment/paytab/callback') 
+  //       ->sendURLs(route('payment.paytab.return',['amount' => (int)$data['amount'], 'payment_from' => $data['payment_from'], 'come_from' => $data['come_from'], 'order_number' => $order_number,'auth_token'=>$user->auth_token]), route('payment.paytab.callback'))
+  //       // ->sendURLs('https://619a-112-196-88-218.ngrok.io/payment/paytab/return?amount='.(int)$data['amount'].'&payment_from='.$data['payment_from'].'&come_from='.$data['come_from'].'&order_number='.$order_number.'&auth_token='.$user->auth_token, 'https://619a-112-196-88-218.ngrok.io/payment/paytab/callback')
   //       ->sendLanguage('en')
   //       ->create_pay_page();
   //   return $pay;
   // }
   // public function capturePayment($data)
   // {
-  //   return  Paypage::capture($data['tranRef'],$data['cartId'],(int)$data['amount'],$data['description']); 
+  //   return  Paypage::capture($data['tranRef'],$data['cartId'],(int)$data['amount'],$data['description']);
   // }
 }

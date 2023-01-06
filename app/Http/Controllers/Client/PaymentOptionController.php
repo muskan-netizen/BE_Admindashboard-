@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 use Illuminate\Support\Facades\DB;
 use App\Models\{Client, ClientPreference, PaymentOption, PayoutOption};
-
+use Log;
 class PaymentOptionController extends BaseController
 {
     use ToasterResponser;
@@ -785,17 +785,27 @@ class PaymentOptionController extends BaseController
             $api_data        = MtnMomoPaymentManager::createApiKey($subscription_key,$reference_id);
             return json_encode(['status'=>201,'api_key'=>$api_data['apiKey'],'message'=>'Api key generate successfully.']);
         }else{
-            return $create_user;
+            return json_encode(['status'=>$result['status'],'message'=>$result['message']]);
         }
-
-
      }
 
      public function GenerateAccressToken(){
-        $curl = curl_init();
-
+            $payOpt                 = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')->where('status', 1)->first();
+            $json                   = json_decode($payOpt->credentials);
+            $subscription_key       = $json->subscription_key;
+            $reference_id           = $json->reference_id;
+            $api_key                = $json->api_key;
+            $token                  = base64_encode($reference_id.':'.$api_key);
+            if ($payOpt->test_mode == '1') {
+                $appUrl       = 'https://sandbox.momodeveloper.mtn.com/';
+                $envirement   = 'sandbox';
+            } else {
+                $appUrl       = 'https://payments.stabexinternational.com/api/mtn/Callback/';
+                $envirement   = 'live';
+            }
+            $curl = curl_init();
             curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://sandbox.momodeveloper.mtn.com/collection/token',
+            CURLOPT_URL => $appUrl.'/collection/token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -804,10 +814,10 @@ class PaymentOptionController extends BaseController
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => array(
-                'X-Target-Environment: sandbox',
-                'Ocp-Apim-Subscription-Key: 8cd27bfbf6274bdbb509a9f465ca6427',
+                'X-Target-Environment: '.$envirement,
+                'Ocp-Apim-Subscription-Key: '.$subscription_key,
                 'Content-Type: application/json',
-                'Authorization: Basic YmY1NmJmYzktYmRiNi00YWMwLThlYjktMTgwZGI5YTFkYTM5OmIwMjViNjI5MGExNzQ2ZTViZDAxMWI3MmViZTIyMjAw'
+                'Authorization: Basic '.$token
             ),
             ));
 

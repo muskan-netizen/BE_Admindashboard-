@@ -1424,17 +1424,23 @@
                     $("#api_key_frm").removeClass('d-block').addClass('d-none');
                     $("#api_key").val('');
                     $("#msg_status").empty();
-                    $("#msg_status").html('<p class="text-success">'+obj.message+'</p>');
+                    $("#msg_status").html('<p class="text-danger">'+obj.message+'</p>');
                   }else if(obj.status == 400){
                     $("#api_key_frm").removeClass('d-block').addClass('d-none');
                     $("#api_key").val('');
                     $("#msg_status").empty();
-                    $("#msg_status").html('<p class="text-success">'+obj.message+'</p>');
+                    $("#msg_status").html('<p class="text-danger">'+obj.message+'</p>');
                   }else if(obj.status == 500){
                     $("#api_key_frm").removeClass('d-block').addClass('d-none');
                     $("#api_key").val('');
                     $("#msg_status").empty();
-                    $("#msg_status").html('<p class="text-success">'+obj.message+'</p>');
+                    $("#msg_status").html('<p class="text-danger">'+obj.message+'</p>');
+                  }
+                  else if(obj.status == 404){
+                    $("#api_key_frm").removeClass('d-block').addClass('d-none');
+                    $("#api_key").val('');
+                    $("#msg_status").empty();
+                    $("#msg_status").html('<p class="text-danger">'+obj.message+'</p>');
                   }
                }
             });
