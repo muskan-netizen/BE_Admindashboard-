@@ -69,7 +69,7 @@ class PlugnpayController extends FrontController
       }
 
     	$responsePay = $this->createPaymentRequest($request->all());
-        \Log::info(json_encode($responsePay));
+        //\Log::info(json_encode($responsePay));
         $dataResponse = json_decode($responsePay);
 
         if($dataResponse->FinalStatus == 'badcard'){
@@ -79,11 +79,11 @@ class PlugnpayController extends FrontController
             $response['route']          = '';
             return $response;
         }
-        \Log::info($dataResponse->FinalStatus);
+        //\Log::info($dataResponse->FinalStatus);
 
         if(isset($dataResponse->FinalStatus))
         {
-        \Log::info('Done');
+        //\Log::info('Done');
 
 
         if($request->from=='tip'){
@@ -95,7 +95,7 @@ class PlugnpayController extends FrontController
             $payment = Payment::where('transaction_id',$dataResponse->address2)->first();
         }
 
-       \Log::info(json_encode($request->all()));
+       //\Log::info(json_encode($request->all()));
 
             if($payment->type=='cart'){
             return $this->completeOrderCart($dataResponse,$payment);

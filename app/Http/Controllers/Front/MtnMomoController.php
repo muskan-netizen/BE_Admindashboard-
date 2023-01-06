@@ -33,15 +33,18 @@ class MtnMomoController extends FrontController
     use ApiResponser;
     use MtnMomoPaymentManager;
 
-    private $companyToken;
+    private $subscription_key;
     private $appUrl;
-    private $serviceType;
+    private $reference_id;
     private $token;
+    private $environment;
+    private $api_key;
+    private $currency;
 
     public function __construct()
     {
-        $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')->where('status', 1)->first();
-        $json = json_decode($payOpt->credentials);
+        $payOpt                 = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')->where('status', 1)->first();
+        $json                   = json_decode($payOpt->credentials);
         $this->subscription_key = $json->subscription_key;
         $this->reference_id     = $json->reference_id;
         $this->api_key          = $json->api_key;
@@ -50,18 +53,18 @@ class MtnMomoController extends FrontController
             $this->appUrl       = 'https://sandbox.momodeveloper.mtn.com/';
             $this->environment  = 'sandbox';
         } else {
-            $this->appUrl       = 'https://sandbox.momodeveloper.mtn.com/';
-            $this->environment  = 'sandbox';
+            $this->appUrl       = 'https://payments.stabexinternational.com/api/mtn/Callback';
+            $this->environment  = 'live';
         }
 
-        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'EUR';
+        $primaryCurrency    = ClientCurrency::where('is_primary', '=', 1)->first();
+        $this->currency     = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'EUR';
     }
 
     public function orderNumber($request)
     {
-        $time = '';
-        $amt = $request->amt??$request->amount;
+        $time   = '';
+        $amt    = $request->amt??$request->amount;
         if(isset($request->auth_token) && !empty($request->auth_token)){
             $user = User::where('auth_token', $request->auth_token)->first();
             FacadesAuth::login($user);
@@ -151,7 +154,7 @@ class MtnMomoController extends FrontController
             $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
             curl_close($curl);
-
+            Log::info('access_token'.json_encode($status));
             if($status == 200){
                 $result = json_decode($response,true);
 
@@ -198,7 +201,7 @@ class MtnMomoController extends FrontController
             $partyId    = mt_rand(1000000000,9999999999);
         }else{
             $currency   = $this->currency;
-            $partyId    = '46733123433';
+            $partyId    = '256783913135';
         }
 
         $this->reference_id = MtnMomoPaymentManager::gen_uuid_4();
@@ -269,9 +272,12 @@ class MtnMomoController extends FrontController
             $payment_status = $result['status'];
             if($payment_status == 'SUCCESSFUL'){
                 $transactionId = $result['financialTransactionId'];
+                Log::info('payment'.json_encode($result));
                 return self::sucessPayment($data,$transactionId);
             }
         }
+
+        Log::info('status'.json_encode($status));
 
 
     }
