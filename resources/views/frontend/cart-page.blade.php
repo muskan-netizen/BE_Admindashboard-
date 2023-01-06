@@ -55,7 +55,7 @@
 @php $serviceType =  Session::get('vendorType');
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
 $hidden_token = '';
-if(isset($additionalPreference['is_token_currency_enable'])){
+if($additionalPreference['is_token_currency_enable'] == 1){
     $hidden_token = 'd-none';
 }
 
@@ -1078,14 +1078,24 @@ if(isset($additionalPreference['is_token_currency_enable'])){
                             <input type="hidden" id="edit_order_schedule_datetime" value="{{$edit_order_schedule_datetime}}">
                             <input type="hidden" id="edit_order_schedule_slot" value="{{$schedule_slots_edit}}">
                         @endif
-                            @if($cart_details->wallet_amount_used > 0)
-                                @if($cart_error_message=='')
+                       
+                            @if($additionalPreference['is_token_currency_enable'] == 1)
+                                @if($cart_details->wallet_amount_used > 0)
+                                    @if($cart_error_message=='')
                                     <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
-                                @else
+                                    @else
                                     <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
+                                    @endif
+                                @else
+                                    <a class="btn shoping btn-danger" href="{{route('user.wallet')}}">{{__('Need Topup Wallet')}}</a>
                                 @endif
+                            
                             @else
-                                <a class="btn shoping btn-danger" href="{{route('user.wallet')}}">{{__('Need Topup Wallet')}}</a>
+                                @if($cart_error_message=='')
+                                <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{count($cart_details->user_allAddresses) == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                                @else
+                                <div class="alert p-0" role="alert"><div class="alert-danger p-1">{{$cart_error_message}}</div></div>
+                                @endif
                             @endif
 
                     </div>

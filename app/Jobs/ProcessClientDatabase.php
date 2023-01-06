@@ -164,7 +164,7 @@ class ProcessClientDatabase implements ShouldQueue
                 DB::connection($schemaName)->table('category_translations')->insert($main_category);
             }
             DB::disconnect($schemaName);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             print_r($ex->getMessage());die;
            return $ex->getMessage();
 
