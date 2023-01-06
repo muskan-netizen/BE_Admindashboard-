@@ -283,7 +283,7 @@ class CartController extends FrontController
 
 
     public function postAddToCart(Request $request, $domain = '')
-    {   
+    {
 
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
@@ -324,7 +324,7 @@ class CartController extends FrontController
 
             //items already ordered in case order is being edit in cart
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
-             /** if product is not lonf term */ 
+             /** if product is not lonf term */
             if(checkColumnExists('products','is_long_term_service') && $productDetail->is_long_term_service !=1){
                 /** if product type is not equal to on demand and appointment
                  **/
@@ -518,7 +518,7 @@ class CartController extends FrontController
                 }
             }else{
                 $cartProduct->quantity = $cartProduct->quantity + $request->quantity;
-               
+
                  //Check if BidId and bid dicount coulmn exists in table
                 if(checkColumnExists('cart_products','bid_number')){
                     $cartProduct->bid_number = @$request->bid_number??null;
@@ -2030,17 +2030,17 @@ class CartController extends FrontController
         if ($user) {
             $cart = Cart::where('status', '0')->where('user_id', $user->id);
             if($getAdditionalPreference['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
-               
+
                 $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id')->with('giftCard');
             }else{
-                
+
                 $cart = $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','order_id');
             }
-            
+
             $cart = $cart->with(['coupon.promo','editingOrder'])->first();
 
             //pr($cart->toArray());
-            
+
         } else {
             if(checkColumnExists('carts','order_id'))
             {
@@ -2124,16 +2124,21 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
 
+            //mohit sir brach code added by sohail
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage', 'is_token_currency_enable', 'token_currency']);
+
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }
+        //sandeep sir code
         $tokenAmount = 1;
-        $is_token_enable = $getAdditionalPreference['is_token_currency_enable'];
+        $is_token_enable = @$getAdditionalPreference['is_token_currency_enable'];
         if($is_token_enable){
             $tokenAmount = getJsToken();
             $cart_details->is_token_enable = $is_token_enable;
             $cart_details->tokenAmount = $tokenAmount;
         }
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message, 'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable]);
+        // till here
+        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
 
 

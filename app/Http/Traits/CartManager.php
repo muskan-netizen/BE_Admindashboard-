@@ -546,7 +546,7 @@ trait cartManager{
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
                 // $total_service_fee = 0;
-                $total_markup_fee_tax = 0; 
+                $total_markup_fee_tax = 0;
                 $bid_vendor_discount = 0;
 
                 /* Getting in Vendor product loop and setting product values*/
@@ -1073,17 +1073,19 @@ trait cartManager{
                 // $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                 $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
                 $vendorData->delOptions = $select;
+
+                //mohit sir branch code added by sohail
                 $processorProduct = [];
                 if(checkTableExists('processor_products')){
                     $processorProduct = ProcessorProduct::where(['product_id' => $prod->product_id])->first();
                 }
-                
                 if(!empty($processorProduct) && $processorProduct->is_processor_enable == 1){
                     $vendorData->processor_product = $processorProduct;
                 }else{
-                    
+
                     $vendorData->processor_product = '';
                 }
+                //till here
 
                 if(isset($serviceArea)){
                     if($serviceArea->isEmpty()){
@@ -1181,9 +1183,9 @@ trait cartManager{
                 }
                 $total_discount_amount = $total_discount_amount + $amount_value;
             }
-            
+
             $total_discount_amount = $total_discount_amount + $total_subscription_discount_admin + $total_subscription_discount_vendor + $total_subscription_discount_delivery;
-            
+
             $cart->total_subscription_discount = decimal_format(($total_subscription_discount_admin + $total_subscription_discount_vendor + $total_subscription_discount_delivery)??0);
 
             $total_payable_amount = $total_payable_amount - $total_discount_amount;
@@ -1351,7 +1353,7 @@ trait cartManager{
             $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'].',product_tax_fee:'.$total_taxable_amount;;
 
 
-            
+
             $cart->bid_total_discount = $bid_total_discount??0;
             $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
             $cart->other_taxes = $other_taxes;

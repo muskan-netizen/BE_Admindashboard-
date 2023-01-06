@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
 use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct};
@@ -96,7 +97,7 @@ class OrderController extends BaseController
                     ->orWhere(function($q3) {
                         if(checkColumnExists('orders', 'is_postpay'))
                         {
-                            $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                            $q3->where('is_postpay', 1) // 1 for order is post pay.
                                ->whereNotIn('payment_option_id', [1, 38]);
                         }
                     });
@@ -124,7 +125,7 @@ class OrderController extends BaseController
                 ->orWhere(function($q3) {
                     if(checkColumnExists('orders', 'is_postpay'))
                     {
-                        $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                        $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
                     }
                 });
@@ -153,7 +154,7 @@ class OrderController extends BaseController
                 ->orWhere(function($q3) {
                     if(checkColumnExists('orders', 'is_postpay'))
                     {
-                        $q3->where('is_postpay', 1) // 1 for order is post pay. 
+                        $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
                     }
                 });
@@ -501,16 +502,16 @@ class OrderController extends BaseController
 
         foreach ($orders as $key => $order) {
 
-            $giftCardUsed = 0; 
-            $giftCardName = ''; 
+            $giftCardUsed = 0;
+            $giftCardName = '';
             if($HasGiftCard ==1 ){
                 if($order->gift_card_id!='' && !empty($order->giftCard)){
                     $giftCardUsed =1;
                     $giftCardName = $order->giftCard ? $order->giftCard->name : 'NA';
                 }
             }
-            $order->giftCardUsed = $giftCardUsed; 
-            $order->giftCardName = $giftCardName; 
+            $order->giftCardUsed = $giftCardUsed;
+            $order->giftCardName = $giftCardName;
             // $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, h:i A');
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
@@ -820,6 +821,58 @@ class OrderController extends BaseController
             'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm
         ]);
     }
+
+    //Update order product price by vendor incase order is takeaway
+    //mohit sir branch code added by sohail
+    public function updateOrderProductPriceByVendor(Request $request, $domain = ''){
+
+        try {
+            $roles = [
+                'or_vend_prod_id'   => 'required',
+                'or_prod_old_price' => 'required',
+                'product_price'   => 'required',
+                'update_price_reason' => 'required|string'
+            ];
+            $validator = Validator::make($request->all(), $roles);
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message' => __('Price & Reason both fields are required')]);
+            }
+            DB::beginTransaction();
+            $orderProduct = OrderProduct::find($request->or_vend_prod_id);
+            $orderProduct->price = decimal_format(isset($request->product_price) ? $request->product_price : 0);
+            $orderProduct->old_price = isset($request->or_prod_old_price) ? ($request->or_prod_old_price) : 0;
+            $orderProduct->updated_price_reason = isset($request->update_price_reason) ? ($request->update_price_reason) : 0;
+            $orderProduct->save();
+            $orderData = Order::find($orderProduct->order_id);
+            $newPayableAmount = 0;
+            $newTotalAmount   = 0;
+            if($orderProduct->old_price < $orderProduct->price){
+                $newPayableAmount =   ($orderProduct->price - $orderProduct->old_price) + $orderData->payable_amount;
+                $newTotalAmount   = ($orderProduct->price - $orderProduct->old_price) + $orderData->total_amount;
+            }else if($orderProduct->old_price > $orderProduct->price){
+                $newPayableAmount =   $orderData->payable_amount - ($request->or_prod_old_price - $request->product_price);
+                $newTotalAmount   = $orderData->total_amount - ($request->or_prod_old_price - $request->product_price);
+            }
+
+            if(!empty($newPayableAmount) && !empty($newTotalAmount)){
+                $orderData->total_amount   = decimal_format($newTotalAmount);
+                $orderData->payable_amount = decimal_format($newPayableAmount);
+                $orderData->save();
+                DB::commit();
+                return response()->json(['status' => 'error', 'message' => __('Product price updated Successfully.')]);
+            }else{
+                DB::rollback();
+            }
+            return response()->json(['status' => 'error', 'message' => __('Product price are same.')]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+//till here
 
     /**
      * Change the status of order
@@ -1413,7 +1466,7 @@ class OrderController extends BaseController
                 $dynamic = $orderVendorDetails->web_hook_code;
             }
             $call_back_url = route('dispatch-order-update', $dynamic);
-            
+
             $tasks = array();
             $meta_data = '';
 
