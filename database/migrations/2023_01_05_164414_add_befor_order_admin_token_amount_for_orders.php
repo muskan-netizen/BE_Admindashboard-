@@ -14,7 +14,10 @@ class AddBeforOrderAdminTokenAmountForOrders extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->decimal('advance_amount',16,4)->default(0);
+            if (!Schema::hasColumn('orders', 'advance_amount'))
+            {
+                $table->decimal('advance_amount',16,4)->default(0);
+            }
         });
     }
 
