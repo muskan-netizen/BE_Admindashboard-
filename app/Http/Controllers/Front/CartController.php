@@ -2060,7 +2060,7 @@ class CartController extends FrontController
 
 
         if ($cart) {
-            $cart_details = $this->getCartsNew($cart, $address_id,$request->code, $schedule_datetime_del);
+            $cart_details = $this->getCartsNew($cart, $address_id, $request->code, $schedule_datetime_del);
         }
         
         $client_preference_detail = ClientPreference::first();

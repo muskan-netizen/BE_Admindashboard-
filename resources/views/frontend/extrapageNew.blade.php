@@ -60,6 +60,7 @@
                                         <span class="invalid-feedback" id="phone_number_error"><strong></strong></span>
                                         <input type="hidden" id="countryData" name="countryData" value="us">
                                         <input type="hidden" id="dialCode" name="dialCode" value="{{$user ? $user->dial_code : ''}}">
+                                        
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
@@ -105,6 +106,7 @@
                                         <span class="invalid-feedback" id="phone_number_error"><strong></strong></span>
                                         <input type="hidden" id="countryData" name="countryData" value="us">
                                         <input type="hidden" id="dialCode" name="dialCode" value="{{$user ? $user->dial_code : ''}}">
+                                        
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
@@ -639,6 +641,7 @@ if($theme1){
 <script src="{{asset('assets/libs/mohithg-switchery/mohithg-switchery.min.js')}}"></script>
 
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script src="{{asset('js/phone_number_validation.js')}}"></script>
 <script type="text/javascript">
 function switchy(){
     $('[data-plugin=\"switchery\"]').each(function (idx, obj) {
@@ -766,15 +769,16 @@ function isNumberKey(evt) {
         $("#input_file_banner").change(function() {
             readURL(this, '#upload_banner_preview');
         });
+        
         var input = document.querySelector("#phone");
-        if(input){
-            window.intlTelInput(input, {
-                separateDialCode: true,
-                hiddenInput: "full_number",
-                utilsScript: "{{asset('assets/js/utils.js')}}",
-                initialCountry: "{{ Session::get('default_country_code','US') }}",
-            });
-        }
+        var iti = window.intlTelInput(input, {
+            separateDialCode: true,
+            hiddenInput: "full_number",
+            utilsScript: "{{asset('assets/js/utils.js?1638200991544')}}",
+            initialCountry: "{{ Session::get('default_country_code','US') }}",
+        });
+
+        phoneNumbervalidation(iti, input);
 
 
         $('.iti__country').click(function() {
@@ -791,11 +795,15 @@ function isNumberKey(evt) {
                 var category_id = $(this).data('category_id');
                 formData.append('selectedCategories[]', category_id);
             });
+            if($("#phone").hasClass("is-invalid")){
+                $("#phone").focus();
+                return false;
+            }
             $(this).attr('disabled', true);
             $('#register_btn_loader').show();
             $('.form-control').removeClass("is-invalid");
             $('.invalid-feedback').children("strong").html('');
-
+            
             $.ajax({
                 type: "POST",
                 data: formData,
