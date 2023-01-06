@@ -121,7 +121,7 @@ class CartController extends FrontController
         if(!empty($client_preference_detail)){
             $client_preference_detail->is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
         }
-        
+
         $client_detail = Client::first();
         // dd($client_detail);
         $public_key_yoco=PaymentOption::where('code','yoco')->first();
@@ -325,11 +325,11 @@ class CartController extends FrontController
 
             //items already ordered in case order is being edit in cart
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
-             /** if product is not lonf term */ 
+             /** if product is not lonf term */
             if(checkColumnExists('products','is_long_term_service') && $productDetail->is_long_term_service !=1){
                 /** if product type is not equal to on demand and appointment
-                 **/ 
-                        
+                 **/
+
                 if( ( !in_array($productDetail->category->categoryDetail->type_id,[8,12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
                     if(!empty($already_added_product_in_cart)){
                         if(($productDetail->variant[0]->quantity + $order_edit_qty) <= $already_added_product_in_cart->quantity){
@@ -347,7 +347,7 @@ class CartController extends FrontController
                     }
                 }
             }
-          
+
             //\Log::info($request->addon_id);
 
             $addonSets = $addon_ids = $addon_options = array();
@@ -415,7 +415,7 @@ class CartController extends FrontController
                 $start_date = $service_start_time ; /** we user start_date_time for long term order timing */
                 $service_start_date = carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
             }
-            
+
             $cart_product_detail = [
                 'status'            => '0',
                 'is_tax_applied'    => '1',
@@ -441,11 +441,11 @@ class CartController extends FrontController
             /** check is long term is added to cart */
             $checkLongTermService = CartProduct::where('cart_id', $cart_detail->id)->with('product')->first();
             $isLongTermService  = 0;
-           
+
             if(checkColumnExists('products','is_long_term_service') && !empty($checkLongTermService->product)){
                 $isLongTermService = $checkLongTermService->product->is_long_term_service ;
             }
-           
+
             if (@$luxury_option && $luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
@@ -2004,17 +2004,17 @@ class CartController extends FrontController
         if ($user) {
             $cart = Cart::where('status', '0')->where('user_id', $user->id);
             if($getAdditionalPreference['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
-               
+
                 $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id')->with('giftCard');
             }else{
-                
+
                 $cart = $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','order_id');
             }
-            
+
             $cart = $cart->with(['coupon.promo','editingOrder'])->first();
 
             //pr($cart->toArray());
-            
+
         } else {
             if(checkColumnExists('carts','order_id'))
             {
@@ -2022,7 +2022,7 @@ class CartController extends FrontController
             }else{
                 $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type')->with(['coupon.promo'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             }
-            
+
         }
 
         if (isset($request->address_id) && !empty($request->address_id)) {
@@ -2062,7 +2062,7 @@ class CartController extends FrontController
         if ($cart) {
             $cart_details = $this->getCartsNew($cart, $address_id,$request->code, $schedule_datetime_del);
         }
-        
+
         $client_preference_detail = ClientPreference::first();
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 
@@ -2091,23 +2091,26 @@ class CartController extends FrontController
                 $conversion_rate=(double)ClientCurrency::where('currency_id',147)->first()->doller_compare;
             }
             $cart_details->conversion_rate=$conversion_rate;
-            
+
             $currency=ClientCurrency::with('currency')->where('is_primary',1)->first();
             if(!empty($currency->currency->iso_code)){
                 $currency_code=$currency->currency->iso_code;
             }
             $cart_details->currency_code=$currency_code;
 
+            //mohit sir brach code added by sohail
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }
-        $tokenAmount = 1;
-        $is_token_enable = $getAdditionalPreference['is_token_currency_enable'];
-        if($is_token_enable){
-            $tokenAmount = getJsToken();
-            $cart_details->is_token_enable = $is_token_enable;
-            $cart_details->tokenAmount = $tokenAmount;
-        }
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message, 'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable]);
+        // $tokenAmount = 1;
+        // $is_token_enable = $getAdditionalPreference['is_token_currency_enable'];
+        // if($is_token_enable){
+        //     $tokenAmount = getJsToken();
+        //     $cart_details->is_token_enable = $is_token_enable;
+        //     $cart_details->tokenAmount = $tokenAmount;
+        // }
+        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
 
 
@@ -2143,7 +2146,7 @@ class CartController extends FrontController
      * totalRoute = number to total route witch we have send to dispatcher
      */
 
-     
+
     public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='',$totalRoute = '1')
     {
         $option = array();
@@ -2151,12 +2154,12 @@ class CartController extends FrontController
         try {
             if($vendorData->vendor_id)
             {
-                
+
                 Session()->put('vid',$vendorData->vendor_id);
 
                 $getAdditionalPreference = getAdditionalPreference(['is_free_delivery_by_roles']);
                 $skip_delivery_fees = false;
-                
+
                 if($getAdditionalPreference['is_free_delivery_by_roles'] == 1 ){
                     $product_id = $vendorData->vendorProducts[0]['product_id'];
                     $result = ProductDeliveryFeeByRole::where('product_id', $product_id)->where('role_id', Auth::user()->role_id)

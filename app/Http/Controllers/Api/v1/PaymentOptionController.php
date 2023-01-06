@@ -38,7 +38,13 @@ class PaymentOptionController extends BaseController{
         else{
             $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti');
         }
-        $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
+        //mohit sir branch code added by sohail
+        $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+        if($request->service_type == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+            $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->where('id', '!=', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
+        }else{
+        //Till here
+            $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
                 $option->title = __('Credit/Debit Card (Stripe)');
@@ -66,7 +72,7 @@ class PaymentOptionController extends BaseController{
     }
 
     public function postPayment(Request $request, $gateway = ''){
-        if(!empty($gateway)){            
+        if(!empty($gateway)){
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
             $domain = '';
@@ -79,7 +85,7 @@ class PaymentOptionController extends BaseController{
             $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
-            
+
             $function = 'postPaymentVia_'.$gateway;
             if(method_exists($this, $function)) {
                 if(!empty($request->action)){
@@ -129,7 +135,7 @@ class PaymentOptionController extends BaseController{
         $gateway = new StripeGatewayController();
         return $gateway->paymentWebViewStripeIdeal($request);
     }
-    
+
     public function postPaymentVia_stripe_oxxo(Request $request){
         $gateway = new StripeGatewayController();
         return $gateway->paymentWebViewStripeOXXO($request);
@@ -177,7 +183,7 @@ class PaymentOptionController extends BaseController{
         $gateway = new PagarmeGatewayController();
         return $gateway->pagarmePurchase($request);
     }
-    public function postPaymentVia_upay(Request $request){ 
+    public function postPaymentVia_upay(Request $request){
         $gateway = new UPayGatewayController();
         return $gateway->upayPurchase($request);
     }
@@ -196,7 +202,7 @@ class PaymentOptionController extends BaseController{
     }
     public function postPaymentVia_authorize_net(Request $request){
         $gateway = new AuthorizeGatewayController();
-        return $gateway->authorizePurchase($request); 
+        return $gateway->authorizePurchase($request);
     }
 
     public function postPaymentVia_cashfree(Request $request){
@@ -228,9 +234,9 @@ class PaymentOptionController extends BaseController{
         return $gateway->createPayLinkApp($request);
     }
 
-    public function postPaymentVia_toyyibpay(Request $request){ 
+    public function postPaymentVia_toyyibpay(Request $request){
 
-        //for getting server main url from header        
+        //for getting server main url from header
         $code = $request->header('code');
         $client = Client::where('code',$code)->first();
         $domain = '';
@@ -241,7 +247,7 @@ class PaymentOptionController extends BaseController{
         }
         $server_url = "https://".$domain."/";
         $request['serverUrl'] = $server_url;
-        $request['currencyId'] = $request->header('currency'); 
+        $request['currencyId'] = $request->header('currency');
         $request['auth_token'] = $request->header('authorization') ?? "";
 
         $gateway = new ToyyibPayController();
@@ -261,7 +267,7 @@ class PaymentOptionController extends BaseController{
         $gateway = new UseRedePaymentController();
         return $gateway->beforePayment($request);
     }
-    
+
     public function postPaymentVia_khalti(Request $request){
         $gateway = new KhaltiGatewayController();
         return $gateway->khaltiPurchase($request);
@@ -779,7 +785,7 @@ class PaymentOptionController extends BaseController{
         }
         //Send SMS to customer
         $orderController->sendSuccessSMS($request, $order);
-    
+
         return true;
     }
 

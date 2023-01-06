@@ -973,7 +973,7 @@
                                 </div>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </form><!-- SMS Configuration end -->
@@ -2079,6 +2079,15 @@
                                     </span>
                                 </div>
                             </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                   <label for="update_order_product_price" class="mr-2 mb-0">{{__('Order Update By Vendor')}}<small class="d-block pr-5">{{__("Enable to show edit button on order detail for vendor.")}}</small></label>
+                                  <span><input type="checkbox" data-plugin="switchery" name="update_order_product_price_switch" id="update_order_product_price_switch" class="form-control checkbox_change" data-className="update_order_product_price"  data-color="#43bee1" @if( @getAdditionalPreference(['update_order_product_price'])['update_order_product_price'] == '1') checked='checked' @endif>
+                                   </span>
+                                   <input type="hidden"  @if(@getAdditionalPreference(['update_order_product_price'])['update_order_product_price'] == 1) value="1" @else value="0" @endif  name="update_order_product_price"  id="update_order_product_price"/>
+                                </div>
+                             </div>
 
                             <div class="col-md-4" id="slots_with_service_area_div">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">

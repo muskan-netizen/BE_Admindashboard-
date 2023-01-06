@@ -1718,6 +1718,16 @@ class OrderController extends FrontController
                     $giftcard = UserGiftCard::where(['id'=>$UserGiftCardId])->update(['is_used'=>1]);
                 }
             }
+
+            // Advance Book Token Amount
+            //mohit sir branch code added by sohail
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+            if(!empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+                $advanceAmount = $payable_amount * $getAdditionalPreference['advance_booking_amount_percentage'] / 100;
+                $order->advance_amount = number_format($advanceAmount, 2);
+            }
+            //till here
+
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->additional_price = $totalAdditionalPrice;
             $order->total_container_charges = $total_container_charges;

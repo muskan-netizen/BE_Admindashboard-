@@ -1,7 +1,7 @@
 
 $(function () {
     var slotValidater = 2;
-   
+
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
@@ -598,7 +598,7 @@ $(document).ready(function () {
         var payment_option_id = selected_option.data("payment_option_id");
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
-           
+
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -1120,7 +1120,16 @@ $(document).ready(function () {
                                     let payment_method_tab_pane_template = _.template($('#payment_method_tab_pane_template').html());
                                     $("#v_pills_tabContent").append(payment_method_tab_pane_template({ payment_options: response.data }));
                                     $('#proceed_to_pay_modal').modal('show');
-                                    $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
+
+                                    //mohit sir branch code added by sohail
+                                    var advanceCartTotalPayableAmount = $('#advance_cart_total_payable_amount').length;
+                                    if(advanceCartTotalPayableAmount == 1){
+                                        var amtHTML = 'Advanced Token Amount: <span id="total_amt">'+$('#advance_cart_total_payable_amount').html()+'</span>';
+                                        $('#proceed_to_pay_modal #pay-billLabel').html(amtHTML);
+                                    }else{
+                                        $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
+                                    }
+                                    //till here
                                     if(stripe_publishable_key != ''){
                                         stripeInitialize();
                                     }
@@ -1249,7 +1258,7 @@ $(document).ready(function () {
         });
     });
 
-    
+
 
     var paymentAjaxData = {};
 
@@ -1294,7 +1303,7 @@ $(document).ready(function () {
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
-        
+
         if (result.error) {
             swal.fire({
                 icon: 'error',
@@ -1681,7 +1690,7 @@ $(document).ready(function () {
         });
     }
 
-    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0, delivery_type = 'D',other_taxes_string='') {
+    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0, delivery_type = 'D',other_taxes_string='',total_amount='') {
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
@@ -1702,7 +1711,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot, is_postpay:post_pay_edit_order },
+            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot, is_postpay:post_pay_edit_order,total_amount:total_amount },
 
             success: function (response) {
                 if (response.status == "Success") {
@@ -1815,7 +1824,7 @@ $(document).ready(function () {
         // alert(total_amount);
         // return false;
         if (payment_option_id == 1 || payment_option_id == 38 || post_pay_edit_order == 1) {
-            placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string);
+            placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string,total_amount);
         } else{
             cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
         }
@@ -2162,7 +2171,7 @@ $(document).ready(function () {
         OrderStorage.setStorageSingle('cartData',[]);
         OrderStorage.setStorageSingle('cartProductCount',0);
         OrderStorage.setStorageSingle('LongTermServiceAdded','');
-        OrderStorage.setStorageSingle('cartFirstProductId',''); 
+        OrderStorage.setStorageSingle('cartFirstProductId','');
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2855,7 +2864,7 @@ $(document).ready(function () {
             return false;
 
         }
-    
+
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
             if(product_id == OrderStorage.getStorage('cartFirstProductId')  ){
@@ -2866,7 +2875,7 @@ $(document).ready(function () {
                 });
                 return false;
             }
-         
+
 
             var service_start_time  =  $('#service_start_time').val();
             if(service_start_time == '' || service_start_time== undefined){
@@ -2879,7 +2888,7 @@ $(document).ready(function () {
             }
         }
 
-       
+
         $(".productAddonSetOptions").each(function (index) {
             var min_select = $(this).attr("data-min");
             var max_select = $(this).attr("data-max");
@@ -3005,7 +3014,7 @@ $(document).ready(function () {
         var service_day =  $(this).attr('data-service_day');
         var service_start_time =  $(this).attr('data-service_start_time');
         var service_date =  $(this).attr('data-service_date');
-        
+
         if ($(this).attr('data-page') == 'productDetail') {
             submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date);
         } else if ($(this).attr('data-page') == 'vendorProducts') {
