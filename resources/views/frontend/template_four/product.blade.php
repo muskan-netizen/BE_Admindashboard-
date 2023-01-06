@@ -289,7 +289,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                     </div>
                                     <div class="border-product al_disc">
                                         <h6 class="product-title mb-2">{{__('Product Details')}}</h6>
-                                        
+
                                         {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}
 
@@ -305,7 +305,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                                                 @endforeach
                                                             </div>
                                                         @endif
-                                                        
+
                                                     </div>
                                                 @endforeach
                                             @endif

@@ -8,6 +8,7 @@ use App\Http\Controllers\Client\CMS\SmsController;
 use App\Http\Controllers\Client\CMS\ReasonController;
 use App\Http\Controllers\Client\SocialMediaController;
 use App\Http\Controllers\Client\VendorPayoutController;
+use App\Http\Controllers\Client\VendorBidController;
 use App\Http\Controllers\Client\DownloadFileController;
 use App\Http\Controllers\Client\ProductImportController;
 use App\Http\Controllers\Client\Accounting\TaxController;
@@ -98,6 +99,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         
 
         Route::get('account/vendor/payout/requests', [VendorPayoutController::class, 'vendorPayoutRequests'])->name('account.vendor.payout.requests');
+        Route::get('vendor/bid/requests/{id?}', [VendorBidController::class, 'bidRequests'])->name('vendor.bid.request');
+        Route::get('vendor/bid/store', [VendorBidController::class, 'vendor.bid.store'])->name('vendor.bid.store');
+        Route::get('vendor/bid/product-search/{id?}', [VendorBidController::class, 'search'])->name('searchProduct'); //vendor product search
+        
+
+        Route::POST('vendor/bid/store', [VendorBidController::class, 'storeBidRequests'])->name('vendor.bid.store');
         Route::get('account/vendor/payout/requests/filter', [VendorPayoutController::class, 'vendorPayoutRequestsFilter'])->name('account.vendor.payout.requests.filter');
 
         Route::get('backend/order/refund', [OrderController::class, 'backendOrderRefund'])->name('backend.order.refund');

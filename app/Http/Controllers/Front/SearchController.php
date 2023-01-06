@@ -133,7 +133,7 @@ class SearchController extends FrontController
         //                               $q2->whereIn('categories.type_id', [4,5,8]);
         //                           });
         //                   });
-        //       }       
+        //       }
         $categories = $categories->where(function ($q) use ($keyword) {
             $q->where('cts.name', ' LIKE', '%' . $keyword . '%')
                 ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
