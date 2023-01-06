@@ -838,9 +838,9 @@ class OrderController extends BaseController
             }
             DB::beginTransaction();
             $orderProduct = OrderProduct::find($request->or_vend_prod_id);
-            $orderProduct->price = decimal_format($request->product_price);
-            $orderProduct->old_price = $request->or_prod_old_price;
-            $orderProduct->updated_price_reason = $request->update_price_reason;
+            $orderProduct->price = decimal_format(isset($request->product_price) ? $request->product_price : 0);
+            $orderProduct->old_price = isset($request->or_prod_old_price) ? ($request->or_prod_old_price) : 0;
+            $orderProduct->updated_price_reason = isset($request->update_price_reason) ? ($request->update_price_reason) : 0;
             $orderProduct->save();
             $orderData = Order::find($orderProduct->order_id);
             $newPayableAmount = 0;

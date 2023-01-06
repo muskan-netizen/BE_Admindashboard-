@@ -2180,10 +2180,12 @@ class OrderController extends BaseController
                             $product->is_processor_enable = (isset($processorProduct->is_processor_enable) && $processorProduct->is_processor_enable == 1)? true : false;
                             $product->processor_name = !empty($processorProduct->name)? $processorProduct->name : '';
                             $product->processor_date = !empty($processorProduct->date)? $processorProduct->date : '';
+                            $product->address = !empty($processorProduct->address)? $processorProduct->address : '';
                         }else{
                             $product->is_processor_enable = false;
                             $product->processor_name = '';
                             $product->processor_date = '';
+                            $product->address = '';
                         }
                         //till here
 
@@ -2395,9 +2397,9 @@ class OrderController extends BaseController
 
             DB::beginTransaction();
             $orderProduct = OrderProduct::find($request->order_vendor_product_id);
-            $orderProduct->price = decimal_format($request->new_product_price);
-            $orderProduct->old_price = $request->order_product_old_price;
-            $orderProduct->updated_price_reason = $request->update_price_reason;
+            $orderProduct->price = decimal_format(isset($request->new_product_price) ? $request->new_product_price : 0);
+            $orderProduct->old_price = isset($request->order_product_old_price) ? ($request->order_product_old_price) : 0;
+            $orderProduct->updated_price_reason = isset($request->update_price_reason) ? ($request->update_price_reason) :0;
             $orderProduct->save();
             $orderData = Order::find($orderProduct->order_id);
             $newPayableAmount = 0;

@@ -2103,13 +2103,15 @@ class CartController extends FrontController
 
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }
-        // $tokenAmount = 1;
-        // $is_token_enable = $getAdditionalPreference['is_token_currency_enable'];
-        // if($is_token_enable){
-        //     $tokenAmount = getJsToken();
-        //     $cart_details->is_token_enable = $is_token_enable;
-        //     $cart_details->tokenAmount = $tokenAmount;
-        // }
+        //sandeep sir code
+        $tokenAmount = 1;
+        $is_token_enable = @$getAdditionalPreference['is_token_currency_enable'];
+        if($is_token_enable){
+            $tokenAmount = getJsToken();
+            $cart_details->is_token_enable = $is_token_enable;
+            $cart_details->tokenAmount = $tokenAmount;
+        }
+        // till here
         return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
 
