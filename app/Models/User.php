@@ -171,4 +171,9 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function authentication_logs(){
         return $this->hasMany('Yadahan\AuthenticationLog\AuthenticationLog', 'authenticatable_id');
     }
+
+    public function bidRequests()
+    {
+        return $this->hasMany(BidRequest::class, 'user_id');
+    }
 }

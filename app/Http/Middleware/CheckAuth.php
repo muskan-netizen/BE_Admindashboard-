@@ -22,6 +22,7 @@ class CheckAuth
      */
     public function handle($request, Closure $next)
     {
+       
         $header = $request->header();
         
         $user = new User();

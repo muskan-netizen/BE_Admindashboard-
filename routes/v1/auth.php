@@ -231,6 +231,16 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('/create-contact', 'Hubspot\HubspotApiController@create');
 
+        //Bidding Controller
+        Route::post('upload/bid/prescriptions',    'Api\v1\BiddingController@uploadBiddingPrescription');
+        Route::get('get/vendor/bid/prescriptions', 'Api\v1\BiddingController@getVendorPrescription');
+        Route::get('get/user/bid/prescriptions',   'Api\v1\BiddingController@getUserPrescription');
+        Route::post('delete/bid/prescriptions',     'Api\v1\BiddingController@deleteProductPrescription');
+        Route::post('get/vendor/product/search',   'Api\v1\BiddingController@search');
+        Route::get('get/user/bid/listing/{bid_id}',   'Api\v1\BiddingController@getbidList');
+        Route::post('bid/add_bid_product_to_cart',   'Api\v1\BiddingController@addBidProductToCart');
+        Route::post('bid/reject',   'Api\v1\BiddingController@bidReject');
+        Route::post('bid/accept',   'Api\v1\BiddingController@bidAccept');
 
         // gift Card Order
         Route::group(['prefix' => 'giftCard'], function () {

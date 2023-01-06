@@ -3,7 +3,7 @@ namespace App\Http\Traits;
 use App\Models\{Order,OrderVendor,UserDevice,ClientPreference, Product};
 use Auth;
 use GuzzleHttp\Client as GCLIENT;
-//use Log;
+use Log;
 
 trait ChatTrait{
 
@@ -71,11 +71,16 @@ trait ChatTrait{
         } else{
             $username =  Auth::user()->name;
             $auid =  Auth::user()->id;
-            
             $result = array_values(array_column($request->all()['user_ids'], 'auth_user_id'));
-            $removeAuth = array_values(array_diff($result, array($auid)));
+            $removeAuth = $result;
+            if(@$data['auth_id']==$auid){
+                $removeAuth = array_values(array_diff($result, array($auid)));
+            }
              /**dispacth noti */
-            $this->getDispacthUrl($data['order_vendor_id'],$data['order_id'],$data['vendor_id'],$data);
+             if($data['order_vendor_id']!=''){
+                $this->getDispacthUrl($data['order_vendor_id'],$data['order_id'],$data['vendor_id'],$data);
+             }
+            
             /**end */
         }
        
@@ -173,12 +178,16 @@ trait ChatTrait{
                         'content-type' => 'application/json'
                     ]
                 ]);
+                
                 $url = $dispatch_domain['service_key_url'];
+                Log::info($url);
+                Log::info($postdata);
                 $res = $client->post(
                     $url . '/api/chat/sendNotificationToAgent',
                     ['form_params' => ($postdata)]
                 );
                 $response = json_decode($res->getBody(), true);
+                Log::info($response);
                 return $response;
         } else{
             return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found!!!')]);

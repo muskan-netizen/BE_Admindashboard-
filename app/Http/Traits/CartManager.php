@@ -436,6 +436,7 @@ trait cartManager{
             $total_deliver_charges = 0 ;
             $total_markup_charges = 0;
             $total_quantity = 0;
+            $deliveryCharges_real = $bid_total_discount = 0;
             $deliveryCharges_real = 0;
             $is_long_term_service = 0;
             $container_charges_tax = 0;
@@ -545,7 +546,9 @@ trait cartManager{
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
                 // $total_service_fee = 0;
-                $total_markup_fee_tax = 0;
+                $total_markup_fee_tax = 0; 
+                $bid_vendor_discount = 0;
+
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
@@ -660,10 +663,16 @@ trait cartManager{
                     $prod->pvariant->price = decimal_format($price_in_currency);
                     $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);
                     $prod->image_url = $this->loadDefaultImage();
+                    // $prod->bid_discount = $pro;
                     $prod->pvariant->media_one = isset($prod->pvariant->media) ? $prod->pvariant->media->first() : [];
                     $prod->pvariant->media_second = isset($prod->product->media) ? $prod->product->media->first() : [];
                     $prod->pvariant->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
-                    $prod->quantity_price = decimal_format($quantity_price);
+                    if(@$prod->bid_discount){
+                        $bid_vendor_discount += (($quantity_price * $prod->bid_discount)/100);
+                    }
+                        $prod->quantity_price = decimal_format($quantity_price);
+
+
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
 
@@ -798,7 +807,6 @@ trait cartManager{
                                 $deliveriesNew = new CartController();
 
                                 $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del, $lastMileDate['tags'],$NumberOfroutes);
-                              //  pr($deliveries);
                                 if (isset($deliveries[0])) {
                                     $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                     if (count($deliveries)>1) {
@@ -820,6 +828,7 @@ trait cartManager{
                                         }
                                     }
                                     $select .= '</select>';
+
                                     if($code) {
                                         $new = array_filter($deliveries, function ($var) use ($code) {
                                             return ($var['code'] == $code);
@@ -919,6 +928,7 @@ trait cartManager{
                     if($cross_prods){
                         $crossSell_products->push($cross_prods);
                     }
+
                 }
 
                 // $couponGetAmount = $payable_amount ;
@@ -1048,10 +1058,13 @@ trait cartManager{
                 $vendorData->discount_amount = decimal_format($discount_amount);
                 $vendorData->discount_percent = decimal_format($discount_percent);
                 $vendorData->taxable_amount = decimal_format($taxable_amount);
-                //Log::info($taxable_amount);
-                // \Log::info($payable_amount);
 
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
+                $vendorData->bid_vendor_discount = decimal_format($bid_vendor_discount);
+
+                $bid_total_discount += $vendorData->bid_vendor_discount;
+
+
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;
                 $vendorData->promo_free_deliver = $PromoFreeDeliver;
@@ -1338,6 +1351,8 @@ trait cartManager{
             $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'].',product_tax_fee:'.$total_taxable_amount;;
 
 
+            
+            $cart->bid_total_discount = $bid_total_discount??0;
             $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
             $cart->other_taxes = $other_taxes;
             $cart->other_taxes_string = $other_taxes_string;
