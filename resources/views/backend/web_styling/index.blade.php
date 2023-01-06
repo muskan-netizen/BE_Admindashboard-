@@ -381,7 +381,7 @@
 
                         @php
                             $imgUrl = asset($icon->image);
-                            if(!empty($icon->image_url['proxy_url']))
+                            if(!empty($icon->image_url['image_path']))
                             {
                                 $imgUrl = $icon->image_url['proxy_url'].'40/40'.$icon->image_url['image_path'];
                             }
