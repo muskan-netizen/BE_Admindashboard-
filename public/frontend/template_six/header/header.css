@@ -1249,6 +1249,9 @@ body .royo_whatsapp_img {
         right: 26px;
         top: 42px;
     }
+    .al_body_template_six .breadcrumb-section.bg-transparent{
+        margin-top: 40px;
+    }
     body.al_body_template_six .al_body_template_six .alSixMainMenu{
         overflow-x: hidden !important;
     }

@@ -4150,7 +4150,7 @@ body.dark {
 .order_detail.order_detail_data ul.product_list li {
     position: relative;
 }
-
+body.al_body_template_four .file.file--upload{border:none;}
 
 /* car bar css start */
 
