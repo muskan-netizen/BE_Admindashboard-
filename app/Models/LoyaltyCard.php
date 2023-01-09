@@ -19,17 +19,14 @@ class LoyaltyCard extends Model
         if ($order_loyalty_points_earned_detail) {
             $balanced_points = ($order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used);
         }
-        \Log::info("Loyalty Points:- ".$balanced_points);\Log::info("payable_amount:- ".$payable_amount);
         $result = LoyaltyCard::where('minimum_points','<=', $balanced_points)->where('status', '=', '0')->orderBy('minimum_points', 'DESC')->first();
         if(empty($result)){
             $result = LoyaltyCard::where('amount_per_loyalty_point','<=', $payable_amount)->where('status', '=', '0')->orderBy('minimum_points', 'ASC')->first();
         }
-        \Log::info("result:- ".json_encode($result));
 
     	if(!empty($result)){
             if($result->amount_per_loyalty_point > 0){
                 $amount_per_loyalty_point = ($payable_amount / $result->amount_per_loyalty_point);
-                \Log::info("amount_per_loyalty_point:- ".$amount_per_loyalty_point);
     		$per_order_points = $result->per_order_points + $amount_per_loyalty_point;
             $loyalty_card_id = $result->id;
             }
