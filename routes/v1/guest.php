@@ -47,6 +47,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
         Route::post('header', 'Api\v1\HomeController@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
+        Route::post('getShippingProductDeliverySlots', 'Api\v1\ProductController@getShippingProductDeliverySlots');
+        Route::post('getProductDeliverySlotsInterval', 'Api\v1\ProductController@getProductDeliverySlotsInterval');
         Route::POST('checkProductAvailibility', 'Api\v1\ProductController@checkProductAvailibility');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');
