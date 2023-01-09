@@ -562,7 +562,14 @@
 				<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
 			</div>
 			<div class="row">
-				<div class=" col-12 al_custom_brand">
+			<div class="col-2 brand text-center">
+					<div class=" top-heading mt-5 pt-5">
+					<h2 class="h2-heading">top-Brands</h2>
+				<a class="" href="javscript:void(0);">See All <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+					</div>
+				</div>
+
+				<div class=" col-md-10 al_custom_brand">
 					<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						<div class="row">
 							

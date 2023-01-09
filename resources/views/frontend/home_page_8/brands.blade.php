@@ -10,6 +10,8 @@
                 <h6>{{ $brand->translation_title }}</h6> </a>
         </div>
     </div>
+
+    
     
     
     
