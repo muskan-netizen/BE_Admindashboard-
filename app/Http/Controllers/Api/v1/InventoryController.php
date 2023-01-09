@@ -9,9 +9,13 @@ use App\Models\Category;
 use App\Models\ClientPreference;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use App\Http\Traits\InventoryTrait;
 
 class InventoryController extends Controller
 {
+
+    use InventoryTrait;
+
     public function getUnAssignedOrderCategory(Request $request)
     {
        try{
@@ -141,12 +145,32 @@ class InventoryController extends Controller
     {
         try{
 
-            return response()->json([
-                'status' => 200,
-                'message' => 'fetched succesfully',
-                'data' => $request->all()
-            ]);
-            if(@$request->vendor_id){
+           dd($request->all());
+            if(@$request->products && is_array($request->products)){
+                foreach($request->products as $i_product){
+                    //save brand and get return brand id
+                    $brand_id = $this->saveBrand($i_product, $request);
+
+                    //save tax and return tax_categories id
+                    $order_product_tax_categories_id = $this->saveTax($i_product, $request);
+
+                    $i_product['brand_id'] =  $brand_id;
+                    $i_product['tax_category_id'] =  $order_product_tax_categories_id;
+
+                    $product_details = \DB::table('products')->where('sku', $i_product['sku'])->first();
+                    if( !empty($product_details) ) {
+                        $order_cat = $i_product['tax_category_id'] =  $product_details->category_id;
+                    }
+
+                    //save product and return product id
+                    $product_id  = $this->saveProduct($i_product);
+                    $this->saveProductTranslation($i_product['product_translations'], $product_id);
+                    $this->saveProductVariantSet($i_product['variants'], $product_id);
+
+
+
+                }
+                
            
                 
                 return response()->json([
