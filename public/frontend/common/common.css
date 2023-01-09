@@ -3466,7 +3466,9 @@ body.al_body_template_eight section.buy_details .discriptions h3 {
 }
 body.al_body_template_eight section.buy_details .product-right .product-title{margin-top:0;}
 /*----------delevry form css-------*/
+
 div#delivery_form .form-group label {
+
     width: 100%;
     border-radius: 4px 0 0 4px;
     height: 50px;
@@ -3476,6 +3478,7 @@ div#delivery_form .form-group label {
 }
 
 div#delivery_form .form-control{
+    
     display: unset !important;
     width: unset !important;
     height: unset !important;
