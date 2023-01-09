@@ -1194,7 +1194,7 @@ class OrderController extends FrontController
                
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
-                    $order_product->price = $variant->price;
+                    $order_product->price = $variant_price;
                     $order_product->markup_price = $variant->markup_price;
                     $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
                     $order_product->start_date_time = $vendor_cart_product->start_date_time;
