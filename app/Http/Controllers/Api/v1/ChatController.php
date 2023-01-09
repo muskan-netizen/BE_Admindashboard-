@@ -196,7 +196,14 @@ class ChatController extends BaseController
                 $order = $this->OrderVendorDetail($request);
                 if(@$order){
                     $room_id = $order->order_number;
-                    $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
+                    if(isset($data['agent_id'])) {
+                        $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id.'-agentId-'.$data['agent_id'];
+                    } else {
+                       
+                        $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
+                    }
+                    
+                   
                     $orderby_user_id = $order->user_id;
                    
                 } else {
