@@ -675,6 +675,7 @@ trait cartManager{
                     $prod->quantity_price = decimal_format($quantity_price);
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
+                    $prod->quantity_role_price = $quantity_role_price;
 
                     $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
