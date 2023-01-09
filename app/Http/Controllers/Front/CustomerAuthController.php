@@ -1003,7 +1003,7 @@ class CustomerAuthController extends FrontController
             $vendor->longitude = $request->longitude;
             $vendor->desc = $request->vendor_description;
             $vendor->slug = Str::slug($request->name, "-");
-            $vendor->is_seller = $request->vendor_type;
+            $vendor->is_seller = $request->vendor_type ?? 0;
             $vendor->save();
             if($request->vendor_type == 0){
                 $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21]);    
