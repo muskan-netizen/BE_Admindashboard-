@@ -453,6 +453,7 @@ trait cartManager{
             }
           // $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */
+            $quantity_role_price = [];
             foreach ($cartData as $ven_key => $vendorData) {
                 $opt_quantity_price_new = 0.00;
                 $addon_price=0;
