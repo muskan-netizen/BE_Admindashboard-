@@ -202,7 +202,6 @@ class WebStylingController extends BaseController{
 
         }catch(\Exception $e)
         {
-                \Log::info($e->getMessage());
                 return response()->json([
                     'status' => 'error',
                     'message' => $e->getMessage()
