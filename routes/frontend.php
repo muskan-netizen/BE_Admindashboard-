@@ -499,6 +499,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('wallet/transfer/confirm', 'Front\WalletController@walletTransferConfirm')->name('wallet.transfer.confirm');
 	Route::get('user/loyalty', 'Front\LoyaltyController@index')->name('user.loyalty');
 	Route::post('wallet/payment/option/list', 'Front\WalletController@paymentOptions')->name('wallet.payment.option.list');
+	Route::get('wallet/addMoney', 'Front\WalletController@addWalletAmount');
 	Route::get('user/deleteAddress/{id}', 'Front\AddressController@delete')->name('deleteAddress');
 	Route::post('user/updateAccount', 'Front\ProfileController@updateAccount')->name('user.updateAccount');
 	Route::post('user/updateTimezone', 'Front\ProfileController@updateTimezone')->name('user.updateTimezone');
@@ -624,23 +625,4 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('get-attributes', 'Front\PostController@getCategoryAttributes')->name("category.attributes");
 
 });
-Route::get('js/translations.js', function (Request $request) {
-    $lang = config('app.locale');
-    $strings = \Illuminate\Support\Facades\Cache::rememberForever('lang_'.$lang.'.js', function () use($lang) {
-        $files = [
-            resource_path('lang/' . $lang . '/common.php'),
-            resource_path('lang/' . $lang . '/validation.php'),
-        ];
-        $strings = [];
 
-        foreach ($files as $file) {
-            $name = basename($file, '.php');
-            $strings[$name] =  $file;
-        }
-
-        return $strings;
-    });
-    header('Content-Type: text/javascript');
-    echo('window.i18n = ' . json_encode($strings) . ';');
-    exit();
-})->name('translations');
