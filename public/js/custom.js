@@ -1120,7 +1120,16 @@ $(document).ready(function () {
                                     let payment_method_tab_pane_template = _.template($('#payment_method_tab_pane_template').html());
                                     $("#v_pills_tabContent").append(payment_method_tab_pane_template({ payment_options: response.data }));
                                     $('#proceed_to_pay_modal').modal('show');
-                                    $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
+
+                                    //mohit sir branch code added by sohail
+                                    var advanceCartTotalPayableAmount = $('#advance_cart_total_payable_amount').length;
+                                    if(advanceCartTotalPayableAmount == 1){
+                                        var amtHTML = 'Advanced Token Amount: <span id="total_amt">'+$('#advance_cart_total_payable_amount').html()+'</span>';
+                                        $('#proceed_to_pay_modal #pay-billLabel').html(amtHTML);
+                                    }else{
+                                        $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
+                                    }
+                                    //till here
                                     if(stripe_publishable_key != ''){
                                         stripeInitialize();
                                     }
@@ -1681,7 +1690,7 @@ $(document).ready(function () {
         });
     }
 
-    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0, delivery_type = 'D',other_taxes_string='') {
+    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0, delivery_type = 'D',other_taxes_string='',total_amount='') {
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
@@ -1702,7 +1711,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot, is_postpay:post_pay_edit_order },
+            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot, is_postpay:post_pay_edit_order,total_amount:total_amount },
 
             success: function (response) {
                 if (response.status == "Success") {
@@ -1815,7 +1824,7 @@ $(document).ready(function () {
         // alert(total_amount);
         // return false;
         if (payment_option_id == 1 || payment_option_id == 38 || post_pay_edit_order == 1) {
-            placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string);
+            placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string,total_amount);
         } else{
             cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
         }
@@ -4236,6 +4245,117 @@ $(document).ready(function () {
         });
 
     });
+
+    //prescription upload for bidding
+
+    // $(document).on('click', '.prescription-doc-remove', function (e) {
+    //     var prescriptionId = $(this).data("prescription_id");
+    //     $.ajaxSetup({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('input[name="_token"]').val()
+    //         }
+    //     });
+    //     $.ajax({
+    //         type: "post",
+    //         headers: {
+    //             Accept: "application/json"
+    //         },
+    //         url: get_product_prescription,
+    //         dataType: 'json',
+    //         data: {prescriptionId:prescriptionId,requestType:'delete_prescription'},
+    //         beforeSend: function () {
+    //             $(".loader_box").show();
+    //         },
+    //         success: function (response) {
+    //             if (response.status == 'success') {
+    //                 $(".modal .close").click();
+    //                 location.reload();
+    //             }
+    //         },
+    //         complete: function () {
+    //             $('.loader_box').hide();
+    //         }
+    //     });
+    // });
+
+    // $(document).on('click', '.bid_prescription_btn', function (e) {
+    //     e.preventDefault();
+    //     $(".uploaded-bidding-prescription").html("");
+    //     $(".uploaded-bidding-prescription-img").val(null);
+    //     var ID = $(this).data("id");
+    //     $.ajaxSetup({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('input[name="_token"]').val()
+    //         }
+    //     });
+    //     $.ajax({
+    //         type: "post",
+    //         headers: {
+    //             Accept: "application/json"
+    //         },
+    //         url: get_bid_prescription,
+    //         dataType: 'json',
+    //         data: {id:ID},
+    //         beforeSend: function () {
+    //             $(".loader_box").show();
+    //         },
+    //         success: function (response) {
+
+    //             // show-prescription-doc
+    //             var showPrescriptionDoc = '';
+    //             $.each(response, function (key, res) {
+    //                 showPrescriptionDoc += '<div class="show-prescription-close"><i class="fa fa-times prescription-doc-remove" data-prescription_id="'+res.id+'" aria-hidden="true"></i><img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60"></div>'
+    //             });
+
+    //             $(".show-bid_prescription-doc").html(showPrescriptionDoc);
+    //             $('#bid_prescription_form').modal('show');
+    //         },
+    //         complete: function () {
+    //             $('.loader_box').hide();
+    //         }
+    //     });
+    // });
+
+    // $(document).on('click', '.submitBidPrescriptionForm', function (e) {
+    //     e.preventDefault();
+    //     var form = document.getElementById('savebidprescriptionform');
+    //     var formData = new FormData(form);
+    //     var route_uri = "add/bid/prescription";
+
+    //     $.ajaxSetup({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('input[name="_token"]').val()
+    //         }
+    //     });
+    //     $.ajax({
+    //         type: "post",
+    //         headers: {
+    //             Accept: "application/json"
+    //         },
+    //         url: route_uri,
+    //         data: formData,
+    //         contentType: false,
+    //         processData: false,
+    //         beforeSend: function () {
+    //             $(".loader_box").show();
+    //         },
+    //         success: function (response) {
+
+    //             if (response.status == 'success') {
+    //                 $(".modal .close").click();
+    //                 location.reload();
+    //             } else {
+    //                 $(".show_all_error.invalid-feedback").show();
+    //                 $(".show_all_error.invalid-feedback").text(response.message);
+    //             }
+    //             return response;
+    //         },
+    //         complete: function () {
+    //             $('.loader_box').hide();
+    //         }
+    //     });
+
+    // });
 
     $(document).on('click', '#tasknow', function () {
         //$('#schedule_div').attr("style", "display: none !important");

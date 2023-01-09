@@ -81,7 +81,15 @@ class PaymentController extends FrontController{
             }
         }
         $ex_codes = ['cod'];
-        $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
+        //mohit sir branch code added by sohail
+        $serviceType =  Session::get('vendorType');
+        $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+        if($serviceType == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+            $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->where('id', '!=', 1)->get();
+        }else{
+            $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
+        }
+        //till here
         foreach ($payment_options as $k => $payment_option) {
             if(((in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials))) && $payment_option->code!=$checkCod){
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));

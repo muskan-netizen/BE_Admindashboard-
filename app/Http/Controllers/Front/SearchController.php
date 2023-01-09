@@ -133,7 +133,7 @@ class SearchController extends FrontController
         //                               $q2->whereIn('categories.type_id', [4,5,8]);
         //                           });
         //                   });
-        //       }       
+        //       }
         $categories = $categories->where(function ($q) use ($keyword) {
             $q->where('cts.name', ' LIKE', '%' . $keyword . '%')
                 ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
@@ -235,7 +235,7 @@ class SearchController extends FrontController
         foreach ($products as $product) {
             $redirect_url = route('productDetail', [$product->vendor_slug, $product->url_slug]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
-            $product_results[] = ['id' => $product->id, 'name' => $product->vendor_name, 'latitude' => $product->latitude, 'longitude' => $product->longitude, 'address' => $product->address, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
+            $product_results[] = ['id' => $product->id, 'name' => $product->dataname, 'latitude' => $product->latitude, 'longitude' => $product->longitude, 'address' => $product->address, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
             if (!empty($vendorMapView)) {
                 $vendorRedirectUrl = route('vendorDetail', $product->vendor_slug);
                 $mapViewVendorList[] = ['id' => $product->vendor_id, 'name' => $product->vendor_name, 'dial_code' => (!empty($product->dial_code) ? $product->dial_code : ''), 'phone_no' => $product->phone_no, 'latitude' => $product->latitude, 'longitude' => $product->longitude, 'address' => $product->address, 'image_url' => $image_url, 'redirect_url' => $vendorRedirectUrl];;

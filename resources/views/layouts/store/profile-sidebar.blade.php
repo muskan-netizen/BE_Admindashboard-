@@ -53,7 +53,13 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
             <li class="{{ (request()->is('user/orders*')) ? 'active' : '' }}"><a href="{{route('user.orders')}}">{{ __('My '.getNomenclatureName($ordertitle, true) )}}</a></li>
             <li class="{{ (request()->is('user/wishlists')) ? 'active' : '' }}"><a href="{{route('user.wishlists')}}">{{ __(getNomenclatureName('Wishlist', true) )}}</a></li>
             <li class="{{ (request()->is('user/loyalty')) ? 'active' : '' }}"><a href="{{route('user.loyalty')}}">{{ __('My Loyalty') }}</a></li>
+            
             <li class="{{ (request()->is('user/wallet')) ? 'active' : '' }}"><a href="{{route('user.wallet')}}">{{ $getAdditionalPreference['is_token_currency_enable'] ? __('My Wallet/Token') : __('My Wallet') }}</a></li>
+
+            @if (@getAdditionalPreference(['is_bid_enable'])['is_bid_enable'] && getAdditionalPreference(['is_bid_enable'])['is_bid_enable']==1)
+                <li class="{{ (request()->is('user/bidRequest') || request()->is('bid/Details') ) ? 'active' : '' }}"><a href="{{route('user.bidRequest')}}">{{ __('Bid Request') }}</a></li>
+            @endif
+          
             @if( (isset($client_preference_detail->subscription_mode)) && ($client_preference_detail->subscription_mode == 1) )
                 <li class="{{ (request()->is('user/subscription*')) ? 'active' : '' }}"><a href="{{route('user.subscription.plans')}}">{{ __('My Subscriptions') }}</a></li>
             @endif
@@ -65,6 +71,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
             @endif
             <li class="{{ (request()->is('user/changePassword')) ? 'active' : '' }}"><a href="{{route('user.changePassword')}}">{{ __('Change Password') }}</a></li>
             <li class="last {{ (request()->is('user/logout')) ? 'active' : '' }}"><a href="{{route('user.logout')}}">{{ __('Log Out') }}</a></li>
+            <li class="last {{ (request()->is('user/refer-earn')) ? 'active' : '' }}"><a href="{{route('refer-earn.index')}}">{{ __('Refer & Earn') }}</a></li>
         </ul>
     </div>
 </div>
