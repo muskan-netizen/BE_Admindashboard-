@@ -180,14 +180,14 @@ trait ChatTrait{
                 ]);
                 
                 $url = $dispatch_domain['service_key_url'];
-                Log::info($url);
-                Log::info($postdata);
+                //Log::info($url);
+                //Log::info($postdata);
                 $res = $client->post(
                     $url . '/api/chat/sendNotificationToAgent',
                     ['form_params' => ($postdata)]
                 );
                 $response = json_decode($res->getBody(), true);
-                Log::info($response);
+                //Log::info($response);
                 return $response;
         } else{
             return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found!!!')]);

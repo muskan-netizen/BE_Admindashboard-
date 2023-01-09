@@ -556,7 +556,7 @@
 		@if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif
 		@elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
 		@elseif($homePageLabel->slug == 'brands' && (count($homePageData['brands']) != 0))
-		<section class="container popular-brands left-shape_ position-relative">
+		<section class="container p2p-full-width popular-brands left-shape_ position-relative">
 			<div class="top-heading al_top_heading text-center d-flex align-items-center">
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
 				<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
@@ -602,14 +602,14 @@
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
 				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
 			</div> -->
-			<div class="row">
-				<div class="col-md-3">
+			<div class="row eccomerce-temp">
+				<div class="col-2 text-center">
 					<div class=" top-heading mt-5 pt-5">
 					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Vendor', true)}}</h2>
-				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+				<a class="" href="{{route('vendor.all')}}">{{__("See All")}} <i class="fa fa-angle-right" aria-hidden="true"></i></a>
 					</div>
 				</div>
-				<div class="col-md-9">
+				<div class="col-md-10">
 					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
 						@include('frontend.home_page_8.vendor')
@@ -651,16 +651,16 @@
 			</div>
 		</section>
         @elseif($homePageLabel->slug == 'recently_viewed' && (count($homePageData['recently_viewed']) != 0))
-		<section class="main-pro-slider suppliers-section container mb-4" id="homepage_recently_viewed">
+		<section class="main-pro-slider p2p-full-width suppliers-section container mb-4" id="homepage_recently_viewed">
 			
 			<div class="row">
-				<div class="col-md-3">
+				<div class="col-md-2 mt-5 view text-center">
 					<div class=" top-heading mt-4 pt-5">
 						<h2 class="h2-heading">{{$homePageLabel->slug=='recently_viewed' ? __('Recently')." ".getNomenclatureName('Viewed', true) : __($homePageLabel->title)}}</h2>
 						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
 					</div>
 				</div>
-				<div class="col-md-9 p-0 mb-4">
+				<div class="col-md-10 p-0 mb-4">
 					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $product )
 						@include('frontend.home_page_8.recently_viewed')
@@ -715,7 +715,7 @@
         @elseif($homePageLabel->slug == 'spotlight_deals' && (count($homePageData['spotlight_deals']) != 0))
 		
 		<section class="mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="container">
+			<div class="container full_width_eccomerce">
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="h2-heading"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
@@ -750,7 +750,7 @@
 		</section>
 		@elseif($homePageLabel->slug == 'single_category_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="container">
+			<div class="container p2p-full-width">
 			<div class="top-heading d-flex justify-content-between">
 				<h2 class="h2-heading mb-3"> @php
 					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
@@ -760,7 +760,7 @@
 			<div class="row">
 				<div class="col-12">
 					<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-						<div class="row">
+						<div class="row p2p_single_slider">
 							@foreach ($homePageData[$homePageLabel->slug] as $product )
 							@include('frontend.home_page_8.single_category_products')
 							@endforeach
@@ -832,8 +832,8 @@
 			</div>
 		</section> -->
 		<section class="main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="container">
-				<div class="row">
+			<div class="container p2p-full-width">
+				<div class="row ">
 					<div class="col-md-12 text-center">
 						<div class="top-heading d-flex justify-content-between">
 							<h2 class="h2-heading"> @php
@@ -844,7 +844,7 @@
 					</div>
 				</div>
 			<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-				<div class="row">
+				<div class="row p2p_eccomerce_slider">
 							@foreach ($homePageData[$homePageLabel->slug] as $product )
 							@include('frontend.home_page_8.product')
 							@endforeach
