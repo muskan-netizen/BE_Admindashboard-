@@ -198,12 +198,14 @@ class ChatController extends BaseController
                     $room_id = $order->order_number;
                     if(isset($data['agent_id'])) {
                         $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id.'-agentId-'.$data['agent_id'];
+                        $agent_db = $data['agent_db'];
+                        $agent_id = $data['agent_id'];
                     } else {
                        
                         $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
+                        $agent_db = '';
+                        $agent_id = '';
                     }
-                    
-                   
                     $orderby_user_id = $order->user_id;
                    
                 } else {
@@ -228,7 +230,9 @@ class ChatController extends BaseController
                 'product_id'=>$product_id, 
                 'vendor_name' => $vendor_name,
                 'product_name' => $product_name,
-                'product_price' => $product_price
+                'product_price' => $product_price,
+                'agent_id'=>$agent_id,
+                'agent_db'=>$agent_db,
             ]);
             \Log::info("================================");
             \Log::info($response);
