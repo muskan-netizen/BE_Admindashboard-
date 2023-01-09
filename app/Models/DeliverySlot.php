@@ -9,6 +9,6 @@ class DeliverySlot extends Model
 {
     use HasFactory;
     
-    protected $fillable =  ['title', 'start_time', 'end_time', 'price', 'status', 'slot_interval','parent_id'];
+    protected $fillable =  ['title', 'start_time', 'end_time', 'price', 'status', 'slot_interval','parent_id', 'cutOff_time'];
     
 }

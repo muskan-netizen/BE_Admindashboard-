@@ -1216,13 +1216,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     $('#date_input').change(function(){
         var input_date = $(this).val();
         var product_id = "{{$product->id}}";
-        var vendor_cutOff_time = "{{$product->vendor->cutOff_time??''}}";
+        // var vendor_cutOff_time = "{{$product->vendor->cutOff_time??''}}";
         if(input_date != ''){
             $.ajax({
                 url: "{{route('product.getShippingProductDeliverySlots')}}",
                 type: "get",
                 datatype: "html",
-                data: {input_date:input_date,product_id:product_id,vendor_cutOff_time:vendor_cutOff_time},
+                data: {input_date:input_date,product_id:product_id}, //,vendor_cutOff_time:vendor_cutOff_time
                 success: function(data){
                     $('#delivery_form').modal({backdrop: 'static', keyboard: false});
                     $("#delivery_option").empty().html(data);

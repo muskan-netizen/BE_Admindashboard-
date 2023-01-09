@@ -1,13 +1,13 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => getNomenclatureName('Slots', True)])
 @section('css')
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
     <link href="{{ asset('assets/libs/dropzone/dropzone.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/dropify/dropify.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/mohithg-switchery/mohithg-switchery.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/multiselect/multiselect.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/selectize/selectize.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/libs/bootstrap-selectroyoorders/bootstrap-select.min.css') }}" rel="stylesheet"
-        type="text/css" />
+    <link href="{{ asset('assets/libs/bootstrap-selectroyoorders/bootstrap-select.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/bootstrap-touchspin/bootstrap-touchspin.min.css') }}" rel="stylesheet"
         type="text/css" />
     <link href="{{ asset('assets/libs/nestable2/nestable2.min.css') }}" rel="stylesheet" type="text/css" />
@@ -57,6 +57,7 @@
                                         <th>{{ __('End Time') }}</th>
                                         <th>{{ __('Price') }}</th>
                                         <th>{{ __('Duration In Minute') }}</th>
+                                        <th>{{ __('CutOff Time') }}</th>
                                         <th>{{ __('Status') }}</th>
                                         <th>{{ __('Action') }}</th>
                                     </tr>
@@ -108,6 +109,12 @@
                                     <input type="time" class="form-control" name="end_time" id="end_time" placeholder="Enter End Time" value="" required>
                                 </div>
                             </div>
+                            <div class="col-md-6" style="z-index: 9999999;">
+                                <div class="form-group" id="cutOff_timeInput">
+                                    {!! Form::label('title', __('Cut Off Time'),['class' => 'control-label']) !!}
+                                    <input class="form-control timepicker" name="cutoff_time" type="text" placeholder="Cut off time" value="" min="0" required/>
+                                </div>
+                            </div>
                             <div class="col-md-6">
                                 <div class="form-group w-100">
                                 {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
@@ -132,6 +139,7 @@
             </div>
         </div>
     </div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -172,6 +180,7 @@
                         {data: 'end_time',name: 'end_time',orderable: false,searchable: false},
                         {data: 'price',name: 'price',orderable: false,searchable: false},
                         {data: 'slot_interval',name: 'slot_interval',orderable: false,searchable: false},
+                        {data: 'cutOff_time',name: 'cutOff_time',orderable: false,searchable: false},
                         {data: 'status',name: 'status',orderable: false,searchable: false},
                         {data: 'action',name: 'action',orderable: false,searchable: false}
                     ]
@@ -187,6 +196,7 @@
                     $('#price').val($(this).data('price'));
                     $("select#slot_minutes").val($(this).data('slot-duration')).attr('selected','selected');
                     $('#add-edit-slot .modal-title').text("Edit Slot");
+                    $('.timepicker').val($(this).data('cut-off-time'));
                 }else{
                     $('#slot_id').val('');
                     $('#slot_title').val('');
@@ -195,8 +205,17 @@
                     $('#price').val('');
                     $("select#slot_minutes").val('');
                     $('#add-edit-slot .modal-title').text("Add Slot");
+                    $('.timepicker').val('');
                 }
                 $('#add-edit-slot').modal();
+            });
+            $('.timepicker').timepicker({                
+                timeFormat: 'HH:mm',
+                interval: 60,
+                inline: true,
+                dynamic: false,
+                dropdown: true,
+                scrollbar: true
             });
         });
     </script>

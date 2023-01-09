@@ -558,13 +558,11 @@ class ProductController extends BaseController
             $request->validate(
                 [
                     'delivery_date' => 'required',
-                    'product_id' => 'required',
-                    'vendor_cutoff_time' => 'required'
+                    'product_id' => 'required'
                 ], 
                 [
                     'vendor_id.required' => 'Delivery date is required',
-                    'pincode.required' => 'Product id is required',
-                    'vendor_cutoff_time.required' => 'Vendor cutoff time is required'
+                    'pincode.required' => 'Product id is required'
                 ]
             );
             $product_id = $request->product_id;
@@ -572,11 +570,12 @@ class ProductController extends BaseController
             $mytime = Carbon::now();
             $current_date = $mytime->format('Y-m-d');
             $current_time = $mytime->format('H:i');
-            $vendor_cut_off_time = Carbon::parse($request->vendor_cutoff_time)->format('H:i');
+            // $vendor_cut_off_time = Carbon::parse($request->vendor_cutoff_time)->format('H:i');
             $product_delivery_slots = DeliverySlotProduct::with('deliverySlot')->where('product_id', $product_id);
             if($current_date == $delivery_date){
-                $product_delivery_slots = $product_delivery_slots->whereHas('deliverySlot' ,function ($q) use ($current_time, $vendor_cut_off_time) {
-                    $q->whereTime('start_time', '>', $current_time)->whereTime('end_time', '<', $vendor_cut_off_time);
+                $product_delivery_slots = $product_delivery_slots->whereHas('deliverySlot' ,function ($q) use ($current_time) {
+                    $q->whereTime('cutOff_time', '>=', $current_time);
+                    // $q->whereTime('start_time', '>', $current_time)->whereTime('end_time', '<', $vendor_cut_off_time);
                 })->get();
             }else{
                 $product_delivery_slots = $product_delivery_slots->get();

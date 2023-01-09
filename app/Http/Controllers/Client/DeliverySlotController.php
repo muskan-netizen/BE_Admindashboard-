@@ -35,13 +35,16 @@ class DeliverySlotController extends Controller
                 ->addColumn('slot_interval', function ($deliverySlot) {
                     return $deliverySlot->slot_interval??'-';
                 })
+                ->addColumn('cutOff_time', function ($deliverySlot) {
+                    return $deliverySlot->cutOff_time??'-';
+                })
                 ->addColumn('action', function ($deliverySlot) use ($request) {
                     $delete_url = route('delivery-slot.destroy', $deliverySlot->id);
                     $action = '<div class="form-ul" style="width: 60px;">
                     <div class="inner-div" style="float: left;">
                         <a class="action-icon addSlotBtn"
                             href="javascript:void(0);"
-                            data-id="'.$deliverySlot->id.'" data-title="'.$deliverySlot->title.'" data-start-time="'.$deliverySlot->start_time.'" data-end-time="'.$deliverySlot->end_time.'" data-price="'.$deliverySlot->price.'" data-slot-duration="'.$deliverySlot->slot_interval.'"><i class="mdi mdi-square-edit-outline"></i></a>
+                            data-id="'.$deliverySlot->id.'" data-title="'.$deliverySlot->title.'" data-start-time="'.$deliverySlot->start_time.'" data-end-time="'.$deliverySlot->end_time.'" data-price="'.$deliverySlot->price.'" data-slot-duration="'.$deliverySlot->slot_interval.'" data-cut-off-time="'.$deliverySlot->cutOff_time.'"><i class="mdi mdi-square-edit-outline"></i></a>
                     </div>
                     <div class="inner-div">
                         <form id="deleteproduct_'.$deliverySlot->id.'" method="POST"
@@ -91,13 +94,14 @@ class DeliverySlotController extends Controller
         $starttime = $request->start_time;  // your start time
         $endtime = $request->end_time;  // End time
         $duration = $request->slot_minutes??0;
-        
+        $cutOff_time = $request->cutoff_time??NULL;        
         $data = [
             'title' => $request->slot_title,
             'start_time' => $starttime,
             'end_time' => $endtime,
             'price' => $request->price,
-            'slot_interval' => $duration
+            'slot_interval' => $duration,
+            'cutOff_time' => $cutOff_time
         ];
 
         $deliverySlot = DeliverySlot::updateOrCreate([ 'id'   => $request->slot_id, ], $data);
