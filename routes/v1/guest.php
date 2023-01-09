@@ -9,6 +9,19 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
     Route::post('vendor-sync-inventory', 'Api\v1\VendorController@vendorSyncInventory')->middleware('ConnectDbFromInventory');
 
+    Route::group(['middleware' => ['ConnectDbFromInventory']], function () { //inventory
+        Route::group(['prefix' => 'inventory'], function () {
+            Route::post('getUnAssignedOrderCategory', 'Api\v1\InventoryController@getUnAssignedOrderCategory');
+            Route::post('getOrderVendorById', 'Api\v1\InventoryController@getOrderVendorById');
+            Route::post('getOrderVendors', 'Api\v1\InventoryController@getOrderVendors');
+            Route::post('getOrderCategories', 'Api\v1\InventoryController@getOrderCategories');
+            Route::post('getOrderVendorCategories', 'Api\v1\InventoryController@getOrderVendorCategories');
+            Route::post('syncVendorCategoryProducts', 'Api\v1\InventoryController@syncVendorCategoryProducts');
+        });
+    });
+
+    
+
 
 
     Route::group(['middleware' => ['dbCheck', 'checkAuth']], function () { //apilogger
