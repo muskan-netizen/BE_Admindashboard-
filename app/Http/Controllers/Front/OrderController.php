@@ -1183,7 +1183,9 @@ class OrderController extends FrontController
                         $quantity_price = $quantity_role_price['quantity_price'];
                         $total_amount += $vendor_cart_product->quantity * $quantity_role_price['amount'];
                         $variant_price = $quantity_role_price['amount'];
+                        
                     } else {
+                        
                         $total_amount += $vendor_cart_product->quantity * $variant->price;
                         $variant_price = $variant->price;
                     }
@@ -3493,10 +3495,8 @@ class OrderController extends FrontController
         $quantity_price = 0;
         $current_price = 0;
         if( ( Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) && !empty($productVariantByRoles))  {
-
             $amount = 0;
             $quantity = 0;
-            
             foreach($productVariantByRoles->reverse() as $inn_key => $inn_val) {
                 if($inn_val->role_id == Auth::user()->role_id ) {
                     if($quantity < $inn_val->quantity && $inn_val->quantity <= $prodQuantity) {
