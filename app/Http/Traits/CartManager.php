@@ -436,6 +436,7 @@ trait cartManager{
             $total_markup_charges = 0;
             $total_quantity = 0;
             $deliveryCharges_real = 0;
+            $delivery_slot_amount = 0;
             $is_long_term_service = 0;
             $container_charges_tax = 0;
 
@@ -929,6 +930,16 @@ trait cartManager{
                     $cross_prods = $upsell->metaProduct($langId, $doller_compare, 'crossSell', ($product->crossSell ?? ''));
                     if($cross_prods){
                         $crossSell_products->push($cross_prods);
+                    }
+
+                    // Add Delivery Slot Price In total amount
+                    if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
+                        $payable_amount = $payable_amount + decimal_format($prod->slot_price);
+                    }
+                    
+                    // Add Delivery Slot Price In total amount
+                    if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
+                        $delivery_slot_amount += decimal_format($prod->slot_price);                        
                     }
                 }
 
