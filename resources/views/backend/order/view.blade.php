@@ -481,7 +481,17 @@ $timezone = Auth::user()->timezone;
                                             @endif
                                         </td>
 
-                                        <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($product->total_amount) }}
+                                        <td>
+                                            {{ $clientCurrency->currency->symbol }}{{ decimal_format($product->total_amount) }}
+
+                                            {{-- mohit sir branch code added by sohail --}}
+                                            @php
+                                                $getAdditionalPreference = getAdditionalPreference(['update_order_product_price']);
+                                            @endphp
+                                            @if( @getAdditionalPreference(['update_order_product_price'])['update_order_product_price'] == '1')
+                                                <a href="javascript:void(0);" data-toggle="modal" data-target="#addModal" class="badge badge-info ml-3 update_product_price" data-or_prod_old_price="{{decimal_format($product->total_amount)}}" data-or_vend_prod_id="{{$product->id}}">Update Price <img src=""> </a>
+                                            @endif
+                                            {{-- till here --}}
                                         </td>
                                     </tr>
                                     @if (count($product->routes) > 0)
@@ -583,10 +593,21 @@ $timezone = Auth::user()->timezone;
                         @endif
                         @endif
                         @endforeach
+
+                        @php
+                                    $sub_total = $sub_total - $vendor->orderDetail->bid_discount;
+                        @endphp
+
                         @if($container_charges > 0)
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Container Charges") }} :</th>
                             <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
+                        </tr>
+                        @endif
+                        @if($vendor->orderDetail->bid_discount > 0)
+                        <tr>
+                            <th scope="row" colspan="4" class="text-end">{{ __("Bid Discount") }} :</th>
+                            <td>{{$clientCurrency->currency->symbol}}@money($vendor->orderDetail->bid_discount)</td>
                         </tr>
                         @endif
                         <tr>
@@ -651,6 +672,8 @@ $timezone = Auth::user()->timezone;
                             <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
                         </tr>
                         @endif
+
+                        
                         @if($client_preference_detail->is_tax_price_inclusive)
 
                         @php //taxable_amount
@@ -708,9 +731,29 @@ $timezone = Auth::user()->timezone;
                             <td>
                                 {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}
                     </div> --}}
-                    <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount,2)}}</div>
+                    <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
                     </td>
                     </tr>
+                    <tr>
+                        <th scope="row" colspan="4" class="text-end">{{ __("Payable Amount") }} :</th>
+                        <td>
+                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
+                        </td>
+                    </tr>
+                    @if(@$order->advance_amount > 0)
+                    <tr>
+                        <th scope="row" colspan="4" class="text-end">{{ __("Advance Paid") }} :</th>
+                        <td>
+                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format(@$order->advance_amount)}}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" colspan="4" class="text-end">{{ __("Pending Amount") }} :</th>
+                        <td>
+                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount)}}</div>
+                        </td>
+                    </tr>
+                    @endif
                     </tbody>
                     @endforeach
                     </table>
@@ -1110,6 +1153,50 @@ $timezone = Auth::user()->timezone;
             });
         });
 
+        //mohit sir branch code added by sohail
+        $(".update_product_price").click(function() {
+            $('#or-vend-prod-id').val($(this).data('or_vend_prod_id'));
+            $('#or-prod-old-price').val($(this).data('or_prod_old_price'));
+            $('#vendor_order_product_price_modal').modal({
+                keyboard: false
+            });
+        });
+        if ($("#update-order-product-price-form").length > 0) {
+            $(document).on('click', '.submitOrderUpdatedPriceByVendor', function(e) {
+                e.preventDefault();
+                var form =  document.getElementById('update-order-product-price-form');
+                var formData = new FormData(form);
+
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "post",
+                    headers: {
+                        Accept: "application/json"
+                    },
+                    url: "{{route('update.product.price')}}",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function(){
+                        $(".loader_box").show();
+                    },
+                    success: function(response) {
+                        location.reload();
+                    },
+                    error: function(response) {
+
+                    },
+                    complete: function(){
+                        $('.loader_box').hide();
+                    }
+                });
+            });
+        }
+        //till here
 
 
         $("#order_statuses li").click(function() {

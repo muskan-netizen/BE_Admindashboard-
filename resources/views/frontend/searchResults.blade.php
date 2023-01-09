@@ -142,6 +142,11 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                                             <div class="product-box scale-effect mt-0">
                                                 <div class="img-wrapper">
                                                     <div class="front">
+                                                        @php
+                                                            if(empty($data['image_url'])){
+                                                                $data['image_url'] = loadDefaultImage();
+                                                            }
+                                                        @endphp
                                                         <a href="{{$data['redirect_url']}}"><img class="img-fluid blur-up lazyload" src="{{$data['image_url']}}" alt=""></a>
                                                     </div>
                                                 </div>

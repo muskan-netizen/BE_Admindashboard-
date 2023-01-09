@@ -7,7 +7,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 //use Laravel\Scout\Searchable;
 
 class Vendor extends Model implements Auditable{
-  
+
   use \OwenIt\Auditing\Auditable;
 
   //use Searchable;
@@ -46,7 +46,7 @@ class Vendor extends Model implements Auditable{
       return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id')->where('slot_type', '2');
     }
 
-    
+
     public function slotDates(){
       return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id');
     }
@@ -61,7 +61,7 @@ class Vendor extends Model implements Auditable{
       $current_time = $mytime->toTimeString();
       return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id')->where('specific_date', '=', $current_date)->where('start_time', '<', $current_time)->where('end_time', '>', $current_time);
     }
-    
+
     public function avgRating(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->avg('averageRating');
     }
@@ -142,7 +142,7 @@ class Vendor extends Model implements Auditable{
   public function getCustomCategory(){
     return $this->hasMany('App\Models\Category','vendor_id','id');
   }
-  
+
   // public function getTaxFixedFee(){
   //   return $this->hasOne('App\Models\TaxRate', 'id', 'fixed_fee_tax_id');
   // }
@@ -201,6 +201,11 @@ class Vendor extends Model implements Auditable{
 
     public function VendorAdditionalInfo(){
       return $this->hasOne(\App\Models\VendorAdditionalInfo::class);
+    }
+
+    public function bids()
+    {
+        return $this->hasMany(Bid::class, 'vendor_id');
     }
 
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\Client\CMS\SmsController;
 use App\Http\Controllers\Client\CMS\ReasonController;
 use App\Http\Controllers\Client\SocialMediaController;
 use App\Http\Controllers\Client\VendorPayoutController;
+use App\Http\Controllers\Client\VendorBidController;
 use App\Http\Controllers\Client\DownloadFileController;
 use App\Http\Controllers\Client\ProductImportController;
 use App\Http\Controllers\Client\Accounting\TaxController;
@@ -95,9 +96,15 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/payout/create-razorpay-details', [RazorpayGatwayController::class, 'razorpay_create_contact'])->name('vendor.razorpay_connect');
         Route::post('vendor/payout/create-razorpay-add-funds', [RazorpayGatwayController::class, 'razorpay_add_funds_accounts'])->name('vendor.add.fund.account');
 
-        
+
 
         Route::get('account/vendor/payout/requests', [VendorPayoutController::class, 'vendorPayoutRequests'])->name('account.vendor.payout.requests');
+        Route::get('vendor/bid/requests/{id?}', [VendorBidController::class, 'bidRequests'])->name('vendor.bid.request');
+        Route::get('vendor/bid/store', [VendorBidController::class, 'vendor.bid.store'])->name('vendor.bid.store');
+        Route::get('vendor/bid/product-search/{id?}', [VendorBidController::class, 'search'])->name('searchProduct'); //vendor product search
+        
+
+        Route::POST('vendor/bid/store', [VendorBidController::class, 'storeBidRequests'])->name('vendor.bid.store');
         Route::get('account/vendor/payout/requests/filter', [VendorPayoutController::class, 'vendorPayoutRequestsFilter'])->name('account.vendor.payout.requests.filter');
 
         Route::get('backend/order/refund', [OrderController::class, 'backendOrderRefund'])->name('backend.order.refund');
@@ -327,6 +334,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('order/update-product-return-client', 'Client\OrderController@updateProductReturn')->name('update.order.return.client');
         Route::get('order/{order_id}/{vendor_id}', 'Client\OrderController@getOrderDetail')->name('order.show.detail');
         Route::get('order-edit/{order_id}/{vendor_id}', 'Client\OrderController@getOrderDetailEdit')->name('order.edit.detail');
+        Route::post('order/update/product/price', 'Client\OrderController@updateOrderProductPriceByVendor')->name('update.product.price');
         Route::post('order/updateStatus', 'Client\OrderController@changeStatus')->name('order.changeStatus');
         Route::post('order/create-dispatch-request', 'Client\OrderController@createDispatchRequest')->name('create.dispatch.request'); # create dispatch request
         Route::resource('customer', 'Client\UserController')->middleware('onlysuperadmin');
@@ -515,6 +523,41 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor_banner/store', 'Client\VendorMultiBannerController@store')->name("vendor_banner.store");
         Route::get('vendor_banner/destroy/{id}', 'Client\VendorMultiBannerController@destroy')->name("vendor_banner.destroy");
 
+        /** Refer and earn  */
+        Route::resource('tier', 'Client\TierController');
+
+        Route::prefix('influencer-user')->group(function () {
+            Route::name('influencer-user.')->group(function () {
+                Route::resource('influencer-user', 'Client\InfluencerUserController');
+                Route::get('getUploadedData', 'Client\InfluencerUserController@getUploadedData')->name('getUploadedData');
+                Route::get('getkycData', 'Client\InfluencerUserController@getkycData')->name('getkycData');
+                Route::post('approveReject', 'Client\InfluencerUserController@approveReject')->name('approveReject');
+               
+            });
+        });
+        Route::prefix('influencer-refer-earn')->group(function () {
+            
+            
+            Route::name('influencer-refer-earn.')->group(function () {
+                Route::get('index', 'Client\InfluencerReferAndEarnController@index')->name('index');
+                Route::get('create', 'Client\InfluencerReferAndEarnController@create')->name('create');
+                Route::get('edit/{id}', 'Client\InfluencerReferAndEarnController@edit')->name('edit');
+                Route::post('store', 'Client\InfluencerReferAndEarnController@store')->name('store');
+                Route::post('update', 'Client\InfluencerReferAndEarnController@update')->name('update');
+                Route::get('list', 'Client\InfluencerReferAndEarnController@userList')->name('list');
+                Route::post('update-user-commision', 'Client\InfluencerReferAndEarnController@updateUserCommision')->name('update-user-commision');
+                Route::get('editInfluencerUser', 'Client\InfluencerReferAndEarnController@editInfluencerUser')->name('editInfluencerUser');
+            });
+            Route::prefix('attribute')->group(function () {
+                Route::name('attribute-influencer-refer-earn.')->group(function () {
+                    Route::get('create', 'Client\InfluencerAttributeController@create')->name('create');
+                    Route::get('edit/{id}', 'Client\InfluencerAttributeController@edit')->name('edit');
+                    Route::post('store', 'Client\InfluencerAttributeController@store')->name('store');
+                    Route::put('update/{id}', 'Client\InfluencerAttributeController@update')->name('update');
+                    Route::delete('delete/{id}', 'Client\InfluencerAttributeController@delete')->name('delete');
+                });
+            });
+        });
 
         /**  Hubspot Create a contact.
          *
@@ -528,7 +571,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('long_term_service/delete/{id}',        'Client\LongTermServiceController@destroy')->name("long_term_service.destroy");
         Route::post('long_term_service/updateBooking',     'Client\LongTermServiceController@updateBooking')->name("long_term_service.updateBooking");
 
-        /**  
+        /**
          * Gift Card.
          */
         Route::get('gitcart',         'Client\GiftCard\GiftcardController@index')->name("giftCart.index");
