@@ -1068,6 +1068,21 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var rePre = `<?php echo $rePre; ?>`;
     var fetchDe = `<?php echo $fetchDe; ?>`;
 </script>
+<div class="modal fade" id="delivery_form" tabindex="-1" aria-labelledby="delivery_formLabel" aria-hidden="true">    
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="delivery_formLabel">{{__('Select Delivery Slot')}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="delivery_option">
+                
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 @section('js-script')
