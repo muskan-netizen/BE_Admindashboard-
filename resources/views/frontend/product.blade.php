@@ -1100,6 +1100,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 </div>
 
 <div class="modal fade" id="delivery_form" tabindex="-1" aria-labelledby="delivery_formLabel" aria-hidden="true">
+    
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom">
