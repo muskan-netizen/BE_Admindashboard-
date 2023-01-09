@@ -1,5 +1,5 @@
 
-<div class="col-md-2">
+<div class="col">
 <div class="product-card-box position-relative al_box_third_template al"  >
     {{-- {{ dd($product)}} --}}
     {{--<div class="add-to-fav 12">
