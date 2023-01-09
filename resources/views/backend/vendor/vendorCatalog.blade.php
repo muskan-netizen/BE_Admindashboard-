@@ -770,6 +770,10 @@ pr($products->toArray());
                                 @if(@$vendor->add_markup_price)
                                   <option value="for_markup">{{__('Markup Price')}}</option>
                                 @endif
+
+                                @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                                    <option value="is_recurring_booking">{{__('Recurring Booking')}}</option>
+                                @endif
                                   <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock')}}</option>
                                   <option value="delete">{{__('Delete')}}</option>
                              </select>

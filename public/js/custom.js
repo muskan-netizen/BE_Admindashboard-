@@ -1,7 +1,7 @@
 
 $(function () {
     var slotValidater = 2;
-   
+
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
@@ -598,7 +598,7 @@ $(document).ready(function () {
         var payment_option_id = selected_option.data("payment_option_id");
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
-           
+
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -1249,7 +1249,7 @@ $(document).ready(function () {
         });
     });
 
-    
+
 
     var paymentAjaxData = {};
 
@@ -1294,7 +1294,7 @@ $(document).ready(function () {
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
-        
+
         if (result.error) {
             swal.fire({
                 icon: 'error',
@@ -2162,7 +2162,7 @@ $(document).ready(function () {
         OrderStorage.setStorageSingle('cartData',[]);
         OrderStorage.setStorageSingle('cartProductCount',0);
         OrderStorage.setStorageSingle('LongTermServiceAdded','');
-        OrderStorage.setStorageSingle('cartFirstProductId',''); 
+        OrderStorage.setStorageSingle('cartFirstProductId','');
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2855,7 +2855,7 @@ $(document).ready(function () {
             return false;
 
         }
-    
+
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
             if(product_id == OrderStorage.getStorage('cartFirstProductId')  ){
@@ -2866,7 +2866,7 @@ $(document).ready(function () {
                 });
                 return false;
             }
-         
+
 
             var service_start_time  =  $('#service_start_time').val();
             if(service_start_time == '' || service_start_time== undefined){
@@ -2879,7 +2879,7 @@ $(document).ready(function () {
             }
         }
 
-       
+
         $(".productAddonSetOptions").each(function (index) {
             var min_select = $(this).attr("data-min");
             var max_select = $(this).attr("data-max");
@@ -3005,7 +3005,7 @@ $(document).ready(function () {
         var service_day =  $(this).attr('data-service_day');
         var service_start_time =  $(this).attr('data-service_start_time');
         var service_date =  $(this).attr('data-service_date');
-        
+
         if ($(this).attr('data-page') == 'productDetail') {
             submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date);
         } else if ($(this).attr('data-page') == 'vendorProducts') {
@@ -5203,3 +5203,10 @@ function numberWithCommas(x) {
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
 
+/***  Recurring Booking Modal  */
+$(document).on("click", "#recurring_booking_btn", async function () {
+    $('#recurring_booking_modal').modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+});

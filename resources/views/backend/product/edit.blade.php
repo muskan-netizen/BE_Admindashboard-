@@ -486,8 +486,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
                     @include('backend.product.variant')
                 @else
-                
-                    
+
+
                     @if($productVariants->count() > 0)
                     <div class="card-box" >
                         <div class="row mb-2 bg-light">
@@ -656,6 +656,13 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 <div class="card-box">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Other Information") }}</h5>
                     <div class="row mb-2">
+
+                        @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Recurring Booking'),['class' => 'control-label']) !!}
+                                <input type="checkbox" id="is_recurring_booking" data-plugin="switchery" name="is_recurring_booking" class="chk_box" data-color="#43bee1" @if($product->is_recurring_booking == 1) checked @endif>
+                            </div>
+                        @endif
                         @if(!in_array($client_preference_detail->business_type,['taxi','laundry']))
                                 @if(Auth::user()->is_superadmin == 1)
                                     <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -698,7 +705,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Replaceable'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="replaceable" data-plugin="switchery" name="replaceable" class="chk_box" data-color="#43bee1" @if($product->replaceable == 1) checked @endif>
                         </div>
-                       
+
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
@@ -715,6 +722,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Individual Delivery Fee'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="individual_delivery_fee" data-plugin="switchery" name="individual_delivery_fee" class="chk_box" data-color="#43bee1" @if($product->individual_delivery_fee == 1) checked @endif>
                         </div>
+
+
                         <div class="col-md-6 justify-content-between mb-2" id="dispatcher_tags_div">
                             <div class="row">
                                 <div class="col-md-5">
@@ -722,7 +731,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 </div>
                                 <div class="col-md-7">
                                     <select class="selectize-select1 form-control" name="tags">
-                                        
+
                                         @if($agent_dispatcher_tags != null && count($agent_dispatcher_tags))
                                         @foreach($agent_dispatcher_tags as $key => $tags)
                                         <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
@@ -734,7 +743,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                         @endif
 
-                        
+
 
                         @if(($configData->need_dispacher_home_other_service == 1 && ($product->category->categoryDetail->type_id == 8)) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 ) )
                         @if($product->Requires_last_mile == 1 )
@@ -782,7 +791,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                     </div>
 
-                    
+
                     <div class="row">
                         <div class="col-sm-12 mb-2">
                             {!! Form::label('title', __('Live'),['class' => 'control-label']) !!}
@@ -1068,7 +1077,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             </select>
                         </div>
                     </div> -->
-                    
+
                     @if($product->vendor->pick_drop == 1 && $product->category->categoryDetail->type_id == 7)
                     <div class="row mb-2">
                         <div class="col-md-6 d-flex align-items-center justify-content-between">
@@ -1664,7 +1673,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
     var uploadedDocumentMap = {};
     Dropzone.autoDiscover = false;
-       
+
 
 
     $(document).ready(function() {
@@ -2064,7 +2073,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 <!-- start product faq -->
 <script>
     $(document).on("change",".attr_radio", function() {
-        
+
     var parentClass = $(this).parent().prop('className');
     var attr_radio_class = $(this).data('class');
     $("."+parentClass+" .attr_radio").prop('checked', false);

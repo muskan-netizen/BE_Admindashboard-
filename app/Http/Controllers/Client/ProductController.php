@@ -182,7 +182,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        
+
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
         if( checkTableExists('product_attributes') ) {
@@ -190,6 +190,7 @@ class ProductController extends BaseController
         }
 
         $product = Product::with($with_array)->where('id', $id)->firstOrFail();
+
 
         $type = Type::all();
         $countries = Country::all();
@@ -253,7 +254,7 @@ class ProductController extends BaseController
                 ->where('attribute_categories.category_id', $product->category_id)
                 ->where('attributes.status', '!=', 2)
                 ->orderBy('position', 'asc')->get();
-            
+
             if( !empty($product->ProductAttribute) ) {
                 foreach($product->ProductAttribute as $key => $val) {
                     $attribute_value[] = $val->attribute_option_id;
@@ -323,7 +324,7 @@ class ProductController extends BaseController
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles']);
 
         $allRoles = Role::where('status',1)->get();
-        
+
         $selectedRoles = [];
         if($getAdditionalPreference['is_free_delivery_by_roles'] == 1){
             $querySelectedRoles = ProductDeliveryFeeByRole::where('product_id', $id)->where('is_free_delivery', 1)->get();
@@ -388,10 +389,10 @@ class ProductController extends BaseController
 
                         foreach($request->attribute as $key => $value) {
                             if( !empty($value) && !empty($value['option'] && is_array($value) )) {
-                                
+
                                 if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
                                     $value_arr = @$value['value'];
-                                    
+
                                     foreach( $value['option'] as $key1 => $val1 ) {
                                         if( @in_array($val1['option_id'], $value_arr) ) {
 
@@ -421,7 +422,7 @@ class ProductController extends BaseController
                                 }
                             }
 
-                        
+
                         }
                         if( !empty($insert_arr) ) {
                             ProductAttribute::where('product_id',$id)->delete();
@@ -429,9 +430,9 @@ class ProductController extends BaseController
                         }
                     }
                 }
-                
+
             }
-            
+
             $product->sku = $request->sku;
             $product->markup_price = $request->markup_price;
             $product->url_slug = $request->url_slug;
@@ -511,6 +512,7 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
+            $product->is_recurring_booking        = $request->is_recurring_booking == 'on' ? 1 : 0;
 
             $product->save();
 
@@ -672,7 +674,7 @@ class ProductController extends BaseController
                 // min order count
                 if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == 1){
                     $minimum_order_count_arr = $request->minimum_order_count_arr;
-                    
+
                     if($minimum_order_count_arr){
                         foreach($minimum_order_count_arr as $key => $minimum_order_count){
                             $where = ['product_id' => $id, 'role_id' => $key];
@@ -681,7 +683,7 @@ class ProductController extends BaseController
                         }
                     }
                 }
-                
+
             }
 
             // update product delivery fees
@@ -699,7 +701,7 @@ class ProductController extends BaseController
                 }
 
             }
-            
+
 
             DB::commit();
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
@@ -727,7 +729,7 @@ class ProductController extends BaseController
             DB::beginTransaction();
             $productde = Product::productDelete($id);
             // $product = Product::find($id);
-           
+
             // $dynamic = time();
 
             // Product::where('id', $id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
@@ -1288,6 +1290,10 @@ class ProductController extends BaseController
                     $update_product = ProductVariant::whereIn('product_id',$request->product_id)->update(['markup_price' => $request->markup_price]);
 
                 break;
+                case "is_recurring_booking":
+                    $update_product = Product::whereIn('id',$request->product_id)->update(['is_recurring_booking' => 1]);
+                break;
+
                 case "for_sell_when_out_of_stock":
                     $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
                 break;
@@ -1300,19 +1306,19 @@ class ProductController extends BaseController
                         // $dynamic = time();
 
                         // Product::where('id', $product->id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
-    
+
                         // $tot_var  = ProductVariant::where('product_id', $product->id)->get();
                         // foreach($tot_var as $varr)
                         // {
                         //     $dynamic = time().substr(md5(mt_rand()), 0, 7);
                         //     ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
                         // }
-    
+
                         // Product::where('id', $product->id)->delete();
-    
+
                         // CartProduct::where('product_id', $product->id)->delete();
                         // UserWishlist::where('product_id', $product->id)->delete();
-    
+
                         DB::commit();
                     }
                 break;
@@ -1331,17 +1337,17 @@ class ProductController extends BaseController
 
     # check if last mile delivery on
     public function getProductVariant(Request $request){
-       
+
         // variant option
         $ProductVariants =   ProductVariant::where('product_id',$request->product_id)->get();
         $options = [];
         foreach($ProductVariants as $key => $variant){
             $options[] = "<option value=".$variant['id'].">".($variant['title'] ?? $variant['sku'])."</option>";
         }
-        
-        // addon selecter 
+
+        // addon selecter
         $selectedAddon =  LongTermServiceProductAddons::where('long_term_service_product_id',$request->service_product_id)->get();
-       
+
         $ProductAddon  =  ProductAddon::with('addOnName','setoptions')->where('product_id',$request->product_id)->get();
         $addOnHtml = '';
         if(count( $ProductAddon)>0){
@@ -1353,7 +1359,7 @@ class ProductController extends BaseController
                 if($addons->setoptions->isNotEmpty()){
                     $addOnHtml .='<div class="col-12 p-0">
                                     <div class="form-group" id="service_product_variantInput">
-                    
+
                                         <label class="control-label">'.$addons->addOnName->title.'</label>
                                         <input name="add_on_id[]" type="hidden" value="'.$addons->addOnName->id.'">
                                         <select class="form-control selectizeInput" id="service_product_variant" name="add_on_set[]">';
@@ -1370,7 +1376,7 @@ class ProductController extends BaseController
                 }
             }
             $addOnHtml .=   '</div>';
-                                   
+
 
         }
       $respons = [

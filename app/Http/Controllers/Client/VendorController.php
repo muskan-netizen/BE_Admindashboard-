@@ -905,7 +905,7 @@ class VendorController extends BaseController
          *  */
         $product = Product::where('is_long_term_service',0)->with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
             $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
-        }])->select('products.id', 'products.sku', 'products.vendor_id','products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id')
+        }])->select('products.id', 'products.sku', 'products.vendor_id','products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id','products.is_recurring_booking')
         ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
         ->orderBy('product_translations.title', $ordring)
         ->groupBy('products.id')
@@ -989,11 +989,8 @@ class VendorController extends BaseController
             });
             if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1){
                 $datatable->addColumn('is_recurring_booking', function ($product) use ($request) {
-                    $checked = '';
-                    if($product->is_recurring_booking == 1){
-                        $checked = 'checked';
-                    }
-                    return "<p>KK</p>";
+                   if($product->is_recurring_booking == 1){ $result = 'Yes';}else{$result = 'No';}
+                   return $result;
                     //return '<input type="checkbox" class="form-control checkbox_change" data-className="is_recurring_booking" "'.$checked.'" data-color="#43bee1">';
 
                 });
