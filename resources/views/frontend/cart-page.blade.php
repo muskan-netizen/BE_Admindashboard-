@@ -251,11 +251,13 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                 $corporate_user_price = 0;
                             @endphp
                             @if( (@Auth::user()->role_id == 3) && ($getAdditionalPreference['is_corporate_user'] == 1) && !empty($vendor_product->product_variant_by_roles) && !empty($vendor_product->quantity_role_price) && $vendor_product->quantity_role_price->quantity_price != 0 )
+
                                 <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                     <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->quantity_role_price->amount) }}</div>
                                 </div>
                             @else
                                 @if(isset($vendor_product->pvariant->actual_price))
+                                
                                 <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                     <div class="items-price">{{Session::get('currencySymbol')}}{{ decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }} @if(in_array($serviceType , ['appointment','on_demand'])) <span class=""> {{ $vendor_product->total_booking_time > 0 ? $vendor_product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif </div>
                                 </div>
