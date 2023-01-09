@@ -1106,10 +1106,13 @@ class OrderController extends FrontController
 
                     if ( (Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) ) {
                         $quantity_role_price = $this->calculatePrice($vendor_cart_product->productVariantByRoles, $vendor_cart_product->quantity);
+                        
                     }
                     if( @$quantity_role_price['quantity_price'] != 0 && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1)) {
+
                         $quantity_price = $quantity_role_price['quantity_price'];
                     } else {
+
                         $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;    
                     }
 
@@ -1180,12 +1183,11 @@ class OrderController extends FrontController
                     $vendor_taxable_amount = $taxable_amount;
 
                     if( @$quantity_role_price['quantity_price'] != 0 && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1)) {
+                        
                         $quantity_price = $quantity_role_price['quantity_price'];
                         $total_amount += $vendor_cart_product->quantity * $quantity_role_price['amount'];
                         $variant_price = $quantity_role_price['amount'];
-                        
                     } else {
-                        
                         $total_amount += $vendor_cart_product->quantity * $variant->price;
                         $variant_price = $variant->price;
                     }
