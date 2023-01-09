@@ -14,6 +14,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
     <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style type="text/css">
     /* .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
@@ -1119,6 +1120,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 @endsection
 @section('script')
@@ -1291,6 +1293,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         }
         
         $('.flatpickr').flatpickr({
+            
             enableTime: false,
             startDate: date_var,
             minDate: date_var,
