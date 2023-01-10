@@ -135,7 +135,7 @@
                         <thead>
                             <td>ID</td>
                             <td>Name</td>
-                            <td>Varient</td>
+                            {{-- <td>Varient</td> --}}
                             <td>Price</td>
                             <td>Quantity</td>
                             <td>Action</td>
@@ -185,7 +185,7 @@
         var quantity = 1;
         $("#addProductBox").removeClass('d-none').addClass('d-block');
         $("#discount-section").removeClass('d-none').addClass('d-block');
-        $("#productTable").append('<tr><td class="id">'+pid+'</td><td class="name">'+name+'</td><td><select class="form-control" name="varients" id="varients"><option value="varient_id">varientOne</option></select></td><td class="price">'+price+'</td><td class="qty"><input type="number" class="form-control quantity" value="'+quantity+'" min="1" max="10"></td><td><a href="javascript:void(0)" class="removeProduct"><i class="fa fa-trash"></i></a></td></tr>');
+        $("#productTable").append('<tr><td class="id">'+pid+'</td><td class="name">'+name+'</td><td class="price">'+price+'</td><td class="qty"><input type="number" class="form-control quantity" value="'+quantity+'" min="1" max="10"></td><td><a href="javascript:void(0)" class="removeProduct"><i class="fa fa-trash"></i></a></td></tr>');
     });
 
     $(document).on("click", ".removeProduct", function (e) {

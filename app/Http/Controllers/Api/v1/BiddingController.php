@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\FrontController;
 use App\Models\{BidRequest,Bid, BidProduct};
 use App\Models\Cart;
 use App\Models\Product;
@@ -42,12 +43,9 @@ class BiddingController extends Controller
     }
 
     public function getVendorPrescription(Request $request){
-        if(!empty($request->prescriptionId) && $request->requestType == 'delete_prescription'){
-            BidRequest::where('id', $request->prescriptionId)->delete();
-            return response()->json(['status' => 'success', 'message' => "Prescription remove Successfully"]);
-        }
-        $bidPrescription = BidRequest::get();
-        return response()->json($bidPrescription);
+            $limit = $request->limit??10; 
+            $userBids = BidRequest::where('status',0)->orderBy('id','desc')->paginate($limit);
+            return response()->json($userBids);
     }
 
 
@@ -78,45 +76,18 @@ class BiddingController extends Controller
         }
     }
 
-    public function search(Request $request, $for = 'all', $dataId = 0)
+    public function search(Request $request,$vid,$key)
     {
-       // return 1;
         try {
-            $keyword = $request->keyword;
-            $langId = Auth::user()->language;
-            $curId = Auth::user()->language;
-            $limit = $request->has('limit') ? $request->limit : 10;
-            $page = $request->has('page') ? $request->page : 1;
-            $action = $request->has('type') && $request->type ? $request->type : null;
-
-            $vendors = Vendor::where('status','1');
-            if (Auth::user()->is_superadmin == 0) {
-                $vendors = $vendors->whereHas('permissionToUser', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
-                });
-            }
-            $vendor_ids =  $vendors->pluck('id');
-
-            $response  = $this->searchProduct($langId,$keyword,$vendor_ids);
-            // $products = Product::byProductCategoryServiceType($action)->join('product_translations as pt', 'pt.product_id', 'products.id')
-            //     ->select('products.id', 'products.sku', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
-            //     ->where('pt.language_id', $langId)
-            //     ->whereHas('vendor', function ($query) use ($action) {
-            //         $query->where($action, 1);
-            //     })
-            //     ->where(function ($q) use ($keyword) {
-            //         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')
-            //             ->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')
-            //             ->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
-            //     });
-            //     $products = $products->where('products.is_live', 1)
-            //             ->whereIn('vendor_id', $vendor_ids)
-            //             ->whereNull('deleted_at')->groupBy('products.id')
-            //             ->paginate($limit, $page);
-            // foreach ($products as $product) {
-            //     $product->response_type = 'product';
-            //     $response[] = $product;
-            // }
+            // dd($key);
+            $response = [];
+            // $keyword = $request->keyword;
+            $vendorId[] = $vid;
+            $language_id = Auth::user()->language??1;
+            // $area = new FrontController();
+            // $allowed_vendors = $area->getServiceAreaVendors();
+            $response  = $this->searchProduct($language_id,$key,$vendorId);
+            // dd($response);
             return $this->successResponse($response);
 
         } catch (Exception $e) {
@@ -138,19 +109,73 @@ class BiddingController extends Controller
 
     public function bidAccept(Request $request,$domain="",$id)
     {
-        \Log::info('$request->bid--'.$id);
         $bid_products = BidProduct::where('bid_id', $request->bid)->with('product.variant')->get();
-        \Log::info($request->all());
-        \Log::info(json_encode($bid_products));
         $CartController  = new CartController();
         foreach($bid_products as $product) {
             $newRequest = new Request();
-            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>$vid,'bid_discount'=>$product->bids->discount]);
+            $newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>$id,'bid_discount'=>$product->bids->discount]);
             $data = $CartController->postAddToCart($newRequest);
         }
 
         return response()->json(['status' => 'success', 'message' => __("Bid accept successfully")]);
 
     }
+
+
+    public function placeBid(Request $request)
+    {
+        \Log::info(json_encode($request->all()));
+        \Log::info(json_encode(auth()->user()));
+       $vendors = Vendor::where('status','1');
+       if (auth()->user()->is_superadmin == 0) {
+           $vendors = $vendors->whereHas('permissionToUser', function ($query) {
+               $query->where('user_id', auth()->id);
+           });
+       }
+       $prod_vendor =  $vendors->first();
+       if(!$prod_vendor){
+            Session::flash('error', 'Somthing went wrong!');
+            return $this->successResponse(__('Somthing went wrong!'),'400');
+       }
+       $vendor_id = $prod_vendor->id;
+       
+       $data    = json_decode($request->data,true);
+       $discount = $data->discount;
+       $vendor_id = $data->vendor_id;
+       $prescription_id = $data->prescription_id;
+       $products = $data->products;
+       if($products){
+        $total = 0;
+        foreach ($products as $key => $bidTotal) {
+            $total += $bidTotal->qty * $bidTotal->price;
+        }
+        $amountPayable = $total - ($total * ($discount/ 100));
+        $data = [
+            'bid_req_id' => (int) $prescription_id,
+            'vendor_id'    => $vendor_id,
+            'discount'     => $discount,
+            'bid_total'    => $total,
+            'final_amount' => $amountPayable,
+            'bid_order_number'   => time()
+        ];
+
+        $vendor_bids = Bid::create($data);
+        $total = 0;
+        foreach ($products as $key => $data) {
+            $total = $data->qty * $data->price;
+           $bids = BidProduct::create([
+              'bid_id'       =>  $vendor_bids->id,
+              'product_id'   =>  $data->id,
+              'quantity'     =>  $data->qty,
+              'price'        =>  $data->price,
+              'total'        =>  $total,
+            ]);
+        }
+
+       }
+
+       return response()->json(['status' => 'success', 'message' => __("Bid Placed successfully")]);
+    }
+
 
 }
