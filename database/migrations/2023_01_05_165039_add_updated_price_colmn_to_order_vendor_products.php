@@ -14,8 +14,12 @@ class AddUpdatedPriceColmnToOrderVendorProducts extends Migration
     public function up()
     {
         Schema::table('order_vendor_products', function (Blueprint $table) {
-            $table->decimal('old_price',16,4)->default(0);
-            $table->text('updated_price_reason')->nullable();
+            if (!Schema::hasColumn('orders', 'advance_amount')){
+                $table->decimal('old_price',16,4)->default(0);
+            }
+            if (!Schema::hasColumn('orders', 'advance_amount')){
+                $table->text('updated_price_reason')->nullable();
+            }
         });
     }
 

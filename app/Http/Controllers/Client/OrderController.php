@@ -776,7 +776,9 @@ class OrderController extends BaseController
         $prod = $order['products']['0'];
         //  dd($prod->pluck('product_id')->toArray());
         $processorProduct = [];
-        // $processorProduct = ProcessorProduct::whereIn('product_id', $prod->pluck('product_id')->toArray())->first();
+        if(checkTableExists('processor_products')){
+            $processorProduct = ProcessorProduct::where(['product_id' => $prod->product_id])->first();
+        }
         foreach ($vendor_order_statuses as $vendor_order_status) {
             $vendor_order_status_created_dates[$vendor_order_status->order_status_option_id] = $vendor_order_status->created_at;
             $vendor_order_status_option_ids[] = $vendor_order_status->order_status_option_id;
