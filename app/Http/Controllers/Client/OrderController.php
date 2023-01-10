@@ -773,8 +773,7 @@ class OrderController extends BaseController
         }])->get();
 
         $vendor_order_statuses = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->get();
-        $prod = $order['products']['0'];
-        //  dd($prod->pluck('product_id')->toArray());
+        $prod = $vendor->products['0'];
         $processorProduct = [];
         if(checkTableExists('processor_products')){
             $processorProduct = ProcessorProduct::where(['product_id' => $prod->product_id])->first();

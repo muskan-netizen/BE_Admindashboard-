@@ -795,7 +795,6 @@ $timezone = Auth::user()->timezone;
                 <p class="mb-2"><span class="fw-semibold me-2">{{ __('Address') }}:</span>
                     {{ $order->address ? $order->address->house_number . ',' : '' }}
                     {{ $order->address ? $order->address->address : '' }}
-                    {{ (isset($processorProduct) && !empty($processorProduct->address )) ?  $processorProduct->address : ''}}
 
                 </p>
                 @if (isset($order->address) && !empty($order->address->street))
