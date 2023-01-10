@@ -436,6 +436,7 @@ trait cartManager{
             $total_markup_charges = 0;
             $total_quantity = 0;
             $deliveryCharges_real = 0;
+
             $delivery_slot_amount = 0;
             $is_long_term_service = 0;
             $container_charges_tax = 0;
@@ -938,6 +939,7 @@ trait cartManager{
                     }
                     
                     // Add Delivery Slot Price In total amount
+
                     if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                         $delivery_slot_amount += decimal_format($prod->slot_price);                        
                     }
@@ -1393,6 +1395,8 @@ trait cartManager{
                 $cart->total_payable_amount =  $cartTotalPay;
                 $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
             }
+
+            $cart->delivery_slot_amount = $delivery_slot_amount;
 
             // $cart->total_payable_amount = decimal_format($total_payable_amount);
             //$cart->delivery_charges = decimal_format($deliveryCharges);
