@@ -20,12 +20,26 @@ class MainRoleSeeder extends Seeder
             $maps = array(
                 array(
                     'id' => 1,
-                    'name' => 'Buyer',
+                    'name' => 'Super Admin',
+                    'guard_name'=>'web'
                 ),
                 array(
                     'id' => 2,
-                    'name' => 'Seller',
+                    'name' => 'Admin',
+                    'guard_name'=>'web'
+
                 ),
+                array(
+                    'id' => 3,
+                    'name' => 'Buyer',
+                    'guard_name'=>'web'
+                ),
+                array(
+                    'id' => 4,
+                    'name' => 'Seller',
+                    'guard_name'=>'web'
+
+                )
             ); 
             \DB::table('main_roles')->insert($maps);
         }

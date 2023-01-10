@@ -25,30 +25,28 @@ class RolePermissionController extends Controller
 
     public function indexRole(Request $request)
     {
-         // $role = Role::create(['name' => 'Super Admin']);
-        // $permission = Permission::create(['name' => 'All Pages articles']);
-        // $role = Role::first();
-        // $permission = Permission::first();
-        // $role->givePermissionTo($permission);
-        // $permission->assignRole($role);
-
-        // $user = auth()->user();
-        // dd($user);
-
         $roles = Role::where('id','>','2')->orderBy('id','ASC')->get();
-        // $admin = User::where('status', 1)->where('is_superadmin', '!=', 1)->count();
-        $users = User::where('status', 1)->get();
-        // dd($roles);
-       
-        return view('backend/role_permission/index',compact('roles','users'));
+        // $users = User::where('status', 1)->get();
+        return view('backend/role_permission/index',compact('roles'));
     }
 
     public function saveRole(Request $request)
     {    
-            $this->validate($request, [
-                'role_name' => 'required|unique:main_roles,name'
-            ]);
-            $role = Role::create(['name' => $request->input('role_name')]);
+        $this->validate($request, [
+            'role_name' => 'required|unique:main_roles,name,'.$request->id
+        ]);
+
+            if(empty($request->id))
+            {
+                $role = Role::create(['name' => $request->input('role_name')]);
+
+            }else{
+
+                $role = Role::findOrFail($request->id);
+                // dd($role);
+                $role->update(['name'=>$request->input('role_name')]);
+                return redirect()->back()->withSuccess('Role Updated.');
+            }
             return redirect()->back()->withSuccess('Role Created.');
     }
 
@@ -65,12 +63,8 @@ class RolePermissionController extends Controller
         // $user = auth()->user();
         // dd($user);
 
-        $roles = Permission::orderBy('id','ASC')->get();
-        // $admin = User::where('status', 1)->where('is_superadmin', '!=', 1)->count();
-        $users = User::where('status', 1)->get();
-        // dd($roles);
-       
-        return view('backend/role_permission/permission',compact('roles','users'));
+        $permissions = Permission::orderBy('id','ASC')->get();
+        return view('backend/role_permission/permission',compact('permissions'));
     }
     
     public function savePermission(Request $request)

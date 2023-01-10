@@ -63,11 +63,12 @@
                                <th>Name</th>
                                <th width="280px">Action</th>
                             </tr>
-                              @forelse ($roles as $key => $role)
+                              @forelse ($permissions as $key => $role)
                               <tr>
                                   <td>{{ ++$key }}</td>
                                   <td>{{ $role->name }}</td>
                                   <td>
+                                    <a class="btn btn-primary btn-sm edit-permission" data-name="{{$role->name}}" data-id="{{$role->id}}" href="javascript:;">Edit</a>
                                       {{-- <a class="btn btn-info" href="{{ route('roles.show',$role->id) }}">Show</a>
                                       @can('role-edit')
                                           <a class="btn btn-primary" href="{{ route('roles.edit',$role->id) }}">Edit</a>
@@ -138,6 +139,15 @@
     $(document).delegate(".add-permission", "click", function(){
         $("#add-permission-modal").modal("show");
     });
+
+    $(document).on('click', '.edit-permission', function(e) {
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-name');
+            $("#add-permission-modal").modal("show");
+            $('.permission-name').val(name);
+            $('.permission-id').val(id);
+
+        });
 
 </script>
 
