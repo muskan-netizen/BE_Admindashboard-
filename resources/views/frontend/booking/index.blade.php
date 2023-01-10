@@ -217,18 +217,27 @@
                         </div>
                     @endif
 
-                    @if ($is_cab_pooling == 1)
+                    @if ($is_cab_pooling == 1 && $is_bid_ride_enable == 1)
                         <div class="pool_radio_controls text-center">
                             <input type="radio" class="pool_radio is_cab_pooling" id="cab_booking" name="is_cab_pooling"
                                 value="0" checked>
                             <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
                                 <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                             </label>
+                            @if($is_cab_pooling ==1)
                             <input type="radio" class="pool_radio is_cab_pooling" id="cab_pooling" name="is_cab_pooling"
                                 value="1">
                             <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
                                 <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
                             </label>
+                            @endif
+                            @if($is_bid_ride_enable ==1)
+                            <input type="radio" class="pool_radio is_cab_pooling" id="cab_bid_ride" name="is_cab_pooling"
+                                value="2">
+                            <label class="pool_label mb-0  my-2" for="cab_bid_ride" id="label_cab_bid_ride">
+                                <h5 class="m-0" id="pool_5">{{ __('Bid & Ride') }}</h5>
+                            </label>
+                            @endif
                         </div>
                     @endif
                     <div class="location-box check-pick-first">
@@ -544,7 +553,7 @@
                         <div class="row mt-2">
                             <div class="col-md-7">
                                 <div class="number_seats">
-                                    <h5>Number Of Seats</h5>
+                                    <h5>{{ __('Number Of Seats') }}</h5>
                                 </div>
                             </div>
                             <div class="col-md-5">
@@ -567,6 +576,7 @@
                         </div>
                     </div>
                     @endif
+
                     <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
                     <% if(result.toll_fee > 0){ %>
