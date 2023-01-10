@@ -2839,6 +2839,7 @@ $(document).ready(function () {
         }
 
         if($('#pincode').val() == ''){
+
             Swal.fire({
                 text: _language.getLanString('Please enter pincode to continue'),
                 icon: "warning",
@@ -2848,6 +2849,7 @@ $(document).ready(function () {
         }
 
         if($('#date_input').val() == ''){
+
             Swal.fire({
                 text: _language.getLanString('Please select delivery date to continue'),
                 icon: "warning",
@@ -2857,6 +2859,7 @@ $(document).ready(function () {
         }
 
         if($('#sele_slot_id').val() == ''){
+
             Swal.fire({
                 text: _language.getLanString('Please select delivery slot to continue'),
                 icon: "warning",
@@ -2959,17 +2962,19 @@ $(document).ready(function () {
                     var incremental_hrs =  $('#incremental_hrs').val();
                     var total_booking_time =  $('#total_hrs').val();
 
+
                     var sele_slot_id = $("#sele_slot_id").val();
                     var sele_slot_price = $("#sele_slot_price").val();
                     var delivery_date = $("#date_input").val();
 
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date,sele_slot_id,sele_slot_price,delivery_date);
+
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='',sele_slot_id='',sele_slot_price='',delivery_date='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2991,9 +2996,9 @@ $(document).ready(function () {
                 "service_day":service_day,
                 "service_date":service_date,
                 "service_start_time":service_start_time,
-                "sele_slot_id":sele_slot_id,
-                "delivery_date":delivery_date,
-                "sele_slot_price":sele_slot_price
+                 "sele_slot_id":sele_slot_id,
+                 "delivery_date":delivery_date,
+                 "sele_slot_price":sele_slot_price
             },
             success: function (response) {
                 if (response.status == 'success') {
