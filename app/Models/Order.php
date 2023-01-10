@@ -89,7 +89,11 @@ class Order extends Model implements Auditable
 
     public function getTotalDiscountCalculateAttribute()
     {
-        return $this->vendors()->sum('discount_amount');
+        if(checkColumnExists('order_vendors', 'subscription_discount_admin')){
+            return $this->vendors()->sum('discount_amount') + $this->vendors()->sum('subscription_discount_admin') + $this->vendors()->sum('subscription_discount_vendor');
+        }else{
+            return $this->vendors()->sum('discount_amount');
+        }
     }
 
     public function luxury_option()
