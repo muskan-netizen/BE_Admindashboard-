@@ -386,11 +386,15 @@ class OrderController extends FrontController
             $total_other_taxes+=(float)$row;
         }
         $order->total_other_taxes_amount=$total_other_taxes;
+
         $slot_delivery_fees = 0;
         foreach($order->products as $product){
+
             $slot_delivery_fees += $product->slot_price;
         }
+
         $order->slot_delivery_fees = $slot_delivery_fees;
+
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         // dd($order);
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
@@ -1286,14 +1290,17 @@ class OrderController extends FrontController
                     }
 
                     if(checkColumnExists('order_vendor_products', 'slot_id')){
+
                         $order_product->slot_id = !empty($vendor_cart_product->slot_id) ? $vendor_cart_product->slot_id : null;
                     }
 
                     if(checkColumnExists('order_vendor_products', 'delivery_date')){
+
                         $order_product->delivery_date = !empty($vendor_cart_product->delivery_date) ? $vendor_cart_product->delivery_date : null;
                     }
 
                     if(checkColumnExists('order_vendor_products', 'slot_price')){
+                        
                         $order_product->slot_price = !empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
                     }
 
