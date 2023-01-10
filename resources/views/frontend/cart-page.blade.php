@@ -767,6 +767,7 @@
             
             @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
                 <div class="row">
+                    
                     <div class="col-6">{{__('Delivery Slot Fees')}}</div>
                     <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
                 </div>
