@@ -1023,7 +1023,7 @@ class OrderController extends FrontController
                 }
             }
 
-
+            $slot_based_price = 0;
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
@@ -1068,7 +1068,9 @@ class OrderController extends FrontController
                 foreach ($vendor_cart_products as $vendor_cart_product) {
 
                     if( !empty($vendor_cart_product->slot_price) ) {
+
                         $slot_based_price += $vendor_cart_product->slot_price;
+
                     }
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (!empty($latitude) && !empty($longitude)) {
@@ -1724,6 +1726,8 @@ class OrderController extends FrontController
                 }
                 $order->payable_amount = $orderTotalPay;
             }else{
+            // Slot based price added to payable amount column            
+            $order->payable_amount = decimal_format($payable_amount + $slot_based_price);
 
                 $orderTotalPay = decimal_format($payable_amount - $total_other_taxes);
                 // gift card calculation
