@@ -2512,6 +2512,9 @@ body.al_body_template_eight .categories-product-list .col-sm-6.offset-sm-3 {
     body.al_body_template_eight .row.margin-res a.suppliers-box.d-block.custom-vender-card {
         height: auto;
     }
+    .al_body_template_eight .full_width_eccomerce h2.h2-heading {
+        font-size: 30px;text-align: left;
+    }
 body.al_body_template_eight .box-account.box-info .btn-solid {
     padding: 8px 8px !important;
 }
