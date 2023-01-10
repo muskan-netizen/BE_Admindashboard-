@@ -1029,6 +1029,7 @@ class OrderController extends FrontController
             }
 
             $slot_based_price = 0;
+
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
@@ -1075,7 +1076,9 @@ class OrderController extends FrontController
                     // @dd($vendor_cart_product->productVariantByRoles);
 
                     if( !empty($vendor_cart_product->slot_price) ) {
+
                         $slot_based_price += $vendor_cart_product->slot_price;
+
                     }
                     // pr($vendor_cart_product->toArray());
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -1728,6 +1731,7 @@ class OrderController extends FrontController
             }else{
 
             // Slot based price added to payable amount column
+            
             $order->payable_amount = decimal_format($payable_amount + $slot_based_price);
 
                 $orderTotalPay = decimal_format($payable_amount - $total_other_taxes);
