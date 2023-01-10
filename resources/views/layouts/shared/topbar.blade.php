@@ -222,6 +222,15 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
                         <i class="fe-user"></i>
                         <span>{{ __("My Account") }}</span>
                     </a>
+
+                    <a href="{{route('roles')}}" class="dropdown-item notify-item">
+                        <i class="fe-user"></i>
+                        <span>{{ __("All Roles") }}</span>
+                    </a>
+                    <a href="{{route('permissions')}}" class="dropdown-item notify-item">
+                        <i class="fe-user"></i>
+                        <span>{{ __("All Permissions") }}</span>
+                    </a>
                     @endif
                     <a href="javascript:void(0)" class="dropdown-item notify-item" data-toggle="modal" data-target="#change_password">
                         <i class="fe-user"></i>

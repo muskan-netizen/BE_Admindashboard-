@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, Permissions, UserPermissions, Type, Category, VendorCategory};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, VendorCategory};
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 
@@ -594,7 +594,7 @@ class AuthController extends BaseController
                 $vendor->slug = Str::slug($user->name, "-");
                 $vendor->save();
             
-                $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+                $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
             
                 UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
             

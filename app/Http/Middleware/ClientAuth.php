@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
-use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency,Permissions,UserVendor,Country};
+use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency,PermissionsOld,UserVendor,Country};
 
 class ClientAuth{
     /**
@@ -50,7 +50,7 @@ class ClientAuth{
                                         $sub_admin_per = false;
                                         $permission_exist = false;
                                         $url_path = $per_url[1];
-                                        $check_if_under_permision = Permissions::get()->pluck('slug')->toArray();
+                                        $check_if_under_permision = PermissionsOld::get()->pluck('slug')->toArray();
                                         if (in_array($url_path,$check_if_under_permision)){
                                             $permission_exist = true;
                                         }

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty, Role, CategoryRole, Attribute};
+use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty, RoleOld, CategoryRole, Attribute};
 use GuzzleHttp\Client as GCLIENT;
 
 class CategoryController extends BaseController
@@ -219,7 +219,7 @@ class CategoryController extends BaseController
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
         if($getAdditionalPreference['is_price_by_role'] == 1){
-            $roles = Role::get();
+            $roles = RoleOld::get();
             if($roles != null){
                 foreach($roles as $role){
                     $category_role = CategoryRole::where('category_id', $id)->where('role_id', $role->id)->first();

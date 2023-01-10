@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, VendorAdditionalInfo};
+use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,PermissionsOld, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, VendorAdditionalInfo};
 
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
@@ -370,7 +370,7 @@ class CustomerAuthController extends FrontController
                     $vendor->slug = Str::slug($user->name, "-");
                     $vendor->save();
 
-                    $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+                    $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
 
                     UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
 
@@ -1006,9 +1006,9 @@ class CustomerAuthController extends FrontController
             $vendor->is_seller = $request->vendor_type;
             $vendor->save();
             if($request->vendor_type == 0){
-                $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21]);    
+                $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21]);    
             }else{
-                $permission_details = Permissions::whereIn('id', [1,2,12,17,18,19,20,21,28]);
+                $permission_details = PermissionsOld::whereIn('id', [1,2,12,17,18,19,20,21,28]);
             }
             $permission_details = $permission_details->get();   
             if ($vendor_registration_documents->count() > 0) {

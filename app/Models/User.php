@@ -11,7 +11,7 @@ use Yadahan\AuthenticationLog\AuthenticationLogable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
@@ -22,6 +22,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     use HasWallet;
     use HasWalletFloat;
     use SoftDeletes;
+    use HasRoles;
     /**
      * The attributes that are mass assignable.
      *

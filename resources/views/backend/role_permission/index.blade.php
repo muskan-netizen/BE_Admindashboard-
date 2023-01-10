@@ -1,0 +1,154 @@
+@extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Role'])
+
+@section('content')
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Roles and Permission</h4>
+            </div>
+        </div>
+    </div>
+    <!-- end page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-8">
+                            <div class="text-sm-left">
+                                @if (\Session::has('success'))
+                                <div class="alert alert-success">
+                                    <span>{!! \Session::get('success') !!}</span>
+                                </div>
+                                @endif
+                                @if (\Session::has('error_delete'))
+                                <div class="alert alert-danger">
+                                    <span>{!! \Session::get('error_delete') !!}</span>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-right">
+                            <a class="btn btn-info waves-effect waves-light text-sm-right add-role"
+                                href="javascript:;"><i class="mdi mdi-plus-circle mr-1"></i> Create Role</a>
+
+                                <a class="btn btn-info waves-effect waves-light text-sm-right " href="{{route('permissions')}}"><i class="mdi mdi-plus-circle mr-1"></i> Add Permissions
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-centered table-nowrap table-striped" id="vendor_payouts_datatable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                               <th>No</th>
+                               <th>Name</th>
+                               <th width="280px">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                              @forelse ($roles as $key => $role)
+                              <tr>
+                                  <td>{{ ++$key }}</td>
+                                  <td>{{ $role->name }}</td>
+                                  <td>
+                                      {{-- <a class="btn btn-info" href="{{ route('roles.show',$role->id) }}">Show</a>
+                                      @can('role-edit')
+                                          <a class="btn btn-primary" href="{{ route('roles.edit',$role->id) }}">Edit</a>
+                                      @endcan
+                                      @can('role-delete')
+                                          {!! Form::open(['method' => 'DELETE','route' => ['roles.destroy', $role->id],'style'=>'display:inline']) !!}
+                                              {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
+                                          {!! Form::close() !!}
+                                      @endcan --}}
+                                  </td>
+                              </tr>
+                              @empty
+
+                              <tr>
+                                <td colspan="10" class="text-center">No Record found.</td>
+                              </tr>
+                              @endforelse
+                            </tbody>
+                          </table>
+                        
+                    </div>
+                  
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+        </div> <!-- end col -->
+    </div>
+</div>
+
+
+<div id="add-role-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __('Add Role') }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <form id="add_role" method="post" action="{{ route('save.roles') }}">
+                @csrf
+                <div class="modal-body" >
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md">
+                                    <div class="form-group" id="nameInput">
+                                        {!! Form::label('title', __('Role'),['class' => 'control-label']) !!}
+                                        {!! Form::text('role_name', null, ['class'=>'form-control', 'required'=>'required']) !!}
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info waves-effect waves-light submitAddSubscriptionForm">{{ __("Submit") }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/rowreorder/1.3.1/js/dataTables.rowReorder.min.js"></script>
+
+<script>
+    $(document).delegate(".add-role", "click", function(){
+        $("#add-role-modal").modal("show");
+
+        var table = $('#vendor_payouts_datatable').DataTable( {
+            rowReorder: true
+        } );
+ 
+        table.on( 'row-reorder', function ( e, diff, edit ) {
+            var result = 'Reorder started on row: '+edit.triggerRow.data()[1]+'<br>';
+    
+            for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
+                var rowData = table.row( diff[i].node ).data();
+    
+                result += rowData[1]+' updated to be in position '+
+                    diff[i].newData+' (was '+diff[i].oldData+')<br>';
+            }
+    
+            $('#result').html( 'Event result:<br>'+result );
+        } );
+
+    });
+
+</script>
+
+@endsection

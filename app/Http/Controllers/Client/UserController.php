@@ -9,7 +9,7 @@ use DataTables;
 use Carbon\Carbon;
 use App\Models\Vendor;
 use App\Models\UserVendor;
-use App\Models\Permissions;
+use App\Models\PermissionsOld;
 use Illuminate\Http\Request;
 use App\Models\UserPermissions;
 use App\Models\Timezone;
@@ -71,6 +71,7 @@ class UserController extends BaseController
         $csvCustomers = CsvCustomerImport::all();
         return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries, 'csvCustomers' => $csvCustomers, 'user_registration_documents' => $user_registration_documents]);
     }
+    
     public function getFilterData(Request $request)
     {
 
@@ -373,7 +374,7 @@ class UserController extends BaseController
     public function newEdit($domain = '', $id)
     {
         $subadmin = User::find($id);
-        $permissions = Permissions::where('status', 1)->whereNotin('id', [4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 22, 23, 24, 25])->get();
+        $permissions = PermissionsOld::where('status', 1)->whereNotin('id', [4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 22, 23, 24, 25])->get();
         $user_permissions = UserPermissions::where('user_id', $id)->get();
         $vendor_permissions = UserVendor::where('user_id', $id)->pluck('vendor_id')->toArray();
         $user_docs = UserDocs::where('user_id', $id)->get();
