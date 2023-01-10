@@ -565,7 +565,7 @@
 			<div class="col-2 brand text-center">
 					<div class=" top-heading">
 					<h2 class="h2-heading">top-Brands</h2>
-				<a class="" href="javscript:void(0);">See All <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+				<!-- <a class="" href="javscript:void(0);">See All <i class="fa fa-angle-right" aria-hidden="true"></i></a> -->
 					</div>
 				</div>
 
@@ -727,7 +727,7 @@
 					<h2 class="h2-heading"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
+						<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
 				</div>
 				<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					<div class="row">
@@ -762,7 +762,7 @@
 				<h2 class="h2-heading mb-3"> @php
 					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 					@endphp </h2>
-					<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
+					<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
 			</div>
 			<div class="row">
 				<div class="col-12">
@@ -802,12 +802,12 @@
 		</section>
 		@elseif($homePageLabel->slug == 'most_popular_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="container">
+			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="h2-heading mb-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i></a> 
+						<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i></a>  -->
 				</div>
 				<div class="row">
 					<div class="col-12">
@@ -846,7 +846,7 @@
 							<h2 class="h2-heading"> @php
 								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 								@endphp </h2>
-								<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
+								<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
 						</div>
 					</div>
 				</div>
