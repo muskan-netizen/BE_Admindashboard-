@@ -800,7 +800,17 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                 </div>
                 <hr class="my-2">
             @endif
-            @if($cart_details->total_service_fee > 0 && $price_bifurcation!=1)
+ 
+            @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
+                <div class="row">
+                    
+                    <div class="col-6">{{__('Delivery Slot Fees')}}</div>
+                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
+                </div>
+                <hr class="my-2">
+            @endif
+        
+        @if($cart_details->total_service_fee > 0 && $price_bifurcation!=1)
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
                     <div class="col-6 text-right"><b> @if( $additionalPreference["is_token_currency_enable"]) 
