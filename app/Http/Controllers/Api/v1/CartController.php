@@ -709,6 +709,7 @@ class CartController extends BaseController
             $total_markup_charges = 0 ;
             $deliver_fee_charges = 0;
             $total_fixed_fee_tax = 0;
+
             $delivery_slot_amount = 0;
       
             foreach ($cartData as $ven_key => $vendorData) {
@@ -1316,9 +1317,11 @@ class CartController extends BaseController
             } //End Tax Code
             
             // Add Delivery Slot Price In total amount
+
             if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                 $delivery_slot_amount += decimal_format($prod->slot_price);
             }
+            
 
             }//End cart Vendor loop
             ++$vondorCnt;
@@ -1443,7 +1446,9 @@ class CartController extends BaseController
         $cart->products = $cartData;
         $cart->item_count = $item_count;
         $cart->is_long_term_added = $is_long_term;
+
         $cart->delivery_slot_amount = $delivery_slot_amount;
+
         $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
         if ($cart->user_id > 0) {
             //$loyalty_amount_saved = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);
