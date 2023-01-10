@@ -705,7 +705,7 @@ class OrderController extends BaseController
                             $order_vendor->subscription_discount_admin  = $subs_discount_admin;
                             $order_vendor->subscription_discount_vendor = $subs_discount_vendor;
                         }
-                        $total_subscription_discount = $total_subscription_discount + $off_percentage_discount;
+                        $total_subscription_discount = $total_subscription_discount + $subs_discount_admin + $subs_discount_vendor;
 
                         $order_vendor->is_restricted = $is_restricted;
                         $order_vendor->bid_discount = $bid_vendor_discount??0;
