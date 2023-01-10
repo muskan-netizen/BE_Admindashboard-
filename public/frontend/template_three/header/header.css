@@ -108,6 +108,9 @@ body.al_body_template_three .menu-navigation.alThreeMenu li.al_main_category a .
 body.al_body_template_three .al_custom_head_map_box {
     width: 100%;
 }
+.al_body_template_three .margin-res .media-body {
+    min-height: 180px;
+}
 body.dark.al_body_template_three .al_count_tabs_new_design li a.nav-link{
     color: #fffcfc;
 }

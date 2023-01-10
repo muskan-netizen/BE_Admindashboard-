@@ -1,5 +1,5 @@
 
-<div class="col-md-2">
+<div class="col">
 <div class="product-card-box position-relative al_box_third_template al"  >
     {{-- {{ dd($product)}} --}}
     {{--<div class="add-to-fav 12">
@@ -31,6 +31,7 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between al_clock pt-2">
                         <b>{!!$product["price"] ?? ''!!} </b>
+                        <del>{!!$product["compare_at_price"] ?? ''!!} </del>
                     </div>
                 </div>
             </div>
