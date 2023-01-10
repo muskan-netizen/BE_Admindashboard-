@@ -474,6 +474,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                         @include('frontend.cart.longTermTimeSelection')
                         @endif
 
+                        @if( $vendor_product->product->same_day_delivery ==  1 && $vendor_product->product->next_day_delivery ==  1)
+                            @include('frontend.cart.deliverySlotSelection')
+                        @endif
                     </div>
 
                     @if( ($vendor_product->product->delay_order_time->delay_order_hrs != '' && $vendor_product->product->delay_order_time->delay_order_min != '' ) &&  (($vendor_product->product->delay_order_time->delay_order_hrs != 0) || ($vendor_product->product->delay_order_time->delay_order_hrs != 0)))
