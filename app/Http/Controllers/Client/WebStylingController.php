@@ -190,7 +190,7 @@ class WebStylingController extends BaseController{
                     if($request->has($nmm)){
                         $orderValue = OrderDeliveryStatusIcon::where('id',$value->id)->first();
                         $orderVal = Storage::disk('s3')->put('ODSI', $request->$nmm, 'public');
-                        $orderValue->image = $orderVal;
+                        $orderValue->image_url = $orderVal;
                         $orderValue->save();
                     }
                 }
@@ -202,7 +202,6 @@ class WebStylingController extends BaseController{
 
         }catch(\Exception $e)
         {
-                \Log::info($e->getMessage());
                 return response()->json([
                     'status' => 'error',
                     'message' => $e->getMessage()

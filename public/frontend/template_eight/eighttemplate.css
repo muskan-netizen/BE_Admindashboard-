@@ -2491,22 +2491,64 @@ body.dark.al_body_template_eight .rating-text-box.ml-sm-auto {
 body.al_body_template_eight .categories-product-list .col-sm-6.offset-sm-3 {
     margin-bottom: 20px;
 }
+.al_body_template_eight .eccomerce-temp .top-heading h2{font-size: 22px !important;
+    line-height: 30px !important;}
 
+.al_body_template_eight .view .top-heading h2{font-size: 22px;
+    line-height: 30px !important;text-align: center !important;}
+.p2p_single_slider .col .deals-product .supplier-rating a {
+        font-size: 16px !important;
+        color: #E9248D !important;
+        font-weight: 600;
+    }
+    .al_body_template_eight .best-seller-full h2.h2-heading {
+        margin-bottom: 20px !important;
+    }
+    .al_body_template_eight .margin-res .supplier-rating p {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    body.al_body_template_eight .row.margin-res a.suppliers-box.d-block.custom-vender-card {
+        height: auto;
+    }
+    .al_body_template_eight .full_width_eccomerce h2.h2-heading {
+        font-size: 30px;text-align: left;
+    }
 body.al_body_template_eight .box-account.box-info .btn-solid {
     padding: 8px 8px !important;
 }
+.al_body_template_eight article#page-container section .vendors section h2.h2-heading{
+    font-size: 30px;
+}
+.al_body_template_eight .p2p_eccomerce_slider10 .slick-slide>div .col {
+    padding: 0px 6px;
+}
+.al_body_template_eight .product-m .p2p_eccomerce_slider10 .slick-slide>div {
+    margin: 0px 0px;
+}
+body.al_body_template_eight section.suppliers-section.container.vender_slider {
+    max-width: 98% !important;
+}
+body.al_body_template_eight .p2p-full-width {
+    max-width: 98% !important;
+}
 
 .al_body_template_eight .top-heading a i {
-    background: var(--theme-deafult);
+    background-color: var(--theme-deafult);
     width: 20px;
     height: 20px;
     line-height: 20px;
     color: #fff;
-    border-radius: 50%;
+    border-radius: 50%;  
     margin-left: 10px;
     text-align: center;
 }
-
+.al_body_template_eight .best-seller-full h2.h2-heading{font-size: 30px;}
+.al_body_template_eight .eccomerce-eight-temp{max-width: 98%;}
+.brand h2{font-size: 22px !important;text-align: center !important;width:100% !important;margin-bottom: 14px !important;}
+.al_body_template_eight .best-seller-full {max-width: 98% !important;}
+.al_body_template_eight .best-seller-eccomerce{max-width: 98% !important;}
 
 /*----------laptop view----------*/
 
@@ -2514,6 +2556,7 @@ body.al_body_template_eight .box-account.box-info .btn-solid {
     body.al_body_template_eight section.section-b-space.new-pages .custom-container {
         max-width: 1170px;
     }
+    .al_body_template_eight .product-description_list p span.product_discription{width:50% !important;}
 }
 
 

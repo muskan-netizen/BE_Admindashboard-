@@ -45,30 +45,31 @@ class PaymentOptionController extends BaseController{
         }else{
         //Till here
             $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
-        foreach($payment_options as $option){
-            if($option->code == 'stripe'){
-                $option->title = __('Credit/Debit Card (Stripe)');
-            }elseif($option->code == 'kongapay'){
-                $option->title = 'Pay Now';
-            }elseif($option->code == 'mvodafone'){
-                $option->title = 'Vodafone M-PAiSA';
-            }elseif($option->code == 'mobbex'){
-                $option->title = __('Mobbex');
-            }elseif($option->code == 'offline_manual'){
-                $json = json_decode($option->credentials);
-                $option->title = $json->manule_payment_title;
-            }elseif($option->code == 'mycash'){
-                $option->title = __('Digicel MyCash');
-            }elseif($option->code == 'windcave'){
-                $option->title = __('Windcave (Debit/Credit card)');
-            }elseif($option->code == 'stripe_ideal'){
-                $option->title = __('iDEAL');
-            }elseif($option->code == 'authorize_net'){
-                $option->title = __('Credit/Debit Card');
+            foreach($payment_options as $option){
+                if($option->code == 'stripe'){
+                    $option->title = __('Credit/Debit Card (Stripe)');
+                }elseif($option->code == 'kongapay'){
+                    $option->title = 'Pay Now';
+                }elseif($option->code == 'mvodafone'){
+                    $option->title = 'Vodafone M-PAiSA';
+                }elseif($option->code == 'mobbex'){
+                    $option->title = __('Mobbex');
+                }elseif($option->code == 'offline_manual'){
+                    $json = json_decode($option->credentials);
+                    $option->title = $json->manule_payment_title;
+                }elseif($option->code == 'mycash'){
+                    $option->title = __('Digicel MyCash');
+                }elseif($option->code == 'windcave'){
+                    $option->title = __('Windcave (Debit/Credit card)');
+                }elseif($option->code == 'stripe_ideal'){
+                    $option->title = __('iDEAL');
+                }elseif($option->code == 'authorize_net'){
+                    $option->title = __('Credit/Debit Card');
+                }
+                $option->title = __($option->title);
             }
-            $option->title = __($option->title);
+            return $this->successResponse($payment_options, '', 201);
         }
-        return $this->successResponse($payment_options, '', 201);
     }
 
     public function postPayment(Request $request, $gateway = ''){
