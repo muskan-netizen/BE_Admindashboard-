@@ -145,8 +145,11 @@ class InventoryController extends Controller
     {
         try{
 
-           dd($request->all());
             if(@$request->products && is_array($request->products)){
+                \Log::info($request->all());
+                DB::beginTransaction();
+                $order_vendor_id = $request->order_vendor_id;
+                $synced_product = [];
                 foreach($request->products as $i_product){
                     //save brand and get return brand id
                     $brand_id = $this->saveBrand($i_product, $request);
@@ -165,18 +168,79 @@ class InventoryController extends Controller
                     //save product and return product id
                     $product_id  = $this->saveProduct($i_product);
                     $this->saveProductTranslation($i_product['product_translations'], $product_id);
-                    $this->saveProductVariantSet($i_product['variants'], $product_id);
 
+                    if(@$i_product['variants']){
+                        $this->saveVariant($i_product['variants'], $product_id, $request);
+                    }
+
+                    if(@$i_product['product_varaint_set']){
+                        $this->saveVariantSet($i_product['product_varaint_set'], $i_product, $request);
+                    }
+
+                    if(@$i_product['addon_sets']){
+                        $this->productApiAddons($i_product['addon_sets'], $product_id);
+                    }
+
+                    if(@$i_product['media']){
+                        $this->saveProductMedia($i_product['media'], $product_id, $order_vendor_id);
+                    }
+
+                    if(@$i_product['variantData']){
+                        $this->saveProductVariant($i_product['variantData'], $product_id, $order_vendor_id);
+                    }
+
+                    if(@$i_product['variantData']){
+                        $this->saveProductCategory($request['order_cat'], $product_id);
+                    }
+                   
+                    $synced_product[] = [
+                        'product_id' => $i_product['i_id'],
+                        'order_product_id' => $product_id
+                    ];
 
 
                 }
                 
-           
+                DB::commit();
                 
                 return response()->json([
                     'status' => 200,
-                    'message' => 'fetched succesfully',
-                    // 'data' => $order_categories
+                    'message' => 'sync succesfull',
+                    'data' => $synced_product
+                ]);
+            }else{
+                throw new \ErrorException('parameter missing', 400);
+            }
+                
+        }catch(\Exception $e){
+            DB::rollback();
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+                'data' => []
+            ]);
+        }
+    }
+
+    
+    public function updateRoyoProductQuantity(Request $request)
+    {
+        try{
+            if(@$request->sku && @$request->quantity){
+                if(!empty($request->sku)){
+                    $productSku = $request->sku;
+                    $quantity = $request->quantity;
+                  
+                    $check_variant = DB::table('product_variants')->where('sku', $productSku)->get();
+                    if(!empty($check_variant)){
+                        DB::table('product_variants')->where('sku', $productSku)->increment('quantity', $quantity);
+                    }
+                }
+               
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'updated succesfully',
+                   
                 ]);
             }else{
                 throw new \ErrorException('parameter missing', 400);
@@ -185,8 +249,111 @@ class InventoryController extends Controller
         }catch(\Exception $e){
             return response()->json([
                 'status' => 400,
-                'message' => $e->getMessage(),
-                'data' => []
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getOrderProductBySku(Request $request)
+    {
+        try{
+            if(@$request->sku && !empty($request->sku)){
+               
+                $product = DB::table('products')->where('sku', $request->sku)->first();
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'updated succesfully',
+                   'data' => $product
+                ]);
+          
+            }else{
+                throw new \ErrorException('parameter missing', 400);
+            }
+                
+        }catch(\Exception $e){
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function deleteOrderProductBySku(Request $request)
+    {
+        try{
+            if(@$request->sku && !empty($request->sku)){
+
+                $order_side_product = DB::table('products')->where('sku', $request->sku)->first();
+                if(!empty($order_side_product)){
+                    DB::table('products')->where('sku', $request->sku)->delete();
+                    
+                    DB::table('product_variants')->where('product_id', $order_side_product->id)->delete(); // Delete Order Side Product Variants
+                    
+                    DB::table('product_categories')->where('product_id', $order_side_product->id)->delete(); // Delete Order Side Product Category
+                }
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'deleted succesfully'
+                ]);
+          
+            }else{
+                throw new \ErrorException('parameter missing', 400);
+            }
+                
+        }catch(\Exception $e){
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+    
+    public function needSyncWithOrder(Request $request)
+    {
+        try{
+            if(@$request->vendor_id && !empty($request->vendor_id) && isset($request->need_sync_with_order)){
+                DB::table('vendors')->where('id', $request->vendor_id)->update(['need_sync_with_order' => $request->need_sync_with_order]);
+               
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'updated succesfully'
+                ]);
+          
+            }else{
+                throw new \ErrorException('parameter missing', 400);
+            }
+                
+        }catch(\Exception $e){
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+    public function getOrderCategoryById(Request $request)
+    {
+        try{
+            if(@$request->category_id && !empty($request->category_id)){
+                $data['category'] = DB::table('categories')->where('id', $request->category_id)->first();
+                $data['category_translation'] = DB::table('category_translations')->where('category_id',$category->id )->first();
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'updated succesfully',
+                    'data' => $data
+                ]);
+          
+            }else{
+                throw new \ErrorException('parameter missing', 400);
+            }
+                
+        }catch(\Exception $e){
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage()
             ]);
         }
     }
