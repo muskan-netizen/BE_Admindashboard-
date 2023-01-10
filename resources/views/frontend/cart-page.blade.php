@@ -470,6 +470,7 @@
                         @endif
 
                         @if( $vendor_product->product->same_day_delivery ==  1 && $vendor_product->product->next_day_delivery ==  1)
+                        
                             @include('frontend.cart.deliverySlotSelection')
                         @endif
                     
