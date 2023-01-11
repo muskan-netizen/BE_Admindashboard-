@@ -673,7 +673,7 @@ $timezone = Auth::user()->timezone;
                         </tr>
                         @endif
 
-                        
+
                         @if($client_preference_detail->is_tax_price_inclusive)
 
                         @php //taxable_amount
@@ -795,7 +795,6 @@ $timezone = Auth::user()->timezone;
                 <p class="mb-2"><span class="fw-semibold me-2">{{ __('Address') }}:</span>
                     {{ $order->address ? $order->address->house_number . ',' : '' }}
                     {{ $order->address ? $order->address->address : '' }}
-                    {{ (isset($processorProduct) && !empty($processorProduct->address )) ?  $processorProduct->address : ''}}
 
                 </p>
                 @if (isset($order->address) && !empty($order->address->street))
@@ -975,7 +974,25 @@ $timezone = Auth::user()->timezone;
 
         </div>
     </div>
+    @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
+        <div class="col-lg-6 mb-3">
+            <div class="card mb-0 h-100">
+                <div class="card-body">
+                    <h4 class="header-title mb-3">{{ __('Processor Information') }}</h4>
+                    <p class="mb-2"><span class="fw-semibold me-2">{{ __('Processor Name') }}:</span>
+                        {{ $processorProduct->name }}
+                    </p>
+                    <p class="mb-2"><span class="fw-semibold me-2">{{ __('Processor Address') }}:</span>
+                        {{ $processorProduct->address }}
+                    </p>
+                    <p class="mb-2"><span class="fw-semibold me-2">{{ __('Processor Date') }}:</span>
+                        {{ $processorProduct->date }}
+                    </p>
+                </div>
 
+            </div>
+        </div>
+    @endif
     @if (count($user_registration_documents) > 0)
     <div class="col-lg-6 mb-3">
         <div class="card mb-0">
