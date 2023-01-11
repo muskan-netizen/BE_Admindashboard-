@@ -15,12 +15,13 @@ class AppStylingAddOptionTableSeeder extends Seeder
     {
 
         $app_styling_options = array(
-            array('app_styling_id' => '8', 'name' => 'Home Page 7', 'image' => 'home_seven.png', 'template_id' => '5', 'is_selected' => '0'),
-            array('app_styling_id' => '8', 'name' => 'Home Page 8', 'image' => 'home_eight.png', 'template_id' => '6', 'is_selected' => '0'),
-            array('app_styling_id' => '7', 'name' => 'Tab 6', 'image' => 'bar_six.png', 'template_id' => '6', 'is_selected' => '0')
+            array('app_styling_id' => '8', 'name' => 'Home Page 7', 'image' => 'home_seven.png', 'template_id' => '6', 'is_selected' => '0'),
+            array('app_styling_id' => '8', 'name' => 'Home Page 8', 'image' => 'home_eight.png', 'template_id' => '7', 'is_selected' => '0'),
+            array('app_styling_id' => '7', 'name' => 'Tab 6', 'image' => 'bar_six.png', 'template_id' => '6', 'is_selected' => '0'),
+            array('app_styling_id' => '8', 'name' => 'Home Page 9', 'image' => 'home_nine.png', 'template_id' => '8', 'is_selected' => '0')
         );
 
-
+      
         foreach ($app_styling_options as $option) {
             $app_style = AppStylingOption::where('image', $option['image'])->first();
             if ($app_style) {
