@@ -565,7 +565,7 @@
 			<div class="col-2 brand text-center">
 					<div class=" top-heading">
 					<h2 class="h2-heading">top-Brands</h2>
-				<a class="" href="javscript:void(0);">See All <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+				<!-- <a class="" href="javscript:void(0);">See All <i class="fa fa-angle-right" aria-hidden="true"></i></a> -->
 					</div>
 				</div>
 
@@ -584,7 +584,7 @@
 		@elseif($homePageLabel->slug == 'cities' && (count($homePageData['cities']) != 0))
 		<section class="suppliers-section container render_full_{{$homePageLabel->slug}}">
 			<div class=" top-heading d-flex justify-content-between align-self-center">
-				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
+				<h2 class="col h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
 			</div>
 			<div class="col-12">
 				<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
@@ -643,7 +643,7 @@
 		@elseif($homePageLabel->slug == 'recent_orders' && count($homePageData['recent_orders']) != 0 )
 		<section class="container best-seller-full mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="top-heading d-flex justify-content-between">
-				<h2 class="h2-heading"> @php
+				<h2 class="col h2-heading"> @php
 					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");
 					@endphp </h2>
 			</div>
@@ -702,9 +702,9 @@
 		{{--  && (count($homePageData['nav_categories']) != 0) --}}
 		@elseif(!empty($homePageLabel->nav_categories) && $homePageLabel->slug == 'nav_categories' && (count($homePageLabel->nav_categories) != 0))
 		<section class="popular-brands left-shape_ position-relative bg-light-gray">
-			<div class="container">
+			<div class="container full_width_eccomerce">
 				<div class="al_top_heading text-center d-flex align-items-center">
-					<h2 class="h2-heading">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
+					<h2 class="col h2-heading">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
 				</div>
 				<div class="row">
 					<div class=" col-12 al_custom_categories">
@@ -724,10 +724,10 @@
 		<section class="mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container full_width_eccomerce">
 				<div class="top-heading d-flex justify-content-between">
-					<h2 class="h2-heading"> @php
+					<h2 class="col h2-heading"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
+						<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
 				</div>
 				<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					<div class="row">
@@ -741,7 +741,7 @@
 		@elseif($homePageLabel->slug == 'best_sellers' && (count($homePageData['best_sellers']) != 0))
 		<section class="container best-seller-eccomerce mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="top-heading d-flex justify-content-between">
-				<h2 class="h2-heading"> @php
+				<h2 class="col h2-heading"> @php
 					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 					@endphp </h2>
 			</div>
@@ -759,10 +759,10 @@
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 			<div class="top-heading d-flex justify-content-between">
-				<h2 class="h2-heading mb-3"> @php
+				<h2 class="col h2-heading mb-3"> @php
 					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 					@endphp </h2>
-					<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
+					<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
 			</div>
 			<div class="row">
 				<div class="col-12">
@@ -782,7 +782,7 @@
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
 			<div class="container">
 				<div class="top-heading d-flex justify-content-between">
-					<h2 class="h2-heading mb-3"> @php
+					<h2 class="col h2-heading mb-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
 						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
@@ -802,12 +802,12 @@
 		</section>
 		@elseif($homePageLabel->slug == 'most_popular_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="container">
+			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
-					<h2 class="h2-heading mb-3"> @php
+					<h2 class="col h2-heading mb-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i></a> 
+						<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i></a>  -->
 				</div>
 				<div class="row">
 					<div class="col-12">
@@ -843,10 +843,10 @@
 				<div class="row ">
 					<div class="col-md-12 text-center">
 						<div class="top-heading d-flex justify-content-between">
-							<h2 class="h2-heading"> @php
+							<h2 class="col h2-heading"> @php
 								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 								@endphp </h2>
-								<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> 
+								<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
 						</div>
 					</div>
 				</div>
