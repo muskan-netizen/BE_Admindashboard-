@@ -13,36 +13,28 @@ class AppStylingAddOptionTableSeeder extends Seeder
      */
     public function run()
     {
-        $app_styling_option = AppStylingOption::updateOrCreate([ 
-            'image' => 'home_seven.png',
-        ],[
-            'app_styling_id' => 8,
-            'name' => 'Home Page 7',
-            'template_id' => 5,
-            'is_selected' => 0,
-            'created_at' => NULL,
-            'updated_at' => NULL,
-        ]);
 
-        $app_styling_option = AppStylingOption::updateOrCreate([ 
-            'image' => 'home_eight.png',
-        ],[
-            'app_styling_id' => 8,
-            'name' => 'Home Page 8',
-            'template_id' => 6,
-            'is_selected' => 0,
-            'created_at' => NULL,
-            'updated_at' => NULL,
-        ]);
+        $app_styling_options = array(
+            array('app_styling_id' => '8', 'name' => 'Home Page 7', 'image' => 'home_seven.png', 'template_id' => '5', 'is_selected' => '0'),
+            array('app_styling_id' => '8', 'name' => 'Home Page 8', 'image' => 'home_eight.png', 'template_id' => '6', 'is_selected' => '0'),
+            array('app_styling_id' => '7', 'name' => 'Tab 6', 'image' => 'bar_six.png', 'template_id' => '6', 'is_selected' => '0')
+        );
 
-        $app_styling_option = AppStylingOption::updateOrCreate([ 
-            'image' => 'bar_six.png',
-        ],[
-            'app_styling_id' => 7,
-            'name' => 'Tab 6',
-            'image' => 'bar_six.png',
-            'is_selected' => '0',
-            'template_id' => '6',
-        ]);
+
+        foreach ($app_styling_options as $option) {
+            $app_style = AppStylingOption::where('image', $option['image'])->first();
+            if ($app_style) {
+                $app_style->update(['app_styling_id' => $option['app_styling_id'], 'name' => $option['name'], 'template_id' => $option['template_id'],]);
+            } else {
+                $app_style = AppStylingOption::create([
+                    'app_styling_id' => $option['app_styling_id'],
+                    'name' => $option['name'],
+                    'image' => $option['image'],
+                    'template_id' => $option['template_id'],
+                    'is_selected' => $option['is_selected'],
+
+                ]);
+            }
+        }
     }
 }
