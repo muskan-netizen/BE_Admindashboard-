@@ -49,7 +49,7 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
             @if(Auth::user()->is_superadmin )
                 <li class="alToggleSwitch">
                     <label class="altoggle">
-                        <input type="checkbox" class="admin_panel_theme" {{$clientData->getPreference->theme_admin == "dark" ? 'checked' : ''}}>
+                        <input type="checkbox" class="admin_panel_theme" {{@$clientData->getPreference->theme_admin == "dark" ? 'checked' : ''}}>
                         <div class="toggle__bg">
                             <div class="toggle__sphere">
                                 <div class="toggle__sphere-bg">
