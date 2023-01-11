@@ -77,6 +77,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
             </div>
 
             <div class="row">
+                @can('dashboard-totalRevenue')
                 <div class="col-sm-6">
                     <!-- Revenue box start here -->
                     <div class="card alDasBoxItems">
@@ -93,6 +94,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         </div>
                     </div><!-- Revenue box end here -->
                 </div>
+                @endcan
                 <div class="col-sm-6">
                     <!-- Growth box start here -->
                     <div class="card alDasBoxItems">

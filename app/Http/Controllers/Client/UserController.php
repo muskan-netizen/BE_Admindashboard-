@@ -29,7 +29,7 @@ use App\Http\Traits\ApiResponser;
 use App\Models\UserDevice;
 use Session;
 use DB;
-use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency};
+use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, RoleOld, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency};
 
 class UserController extends BaseController
 {
@@ -50,7 +50,7 @@ class UserController extends BaseController
 
     public function index()
     {
-        $roles = Role::all();
+        $roles = RoleOld::all();
         $countries = Country::all();
         $active_users = User::where('status', 1)->where('is_superadmin', '!=', 1)->count();
         $inactive_users = User::where('status', 3)->count();
@@ -386,7 +386,7 @@ class UserController extends BaseController
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-        $roles = Role::where('status', 1)
+        $roles = RoleOld::where('status', 1)
             // ->where('is_enable_pricing',1)
             ->get();
         return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions, 'user_docs' => $user_docs, 'user_registration_documents' => $user_registration_documents, 'active_orders' => $active_orders, 'completed_orders' => $completed_orders, 'clientCurrency' => $clientCurrency, 'fixedFee' => $fixedFee, 'getAdditionalPreference' => $getAdditionalPreference, 'roles' => $roles]);

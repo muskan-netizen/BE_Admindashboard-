@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, Role};
+use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -64,7 +64,7 @@ class ClientPreferenceController extends BaseController{
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-
+        // dd('ddd');
 
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
@@ -148,7 +148,7 @@ class ClientPreferenceController extends BaseController{
                     ->orderBy('client_languages.is_primary', 'desc')->get();
         $roles = [];
         if(checkColumnExists('roles','is_enable_pricing')){
-            $roles = Role::where('status',1)->get();
+            $roles = RoleOld::where('status',1)->get();
         }
         // dd($preference);
         return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles'));
@@ -231,9 +231,9 @@ class ClientPreferenceController extends BaseController{
         try {
             if($request->has('role_id')){
                 foreach($request->role_id as $key => $_role){
-                    $userRole                    = Role::where('id',$_role)->first();
+                    $userRole                    = RoleOld::where('id',$_role)->first();
                     if(!$userRole){
-                        $userRole                = new Role();
+                        $userRole                = new RoleOld();
                     }
                     $userRole->is_enable_pricing = ($request->has('is_enable_pricing') && isset($request->is_enable_pricing[$_role]) ) ? ( (($request->is_enable_pricing[$_role] == 1) || ($request->is_enable_pricing[$_role] == 'on')) ? 1 : 0) : 0;
                     $userRole->role              = $request->has('role') ? $request->role[$_role] : $userRole->role;

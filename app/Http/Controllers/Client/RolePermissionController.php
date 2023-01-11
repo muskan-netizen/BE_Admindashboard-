@@ -25,9 +25,16 @@ class RolePermissionController extends Controller
 
     public function indexRole(Request $request)
     {
-        $roles = Role::where('id','>','2')->orderBy('id','ASC')->get();
+        $roles = Role::where('id','>','4')->orderBy('id','ASC')->get();
+        $permissions = Permission::get();
+        $options = '';
+        foreach($permissions as $perm)
+        {
+                $options .= "<option value='{$perm->name}'>{$perm->controller} ({$perm->name})</option>";
+        }
+
         // $users = User::where('status', 1)->get();
-        return view('backend/role_permission/index',compact('roles'));
+        return view('backend/role_permission/index',compact('roles','options'));
     }
 
     public function saveRole(Request $request)

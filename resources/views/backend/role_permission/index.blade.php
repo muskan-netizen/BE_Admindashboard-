@@ -109,23 +109,29 @@
                 @csrf
                 <div class="modal-body" >
                     <div class="row">
-                        <div class="col-md-12">
-                            <div class="row">
-                                <div class="col-md">
-                                    <input name="id" class="role-id" type="hidden" />
-                                    <div class="form-group" id="nameInput">
-                                        {!! Form::label('title', __('Role'),['class' => 'control-label']) !!}
-                                        {!! Form::text('role_name', null, ['class'=>'form-control role-name', 'required'=>'required']) !!}
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong></strong>
-                                        </span>
+                        <input name="id" class="role-id" type="hidden" />
+
+                                    <div class="col-md-12">
+                                        <div class="form-group" id="nameInput">
+                                                {!! Form::label('title', __('Role'),['class' => 'control-label']) !!}
+                                                {!! Form::text('role_name', null, ['class'=>'form-control role-name', 'required'=>'required']) !!}
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong></strong>
+                                                </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 select2" style="display: none">
+                                        <div class="form-group" id="nameInput">
+                                        {!! Form::label('title', __('Permission'),['class' => 'control-label']) !!}
+                                        <select class="permissoin-multiple" name="permission[]" multiple="multiple">
+                                            {!! $options !!}
+                                        </select>
+                                        </div>
                                     </div>
                                 </div>
                               
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                          
+                 
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-info waves-effect waves-light submitAddSubscriptionForm">{{ __("Submit") }}</button>
                 </div>
@@ -136,17 +142,18 @@
 @endsection
 
 @section('script')
-<script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script>
-<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/rowreorder/1.3.1/js/dataTables.rowReorder.min.js"></script>
+
 
 <script>
+
+var table = $('#vendor_payouts_datatable').DataTable( {
+            rowReorder: true
+        } );
+
     $(document).delegate(".add-role", "click", function(){
         $("#add-role-modal").modal("show");
 
-        var table = $('#vendor_payouts_datatable').DataTable( {
-            rowReorder: true
-        } );
+       
  
         table.on( 'row-reorder', function ( e, diff, edit ) {
             var result = 'Reorder started on row: '+edit.triggerRow.data()[1]+'<br>';
@@ -170,7 +177,8 @@
             $("#add-role-modal").modal("show");
             $('.role-name').val(name);
             $('.role-id').val(id);
-
+            $('.select2').show();
+            $('.permissoin-multiple').select2();
         });
 
 </script>

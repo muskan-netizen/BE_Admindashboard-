@@ -1468,7 +1468,7 @@
                   <input type="hidden" name='is_hubspot' value='1'> --}}
                         {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
                         @php
-                            $allRoles = \App\Models\Role::get();
+                            $allRoles = \App\Models\RoleOld::get();
                         @endphp
                         <hr />
                         <div class="row hub_row alCustomToggleColor"
