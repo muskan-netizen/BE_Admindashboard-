@@ -20,6 +20,7 @@
 
 <script>
      $('.addrejectSubmit').on('click', function(e) {
+        console.log('clicked');
                 e.preventDefault();
                 var return_reason_id = $('#return_reason_id').val();
                 var reject_reason = $('#reject_reason').val();
