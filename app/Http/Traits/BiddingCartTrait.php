@@ -47,7 +47,7 @@ trait biddingCartTrait{
         foreach ($products as $product) {
             $redirect_url = route('productDetail', [$product->vendor_slug, $product->url_slug]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'] . '80/80' . $product->media->first()->image->path['image_path'] : '';
-            $product_results[] = ['id' => $product->id, 'name' => $product->dataname , 'price' =>$product->variant[0]->price,'variant_id'=>$product->variants[0]->id,'variant'=>$product->variants];
+            $product_results[] = ['id' => $product->id, 'name' => $product->dataname , 'price' =>decimal_format($product->variant[0]->price),'variant_id'=>$product->variants[0]->id,'variant'=>$product->variants];
         }
         $response =[];
         if (@$product_results) {

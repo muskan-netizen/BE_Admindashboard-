@@ -23,7 +23,10 @@ class VendorBidController extends BaseController{
 
     public function bidRequests(Request $request,$domain = '',$id = null)
     {
-        $prescriptions = BidRequest::where('status' , '=' , 0)->get();
+        $prescriptions = BidRequest::withCount(['bids'=>function($q)use($id){
+            $q->where('vendor_id',$id);
+         }])->where('status' , '=' , 0)->get();
+        
         return view('backend.bidding_module.vendorBidRequests', compact('prescriptions','id'));
     }
 

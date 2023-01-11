@@ -85,8 +85,11 @@
                                                 <td>{{$prescription->created_at}}</td>
                                                 <td>
                                                     <a href="{{$prescription->prescription}}" target="_blank"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
-
+                                                    @if($prescription->bids_count==0)
                                                     <a href="javascript:void(0)" class="biddingBitton" data-prescription="{{$prescription->id}}"  ><i class="fa fa-gavel" aria-hidden="true"></i></a>
+                                                    @else
+                                                    <i class="fa fa-check text-success" aria-hidden="true"></i>
+                                                    @endif
                                                 </td>
                                             </tr>
                                             @endforeach

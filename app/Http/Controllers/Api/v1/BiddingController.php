@@ -44,7 +44,11 @@ class BiddingController extends Controller
 
     public function getVendorPrescription(Request $request){
             $limit = $request->limit??10; 
-            $userBids = BidRequest::where('status',0)->orderBy('id','desc')->paginate($limit);
+            $vendor_id = $request->vendor_id;
+            $userBids = BidRequest::withCount(['bids'=>function($q)use($vendor_id){
+               $q->where('vendor_id',$vendor_id);
+            }])->where('status',0)->orderBy('id','desc')->paginate($limit);
+    
             return response()->json($userBids);
     }
 
@@ -124,8 +128,6 @@ class BiddingController extends Controller
 
     public function placeBid(Request $request)
     {
-        \Log::info(json_encode($request->all()));
-        \Log::info(json_encode(auth()->user()));
        $vendors = Vendor::where('status','1');
        if (auth()->user()->is_superadmin == 0) {
            $vendors = $vendors->whereHas('permissionToUser', function ($query) {
@@ -138,12 +140,11 @@ class BiddingController extends Controller
             return $this->successResponse(__('Somthing went wrong!'),'400');
        }
        $vendor_id = $prod_vendor->id;
-       
-       $data    = json_decode($request->data,true);
-       $discount = $data->discount;
-       $vendor_id = $data->vendor_id;
-       $prescription_id = $data->prescription_id;
-       $products = $data->products;
+       $products    = json_decode($request->products);
+       $discount = $request->discount;
+
+       $vendor_id = $request->vendor_id;
+       $prescription_id = $request->prescription_id;
        if($products){
         $total = 0;
         foreach ($products as $key => $bidTotal) {
