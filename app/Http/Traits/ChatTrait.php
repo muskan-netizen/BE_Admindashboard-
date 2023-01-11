@@ -86,7 +86,6 @@ trait ChatTrait{
        
         $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
         $devices            = UserDevice::whereNotNull('device_token')->whereIn('user_id',$removeAuth)->pluck('device_token') ?? [];
-        
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $data = [
                 "registration_ids" => $devices,
