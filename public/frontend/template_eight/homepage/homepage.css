@@ -731,6 +731,9 @@ body.al_body_template_eight section.suppliers-section.container.vender_slider {
     max-width: 98% !important;
     padding-top: 10px !important;
 }
+.al_body_template_eight .fixed-bar .menu-navigation.alThreeMenu .slick-list.draggable li.al_main_category {
+    top: 0px;
+}
 
 /* shimmer_effect end */
 
