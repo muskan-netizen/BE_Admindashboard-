@@ -1019,7 +1019,7 @@ trait cartManager{
                     // calculate subscription discount On admin and vendor
                     $vendor_subs_disc_percent       = isset($vendorData->vendor->subscription_discount_percent) ? $vendorData->vendor->subscription_discount_percent : 0;
                     $deliveryfee_for_subscription = ($deliveryfeeOnCoupon == 0) ? $deliveryCharges_real : 0;
-                    $subscription_discount_arr      = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_for_subscription, $payable_amount  +  $deliveryCharges_real, $vendor_subs_disc_percent);
+                    $subscription_discount_arr      = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_for_subscription, $payable_amount  +  $deliveryfee_for_subscription, $vendor_subs_disc_percent);
                     $subscription_discount_admin    = $subscription_discount_arr['admin'];
                     $subscription_discount_vendor   = $subscription_discount_arr['vendor'];
                     $subscription_discount_delivery = $subscription_discount_arr['delivery_discount'];

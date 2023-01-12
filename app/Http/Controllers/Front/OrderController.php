@@ -1466,6 +1466,7 @@ class OrderController extends FrontController
                         $total_discount += $delivery_fee;
                         $vendor_payable_amount -= $delivery_fee;
                         $vendor_discount_amount += $delivery_fee;
+                        $deliveryfeeOnCoupon = 1;
                     }
 
 
@@ -1540,6 +1541,7 @@ class OrderController extends FrontController
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
                 $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
+                $deliveryfee_for_subscription = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
                 $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $delivery_fee, $OrderVendor->payable_amount, $vendor_subs_disc_percent);
                 $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                 $subs_discount_vendor           = $subs_discount_arr['vendor'];
