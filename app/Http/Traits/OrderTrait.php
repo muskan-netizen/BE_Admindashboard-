@@ -171,9 +171,8 @@ trait OrderTrait{
      // place Request To Dispatch for Appointment , OnDemand
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain,$request)
     {
-
         try {
-
+            
             $order = Order::find($order);
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
@@ -185,7 +184,6 @@ trait OrderTrait{
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
 
             $order_vendor = OrderVendor::with('products.product')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-
             foreach( $order_vendor->products as $product){
                 $allocation_type = 'a';
                 $agent = '';
@@ -216,26 +214,31 @@ trait OrderTrait{
 
                 $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
                 $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
+                $is_assign_warehouse = $dispatch_domain['service_type'] == 'rental' ? 1 : 0;
+                
                 Log::info('service_time');
                 Log::info($service_time);
                 $tasks[] = array(
                     'task_type_id' => $task_type_id,
-                    'latitude'     => $vendor_details->latitude ?? '',
-                    'longitude'    => $vendor_details->longitude ?? '',
-                    'short_name'   => '',
-                    'address'      => $vendor_details->address ?? '',
-                    'post_code'    => '',
-                    'barcode'      => '',
-                    'flat_no'     => null,
-                    'email'       => $vendor_details->email ?? null,
+                    'latitude' => $vendor_details->latitude ?? '',
+                    'longitude' => $vendor_details->longitude ?? '',
+                    'short_name' => '',
+                    'address' => $vendor_details->address ?? '',
+                    'post_code' => '',
+                    'barcode' => '',
+                    'flat_no' => null,
+                    'email' => $vendor_details->email ?? null,
                     'phone_number' => $vendor_details->phone_no ?? null,
-                    'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ?  $service_time  : null ,
+                    'appointment_duration' => $dispatch_domain['service_type'] == 'appointment' ? $service_time : null,
                 );
+                
                 if($product->dispatch_agent_id){
                     $allocation_type = 'm';
                     $agent = $product->dispatch_agent_id;
                 }
-                if($dispatch_domain['service_type'] == 'on_demand' ){
+                $service_types = ['on_demand', 'rental'];
+                if(@in_array($dispatch_domain['service_type'], $service_types))
+                {
                     $tasks[] = array(
                         'task_type_id' => 2,
                         'latitude' => $cus_address->latitude ?? '',
@@ -296,7 +299,8 @@ trait OrderTrait{
                         'user_icon' => $customer->image,
                         'agent'     => $agent,
                         'task_type_id' =>$task_type_id, //  for add agent booking in case of appointment
-                        'service_time' =>  $service_time
+                        'service_time' =>  $service_time,
+                        'is_assign_warehouse' => $is_assign_warehouse
                     ];
 
 

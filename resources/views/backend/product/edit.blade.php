@@ -144,7 +144,7 @@ div#attribute_section .col-sm-9 .form-check-inline.w-100 {
 </style>
 @endsection
 @php
-$lastmileShow = array('7','10','11');
+$lastmileShow = array('7','11'); //,'10'
 
 $brandNotShow = array('7','8','12');
 $on_demand_check = array('8','12');

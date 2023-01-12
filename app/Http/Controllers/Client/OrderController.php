@@ -15,7 +15,7 @@ use App\Http\Controllers\DunzoController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct};
+use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct, OrderVendorProduct};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -925,7 +925,6 @@ class OrderController extends BaseController
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type == 'D') {
                         //Create Shipping request for dispatcher
-
                         if( checkColumnExists('orders','is_long_term') &&   $orderData->orderDetail->is_long_term ==1){
                             $order_dispatch = $this->checkIfanyServiceProductLastMileon($request);
 
@@ -1272,7 +1271,6 @@ class OrderController extends BaseController
         $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $order_dispatchs = 2;
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-        // pr( $checkdeliveryFeeAdded);
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
@@ -1350,14 +1348,36 @@ class OrderController extends BaseController
                 }
             }
         }
+
+        if ($luxury_option_id == 4) { // only for rental type
+            $dispatch_domain = $this->getDispatchDomain();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                    if ($prod->product->category->categoryDetail->type_id == 10) {
+                        $dispatch_domain = [
+                            'service_key'      => $dispatch_domain->delivery_service_key,
+                            'service_key_code' => $dispatch_domain->delivery_service_key_code,
+                            'service_key_url'  => $dispatch_domain->delivery_service_key_url,
+                            'service_type'     => 'rental'
+                        ];
+                        
+                        $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                        if ($order_dispatchs && $order_dispatchs == 1) {
+                            // $OnDemand = 1;
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
         
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
+            // dd($checkdeliveryFeeAdded->delivery_fee);
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
-
-
+            
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
         }
@@ -1462,6 +1482,7 @@ class OrderController extends BaseController
             $dynamic = uniqid($order->id . $vendor);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
             $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
+            // pr($orderVendorDetails);
             if(!empty($orderVendorDetails->web_hook_code))
             {
                 $dynamic = $orderVendorDetails->web_hook_code;
@@ -1571,12 +1592,12 @@ class OrderController extends BaseController
             ]);
 
             $url = $dispatch_domain->delivery_service_key_url;
-
+            // dd($url);
             $res = $client->post(
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
             );
-
+            // dd($res);
             $response = json_decode($res->getBody(), true);
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
@@ -1595,8 +1616,6 @@ class OrderController extends BaseController
             // ]);
         }
     }
-
-
 
     // place Request To Dispatch for On Demand
     public function placeRequestToDispatchOnDemand($order, $vendor, $dispatch_domain)
