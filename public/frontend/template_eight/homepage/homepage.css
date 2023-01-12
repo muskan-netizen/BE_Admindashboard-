@@ -722,12 +722,18 @@ footer#footer {
 .al_body_template_eight .cab-banner-area .cab-input input.form-control {
     border-radius: 12px !important;
 }
-
+.al_body_template_eight .full_width_eccomerce{max-width: 98%;}
 .product-card-box.position-relative.al_box_third_template.al {
     -webkit-transform: scale(1);
     transform: scale(1);
 }
-
+body.al_body_template_eight section.suppliers-section.container.vender_slider {
+    max-width: 98% !important;
+    padding-top: 10px !important;
+}
+.al_body_template_eight .fixed-bar .menu-navigation.alThreeMenu .slick-list.draggable li.al_main_category {
+    top: 0px;
+}
 
 /* shimmer_effect end */
 
@@ -735,7 +741,26 @@ footer#footer {
     section#our_vendor_main_div .vendors {
         padding: 0 20px;
     }
-    body.al_body_template_eight .p2p-full-width .media-body .al_clock b{font-size: 12px;}
+    body.al_body_template_eight .p2p-full-width .media-body .al_clock b{font-size: 14px;}
+    body.al_body_template_eight .recent-orders-8 .order_detail .ul.price_box_bottom li label {
+        font-size: 14px;
+    }
+    
+    body.al_body_template_eight .recent-orders-8 .order_detail  ul.price_box_bottom li span {
+        font-size: 12px;
+    }
+    .al_body_template_eight .product-4-spotlight_deals .row .col .deals-product .supplier-rating a.suppliers-box h4{
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;font-size: 16px;
+    }
+    .al_body_template_eight .full_width_eccomerce .product-4-spotlight_deals .col {
+        padding: 2px;
+    }
+    body.al_body_template_eight section.suppliers-section.container.vender_slider {
+        max-width: 98% !important;
+        padding-top: 10px !important;
+    }
 }
 
 article#page-container {
@@ -918,8 +943,8 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     border-radius: 10px;
 }
 
-.product-card-box.position-relative.text-center.al_custom_vendors_sec {
-    background: #d9d9d99c;
+.al_body_template_eight .product-card-box.position-relative.text-center.al_custom_vendors_sec {
+    background: #d9d9d973;
     border-radius: 10px;
     border: 1px solid#D9D9D9;
     height: auto;
@@ -1154,7 +1179,11 @@ section#our_vendor_main_div {
 }
 
 section.main-product.single_category_products .supplier-rating a {
-    color: #ff7521;
+    color: var(--theme-deafult);
+    font-weight: 600;
+    font-size: 16px !important;
+    /* padding: 0px 0px 10px 0px; */
+    display: block;
 }
 
 section.main-product.single_category_products.mb-0.render_full_single_category_products h2.h2-heading.mb-4 {
@@ -1264,7 +1293,7 @@ section.suppliers-section.container {
     margin: 12px 0px 6px 0px;
 }
 
-.deals-product .supplier-rating a.suppliers-box.d-block h5 {
+.al_body_template_eight .deals-product .supplier-rating a.suppliers-box.d-block h5 {
     font-family: 'Times New Roman';
     font-style: normal;
     font-weight: 400;
@@ -1275,6 +1304,10 @@ section.suppliers-section.container {
     font-weight: 500;
     margin-bottom: 0px;
 }
+.suppliers-slider-vendors .supplier-rating h5 {
+    padding: 8px 0px;
+}
+.product-4-single_category_products .deals-product .supplier-rating a.suppliers-box.d-block{padding-bottom: 0px;}
 .best-seller-eccomerce .deals-product .supplier-rating a {
     display: block;
     font-size: 16px !important;
@@ -1339,19 +1372,25 @@ section.suppliers-section.container.vender_slider .product-m.render_vendors {
     color: #E9248D !important;
     font-weight: 600;
 }
-section.suppliers-section.container.vender_slider .supplier-rating {
+.al_body_template_eight section.suppliers-section.container.vender_slider .supplier-rating {
     position: relative;
-    top: 22px;
-    bottom: 0;
+    /* top: 22px;
+    bottom: 0; */
+    padding:10px 0px;
 }
 
 .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec {
     background: #fff;
     border: 1px solid #D9D9D9;
-    height: 330px;
+    /* height: 330px; */
     margin: 0;
 }
-
+.al_body_template_eight .product-card-box.position-relative.text-center.al_custom_vendors_sec a.spotlight-deal-btn {
+    font-weight: 600;
+    font-size: 16px !important;
+    padding: 10px 0px;
+    display: block;
+}
 section.suppliers-section.container.vender_slider .supplier-rating h4 {
     color: #000;
 }
@@ -1374,13 +1413,16 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
     border-radius: 10px 10px 0 0;
 }
 
-.render_full_spotlight_deals .supplier-rating {
+/* .render_full_spotlight_deals .supplier-rating {
     border: 2px solid#fff;
     padding: 10px;
     width: 80%;
     border-radius: 10px;
+} */
+.al_body_template_eight .main-product h2.h2-heading {
+    font-size: 30px;
 }
-
+.al_body_template_eight .render_full_spotlight_deals h2.h2-heading{font-size: 30px;}
 body.al_body_template_eight.homeHeader .common-banner img {
     height: 500px !important;
     width: 100% !important;

@@ -1730,9 +1730,11 @@ body.al_body_template_eight.homeHeader .outter-fillter-data .product-wrapper-gri
     width: 100%;
     object-fit: cover;
     border-radius: 10px 10px 0 0;
-    padding-top: 0 !important;
+    padding-top: 0;
 }
-
+.al_body_template_eight .margin-res .product-image img {
+    padding-top: 20px !important;
+}
 body.al_body_template_eight .outter-fillter-data .media-body.align-self-center h6 {
     margin: 10px 0 !important;
 }
@@ -2503,6 +2505,17 @@ body.al_body_template_eight .categories-product-list .col-sm-6.offset-sm-3 {
     }
     .al_body_template_eight .best-seller-full h2.h2-heading {
         margin-bottom: 20px !important;
+    }
+    .al_body_template_eight .margin-res .supplier-rating p {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    body.al_body_template_eight .row.margin-res a.suppliers-box.d-block.custom-vender-card {
+        height: auto;
+    }
+    .al_body_template_eight .full_width_eccomerce h2.h2-heading {
+        font-size: 30px;text-align: left;
     }
 body.al_body_template_eight .box-account.box-info .btn-solid {
     padding: 8px 8px !important;
