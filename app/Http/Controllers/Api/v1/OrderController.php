@@ -459,7 +459,7 @@ class OrderController extends BaseController
                             if(@$vendor_cart_product->bid_number)
                             {
                                 Bid::where('id', $vendor_cart_product->bid_number)->update(['status'=>1]);
-                                $bid_vendor_discount += (($order_product->price * $vendor_cart_product->bid_discount)/100);
+                                $bid_vendor_discount += ((($order_product->price * $vendor_cart_product->quantity)* $vendor_cart_product->bid_discount)/100);
                             }
 
                             if (isset($vendor_cart_product->variant_id) && !empty($vendor_cart_product->variant_id)) {
