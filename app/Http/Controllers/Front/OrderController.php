@@ -1178,7 +1178,7 @@ class OrderController extends FrontController
                     if(@$vendor_cart_product->bid_number)
                     {
                         Bid::where('id', $vendor_cart_product->bid_number)->update(['status'=>1]);
-                        $bid_vendor_discount += (($order_product->price * $vendor_cart_product->bid_discount)/100);
+                        $bid_vendor_discount += ((($order_product->price * $vendor_cart_product->quantity) * $vendor_cart_product->bid_discount)/100);
                     }
 
                     $order_product->total_booking_time = @$vendor_cart_product->total_booking_time;

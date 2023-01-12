@@ -42,10 +42,10 @@ class BiddingController extends Controller
         return response()->json(['status' => 'success', 'message' => "Uploaded Successfully"]);
     }
 
-    public function getVendorPrescription(Request $request){
+    public function getVendorPrescription(Request $request,$vid){
             $limit = $request->limit??10; 
-            $vendor_id = $request->vendor_id;
-            $userBids = BidRequest::withCount(['bids'=>function($q)use($vendor_id){
+            $vendor_id = $vid;
+            $userBids = BidRequest::withCount(['bid'=>function($q)use($vendor_id){
                $q->where('vendor_id',$vendor_id);
             }])->where('status',0)->orderBy('id','desc')->paginate($limit);
     

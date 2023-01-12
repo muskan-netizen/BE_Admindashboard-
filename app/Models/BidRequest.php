@@ -25,11 +25,6 @@ class BidRequest extends Model
         return $this->hasOne(Bid::class, 'bid_req_id','id');
     }
 
-    public function bidss()
-    {
-        return $this->belongsTo(Bid::class);
-    }
-
     public function bidCounts()
     {
         return $this->hasMany(Bid::class, 'bid_req_id')->where('status',0);

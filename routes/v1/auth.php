@@ -233,7 +233,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         //Bidding Controller
         Route::post('upload/bid/prescriptions',    'Api\v1\BiddingController@uploadBiddingPrescription');
-        Route::get('get/vendor/bid/prescriptions', 'Api\v1\BiddingController@getVendorPrescription');
+        Route::get('get/vendor/bid/prescriptions/{vid?}', 'Api\v1\BiddingController@getVendorPrescription');
         Route::get('get/user/bid/prescriptions',   'Api\v1\BiddingController@getUserPrescription');
         Route::post('delete/bid/prescriptions',     'Api\v1\BiddingController@deleteProductPrescription');
         Route::get('get/vendor/product/search/{vid}/{key}',   'Api\v1\BiddingController@search');
