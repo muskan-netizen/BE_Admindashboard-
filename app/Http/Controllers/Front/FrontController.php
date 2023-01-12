@@ -906,7 +906,6 @@ class FrontController extends Controller
     // get slot fron dispatcher
     public function getSlotFromDispatchDemand(Request $request)
     {
-       
            $product = $this->productDetail($request->product_id);
         
             $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';

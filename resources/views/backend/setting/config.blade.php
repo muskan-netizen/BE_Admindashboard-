@@ -1364,7 +1364,7 @@
         </div>
 
         @php
-            $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card']);
+            $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card','is_service_product_price_from_dispatch']);
         @endphp
         <div class="row">
             {{-- hubspot form --}}
@@ -2388,6 +2388,16 @@
                                    <input type="hidden"  @if(@getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == 1) value="1" @else value="0" @endif  name="is_cust_success_signup_email"  id="is_cust_success_signup_email"/>
                                 </div>
                             </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                   <label for="is_service_product_price_from_dispatch_switch" class="mr-2 mb-0">{{__('Service Product Price from Dispatcher')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
+                                  <span> <input type="checkbox" data-plugin="switchery" name="is_service_product_price_from_dispatch_switch" id="is_service_product_price_from_dispatch_switch" class="form-control checkbox_change" data-className="is_service_product_price_from_dispatch"  data-color="#43bee1" @if(   $getAdditionalPreference ['is_service_product_price_from_dispatch'] == '1') checked='checked' @endif>
+                                   </span>
+                                   <input type="hidden"  @if(   $getAdditionalPreference['is_service_product_price_from_dispatch'] == '1')  value="1" @else value="0" @endif  name="is_service_product_price_from_dispatch"  id="is_service_product_price_from_dispatch"/>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </form>

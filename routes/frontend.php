@@ -468,6 +468,7 @@ Route::group(['middleware' => ['domain']], function () {
 	 */
 	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
+	Route::post('get_price_from_dispatcher', 'Front\ProductController@getFreeLincerFromDispatcher')->name('product.get_price_from_dispatcher');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 

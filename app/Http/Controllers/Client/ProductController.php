@@ -261,13 +261,14 @@ class ProductController extends BaseController
                 }
             }
         }
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles','is_cab_pooling','is_service_product_price_from_dispatch']);
 
         $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
         $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
         $otherProducts       = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData          = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
-        $configData->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+        $configData->is_cab_pooling = $getAdditionalPreference['is_cab_pooling'];
         $celebrities         = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
         $tollPassOrigin      = (checkColumnExists('toll_pass_origin','toll_pass')) ? TollPassOrigin::select('id', 'toll_pass', 'desc')->get() : [];
         $travelMode          = (checkColumnExists('travel_mode','travelmode')) ?TravelMode::select('id', 'travelmode', 'desc')->get() : [];
@@ -290,7 +291,13 @@ class ProductController extends BaseController
         if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 8) # if type is on demand
         {
             $vendor_id = $product->vendor_id;
-            $agent_dispatcher_on_demand_tags = $this->getDispatcherOnDemandTags($vendor_id);
+            $onDemandRes = $this->getDispatcherOnDemandTags($vendor_id);
+            if(  $getAdditionalPreference['is_service_product_price_from_dispatch'] ==1){
+                $product->is_onDemand_on = isset($onDemandRes['is_onDemand_enable']) ?  $onDemandRes['is_onDemand_enable'] : 0;
+            }
+
+           // pr($this->getDispatcherOnDemandTags($vendor_id));
+            $agent_dispatcher_on_demand_tags = isset($onDemandRes['tags']) ?  $onDemandRes['tags'] : '';// $this->getDispatcherOnDemandTags($vendor_id);
 
         }
         if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 12) # if type is on demand
@@ -320,7 +327,7 @@ class ProductController extends BaseController
         if(checkColumnExists('roles','is_enable_pricing')){
             $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
         }
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles']);
+        
 
         $allRoles = Role::where('status',1)->get();
 
@@ -331,7 +338,7 @@ class ProductController extends BaseController
                 $selectedRoles[] = $querySelectedRole->role_id;
             }
         }
-
+       //pr($product);
         //mohit sir branch code added by sohail
         $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();
 
@@ -514,6 +521,10 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
+            if(checkColumnExists('products','get_price_from_dispatcher')){
+              //pr(($request->has('get_price_from_dispatcher') && $request->get_price_from_dispatcher == 'on') ? 1 : 0);
+                $product->get_price_from_dispatcher = ($request->has('get_price_from_dispatcher') && $request->get_price_from_dispatcher == 'on') ? 1 : 0;
+            }
 
             $product->save();
 
@@ -1187,10 +1198,15 @@ class ProductController extends BaseController
 
       # get dispatcher on demand tags from dispatcher panel
       public function getDispatcherOnDemandTags($vendor_id){
+        $retResponse = [
+            'is_onDemand_enable' =>0,
+            'tags' =>'',
+        ];
         try {
             $dispatch_domain = $this->checkIfOnDemandOn();
+            
                 if ($dispatch_domain && $dispatch_domain != false) {
-
+                    $retResponse['is_onDemand_enable'] = 1;
                     $unique = Auth::user()->code;
                     $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
 
@@ -1202,13 +1218,15 @@ class ProductController extends BaseController
                             $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
                             $response = json_decode($res->getBody(), true);
                             if($response && $response['message'] == 'success'){
-                                return $response['tags'];
+                                
+                                $retResponse['tags'] = $response['tags'];
                             }
             //                Log::info($response);
                 }
+                return $retResponse;
             }
             catch(\Exception $e){
-                // Log::info($e->getMessage());
+                return $retResponse;
             }
     }
     # get dispatcher Appointment tags from dispatcher panel

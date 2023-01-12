@@ -529,4 +529,21 @@ class ProductController extends FrontController{
 
     }
 
+    # get product faq
+    public function getFreeLincerFromDispatcher(Request $request){
+       $selecterVariant = ProductVariant::where('id',$request->variant_id)->first();
+       if($selecterVariant){
+           $res = $this->getLincerFreeFromDispatcher($request->onDemandBookingdate,$selecterVariant->sku);
+           return response()->json(array('status' => 'Success', 'data' => $res['data']));
+       }
+    //    $sku = 'AC100';
+    //     $data = '2023-01-11';
+        //pr(  $res);
+        //return \Response::json(\View::make('frontend.modals.product-order-form', array('product_faqs'=>  $product_faqs))->render());
+
+        //return $this->errorResponse('Invalid product form ', 404);
+
+
+}
+
 }

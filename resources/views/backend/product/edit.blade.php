@@ -332,7 +332,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
                         @endif
-
                         @if($product->vendor->need_container_charges == 1)
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Container Charges (Optional)'), ['class' => 'control-label']) !!}
