@@ -71,6 +71,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
             @endif
             <li class="{{ (request()->is('user/changePassword')) ? 'active' : '' }}"><a href="{{route('user.changePassword')}}">{{ __('Change Password') }}</a></li>
             <li class="last {{ (request()->is('user/logout')) ? 'active' : '' }}"><a href="{{route('user.logout')}}">{{ __('Log Out') }}</a></li>
+            <li class="last {{ (request()->is('user/refer-earn')) ? 'active' : '' }}"><a href="{{route('refer-earn.index')}}">{{ __('Refer & Earn') }}</a></li>
         </ul>
     </div>
 </div>

@@ -490,7 +490,7 @@ $pages = \App\Models\Page::with([
 
 
    @endif
-   @if(isset($navCategories))
+   @if(!empty($navCategories) && count($navCategories))
    <div class="menu-navigation alThreeMenu">
        <div class="container-fluid">
            <div class="row">

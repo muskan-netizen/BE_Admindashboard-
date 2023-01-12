@@ -499,6 +499,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('wallet/transfer/confirm', 'Front\WalletController@walletTransferConfirm')->name('wallet.transfer.confirm');
 	Route::get('user/loyalty', 'Front\LoyaltyController@index')->name('user.loyalty');
 	Route::post('wallet/payment/option/list', 'Front\WalletController@paymentOptions')->name('wallet.payment.option.list');
+	Route::get('wallet/addMoney', 'Front\WalletController@addWalletAmount');
 	Route::get('user/deleteAddress/{id}', 'Front\AddressController@delete')->name('deleteAddress');
 	Route::post('user/updateAccount', 'Front\ProfileController@updateAccount')->name('user.updateAccount');
 	Route::post('user/updateTimezone', 'Front\ProfileController@updateTimezone')->name('user.updateTimezone');
@@ -528,6 +529,14 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/subscription/purchase/{slug}', 'Front\UserSubscriptionController@purchaseSubscriptionPlan')->name('user.subscription.plan.purchase');
 	Route::post('user/subscription/cancel/{slug}', 'Front\UserSubscriptionController@cancelSubscriptionPlan')->name('user.subscription.plan.cancel');
 	Route::get('user/subscription/checkActive/{slug}', 'Front\UserSubscriptionController@checkActiveSubscription')->name('user.subscription.plan.checkActive');
+
+	// Refer and Earn Module
+	Route::name('refer-earn.')->group(function () {
+		Route::get('user/refer-earn', 'Front\InfluencerReferAndEarnController@index')->name('index');
+		Route::get('user/get-refer-earn-form/{id}', 'Front\InfluencerReferAndEarnController@getReferEarnForm')->name('form');
+		Route::post('user/save-refer-earn-form', 'Front\InfluencerReferAndEarnController@save')->name('save');
+		Route::post('user/update-refer-code', 'Front\InfluencerReferAndEarnController@updateRefferalCode')->name('updateRefferalCode');
+	});
 	Route::post('user/save_fcm_token', 'Front\ProfileController@save_fcm')->name('user.save_fcm');
 	// Rating & review
 	Route::group(['prefix' => 'rating'], function () {
@@ -616,23 +625,4 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('get-attributes', 'Front\PostController@getCategoryAttributes')->name("category.attributes");
 
 });
-Route::get('js/translations.js', function (Request $request) {
-    $lang = config('app.locale');
-    $strings = \Illuminate\Support\Facades\Cache::rememberForever('lang_'.$lang.'.js', function () use($lang) {
-        $files = [
-            resource_path('lang/' . $lang . '/common.php'),
-            resource_path('lang/' . $lang . '/validation.php'),
-        ];
-        $strings = [];
 
-        foreach ($files as $file) {
-            $name = basename($file, '.php');
-            $strings[$name] =  $file;
-        }
-
-        return $strings;
-    });
-    header('Content-Type: text/javascript');
-    echo('window.i18n = ' . json_encode($strings) . ';');
-    exit();
-})->name('translations');

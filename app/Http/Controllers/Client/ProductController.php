@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -182,7 +182,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        
+
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
         if( checkTableExists('product_attributes') ) {
@@ -253,7 +253,7 @@ class ProductController extends BaseController
                 ->where('attribute_categories.category_id', $product->category_id)
                 ->where('attributes.status', '!=', 2)
                 ->orderBy('position', 'asc')->get();
-            
+
             if( !empty($product->ProductAttribute) ) {
                 foreach($product->ProductAttribute as $key => $val) {
                     $attribute_value[] = $val->attribute_option_id;
@@ -320,10 +320,10 @@ class ProductController extends BaseController
         if(checkColumnExists('roles','is_enable_pricing')){
             $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
         }
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module']);
 
         $allRoles = Role::where('status',1)->get();
-        
+
         $selectedRoles = [];
         if($getAdditionalPreference['is_free_delivery_by_roles'] == 1){
             $querySelectedRoles = ProductDeliveryFeeByRole::where('product_id', $id)->where('is_free_delivery', 1)->get();
@@ -332,7 +332,10 @@ class ProductController extends BaseController
             }
         }
 
-        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value]);
+        //mohit sir branch code added by sohail
+        $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();
+
+        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value]);
     }
 
     /**
@@ -388,10 +391,10 @@ class ProductController extends BaseController
 
                         foreach($request->attribute as $key => $value) {
                             if( !empty($value) && !empty($value['option'] && is_array($value) )) {
-                                
+
                                 if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
                                     $value_arr = @$value['value'];
-                                    
+
                                     foreach( $value['option'] as $key1 => $val1 ) {
                                         if( @in_array($val1['option_id'], $value_arr) ) {
 
@@ -421,7 +424,7 @@ class ProductController extends BaseController
                                 }
                             }
 
-                        
+
                         }
                         if( !empty($insert_arr) ) {
                             ProductAttribute::where('product_id',$id)->delete();
@@ -429,9 +432,9 @@ class ProductController extends BaseController
                         }
                     }
                 }
-                
+
             }
-            
+
             $product->sku = $request->sku;
             $product->markup_price = $request->markup_price;
             $product->url_slug = $request->url_slug;
@@ -669,10 +672,23 @@ class ProductController extends BaseController
                     // Product Variant By Roles (END)
                 }
 
+                //mohit sir branch code added by sohail
+                $processorProductDetail = [
+                    'product_id' => $product->id,
+                    'is_processor_enable' => ($request->is_processor_enable == 1)? 1 : 0,
+                    'name' => !empty($request->processor_title)? $request->processor_title : '',
+                    'address' => !empty($request->processor_address)? $request->processor_address : '',
+                    'latitude' => !empty($request->processor_latitude)? $request->processor_latitude : '',
+                    'longitude' => !empty($request->processor_longitude)? $request->processor_longitude : '',
+                    'date' => !empty($request->processor_date)? $request->processor_date : '',
+                ];
+                ProcessorProduct::updateOrCreate(['product_id' => $product->id], $processorProductDetail);
+                //till here
+
                 // min order count
                 if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == 1){
                     $minimum_order_count_arr = $request->minimum_order_count_arr;
-                    
+
                     if($minimum_order_count_arr){
                         foreach($minimum_order_count_arr as $key => $minimum_order_count){
                             $where = ['product_id' => $id, 'role_id' => $key];
@@ -681,7 +697,7 @@ class ProductController extends BaseController
                         }
                     }
                 }
-                
+
             }
 
             // update product delivery fees
@@ -699,7 +715,7 @@ class ProductController extends BaseController
                 }
 
             }
-            
+
 
             DB::commit();
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
@@ -727,7 +743,7 @@ class ProductController extends BaseController
             DB::beginTransaction();
             $productde = Product::productDelete($id);
             // $product = Product::find($id);
-           
+
             // $dynamic = time();
 
             // Product::where('id', $id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
@@ -1300,19 +1316,19 @@ class ProductController extends BaseController
                         // $dynamic = time();
 
                         // Product::where('id', $product->id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
-    
+
                         // $tot_var  = ProductVariant::where('product_id', $product->id)->get();
                         // foreach($tot_var as $varr)
                         // {
                         //     $dynamic = time().substr(md5(mt_rand()), 0, 7);
                         //     ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
                         // }
-    
+
                         // Product::where('id', $product->id)->delete();
-    
+
                         // CartProduct::where('product_id', $product->id)->delete();
                         // UserWishlist::where('product_id', $product->id)->delete();
-    
+
                         DB::commit();
                     }
                 break;
@@ -1331,17 +1347,17 @@ class ProductController extends BaseController
 
     # check if last mile delivery on
     public function getProductVariant(Request $request){
-       
+
         // variant option
         $ProductVariants =   ProductVariant::where('product_id',$request->product_id)->get();
         $options = [];
         foreach($ProductVariants as $key => $variant){
             $options[] = "<option value=".$variant['id'].">".($variant['title'] ?? $variant['sku'])."</option>";
         }
-        
-        // addon selecter 
+
+        // addon selecter
         $selectedAddon =  LongTermServiceProductAddons::where('long_term_service_product_id',$request->service_product_id)->get();
-       
+
         $ProductAddon  =  ProductAddon::with('addOnName','setoptions')->where('product_id',$request->product_id)->get();
         $addOnHtml = '';
         if(count( $ProductAddon)>0){
@@ -1353,7 +1369,7 @@ class ProductController extends BaseController
                 if($addons->setoptions->isNotEmpty()){
                     $addOnHtml .='<div class="col-12 p-0">
                                     <div class="form-group" id="service_product_variantInput">
-                    
+
                                         <label class="control-label">'.$addons->addOnName->title.'</label>
                                         <input name="add_on_id[]" type="hidden" value="'.$addons->addOnName->id.'">
                                         <select class="form-control selectizeInput" id="service_product_variant" name="add_on_set[]">';
@@ -1370,7 +1386,7 @@ class ProductController extends BaseController
                 }
             }
             $addOnHtml .=   '</div>';
-                                   
+
 
         }
       $respons = [

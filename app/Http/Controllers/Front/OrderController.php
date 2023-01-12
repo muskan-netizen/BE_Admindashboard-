@@ -869,7 +869,7 @@ class OrderController extends FrontController
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
              //Get earn and used loyalty amount
-            $loyaltyCheck = $this->getOrderLoyalityAmount($user,$customerCurrency);
+            $loyaltyCheck = $this->getOrderLoyalityAmount($user, $customerCurrency);
             $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
             $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
 
@@ -1540,7 +1540,7 @@ class OrderController extends FrontController
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
                 $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
-                $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $delivery_fee, ($vendor_payable_amount - $delivery_fee), $vendor_subs_disc_percent);
+                $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $delivery_fee, $OrderVendor->payable_amount, $vendor_subs_disc_percent);
                 $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                 $subs_discount_vendor           = $subs_discount_arr['vendor'];
 
@@ -1548,6 +1548,7 @@ class OrderController extends FrontController
                     $OrderVendor->subscription_discount_admin  = $subs_discount_admin;
                     $OrderVendor->subscription_discount_vendor = $subs_discount_vendor;
                 }
+                $total_subscription_discount = $total_subscription_discount + $subs_discount_admin + $subs_discount_vendor;
                 $OrderVendor->is_restricted = $is_restricted;
                 $OrderVendor->bid_discount = $bid_vendor_discount??0;
                 $Order_bid_discount += $bid_vendor_discount??0;
@@ -1576,22 +1577,7 @@ class OrderController extends FrontController
             //echo "loop end";
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('', $payable_amount);
 
-            // calculate subscription discount on admin and vendor
-            if ($user_subscription) {
-                foreach ($user_subscription->features as $feature) {
-                    if ($feature->feature_id == 1) {
-                        $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
-                    } elseif ($feature->feature_id == 2) {
-                        $off_percentage_discount = ($feature->percent_value * $payable_amount / 100);
-                        $total_subscription_discount = $total_subscription_discount + $off_percentage_discount;
-                    }
-                }
-            }
-
-            // if (in_array(1, $subscription_features)) {
-            //     $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
-            // }
-            //echo "total_discount:" .$total_discount." total_subscription_discount: " .$total_subscription_discount;
+            //Total Discount
             $total_discount = $total_discount + $total_subscription_discount;
 
             $order->total_amount = $total_amount - $Order_bid_discount??0;
@@ -1708,6 +1694,16 @@ class OrderController extends FrontController
                     $giftcard = UserGiftCard::where(['id'=>$UserGiftCardId])->update(['is_used'=>1]);
                 }
             }
+
+            // Advance Book Token Amount
+            //mohit sir branch code added by sohail
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+            if(!empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+                $advanceAmount = $payable_amount * $getAdditionalPreference['advance_booking_amount_percentage'] / 100;
+                $order->advance_amount = number_format($advanceAmount, 2);
+            }
+            //till here
+
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->additional_price = $totalAdditionalPrice;
             $order->total_container_charges = $total_container_charges;
