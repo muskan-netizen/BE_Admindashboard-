@@ -551,6 +551,7 @@ trait cartManager{
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
+                $deliveryfeeOnCoupon = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
 
                     $prod->product->ServicePeriods = [];
@@ -996,6 +997,7 @@ trait cartManager{
                                 $PromoFreeDeliver = 1;
                               // $coupon_amount_used = $coupon_amount_used ;
                                 $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
+                                $deliveryfeeOnCoupon = 1;
                                 $payable_amount = $payable_amount;
                             }
                         }
@@ -1016,7 +1018,8 @@ trait cartManager{
                 if($user){
                     // calculate subscription discount On admin and vendor
                     $vendor_subs_disc_percent       = isset($vendorData->vendor->subscription_discount_percent) ? $vendorData->vendor->subscription_discount_percent : 0;
-                    $subscription_discount_arr      = $this->calCulateSubscriptionDiscount($user->id, $deliveryCharges_real, $payable_amount  +  $deliveryCharges_real, $vendor_subs_disc_percent);
+                    $deliveryfee_for_subscription = ($deliveryfeeOnCoupon == 0) ? $deliveryCharges_real : 0;
+                    $subscription_discount_arr      = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_for_subscription, $payable_amount  +  $deliveryCharges_real, $vendor_subs_disc_percent);
                     $subscription_discount_admin    = $subscription_discount_arr['admin'];
                     $subscription_discount_vendor   = $subscription_discount_arr['vendor'];
                     $subscription_discount_delivery = $subscription_discount_arr['delivery_discount'];
