@@ -11,18 +11,6 @@ use Spatie\Permission\Models\Permission;
 class RolePermissionController extends Controller
 {
     
-
-    function __construct()
-    {
-        //  $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index','store']]);
-        //  $this->middleware('permission:role-create', ['only' => ['create','store']]);
-        //  $this->middleware('permission:role-edit', ['only' => ['edit','update']]);
-        //  $this->middleware('permission:role-delete', ['only' => ['destroy']]);
-    }
-
-    
-
-
     public function indexRole(Request $request)
     {
         $roles = Role::with('permissions')->where('id','>','4')->orderBy('id','ASC')->get();
@@ -59,10 +47,7 @@ class RolePermissionController extends Controller
             if(empty($request->id))
             {
                 $role = Role::create(['name' => $request->input('role_name')]);
-                // $permissions = Permission::whereIn('id',$request->permission)->pluck('id');
                 if(@$request->permission && count($request->permission)>0){
-                // DB::table('model_has_roles')->where('model_id',$id)->delete();
-                // $role->givePermissionTo($request->permission);
                     //Assign all selected permisson to role
                     $role->syncPermissions($request->input('permission'));
                 }else{

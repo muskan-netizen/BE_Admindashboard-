@@ -22,26 +22,23 @@ class PermissionMiddleware
 
         $user = auth()->user();
         $authGuard = app('auth')->guard($guard);
- 
-        $permissionArray = array();
-        foreach ($user->roles as $role) {
-            foreach ($role->permissions as $key=> $perm) {
-                $permissionArray[$perm->controller][] = $perm->name;
-            }
-        }
-        
+        $permissionArray = $this->permissionUser($user);
 
             $page = $request->route()->action['controller'];
             $check = explode('\\',$page);
             $cnt = count($check);
             $pageUrl = $check[$cnt-1];
             $check = explode('@',$pageUrl);
+            $page = $check[0];
+
             $permissions = [];
-            if(isset($permissionArray[$check[0]]))
+            if(isset($permissionArray[$page]) && count($permissionArray[$page])>0)
             {
                 $permissions =  $permissionArray[$check[0]];
             }else{
+                if(@$user->is_superadmin){
                     return $next($request);
+                }
 
                 throw UnauthorizedException::forPermissions($permissions);
             }
@@ -55,4 +52,25 @@ class PermissionMiddleware
 
         throw UnauthorizedException::forPermissions($permissions);
     }
+
+
+    public function permissionUser($user)
+    {
+        
+        if(@$user->is_superadmin){
+            //Assign all selected permisson to role
+            $role = Role::first();
+            $permissions = Permission::pluck('id');
+            $role->syncPermissions($permissions);
+        }
+
+        $permissionArray = array();
+        foreach ($user->roles as $role) {
+            foreach ($role->permissions as $key=> $perm) {
+                $permissionArray[$perm->controller][] = $perm->name;
+            }
+        }
+        return $permissionArray;
+    }
+
 }
