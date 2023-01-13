@@ -889,8 +889,8 @@ class UserhomeController extends FrontController
                 'vendor' => $on_sale_product_detail->vendor,
                 'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$on_sale_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                 'compare_at_price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
-                'compare_price' => @$new_product_detail->variant->first()->compare_at_price??0 * $multiply,
-                'price_numeric' =>@$new_product_detail->variant->first()->price??0 * $multiply,
+                'compare_price' => @$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply,
+                'price_numeric' =>@$on_sale_product_detail->variant->first()->price??0 * $multiply,
                 'category' => (!empty($on_sale_product_detail->category) && !empty($on_sale_product_detail->category->categoryDetail) 
                 && !empty($on_sale_product_detail->category->categoryDetail->translation)) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
