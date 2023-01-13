@@ -244,7 +244,7 @@
                                         @endif
                                     @endforeach
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check mb-4">
                                     <input type="checkbox" name="term_and_condition" class="form-check-input @error('term_and_condition') is-invalid @enderror" id="html">
                                     <label for="html" class="mr-3">{{ __('I accept the') }}
                                         <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
@@ -286,7 +286,7 @@
 
 
                                     </div> -->
-                                    <div class="col-md-6 hide position-absolute">
+                                    <div class="col-md-6 position-absolute">
                                         <label for="">Referral Code</label>
                                         <input type="text" class="form-control" id="refferal_code"
                                             placeholder="Refferal Code" name="refferal_code"
@@ -298,7 +298,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="row mt-3">
+                                <div class="row mt-5">
                                     <div class="col-md-12">
                                         <input type="hidden" name="device_type" value="web">
                                         <input type="hidden" name="device_token" value="web">

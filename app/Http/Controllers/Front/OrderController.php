@@ -1462,20 +1462,15 @@ class OrderController extends FrontController
                     }
 
                     $coupon_name = $vendor_cart_product->coupon->promo->name;
-                    if ($vendor_cart_product->coupon->promo->allow_free_delivery) {
-                        $total_discount += $delivery_fee;
-                        $vendor_payable_amount -= $delivery_fee;
-                        $vendor_discount_amount += $delivery_fee;
-                    }
-
-
+                    //-------------Coupon Related discount calculations start here----------------------
+                        //----fixed amount----------
                     if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                         $amount = round($vendor_cart_product->coupon->promo->amount);
                         $total_discount += $amount;
                         $vendor_payable_amount -= $amount;
                         $vendor_discount_amount += $amount;
                     } else {
-
+                    //----Percent amount----------
                         $percentage_amount = ($vendor_payable_amount * $vendor_cart_product->coupon->promo->amount / 100);
                         $total_discount += $percentage_amount;
                         $vendor_payable_amount -= $percentage_amount;
@@ -1486,7 +1481,9 @@ class OrderController extends FrontController
                         $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
                         $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                         $total_discount += $delivery_fee;
+                        $deliveryfeeOnCoupon = 1;
                     }
+                    //-------------Coupon Related discount calculations Ends here----------------------
                 }
 
 
@@ -1540,7 +1537,8 @@ class OrderController extends FrontController
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
                 $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
-                $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $delivery_fee, $OrderVendor->payable_amount, $vendor_subs_disc_percent);
+                $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
+                $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_ifnot_discounted, $OrderVendor->payable_amount, $vendor_subs_disc_percent);
                 $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                 $subs_discount_vendor           = $subs_discount_arr['vendor'];
 
