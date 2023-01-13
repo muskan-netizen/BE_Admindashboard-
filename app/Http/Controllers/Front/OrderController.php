@@ -1461,6 +1461,7 @@ class OrderController extends FrontController
                         $coupon_paid_by = 0;
                     }
 
+                    $coupon_name = $vendor_cart_product->coupon->promo->name;
                     //-------------Coupon Related discount calculations start here----------------------
                         //----fixed amount----------
                     if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
