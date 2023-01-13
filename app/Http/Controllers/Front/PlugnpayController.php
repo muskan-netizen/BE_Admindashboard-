@@ -26,12 +26,9 @@ class PlugnpayController extends FrontController
    {
         $time = time();
 
-        if($request->come_from = 'app'){
-            $user = User::find($request->auth_token);
-            $user_id = $user->id;
-        }else{
-            $user_id = auth()->user()->id;
-        }
+
+        $user_id = auth()->user()->id;
+
         if($request->from == 'cart')
         {
             $time = $request->order_number;
