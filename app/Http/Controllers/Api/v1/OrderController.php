@@ -303,6 +303,7 @@ class OrderController extends BaseController
                         $vendor_discount_amount = 0;
                         $is_restricted = 0;
                         $bid_vendor_discount = 0;
+                        $deliveryfeeOnCoupon = 0;
 
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
@@ -663,6 +664,7 @@ class OrderController extends BaseController
                                 $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
                                 $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                                 $total_discount += $delivery_fee;
+                                $deliveryfeeOnCoupon = 1;
                             }
                             //-------------Coupon Related discount calculations Ends here----------------------
                         }
@@ -696,7 +698,8 @@ class OrderController extends BaseController
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
 
                         $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
-                        $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $delivery_fee, ($vendor_payable_amount - $delivery_fee), $vendor_subs_disc_percent);
+                        $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
+                        $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_ifnot_discounted, ($vendor_payable_amount - $delivery_fee), $vendor_subs_disc_percent);
                         $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                         $subs_discount_vendor           = $subs_discount_arr['vendor'];
 
