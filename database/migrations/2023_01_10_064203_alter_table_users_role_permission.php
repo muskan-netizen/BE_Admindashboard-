@@ -14,9 +14,9 @@ class AlterTableUsersRolePermission extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'role_permission'))
+            if (!Schema::hasColumn('users', 'geo_ids'))
             {
-                $table->integer('role_permission_id')->default(0);
+                $table->longText('geo_ids')->default(0);
             }
         });
     }
@@ -29,7 +29,7 @@ class AlterTableUsersRolePermission extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role_permission_id');
+            $table->dropColumn('geo_ids');
         });
     }
 }

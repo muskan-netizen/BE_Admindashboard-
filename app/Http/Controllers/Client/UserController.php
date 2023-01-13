@@ -29,7 +29,8 @@ use App\Http\Traits\ApiResponser;
 use App\Models\UserDevice;
 use Session;
 use DB;
-use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, RoleOld, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency};
+use Spatie\Permission\Models\Role;
+use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, RoleOld, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency, ServiceArea};
 
 class UserController extends BaseController
 {
@@ -374,6 +375,9 @@ class UserController extends BaseController
     public function newEdit($domain = '', $id)
     {
         $subadmin = User::find($id);
+        $geoIds = explode(',',$subadmin->geo_ids);
+        // dd($geoIds);
+        $userRole = @$subadmin->roles[0]->id;
         $permissions = PermissionsOld::where('status', 1)->whereNotin('id', [4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 22, 23, 24, 25])->get();
         $user_permissions = UserPermissions::where('user_id', $id)->get();
         $vendor_permissions = UserVendor::where('user_id', $id)->pluck('vendor_id')->toArray();
@@ -386,10 +390,11 @@ class UserController extends BaseController
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-        $roles = RoleOld::where('status', 1)
-            // ->where('is_enable_pricing',1)
-            ->get();
-        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions, 'user_docs' => $user_docs, 'user_registration_documents' => $user_registration_documents, 'active_orders' => $active_orders, 'completed_orders' => $completed_orders, 'clientCurrency' => $clientCurrency, 'fixedFee' => $fixedFee, 'getAdditionalPreference' => $getAdditionalPreference, 'roles' => $roles]);
+        $roles = RoleOld::where('status', 1)->get();
+        $rolesNew = Role::where('id','>','0')->get();
+        $serviceArea = ServiceArea::all();
+
+        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions, 'user_docs' => $user_docs, 'user_registration_documents' => $user_registration_documents, 'active_orders' => $active_orders, 'completed_orders' => $completed_orders, 'clientCurrency' => $clientCurrency, 'fixedFee' => $fixedFee, 'getAdditionalPreference' => $getAdditionalPreference, 'roles' => $roles,'rolesNew'=>$rolesNew,'userRole'=>$userRole,'serviceArea'=>$serviceArea,'geoIds'=>$geoIds]);
     }
     public function getUserOrders($id, $order_type)
     {
@@ -428,7 +433,14 @@ class UserController extends BaseController
             'is_admin'      => $request->is_admin,
             'is_superadmin' => 0
         ];
+        $data['geo_ids'] = ((@$request->geo_ids)?implode(',',$request->geo_ids):'');
         $client = $user->update($data);
+
+        //Assign user to role for permission
+        if(@$request->input('role')){
+            DB::table('model_has_roles')->where('model_id',$id)->delete();
+            $user->assignRole($request->input('role'));
+        }
         //for updating permissions
         $removepermissions = UserPermissions::where('user_id', $id)->delete();
         if ($request->permissions) {

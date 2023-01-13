@@ -49,9 +49,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('/webhook/set','AhoyController@setWebhook')->name('setWebhook');
         Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
         Route::get('profile', 'Client\UserController@profile')->name('client.profile');
-
+        
         Route::get('role/add', 'Client\RolePermissionController@indexRole')->name('roles');
         Route::post('role/save', 'Client\RolePermissionController@saveRole')->name('save.roles');
+        Route::POST('role/getRole', 'Client\RolePermissionController@getRole')->name('get.role');
         Route::get('permission/add', 'Client\RolePermissionController@indexPermission')->name('permissions');
         Route::post('permission/save', 'Client\RolePermissionController@savePermission')->name('save.permission');
         Route::post('permission/assign', 'Client\RolePermissionController@assignPermission')->name('assign.permissions');

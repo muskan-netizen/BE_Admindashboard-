@@ -25,16 +25,29 @@ class RolePermissionController extends Controller
 
     public function indexRole(Request $request)
     {
-        $roles = Role::where('id','>','4')->orderBy('id','ASC')->get();
+        $roles = Role::with('permissions')->where('id','>','4')->orderBy('id','ASC')->get();
         $permissions = Permission::get();
-        $options = '';
+        return view('backend/role_permission/index',compact('roles','permissions'));
+    }
+
+    public function getRole(Request $request,$id)
+    {
+        $roles = Role::with('permissions')->findOrFail($request->id);
+        $permissions = Permission::get();
+        $select ='';
+        $selected = "";
         foreach($permissions as $perm)
         {
-                $options .= "<option value='{$perm->name}'>{$perm->controller} ({$perm->name})</option>";
+            if(in_array($perm->id,$roles->permissions->pluck('id')->toArray()))
+            {
+                $selected = 'Selected';
+            }else{
+                $selected = '';
+            }
+            $select .="<option value='{$perm->id}' {$selected}>$perm->name</option>";
         }
 
-        // $users = User::where('status', 1)->get();
-        return view('backend/role_permission/index',compact('roles','options'));
+        return response()->json(['select'=>$select,'role'=>$roles]);
     }
 
     public function saveRole(Request $request)
@@ -46,11 +59,29 @@ class RolePermissionController extends Controller
             if(empty($request->id))
             {
                 $role = Role::create(['name' => $request->input('role_name')]);
+                // $permissions = Permission::whereIn('id',$request->permission)->pluck('id');
+                if(@$request->permission && count($request->permission)>0){
+                // DB::table('model_has_roles')->where('model_id',$id)->delete();
+                // $role->givePermissionTo($request->permission);
+                    //Assign all selected permisson to role
+                    $role->syncPermissions($request->input('permission'));
+                }else{
+                    //Revoke all permisson from role
+                    $role->syncPermissions();
+                }
 
             }else{
 
                 $role = Role::findOrFail($request->id);
-                // dd($role);
+                
+                if(@$request->permission &&  count($request->permission)>0){
+                    //Assign all selected permisson to role
+                    $role->syncPermissions($request->input('permission'));
+                }else{
+                    //Revoke all permisson from role
+                    $role->syncPermissions();
+                }
+                
                 $role->update(['name'=>$request->input('role_name')]);
                 return redirect()->back()->withSuccess('Role Updated.');
             }

@@ -19,44 +19,23 @@ class PermissionMiddleware
      */
     public function handle($request, Closure $next, $permission = null, $guard = null)
     {
+
         $user = auth()->user();
         $authGuard = app('auth')->guard($guard);
-        // return $next($request);
-        // if ($authGuard->guest()) {
-        //     throw UnauthorizedException::notLoggedIn();
-        // }
-
-        // if (! is_null($permission)) {
-        //     $permissions = is_array($permission)
-        //         ? $permission
-        //         : explode('|', $permission);
-        // }
-
-       // $user = auth()->user();
-        // $user = User::with('roles')->where('id',$userId)->get();
-        // dd($user);
-        // $user->assignRole('1');
-        // $role = Role::first();
-        // $permission = Permission::first();
-        // $role->syncPermissions($permission);
-        // dd($user->roles[0]->permissions);
-        //  $role->revokePermissionTo($permission);
-        // $role = $user->getRoleNames(); 
+ 
         $permissionArray = array();
         foreach ($user->roles as $role) {
             foreach ($role->permissions as $key=> $perm) {
                 $permissionArray[$perm->controller][] = $perm->name;
-                // $permissionArray['DashboardController'][] = $perm->name;
             }
         }
-        // dd($permissionArray);
+        
 
             $page = $request->route()->action['controller'];
             $check = explode('\\',$page);
             $cnt = count($check);
             $pageUrl = $check[$cnt-1];
             $check = explode('@',$pageUrl);
-            // dd($check[0]);
             $permissions = [];
             if(isset($permissionArray[$check[0]]))
             {

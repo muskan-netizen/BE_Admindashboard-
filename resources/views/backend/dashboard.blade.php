@@ -113,7 +113,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
             </div>
         </div>
-
+        @can('dashboard-monthRevenue')
         <div class="col-xl-7 col-lg-6">
             <div class="card card-h-100">
                 <!-- month wise data shown start here  -->
@@ -138,11 +138,12 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div><!-- month wise data shown end here  -->
             </div>
         </div>
+        @endcan
 
     </div>
 
     <div class="row">
-
+        @can('dashboard-weekRevenue')
         <div class="col-lg-8">
             <!-- total revenue sec start here -->
             <div class="card alRevenueByLocation">
@@ -206,7 +207,8 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
             </div>
         </div>
-
+        @endcan
+        @can('dashboard-locationRevenue')
         <div class="col-lg-4">
             <div class="card alRevenueByLocation">
                 <div class="card-body">
@@ -264,6 +266,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
             </div>
         </div>
+        @endcan
 
     </div>
 

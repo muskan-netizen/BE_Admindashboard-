@@ -66,9 +66,9 @@
                               @forelse ($roles as $key => $role)
                               <tr>
                                   <td>{{ ++$key }}</td>
-                                  <td>{{ $role->name }}</td>
+                                  <td>{{ @$role->name }}</td>
                                   <td>
-                                    <a class="btn btn-primary btn-sm edit-role" data-name="{{$role->name}}" data-id="{{$role->id}}" href="javascript:;">Edit</a>
+                                    <a class="btn btn-primary btn-sm edit-role" data-name="{{@$role->name}}" data-id="{{$role->id}}" href="javascript:;">Edit</a>
                                       {{-- <a class="btn btn-info" href="{{ route('roles.show',$role->id) }}">Show</a>
                                       @can('role-edit')
                                           <a class="btn btn-primary" href="{{ route('roles.edit',$role->id) }}">Edit</a>
@@ -120,11 +120,13 @@
                                                 </span>
                                         </div>
                                     </div>
-                                    <div class="col-md-12 select2" style="display: none">
+                                    <div class="col-md-12 select2">
                                         <div class="form-group" id="nameInput">
                                         {!! Form::label('title', __('Permission'),['class' => 'control-label']) !!}
-                                        <select class="permissoin-multiple" name="permission[]" multiple="multiple">
-                                            {!! $options !!}
+                                        <select class="permissoin-multiple selectTo" name="permission[]" multiple="multiple">
+                                            @foreach($permissions as $perm)
+                                            <option value="{{$perm->id}}" >{{$perm->name}}</option>
+                                            @endforeach
                                         </select>
                                         </div>
                                     </div>
@@ -145,41 +147,64 @@
 
 
 <script>
+$('.permissoin-multiple').select2();
+var table = $('#vendor_payouts_datatable').DataTable({
+            // rowReorder: true,
+            sort:false
+        });
 
-var table = $('#vendor_payouts_datatable').DataTable( {
-            rowReorder: true
-        } );
+    // table.on( 'row-reorder', function ( e, diff, edit ) {
+    //     var result = 'Reorder started on row: '+edit.triggerRow.data()[1]+'<br>';
+    //     for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
+    //         var rowData = table.row( diff[i].node ).data();
+    //         result += rowData[1]+' updated to be in position '+
+    //             diff[i].newData+' (was '+diff[i].oldData+')<br>';
+    //     }
+    //     $('#result').html( 'Event result:<br>'+result );
+    // });
 
     $(document).delegate(".add-role", "click", function(){
+        $('.role-name').val('');
+        $('.role-id').val('');
         $("#add-role-modal").modal("show");
-
-       
- 
-        table.on( 'row-reorder', function ( e, diff, edit ) {
-            var result = 'Reorder started on row: '+edit.triggerRow.data()[1]+'<br>';
-    
-            for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
-                var rowData = table.row( diff[i].node ).data();
-    
-                result += rowData[1]+' updated to be in position '+
-                    diff[i].newData+' (was '+diff[i].oldData+')<br>';
-            }
-    
-            $('#result').html( 'Event result:<br>'+result );
-        } );
-
     });
 
 
     $(document).on('click', '.edit-role', function(e) {
             var id = $(this).attr('data-id');
-            var name = $(this).attr('data-name');
-            $("#add-role-modal").modal("show");
-            $('.role-name').val(name);
-            $('.role-id').val(id);
-            $('.select2').show();
-            $('.permissoin-multiple').select2();
+            callAjax(id)
         });
+
+        $(document).on('click', '.close', function(e) {
+            $(".select2").hide();
+        });
+
+
+        function callAjax(id)
+        {
+            var id = id;
+            $.ajax({
+                method: "post",
+                headers: {
+                    Accept: "application/json",
+                },
+                url: "{{route('get.role') }}",
+                data: 'id='+id,
+                success: function (response) {
+                    if (response) {
+                        $("#add-role-modal").modal("show");
+                        $('.role-name').val(response.role.name);
+                        $('.role-id').val(response.role.id);
+                        $('.select2').show();
+                        $('.selectTo').html(response.select);
+                        $('.permissoin-multiple').select2();
+                    }else{
+                        alert('Try Again!');
+                    }
+                }
+            });
+            
+        }
 
 </script>
 
