@@ -326,6 +326,7 @@
                                                             @if ($additionalPreference['is_token_currency_enable'])
                                                                 {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->quantity_price)) }}
                                                             @else
+
                                                                 {{ Session::get('currencySymbol') . decimal_format($vendor_product->quantity_price) }}
                                                             @endif
                                                         </div>
@@ -829,6 +830,7 @@
 
 
                                             <p class="total_amt m-0">
+
                                                 @if ($additionalPreference['is_token_currency_enable'])
                                                     {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount)) }}@else{{ Session::get('currencySymbol') . decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount ?? 0) }}
                                                 @endif
