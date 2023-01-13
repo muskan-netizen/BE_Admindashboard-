@@ -1037,6 +1037,7 @@ class OrderController extends FrontController
                 $is_restricted = 0;
                 $additionalPrice=0.00;
                 $quantity_container_charges = 0;
+                $deliveryfeeOnCoupon = 0;
 
                 $passbase_check = VerificationOption::where(['code' => 'passbase', 'status' => 1])->first();
 
