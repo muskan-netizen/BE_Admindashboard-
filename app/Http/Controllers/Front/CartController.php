@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use Adyen\Service\Recurring;
 use DB;
 use Log;
 use Auth;
@@ -415,6 +416,8 @@ class CartController extends FrontController
                 $service_start_date = carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
             }
 
+
+
             $cart_product_detail = [
                 'status'            => '0',
                 'is_tax_applied'    => '1',
@@ -440,6 +443,16 @@ class CartController extends FrontController
             if(checkColumnExists('cart_products','bid_number')){
                 $cart_product_detail['bid_number'] =@$request->bid_number??null;
                 $cart_product_detail['bid_discount'] =@$request->bid_discount??null;
+                // dd($request->bid_number);
+            }
+
+             //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
+             if(checkColumnExists('cart_products','recurring_booking_type')){
+                $cart_product_detail['recurring_booking_type']  =@$request->recurring_booking_type??null;
+                $cart_product_detail['recurring_week_day']      =@$request->recurring_week_day??null;
+                $cart_product_detail['recurring_week_type']     =@$request->recurring_week_type??null;
+                $cart_product_detail['recurring_day_data']      =@$request->recurring_day_data??null;
+                $cart_product_detail['recurring_booking_time']  =@$request->recurring_booking_time??null;
                 // dd($request->bid_number);
             }
 
@@ -499,6 +512,8 @@ class CartController extends FrontController
             }
 
             if($isnew == 1){
+
+
                 $cartProduct = CartProduct::create($cart_product_detail);
                 if(!empty($addon_ids) && !empty($addon_options)){
                     $saveAddons = array();
@@ -523,6 +538,13 @@ class CartController extends FrontController
                 if(checkColumnExists('cart_products','bid_number')){
                     $cartProduct->bid_number = @$request->bid_number??null;
                     $cartProduct->bid_discount = @$request->bid_discount??null;
+                }
+                if(checkColumnExists('cart_products','recurring_booking_type')){
+                    $cartProduct->recurring_booking_type    =   @$request->recurring_booking_type??null;
+                    $cartProduct->recurring_week_day        =   @$request->recurring_week_day??null;
+                    $cartProduct->recurring_week_type       =   @$request->recurring_week_type??null;
+                    $cartProduct->recurring_day_data        =   @$request->recurring_day_data??null;
+                    $cartProduct->recurring_booking_time    =   @$request->recurring_booking_time??null;
                 }
 
                 $cartProduct->save();
@@ -2901,5 +2923,53 @@ class CartController extends FrontController
             }
         }
         return json_encode($today);
+    }
+
+    public function VendorTimeSlot(Request $request){
+        $user       = Auth::user();
+        $dates      = $request->dates;
+        $dates      = explode(",",$dates);
+        $userdates  = [];
+        $dayArr     = ['sunday'=>1,'monday'=>2,'tuesday'=>3,'wednesday'=>4,'thursday'=>5,'friday'=>6,'saturday'=>7];
+        if($dates){
+            foreach($dates as $date){
+                $day = GetDayFromDate($date);
+                $day = $dayArr[$day];
+                array_push($userdates,$day);
+            }
+        }
+        if ($user) {
+            $cart       = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $addresses  = UserAddress::where('user_id', $user->id)->where('status',1)->get();
+            $guest_user = false;
+        } else {
+            $cart       = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $addresses  = collect();
+        }
+        if ($cart) {
+            $cartData   = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        }
+
+        if($cartData){
+            foreach ($cartData as $key => $data) {
+                $vendorWeeklySlotDay = VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$data->vendor_id])->get()->toArray();
+                $checkAvailableSlots = $this->RecurringBookingAvailableSlots($vendorWeeklySlotDay,$userdates);
+                //pr($checkAvailableSlots);
+            }
+        }
+    }
+
+    public function RecurringBookingAvailableSlots($vendorWeeklySlotDay,$userdates){
+        $AvailableSlots = [];
+        if($vendorWeeklySlotDay){
+            foreach($vendorWeeklySlotDay as $slot){
+                if(in_array($slot['day'],$userdates)){
+                    $AvailableSlots[]=['start_time'=>convertDateTimeInTimeZone(date('Y-M-d')." ".$slot['start_time'], Auth()->user()->timezone, 'H:i'),'end_time'=>substr($slot['end_time'],0,-3)];
+                }
+            }
+            return $AvailableSlots;
+        }
+
+
     }
 }

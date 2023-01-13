@@ -18,12 +18,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
 
+if (!function_exists('setUserCode')) {
 function setUserCode(){
     $userCode = session()->has('userCode');
     if(!$userCode){
         $user = ClientData::first();
         session()->put('userCode', $user->code);
     }
+}
 }
 
 // Returns the values of the additional preferences.
@@ -101,7 +103,7 @@ if (!function_exists('getInToken')) {
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             session()->put('compareCurrency', $clientCurrency->doller_compare);
         }
-        
+
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
         if($tokenCurrency == null){
@@ -116,7 +118,7 @@ if (!function_exists('getInToken')) {
 if (!function_exists('getJsToken')) {
     function getJsToken(){
         setUserCode();
-        $redis = Redis::connection();        
+        $redis = Redis::connection();
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
         if($tokenCurrency == null){
@@ -1128,7 +1130,7 @@ if (!function_exists('getServiceTypesCategory')) {
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
             if(isset($set_template)  && $set_template->template_id == 9){
-               
+
                 if(@$client_preference->p2p_check){
                     $vendorType = 'p2p';
                     // session()->put('vendorType', 'p2p');
@@ -1392,7 +1394,7 @@ if( !function_exists('check_influencer_enable') ) {
             return true;
         }
         return false;
-    }   
+    }
 }
 
 if( !function_exists('is_p2p_vendor') ) {
@@ -1486,7 +1488,7 @@ if( !function_exists('generateSlug') ) {
 
 if( !function_exists('printOldOrDbValue') ) {
     function printOldOrDbValue($key, $data=null) {
-        
+
         $value = '';
 
         if( !empty($key) ) {
@@ -1538,6 +1540,14 @@ if( !function_exists('makeCartEmpty') ) {
         CartProductPrescription::where('cart_id', $cartid)->delete();
 
         return true;
+    }
+}
+
+
+if (!function_exists('GetDayFromDate')) {
+    function GetDayFromDate($date)
+    {
+        return strtolower(date('l', strtotime($date)));
     }
 }
 

@@ -88,7 +88,7 @@ display: flex;align-items: center;justify-content: center;border: 1px solid#eee;
 .new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
 justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
 .cart-checkout_btn button{width:100%;}
-.cart-checkout_btn #order_placed_btn, .cart-checkout_btn #recurring_booking_btn{padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
+.cart-checkout_btn #order_placed_btn{padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .cart_delivery a i {font-weight: 600;font-size: 16px;}
 .schedule_btn ul li label.taskschedulebtn {padding: 6px 10px !important;font-size: 10px !important;}
 .cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;}
@@ -120,9 +120,6 @@ font-size: 12px;padding: 6.7px 10px;}
 .login-form #schedule_div input{display:block;width: 100% !important;}
 .login-form #schedule_div input::-webkit-calendar-picker-indicator{color: rgba(0, 0, 0, 0);opacity: 1}
 /*------cart page css end here------ */
-
-.check_recurring{display:block;padding-left:35px;margin-bottom:12px;cursor:pointer;font-size:22px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;position:absolute;top:0;left:0;height:25px;width:25px;background-color:#eee;border-radius:50%}.check_recurring input{position:absolute;opacity:0;cursor:pointer}.check_recurring:hover input~.checkmark{background-color:#ccc}.check_recurring input:checked~.checkmark{background-color:#2196f3}.check_recurring:after{content:"";position:absolute;display:none}.check_recurring input:checked~.checkmark:after{display:block}.check_recurring .checkmark:after{top:9px;left:9px;width:8px;height:8px;border-radius:50%;background:#fff}
-
 @media (max-width:576px){
 .al_body_template_two .show-prescription-doc {width:100%;}
 .item-show-cart h4 {font-size:14px !important;}
@@ -872,39 +869,6 @@ $client_preferences = \App\Models\ClientPreference::first();
   </div>
 
 
-
-  <!--- Recurring Booking Modal --->
-
-  <div class="modal fade recurring_booking_modal" id="recurring_booking_modal" tabindex="-1" aria-labelledby="recurring_booking_modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title" id="recurring_booking_modalLabel">{{__('Recurring Booking')}}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body mt-0 pb-0 pt-4" style="height: 200px">
-                <div class="row">
-                    <div class="col-md-6">
-                        <label class="check_recurring m-0">
-                            {{__('Day/Week/Month')}}
-                            <input type="radio" name="booking_type" value="1">
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="check_recurring m-0">
-                            {{__('Custom Date')}}
-                            <input type="radio" name="booking_type" value="2">
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 
 @section('script')
@@ -1809,6 +1773,12 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
+
+
+
+
+
+
 
 </script>
 @if(in_array('kongapay',$client_payment_options))

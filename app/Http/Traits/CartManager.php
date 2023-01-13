@@ -316,6 +316,7 @@ trait cartManager{
         $processorProduct = [];
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
         $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
+        $isRecurringBooking = checkColumnExists('products','is_recurring_booking') ;
         $this->config();
         $address = [];
         $category_array = [];
@@ -388,7 +389,12 @@ trait cartManager{
         ]);
 
 
-        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        if(checkColumnExists('cart_products','recurring_booking_type')){
+            $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        }else{
+            $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        }
+
 
        //Get All Taxes
        $taxRates = $this->getTaxes();
@@ -553,10 +559,18 @@ trait cartManager{
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-
+                   // pr($prod);
                     $prod->product->ServicePeriods = [];
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
+                    $prod->is_recurring_booking = 0;
+
+                    if($isRecurringBooking ==1 && $prod->product->is_recurring_booking ==1){
+                        $prod->is_recurring_booking   = 1;
+                        $prod->recurring_booking_time = convertDateTimeInTimeZone($prod->recurring_booking_time, $user_timezone, 'H:i');;
+                        $is_recurring_booking         = 1;
+
+                    }
                     if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
                         $vendorData->is_long_term_service = 1;
                         $is_long_term_service = 1;
@@ -617,6 +631,26 @@ trait cartManager{
                         $quantity_price = 0;
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = ($getAdditionalPreference['is_price_by_role'] == 1 ) ? $prod->pvariant->new_price : $prod->pvariant->price??0;
+
+                        // Recurring Booking Enabled
+                        if(checkColumnExists('cart_products','recurring_booking_type')){
+                            if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                                $date       = explode(",",$prod->recurring_day_data);
+                                $start_date = $end_date = '';
+                                if(isset($date[0])){
+                                    $start_date = $date[0];
+                                }
+                                if(isset($date[1])){
+                                    $end_date   = $date[1];
+                                }
+                                if(!empty($start_date) && !empty($end_date)){
+                                    $days_count         = Carbon::parse( $start_date )->diffInDays( $end_date );
+                                    $pvariant_new_price = $price_in_currency * $days_count;
+                                    $price_in_currency  = $pvariant_new_price??0;
+                                }
+                            }
+                        }
+
                         if($cartData[0]->luxury_option_id == 4 ){ // for rental case
                             if(($prod->pvariant->incremental_price_per_min!='' && $prod->pvariant->incremental_price_per_min > 0)){
                                 $prod->additional_price = ($prod->additional_increments_hrs_min / $prod->pvariant->incremental_price_per_min);
@@ -661,6 +695,7 @@ trait cartManager{
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
                     $total_quantity += $prod->quantity;
                     $prod->pvariant->price = decimal_format($price_in_currency);
+
                     $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);
                     $prod->image_url = $this->loadDefaultImage();
                     // $prod->bid_discount = $pro;
@@ -702,10 +737,51 @@ trait cartManager{
 
                                 $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
                                 $addons->option->price_in_cart = $addons->option->price;
+
+                                // Recurring Booking Enabled
+                                if(checkColumnExists('cart_products','recurring_booking_type')){
+                                    if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                                        $date       = explode(",",$prod->recurring_day_data);
+                                        $start_date = $end_date = '';
+                                        if(isset($date[0])){
+                                            $start_date = $date[0];
+                                        }
+                                        if(isset($date[1])){
+                                            $end_date   = $date[1];
+                                        }
+                                        if(!empty($start_date) && !empty($end_date)){
+                                            $days_count                     =  Carbon::parse( $start_date )->diffInDays( $end_date );
+                                            $pvariant_new_price             =  $addons->option->price * $days_count;
+                                            $addons->option->price_in_cart  =  decimal_format($pvariant_new_price);
+                                        }
+                                    }
+                                }
+
                                 $addon_price=$addons->option->price;
                                 $addons->option->price = decimal_format($opt_price_in_currency);
+
                                 $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                                 $addons->option->quantity_price = $opt_quantity_price;
+
+                                // Recurring Booking Enabled
+                                if(checkColumnExists('cart_products','recurring_booking_type')){
+                                    if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                                        $date       = explode(",",$prod->recurring_day_data);
+                                        $start_date = $end_date = '';
+                                        if(isset($date[0])){
+                                            $start_date = $date[0];
+                                        }
+                                        if(isset($date[1])){
+                                            $end_date   = $date[1];
+                                        }
+                                        if(!empty($start_date) && !empty($end_date)){
+                                            $days_count                         =  Carbon::parse( $start_date )->diffInDays( $end_date );
+                                            $pvariant_new_price                 =  $opt_quantity_price * $days_count;
+                                            $addons->option->quantity_price     =  decimal_format($pvariant_new_price);
+                                        }
+                                    }
+                                }
+
                                 $opt_quantity_price_new += $opt_quantity_price;
                                 $payable_amount = $payable_amount + $opt_quantity_price;
                                 $quantity_price = $quantity_price + $opt_quantity_price;
@@ -1032,6 +1108,7 @@ trait cartManager{
 
 
                 $subtotal_amount = $payable_amount;
+
                 // if($PromoFreeDeliver != 1){
                 $payable_amount = $payable_amount + $deliveryCharges_real;
                 //}
@@ -1060,6 +1137,9 @@ trait cartManager{
                 $vendorData->taxable_amount = decimal_format($taxable_amount);
 
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
+
+
+
                 $vendorData->bid_vendor_discount = decimal_format($bid_vendor_discount);
 
                 $bid_total_discount += $vendorData->bid_vendor_discount;

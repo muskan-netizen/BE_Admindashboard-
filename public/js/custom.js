@@ -2171,6 +2171,7 @@ $(document).ready(function () {
         OrderStorage.setStorageSingle('cartData',[]);
         OrderStorage.setStorageSingle('cartProductCount',0);
         OrderStorage.setStorageSingle('LongTermServiceAdded','');
+        OrderStorage.setStorageSingle('RecurringBookingAdded','');
         OrderStorage.setStorageSingle('cartFirstProductId','');
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
@@ -2198,6 +2199,7 @@ $(document).ready(function () {
                             OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);
                             OrderStorage.setStorageSingle('LongTermServiceAdded',cart_details.products[0].is_long_term_service);
+                            OrderStorage.setStorageSingle('RecurringBookingAdded',cart_details.products[0].is_recurring_booking);
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
 
@@ -2888,6 +2890,70 @@ $(document).ready(function () {
             }
         }
 
+        if($('#is_recurring_booking').length > 0){
+            addRecurringBooking =1;
+            if(product_id == OrderStorage.getStorage('cartFirstProductId')  ){
+                Swal.fire({
+                    text: _language.getLanString('Product Already added in cart'),
+                    icon: "warning",
+                    button: "OK",
+                });
+                return false;
+            }
+
+            var booking_type        = $('input[name="booking_type"]:checked').val();
+            var recurring_week_type = '';
+            var recurring_week_day  = '';
+            if(booking_type == 1){
+                var recurringBookingTime      = $("#daily_booking_time").val();
+                var recurringBookingDate      = $("#daily-datepicker").val();
+                var message                   = _language.getLanString('Please select daily dates');
+                if(recurringBookingDate != '' || recurringBookingDate!= undefined){
+                    var date                  = recurringBookingDate.split(',');
+                    if(date[0]){
+                        $('#start_time').val(date[0]);
+                    }
+                    if(date[1]){
+                        $('#end_time').val(date[1]);
+                    }
+                }
+            }else if(booking_type == 2){
+                var recurringBookingTime      = $("#weekly_booking_time").val();
+                var recurringBookingDate      = $("#weekly-datepicker").val();
+                var message                   = _language.getLanString('Please select Weekly dates');
+                var recurring_week_type       =  1;
+                var recurring_week_day        = ['sn','mo'];
+
+            }else if(booking_type == 3){
+                var recurringBookingTime      = $("#month_booking_time").val();
+                var recurringBookingDate      = $("#month-datepicker").val();
+                var message                   = _language.getLanString('Please select monthly dates');
+            }else if(booking_type == 4){
+                var recurringBookingTime      = $("#custom_booking_time").val();
+                var recurringBookingDate      = $("#custom-datepicker").val();
+                var message                   = _language.getLanString('Please select custom dates');
+            }
+
+
+            if(recurringBookingTime == '' || recurringBookingTime== undefined){
+                Swal.fire({
+                    text: _language.getLanString('Please enter booking timing'),
+                    icon: "warning",
+                    button: "OK",
+                });
+                return false;
+            }
+
+            if(recurringBookingDate == '' || recurringBookingDate== undefined){
+                Swal.fire({
+                    text: message,
+                    icon: "warning",
+                    button: "OK",
+                });
+                return false;
+            }
+        }
+
 
         $(".productAddonSetOptions").each(function (index) {
             var min_select = $(this).attr("data-min");
@@ -2920,14 +2986,23 @@ $(document).ready(function () {
         if (!breakOut) {
             var sVendorResponse = checkIsolateSingleVendor(vendor_id);
             if (sVendorResponse.status == 'Success') {
-                var service_period  =  $('#service_period').val();
-                var service_day     =  $('#service_day').val();
-                var service_date     =  $('#service_date').val();
-                var service_start_time   =  $('#service_start_time').val();
+                var service_period          =  $('#service_period').val();
+                var service_day             =  $('#service_day').val();
+                var service_date            =  $('#service_date').val();
+                var service_start_time      =  $('#service_start_time').val();
+                var recurring_booking_type  =  booking_type;
+                var recurring_week_day      =  recurring_week_day;
+                var recurring_week_type     =  recurring_week_type;
+                var recurring_day_data      =  recurringBookingDate;
+                var recurring_booking_time  =  recurringBookingTime;
+
                 if (((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) || (OrderStorage.getStorage('cartProductCount') > 0 &&  addLongTerm ==1 ) ) {
                     var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
                     if(OrderStorage.getStorage('LongTermServiceAdded') == 1 || addLongTerm ==1 ){
                         modelText = _language.getLanString('You can only buy Single Long Term Serivce . Do you want to remove  all your cart products to continue ?');
+                    }
+                    if(OrderStorage.getStorage('RecurringBookingAdded') == 1 || addRecurringBooking ==1 ){
+                        modelText = _language.getLanString('You can only buy Single Recurring Booking Serivce . Do you want to remove  all your cart products to continue ?');
                     }
                    showRemoveCart(modelText);
                 } else {
@@ -2938,13 +3013,13 @@ $(document).ready(function () {
                     var incremental_hrs =  $('#incremental_hrs').val();
                     var total_booking_time =  $('#total_hrs').val();
 
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date);
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date,recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='',recurring_booking_type='',recurring_week_day='',recurring_week_type='',recurring_day_data='',recurring_booking_time='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -2965,7 +3040,12 @@ $(document).ready(function () {
                 "service_period":service_period,
                 "service_day":service_day,
                 "service_date":service_date,
-                "service_start_time":service_start_time
+                "service_start_time":service_start_time,
+                "recurring_booking_type":recurring_booking_type,
+                "recurring_week_day":recurring_week_day,
+                "recurring_week_type":recurring_week_type,
+                "recurring_day_data":recurring_day_data,
+                "recurring_booking_time":recurring_booking_time,
             },
             success: function (response) {
                 if (response.status == 'success') {
@@ -5323,10 +5403,6 @@ function numberWithCommas(x) {
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
 
-/***  Recurring Booking Modal  */
-$(document).on("click", "#recurring_booking_btn", async function () {
-    $('#recurring_booking_modal').modal({
-        backdrop: 'static',
-        keyboard: false
-    })
-});
+
+
+

@@ -468,6 +468,8 @@ Route::group(['middleware' => ['domain']], function () {
 	 */
 	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
+    // get recurring booking vendor time slots
+    Route::post('vendor-time-slot', 'Front\CartController@VendorTimeSlot')->name('recurring.booking.vendor.slot');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 

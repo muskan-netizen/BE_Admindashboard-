@@ -28,6 +28,7 @@ class AddRecurringBookingProductsTable extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             //
+            $table->dropColumn('is_recurring_booking');
         });
     }
 }
