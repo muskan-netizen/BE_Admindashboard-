@@ -642,17 +642,15 @@ class OrderController extends BaseController
 
                             $coupon_name = $vendor_cart_product->coupon->promo->name;
 
-                            if ($vendor_cart_product->coupon->promo->allow_free_delivery) {
-                                $total_discount += $delivery_fee;
-                                $vendor_payable_amount -= $delivery_fee;
-                                $vendor_discount_amount += $delivery_fee;
-                            }
+                            //-------------Coupon Related discount calculations start here----------------------
+                                //----fixed amount----------
                             if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                                 $coupon_discount_amount = $vendor_cart_product->coupon->promo->amount;
                                 $total_discount += $coupon_discount_amount;
                                 $vendor_payable_amount -= $coupon_discount_amount;
                                 $vendor_discount_amount += $coupon_discount_amount;
                             } else {
+                                //----Percent amount----------
                                 $coupon_discount_amount = ($only_products_amount * $vendor_cart_product->coupon->promo->amount / 100);
                                 $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
                                 $total_discount += $final_coupon_discount_amount;
@@ -666,6 +664,7 @@ class OrderController extends BaseController
                                 $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                                 $total_discount += $delivery_fee;
                             }
+                            //-------------Coupon Related discount calculations Ends here----------------------
                         }
                         //Start applying service fee on vendor products total
                         $vendor_service_fee_percentage_amount = 0;
