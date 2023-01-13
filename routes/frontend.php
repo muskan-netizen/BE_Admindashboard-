@@ -152,8 +152,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/gcash/view','Front\GCashController@webView')->name('payment.gcash.webView');
 
     //plugnpay
-    Route::post('payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
-    Route::get('payment/plugnpay/view','Front\PlugnpayController@webView')->name('payment.plugnpay.webView');
+    Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
 
 
 	//Simplify

@@ -8,6 +8,7 @@ trait PlugnpaypaymentManager{
 
   private $plugnpay_publisher_name;
   private $api_url;
+  private $environment;
 
   public function __construct()
   {
@@ -27,6 +28,20 @@ trait PlugnpaypaymentManager{
 
 
   public function createPaymentRequest($data){
+
+
+    if(isset($data['plugnpay_publisher_name'])){
+        $plugnpay_publisher_name = $data['plugnpay_publisher_name'];
+    }
+    if(isset($data['api_url'])){
+        $api_url = $data['api_url'];
+    }
+    if(isset($data['environment'])){
+        $environment = $data['environment'];
+    }else{
+        $environment = $this->environment;
+    }
+
         // Is curl complied into PHP?
         $is_curl_compiled_into_php = "yes";
         // Possible answers are:
@@ -41,22 +56,32 @@ trait PlugnpaypaymentManager{
         //$pnp_post_url = "https://pay1.plugnpay.com/payment/pnpremote.cgi";
         // This should never need to be changed...
 
-        $pnp_post_url =  $this->api_url;
+        $pnp_post_url =  $this->api_url ?? $api_url;
         $order_number =  $data['order_number'];
-        $publisher_name = $this->plugnpay_publisher_name;
+        $publisher_name = $this->plugnpay_publisher_name ?? $plugnpay_publisher_name;
         $publisher_email = "Delivadrinks@gmail.com";
         $card_number = $data['cno'];
         $card_cvv = $data['cv'];
         $card_exp = $data['dt'];
         $card_amount = $data['amount'];
         //$card_name = auth()->user()->name;
-        if($this->environment == 'sandbox'){
+        if($environment == 'sandbox'){
             $card_name   = 'cardtest';
         }else{
-            $card_name   = auth()->user()->name;
+
+            if(isset($data['come_from'])){
+                $card_name   = $data['user']['name'];
+            }else{
+                $card_name   = auth()->user()->name;
+            }
+
         }
 
-        $email = auth()->user()->email??"Delivadrinks@gmail.com";
+        if(isset($data['come_from'])){
+            $email = $data['user']['email'];
+        }else{
+            $email = auth()->user()->email??"Delivadrinks@gmail.com";
+        }
         // billing address info
         $card_address1 = "";
         $card_address2 = "";
@@ -99,7 +124,6 @@ trait PlugnpaypaymentManager{
          $pnp_post_values .= "state=" . $card_state . "&";
          $pnp_post_values .= "country=" . $card_country . "&";
      }
-
 
      /**************************************************************************
        UNLESS YOU KNOW WHAT YOU ARE DOING YOU SHOULD NOT CHANGE THE BELOW CODE

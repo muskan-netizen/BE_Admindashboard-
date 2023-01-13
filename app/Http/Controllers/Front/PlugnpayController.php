@@ -25,30 +25,37 @@ class PlugnpayController extends FrontController
     public function orderNumber($request)
    {
         $time = time();
+
+        if($request->come_from = 'app'){
+            $user = User::find($request->auth_token);
+            $user_id = $user->id;
+        }else{
+            $user_id = auth()->user()->id;
+        }
         if($request->from == 'cart')
         {
             $time = $request->order_number;
-            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'cart','date'=>date('Y-m-d'),'user_id'=>auth()->user()->id]);
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'cart','date'=>date('Y-m-d'),'user_id'=>$user_id]);
 
         }elseif($request->from == 'wallet')
         {
             $time = $request->transaction_id??time();
-            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d'),'user_id'=>$user_id]);
 
         }elseif($request->from == 'tip')
         {
              $time = time();
-             Payment::create(['amount'=>0,'transaction_id'=>$request->order_number.'_'.$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
+             Payment::create(['amount'=>0,'transaction_id'=>$request->order_number.'_'.$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d'),'user_id'=>$user_id]);
 
         }elseif($request->from == 'subscription')
         {
             $time = time();
-            Payment::create(['amount'=>0,'transaction_id'=>$request->subsid.'_'.$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
+            Payment::create(['amount'=>0,'transaction_id'=>$request->subsid.'_'.$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>$user_id]);
 
         }else if($request->from == 'pickup_delivery')
         {
             $time = $request->order_number;
-            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d'),'user_id'=>auth()->user()->id]);
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d'),'user_id'=>$user_id]);
 
         }
         return $time;
@@ -56,6 +63,8 @@ class PlugnpayController extends FrontController
 
     public function beforePayment(Request $request)
     {
+
+
       $response = [];
 
       $number =  $this->orderNumber($request);
@@ -68,8 +77,9 @@ class PlugnpayController extends FrontController
         $request->request->add(['order_number' => $number,'amount'=>$request->amount]);
       }
 
+      \Log::info(json_encode($request->all()));
     	$responsePay = $this->createPaymentRequest($request->all());
-        //\Log::info(json_encode($responsePay));
+        \Log::info(json_encode($responsePay));
         $dataResponse = json_decode($responsePay);
 
         if($dataResponse->FinalStatus == 'badcard'){
@@ -79,11 +89,11 @@ class PlugnpayController extends FrontController
             $response['route']          = '';
             return $response;
         }
-        //\Log::info($dataResponse->FinalStatus);
+        \Log::info($dataResponse->FinalStatus);
 
         if(isset($dataResponse->FinalStatus))
         {
-        //\Log::info('Done');
+        \Log::info('Done');
 
 
         if($request->from=='tip'){
@@ -129,6 +139,9 @@ class PlugnpayController extends FrontController
 
     public function completeOrderCart($request,$payment)
     {
+
+
+
       $order = Order::where('order_number',$payment->transaction_id)->first();
           if(isset($request->FinalStatus) && $request->FinalStatus == 'success')
           {
