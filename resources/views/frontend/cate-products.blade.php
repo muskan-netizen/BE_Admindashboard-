@@ -336,7 +336,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                                     @endif
                                                                 </h3>
                                                                 <div class="product-description_list border-bottom">
-                                                                    <span class="flag-discount">30% Off</span>
+                                                                    @if($dicountPercentage = productDiscountPercentage($data->variant_price, $data->variant_compare_at_price))
+                                                                        <span class="flag-discount">{{$dicountPercentage}}% Off</span>
+                                                                    @endif
                                                                     <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
                                                                     @if(@$data->vendor->is_seller == 1)
                                                                         <h6 class="sold-by d-flex">

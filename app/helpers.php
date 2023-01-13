@@ -1480,6 +1480,17 @@ if( !function_exists('is_category_p2p') ) {
 //     }
 // }
 
+if( !function_exists('productDiscountPercentage()') ) {
+    function productDiscountPercentage($product_price, $product_compare_price)
+    {
+        if($product_compare_price > 0) {
+            $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;
+            return round($discount);
+        }
+        return 0;
+    }
+}
+
 if( !function_exists('generateSlug') ) {
     function generateSlug($name)
     {
