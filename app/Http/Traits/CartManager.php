@@ -566,7 +566,7 @@ trait cartManager{
 
                     if($isRecurringBooking ==1 && $prod->product->is_recurring_booking ==1){
                         $prod->is_recurring_booking   = 1;
-                        $prod->recurring_booking_time = convertDateTimeInTimeZone($prod->recurring_booking_time, $user_timezone, 'H:i');;
+                        $prod->recurring_booking_time = convertDateTimeInTimeZone($prod->recurring_booking_time, $user_timezone, 'H:i');
                         $is_recurring_booking         = 1;
 
                     }

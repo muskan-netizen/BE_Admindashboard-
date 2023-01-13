@@ -1255,6 +1255,7 @@ class OrderController extends FrontController
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
 
+
                     $order_product->save();
 
                     /** for long Term Service */
@@ -1443,7 +1444,7 @@ class OrderController extends FrontController
                             $rate = $tax_rate_detail->tax_rate;
                         }
                     }
-                  
+
                 } //End products loop
 
                 $payable_amount += $vendor_total_container_charges;
@@ -1712,6 +1713,23 @@ class OrderController extends FrontController
                 $order->payment_status = 1;
             }
             $order->bid_discount  = $Order_bid_discount??0;
+
+            // Recurring Booking Functionity
+
+            if(checkColumnExists('cart_products','recurring_booking_type')){
+                if($vendor_cart_product->recurring_booking_type == 1){
+                    $user_timezone          =   $user->timezone ?? 'Asia/Kolkata';
+                    $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+
+                    if(checkColumnExists('orders','recurring_booking_type')){
+                        $order->recurring_booking_type  = $vendor_cart_product->recurring_booking_type;
+                        $order->recurring_week_day      = json_encode($vendor_cart_product->recurring_week_day);
+                        $order->recurring_week_type     = $vendor_cart_product->recurring_week_type;
+                        $order->recurring_day_data      = $vendor_cart_product->recurring_day_data;
+                        $order->recurring_booking_time  = $recurring_booking_time;
+                    }
+                }
+            }
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
 

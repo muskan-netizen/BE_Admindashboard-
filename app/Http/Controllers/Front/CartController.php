@@ -449,7 +449,7 @@ class CartController extends FrontController
              //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
              if(checkColumnExists('cart_products','recurring_booking_type')){
                 $cart_product_detail['recurring_booking_type']  =@$request->recurring_booking_type??null;
-                $cart_product_detail['recurring_week_day']      =@$request->recurring_week_day??null;
+                $cart_product_detail['recurring_week_day']      =@json_encode($request->recurring_week_day)??null;
                 $cart_product_detail['recurring_week_type']     =@$request->recurring_week_type??null;
                 $cart_product_detail['recurring_day_data']      =@$request->recurring_day_data??null;
                 $cart_product_detail['recurring_booking_time']  =@$request->recurring_booking_time??null;
@@ -541,7 +541,7 @@ class CartController extends FrontController
                 }
                 if(checkColumnExists('cart_products','recurring_booking_type')){
                     $cartProduct->recurring_booking_type    =   @$request->recurring_booking_type??null;
-                    $cartProduct->recurring_week_day        =   @$request->recurring_week_day??null;
+                    $cartProduct->recurring_week_day        =   @json_encode($request->recurring_week_day)??null;
                     $cartProduct->recurring_week_type       =   @$request->recurring_week_type??null;
                     $cartProduct->recurring_day_data        =   @$request->recurring_day_data??null;
                     $cartProduct->recurring_booking_time    =   @$request->recurring_booking_time??null;

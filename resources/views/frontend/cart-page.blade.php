@@ -846,7 +846,7 @@
                         </div>
                     @endforeach
                     @if(checkColumnExists('cart_products','recurring_booking_type'))
-                        @if ($vendor_product->recurring_booking_type == 1)
+                        @if ($vendor_product->recurring_booking_type == 1 || $vendor_product->recurring_booking_type == 2 || $vendor_product->recurring_booking_type == 3 || $vendor_product->recurring_booking_type == 4)
                             @php
                                 if($vendor_product->recurring_booking_type == 1){
                                     $booking_type = 'Daily';
@@ -857,6 +857,8 @@
                                 }else if($vendor_product->recurring_booking_type == 4){
                                     $booking_type = 'Custom';
                                 }
+
+
                             @endphp
                             <div class="row">
                                 <div class="col-lg-12 left_box new_cart mt-4 p-3">
@@ -869,7 +871,11 @@
                                         </thead>
                                         <tbody>
                                             <td>{{ $booking_type }}</td>
-                                            <td>{{ $vendor_product->recurring_day_data }}</td>
+                                            <td>{{ $vendor_product->recurring_day_data }}
+                                                @if($vendor_product->recurring_booking_type == 2)
+                                                    {{ collect($vendor_product->recurring_week_day)->implode('-') }}
+                                                @endif
+                                            </td>
                                             <td>
                                                 {{ Carbon\Carbon::parse($vendor_product->recurring_booking_time)->format('g:i A' ) }}
                                             </td>
@@ -913,6 +919,17 @@
                         </div>
                         <input type="hidden" name="without_category_kyc"
                             value="{{ $cart_details->without_category_kyc }}">
+
+                            @if(checkColumnExists('cart_products','recurring_booking_type'))
+                                @if ($vendor_product->recurring_booking_type == 1)
+                                    <input type="hidden" id="is_recurring_booking" value="{{ $vendor_product->recurring_booking_type }}" />
+                                @endif
+                                @else
+                                <input type="hidden" id="is_recurring_booking" value="0" />
+                            @endif
+
+
+
                         @if ($client_preference_detail->category_kyc_documents == 1)
                             @if (@$cart_details->category_kyc_count > 0)
                                 <div class=" col-3 {{ $cart_details->category_kyc_count }}"

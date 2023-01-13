@@ -911,11 +911,15 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
+
+
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
             return false;
         }
+
+
         var delivery_type = 'D';
         var other_taxes_string='';
         if($("#other_taxes_string").val()!=null){
@@ -1701,12 +1705,15 @@ $(document).ready(function () {
         }
         var is_gift = $('#is_gift:checked').val() ?? 0;
         var total_fixed_fee_amount = $("input[name='total_fixed_fee_amount']").val() ?? 0;
-         if ((task_type == 'schedule') && (schedule_dt == '')) {
-            $("#proceed_to_pay_modal").modal('hide');
-            $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-            success_error_alert('error', 'Schedule date time is required', ".cart_response");
-            return false;
-        }
+
+            if ((task_type == 'schedule') && (schedule_dt == '')) {
+                $("#proceed_to_pay_modal").modal('hide');
+                $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                success_error_alert('error', 'Schedule date time is required', ".cart_response");
+                return false;
+            }
+
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -2922,7 +2929,9 @@ $(document).ready(function () {
                 var recurringBookingDate      = $("#weekly-datepicker").val();
                 var message                   = _language.getLanString('Please select Weekly dates');
                 var recurring_week_type       =  1;
-                var recurring_week_day        = ['sn','mo'];
+                var recurring_week_day        = $('.weeknames ul li.active').map(function(){
+                                                    return $(this).text();
+                                                }).get().join(',');
 
             }else if(booking_type == 3){
                 var recurringBookingTime      = $("#month_booking_time").val();
