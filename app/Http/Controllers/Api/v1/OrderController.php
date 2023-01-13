@@ -291,6 +291,7 @@ class OrderController extends BaseController
                     $total_container_charges = 0;
                     $fixed_fee_amount = 0.00;
                     $vendor_total_container_charges = 0;
+                    $deliveryfeeOnCoupon = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $delivery_fee = 0;
                         $deliver_charge = $delivery_fee_charges = 0.00;
@@ -303,6 +304,7 @@ class OrderController extends BaseController
                         $vendor_discount_amount = 0;
                         $is_restricted = 0;
                         $bid_vendor_discount = 0;
+                        $deliveryfeeOnCoupon = 0;
 
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                         if(isset($cart->editingOrder) && !empty($cart->editingOrder))

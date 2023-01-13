@@ -1010,6 +1010,8 @@ class OrderController extends FrontController
             $additionalPrice = 0.00;
             $totalAdditionalPrice = 0.00;
             $is_long_term_order = 0;
+            $deliveryfeeOnCoupon = 0;
+            
             $checkLongTermInDB = checkColumnExists('products', 'is_long_term_service');
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (!empty($request->other_taxes_string)) {
@@ -1037,7 +1039,7 @@ class OrderController extends FrontController
                 $is_restricted = 0;
                 $additionalPrice=0.00;
                 $quantity_container_charges = 0;
-
+                $deliveryfeeOnCoupon = 0;
                 $passbase_check = VerificationOption::where(['code' => 'passbase', 'status' => 1])->first();
 
                 /* Update details related to order vendor */
