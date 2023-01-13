@@ -21,7 +21,7 @@ $applocale = session()->get('applocale');
 @endif
     <footer id="footer" class="footer-light al_footer_template_three">
         <section class="section-b-space light-layout pb-0">
-            <div class="container">
+            <div class="container eccomerce-eight-temp">
                 <div class="row footer-theme partition-f py-lg-3 py-2">
                     @if($client_preference_detail->show_contact_us == 1)
                     <div class="col-12 d-block d-md-none">

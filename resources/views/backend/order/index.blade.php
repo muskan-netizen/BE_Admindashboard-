@@ -197,7 +197,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% if(vendor.subtotal_amount > 0 || vendor.subtotal_amount < 0) { %>
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Total') }}</label>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.subtotal_amount) + parseFloat(vendor.bid_discount)) %></span>
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat ((vendor.subtotal_amount) +(vendor.bid_discount) ) ) %></span>
                                                     </li>
                                                     <% } %>
                                                      <% if(vendor.bid_discount > 0) { %>
@@ -345,7 +345,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 <ul class="price_box_bottom m-0 pl-0 pt-1">
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Total') }}</label>
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.total_amount) + parseFloat(order.bid_discount)) %></span>
+                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat( ( (order.total_amount) +( order.bid_discount)) )) %></span>
                                     </li>
 
                                     <% if(order.bid_discount > 0) { %>
@@ -436,12 +436,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.wallet_amount_used) %></span>
                                     </li>
                                     <% } %>
-                                    <% if(order.total_discount > 0 || order.total_discount < 0) { %>
-                                    <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">{{__('Total Discount')}}</label>
-                                        <span>-{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_discount) %></span>
-                                    </li>
-                                    <% } %>
+                                    
                                     <% if(order.total_discount_calculate > 0 || order.total_discount_calculate < 0) { %>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{__('Total Discount')}}</label>

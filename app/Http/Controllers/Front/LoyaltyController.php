@@ -38,8 +38,8 @@ class LoyaltyController extends FrontController
             $loyalty_points_earned = (!empty($order_loyalty_points_earned_detail->sum_of_loyalty_points_earned)) ? $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned : 0;
             $loyalty_points_used = (!empty($order_loyalty_points_earned_detail->sum_of_loyalty_points_used)) ? $order_loyalty_points_earned_detail->sum_of_loyalty_points_used : 0;
         }
-        $current_loyalty = LoyaltyCard::select('name', 'image')->where('minimum_points', '<=', $balanced_points)->orderBy('minimum_points', 'desc')->first();
-        $upcoming_loyalty = LoyaltyCard::select('name', 'image', 'minimum_points')->where('minimum_points', '>', $balanced_points)->get();
+        $current_loyalty = LoyaltyCard::select('name', 'image')->where('minimum_points', '<=', $balanced_points)->where('status', '=', '0')->orderBy('minimum_points', 'desc')->first();
+        $upcoming_loyalty = LoyaltyCard::select('name', 'image', 'minimum_points')->where('minimum_points', '>', $balanced_points)->where('status', '=', '0')->get();
         if($upcoming_loyalty){
             foreach($upcoming_loyalty as $loyalty){
                 $loyalty->points_to_reach = number_format(($loyalty->minimum_points - $balanced_points), 2, '.', '');
