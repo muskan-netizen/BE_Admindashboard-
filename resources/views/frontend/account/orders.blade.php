@@ -681,7 +681,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                @if ($order->taxable_amount > 0)
+                                                                                @if ($order->taxable_amount + $total_other_taxes > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
@@ -691,7 +691,8 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                @if ($order->taxable_amount > 0)
+                                                                                
+                                                                                @if ($order->total_container_charges > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
@@ -747,30 +748,8 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                @if ($order->subscription_discount > 0)
-                                                                                    <li
-                                                                                        class="d-flex align-items-center justify-content-between">
-                                                                                        <label
-                                                                                            class="m-0">{{ __('Subscription Discount') }}</label>
-                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->subscription_discount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->subscription_discount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                                    </li>
-                                                                                @endif
-                                                                                @if ($order->total_discount_calculate > 0)
-                                                                                    <li
-                                                                                        class="d-flex align-items-center justify-content-between">
-                                                                                        <label
-                                                                                            class="m-0">{{ __('Discount') }}</label>
-                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->total_discount_calculate
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->total_discount_calculate
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                                    </li>
-                                                                                @endif
+                                                                                
+                                                                                
                                                                                 @if ($order->total_delivery_fee > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -783,6 +762,20 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+
+                                                                                @if ($order->total_discount_calculate > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Discount') }}</label>
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->total_discount_calculate
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->total_discount_calculate
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+
                                                                                 @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">

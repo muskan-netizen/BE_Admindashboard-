@@ -137,7 +137,9 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
     padding: 0 10px;
     background-color: transparent;
 }
-
+.al_body_template_eight #al_new_design .pixelstrap li a .nav-cate-img {
+    display: none !important;
+}
 .al_custom_head .al_z_index {
     z-index: 999
 }
@@ -875,8 +877,9 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
     display: block;
     font-style: normal;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 16px;
+    font-weight: 600;
     color: #222;
 }
 
@@ -956,7 +959,7 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
 .al_body_template_eight .al_custom_head .onhover-dropdown span:before,
 .al_custom_head.top-header .header-dropdown li a,
 .al_custom_head.top-header .header-dropdown li span svg path {
-    fill: #e09378;
+    fill: var(--theme-deafult);
 }
 
 .al_body_template_eight .al_custom_head_map_box {
@@ -975,6 +978,7 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
     width: 200px;
     padding: 20px 0;
 }
+.al_body_template_eight  .top-header .header-dropdown li{padding-bottom: 0px;}
 
 .al_body_template_eight li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center span.mr-1 {
     position: relative;
@@ -1036,7 +1040,7 @@ body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
 }
 
 body.al_body_template_eight #al_new_design .pixelstrap ul {
-    top: 70px;
+    top: 40px;
 }
 
 .al_body_template_eight .menu-navigation.alThreeMenu li.al_main_category {
@@ -1142,7 +1146,7 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
 .al_body_template_eight .menu-navigation.alThreeMenu li.al_main_category {
     padding: 0 20px;
     top: -6px;
-    height: 80px;
+    height: 40px;
     display: flex !important;
     align-items: center;
 }

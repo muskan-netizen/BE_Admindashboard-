@@ -797,7 +797,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Live'),['class' => 'control-label']) !!}
                             <select class="selectizeInput form-control" id="is_live" name="is_live">
                                 <option value="0" @if($product->is_live == 0) selected @endif>{{ __('Draft')}}</option>
-                                @if(Auth::user()->is_superadmin == 1)
+                                @if (isset($getAdditionalPreference['is_seller_module']) && $getAdditionalPreference['is_seller_module'] == 1)
+                                    @if(Auth::user()->is_superadmin == 1)
+                                        <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                    @endif
+                                @else
                                     <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
                                 @endif
                             </select>
@@ -1235,19 +1239,19 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 <div class="card-box" style="">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pickup Point For Customer") }}</h5>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label for="title" class="control-label">Pickup Point :</label>
                         </div>
-                        <div class="col-md-2 mb-2">
+                        <div class="col-md-4 mb-2">
                             <input type="radio" class="custom-control-input check is-processor-enable" id="option2" value="0" name="is_processor_enable" {{ @$processorProduct->is_processor_enable == 0 ? 'checked' : '' }}>
                             <label class="custom-control-label" for="option2">{{ __("Vendor") }}</label>
                         </div>
-                        <div class="col-md-7 text-align:left;">
+                        <div class="col-md-4 text-align:left;">
                             <input type="radio" class="custom-control-input check is-processor-enable" id="option1" value="1" name="is_processor_enable" {{ @$processorProduct->is_processor_enable == 1 ? 'checked' : '' }}>
                             <label class="custom-control-label" for="option1">{{ __("Processor") }}</label>
                         </div>
                     </div>
-                    <div class="row processor-enable-row" style="display:{{ @$processorProduct->is_processor_enable == 1 ? 'block;' : 'none;' }}">
+                    <div class="row processor-enable-row" style="display:{{ @$processorProduct->is_processor_enable == 1 ? 'flex;' : 'none;' }}">
                         <div class="col-md-6 mb-2" >
                             {!! Form::label('title', __('Processor Name'),['class' => 'control-label']) !!}
                             <input class="form-control" id="processor-title" required name="processor_title" type="text" value="{{ (@$processorProduct->name) ? $processorProduct->name : '' }}">
@@ -1256,39 +1260,17 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Processor Date'),['class' => 'control-label']) !!}
                             <input class="form-control date-datepicker flatpickr-input" id="processor-date" required name="processor_date" type="text" value="{{ (@$processorProduct->date) ? $processorProduct->date : '' }}">
                         </div>
-                        <div class="col-md-12 mb-2" id="addressInput">
+                        <div class="col-md-12 mb-2" >
                             {!! Form::label('title', __('Processor Address'),['class' => 'control-label']) !!}
-                            <div class="input-group">
-                                <input type="text" name="processor_address" id="edit-address" class="form-control" value="{{ (@$processorProduct->address) ? $processorProduct->address : '' }}" onkeyup="checkAddressString(this,'edit')">
-                                <div class="input-group-append">
-                                    <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="edit"> <i class="mdi mdi-map-marker-radius"></i></button>
-                                </div>
-                            </div>
-                            <span class="invalid-feedback" role="alert">
-                                <strong></strong>
-                            </span>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group mb-3" id="latitudeInput">
-                                {!! Form::label('title', __('Processor Latitude'),['class' => 'control-label']) !!}
-                                <input type="text" name="processor_latitude" id="edit_latitude"class="form-control" value="{{ (@$processorProduct->latitude) ? $processorProduct->latitude : '' }}">
-                                @if($errors->has('latitude'))
-                                <span class="text-danger" role="alert">
-                                    <strong>{{ $errors->first('latitude') }}</strong>
-                                </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group mb-3" id="longitudeInput">
-                                {!! Form::label('title', __('Processor Longitude'),['class' => 'control-label']) !!}
-                                <input type="text" name="processor_longitude" id="edit_longitude" class="form-control" value="{{ (@$processorProduct->longitude) ? $processorProduct->longitude : '' }}">
-                                @if($errors->has('longitude'))
-                                <span class="text-danger" role="alert">
-                                    <strong>{{ $errors->first('longitude') }}</strong>
-                                </span>
-                                @endif
-                            </div>
+                            <input class="form-control"
+                            type="text" placeholder="{{ __('Enter Pickup Location') }}"
+                            name="processor_address" id="pickup_location" value="{{ (@$processorProduct->address) ? $processorProduct->address : '' }}">
+
+                            <input type="hidden" name="processor_latitude" value="{{ (@$processorProduct->latitude) ? $processorProduct->latitude : '' }}" id="pickup_location_latitude_home"/>
+
+                            <input type="hidden"
+                            name="processor_longitude" value="{{ (@$processorProduct->longitude) ? $processorProduct->longitude : '' }}"
+                            id="pickup_location_longitude_home" />
                         </div>
                     </div>
                 </div>
@@ -1520,39 +1502,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 </div>
 <!-- Role based Price (END) -->
 
-<!----Show map Mpdel start -->
-<div id="show-map-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-full-width">
-        <div class="modal-content">
-
-            <div class="modal-header border-bottom">
-                <h4 class="modal-title">{{ __("Select Location") }}</h4>
-                <button type="button" class="close remove-modal-open" data-dismiss="modal" aria-hidden="true">×</button>
-            </div>
-            <div class="modal-body p-4">
-
-                <div class="row">
-                    <form id="task_form" action="#" method="POST" style="width: 100%">
-                        <div class="col-md-12">
-                            <div id="googleMap" style="height: 500px; min-width: 500px; width:100%"></div>
-                            <input type="hidden" name="lat_input" id="lat_map" value="0" />
-                            <input type="hidden" name="lng_input" id="lng_map" value="0" />
-                            <input type="hidden" name="address_map" id="address_map" value="" />
-                            <input type="hidden" name="place_id" id="place_id" value="" />
-                            <input type="hidden" name="for" id="map_for" value="" />
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-info waves-effect waves-light remove-modal-open selectMapLocation">Ok</button>
-                <!--<button type="Cancel" class="btn btn-info waves-effect waves-light cancelMapLocation">cancel</button>-->
-            </div>
-        </div>
-    </div>
-</div>
-<!----Show map Mpdel end -->
-
 <script type="text/template" id="vendorSelectorTemp">
     <tr class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
     <input type="hidden" name="option_id[<%= id-1 %>][]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
@@ -1588,6 +1537,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
 <script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
+{{-- <script src="{{asset('js/cab_booking.js')}}"></script> --}}
 <script>
     CKEDITOR.replace('body_html');
     CKEDITOR.config.height = 150;
@@ -1613,87 +1563,16 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
     }
     //till here
 
-    $(document).on('click', '.showMap', function() {
-        var no = $(this).attr('num');
-        console.log(no);
-
-        var lats = document.getElementById(no + '_latitude').value;
-        var lngs = document.getElementById(no + '_longitude').value;
-        var address = document.getElementById(no+'-address').value;
-        console.log(lats + '--' + lngs);
-
-        document.getElementById('map_for').value = no;
-
-        if (lats == null || lats == '0' || lats =='') {
-            lats = Default_latitude;
-        }
-        if (lngs == null || lngs == '0'  || lngs == '') {
-            lngs = Default_longitude ;
-        }
-        if(address==null){
-            address= '';
-        }
-
-        var myLatlng = new google.maps.LatLng(lats, lngs);
-        var mapProp = {
-            center: myLatlng,
-            zoom: 13,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-
-        };
-        document.getElementById('lat_map').value= lats;
-        document.getElementById('lng_map').value= lngs ;
-        document.getElementById('address_map').value= address ;
-        var infowindow = new google.maps.InfoWindow();
-        var geocoder = new google.maps.Geocoder();
-        var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-        var marker = new google.maps.Marker({
-            position: myLatlng,
-            map: map,
-            title: 'Hello World!',
-            draggable: true
-        });
-        document.getElementById('lat_map').value = lats;
-        document.getElementById('lng_map').value = lngs;
-
-        google.maps.event.addListener(marker, 'dragend', function() {
-            geocoder.geocode({
-            'latLng': marker.getPosition()
-            }, function(results, status) {
-
-            if (status == google.maps.GeocoderStatus.OK) {
-                if (results[0]) {
-                        document.getElementById('lat_map').value = marker.getPosition().lat();
-                        document.getElementById('lng_map').value = marker.getPosition().lng();
-                        document.getElementById('address_map').value= results[0].formatted_address;
-
-                    infowindow.setContent(results[0].formatted_address);
-
-                    infowindow.open(map, marker);
-                }
-            }
+    $("#pickup_location").keydown(function(){
+        var input = document.getElementById('pickup_location');
+        if(input){
+            var autocomplete = new google.maps.places.Autocomplete(input);
+            google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                var place = autocomplete.getPlace();
+                $('#pickup_location_latitude_home').val(place.geometry.location.lat());
+                $('#pickup_location_longitude_home').val(place.geometry.location.lng());
             });
-        });
-        $('#add-customer-modal').addClass('fadeIn');
-        $('#show-map-modal').modal({
-            //backdrop: 'static',
-            keyboard: false
-        });
-
-    });
-
-    $(document).on('click', '.selectMapLocation', function() {
-
-    var mapLat = document.getElementById('lat_map').value;
-    var mapLlng = document.getElementById('lng_map').value;
-    var mapFor = document.getElementById('map_for').value;
-    var address = document.getElementById('address_map').value;
-
-    document.getElementById(mapFor + '_latitude').value = mapLat;
-    document.getElementById(mapFor + '_longitude').value = mapLlng;
-    document.getElementById(mapFor + '-address').value = address;
-
-    $('#show-map-modal').modal('hide');
+        }
     });
 
     $(document).on("change", "#file_type_select", function() {

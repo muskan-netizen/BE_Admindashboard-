@@ -605,8 +605,8 @@ if (!function_exists('SplitTime')) {
         $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
         if ($nowT > $nowE) {
             return [];
-        } elseif ($nowT>$nowS) {
-            $StartTime = date('H:i', strtotime($now));
+        /* } elseif ($nowT>$nowS) {
+            $StartTime = date('H:i', strtotime($now)); */
         } else {
             $StartTime = date('H:i', strtotime($nowA));
         }
@@ -622,7 +622,13 @@ if (!function_exists('SplitTime')) {
             if ($endtm>$EndTime) {
                 $endtm = $EndTime;
             }
-            $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            if ($nowT>$nowS && $StartTime > $nowT){//Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
+            if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
+
             $StartTime += $AddMins;
             $endtm = 0;
         }
@@ -813,8 +819,8 @@ if (!function_exists('SplitTimeTemp')) {
         $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
         if ($nowT > $nowE) {
             return [];
-        } elseif ($nowT>$nowS) {
-            $StartTime = date('H:i', strtotime($now));
+        /* } elseif ($nowT>$nowS) {
+            $StartTime = date('H:i', strtotime($now)); */
         } else {
             $StartTime = date('H:i', strtotime($nowA));
         }
@@ -830,7 +836,13 @@ if (!function_exists('SplitTimeTemp')) {
             if ($endtm>$EndTime) {
                 $endtm = $EndTime;
             }
-            $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+
+            if ($nowT>$nowS && $StartTime > $nowT){//Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
+            if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
             $StartTime += $AddMins+60;
             $endtm = 0;
         }
@@ -1227,7 +1239,9 @@ if (!function_exists('getCategoryTypesServices')) {
      * config('constants.ServiceTypes')
      */
     function getCategoryTypesServices() {
+
         $client_preference = ClientPreference::select('business_type')->first();
+
         switch($client_preference->business_type){
             case "taxi":
                 $typeArray =['pick_drop_service'];

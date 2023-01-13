@@ -460,7 +460,7 @@ class OrderController extends BaseController
                             if(@$vendor_cart_product->bid_number)
                             {
                                 Bid::where('id', $vendor_cart_product->bid_number)->update(['status'=>1]);
-                                $bid_vendor_discount += (($order_product->price * $vendor_cart_product->bid_discount)/100);
+                                $bid_vendor_discount += ((($order_product->price * $vendor_cart_product->quantity)* $vendor_cart_product->bid_discount)/100);
                             }
 
                             if (isset($vendor_cart_product->variant_id) && !empty($vendor_cart_product->variant_id)) {
@@ -705,6 +705,8 @@ class OrderController extends BaseController
                             $order_vendor->subscription_discount_admin  = $subs_discount_admin;
                             $order_vendor->subscription_discount_vendor = $subs_discount_vendor;
                         }
+                        $total_subscription_discount = $total_subscription_discount + $subs_discount_admin + $subs_discount_vendor;
+
                         $order_vendor->is_restricted = $is_restricted;
                         $order_vendor->bid_discount = $bid_vendor_discount??0;
                         $Order_bid_discount += $bid_vendor_discount??0;

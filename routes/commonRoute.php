@@ -3,7 +3,7 @@
 // ADMIN LANGUAGE SWITCH
 Route::group(['middleware' => ['domain', 'webAuth'], 'prefix' => '/common'], function () {
 
-    Route::post('chat/sendNotificationToUser', 'Client\ChatController@sendNotificationToUser')->name('chat.sendNotificationToUser');
+    Route::post('chat/sendNotificationToUser', 'Front\ChatDispatcherNotificationController@sendNotificationToUser')->name('chat.sendNotificationToUser');
     
 
 });
