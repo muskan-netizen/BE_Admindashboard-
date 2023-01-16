@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -320,7 +320,7 @@ class ProductController extends BaseController
         if(checkColumnExists('roles','is_enable_pricing')){
             $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
         }
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module']);
 
         $allRoles = Role::where('status',1)->get();
 
@@ -775,7 +775,7 @@ class ProductController extends BaseController
         //return $request->all();
         $multiArray = array();
         $variantNames = array();
-        $product = Product::where('id', $request->pid)->firstOrFail();
+        $product = Product::where('id', $request->pid)->with(['variant'])->firstOrFail();
         $msgRes = 'Please check variants to create variant set.';
         if (!$request->has('optionIds') || !$request->has('variantIds')) {
             return response()->json(array('success' => 'false', 'msg' => $msgRes));
@@ -816,6 +816,15 @@ class ProductController extends BaseController
             return response()->json(array('success' => 'false', 'msg' => $msgRes));
         }
 
+        if(!empty($product->variant)){
+            if(count($product->variant) == 1){
+                $ordercount = OrderProduct::where('product_id', $product->id)->where('variant_id', $product->variant[0]->id)->count();
+                if($ordercount == 0){
+                    ProductVariant::where('product_id', $product->id)->whereNull('price')->where('title', $request->sku)->delete();
+                }
+            }
+        }
+        
         $makeHtml = $this->combinationHtml($combination, $multiArray, $variantNames, $product->id, $request->sku, $edit);
         return response()->json(array('success' => true, 'html' => $makeHtml));
     }
