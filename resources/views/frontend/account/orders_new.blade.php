@@ -444,7 +444,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                         <label class="items_price">{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                                                     </li>
                                                                                                     <li>
-                                                                                                        <label  class="rating-star single-cancel-order cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                        <label  class="rating-star single-cancel-order cancel_order" data-order_product_id="{{$product->product_id??0}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                             {{ __('Cancel Order') }}
                                                                                                         </label>
                                                                                                     </li>
@@ -2581,6 +2581,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
         event.preventDefault();
         var id = $(this).data('id');
         var order_vendor_id = $(this).data('order_vendor_id');
+        var order_product_id = $(this).data('order_product_id');
         var pickup_cancelling_charges = $(this).data('pickup_cancelling_charges');
         if (typeof pickup_cancelling_charges !== 'undefined' && pickup_cancelling_charges !== false) {
             var order_id = $(this).data('order_id');
@@ -2596,14 +2597,14 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                         confirmButtonText: 'Ok',
                     });
 
-                    $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id+'&pickup_cancelling_charges='+pickup_cancelling_charges+'&order_id='+order_id+'&pickup_order_date='+pickup_order_date+'&order_number='+order_number, function(markup)
+                    $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id +'&order_product_id=' + order_product_id+'&pickup_cancelling_charges='+pickup_cancelling_charges+'&order_id='+order_id+'&pickup_order_date='+pickup_order_date+'&order_number='+order_number, function(markup)
                     {
                         $('#cancel_order').modal('show');
                         $('#cancel-order-form-modal').html(markup);
                     });
                 }
             }else{
-                $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id, function(markup)
+                $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id +'&order_product_id=' + order_product_id, function(markup)
                 {
                     $('#cancel_order').modal('show');
                     $('#cancel-order-form-modal').html(markup);
@@ -2611,7 +2612,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
             }
         }
         else{
-            $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id, function(markup)
+            $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id +'&order_product_id=' + order_product_id, function(markup)
             {
                 $('#cancel_order').modal('show');
                 $('#cancel-order-form-modal').html(markup);
