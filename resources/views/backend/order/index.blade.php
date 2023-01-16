@@ -186,7 +186,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
                                                             <label class="items_price">
                                                                 (<%= product.product_name %>)
-                                                                {{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %></label>
+                                                                {{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %>
+                                                            </label>
+                                                            <% if(order.luxury_option_id == 4) { %>
+                                                                <div class="accept_reject_div">
+                                                                    <input type="checkbox" class="mt-1 productIdsCheck_<%= order.id %>" name="product_id[]" value="<%= product.product_id %>" checked />
+                                                                    <button class="btn btn-danger btn-sm updateVendorProdStatus ml-1" data-order_vendor_product_id="<%= product.product_id %>" data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-order_luxury_option="<%= order.luxury_option_id %>" title="Reject" style="padding: 0px 7px;">x</button>
+                                                                </div>
+                                                            <% } %>
                                                         </div>
                                                     <% }); %>
                                                 </div>
@@ -973,10 +980,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         }
 
-
-
-
-
         // update status
         $(document).on("click", ".update-status", function() {
 
@@ -992,6 +995,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var vendor_id = that.data("vendor_id");
             var count = that.data("count");
             var alertMessage = "";
+            var productIds = [];
+            $('.productIdsCheck_'+order_id+':checked').each(function(i){
+                productIds[i] = $(this).val();
+            });
             if(status_option_id == 2 && that.data('is_alert'))
             {
                 alertMessage = that.data('alert_message');
@@ -1016,6 +1023,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 "_token": "{{ csrf_token() }}",
                                 status_option_id: status_option_id,
                                 order_vendor_id: order_vendor_id,
+                                productIds: productIds,
                             },
                             success: function(response) {
 
@@ -1068,6 +1076,62 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     }
                 });
             }
+        });
+
+        // update vendor Product status
+        $(document).on("click", ".updateVendorProdStatus", function(e) {
+            e.preventDefault()
+            let that = $(this);
+            var count = that.data("count");
+            var status_option_id = that.data("status_option_id");
+            var luxury_option = that.data("order_luxury_option");
+            var order_vendor_id = that.data("order_vendor_id");
+            var order_id = that.data("order_id");
+            var vendor_id = that.data("vendor_id");
+            var count = that.data("count");
+            var order_product_id = that.data("order_vendor_product_id");
+            var alertMessage = "";
+            
+            Swal.fire({
+                title: "{{__('Are you Sure?')}}",
+                // icon: 'info',
+                text: alertMessage,
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: "{{ route('order.changeVendorProductStatus') }}",
+                        type: "POST",
+                        data: {
+                            order_id: order_id,
+                            vendor_id: vendor_id,
+                            vendor_id: vendor_id,
+                            "_token": "{{ csrf_token() }}",
+                            status_option_id: status_option_id,
+                            order_vendor_id: order_vendor_id,
+                            order_product_id: order_product_id,
+                        },
+                        success: function(response) {
+                            if(response.status=='error'){
+                                Swal.fire({
+                                    icon: 'warning',
+                                    text: response.message,
+                                    showCancelButton: false,
+                                    confirmButtonText: 'Ok',
+                                }) 
+                            }else if(response.status=='success'){
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: response.message,
+                                    showCancelButton: false,
+                                    confirmButtonText: 'Ok',
+                                })
+                            }                            
+                        },
+                    });
+                }
+            });
         });
     });
 </script>

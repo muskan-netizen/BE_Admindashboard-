@@ -883,9 +883,10 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
-
         $orderPlaced = true;
         $orderPlacedNo = '';
+        $productIds = $request->productIds;
+        // dd($productIds);
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
          try {
@@ -893,7 +894,7 @@ class OrderController extends BaseController
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
-
+            
             if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 2) { //$request->status_option_id == 3){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been accepted!!!')]);
             }
@@ -1082,6 +1083,34 @@ class OrderController extends BaseController
             ]);
         }
     }
+
+    public function changeVendorProductStatus(Request $request, $domain = '')
+    {
+        try {
+            $timezone = Auth::user()->timezone;
+            $vendor_order_product_status_check = OrderVendorProduct::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('product_id', $request->order_product_id)->where('order_vendor_status_option_id', $request->status_option_id)->first();
+
+            if (@$vendor_order_product_status_check->order_vendor_status_option_id == 3) { //$request->status_option_id == 2){
+                return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
+            }
+
+            $update_status = OrderVendorProduct::where(['order_id' => $request->order_id, 'product_id' => $request->order_product_id])->update([
+                'order_vendor_status_option_id' => $request->status_option_id
+            ]);
+            if($update_status){
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('Order Vendor Product Status Updated Successfully.')
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
     /// ******************   insert In Vendor Order Dispatch Status   ************************ ///////////////
     public function insertInVendorOrderDispatchStatus($request)
     {
