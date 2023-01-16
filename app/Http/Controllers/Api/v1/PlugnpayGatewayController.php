@@ -284,7 +284,6 @@ class PlugnpayGatewayController extends BaseController
             $data['transaction_id'] =  $payment->transaction_id;
 
             $request = new \Illuminate\Http\Request($data);
-
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
@@ -333,10 +332,9 @@ class PlugnpayGatewayController extends BaseController
             $data['order_number']        = $requestdata['order_number'];
             $data['reload_route']        = $requestdata['reload_route'];
             $data['amount']              = $requestdata['amount'];
-
-            $request                    = new \Illuminate\Http\Request($data);
-            $plaseOrderForPickup        = new PickupDeliveryController();
-            $res                        = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+            $request                     = new \Illuminate\Http\Request($data);
+            $plaseOrderForPickup         = new PickupDeliveryController();
+            $res                         = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
 
             if($come_from == 'app')
             {

@@ -610,11 +610,11 @@ class PickupDeliveryController extends BaseController{
                 $payment->save();
             }
 
-            $data['product_id']         =   $productId->product_id;
-            $data['tasks']              =   json_decode($tasks->tasks);
-            $request                    =   new \Illuminate\Http\Request($data);
-
-
+            if($request->payment_option_id = 49){
+                $data['product_id']         =   $productId->product_id;
+                $data['tasks']              =   json_decode($tasks->tasks);
+                $request                    =   new \Illuminate\Http\Request($data);
+            }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$vendor_id);
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = Auth::user();
