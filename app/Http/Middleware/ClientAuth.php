@@ -75,8 +75,8 @@ class ClientAuth{
                 return $next($request);
              }
              else{
-                 Auth::logout();
-                 return redirect('login')->with(['account_blocked' => 'You are unauthorized user.']);
+                //  Auth::logout();
+                //  return redirect('login')->with(['account_blocked' => 'You are unauthorized user.']);
              }
 
              $cl = Client::first();
@@ -91,6 +91,8 @@ class ClientAuth{
 
               Session::put('default_country_code', $countryCode);
               Session::put('default_country_phonecode', $phoneCode);
+
+              return $next($request);
         }
         return redirect('user/login');
 

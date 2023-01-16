@@ -126,6 +126,10 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                             {{__('My Account')}}
                             <ul class="onhover-show-div">
                             @if(Auth::user())
+
+                            <li>
+                                <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                            </li>
                                 @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
                                         <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>

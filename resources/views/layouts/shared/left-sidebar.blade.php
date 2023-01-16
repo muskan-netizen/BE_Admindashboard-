@@ -60,17 +60,19 @@
             </div>
             <p class="text-muted">Admin Head</p>
         </div>
+        
         <div id="sidebar-menu">
             <?php
             $allowed = [];
             if (Auth::user()->is_superadmin == 0) {
-                foreach (Auth::user()->getAllPermissions as $value) {
+                foreach (@Auth::user()->getAllPermissions as $value) {
                     array_push($allowed, $value->permission->slug);
                 }
             } else {
                 array_push($allowed, '99999');
             }
             ?>
+            
             <ul id="side-menu">
                  @if(count(array_intersect($order_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
                 <li>

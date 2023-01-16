@@ -12,9 +12,6 @@ class MainPermissionSeeder extends Seeder{
      * @return void
      */
     public function run(){
-        $permissions_array = [];
-        // $permissions = [
-        //  'DASHBOARD','ORDERS','VENDORS','CUSTOMERS','Profile', 'CUSTOMIZE', 'CONFIGURATIONS', 'BANNER','CATALOG', 'TAX', 'PAYMENT','PROMOCODE', 'LOYALTY CARDS', 'CELEBRITY', 'WEB STYLING', 'APP STYLING', 'Accounting Orders', 'Accounting Loyality', 'Accounting Promo Codes', 'Accounting Taxes', 'Accounting Vendors','Subscriptions Customers', 'Subscriptions Vendors', 'CMS Pages', 'CMS Emails', 'Inquiries','Tools'];
 
         $permissions = array(
             //Dashboard Page
@@ -64,6 +61,99 @@ class MainPermissionSeeder extends Seeder{
             array('name' => 'review-view','controller'=>'ReviewController'),
             array('name' => 'review-product-performance','controller'=>'ReportController'),
 
+
+            //UserController Client Profile Page
+            array('name' => 'setting-profile-view','controller'=>'UserController'),
+            array('name' => 'setting-profile-add','controller'=>'UserController'),
+
+            //ClientPreferenceController Page
+            array('name' => 'setting-customize-view','controller'=>'ClientPreferenceController'),
+            array('name' => 'setting-customize-add','controller'=>'ClientPreferenceController'),
+
+
+             //WebStylingController Page
+             array('name' => 'setting-webstyle-view','controller'=>'WebStylingController'),
+
+             
+             //AppStylingController Page
+             array('name' => 'setting-appstyle-view','controller'=>'AppStylingController'),
+
+
+              //PageController Page
+              array('name' => 'cms-pages-view','controller'=>'PageController'),
+              
+              //EmailController Page
+              array('name' => 'cms-email-view','controller'=>'EmailController'),
+
+
+
+              //NotificationController Page
+              array('name' => 'cms-notification-view','controller'=>'NotificationController'),
+
+              //SmsController Page
+              array('name' => 'cms-sms-view','controller'=>'SmsController'),
+
+              //ReasonController Page
+              array('name' => 'cms-reason-view','controller'=>'ReasonController'),
+
+              //CategoryController Page
+              array('name' => 'category-view','controller'=>'CategoryController'),
+              array('name' => 'category-add','controller'=>'CategoryController'),
+              array('name' => 'variant-view','controller'=>'CategoryController'),
+              array('name' => 'variant-add','controller'=>'CategoryController'),
+              array('name' => 'brand-view','controller'=>'CategoryController'),
+              array('name' => 'brand-add','controller'=>'CategoryController'),
+              array('name' => 'tags-view','controller'=>'CategoryController'),
+              array('name' => 'tags-add','controller'=>'CategoryController'),
+
+
+              //ClientPreferenceController Page
+              array('name' => 'configuration-view','controller'=>'ClientPreferenceController'),
+              array('name' => 'configuration-add','controller'=>'ClientPreferenceController'),
+
+
+              //TaxController Page
+              array('name' => 'tax-view','controller'=>'TaxController'),
+              array('name' => 'tax-add','controller'=>'TaxController'),
+
+
+              //PaymentOption Page
+              array('name' => 'payment-option-view','controller'=>'PaymentOptionController'),
+              array('name' => 'payment-option-add','controller'=>'PaymentOptionController'),
+
+
+              //DeliveryOption Page
+              array('name' => 'delivery-option-view','controller'=>'DeliveryOptionController'),
+              array('name' => 'delivery-option-add','controller'=>'DeliveryOptionController'),
+
+               //Banners Page
+               array('name' => 'banner-option-view','controller'=>'BannerController'),
+               array('name' => 'banner-option-add','controller'=>'BannerController'),
+
+
+                //PromocodeController Page
+                array('name' => 'promo-code-view','controller'=>'PromocodeController'),
+                array('name' => 'promo-code-add','controller'=>'PromocodeController'),
+
+
+                //LoyaltyController Page
+                array('name' => 'loyalty-code-view','controller'=>'LoyaltyController'),
+                array('name' => 'loyalty-code-add','controller'=>'LoyaltyController'),
+
+                //campaign Page
+                array('name' => 'campaign-code-view','controller'=>'CampaignController'),
+                array('name' => 'campaign-code-add','controller'=>'CampaignController'),
+
+
+                //inquiry Page
+                array('name' => 'inquiry-code-view','controller'=>'CampaignController'),
+
+
+                //ToolsController Page
+                array('name' => 'tool-view','controller'=>'ToolsController'),
+
+                //database-logs Page
+                array('name' => 'database-log-view','controller'=>'ToolsController'),
 
 
         );

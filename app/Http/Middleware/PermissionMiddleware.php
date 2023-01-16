@@ -43,7 +43,6 @@ class PermissionMiddleware
                 throw UnauthorizedException::forPermissions($permissions);
             }
 
-
         foreach ($permissions as $permission) {
             if ($authGuard->user()->can($permission)) {
                 return $next($request);
@@ -60,7 +59,7 @@ class PermissionMiddleware
         if(@$user->is_superadmin){
             //Assign all selected permisson to role
             $role = Role::first();
-            $permissions = Permission::pluck('id');
+            $permissions = Permission::all();
             $role->syncPermissions($permissions);
         }
 
