@@ -643,7 +643,7 @@ jQuery(function () {
                             $("#vendor_main_div").append(vendors_template({results: response.data})).show();
                             if(response.data.length == 1){
                                 $('.vendor-list').trigger('click');
-                                $('.table-responsive').remove();
+                                $('.table-responsive').hide();
                             }else{
                                 $('.vendor-list').first().trigger('click');
                             }

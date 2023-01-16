@@ -148,6 +148,7 @@
                                 </li>
                             @endif
 
+
                             @if(count(array_intersect($accounting_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="#sidebaraccounting" data-toggle="collapse">
@@ -212,6 +213,9 @@
                                     </div>
                                 </li>
                             @endif
+
+                          
+
                             @if(Auth::user()->is_superadmin == 1)
                             {{-- @if(count(array_intersect($subscription_permissions, $allowed)) || Auth::user()->is_superadmin == 1) --}}
                                 @if($client_preference->subscription_mode == 1)
@@ -309,6 +313,20 @@
                                     <span> {{ __('Profile') }} </span>
                                 </a>
                             </li>
+                            @if(@getAdditionalPreference(['is_influencer_refer_and_earn'])['is_influencer_refer_and_earn'] == 1)
+                            <li>
+                                <a href="{{route('influencer-refer-earn.index')}}">
+                                    <span class="icon-profile"></span>
+                                    <span> {{ __('Influencer Refer & Earn') }} </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{route('influencer-refer-earn.list')}}">
+                                    <span class="icon-profile"></span>
+                                    <span> {{ __('Influencer User') }} </span>
+                                </a>
+                            </li>
+                            @endif
                         @endif
                         @if(in_array('customize',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>

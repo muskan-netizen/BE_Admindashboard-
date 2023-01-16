@@ -20,7 +20,8 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid,ProcessorProduct};
+
 use App\Models\AutoRejectOrderCron;
 
 use App\Models\{VendorOrderCancelReturnPayment};
@@ -125,6 +126,7 @@ class OrderController extends BaseController
             $language_id = $user->language ?? 1;
             $latitude = '';
             $longitude = '';
+            $Order_bid_discount = 0;
 
             if ($user) {
                 DB::beginTransaction();
@@ -300,6 +302,9 @@ class OrderController extends BaseController
                         $vendor_markup_amount = 0;
                         $vendor_discount_amount = 0;
                         $is_restricted = 0;
+                        $bid_vendor_discount = 0;
+                        $deliveryfeeOnCoupon = 0;
+
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
                         {
@@ -434,6 +439,8 @@ class OrderController extends BaseController
                             $order_product->order_vendor_id = $order_vendor->id;
                             $order_product->order_id = $order->id;
                             $order_product->price = $variant->price;
+                            $order_product->bid_number = @$vendor_cart_product->bid_number ?? null;
+                            $order_product->bid_discount = @$vendor_cart_product->bid_discount ?? null;
                             $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
                             $order_product->start_date_time = $vendor_cart_product->start_date_time;
                             $order_product->end_date_time = $vendor_cart_product->end_date_time;
@@ -449,6 +456,14 @@ class OrderController extends BaseController
                             $order_product->variant_id = $vendor_cart_product->variant_id;
                             $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                             $product_variant_sets = '';
+
+
+                            if(@$vendor_cart_product->bid_number)
+                            {
+                                Bid::where('id', $vendor_cart_product->bid_number)->update(['status'=>1]);
+                                $bid_vendor_discount += ((($order_product->price * $vendor_cart_product->quantity)* $vendor_cart_product->bid_discount)/100);
+                            }
+
                             if (isset($vendor_cart_product->variant_id) && !empty($vendor_cart_product->variant_id)) {
                                 $var_sets = ProductVariantSet::where('product_variant_id', $vendor_cart_product->variant_id)->where('product_id', $vendor_cart_product->product->id)
                                     ->with([
@@ -628,17 +643,15 @@ class OrderController extends BaseController
 
                             $coupon_name = $vendor_cart_product->coupon->promo->name;
 
-                            if ($vendor_cart_product->coupon->promo->allow_free_delivery) {
-                                $total_discount += $delivery_fee;
-                                $vendor_payable_amount -= $delivery_fee;
-                                $vendor_discount_amount += $delivery_fee;
-                            }
+                            //-------------Coupon Related discount calculations start here----------------------
+                                //----fixed amount----------
                             if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                                 $coupon_discount_amount = $vendor_cart_product->coupon->promo->amount;
                                 $total_discount += $coupon_discount_amount;
                                 $vendor_payable_amount -= $coupon_discount_amount;
                                 $vendor_discount_amount += $coupon_discount_amount;
                             } else {
+                                //----Percent amount----------
                                 $coupon_discount_amount = ($only_products_amount * $vendor_cart_product->coupon->promo->amount / 100);
                                 $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
                                 $total_discount += $final_coupon_discount_amount;
@@ -651,7 +664,9 @@ class OrderController extends BaseController
                                 $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
                                 $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                                 $total_discount += $delivery_fee;
+                                $deliveryfeeOnCoupon = 1;
                             }
+                            //-------------Coupon Related discount calculations Ends here----------------------
                         }
                         //Start applying service fee on vendor products total
                         $vendor_service_fee_percentage_amount = 0;
@@ -683,7 +698,8 @@ class OrderController extends BaseController
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
 
                         $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
-                        $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $delivery_fee, ($vendor_payable_amount - $delivery_fee), $vendor_subs_disc_percent);
+                        $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
+                        $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_ifnot_discounted, ($vendor_payable_amount - $delivery_fee), $vendor_subs_disc_percent);
                         $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                         $subs_discount_vendor           = $subs_discount_arr['vendor'];
 
@@ -691,7 +707,11 @@ class OrderController extends BaseController
                             $order_vendor->subscription_discount_admin  = $subs_discount_admin;
                             $order_vendor->subscription_discount_vendor = $subs_discount_vendor;
                         }
+                        $total_subscription_discount = $total_subscription_discount + $subs_discount_admin + $subs_discount_vendor;
+
                         $order_vendor->is_restricted = $is_restricted;
+                        $order_vendor->bid_discount = $bid_vendor_discount??0;
+                        $Order_bid_discount += $bid_vendor_discount??0;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
                             if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -735,7 +755,8 @@ class OrderController extends BaseController
                     //     $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
                     // }
                     $total_discount = $total_discount + $total_subscription_discount;
-                    $order->total_amount = $total_amount+$total_container_charges;
+                    $order->total_amount = ($total_amount + $total_container_charges) - $Order_bid_discount??0;
+                    // $order->total_amount = $total_amount - $Order_bid_discount??0;
                     $order->total_discount = $total_discount;
                     //$order->taxable_amount = $taxable_amount;
                     $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
@@ -782,12 +803,21 @@ class OrderController extends BaseController
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
+                    $payable_amount = $payable_amount - $Order_bid_discount??0;
 
                     if (!$additionalPreferences->is_tax_price_inclusive) {
                         $order->payable_amount = $payable_amount;
                     }else{
                         $order->payable_amount = $payable_amount - $order->taxable_amount;
                     }
+
+                    // Advance Book Token Amount by mohit added by shiekh sohail farm meat
+                    $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+                    if(!empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+                        $advanceAmount = $payable_amount * $getAdditionalPreference['advance_booking_amount_percentage'] / 100;
+                        $order->advance_amount = number_format($advanceAmount, 2);
+                    }
+                    // till here
 
                     $order->fixed_fee_amount = $fixed_fee_amount;
                     $order->total_container_charges = $total_container_charges;
@@ -797,6 +827,7 @@ class OrderController extends BaseController
                     if(checkColumnExists('orders','is_long_term')){
                         $order->is_long_term            = $is_long_term_order;
                     }
+                    $order->bid_discount  = $Order_bid_discount??0;
                     $order->save();
 
                     // pr($res);
@@ -2167,6 +2198,21 @@ class OrderController extends BaseController
                             }
                         }
 
+                        //Mohit sir branch code by sohail
+                        if($order->luxury_option_id == 3){
+                            $processorProduct = ProcessorProduct::where('product_id', $product->product_id)->first();
+                            $product->is_processor_enable = (isset($processorProduct->is_processor_enable) && $processorProduct->is_processor_enable == 1)? true : false;
+                            $product->processor_name = !empty($processorProduct->name)? $processorProduct->name : '';
+                            $product->processor_date = !empty($processorProduct->date)? $processorProduct->date : '';
+                            $product->address = !empty($processorProduct->address)? $processorProduct->address : '';
+                        }else{
+                            $product->is_processor_enable = false;
+                            $product->processor_name = '';
+                            $product->processor_date = '';
+                            $product->address = '';
+                        }
+                        //till here
+
                         $product_addons = [];
                         $variant_options = [];
                         $vendor_total_container_charges = 0;
@@ -2328,6 +2374,19 @@ class OrderController extends BaseController
                 $order['total_amount'] = $order->total_amount;
                 $order['payable_amount'] = $order->payable_amount;
             }
+            //mohit sir branch code added by sohail
+            $advancePayableAmount = 0;
+            $pendingAmount = 0;
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+            if(!empty($order->advance_amount) && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) )
+            {
+                $advancePayableAmount = $order->advance_amount;
+                $pendingAmount = $order['payable_amount'] - $order->advance_amount;
+            }
+            $order['advance_paid_amount'] = number_format((float)$advancePayableAmount, 2, '.', '');
+            $order['pending_amount'] = number_format((float)$pendingAmount, 2, '.', '');
+            //till here
+
            /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
            $total_other_taxes = 0;
            if($order->total_other_taxes!=''){
@@ -2348,6 +2407,56 @@ class OrderController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+
+    //mohit sir brach code added by sohail
+    public function orderUpdate(Request $request){
+        try {
+            $roles = [
+                'order_vendor_product_id'   => 'required',
+                'order_product_old_price' => 'required',
+                'new_product_price'   => 'required',
+                'update_price_reason' => 'required|string'
+            ];
+            $validator = Validator::make($request->all(), $roles);
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message' => __('Price & Reason both fields are required')]);
+            }
+
+            DB::beginTransaction();
+            $orderProduct = OrderProduct::find($request->order_vendor_product_id);
+            $orderProduct->price = decimal_format(isset($request->new_product_price) ? $request->new_product_price : 0);
+            $orderProduct->old_price = isset($request->order_product_old_price) ? ($request->order_product_old_price) : 0;
+            $orderProduct->updated_price_reason = isset($request->update_price_reason) ? ($request->update_price_reason) :0;
+            $orderProduct->save();
+            $orderData = Order::find($orderProduct->order_id);
+            $newPayableAmount = 0;
+            $newTotalAmount   = 0;
+            if($orderProduct->old_price < $orderProduct->price){
+                $newPayableAmount =   ($orderProduct->price - $orderProduct->old_price) + $orderData->payable_amount;
+                $newTotalAmount   = ($orderProduct->price - $orderProduct->old_price) + $orderData->total_amount;
+            }else if($orderProduct->old_price > $orderProduct->price){
+                $newPayableAmount =   $orderData->payable_amount - ($request->order_product_old_price - $request->new_product_price);
+                $newTotalAmount   = $orderData->total_amount - ($request->order_product_old_price - $request->new_product_price);
+            }
+            if(!empty($newPayableAmount) && !empty($newTotalAmount)){
+                $orderData->total_amount   = decimal_format($newTotalAmount);
+                $orderData->payable_amount = decimal_format($newPayableAmount);
+                $orderData->save();
+                DB::commit();
+                return response()->json(['status' => 'success', 'message' => __('Product price updated Successfully.')]);
+            }else{
+                DB::rollback();
+            }
+            return response()->json(['status' => 'error', 'message' => __('Product price are same.')]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+    //till here
 
 
     public function submitEditedOrder(Request $request)

@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
+use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -605,8 +605,8 @@ if (!function_exists('SplitTime')) {
         $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
         if ($nowT > $nowE) {
             return [];
-        } elseif ($nowT>$nowS) {
-            $StartTime = date('H:i', strtotime($now));
+        /* } elseif ($nowT>$nowS) {
+            $StartTime = date('H:i', strtotime($now)); */
         } else {
             $StartTime = date('H:i', strtotime($nowA));
         }
@@ -622,7 +622,13 @@ if (!function_exists('SplitTime')) {
             if ($endtm>$EndTime) {
                 $endtm = $EndTime;
             }
-            $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            if ($nowT>$nowS && $StartTime > $nowT){//Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
+            if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
+
             $StartTime += $AddMins;
             $endtm = 0;
         }
@@ -813,8 +819,8 @@ if (!function_exists('SplitTimeTemp')) {
         $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
         if ($nowT > $nowE) {
             return [];
-        } elseif ($nowT>$nowS) {
-            $StartTime = date('H:i', strtotime($now));
+        /* } elseif ($nowT>$nowS) {
+            $StartTime = date('H:i', strtotime($now)); */
         } else {
             $StartTime = date('H:i', strtotime($nowA));
         }
@@ -830,7 +836,13 @@ if (!function_exists('SplitTimeTemp')) {
             if ($endtm>$EndTime) {
                 $endtm = $EndTime;
             }
-            $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+
+            if ($nowT>$nowS && $StartTime > $nowT){//Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
+            if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
             $StartTime += $AddMins+60;
             $endtm = 0;
         }
@@ -1227,7 +1239,9 @@ if (!function_exists('getCategoryTypesServices')) {
      * config('constants.ServiceTypes')
      */
     function getCategoryTypesServices() {
+
         $client_preference = ClientPreference::select('business_type')->first();
+
         switch($client_preference->business_type){
             case "taxi":
                 $typeArray =['pick_drop_service'];
@@ -1417,6 +1431,16 @@ if( !function_exists('p2p_module_status') ) {
     }
 }
 
+if( !function_exists('check_influencer_enable') ) {
+    function check_influencer_enable() {
+        $additional_preference = getAdditionalPreference(['is_attribute']);
+        if(@$additional_preference['is_attribute']) {
+            return true;
+        }
+        return false;
+    }
+}
+
 if( !function_exists('is_p2p_vendor') ) {
     function is_p2p_vendor($vendor_id = '') {
         $auth_user = auth()->user();
@@ -1506,6 +1530,30 @@ if( !function_exists('generateSlug') ) {
     }
 }
 
+if( !function_exists('printOldOrDbValue') ) {
+    function printOldOrDbValue($key, $data=null) {
+
+        $value = '';
+
+        if( !empty($key) ) {
+            if( !empty(old($key)) ) {
+                // Return Old Value
+                $value = old($key);
+            }
+            elseif( !empty($data) ) {
+                // Return Value from db
+                if( is_object($data) ) {
+                    $value = $data->$key;
+                }
+                elseif( is_array($data) ) {
+                    $value = $data[$key];
+                }
+            }
+            return $value;
+        }
+        return $value;
+    }
+}
 if( !function_exists('get_tiny_url') ) {
     function get_tiny_url($url)  {
         $ch = curl_init();
@@ -1516,6 +1564,26 @@ if( !function_exists('get_tiny_url') ) {
         $data = curl_exec($ch);
         curl_close($ch);
         return $data;
+    }
+}
+
+
+if( !function_exists('makeCartEmpty') ) {
+    function makeCartEmpty()
+    {
+        $cart = Cart::where('user_id',auth()->id())->select('id')->first();
+        $cartid = $cart->id;
+        Cart::where('id', $cartid)->update([
+        'schedule_type' => null, 'scheduled_date_time' => null,
+        'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
+        ]);
+        CaregoryKycDoc::where('cart_id',$cartid)->delete();
+        CartAddon::where('cart_id', $cartid)->delete();
+        CartCoupon::where('cart_id', $cartid)->delete();
+        CartProduct::where('cart_id', $cartid)->delete();
+        CartProductPrescription::where('cart_id', $cartid)->delete();
+
+        return true;
     }
 }
 

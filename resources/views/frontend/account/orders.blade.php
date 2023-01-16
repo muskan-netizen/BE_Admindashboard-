@@ -682,7 +682,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                @if ($order->taxable_amount > 0)
+                                                                                @if ($order->taxable_amount + $total_other_taxes > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
@@ -692,7 +692,8 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                @if ($order->taxable_amount > 0)
+                                                                                
+                                                                                @if ($order->total_container_charges > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
@@ -748,30 +749,8 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                @if ($order->subscription_discount > 0)
-                                                                                    <li
-                                                                                        class="d-flex align-items-center justify-content-between">
-                                                                                        <label
-                                                                                            class="m-0">{{ __('Subscription Discount') }}</label>
-                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->subscription_discount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->subscription_discount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                                    </li>
-                                                                                @endif
-                                                                                @if ($order->total_discount_calculate > 0)
-                                                                                    <li
-                                                                                        class="d-flex align-items-center justify-content-between">
-                                                                                        <label
-                                                                                            class="m-0">{{ __('Discount') }}</label>
-                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->total_discount_calculate
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->total_discount_calculate
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                                    </li>
-                                                                                @endif
+                                                                                
+                                                                                
                                                                                 @if ($order->total_delivery_fee > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -784,6 +763,20 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+
+                                                                                @if ($order->total_discount_calculate > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Discount') }}</label>
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->total_discount_calculate
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format($order->total_discount_calculate
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+
                                                                                 @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -809,6 +802,22 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                     @endif
                                                                                     </span>
                                                                                 </li>
+                                                                                {{-- mohit sir branch code added by sohail --}}
+                                                                                @if (@$order->advance_amount > 0)
+                                                                                    <li
+                                                                                        class="grand_total d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Advance Paid') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format(@$order->advance_amount) }}</span>
+                                                                                    </li>
+                                                                                    <li
+                                                                                        class="grand_total d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Pending Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                {{-- till here --}}
                                                                                 @if ($order->payment_option_id != 1 && $order->is_postpay == 1 && $order->payment_status == 0)
                                                                                 <!-- <li class="align-items-center justify-content-between w-100">
                                                                                     <button id="amount_pay_now" class="btn btn-solid w-100" type="button" data-paymentoptionid="{{$order->payment_option_id}}" data-orderid="{{$order->id}}" data-payableamount="{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}">Pay Now</button>
@@ -1286,6 +1295,22 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         *
                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                 </li>
+                                                                                {{-- mohit sir branch code added by sohail --}}
+                                                                                @if (@$order->advance_amount > 0)
+                                                                                    <li
+                                                                                        class="grand_total d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Advance Paid') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format(@$order->advance_amount) }}</span>
+                                                                                    </li>
+                                                                                    <li
+                                                                                        class="grand_total d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Pending Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                {{-- till here --}}
                                                                             </ul>
 
                                                                             @if ($client_preference_detail->tip_after_order == 1 && $order->tip_amount <= 0 && $payments > 0)
@@ -1685,6 +1710,23 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
+
+                                                                                    {{-- mohit sir branch code added by sohail --}}
+                                                                                    @if (@$order->advance_amount > 0)
+                                                                                        <li
+                                                                                            class="grand_total d-flex align-items-center justify-content-between">
+                                                                                            <label
+                                                                                                class="m-0">{{ __('Advance Paid') }}</label>
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format(@$order->advance_amount) }}</span>
+                                                                                        </li>
+                                                                                        <li
+                                                                                            class="grand_total d-flex align-items-center justify-content-between">
+                                                                                            <label
+                                                                                                class="m-0">{{ __('Pending Amount') }}</label>
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
+                                                                                        </li>
+                                                                                    @endif
+                                                                                    {{-- till here --}}
                                                                                 </ul>
                                                                             </div>
                                                                         </div>
@@ -2033,6 +2075,22 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         - $order->total_discount_calculate *
                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                 </li>
+                                                                                {{-- mohit sir branch code added by sohail --}}
+                                                                                @if (@$order->advance_amount > 0)
+                                                                                    <li
+                                                                                        class="grand_total d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Advance Paid') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format(@$order->advance_amount) }}</span>
+                                                                                    </li>
+                                                                                    <li
+                                                                                        class="grand_total d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Pending Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                {{-- till here --}}
                                                                             </ul>
                                                                         </div>
                                                                     </div>

@@ -638,7 +638,7 @@ $(document).ready( async function () {
                                     dots: false,
                                     infinite: true,
                                     speed: 300,
-                                    slidesToShow: 4,
+                                    slidesToShow: 10,
                                     centerMode: true,
                                     centerPadding: '60px',
                                     slidesToScroll: 4,

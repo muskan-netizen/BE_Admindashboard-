@@ -17,9 +17,10 @@ class DispatcherController extends Controller
         if(@$request->order_panel_id){    
             
             $client_preferences = ClientPreference::first();
+            $DatabaseName = DB::connection()->getDatabaseName();
             $preferences = [
-           'delivery_service_key_url' => $client_preferences->delivery_service_key_url,
-           'delivery_service_key_code' => $client_preferences->delivery_service_key_code
+                'delivery_service_key_url' => $client_preferences->delivery_service_key_url,
+                'delivery_service_key_code' => $client_preferences->delivery_service_key_code
             ];
             $categories = [];
             if(@$client_preferences->delivery_service_key_url && !empty($client_preferences->delivery_service_key_url)){
@@ -32,7 +33,7 @@ class DispatcherController extends Controller
             }
 
         $this->connectDb();
-        SyncToDispatcher::dispatch($request->order_panel_id, $preferences, $categories)->onQueue('sync_dispatcher');
+        SyncToDispatcher::dispatch($request->order_panel_id, $preferences, $categories,$DatabaseName)->onQueue('sync_dispatcher');
         return response()->json([
             'status' => 200,
             'message' => 'Syncing is processing',

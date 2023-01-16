@@ -186,31 +186,30 @@ trait cartManager{
     $loyalty_amount_saved = 0;
     $loyalty_points_used = 0;
     $redeem_points_per_primary_currency = '';
-    $loyalty_card = LoyaltyCard::where('status', '0')->first();
+    $loyalty_card = LoyaltyCard::where('status', '=', '0')->first();
     if ($loyalty_card) {
         $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
     }
 
     $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-    	$balanced_points = ($order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used);
+    $balanced_points = ($order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used);
 
-    	$result = LoyaltyCard::where('minimum_points','<=', $balanced_points)->orderBy('minimum_points', 'desc')->value('minimum_points');
+    $result = LoyaltyCard::where('minimum_points','<=', $balanced_points)->where('status', '=', '0')->orderBy('minimum_points', 'desc')->value('minimum_points');
     /* Getting All User Subscription plans */
     $subscription_features = array();
     $user_subscription = null;
 
-
-        if ($order_loyalty_points_earned_detail && $result) {
-            $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-            if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                if( ($customerCurrency) && ($customerCurrency->is_primary != 1) ){
-                    $loyalty_amount_saved = $loyalty_amount_saved * $customerCurrency->doller_compare;
-                }
+    if ($order_loyalty_points_earned_detail && $result) {
+        $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+        if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+            $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+            if( ($customerCurrency) && ($customerCurrency->is_primary != 1) ){
+                $loyalty_amount_saved = $loyalty_amount_saved * $customerCurrency->doller_compare;
             }
         }
+    }
 
-        return (object)array('loyalty_amount_saved'=>$loyalty_amount_saved??0,'loyalty_points_used'=>$loyalty_points_used??0);
+    return (object)array('loyalty_amount_saved'=>$loyalty_amount_saved??0,'loyalty_points_used'=>$loyalty_points_used??0);
 
   }
 
@@ -436,6 +435,7 @@ trait cartManager{
             $total_deliver_charges = 0 ;
             $total_markup_charges = 0;
             $total_quantity = 0;
+            $deliveryCharges_real = $bid_total_discount = 0;
             $deliveryCharges_real = 0;
             $is_long_term_service = 0;
             $container_charges_tax = 0;
@@ -546,9 +546,12 @@ trait cartManager{
                 $total_fixed_fee_tax = 0;
                 // $total_service_fee = 0;
                 $total_markup_fee_tax = 0;
+                $bid_vendor_discount = 0;
+
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
+                $deliveryfeeOnCoupon = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
 
                     $prod->product->ServicePeriods = [];
@@ -660,10 +663,16 @@ trait cartManager{
                     $prod->pvariant->price = decimal_format($price_in_currency);
                     $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);
                     $prod->image_url = $this->loadDefaultImage();
+                    // $prod->bid_discount = $pro;
                     $prod->pvariant->media_one = isset($prod->pvariant->media) ? $prod->pvariant->media->first() : [];
                     $prod->pvariant->media_second = isset($prod->product->media) ? $prod->product->media->first() : [];
                     $prod->pvariant->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
-                    $prod->quantity_price = decimal_format($quantity_price);
+                    if(@$prod->bid_discount){
+                        $bid_vendor_discount += (($quantity_price * $prod->bid_discount)/100);
+                    }
+                        $prod->quantity_price = decimal_format($quantity_price);
+
+
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
 
@@ -798,7 +807,6 @@ trait cartManager{
                                 $deliveriesNew = new CartController();
 
                                 $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del, $lastMileDate['tags'],$NumberOfroutes);
-                              //  pr($deliveries);
                                 if (isset($deliveries[0])) {
                                     $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                     if (count($deliveries)>1) {
@@ -820,6 +828,7 @@ trait cartManager{
                                         }
                                     }
                                     $select .= '</select>';
+
                                     if($code) {
                                         $new = array_filter($deliveries, function ($var) use ($code) {
                                             return ($var['code'] == $code);
@@ -919,6 +928,7 @@ trait cartManager{
                     if($cross_prods){
                         $crossSell_products->push($cross_prods);
                     }
+
                 }
 
                 // $couponGetAmount = $payable_amount ;
@@ -987,7 +997,8 @@ trait cartManager{
                                 $PromoFreeDeliver = 1;
                               // $coupon_amount_used = $coupon_amount_used ;
                                 $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
-                                $payable_amount = $payable_amount - $deliveryCharges_real;
+                                $deliveryfeeOnCoupon = 1;
+                                $payable_amount = $payable_amount;
                             }
                         }
                     }
@@ -1004,17 +1015,18 @@ trait cartManager{
                     }
                 }
 
+                $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $deliveryCharges_real : 0;
                 if($user){
                     // calculate subscription discount On admin and vendor
                     $vendor_subs_disc_percent       = isset($vendorData->vendor->subscription_discount_percent) ? $vendorData->vendor->subscription_discount_percent : 0;
-                    $subscription_discount_arr      = $this->calCulateSubscriptionDiscount($user->id, $deliveryCharges_real, $payable_amount, $vendor_subs_disc_percent);
+                    $subscription_discount_arr      = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_ifnot_discounted, $payable_amount  +  $deliveryfee_ifnot_discounted, $vendor_subs_disc_percent);
                     $subscription_discount_admin    = $subscription_discount_arr['admin'];
                     $subscription_discount_vendor   = $subscription_discount_arr['vendor'];
                     $subscription_discount_delivery = $subscription_discount_arr['delivery_discount'];
                 }
                 // add total delivery fee
                 if($vendorData->vendor->delivery_charges_tax_id)
-                $total_deliver_charges +=  $deliveryCharges_real;
+                $total_deliver_charges +=  $deliveryfee_ifnot_discounted;
 
                 if($vendorData->vendor->add_markup_price)
                 $total_markup_charges +=  $totalMarkup;
@@ -1022,12 +1034,7 @@ trait cartManager{
 
 
                 $subtotal_amount = $payable_amount;
-                // if($PromoFreeDeliver != 1){
-                $payable_amount = $payable_amount + $deliveryCharges_real;
-                //}
-                //$payable_amount = $payable_amount + $deliver_charge;
-                //Start applying service fee on vendor products total
-
+                $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted;
 
 
                 $vendor_service_fee_percentage_amount = 0;
@@ -1048,10 +1055,13 @@ trait cartManager{
                 $vendorData->discount_amount = decimal_format($discount_amount);
                 $vendorData->discount_percent = decimal_format($discount_percent);
                 $vendorData->taxable_amount = decimal_format($taxable_amount);
-                //Log::info($taxable_amount);
-                // \Log::info($payable_amount);
 
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
+                $vendorData->bid_vendor_discount = decimal_format($bid_vendor_discount);
+
+                $bid_total_discount += $vendorData->bid_vendor_discount;
+
+
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;
                 $vendorData->promo_free_deliver = $PromoFreeDeliver;
@@ -1061,13 +1071,18 @@ trait cartManager{
                 $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
                 $vendorData->delOptions = $select;
 
-                $processorProduct = ProcessorProduct::where(['product_id' => $prod->product_id])->first();
+                //mohit sir branch code added by sohail
+                $processorProduct = [];
+                if(checkTableExists('processor_products')){
+                    $processorProduct = ProcessorProduct::where(['product_id' => $prod->product_id])->first();
+                }
                 if(!empty($processorProduct) && $processorProduct->is_processor_enable == 1){
                     $vendorData->processor_product = $processorProduct;
                 }else{
 
                     $vendorData->processor_product = '';
                 }
+                //till here
 
                 if(isset($serviceArea)){
                     if($serviceArea->isEmpty()){
@@ -1335,6 +1350,8 @@ trait cartManager{
             $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'].',product_tax_fee:'.$total_taxable_amount;;
 
 
+
+            $cart->bid_total_discount = $bid_total_discount??0;
             $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
             $cart->other_taxes = $other_taxes;
             $cart->other_taxes_string = $other_taxes_string;

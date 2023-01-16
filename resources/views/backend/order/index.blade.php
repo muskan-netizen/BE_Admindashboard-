@@ -46,7 +46,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     <div class="row no-gutters order_head mb-2">
                         <div class="col-md-3 alOrderStatus"><h4>{{ __("Order ID") }}</h4>
                         <span>#<%= order.order_number %> </span>
-                        
+
                         <% if(order.vendors[0].exchanged_of_order && order.vendors[0].exchanged_of_order.order_detail) { %>
                             <h4>{{ __("Exchange of Order") }}</h4>
                             <a href="<%= order.vendors[0].exchanged_of_order.vendor_detail_url %>" > <span>#<%= order.vendors[0].exchanged_of_order.order_detail.order_number %></span></a>
@@ -193,10 +193,17 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                             </div>
                                             <div class="col-md-3 mt-md-0 mt-sm-2">
                                                 <ul class="price_box_bottom m-0 p-0">
+
                                                     <% if(vendor.subtotal_amount > 0 || vendor.subtotal_amount < 0) { %>
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Total') }}</label>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span>
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat ((vendor.subtotal_amount) +(vendor.bid_discount) ) ) %></span>
+                                                    </li>
+                                                    <% } %>
+                                                     <% if(vendor.bid_discount > 0) { %>
+                                                    <li class="d-flex align-items-center justify-content-between">
+                                                        <label class="m-0">{{ __('Bid Discount') }}</label>
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.bid_discount) %></span>
                                                     </li>
                                                     <% } %>
                                                     <% if(vendor.additional_price > 0 ) { %>
@@ -295,7 +302,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         </a>
                                         <div id="update-single-status" class="my-2">
 
-                                        
+
                                             {{-- <a class=start_chat data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>">Start Chat</a> --}}
                                                 <% if(vendor.order_status_option_id == 1) { %>
                                                     <% if(order.vendors[0].exchanged_of_order) { %>
@@ -324,7 +331,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Exchange Reject') }}</button>
                                                         <% } else { %>
                                                     <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>
-                                                    <% } %>  
+                                                    <% } %>
                                                     <% } %>
 
                                             </div>
@@ -338,9 +345,16 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 <ul class="price_box_bottom m-0 pl-0 pt-1">
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Total') }}</label>
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_amount) %></span>
+                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat( ( (order.total_amount) +( order.bid_discount)) )) %></span>
                                     </li>
-                                    
+
+                                    <% if(order.bid_discount > 0) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                                 <label class="m-0">{{ __('Bid Discount') }}</label>
+                                                 <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.bid_discount) %></span>
+                                         </li>
+                                      <% } %>
+
                                     <% if(order.additional_price > 0 || order.additional_price < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                                  <label class="m-0">{{ __('Tax') }}</label>
@@ -422,12 +436,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.wallet_amount_used) %></span>
                                     </li>
                                     <% } %>
-                                    <% if(order.total_discount > 0 || order.total_discount < 0) { %>
-                                    <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">{{__('Total Discount')}}</label>
-                                        <span>-{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_discount) %></span>
-                                    </li>
-                                    <% } %>
+                                    
                                     <% if(order.total_discount_calculate > 0 || order.total_discount_calculate < 0) { %>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{__('Total Discount')}}</label>
@@ -442,6 +451,18 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount))%></span>
                                     </li>
+
+                                    {{-- mohit sir branch code added by sohail --}}
+                                    <% if(order.advance_amount > 0) { %>
+                                        <li class="grand_total d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Advance Paid') }} </label>
+                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.advance_amount))%></span>
+                                        </li>
+                                        <li class="grand_total d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Pending Amount') }} </label>
+                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount) - parseFloat(order.advance_amount))%></span>
+                                        </li>
+                                    <% } %>
                                 </ul>
                             </div>
                         </div>
