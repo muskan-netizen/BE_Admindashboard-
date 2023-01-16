@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' =>  __('Address Book')  ])
+@extends('layouts.store', ['title' => __('Refer and earn')  ])
 @section('css')
 <style type="text/css">
     .main-menu .brand-logo {
@@ -112,7 +112,7 @@
                                     <h2>{{ __('Refer and earn') }}</h2>
                             </div>
                             <div class="box-account box-info order-address">
-                                @if( !empty($influencer_category) )
+                                @if( !empty($influencer_category) && count($influencer_category) > 0)
                                     <div class="row">
                                         @foreach($influencer_category as $key => $val)
                                             <div class="col-md-4">
@@ -122,6 +122,8 @@
                                             </div>
                                         @endforeach
                                     </div>
+                                @else
+                                <div class="text-center"><h3><strong>{{__('No Data Found')}}</strong></h3></div>
                                 @endif
                             </div>
                             @else

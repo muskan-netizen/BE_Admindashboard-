@@ -1061,6 +1061,7 @@ class OrderController extends FrontController
 
                 $vendorProductIds = array();
                 $bid_vendor_discount = 0;
+                $vendor_service_fee_percentage_amount = 0;
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
                     //pr($vendor_cart_product->toArray());
@@ -1415,15 +1416,17 @@ class OrderController extends FrontController
                             // if(!in_array($vendor_cart_product->vendor_id, $addonArray)){
                             //     $vendor_payable_amount_for_service = $vendor_payable_amount;
                             // }
+
+                            $quantity_price = $quantity_price + $opt_quantity_price;
                         }
                     }
 
-                    $vendor_service_fee_percentage_amount = 0;
                     if ($vendor_cart_product->vendor->service_fee_percent > 0) {
                         // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
-                        $vendor_service_fee_percentage_amount = ( $quantity_price * $vendor_cart_product->vendor->service_fee_percent) / 100;
-                        $payable_amount += $vendor_service_fee_percentage_amount;
-                        $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                        $service_fee_percentage_amount        = ( $quantity_price * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                        $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
+                        $payable_amount += $service_fee_percentage_amount;
+                        $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
                     }
 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
