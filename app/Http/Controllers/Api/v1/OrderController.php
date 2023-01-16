@@ -2082,7 +2082,7 @@ class OrderController extends BaseController
                     ->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
                         $q1->orWhere(function ($q2) {
-                            $q2->whereIn('payment_option_id', [1]);
+                            $q2->whereIn('payment_option_id', [1,38]);
                         });
                     })
                     ->where('id', $order_id)->select('*', 'id as total_discount_calculate')->first();
@@ -2119,7 +2119,7 @@ class OrderController extends BaseController
                     ->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
                         $q1->orWhere(function ($q2) {
-                            $q2->whereIn('payment_option_id', [1]);
+                            $q2->whereIn('payment_option_id', [1,38]);
                         });
                     });
                     if(!$user->is_admin){
