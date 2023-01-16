@@ -66,6 +66,7 @@
 @php
     $serviceType = Session::get('vendorType');
     $additionalPreference = $getAdditionalPreference;
+   
     $hidden_token = '';
     if ($additionalPreference['is_token_currency_enable'] == 1) {
         $hidden_token = 'd-none';
@@ -523,7 +524,7 @@
                         @endphp --}}
                                         @if (($cart_details->closed_store_order_scheduled == 1 ||
                                             $client_preference_detail->off_scheduling_at_cart != 1) &&
-                                            (in_array($serviceType, ['appointment', 'on_demand']) && $vendor_product->product->mode_of_service == 'schedule'))
+                                            ((in_array($serviceType, ['appointment', 'on_demand'])  ) &&( $vendor_product->product->mode_of_service == 'schedule')))
                                             <hr class="my-1">
                                             @if ($client_preference_detail->business_type != 'laundry')
                                                 @if (@$vendor_product->product->is_slot_from_dispatch != 1 || $vendor_product->product->Requires_last_mile != 1)

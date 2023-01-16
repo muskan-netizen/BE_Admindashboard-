@@ -302,7 +302,7 @@ class CartController extends FrontController
                 $cart_detail['created_by'] = $user_id;
             }
             $cart_detail = [
-                'is_gift' => 1,
+                'is_gift' => 0,
                 'status' => '0',
                 'item_count' => 0,
                 'currency_id' => $client_currency->currency_id,
@@ -415,6 +415,7 @@ class CartController extends FrontController
                 $service_start_date = carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
             }
 
+           
             $cart_product_detail = [
                 'status'            => '0',
                 'is_tax_applied'    => '1',
@@ -435,6 +436,20 @@ class CartController extends FrontController
                 'service_period'      => $request->has('service_period') ? $request->service_period : null,
                 'service_start_date'  => @$service_start_date,
             ];
+             //Check if 
+            if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
+                $client_timezone = DB::table('clients')->first('timezone');
+                $timezone = $user ? $user->timezone : $client_timezone->timezone;
+               
+                $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $slot = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
+                   //   pr($slot);        
+                $cart_product_detail['schedule_type'] = 'schedule';
+                $cart_product_detail['scheduled_date_time'] = @$dataTime;
+                $cart_product_detail['schedule_slot'] = @$slot ?? null;
+                $cart_product_detail['dispatch_agent_price'] = @$request->dispatcherAgentData['agent_price']??null;
+                $cart_product_detail['dispatch_agent_id'] = @$request->dispatcherAgentData['agent_id']??null;
+            }
 
             //Check if BidId and bid dicount coulmn exists in table
             if(checkColumnExists('cart_products','bid_number')){
@@ -2093,7 +2108,7 @@ class CartController extends FrontController
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 
         $expected_vendors = [];
-    //    $expected_vendors = $this->searchProductExpection($cart_details);
+         //    $expected_vendors = $this->searchProductExpection($cart_details);
         $expected_vendor_html = '';
         // if(count($expected_vendors))
         // {

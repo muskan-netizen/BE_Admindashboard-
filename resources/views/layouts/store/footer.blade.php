@@ -260,6 +260,7 @@ if($showSubscriptionPlanPopUp == 1){
 @endphp
 
 <script type="text/javascript">
+    var currencySymbol = "{{ Session::get('currencySymbol') }}";
     var is_hyperlocal = 0;
     var selected_address = 0;
     var vendor_type = "delivery";

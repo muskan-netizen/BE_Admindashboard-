@@ -313,7 +313,7 @@ trait cartManager{
       public function getCartsNew($cart, $address_id=0 , $code = 'D',$schedule_datetime_del='')
       {
         $processorProduct = [];
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        
         $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $this->config();
         $address = [];
@@ -334,7 +334,7 @@ trait cartManager{
         $crossSell_products = collect();
         $couponGetAmount=0;
         $loyalty_amount_saved = 0;
-        $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
+        $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency','is_price_by_role','is_service_product_price_from_dispatch']);
         $user_timezone = 'Asia/Kolkata';
         $giftCardUsed = 0;
         $giftCardAmount = 0;
@@ -388,7 +388,7 @@ trait cartManager{
 
 
         $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-
+     
        //Get All Taxes
        $taxRates = $this->getTaxes();
 
@@ -469,17 +469,17 @@ trait cartManager{
                 $subscription_discount_admin     = 0;
                 $subscription_discount_delivery  = 0;
                 $subscription_discount_vendor    = 0;
-
                 if(!empty($user)){
                     $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
                     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
+                }else{
+                    $vendorData->scheduled_date_time = date('Y-m-d',strtotime($vendorData->scheduled_date_time)) ;
                 }
                 $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
 
                 $slots = (object)$slotsRes['slots'];
                 // this variable for get slot from dispatc
                 $slotsdate = $slotsRes['date'];
-
                 $slotcount =count((array)$slots);
 
                 $vendor_latitude = $vendorData->vendor->latitude ?? 30.71728880;
@@ -552,7 +552,7 @@ trait cartManager{
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-
+                   // pr($prod->toArray());
                     $prod->product->ServicePeriods = [];
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
@@ -615,7 +615,7 @@ trait cartManager{
 
                         $quantity_price = 0;
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
-                        $price_in_currency = ($getAdditionalPreference['is_price_by_role'] == 1 ) ? $prod->pvariant->new_price : $prod->pvariant->price??0;
+                        $price_in_currency = ($additionalPreference['is_price_by_role'] == 1 ) ? $prod->pvariant->new_price : $prod->pvariant->price??0;
                         if($cartData[0]->luxury_option_id == 4 ){ // for rental case
                             if(($prod->pvariant->incremental_price_per_min!='' && $prod->pvariant->incremental_price_per_min > 0)){
                                 $prod->additional_price = ($prod->additional_increments_hrs_min / $prod->pvariant->incremental_price_per_min);
@@ -628,7 +628,9 @@ trait cartManager{
                         }
 
                    // } ///// Notable
-
+                   if(($action == 'on_demand') && checkColumnExists('cart_products', 'dispatch_agent_price') && ($additionalPreference['is_service_product_price_from_dispatch'] ==1 )){
+                        $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
+                    }
                     $totalMarkup += $prod->pvariant->markup_price * $prod->quantity??0;
                     $price_in_doller_compare = $prod->pvariant->price??0;
                     $container_charges_in_currency = $prod->pvariant->container_charges??0;
@@ -646,7 +648,6 @@ trait cartManager{
                         //  $coupon_apply_price+=$price_in_currency;
                         $container_charges_in_doller_compare = $prod->pvariant->container_charges??0;
                         if($customerCurrency && $prod->pvariant){
-
                             // $price_in_currency = $prod->pvariant->price / $divider;
                             $price_in_doller_compare = $price_in_currency * $customerCurrency->doller_compare;
 
@@ -658,6 +659,7 @@ trait cartManager{
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     $sub_total+=$quantity_price+$quantity_container_charges;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
+                   
                     $total_quantity += $prod->quantity;
                     $prod->pvariant->price = decimal_format($price_in_currency);
                     $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);

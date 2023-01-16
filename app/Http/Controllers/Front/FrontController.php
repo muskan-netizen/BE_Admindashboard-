@@ -752,6 +752,7 @@ class FrontController extends Controller
         $client_data = Client::first();
         $countries = Country::get();
         $langId = Session::get('customerLanguage');
+        $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
         $guest_user = true;
         if ($user) {
             $cart = Cart::select('id', 'is_gift', 'item_count','scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
@@ -821,6 +822,7 @@ class FrontController extends Controller
             $cateTypeId = $productDetail ? ($productDetail->productcategory ? $productDetail->productcategory->type_id : '') : '';
             $is_slot_from_dispatch = $productDetail ? $productDetail->is_slot_from_dispatch  : '';
             $last_mile_check = $productDetail ? $productDetail->Requires_last_mile  : '';
+            $cartData[$key]->cateTypeId = $cateTypeId;
             if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ($last_mile_check == 1)){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
@@ -851,34 +853,34 @@ class FrontController extends Controller
                 $cartData[$key]->is_dispatch_slot = 1 ;
             }else{
                 $time_slots = [];
-                if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
-                    $start_time = new DateTime("now", new  DateTimeZone($timezone) );
-                    $today = $start_time->format('Y-m-d');
-                    if($today < $selectedDate){
-                        $curr_time = date('Y-m-d 00:00');
-                    }else{
-                        $daten = new DateTime("now", new DateTimeZone($timezone) );
-                        $curr_time = $daten->format('Y-m-d h:i');
-                    }
-                    $start_time = $start_time->format('Y-m-d H:m');
-                    $end_time = date('Y-m-d 23:59');
-                    $timing   = $this->SplitTime($curr_time, $end_time, "60");
-                    foreach ($timing as $k=> $slt) {
-                        if($k+1 < count($timing)){
-                            $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
-                            $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
-                            $time_slots[] =  $viewSlot;
+                if(($cateTypeId == 8) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1 )){ // no need to geting verdor slot when we get driver price
+                    if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
+                        $start_time = new DateTime("now", new  DateTimeZone($timezone) );
+                        $today = $start_time->format('Y-m-d');
+                        if($today < $selectedDate){
+                            $curr_time = date('Y-m-d 00:00');
+                        }else{
+                            $daten = new DateTime("now", new DateTimeZone($timezone) );
+                            $curr_time = $daten->format('Y-m-d h:i');
                         }
+                        $start_time = $start_time->format('Y-m-d H:m');
+                        $end_time = date('Y-m-d 23:59');
+                        $timing   = $this->SplitTime($curr_time, $end_time, "60");
+                        foreach ($timing as $k=> $slt) {
+                            if($k+1 < count($timing)){
+                                $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
+                                $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                                $time_slots[] =  $viewSlot;
+                            }
+                        }
+                    }else{
+                        $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
+                        $slots = (object)$slotsRes['slots'];
+                        $time_slots =  $slots;
                     }
-                }else{
-                    $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
-                    $slots = (object)$slotsRes['slots'];
-                    $time_slots =  $slots;
-                  
-
                 }
-
-                
+           
+                //$cartData->is_service_product_price_from_dispatch  = $additionalPreference['is_service_product_price_from_dispatch'] ;
                 $cartData[$key]->timeSlots = $time_slots;
                 $cartData[$key]->dispatchAgents = [];
             }

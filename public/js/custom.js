@@ -3716,7 +3716,8 @@ $(document).ready(function () {
     }
 
     // on demand add to cart
-    function addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that) {
+    // dispatcherAgentData coming where we selecte price from dispatchr driver
+    function addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that,dispatcherAgentData="") {
         $.ajax({
             type: "post",
             dataType: "json",
@@ -3727,7 +3728,8 @@ $(document).ready(function () {
                 "product_id": product_id,
                 "addonoptID": addonoptids,
                 "quantity": 1,
-                "variant_id": variant_id,
+                "variant_id"    : variant_id,
+                "dispatcherAgentData"    : dispatcherAgentData,
             },
             success: function (response) {
                 if (response.status == 'success') {
