@@ -334,14 +334,16 @@ class PlugnpayGatewayController extends BaseController
             $data['reload_route']        = $requestdata['reload_route'];
             $data['amount']              = $requestdata['amount'];
 
-            $request = new \Illuminate\Http\Request($data);
-            $plaseOrderForPickup = new PickupDeliveryController();
-            $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+            $request                    = new \Illuminate\Http\Request($data);
+            $plaseOrderForPickup        = new PickupDeliveryController();
+            $res                        = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+
             if($come_from == 'app')
             {
                 $response['status']         = 'Success';
                 $response['msg']            = 'Success Added Pickup Delivery.';
                 $response['payment_from']   = 'pickup_delivery';
+                $response['data']           = $res;
             }
 
             return response()->json($response,200);

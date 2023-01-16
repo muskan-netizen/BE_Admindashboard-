@@ -609,6 +609,12 @@ class PickupDeliveryController extends BaseController{
                 $payment->type = 'pickup/delivery';
                 $payment->save();
             }
+
+            $data['product_id']         =   $productId->product_id;
+            $data['tasks']              =   json_decode($tasks->tasks);
+            $request                    =   new \Illuminate\Http\Request($data);
+
+
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$vendor_id);
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = Auth::user();
@@ -733,7 +739,7 @@ class PickupDeliveryController extends BaseController{
                             'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI'),
                             'no_seats_for_pooling' =>(isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
                             'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
-                            'available_seats' => $product->seats_for_booking,
+                            'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
                         ];
 
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
