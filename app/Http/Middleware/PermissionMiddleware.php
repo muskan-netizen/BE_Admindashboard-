@@ -39,7 +39,6 @@ class PermissionMiddleware
                 if(@$user->is_superadmin){
                     return $next($request);
                 }
-
                 throw UnauthorizedException::forPermissions($permissions);
             }
 
@@ -56,12 +55,12 @@ class PermissionMiddleware
     public function permissionUser($user)
     {
         
-        if(@$user->is_superadmin){
-            //Assign all selected permisson to role
-            $role = Role::first();
-            $permissions = Permission::all();
-            $role->syncPermissions($permissions);
-        }
+        // if(@$user->is_superadmin){
+        //     //Assign all selected permisson to role
+        //     $role = Role::first();
+        //     $permissions = Permission::all();
+        //     $role->syncPermissions('');
+        // }
 
         $permissionArray = array();
         foreach ($user->roles as $role) {

@@ -155,6 +155,8 @@ class MainPermissionSeeder extends Seeder{
                 //database-logs Page
                 array('name' => 'database-log-view','controller'=>'ToolsController'),
 
+                //Role Permission page
+                array('name' => 'role-permission','controller'=>'RolePermissionController'),
 
         );
 

@@ -483,7 +483,7 @@ class UserController extends BaseController
     public function profile()
     {
         $countries = Country::all();
-        $client = Client::where('code', Auth::user()->code)->first();
+        $client = Client::first();
         $tzlist = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
 
         $tzlist = Timezone::whereIn('timezone', $tzlist)->get();
