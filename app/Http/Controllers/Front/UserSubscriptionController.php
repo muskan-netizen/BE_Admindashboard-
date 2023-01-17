@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Mail; 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{User, UserAddress, ClientPreference, Client, ClientCurrency, SubscriptionPlansUser, SubscriptionFeaturesListUser, SubscriptionInvoicesUser, SubscriptionInvoiceFeaturesUser, Payment, PaymentOption};
@@ -72,7 +72,7 @@ class UserSubscriptionController extends FrontController
         }
         return view('frontend.account.userSubscriptions')->with(['navCategories'=>$navCategories, 'subscription_plans'=>$sub_plans, 'subscription'=>$active_subscription, 'clientCurrency'=>$clientCurrency]);
     }
-    
+
     /**
      * select user subscription.
      *
@@ -105,7 +105,7 @@ class UserSubscriptionController extends FrontController
         else{
             return response()->json(["status"=>"Error", "message" => __("Subscription plan not active")]);
         }
-        $code = array('stripe', 'dpo', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti');
+        $code = array('stripe', 'dpo', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti','mtn_momo','plugnpay');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {

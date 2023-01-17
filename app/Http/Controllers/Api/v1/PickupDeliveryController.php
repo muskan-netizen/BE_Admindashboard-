@@ -34,13 +34,13 @@ class PickupDeliveryController extends BaseController{
             if($vid == 0){
                 return response()->json(['error' => __('No record found.')], 404);
             }
-            
+
             $preferences = ClientPreference::where('id', '>', 0)->first();
             $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
-            
+
             $user = Auth::user();
             $userid = $user->id;
-            
+
             $schedule_datetime_del = '';
             if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
                 $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
@@ -82,7 +82,7 @@ class PickupDeliveryController extends BaseController{
                     if($cid > 0){
                         $products = $products->where('products.category_id', $cid);
                     }
-                    
+
                     if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
                     {
                         Log::info($request->no_seats_for_pooling);
@@ -114,7 +114,10 @@ class PickupDeliveryController extends BaseController{
                         $product->toll_fee   = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
                     }else{
                         $product->tags_price = decimal_format($product->tags_price);
-                        $product->toll_fee   = decimal_format($tags_price['toll_fee']);
+                        if(isset($tags_price['toll_fee'])){
+                            $product->toll_fee   = decimal_format($tags_price['toll_fee']);
+                        }
+
                     }
                     $product->total_tags_price = $product->tags_price + $product->toll_fee + $product->service_charge_amount;
                     foreach ($product->variant as $k => $v) {
@@ -227,7 +230,7 @@ class PickupDeliveryController extends BaseController{
      public function getDeliveryFeeDispatcher($request, $product=null, $schedule_datetime_del=''){
         try {
                 $dispatch_domain = $this->checkIfPickupDeliveryOn();
-                if ($dispatch_domain && $dispatch_domain != false) 
+                if ($dispatch_domain && $dispatch_domain != false)
                 {
                     $all_location = array();
                     $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI')];
@@ -379,8 +382,8 @@ class PickupDeliveryController extends BaseController{
                 if(checkColumnExists('orders', 'is_postpay')){
                     $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
                 }
-                
-                
+
+
 
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
@@ -389,7 +392,7 @@ class PickupDeliveryController extends BaseController{
                 $order->scheduled_date_time = $schedule_datetime_del??NULL;
                 $order->save();
 
-                // save pickup delivery task 
+                // save pickup delivery task
                 $order_location = new OrderLocations();
                 $order_location->order_id = $order->id;
                 $order_location->product_id = $request->product_id;
@@ -528,13 +531,13 @@ class PickupDeliveryController extends BaseController{
                         $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                     }
                 }
-                
+
                 $order->total_delivery_fee = $total_delivery_fee;
                 $order->loyalty_points_used = $loyalty_points_used;
                 $order->loyalty_amount_saved = $loyalty_amount_saved;
                 $order->total_toll_amount    = $total_toll_amount;
                 $order->total_service_fee    = $total_service_fee;
-                
+
 
                 $now = Carbon::now()->toDateTimeString();
                 $user_subscription = SubscriptionInvoicesUser::with('features')
@@ -555,7 +558,7 @@ class PickupDeliveryController extends BaseController{
                 }
 
 
-                
+
                 $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                 if (isset($request->transaction_id) && (!empty($request->transaction_id))) {
@@ -606,6 +609,12 @@ class PickupDeliveryController extends BaseController{
                 $payment->type = 'pickup/delivery';
                 $payment->save();
             }
+
+            if($request->payment_option_id = 49){
+                $data['product_id']         =   $productId->product_id;
+                $data['tasks']              =   json_decode($tasks->tasks);
+                $request                    =   new \Illuminate\Http\Request($data);
+            }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$vendor_id);
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = Auth::user();
@@ -616,11 +625,11 @@ class PickupDeliveryController extends BaseController{
             }else{
                 return $request_to_dispatch;
             }
-       
-        
-        
+
+
+
     }
-    
+
     // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
         try {
@@ -657,7 +666,7 @@ class PickupDeliveryController extends BaseController{
                 if(isset($request->task_type) && !empty($request->task_type))
                 {
                     $request->task_type = $request->task_type;
-                    $schedule_datetime_del = null;                   
+                    $schedule_datetime_del = null;
                     $request->order_time = $schedule_datetime_del;
                 }else{
                     $request->task_type = 'schedule';
@@ -687,15 +696,15 @@ class PickupDeliveryController extends BaseController{
                     $type=0;
                 }
 
-                
+
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                     $customerno = "0" . $customer->phone_number;
-                } else {                
+                } else {
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-                
+
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -730,7 +739,7 @@ class PickupDeliveryController extends BaseController{
                             'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI'),
                             'no_seats_for_pooling' =>(isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
                             'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
-                            'available_seats' => $product->seats_for_booking,
+                            'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
                         ];
 
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
@@ -753,7 +762,7 @@ class PickupDeliveryController extends BaseController{
 
 
                     $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
-                    
+
                     //if($or_ids->vendor->auto_accept_order==1):
                         $update_vendor = VendorOrderStatus::updateOrCreate([
                             'order_id' =>  $order->id,
@@ -817,7 +826,7 @@ class PickupDeliveryController extends BaseController{
             }
 
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
-                      
+
             $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->delivery_service_key)? $dispatch_domain->delivery_service_key : $dispatch_domain->pickup_delivery_service_key,
                 'shortcode' => !empty($dispatch_domain->delivery_service_key_code)? $dispatch_domain->delivery_service_key_code : $dispatch_domain->pickup_delivery_service_key_code,
                 'content-type' => 'application/json']
@@ -963,7 +972,7 @@ class PickupDeliveryController extends BaseController{
         }])
         ->select('*','dispatcher_status_option_id as dispatcher_status')->first();
         $dispatch_traking_url = ($request->has('new_dispatch_traking_url') && !empty($request->new_dispatch_traking_url)) ? $request->new_dispatch_traking_url : $order->dispatch_traking_url;
-        $dispatch_traking_url = str_replace('/order/', '/order-details/', $dispatch_traking_url);        
+        $dispatch_traking_url = str_replace('/order/', '/order-details/', $dispatch_traking_url);
         $response = Http::get($dispatch_traking_url);
         if($response->status() == 200){
             $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
@@ -1100,7 +1109,7 @@ class PickupDeliveryController extends BaseController{
                     OrderLocations::insert(['tasks' => $request->tasks, 'order_id' => $order->id, 'vendor_id' => $vendor_id, 'product_id' => $order_product->product_id]);
                 }
             }
-            
+
             $schedule_datetime_del = (!empty($order->scheduled_date_time)) ? $order->scheduled_date_time : NULL;
             $tags_price            = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
             $product_tags_price    = $tags_price['delivery_fee']??0;
@@ -1130,7 +1139,7 @@ class PickupDeliveryController extends BaseController{
             $request->request->add(['no_seats_for_pooling' => $order_product->no_seats_for_pooling]);
             $request->request->add(['is_cab_pooling' => $order_product->is_cab_pooling]);
 
-             
+
             $total_delivery_fee = 0;
             $delivery_fee = 0;
             $vendor_payable_amount = 0;
@@ -1151,7 +1160,7 @@ class PickupDeliveryController extends BaseController{
                     $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
                 }
             }
-           
+
             $variant = $product->variants->where('product_id', $product->id)->first();
             $variant->price = $request->tags_amount;
             $variant->toll_price = $request->tollamount;
@@ -1178,7 +1187,7 @@ class PickupDeliveryController extends BaseController{
             }
             $vendor_taxable_amount += $taxable_amount;
             $total_amount += $variant->price;
-            
+
             $order_product->price = $variant->price;
             $order_product->toll_price = $variant->toll_price;
             $order_product->save();
@@ -1213,7 +1222,7 @@ class PickupDeliveryController extends BaseController{
             $order_vendor->taxable_amount = $vendor_taxable_amount;
             $order_vendor->discount_amount= $vendor_discount_amount;
             $order_vendor->toll_amount = (isset($request->tollamount))?$request->tollamount:0.00;
-            
+
             $vendor_info = Vendor::where('id', $vendor_id)->first();
             if ($vendor_info) {
                 if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -1235,7 +1244,7 @@ class PickupDeliveryController extends BaseController{
                     $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                 }
             }
-            
+
             $order->total_delivery_fee = $total_delivery_fee;
             $order->loyalty_points_used = $loyalty_points_used;
             $order->loyalty_amount_saved = $loyalty_amount_saved;
@@ -1264,10 +1273,10 @@ class PickupDeliveryController extends BaseController{
             }
 
 
-            
+
             $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
-            
+
             $order->save();
 
 
@@ -1278,7 +1287,7 @@ class PickupDeliveryController extends BaseController{
             }
             DB::commit();
             return $this->successResponse([], __('Drop Off Location Updated.'), 200);
-            
+
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -1288,12 +1297,12 @@ class PickupDeliveryController extends BaseController{
 
     // place Request To Dispatch
     public function updateOrderRequestToDispatch($request,$order,$vendor){
-        try 
+        try
         {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
             $wallet = $customer->wallet;
-            if($dispatch_domain && $dispatch_domain != false) 
+            if($dispatch_domain && $dispatch_domain != false)
             {
                 $tasks = array();
                 if ($request->payment_option_id == 1) {
@@ -1324,7 +1333,7 @@ class PickupDeliveryController extends BaseController{
                 if(isset($request->task_type) && !empty($request->task_type))
                 {
                     $request->task_type = $request->task_type;
-                    $schedule_datetime_del = null;                   
+                    $schedule_datetime_del = null;
                     $request->order_time = $schedule_datetime_del;
                 }else{
                     $request->task_type = 'schedule';
@@ -1332,7 +1341,7 @@ class PickupDeliveryController extends BaseController{
                     $request->order_time = $schedule_datetime_del;
                 }
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
-                
+
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
                 if(!empty($client_do->custom_domain)){
@@ -1342,11 +1351,11 @@ class PickupDeliveryController extends BaseController{
                 }
                 $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$order_vendor->web_hook_code;
                 $tasks = array();
-               
+
                 $product = Product::find($request->product_id);
                 $order_agent_tag = $product->tags??'';
                 $type = $request->bookingType ?? 0;
-                
+
                 $postdata =  [
                             'task_type' => $request->task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
@@ -1376,7 +1385,7 @@ class PickupDeliveryController extends BaseController{
                         )]
                 );
                 $response = json_decode($res->getBody(), true);
-                
+
                 return $response;
             }
         }catch(\Exception $e)

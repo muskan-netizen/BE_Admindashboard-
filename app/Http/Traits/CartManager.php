@@ -999,6 +999,7 @@ trait cartManager{
                                 $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
                                 $deliveryfeeOnCoupon = 1;
                                 $payable_amount = $payable_amount;
+                                $deliveryfeeOnCoupon = 1;
                             }
                         }
                     }
@@ -1034,7 +1035,12 @@ trait cartManager{
 
 
                 $subtotal_amount = $payable_amount;
-                $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted;
+                // if($PromoFreeDeliver != 1){
+                $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted;;
+                //}
+                //$payable_amount = $payable_amount + $deliver_charge;
+                //Start applying service fee on vendor products total
+
 
 
                 $vendor_service_fee_percentage_amount = 0;

@@ -1010,6 +1010,8 @@ class OrderController extends FrontController
             $additionalPrice = 0.00;
             $totalAdditionalPrice = 0.00;
             $is_long_term_order = 0;
+            $deliveryfeeOnCoupon = 0;
+            
             $checkLongTermInDB = checkColumnExists('products', 'is_long_term_service');
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (!empty($request->other_taxes_string)) {
@@ -1038,7 +1040,6 @@ class OrderController extends FrontController
                 $additionalPrice=0.00;
                 $quantity_container_charges = 0;
                 $deliveryfeeOnCoupon = 0;
-
                 $passbase_check = VerificationOption::where(['code' => 'passbase', 'status' => 1])->first();
 
                 /* Update details related to order vendor */
@@ -1444,7 +1445,7 @@ class OrderController extends FrontController
                             $rate = $tax_rate_detail->tax_rate;
                         }
                     }
-                  
+
                 } //End products loop
 
                 $payable_amount += $vendor_total_container_charges;
@@ -1463,6 +1464,7 @@ class OrderController extends FrontController
                     }
 
                     $coupon_name = $vendor_cart_product->coupon->promo->name;
+                    
                     //-------------Coupon Related discount calculations start here----------------------
                         //----fixed amount----------
                     if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
@@ -1471,7 +1473,7 @@ class OrderController extends FrontController
                         $vendor_payable_amount -= $amount;
                         $vendor_discount_amount += $amount;
                     } else {
-                    //----Percent amount----------
+                        //----Percent amount----------
                         $percentage_amount = ($vendor_payable_amount * $vendor_cart_product->coupon->promo->amount / 100);
                         $total_discount += $percentage_amount;
                         $vendor_payable_amount -= $percentage_amount;
@@ -1538,7 +1540,7 @@ class OrderController extends FrontController
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
                 $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
-                $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
+                $deliveryfee_ifnot_discounted   = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
                 $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_ifnot_discounted, $OrderVendor->payable_amount, $vendor_subs_disc_percent);
                 $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                 $subs_discount_vendor           = $subs_discount_arr['vendor'];
