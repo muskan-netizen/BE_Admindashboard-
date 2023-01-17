@@ -2523,7 +2523,7 @@ class CartController extends FrontController
 
             $user = Auth::user();
             $client_timezone = DB::table('clients')->first('timezone');
-            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            $user->timezone = $user->timezone ?? $client_timezone->timezone;
             $new_session_token = session()->get('_token');
             if ($user || $new_session_token) {
                 if($request->task_type == 'now'){

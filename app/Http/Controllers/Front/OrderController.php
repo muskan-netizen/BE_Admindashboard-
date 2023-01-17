@@ -1662,7 +1662,6 @@ class OrderController extends FrontController
             //echo  " total_service_fee=".$total_service_fee." total_delivery_fee=".$total_delivery_fee;
             //echo  " Total payable_amount 3=".$payable_amount."; <br>";
 
-
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
             $order->scheduled_slot = (($cart->scheduled_slot) ? $cart->scheduled_slot : null);
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot) ? $cart->dropoff_scheduled_slot : null);
