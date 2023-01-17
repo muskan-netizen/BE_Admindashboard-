@@ -298,7 +298,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="row mt-5">
+                                <div class="row  mt-5">
                                     <div class="col-md-12">
                                         <input type="hidden" name="device_type" value="web">
                                         <input type="hidden" name="device_token" value="web">
