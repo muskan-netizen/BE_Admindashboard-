@@ -1,8 +1,7 @@
 @extends('layouts.vertical', ['title' => 'Dashboard'])
 @section('css')
-<link href="{{asset('assets/assets/dashboard/css/jquery-jvectormap-1.2.2.css')}}" rel="stylesheet" type="text/css" />
+
 <link href="{{asset('assets/dashboard/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
-<link href="{{asset('assets/dashboard/css/new_app.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/dashboard/css/new_dashboard.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
@@ -568,11 +567,10 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
 </script>
 <script src="{{asset('assets/dashboard/js/new_dashboard.js')}}"></script>
 <script src="{{asset('assets/dashboard/js/vendor.min.js')}}"></script>
-<script src="{{asset('assets/dashboard/js/app.min.js')}}"></script>
 <script src="{{asset('assets/dashboard/js/apexcharts.min.js')}}"></script>
 <script src="{{asset('assets/dashboard/js/jquery-jvectormap-1.2.2.min.js')}}"></script>
 <script src="{{asset('assets/dashboard/js/jquery-jvectormap-world-mill-en.js')}}"></script>
-<script src="{{asset('assets/dashboard/js/dashboard.js')}}"></script>
+{{-- <script src="{{asset('assets/dashboard/js/dashboard.js')}}"></script> --}}
 
 
 @endsection
