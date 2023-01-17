@@ -51,6 +51,10 @@ class OrderProduct extends Model{
     public function media(){
         return $this->hasMany('App\Models\ProductImage', 'product_id', 'product_id')->select('product_id', 'media_id', 'is_default');
     }
+    public function reqCancelOrder()
+    {
+        return $this->hasOne('App\Models\OrderCancelRequest', 'order_vendor_product_id'); //, 'order_id', 'id'
+    }
     public function pimage(){
         return $this->hasMany('App\Models\ProductImage', 'order_product_id', 'order_product_id')->select('product_images.product_id', 'product_images.media_id', 'product_images.is_default', 'vendor_media.media_type', 'vendor_media.path')->join('vendor_media', 'vendor_media.id', 'product_images.media_id')->limit(1);
     }

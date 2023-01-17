@@ -652,7 +652,7 @@ class ReturnOrderController extends FrontController
 
         $currentOrderStatus = OrderVendor::with('products')->where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
         $orderVendorProduct = OrderProduct::with('addon', 'addon.option', 'variant')->where('order_vendor_id', $currentOrderStatus->id)->where('product_id', $product_id)->first();
-        $cancelledProductPrice = $this->checkreplaceProduct($request, $orderVendorProduct);
+        $cancelledProductPrice = $this->checkreplaceProduct($request, $orderVendorProduct) * $orderVendorProduct->quantity;
 
         if ($client_preferences->business_type == 'laundry') {
             if ($request->pickup_order_date == $today) {
@@ -735,8 +735,7 @@ class ReturnOrderController extends FrontController
             }
         } else {
 
-            // $currentOrderStatus->order_amount = $currentOrderStatus->order_amount - $cancelledProductPrice;
-            // $currentOrderStatus->save();
+
             //remove product from order
             $orderProduct = OrderProduct::where('order_vendor_id', $currentOrderStatus->id)->where('product_id', $product_id)->delete();
             $return_response =  $this->GetVendorProductReturnAmount($request, $orderData, $cancelledProductPrice);
@@ -747,15 +746,21 @@ class ReturnOrderController extends FrontController
             $orderProductCancelReason->order_id = $request->order_id;
             $orderProductCancelReason->vendor_id = $request->vendor_id;
             $orderProductCancelReason->order_vendor_id = $request->order_vendor_id;
-            // $orderProductCancelReason->product_id = $product_id;
+            // $orderProductCancelReason->order_vendor_product_id = '';
             $orderProductCancelReason->return_reason_id = $request->return_reason_id;
             $orderProductCancelReason->status = 1;
-            $orderProductCancelReason->cancel_reason = $request->reject_reason;
+            $orderProductCancelReason->reject_reason = $request->reject_reason;
             $orderProductCancelReason->save();
 
-            /***************save reject reason  end   ********************/
+            $currentOrderStatus->payable_amount = $currentOrderStatus->payable_amount - $cancelledProductPrice;
+            $currentOrderStatus->subtotal_amount = $currentOrderStatus->subtotal_amount - $cancelledProductPrice;
+            $currentOrderStatus->save();
+            // order amount update
+            $orderData->total_amount = $orderData->total_amount - $cancelledProductPrice;
+            $orderData->payable_amount = $orderData->payable_amount - $cancelledProductPrice;
+            $orderData->save();
 
-            /***************cancel product from dispatcher  start   ********************/
+            /***************cancel product from dispatcher  start  total_amount ********************/
             //code--------
             /***************cancel product from dispatcher  end   ********************/
         }
@@ -800,13 +805,15 @@ class ReturnOrderController extends FrontController
 
     public function vendorOrderForCancelReq(Request $request)
     {
-        $checkReqIfExist = OrderCancelRequest::where(['order_id' => $request->order_id, 'order_vendor_id' => $request->order_vendor_id, 'vendor_id' =>  $request->vendor_id])->first();
+
+        $checkReqIfExist = OrderCancelRequest::where(['order_id' => $request->order_id, 'order_vendor_product_id' => $request->order_vendor_product_id, 'order_vendor_id' => $request->order_vendor_id, 'vendor_id' =>  $request->vendor_id])->first();
 
         if (empty($checkReqIfExist)) {
             $reject_reason = urldecode($request->reject_reason);
 
             $order_cancel_request = new OrderCancelRequest();
             $order_cancel_request->order_id = $request->order_id;
+            $order_cancel_request->order_vendor_product_id = $request->order_vendor_product_id;
             $order_cancel_request->order_vendor_id = $request->order_vendor_id;
             $order_cancel_request->vendor_id = $request->vendor_id;
             $order_cancel_request->reject_reason = $reject_reason;
