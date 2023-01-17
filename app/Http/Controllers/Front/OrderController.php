@@ -1444,7 +1444,7 @@ class OrderController extends FrontController
                             $rate = $tax_rate_detail->tax_rate;
                         }
                     }
-                  
+
                 } //End products loop
 
                 $payable_amount += $vendor_total_container_charges;

@@ -2039,6 +2039,7 @@ class OrderController extends BaseController
 
     public function postOrderDetail(Request $request)
     {
+
         try {
             $user = Auth::user();
             $order_item_count = 0;
@@ -2363,6 +2364,9 @@ class OrderController extends BaseController
             // })->get();
 
            // $order['user_document_value'] =  $user_docs;
+
+
+           Log::info('order'.json_encode($order));
             if(auth()->user()->is_admin){
                 $order['total_amount'] = $order->total_amount  - $total_markup_Price;
                 $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
@@ -3399,6 +3403,7 @@ class OrderController extends BaseController
      */
     public function tipAfterOrder(Request $request)
     {
+
         $user = Auth::user();
         if ($user) {
             $order_number = $request->order_number;

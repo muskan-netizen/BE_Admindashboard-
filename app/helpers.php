@@ -18,11 +18,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
 
-function setUserCode(){
-    $userCode = session()->has('userCode');
-    if(!$userCode){
-        $user = ClientData::first();
-        session()->put('userCode', $user->code);
+if (!function_exists('setUserCode')) {
+    function setUserCode(){
+        $userCode = session()->has('userCode');
+        if(!$userCode){
+            $user = ClientData::first();
+            session()->put('userCode', $user->code);
+        }
     }
 }
 
@@ -1333,6 +1335,36 @@ if (!function_exists('sendSmsTemplate')) {
     }
 }
 
+
+
+if (!function_exists('inventorySyncOnOff')) {
+    function inventorySyncOnOff($vendor_id)
+    {
+        if (!empty($vendor_id)) {
+            $client_preferences = ClientPreference::first();
+
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'shortcode' => $client_preferences->inventory_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+            $url = $client_preferences->inventory_service_key_url;
+
+            $request = $client->get($url . '/api/v1/sync-status', [
+                'json' => ['royo_vendor_id' => $vendor_id]
+            ]);
+
+            $response = json_decode($request->getBody());
+
+            if ($response->status) {
+                return $response->msg;
+            }
+        } else {
+            return false;
+        }
+    }
+}
 // Returns the values of the additional preferences.
 if (!function_exists('checkTableExists')) {
     /** check if column exits in table
@@ -1554,4 +1586,5 @@ if( !function_exists('makeCartEmpty') ) {
         return true;
     }
 }
+
 
