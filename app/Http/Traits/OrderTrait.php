@@ -183,8 +183,9 @@ trait OrderTrait{
             $paymentSentAlready = 0;
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
 
-            $order_vendor = OrderVendor::with('products.product')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+            $order_vendor = OrderVendor::with(['products.product', 'products.order_product_status'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
             foreach( $order_vendor->products as $product){
+                // dd($product->order_product_status);
                 $allocation_type = 'a';
                 $agent = '';
                 if ($order->payment_option_id == 1 ) {

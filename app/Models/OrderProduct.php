@@ -25,7 +25,10 @@ class OrderProduct extends Model{
         return parent::getArrayableAppends();
     }
 
-
+    public function order_product_status()
+    {
+        return $this->hasOne('App\Models\VendorOrderProductStatus', 'order_vendor_product_id');
+    }
     public function vendor(){
         return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'order_pre_time', 'auto_reject_time', 'order_min_amount');
     }

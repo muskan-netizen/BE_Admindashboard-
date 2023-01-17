@@ -188,10 +188,16 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                                 (<%= product.product_name %>)
                                                                 {{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %>
                                                             </label>
-                                                            <% if(order.luxury_option_id == 4) { %>
+                                                            <% if(order.luxury_option_id == 4 && vendor.order_status_option_id == 1) { %>
                                                                 <div class="accept_reject_div">
-                                                                    <input type="checkbox" class="mt-1 productIdsCheck_<%= order.id %>" name="product_id[]" value="<%= product.product_id %>" checked />
-                                                                    <button class="btn btn-danger btn-sm updateVendorProdStatus ml-1" data-order_vendor_product_id="<%= product.product_id %>" data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-order_luxury_option="<%= order.luxury_option_id %>" title="Reject" style="padding: 0px 7px;">x</button>
+                                                                    
+                                                                    
+                                                                    <% if(product.order_product_status && product.order_product_status.order_status_option_id && product.order_product_status.order_status_option_id  == 3) { %>
+                                                                        <span class="badge badge-danger">Rejected</span>
+                                                                    <% }else{ %>
+                                                                        <input type="checkbox" class="mt-1 productIdsCheck_<%= order.id %>" name="product_id[]" value="<%= product.product_id %>" data-order_vendor_product_id="<%= product.id %>" checked />
+                                                                    <button class="btn btn-danger btn-sm updateVendorProdStatus ml-1" data-vendor_product_id="<%= product.product_id %>" data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-order_luxury_option="<%= order.luxury_option_id %>" data-order_vendor_product_id="<%= product.id %>" title="Reject" style="padding: 0px 7px;">x</button>
+                                                                    <% } %>
                                                                 </div>
                                                             <% } %>
                                                         </div>
@@ -315,7 +321,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% if(order.vendors[0].exchanged_of_order) { %>
                                                         <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-is_alert = "<%= vendor.isAlert %>" data-alert_message = "<%= vendor.alertMessage %>">{{ __('Exchange Accept') }}</button>
                                                         <% } else { %>
-                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-is_alert = "<%= vendor.isAlert %>" data-alert_message = "<%= vendor.alertMessage %>">{{ __('Accept') }}</button>
+                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-is_alert = "<%= vendor.isAlert %>" data-alert_message = "<%= vendor.alertMessage %>" data-order_luxury_option="<%= order.luxury_option_id %>">{{ __('Accept') }}</button>
                                                     <% } %>
                                                     <!--<button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>-->
                                                 <% } else if(vendor.order_status_option_id == 2) { %>
@@ -994,10 +1000,15 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var order_id = that.data("order_id");
             var vendor_id = that.data("vendor_id");
             var count = that.data("count");
+            var order_luxury_option_id = that.data("order_luxury_option");
             var alertMessage = "";
             var productIds = [];
             $('.productIdsCheck_'+order_id+':checked').each(function(i){
                 productIds[i] = $(this).val();
+            });
+            order_vendor_product_id = [];
+            $('.productIdsCheck_'+order_id+':checked').each(function(i){
+                order_vendor_product_id[i] = $(this).data('order_vendor_product_id');
             });
             if(status_option_id == 2 && that.data('is_alert'))
             {
@@ -1024,6 +1035,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 status_option_id: status_option_id,
                                 order_vendor_id: order_vendor_id,
                                 productIds: productIds,
+                                order_vendor_product_id: order_vendor_product_id,
+                                order_luxury_option_id: order_luxury_option_id
                             },
                             success: function(response) {
 
@@ -1089,7 +1102,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var order_id = that.data("order_id");
             var vendor_id = that.data("vendor_id");
             var count = that.data("count");
-            var order_product_id = that.data("order_vendor_product_id");
+            var order_product_id = that.data("vendor_product_id");
+            var order_vendor_product_id = that.data("order_vendor_product_id");
             var alertMessage = "";
             
             Swal.fire({
@@ -1111,6 +1125,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                             status_option_id: status_option_id,
                             order_vendor_id: order_vendor_id,
                             order_product_id: order_product_id,
+                            order_vendor_product_id: order_vendor_product_id,
                         },
                         success: function(response) {
                             if(response.status=='error'){

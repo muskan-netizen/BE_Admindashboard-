@@ -459,6 +459,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                             </div>
 
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Security Amount'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('compare_at_price', decimal_format($product->variant[0]->security_amount), ['class'=>'form-control', 'id' => 'security_amount', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+
                         </div>
                         {{-- <div class="row mb-2">
 
@@ -775,13 +781,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <input type="checkbox" bid="" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box" data-color="#43bee1" @if($product->age_restriction == 1) checked @endif>
                         </div>
                         @endif
-
-
-
-
-
                     </div>
-
 
                     <div class="row">
                         <div class="col-sm-12 mb-2">

@@ -15,7 +15,7 @@ use App\Http\Controllers\DunzoController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct, OrderVendorProduct};
+use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct, OrderVendorProduct, VendorOrderProductStatus};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -188,12 +188,21 @@ class OrderController extends BaseController
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $HasGiftCard = 0;
-        $orders = Order::with(['vendors.products' => function ($q) {
+        $orders = Order::with([
+            'vendors.products' => function ($q) {
+                if (checkColumnExists('vendor_order_product_statuses', 'order_status_option_id')) {
+                    $q->with('order_product_status');
+                }
+                // $q->whereDoesntHave('order_product_status', function ($sq) {
+                //     $sq->where('order_status_option_id', '=', 3);
+                // });
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
+        
         if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
             $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
         }
+        
 
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
@@ -413,11 +422,12 @@ class OrderController extends BaseController
                 $response[$vendorTypeOrders] = $$vendorTypeOrders;
             }
         }
-
+        
         if ($lux_id > 0) {
             $orders = $orders->where('luxury_option_id', $lux_id);
         }
         $orders = $orders->paginate(30);
+        // dd($orders);
 
         // Pending orders count
         $pending_orders = $pending_orders->with('vendors', function ($query) use ($user) {
@@ -643,6 +653,9 @@ class OrderController extends BaseController
             },
             'vendors.products' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);
+                if (checkColumnExists('vendor_order_product_statuses', 'order_status_option_id')) {
+                    $query->with('order_product_status');
+                }
             },
             'vendors.products.product',
             'vendors.products.addon',
@@ -725,7 +738,7 @@ class OrderController extends BaseController
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
                 $product->routes = []; // routes for single product $product->Routes; //
-                if (in_array($order->luxury_option_id, [6, 8])) { // for on demand service and appointment service code by harbans :)
+                if (in_array($order->luxury_option_id, [6, 8, 4])) { // for on demand service and appointment service code by harbans :)
                     $product->routes =  $product->Routes; // OrderProductDispatchRoute::with('DispatchStatus')->where(['order_vendor_product_id'=>$product->id])->get()->toArray();
                 }
                 foreach ($product->addon as $ck => $addons) {
@@ -802,7 +815,7 @@ class OrderController extends BaseController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-
+        // dd($order);
         //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
@@ -885,8 +898,8 @@ class OrderController extends BaseController
     {
         $orderPlaced = true;
         $orderPlacedNo = '';
-        $productIds = $request->productIds;
-        // dd($productIds);
+        $productIds = $request->productIds??'';
+        $orderVendorProductIds = $request->order_vendor_product_id??'';
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
          try {
@@ -969,6 +982,19 @@ class OrderController extends BaseController
 
                 if ($orderPlaced) {
 
+                    if($request->order_luxury_option_id == 4){
+                        foreach($orderVendorProductIds as $key => $id){
+                            $vendor_order_product_status = new VendorOrderProductStatus();
+                            $vendor_order_product_status->order_id = $request->order_id;
+                            $vendor_order_product_status->order_vendor_id = $request->order_vendor_id;
+                            $vendor_order_product_status->vendor_id = $request->vendor_id;
+                            $vendor_order_product_status->product_id = $productIds[$key];
+                            $vendor_order_product_status->order_status_option_id = $request->status_option_id;
+                            $vendor_order_product_status->order_vendor_product_id = $id;
+                            $vendor_order_product_status->save();
+                        }
+                    }
+
                     $vendorOrderStatus = VendorOrderStatus::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
 
                     $vendor_order_status = new VendorOrderStatus();
@@ -979,9 +1005,6 @@ class OrderController extends BaseController
                     $vendor_order_status->order_vendor_id = $vendorOrderStatus->order_vendor_id;
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
-
-
-
 
                     if ($request->status_option_id == 3) {
                         if ($orderData->shipping_delivery_type == 'D' && !empty($currentOrderStatus->dispatch_traking_url)) {
@@ -1055,7 +1078,6 @@ class OrderController extends BaseController
                     $this->ProductVariantStockIncrease($request->order_id);
                 }
 
-
                 $order_vendor = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 $order_vendor->order_status_option_id = $request->status_option_id;
                 $order_vendor->reject_reason = $request->reject_reason;
@@ -1088,16 +1110,22 @@ class OrderController extends BaseController
     {
         try {
             $timezone = Auth::user()->timezone;
-            $vendor_order_product_status_check = OrderVendorProduct::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('product_id', $request->order_product_id)->where('order_vendor_status_option_id', $request->status_option_id)->first();
+            $vendor_order_product_status_check = VendorOrderProductStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_vendor_product_id', $request->order_vendor_product_id)->where('order_status_option_id', $request->status_option_id)->first();
 
-            if (@$vendor_order_product_status_check->order_vendor_status_option_id == 3) { //$request->status_option_id == 2){
+            if (@$vendor_order_product_status_check->order_status_option_id == 3) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
 
-            $update_status = OrderVendorProduct::where(['order_id' => $request->order_id, 'product_id' => $request->order_product_id])->update([
-                'order_vendor_status_option_id' => $request->status_option_id
-            ]);
-            if($update_status){
+            $create_vendor_order_product_status = VendorOrderProductStatus::create(array(
+                'order_id' => $request->order_id,
+                'order_vendor_id'  => $request->order_vendor_id,
+                'vendor_id' => $request->vendor_id,
+                'product_id' => $request->order_product_id,
+                'order_status_option_id' => $request->status_option_id,
+                'order_vendor_product_id' => $request->order_vendor_product_id
+            ));
+
+            if($create_vendor_order_product_status){
                 return response()->json([
                     'status' => 'success',
                     'message' => __('Order Vendor Product Status Updated Successfully.')
