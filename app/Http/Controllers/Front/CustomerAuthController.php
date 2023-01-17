@@ -23,15 +23,19 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption};
+use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, VendorAdditionalInfo};
+
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
 use Math;
 use SimpleXMLElement;
 use Log;
+use App\Http\Traits\ProductActionTrait;
+
 class CustomerAuthController extends FrontController
 {
     use ApiResponser;
+    use ProductActionTrait;
 
     private $folderName = '/vendor/extra_docs';
 
@@ -87,6 +91,8 @@ class CustomerAuthController extends FrontController
             $login_page = "template_four.account.loginnew";
         }elseif($set_template->template_id == 6){
             $login_page = "template_six.account.loginnew";
+        }elseif($set_template->template_id == 8){
+            $login_page = "template_eight.account.loginnew";
         } else{
             $login_page = "account.loginnew";
         }
@@ -124,6 +130,8 @@ class CustomerAuthController extends FrontController
             $register_page = "template_four.account.registernew";
         }elseif($set_template->template_id == 6){
             $register_page = "template_six.account.registernew";
+        }elseif($set_template->template_id == 8){
+            $register_page = "template_eight.account.registernew";
         }else{
             $register_page = "account.registernew";
         }
@@ -170,6 +178,7 @@ class CustomerAuthController extends FrontController
             }
             $this->checkCookies($userid);
             $user_cart = Cart::where('user_id', $userid)->first();
+           
             if ($user_cart) {
                 $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
                 if ($unique_identifier_cart) {
@@ -231,7 +240,6 @@ class CustomerAuthController extends FrontController
                 }
 
                 if(!empty($req->phone_number) && isset($preferences) && ($preferences->verify_phone == 0)){
-
                     $validator = $req->validate([
                         'phone_number' => 'string|min:7|max:15|unique:users'
                     ]);
@@ -339,6 +347,53 @@ class CustomerAuthController extends FrontController
                 } else {
                     Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $user->id, 'created_by' => $user->id, 'unique_identifier' => '']);
                 }
+
+                ####################################################
+                ## if p2p is enable then register user as a admin ##
+                ####################################################
+
+                if( getClientPreferenceDetail()->p2p_check ) {
+
+                    $user->is_admin = 1;
+                    $user->save();
+
+                    // Create vendor with default images
+                    $vendor = new Vendor();
+                    $vendor->logo = 'default/default_logo.png';
+                    $vendor->banner = 'default/default_image.png';
+
+                    $vendor->status = 1;
+                    $vendor->name = $user->name;
+                    $vendor->p2p = 1;
+                    $vendor->email = $user->email ?? '';
+                    $vendor->phone_no = $user->phone_number ?? '';
+                    $vendor->slug = Str::slug($user->name, "-");
+                    $vendor->save();
+
+                    $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+
+                    UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
+
+                    foreach ($permission_details as $permission_detail) {
+                        UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
+                    }
+                    $p2p_type = Type::where('service_type', 'p2p')->first();
+                    if( !empty($p2p_type) ) {
+                        $category_id = Category::where('type_id', $p2p_type->id)->get();
+                        $categories_ids = [];
+                        
+                        if( !empty($category_id) ) {
+                            foreach($category_id as $key => $val) {
+                                $categories_ids[] = $val->id;
+                            }
+                        }
+                        $req->request->add(['selectedCategories'=> $categories_ids]);
+                        
+                    }
+                    
+                    $this->addDataSaveVendor($req, $vendor->id);
+                }
+
                 Session::forget('referrer');
                 $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
                         'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from',
@@ -450,16 +505,26 @@ class CustomerAuthController extends FrontController
             } else {
                 Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
             }
-            $message = __('Logged in successfully');
+
+            if($this->checkTemplateForAction(8)){
+               
+                $this->LoginActionRecentView($userid);
+            }
+            
+            $message = ('Logged in successfully');
             $redirect_to = '';
+     
             if(session()->has('url.intended')){
+              
                 $redirect_to = session()->get('url.intended');
                 session()->forget('url.intended');
             }else{
+          
                 $redirect_to = route('user.verify');
             }
             $req->request->add(['is_phone'=>1, 'redirect_to'=>$redirect_to]);
             $response = $req->all();
+           
             return $this->successResponse($response, $message);
         }
         else {
@@ -469,6 +534,7 @@ class CustomerAuthController extends FrontController
 
     /*** Login user via username ***/
     public function loginViaUsername(Request $request, $domain = ''){
+       
         try{
             $errors = array();
 
@@ -478,6 +544,7 @@ class CustomerAuthController extends FrontController
 
             if(preg_match($phone_regex, $username))
             {
+            
                 $validator = Validator::make($request->all(), [
                     'username'  => 'required',
                     'dialCode'  => 'required',
@@ -485,6 +552,7 @@ class CustomerAuthController extends FrontController
                 ]);
 
                 if($validator->fails()){
+                    
                     foreach($validator->errors()->toArray() as $error_key => $error_value){
                         $errors['error'] = __($error_value[0]);
                         return response()->json($errors, 422);
@@ -556,11 +624,14 @@ class CustomerAuthController extends FrontController
             }
             elseif (preg_match($email_regex, $username))
             {
+                
+                
                 $validator = Validator::make($request->all(), [
                     'username'  => 'required'
                 ]);
 
                 if($validator->fails()){
+                  
                     foreach($validator->errors()->toArray() as $error_key => $error_value){
                         $errors['error'] = __($error_value[0]);
                         return response()->json($errors, 422);
@@ -584,12 +655,15 @@ class CustomerAuthController extends FrontController
                         }
                     }
                     if($Authuser->is_superadmin == 1 || $Authuser->is_admin == 1){
+                       
                         Auth::logout();
                         Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1]);
                     }
                     $this->checkCookies($userid);
                     $user_cart = Cart::where('user_id', $userid)->first();
+                    
                     if ($user_cart) {
+                        
                         $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
                         if ($unique_identifier_cart) {
                             $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
@@ -607,11 +681,21 @@ class CustomerAuthController extends FrontController
                             $unique_identifier_cart->delete();
                         }
                     } else {
+                       
                         Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
                     }
+                 
+                    
+                    if($this->checkTemplateForAction(8)){
+                    
+                        $this->LoginActionRecentView($userid);
+                    }
+            
                     $message = 'Logged in successfully';
                     $redirect_to = '';
+                    
                     if(session()->has('url.intended')){
+                        
                         $redirect_to = session()->get('url.intended');
                         session()->forget('url.intended');
                     }else{
@@ -623,6 +707,7 @@ class CustomerAuthController extends FrontController
                 }
                 $checkEmail = User::where('email', $username)->first();
                 if ($checkEmail) {
+                  
                     if($checkEmail->status != 1){
                         if(session()->get("locale") == "ar"){
                             return $this->errorResponse(__('أنت غير مخول للوصول إلى هذا الحساب'), 404);
@@ -748,15 +833,17 @@ class CustomerAuthController extends FrontController
 
     public function postVendorregister(Request $request, $domain = ''){
         try {
-            //pr($request->all());
+
+            $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration']);
+            // dd($getAdditionalPreference);
             DB::beginTransaction();
             $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
             if (empty($request->input('user_id'))) {
                 if ($vendor_registration_documents->count() > 0) {
                     $rules_array = [
-
                         'address' => 'required',
                         'full_name' => 'required',
+                        'title' => 'required',
                         'email' => 'required|email|unique:users',
                         // 'vendor_registration_document.*.did_visit' => 'required',
                         'password' => 'required|string|min:6|max:50',
@@ -794,6 +881,7 @@ class CustomerAuthController extends FrontController
                     $request->validate(
                         [
                             'address' => 'required',
+                            'title' => 'required',
                             'full_name' => 'required',
                             'email' => 'required|email|unique:users',
                             'password' => 'required|string|min:6|max:50',
@@ -802,9 +890,9 @@ class CustomerAuthController extends FrontController
                             'phone_number' => 'required|string|min:6|max:15|unique:users',
                             'check_conditions' => 'required',
                             'city' => 'required',
-                        'pincode' => 'required',
-                        'state' => 'required',
-                        'country' => 'required',
+                            'pincode' => 'required',
+                            'state' => 'required',
+                            'country' => 'required',
                         ],
                         ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
                     );
@@ -860,6 +948,10 @@ class CustomerAuthController extends FrontController
             }else{
                 $user = User::where('id', $request->user_id)->first();
                 $user->title = $request->title;
+                // if user is already exists then mark as a admin
+                // if( getClientPreferenceDetail()->p2p_check ) {
+                //     $user->is_admin = 1;
+                // }
                 $user->save();
             }
             $vendor = new Vendor();
@@ -879,26 +971,15 @@ class CustomerAuthController extends FrontController
                 }
             }
 
-            // if($client_preference){
-            //     if($client_preference->dinein_check == 1){$count++;}
-            //     if($client_preference->takeaway_check == 1){$count++;}
-            //     if($client_preference->delivery_check == 1){$count++;}
-            // }
             if($count > 1){
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                     $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
                     $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
                     
                 }
-                // $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-                // $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-                // $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
             }
             else{
                 $vendor->$single_vendor_type = 1;
-                // $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
-                // $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
-                // $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
             }
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
@@ -924,8 +1005,14 @@ class CustomerAuthController extends FrontController
             $vendor->longitude = $request->longitude;
             $vendor->desc = $request->vendor_description;
             $vendor->slug = Str::slug($request->name, "-");
+            $vendor->is_seller = $request->vendor_type ?? 0;
             $vendor->save();
-            $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+            if($request->vendor_type == 0){
+                $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21]);    
+            }else{
+                $permission_details = Permissions::whereIn('id', [1,2,12,17,18,19,20,21,28]);
+            }
+            $permission_details = $permission_details->get();   
             if ($vendor_registration_documents->count() > 0) {
                 foreach ($vendor_registration_documents as $vendor_registration_document) {
                     $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
@@ -956,6 +1043,34 @@ class CustomerAuthController extends FrontController
             }
             // vendor additional data
             $this->addDataSaveVendor($request , $vendor->id);
+             
+            if($this->checkTemplateForAction(8)){
+                $this->LoginActionRecentView($user->id);
+            }
+            
+            // Add vendor additional data
+            $additionalData = [];
+            if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1){
+                $additionalData = [
+                    // 'vendor_id' => $vendor->id,
+                    'company_name' => $request->company_name,
+                    'gst_number' => $request->gst_num_Input,
+                ];
+            }
+
+            if(@$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
+                $additionalData['account_name'] = $request->account_name;
+                $additionalData['bank_name'] = $request->bank_name;
+                $additionalData['account_number'] = $request->account_number;
+                $additionalData['ifsc_code'] = $request->ifsc_code;
+            }
+            // dd($additionalData);
+            if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1 || @$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
+                $saveVendorAdditionalInfo = VendorAdditionalInfo::updateOrCreate(
+                    ['vendor_id'=> $vendor->id], 
+                    $additionalData
+                );
+            }
 
             $content = '';
             $email_template = EmailTemplate::where('id', 1)->first();
@@ -1012,9 +1127,11 @@ class CustomerAuthController extends FrontController
 
             }
             DB::commit();
+            $is_seller = $request->vendor_type;
+            $msg_text = isset($is_seller) && $is_seller == 0 ? 'Vendor' : 'Seller';
             return response()->json([
                 'status' => 'success',
-                'message' => 'Vendor Registration Created Successfully!',
+                'message' => $msg_text.' Registration Created Successfully!',
             ]);
         } catch (Exception $e) {
             DB::rollback();
@@ -1072,25 +1189,18 @@ class CustomerAuthController extends FrontController
 
     public function zillowGetData()
     {
-
-
-
-
         $params = (array('address' => '7356 CARTER AVE', 'citystatezip' => 'NEWARK'));
 
         $params['zws-id'] = 'X1-ZWz16b0yk0045n_8mfo0';
-			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
-			$result = new SimpleXMLElement($url, 0, true);dd($params);
+        $url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
+        $result = new SimpleXMLElement($url, 0, true);dd($params);
 
-			// save this in object so that we could reuse it
-			if ( isset($result->response->results->result->zpid) ) {
-				$this->zpid = (string)$result->response->results->result->zpid;
-			}
-
-			return $result->response;
-
+        // save this in object so that we could reuse it
+        if ( isset($result->response->results->result->zpid) ) {
+            $this->zpid = (string)$result->response->results->result->zpid;
+        }
+        return $result->response;
     }
-
 
     // public function getDatazillo($params);
     // {
@@ -1105,6 +1215,5 @@ class CustomerAuthController extends FrontController
 
 	// 		return $result;
     // }
-
-
 }
+

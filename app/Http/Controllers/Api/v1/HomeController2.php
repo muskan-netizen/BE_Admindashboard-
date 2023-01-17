@@ -24,7 +24,7 @@ use DateTime;
 use DateInterval;
 use DateTimeZone;
 
-class HomeController extends BaseController
+class HomeController2 extends BaseController
 {
     use ApiResponser;
 

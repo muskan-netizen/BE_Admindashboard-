@@ -61,7 +61,13 @@ class FrontController extends Controller
                 if( isset($send->code) && $send->code != 'ok'){
                     return '2';
                 }
-            }else{
+            }
+            elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -80,7 +86,6 @@ class FrontController extends Controller
         }
         return '1';
 	}
-
     protected function sendSmsNew($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
             $body = $body['body']??'';
@@ -117,7 +122,13 @@ class FrontController extends Controller
                 if( isset($send->code) && $send->code != 'ok'){
                     return '2';
                 }
-            }else{
+            }
+            elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -1205,5 +1216,57 @@ class FrontController extends Controller
              return false;
          }
      }
+
+    public function test_notification(Request $request){
+        $new[] = $request->token ;
+        $fcm_server_key = $request->fcm_server_key ;
+        // if(  $request->token  ){
+    
+        //     echo 'fcm_server_key or tokon inveled';
+        //     exit();
+        // }
+        $order = Order::with(['vendors.vendor:id,name,auto_accept_order,logo'])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount', 'created_at')->first();
+     
+      // pr($order);
+        $item['title']     = 'notification test by harbans';
+        $item['body']      = 'this is test by h:) ';
+        $data = [
+            "registration_ids" => $new,
+            "notification" => [
+                'title' => 'notification test by harbans',
+                'body'  => 'notification test by harbans',
+                'sound' => "notification.wav",
+                'click_action' => route('order.index'),
+                "android_channel_id" => "sound-channel-id"
+            ],
+            "data" => [
+                'title' => 'notification test by harbans',
+                'body'  => 'notification test by harbans',
+                'data' => $order,
+                'type' => "order_created"
+            ],
+            "priority" => "high"
+        ];
+    
+        $headers = [
+            'Authorization: key=AAAAJo1U6_Q:APA91bGawE2fcj6IKUMlUbBgyQIFZ0_-SRJtkghEqKvuyBXq83HZQOLfLTenfWT-eEXSnvU06Hk4LYeWqxkpH1xQn_MQhqIuEDfPZb-e52GJ-aXZzs5LHg2XPotX2oMDDO3iacYT75ho',
+            'Content-Type: application/json',
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        $result = curl_exec($ch);
+        // if ($result === FALSE) {
+        //     die('Oops! FCM Send Error: ' . curl_error($ch));
+        // }
+        echo  $new[0];
+        curl_close($ch);
+        return $result;
+    
+    }
  
 }

@@ -28,7 +28,6 @@ class ProductsImport implements ToCollection{
             try {
 
                 foreach ($rows as $row) {
-
                     $checker = 0;
                     if ($row[0] != "SKU") { //header of excel check
 
@@ -37,13 +36,13 @@ class ProductsImport implements ToCollection{
                             $checker = 1;
                         }
                         if (Product::where('sku', $row[0])->exists()) { //if sku or handle is empty
-                            // $error[] = "Row " . $i . " : Product with this sku already exist";
-                            // $checker = 1;
-                        }
-                        if ($row[3] == "") { //check if published is empty
-                            $error[] = "Row " . $i . " : Please mark published either true or false";
+                            $error[] = "Row " . $i . " : Product with this sku already exist";
                             $checker = 1;
                         }
+                        // if ($row[3] == "") { //check if published is empty
+                        //     $error[] = "Row " . $i . " : Please mark published either true or false";
+                        //     $checker = 1;
+                        // }
                         if ($row[4] == "") { // check if category is empty
                             $error[] = "Row " . $i . " : Category cannot be empty";
                             $checker = 1;
@@ -308,7 +307,24 @@ class ProductsImport implements ToCollection{
 
 
 
-
+                            \Log::info(json_encode([
+                                'type_id' => 1,
+                                'sku' => $da[0],
+                                'is_featured' => 0,
+                                'is_physical' => 0,
+                                'has_inventory' => 0,
+                                'url_slug' => $da[0],
+                                'brand_id' => $brand_id,
+                                'requires_shipping' => 0,
+                                'Requires_last_mile' => 0,
+                                'sell_when_out_of_stock' => 0,
+                                'vendor_id' => $this->vendor_id,
+                                'category_id' =>$category->category_id,
+                                'tax_category_id' => $tax_category_id,
+                                'title' => ($da[1] == "") ? "" : $da[1],
+                                'is_live' => ($da[3] == 'TRUE') ? 1 : 0,
+                                'body_html' => ($da[2] == "") ? "" : $da[2],
+                            ]));    
                             $product = Product::insertGetId([
                                 'type_id' => 1,
                                 'sku' => $da[0],

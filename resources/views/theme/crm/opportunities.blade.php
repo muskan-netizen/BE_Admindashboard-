@@ -32,7 +32,7 @@
                                 <div class="form-group">
                                     <label for="inputPassword2" class="sr-only">Search</label>
                                     <input type="search" class="form-control" id="inputPassword2"
-                                        placeholder="Search...">
+                                        placeholder="{{ __('Search') }}...">
                                 </div>
                                 <div class="form-group mx-sm-3">
                                     <label for="status-select" class="mr-2">{{__('Sort By')}}</label>

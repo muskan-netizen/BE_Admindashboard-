@@ -9,5 +9,5 @@ class ReturnReason extends Model
 {
     use HasFactory;
    
-    
+    protected $fillable = ['title', 'status', 'order', 'type'];
 }

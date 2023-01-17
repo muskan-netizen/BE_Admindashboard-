@@ -64,7 +64,7 @@
                     <button type="button" class="btn incremental-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
                     </button>
                 </span>
-                <input style="display: none" readonly  step="{{$product->additional_increments*60+$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="0">
+                <input style="display: none" readonly  step="{{$product->additional_increments*60+$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="{{$product->additional_increments*60+$product->additional_increments_min}}">
 
                 <input  type="hidden" min="0" name="total_hrs" id="total_hrs" value="{{getMinutes($product->minimum_duration,$product->minimum_duration_min)}}" >
 
@@ -77,6 +77,7 @@
                 </span>
             </div>
         </div>
+
         <div class="mt-0">
           <div class="duration">
             <div class="total_duration d-flex align-items-center">
@@ -90,10 +91,11 @@
           </div> 
         </div>
         <div class="disclaimer mb-3">
-          <span class="d-flex align-items-center"> 
-            {{__("Extra duration will be charged")}} 
-            {{Session::get('currencySymbol')}}
-              <b class="px-1 variant_incremental_price">{{number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",")}} </b>
+          <span class="d-flex align-items-center">
+          
+              {{__("Extra duration will be charged")}} 
+            
+              <b class="px-1 variant_incremental_price">{{Session::get('currencySymbol')}}{{number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",")}} </b>
             {{__("per")}} 
               <b class="px-1 addtional_hrs">{{ ($product->additional_increments) }}</b> {{__("hour")}} <b class="px-1 addtional_min">{{($product->additional_increments_min)}} </b>
             {{__("min")}}    
@@ -181,9 +183,9 @@
               var checkInPicker = $checkinInput.data('daterangepicker');
               
               checkInPicker.setEndDate(moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes').format("M/DD/YY hh:mm A"));
-             
+          
               var formData = {
-                variant_option_id:$('.changeVariant:checked').val(),
+                variant_option_id: $('.changeVariant:checked').val(),
                 product_id:$("input[name='product_id']").val(),
                 selectedStartDate:start_current_time,
                 selectedEndDate:end_current_time
@@ -222,7 +224,13 @@
                 selectedStartDate:start_current_time,
                 selectedEndDate:end_current_time
               }
-              var total1=   $('#total_hrs').val();
+          
+            // console.log($($checkoutInput).val());
+            // console.log(document.getElementById('incremental_hrs').value);
+           
+             var total1=   $('#total_hrs').val();
+              console.log('total',total_min);
+              console.log('incremental_hrs',default_step);       
               total_min = parseInt(total1)+parseInt(default_step);
               
               $('#total_hrs').val(total_min);
@@ -406,7 +414,9 @@
          
           $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(t_min_hr_min));
           $('#total_hrs').val(parseInt(t_min_hr_min));
-           //console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
+
+           console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
+
         }
 
 

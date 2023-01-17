@@ -307,6 +307,8 @@
     "Save": "Save",
     "Enable location based visibility of Vendors and set the Default Location.": "Enable location based visibility of Vendors and set the Default Location.",
     "Default Location": "Default Location",
+    "Price By Role": "Price By Role",
+    "Enable to show price by role on edit's vendor screen.": "Enable to show price by role on edit's vendor screen.",
     "Latitude": "Latitude",
     "Longitude": "Longitude",
     "Last Mile Delivery": "Last Mile Delivery",
@@ -1078,5 +1080,8 @@
     "Your order will arrive by" : "Your order will arrive by",
     "We are not accepting orders less then" :"We are not accepting orders less then",
     "Banner Size":"Banner Size",
-    "Content Area":"Content Area"
+    "Content Area":"Content Area",
+    "Tracking Url":"Tracking Url",
+    "Enable to allow guest customers to send otp.":"Enable to allow guest customers to send otp."
+    
  }

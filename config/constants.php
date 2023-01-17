@@ -23,6 +23,8 @@ return [
     'on_demand'    => 'Services',           // Services that are available any time you want to use it. 
     'laundry'      => 'Laundry',            // Laundry related products are mentioned in this flow.
     'appointment'  => 'Appointment',        // appointment related products are mentioned in this flow.
+    'p2p'          => 'P2P',
+ 
   ],
   // VendorTypes database
   // add these fields in table (client_preferences) rental_check,pick_check,on_demand_check,laundry_check
@@ -38,6 +40,8 @@ return [
     'on_demand'    => 'on_demandicon',         // Services that are available any time you want to use it. 
     'laundry'      => 'laundryicon',            // Laundry related products are mentioned in this flow.
     'appointment'  => 'appointmenticon',        // appointment related products are mentioned in this flow.
+    'p2p'          => 'P2P',
+
   ],
   /**  
    * these service types for category type 
@@ -61,4 +65,18 @@ return [
     'laundry'      => '7',            // Laundry related products are mentioned in this flow.
     'appointment'  => '8',  
   ],
+  'Period' =>[
+    'days'     => 'Daily',
+    'week'     => 'Weekly',
+    'months'   => 'Monthly',
+  ],
+  'weekDay' => [
+    '1' => "Sunday",
+    '2' => "Monday",
+    '3' => "Tuesday",
+    '4' => "Wednesday",
+    '5' => "Thursday",
+    '6' => "Friday",
+    '7' => "Saturday",
+  ]
 ];

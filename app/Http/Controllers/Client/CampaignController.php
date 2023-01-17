@@ -256,10 +256,26 @@ class CampaignController extends BaseController
             $campaign->email_subject = $request->email_subject;
             $campaign->email_body = $request->email_body;
         }else{
-            $campaign->push_title = $request->push_title;
+            $campaign->push_title = $request->push_title??$request->title;
             $campaign->push_message_body = $request->push_message_body;
             $campaign->push_url_option = $request->push_url_option;
-            $campaign->push_url_option_value = $request->push_url_option_value;
+            
+            $option = '';
+            if($request->push_url_option == '2'){
+                $categorySlug = Category::where('id',$request->push_url_option_value)->first();
+                $option = $categorySlug->type->title.'/'.$categorySlug->translation_one->name.'/'.$request->push_url_option_value;
+            }else if($request->push_url_option == '3'){
+                $vendorSlug = Vendor::where('id',$request->push_url_option_value)->select('name')->first();
+                $option = 'Vendor/'.$vendorSlug->name.'/'.$request->push_url_option_value;
+            }
+            // $client = Client::select('sub_domain','custom_domain')->where('id', '>', 0)->first();
+            // if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
+            // $redirect_url_link = "https://" . $client->custom_domain.$option;
+            // else
+            // $redirect_url_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN').$option;
+
+            $campaign->push_url_option_value = (($request->push_url_option == '1')?$request->push_url_option_value:$option);
+
         }        
         $campaign->send_to = $request->send_to;
         $campaign->schedule_datetime = $request->schedule_datetime;
@@ -286,10 +302,10 @@ class CampaignController extends BaseController
             {
                 $users = User::where(['status'=>1]);
                 if($request->type==1){
-                    $users->whereNotNull('phone_number');
+                    $users->whereNotNull('phone_number')->groupBy('phone_number');
                 }
                 if($request->type==2){
-                    $users->whereNotNull('email');
+                    $users->whereNotNull('email')->groupBy('email');
                 }                
                 $users = $users->get();
                 $getusercount = count($users);                

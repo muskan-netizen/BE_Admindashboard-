@@ -1,12 +1,16 @@
 <?php
+
+use App\Http\Controllers\BidController;
+use App\Http\Controllers\Front\CartController;
+
 	Route::post('ajaxGetScheduleDateDetails', 'Front\CartController@ajaxGetScheduleDateDetails')->name('ajaxGetScheduleDateDetails');
 	Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
 	Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
 	Route::get('auth/xero','Front\XeroController@index')->name('xero_auth');
 	Route::any('auth/callback/xero','Front\XeroController@xero_callback')->name('callback_xero');
-	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback'); 
-	Route::match(['get','post'],'payment/paytab/return','Front\PaytabController@returnBack')->name('payment.paytab.return'); 
+	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback');
+	Route::match(['get','post'],'payment/paytab/return','Front\PaytabController@returnBack')->name('payment.paytab.return');
 	Route::get('/debug-sentry', function () {
 		echo \Hash::make('dispatcher@765');
 		//throw new Exception('My first Sentry error!');
@@ -15,21 +19,24 @@
 
 Route::group(['middleware' => ['domain']], function () {
 	//easypay test
+	Route::get('test_notification', 'Front\FrontController@test_notification');
 	Route::get('testpayment', 'Front\EasypaisaControllertest@testpayment')->name('testpayment');
 	Route::get('response', 'Front\EasypaisaControllertest@response')->name('response_payment');
     Route::get('responseConf', 'Front\EasypaisaControllertest@responseConformation')->name('responseConformation');
-
+	Route::any('webhook/quick-api', 'Front\QuickApiController@webhooks')->name('quick-api');
 	Route::any('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::any('webhook/ship-rocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::any('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
 	Route::any('webhook/ahoy','AhoyController@ahoyWebhook')->name('ahoyWebhook');
 
+	// order dispatcher order web hooks
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
 	Route::get('dispatch-order-cancel-request/{id?}', 'Front\DispatcherController@dispatchOrderCancelRequest')->name('dispatch-order-cancel-request'); // Order Status update Dispatch details
 	Route::post('dispatch/customer/distance/notification/{id?}', 'Front\DispatcherController@dispatchCustomerDetails')->name('dispatch-customer-details'); // send distance & co2 emission push notification from dispatch to customer
     Route::get('dispatch-order-product-status-update/{id?}', 'Front\DispatcherController@dispatchOrderSingleProductStatusUpdate')->name('dispatch-order-product-status-update'); // Order Status update Dispatch
+	Route::get('dispatch-order-service-status-update/{id?}', 'Front\DispatcherController@dispatchOrderServiceProductStatusUpdate')->name('dispatch-order-service-status-update'); // Order Status update Dispatch
 	Route::get('testsms', 'Front\FrontController@testsms');
 
     Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
@@ -39,22 +46,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('send-notification', 'Front\CustomerAuthController@sendNotification');
     Route::get('vendor-notification', 'Front\DispatcherController@test');
 	Route::get('test/email1', 'Front\FrontController@sendmailtest');
-	Route::get('test/email', function () {
-		$send_mail = 'test@yopmail.com';
-		// App\Jobs\SendRefferalCodeEmailJob::dispatch($send_mail);
-		// dispatch(new App\Jobs\SendRefferalCodeEmailJob($send_mail));
-		$details = [
-			'title' => 'Mail from ItSolutionStuff.com',
-			'body' => 'This is for testing email using smtp'
-		];
-	   
-		try {
-				\Mail::to('sandeep.kumar@codebrewinnovations.com')->send(new \App\Mail\MyTestMail($details));
-				dd('send mail successfully !!');
-			}catch(\Exception $e) {
-					return response()->json(['data' => $e->getMessage()]);
-			}
-	});
 
 
 	// Start edit order routes
@@ -97,7 +88,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/check_stripe_return_data', 'Front\StripeGatewayController@checkStripeReturnDataFrom3DAuth')->name('check_stripe_return_data');
 	Route::post('/payment/payment_init', 'Front\StripeGatewayController@paymentInit')->name('payment_init');
 	Route::post('payment/webhook/stripe', 'Front\StripeGatewayController@stripeWebhook')->name('payment.webhook.stripe');
-
+	Route::get('/payment/checkgift', 'Front\StripeGatewayController@checkgift')->name('checkgift');
 	// Stripe FPX
 	Route::post('payment/create/stripe_fpx', 'Front\StripeGatewayController@createStripeFPXPaymentIntent')->name('payment.create.stripe_fpx');
 	Route::get('payment/retrieve/stripe_fpx', 'Front\StripeGatewayController@retrieveStripeFPXPaymentIntent')->name('payment.retrieve.stripe_fpx');
@@ -121,7 +112,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/webview/stripe_ideal', 'Front\StripeGatewayController@paymentWebViewStripeIdeal')->name('payment.webview.stripe_ideal');
 	Route::get('payment/webview/response/stripe_ideal', 'Front\StripeGatewayController@webViewResponseStripeIdeal')->name('payment.webview.response.stripe_ideal');
 
-		   
+
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
 	Route::get('payment/paypal/CompletePurchase', 'Front\PaypalGatewayController@paypalCompletePurchase')->name('payment.paypalCompletePurchase');
@@ -145,7 +136,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mobbex', 'Front\MobbexGatewayController@mobbexPurchase')->name('payment.mobbexPurchase');
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
 
-	
+
 
 
 	//GCash
@@ -164,7 +155,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Braintree
 	Route::match(['get','post'],'payment/braintree/page','Front\BraintreeController@beforePayment')->name('payment.braintree.beforePayment');
-	Route::post('payment/braintree','Front\BraintreeController@createPayment')->name('payment.braintree.createPayment'); 
+	Route::post('payment/braintree','Front\BraintreeController@createPayment')->name('payment.braintree.createPayment');
 
 	//Ozow
 	Route::match(['get','post'],'payment/ozow/page','Front\OzowController@beforePayment')->name('payment.ozow.beforePayment');
@@ -219,9 +210,9 @@ Route::group(['middleware' => ['domain']], function () {
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 
-	//VivaWallet routes 
+	//VivaWallet routes
 	Route::match(['get','post'],'payment/vivawallet/pay', 'Front\VivawalletController@createPayLink')->name('vivawallet.pay');
-	
+
 
 	Route::match(['get','post'],'viva/result', 'Front\VivawalletController@successPage')->name('viva.success');
 	Route::any('viva/webhook/success', 'Front\VivawalletController@verifyWebhookUrl')->name('viva.webhook');
@@ -239,7 +230,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mvPay', 'Front\MvodafoneController@createPayLink')->name('mvodafone.pay');
 	Route::get('payment/mvsuccess', 'Front\MvodafoneController@successPage')->name('mvodafone.success');
 
-	//Flutterwave routes 
+	//Flutterwave routes
 	Route::post('payment/flutterwave', 'Front\FlutterWaveController@createHash')->name('flutterwave.createHash');
 	Route::match(['get','post'],'payment/flutter/success', 'Front\FlutterWaveController@successPage')->name('flutterwave.success');
 
@@ -247,32 +238,32 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/easypaisa', 'Front\EasypaisaController@createHash')->name('easypaisa.createHash');
 	Route::get('payment/easypaisa', 'Front\EasypaisaController@successPage')->name('easypaisa.success');
 
-	//Windcave routes 
+	//Windcave routes
 	Route::post('payment/windcave', 'Front\WindcaveController@createHash')->name('windcave.createHash');
 	Route::get('payment/windcave/success', 'Front\WindcaveController@successPage')->name('windcave.success');
 	Route::get('payment/windcave/fail', 'Front\WindcaveController@failPage')->name('windcave.fail');
-	
-	//DPO routes 
+
+	//DPO routes
 	Route::post('payment/dpo', 'Front\DpoController@createTocken')->name('dpo.createTocken');
 	Route::get('payment/dpo/redirect', 'Front\DpoController@successPage')->name('dpo.redirect');
 	Route::get('payment/dpo/success', 'Front\DpoController@successPage')->name('dpo.success');
 	Route::get('payment/dpo/fail', 'Front\DpoController@failPage')->name('dpo.fail');
 
-	//Paytech routes 
+	//Paytech routes
 	Route::post('payment/paytech', 'Front\PaytechController@createHash')->name('paytech.createHash');
 	Route::get('payment/paytech/success', 'Front\PaytechController@successPage')->name('paytech.success');
 	Route::get('payment/paytech/fail', 'Front\PaytechController@failPage')->name('paytech.fail');
 
 	Route::post('payment/dpo/wallet', 'Front\DpoController@createTocken')->name('dpo.createTocken');
 	Route::post('payment/dpo/subscription', 'Front\DpoController@createTocken')->name('dpo.subscription');
-	
+
 	//payPhone routes
 	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
 	Route::get('payment/payphone/success', 'Front\PayphoneController@successPage')->name('payphone.success');
 	Route::any('payment/payphone/api/{url?}/{token?}', 'Front\PayphoneController@webViewPay')->name('payphone.webview');
 	Route::any('payment/payphone/refundWalletAmount', 'Front\PayphoneController@refundWalletAmount')->name('payphone.refund');
-	
-	//KongaPay routes 
+
+	//KongaPay routes
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
 	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
 	Route::match(['get','post'],'payment/kongapay/result/{from?}', 'Front\KongapayController@completeOrderCart')->name('kongapay.successCart');
@@ -298,11 +289,10 @@ Route::group(['middleware' => ['domain']], function () {
 	// Route::post('payment/paylink/notify', 'Front\PaylinkGatewayController@paylinkNotify')->name('payment.paylinkNotify');
 
 	Route::post('payment/razorpay', 'Front\RazorpayGatewayController@razorpayPurchase')->name('payment.razorpayPurchase');
-	// Route::get("/payment/razorpay/view", function(){
-	// 	return View::make("frontend.razorpay_view");
-	//  })->name('razorpay.view');
+
 	Route::post('payment/razorpay/pay', 'Front\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
 	Route::get('payment/razorpay/notify', 'Front\RazorpayGatewayController@razorpayNotify')->name('payment.razorpayNotify');
+	Route::get('payment/razorpay/payout/notify', 'Front\RazorpayGatewayController@razorpayPayoutNotify')->name('payment.razorpay.payout.notify');
 
 
 	//Cashfree
@@ -359,7 +349,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
 
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
-	
+
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
 	Route::get('/homeTest', 'Front\UserhomeController@indexTest')->name('homeTest');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
@@ -367,6 +357,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
 	Route::get('driver-documents', 'Front\UserhomeController@driverDocuments')->name('driver-documents');
 	Route::get('page/{slug}', 'Front\UserhomeController@getExtraPage')->name('extrapage');
+	Route::get('order/track/{id}/{order_id}', 'Front\OrderController@TrackOrder')->name('track.order');
+	Route::post('order/track/token', 'Front\OrderController@TrackOrderTokenVerify')->name('track.order.token.verify');
+	Route::post('order/track/otpresend', 'Front\OrderController@ResendOtpForTrackingUrl')->name('track.order.otp.resend');
 
 	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
 	Route::post('/postHomePageDataSingle', 'Front\UserhomeController@postHomePageDataSingle')->name('postHomePageDataSingle');
@@ -452,7 +445,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::post('/updateCartBookingSlot', 'Front\CartController@updateCartBookingSlot')->name('updateCartBookingSlot');
 
-	
+
+
 
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
@@ -468,6 +462,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('getSlotFromDispatchDemand', 'Front\FrontController@getSlotFromDispatchDemand')->name('getSlotFromDispatchDemand');
 	//chatNotification to all users from dispacther
 	Route::any('sendNotificationToUserByDispatcher', 'Front\ChatDispatcherNotificationController@sendNotificationToUserByDispatcher')->name('sendNotificationToUserByDispatcher'); // Order Status update Dispatch
+	Route::get('recentViewProduct/all', 'Front\RecentViewProductController@viewAll')->name('recent.view.product.all');
 	/**
 	 * booking routes
 	 */
@@ -504,6 +499,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('wallet/transfer/confirm', 'Front\WalletController@walletTransferConfirm')->name('wallet.transfer.confirm');
 	Route::get('user/loyalty', 'Front\LoyaltyController@index')->name('user.loyalty');
 	Route::post('wallet/payment/option/list', 'Front\WalletController@paymentOptions')->name('wallet.payment.option.list');
+	Route::get('wallet/addMoney', 'Front\WalletController@addWalletAmount');
 	Route::get('user/deleteAddress/{id}', 'Front\AddressController@delete')->name('deleteAddress');
 	Route::post('user/updateAccount', 'Front\ProfileController@updateAccount')->name('user.updateAccount');
 	Route::post('user/updateTimezone', 'Front\ProfileController@updateTimezone')->name('user.updateTimezone');
@@ -519,7 +515,8 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('order/success/{order_id}', 'Front\OrderController@getOrderSuccessPage')->name('order.success');
 	Route::get('order/return/success', 'Front\OrderController@getOrderSuccessReturnPage')->name('order.return.success');
 
-
+	Route::post('user/editorder', 'Front\OrderController@editOrderByUser')->name('user.editorder');
+	Route::post('user/discardeditorder', 'Front\OrderController@discardEditOrderByUser')->name('user.discardeditorder');
 
 	Route::post('promocode/list', 'Front\PromoCodeController@postPromoCodeList')->name('verify.promocode.list');
 	Route::post('promocode/validate_code', 'Front\PromoCodeController@validate_code')->name('verify.promocode.validate_code');
@@ -532,24 +529,37 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/subscription/purchase/{slug}', 'Front\UserSubscriptionController@purchaseSubscriptionPlan')->name('user.subscription.plan.purchase');
 	Route::post('user/subscription/cancel/{slug}', 'Front\UserSubscriptionController@cancelSubscriptionPlan')->name('user.subscription.plan.cancel');
 	Route::get('user/subscription/checkActive/{slug}', 'Front\UserSubscriptionController@checkActiveSubscription')->name('user.subscription.plan.checkActive');
+
+	// Refer and Earn Module
+	Route::name('refer-earn.')->group(function () {
+		Route::get('user/refer-earn', 'Front\InfluencerReferAndEarnController@index')->name('index');
+		Route::get('user/get-refer-earn-form/{id}', 'Front\InfluencerReferAndEarnController@getReferEarnForm')->name('form');
+		Route::post('user/save-refer-earn-form', 'Front\InfluencerReferAndEarnController@save')->name('save');
+		Route::post('user/update-refer-code', 'Front\InfluencerReferAndEarnController@updateRefferalCode')->name('updateRefferalCode');
+	});
 	Route::post('user/save_fcm_token', 'Front\ProfileController@save_fcm')->name('user.save_fcm');
 	// Rating & review
 	Route::group(['prefix' => 'rating'], function () {
 		Route::post('update-product-rating', 'Front\RatingController@updateProductRating')->name('update.order.rating');
 		Route::get('get-product-rating', 'Front\RatingController@getProductRating')->name('get-product-rating-details');
-		
+
 		Route::post('update-driver-rating', 'Front\RatingController@updateDriverRating')->name('update.driver.rating');
 		Route::get('get-driver-rating', 'Front\RatingController@getDriverRating')->name('get-driver-rating-details');
+		Route::post('driver-agent-rating', 'Api\v1\RatingController@driverAgentRating')->name('driver-agent-rating');
 	});
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
 		Route::get('get-order-data-in-model', 'Front\ReturnOrderController@getOrderDatainModel')->name('getOrderDatainModel');
+		Route::get('get-replace-order-data-in-model', 'Front\ReturnOrderController@getReplaceOrderDatailModel')->name('getReplaceOrderDatailModel');
 		Route::get('get-return-products', 'Front\ReturnOrderController@getReturnProducts')->name('get-return-products');
+		Route::get('get-replace-products', 'Front\ReturnOrderController@getReplaceProducts')->name('get-replace-products');
 		Route::post('update-product-return', 'Front\ReturnOrderController@updateProductReturn')->name('update.order.return');
+		Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
 
 		Route::get('get-vendor-order-for-cancel', 'Front\ReturnOrderController@getVendorOrderForCancel')->name('get-vendor-order-for-cancel');
 		Route::post('vendor-order-for-cancel', 'Front\ReturnOrderController@vendorOrderForCancel')->name('order.cancel.customer');
 
+		Route::post('vendor-order-for-cancel-req', 'Front\ReturnOrderController@vendorOrderForCancelReq')->name('order.cancel.req.customer');
 	});
 	// Return product
 	Route::group(['prefix' => 'looking'], function () {
@@ -575,32 +585,44 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
 	Route::match(['get','post'],'passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 	Route::get('user/chat/userVendor/{room_id?}', 'Front\ChatController@UservendorChat')->name("userChat.UservendorChat");
+	Route::get('user/chat/userToUser/{room_id?}', 'Front\ChatController@UserToUserChat')->name("userChat.UserToUserChat");
 	Route::get('user/chat/userAgent/{room_id?}', 'Front\ChatController@UserAgentChat')->name("userChat.UserAgentChat");
 
 	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
 	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
 
+    //bidding system
+	Route::get('user/bidRequest', [BidController::class, 'index'])->name('user.bidRequest');
+	Route::POST('user/bidUpdatePdf', [BidController::class, 'uploadPrescription'])->name('bid.update_pdf');
+    Route::get('bidding/make', [BidController::class, 'index'])->name('bid.index');
+    Route::get('bid/accept/{id?}/{vid?}', [BidController::class, 'bidAccept'])->name('bid.accept');
+    Route::get('bid/reject/{id?}/{vid?}', [BidController::class, 'bidReject'])->name('bid.reject');
+    Route::post('store', [BidController::class, 'store'])->name('bid.store');
+    Route::get('bid/Details/{id?}', [BidController::class, 'bidDetails'])->name('bid.details');
+    Route::post('add/bid/prescription', [BidController::class, 'uploadPrescription'])->name('bid.uploadPrescription');  //add bidding prescription
+    Route::post('get/bid/prescription', [BidController::class, 'getPrescription'])->name('getPrescription'); //get bedding prescription
+    Route::get('product-search', [BidController::class, 'search'])->name('searchProduct'); //vendor product search
+    Route::get('bid/add/to/cart/{id}', [CartController::class, 'initCart'] )->name('bidding-cart');
 
 
-	
+
+
+	/**
+	 * booking routes
+	 */
+	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
+
+	// gift card
+	Route::get('user/giftCard', 'Front\giftCard\GiftcardController@getGiftCard')->name("giftCard.index");
+	Route::get('user/giftCard/payment/{id}', 'Front\giftCard\GiftcardController@selectGiftCardPayment')->name('giftCard.paymentList');
+	Route::get('user/giftCard/list', 'Front\giftCard\GiftcardController@postGiftCardLisTCart')->name('giftCard.cart.list');
+	Route::post('verify/giftCard', 'Front\giftCard\GiftcardController@postVerifyGiftCardCode')->name('verify.giftCard');
+	Route::post('remove/giftCard', 'Front\giftCard\GiftcardController@RemoveGiftCardCode')->name('remove.giftCard');
+	Route::get('user/giftCard/mailTest', 'Front\giftCard\GiftcardController@textGiftMail')->name('giftCard.mail');
+
+
+	Route::resource('posts', 'Front\PostController');
+	Route::get('get-attributes', 'Front\PostController@getCategoryAttributes')->name("category.attributes");
+
 });
-Route::get('js/translations.js', function (Request $request) {
-    $lang = config('app.locale');
-    $strings = \Illuminate\Support\Facades\Cache::rememberForever('lang_'.$lang.'.js', function () use($lang) {
-        $files = [
-            resource_path('lang/' . $lang . '/common.php'),
-            resource_path('lang/' . $lang . '/validation.php'),
-        ];
-        $strings = [];
 
-        foreach ($files as $file) {
-            $name = basename($file, '.php');
-            $strings[$name] =  $file;
-        }
-
-        return $strings;
-    });
-    header('Content-Type: text/javascript');
-    echo('window.i18n = ' . json_encode($strings) . ';');
-    exit();
-})->name('translations');

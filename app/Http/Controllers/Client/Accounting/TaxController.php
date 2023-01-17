@@ -47,7 +47,7 @@ class TaxController extends Controller{
     public function filter(Request $request){
         $user = Auth::user();
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
-        $orders_query = Order::with('user','paymentOption','taxes');
+        $orders_query = Order::with('user','paymentOption','taxes','ordervendor');
         if (Auth::user()->is_superadmin == 0) {
             $orders_query = $orders_query->whereHas('vendors.vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -76,7 +76,12 @@ class TaxController extends Controller{
             return decimal_format($orders->payable_amount);
         })
         ->addColumn('taxable_amount', function($orders) {
-            return decimal_format($orders->taxable_amount);
+            if(isset($orders->ordervendor->taxable_amount)){
+                return decimal_format($orders->ordervendor->taxable_amount);
+            }else{
+                return 0;
+            }
+            
         })
         ->addColumn('payment_method', function($orders) {
             return $orders->paymentOption ? $orders->paymentOption->title : '';
@@ -87,15 +92,15 @@ class TaxController extends Controller{
         ->addColumn('created_date', function($orders) use($timezone) {
                 return dateTimeInUserTimeZone($orders->created_at, $timezone);
         })
-        ->addColumn('tax_types', function($orders){
-            $tax_types = [];
-            foreach ($orders->taxes as $tax) {
-                if($tax && !is_null($tax->category)){
-                    $tax_types[]= $tax->category->title??'';
-                }
-            }
-            return implode(', ',$tax_types);
-        })
+        // ->addColumn('tax_types', function($orders){
+        //     $tax_types = [];
+        //     foreach ($orders->taxes as $tax) {
+        //         if($tax && !is_null($tax->category)){
+        //             $tax_types[]= $tax->category->title??'';
+        //         }
+        //     }
+        //     return implode(', ',$tax_types);
+        // })
         ->addIndexColumn()
         ->filter(function ($instance) use ($request) {
             if (!empty($request->get('search'))) {

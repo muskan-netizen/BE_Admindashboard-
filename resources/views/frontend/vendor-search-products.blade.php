@@ -1,9 +1,12 @@
+@php
+  $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+@endphp
 {{--@if($listData->isNotEmpty()) --}}
 <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
     <nav class="scrollspy-menu">
         <ul>
             @forelse($listData as $key => $data)
-            <li><a href="#{{ $data->category->slug }}">{{ $data->category->translation_one->name }}({{ $data->products_count }})</a></li>
+            <li class="side-scroll-menu-li"><a href="#{{ str_replace(' ', '-', $data->category->slug) }}">{{ $data->category->translation_one->name }}({{ $data->products_count }})</a></li>
             @empty
             @endforelse
         </ul>
@@ -58,7 +61,7 @@
         @endif
     </div>
 @forelse($listData as $key => $data)
-    <section class="scrolling_section " id="{{ $data->category->slug }}">
+    <section class="scrolling_section" id="{{ str_replace(' ', '-', $data->category->slug) }}">
         @if (!empty($data->products))
             <h2 class="category-head mt-0 mb-3">
                 {{ $data->category->translation_one->name }}
@@ -277,10 +280,17 @@
                             @endif
 
                             <p class="mb-1 product_price">
-                                {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier) }}
+                                @if($additionalPreference ['is_token_currency_enable'])
+                                    {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken($prod->variant_price * $prod->variant_multiplier)}}
+                                @else
+                                    {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier) }}
+                                @endif
                                 @if ($prod->variant[0]->compare_at_price > 0)
-                                    <span
-                                        class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
+                                    @if($additionalPreference ['is_token_currency_enable'])
+                                        <span class="org_price ml-1 font-14">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken($prod->variant[0]->compare_at_price * $prod->variant_multiplier)}}</span>
+                                    @else
+                                        <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
+                                    @endif
                                 @endif
                             </p>
                             <div class="member_no d-block mb-0">

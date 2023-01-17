@@ -15,7 +15,26 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
     <source src="{{ asset('assets/sounds/notification.mp3')}}" type="audio/mpeg">
     Your browser does not support the audio element.
 </audio>
-<div class="navbar-custom">
+<style>
+ .notification {
+  text-decoration: none;
+  padding: 1px 2px;
+  position: relative;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.notification .badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  padding: 5px 10px;
+  border-radius: 50%;
+  background: rgb(189, 188, 188);
+  color: white;
+}
+</style>
+<div class="navbar-custom {{(is_p2p_vendor()) ? '' : ''}}">
 
     <div class="col d-flex align-items-center justify-content-between justify-content-lg-end">
 
@@ -30,7 +49,7 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
             @if(Auth::user()->is_superadmin )
                 <li class="alToggleSwitch">
                     <label class="altoggle">
-                        <input type="checkbox" class="admin_panel_theme" {{$clientData->getPreference->theme_admin == "dark" ? 'checked' : ''}}>
+                        <input type="checkbox" class="admin_panel_theme" {{@$clientData->getPreference->theme_admin == "dark" ? 'checked' : ''}}>
                         <div class="toggle__bg">
                             <div class="toggle__sphere">
                                 <div class="toggle__sphere-bg">
@@ -70,6 +89,9 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
             </li>
             <li class="m-hide"><label class="site-name m-0">{{ucFirst($clientData->custom_domain)}}</label></li>
             <li class="m-hide"><a href="{{route('userHome')}}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __("View Website") }}</span></a></li>
+           @if(App\Services\InventoryService::checkIfInventoryOn())
+            <li class="m-hide" ><a href="javascript:;"id="inventoryModalShow" ><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __("View Inventory") }}</span></a></li>
+            @endif
             <!-- <li class="m-hide"><a href="#" target="_blank"><i class="fab fa-apple" aria-hidden="true"></i><span class="align-middle">iOS App</span></a></li>
             <li class="m-hide"><a href="#" target="_blank"><i class="fab fa-android" aria-hidden="true"></i><span class="align-middle">Android App</span></a></li> -->
 
@@ -308,3 +330,4 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
         </div>
     </div>
 </div>
+

@@ -80,7 +80,7 @@
                 </div>
             </div>
         </div>
-        <div class="row my-md-3">
+        <div class="row my-md-3 mt-5 pt-4">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
                 <div class="dashboard-left mb-3">
@@ -170,7 +170,11 @@
 </div>
 <script type="text/template" id="add_address_template">
     <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="addedit-addressLabel"><%= title %> {{ __('Address') }}</h5>
+        <% if(title == 'Edit') { %>
+            <h5 class="modal-title" id="addedit-addressLabel">{{ __('Edit') }} {{ __('Address') }}</h5>
+        <% }else{ %>
+            <h5 class="modal-title" id="addedit-addressLabel">{{ __('Add') }} {{ __('Address') }}</h5>
+        <% } %>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -243,7 +247,7 @@
                         <div class="form-row">
                             <div class="col-md-6 mb-2">
                                 <label for="house_number">{{ __('House / Apartment/ Flat No.') }}</label>
-                                <input type="text" class="form-control" id="house_number" placeholder="{{ __('House / Apartment/ Flat number') }}" name="house_number" value="<%= ((typeof address != 'undefined') && (address.house_number != null)) ? address.house_number : '' %>">
+                                <input type="text" class="form-control" id="house_number" placeholder="{{ __('House / Apartment/ Flat No.') }}" name="house_number" value="<%= ((typeof address != 'undefined') && (address.house_number != null)) ? address.house_number : '' %>">
                                 <span class="text-danger" id="house_number_error"></span>
                             </div>
                             <div class="col-md-6 mb-2">
@@ -268,7 +272,7 @@
                         </div>
                         <div class="form-row mb-0">
                             <div class="col-md-6 mb-2">
-                                <label for="country">{{ __('Country') }}</label>
+                                <label for="country">{{ __('Select') }} {{ __('Country') }}</label>
                                 <select name="country" id="country" class="form-control" value="<%= ((typeof address != 'undefined') && (address.country_id != null)) ? address.country_id : '' %>" required="required">
                                     <option value="">{{__('Select country')}}</option>
                                     @foreach($countries as $co)

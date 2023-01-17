@@ -21,6 +21,10 @@ class CabBookingLayout extends Model
       return $this->belongsTo('App\Models\CabBookingLayoutTranslation', 'id', 'cab_booking_layout_id' );
     }
 
+    public function banner_images(){
+      return $this->hasMany('App\Models\CabBookingLayoutBanner', 'cab_booking_layout_id' );
+    }
+
     public function pickupCategories(){
         return $this->hasMany('App\Models\CabBookingLayoutCategory')->whereHas('categoryDetail',function($q){$q->where('deleted_at',null);});
 
@@ -41,5 +45,19 @@ class CabBookingLayout extends Model
       $values['image_fit'] = \Config::get('app.FIT_URl');
 
       return $values;
+    }
+
+    public function scopeApp($query)
+    {
+      if(checkColumnExists('cab_booking_layouts', 'type')){
+        return $query->where('type', 2);
+      }
+    }
+
+    public function scopeWeb($query)
+    {
+      if(checkColumnExists('cab_booking_layouts', 'type')){
+        return $query->where('type', 1);
+      }
     }
 }

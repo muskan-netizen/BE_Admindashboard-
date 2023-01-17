@@ -125,7 +125,7 @@ $timezone = Auth::user()->timezone;
                 <td style="text-align: right;">{{$currencySymbol . decimal_format($order->taxable_amount)}}</td>
              </tr>
              <tr>
-               <td style="text-align: left;"><b>{{__('Delivery fee')}}:</b></td>
+               <td style="text-align: left;"><b>{{__('Delivery Fee')}}:</b></td>
                <td style="text-align: right;">{{$currencySymbol . decimal_format($order->total_delivery_fee)}}</td>
             </tr>
             <tr>
@@ -183,7 +183,7 @@ $timezone = Auth::user()->timezone;
       <table class="payment-method" style="width: 100%;">
          <thead>
             <tr style="color: rgb(0 0 0 / 44%);font-size: 12px;line-height: 15px;">
-               <th>{{__('Payment method')}}</th>
+               <th>{{__('Payment Method')}}</th>
                <th style="text-align: right;">{{__('Customer Details')}}</th>
             </tr>
          </thead>

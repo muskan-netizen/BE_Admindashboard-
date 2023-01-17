@@ -10,12 +10,13 @@ $applocale = 'en';
 if(session()->has('applocale')){
     $applocale = session()->get('applocale');
 }
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 @endphp
 <div class="top-header site-topbar al_custom_head">
     <nav class="navbar navbar-expand-lg p-0 ">
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
-                <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"   >
+                <div class="col-lg-8 p-0 d-md-flex align-items-center justify-content-start" >
                     <a class="navbar-brand mr-3"  href="{{ route('userHome') }}">
                     <img class="logo-image" style="height:50px;" alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
@@ -35,9 +36,15 @@ if(session()->has('applocale')){
                         </div>
 
                     </div>
+                    @auth
+                        @if(@getAdditionalPreference(['is_bid_enable'])['is_bid_enable'] == 1)
+                            @include('frontend.bidding_module.modal')
+                        @endif 
+                    @endauth
+
                 </div>
 
-                <div class="col-lg-6 text-right ml-auto al_z_index p-0"  >
+                <div class="col-lg-4 text-right ml-auto al_z_index p-0"  >
                     <ul class="header-dropdown ml-auto">
                         @if($client_preference_detail->header_quick_link == 1)
                         <li class="onhover-dropdown quick-links quick-links">
@@ -127,9 +134,11 @@ if(session()->has('applocale')){
                                 <li>
                                     <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
                                 </li>
+                                @if($getAdditionalPreference['is_phone_signup'] != 1)
                                 <li>
                                     <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
                                 </li>
+                                @endif
                                 @endif
                             </ul>
                         </li>
@@ -212,6 +221,7 @@ if(session()->has('applocale')){
         </div>
     </div>--}}
 </div>
+
 <div class="al_mobile_menu al_new_mobile_header">
                 <div class="al_new_cart">
                     @if($client_preference_detail->cart_enable == 1)
@@ -337,5 +347,4 @@ if(session()->has('applocale')){
                     </ul>
                 </div>
             </div>
-
 

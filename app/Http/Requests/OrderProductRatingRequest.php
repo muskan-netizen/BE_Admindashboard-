@@ -28,7 +28,7 @@ class OrderProductRatingRequest extends FormRequest{
             'order_vendor_product_id' => 'required|exists:order_vendor_products,id',
             'order_id' => 'required|exists:orders,id',
             'product_id' => 'required',
-            'files.*' => 'image'
+            'files.*' => 'image|mimes:jpeg,png,jpg,gif,svg'
         ];
     }
     public function messages(){
