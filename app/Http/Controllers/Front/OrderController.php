@@ -1040,10 +1040,6 @@ class OrderController extends FrontController
                 $additionalPrice=0.00;
                 $quantity_container_charges = 0;
                 $deliveryfeeOnCoupon = 0;
-<<<<<<< HEAD
-
-=======
->>>>>>> SurendraLoyalPointStage
                 $passbase_check = VerificationOption::where(['code' => 'passbase', 'status' => 1])->first();
 
                 /* Update details related to order vendor */
