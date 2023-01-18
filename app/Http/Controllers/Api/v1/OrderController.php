@@ -305,6 +305,7 @@ class OrderController extends BaseController
                         $is_restricted = 0;
                         $bid_vendor_discount = 0;
                         $deliveryfeeOnCoupon = 0;
+                        $vendor_service_fee_percentage_amount = 0;
 
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
@@ -377,7 +378,7 @@ class OrderController extends BaseController
                                     $productAddon_price = $productAddon_price + $opt_quantity_price;
                                     $payable_amount = $payable_amount + $opt_quantity_price;
                                     $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
-
+                                    $vendor_products_total_amount = $vendor_products_total_amount + $opt_quantity_price;
                                 }
                             }
 
@@ -675,16 +676,17 @@ class OrderController extends BaseController
                             //-------------Coupon Related discount calculations Ends here----------------------
                         }
                         //Start applying service fee on vendor products total
-                        $vendor_service_fee_percentage_amount = 0;
+                        $service_fee_percentage_amount = 0;
                         if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                            $vendor_service_fee_percentage_amount = ((($vendor_products_total_amount+$opt_quantity_price)-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
-
-                            $vendor_payable_amount += $vendor_service_fee_percentage_amount;
-                            $payable_amount += $vendor_service_fee_percentage_amount;
+                            $service_fee_percentage_amount = (($vendor_products_total_amount-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                            $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
+                            $vendor_payable_amount += $service_fee_percentage_amount;
+                            $payable_amount += $service_fee_percentage_amount;
+                            Log::info("service_fee_percentage_amount ".$service_fee_percentage_amount);
                         }
                         //End applying service fee on vendor products total
-                        $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
-                        $order_vendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
+                        $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
+                        $order_vendor->service_fee_percentage_amount = $service_fee_percentage_amount;
 
                         $total_delivery_fee += $delivery_fee;
                         $vendor_payable_amount += $delivery_fee;
@@ -741,7 +743,7 @@ class OrderController extends BaseController
                     }
 
                     $payable_amount = $payable_amount + $total_taxes + $additional_price;
-// dump("point - ".$payable_amount);
+
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 
                     // calculate subscription discount
