@@ -323,6 +323,7 @@ $timezone = Auth::user()->timezone;
                                                 <div class="row mt-2">
                                                     <div class="col-md-9 mb-3">
                                                         @php
+                                                        
                                                         $subtotal_order_price = $total_order_price = $total_tax_order_price = 0;
                                                         @endphp
                                                         @foreach ($order->vendors as $key => $vendor)
@@ -402,7 +403,7 @@ $timezone = Auth::user()->timezone;
                                                             <div class="row">
                                                                 <div class="col-6 col-sm-4">
                                                                     <h5 class="m-0">
-                                                                        {{ __('Order Status') }}
+                                                                        {{ __('Order Status')  }}
                                                                     </h5>
                                                                     <ul class="status_box mt-1 pl-0">
                                                                         @if (!empty($vendor->order_status))
@@ -504,10 +505,10 @@ $timezone = Auth::user()->timezone;
                                                                             </label>
                                                                         </li>
                                                                         @elseif($product->reqCancelOrder->status == 'Pending')
-                                                                        <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-warning mr-2" style="font-size:12px">{{ __('Cancel Request Pending') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
+                                                                        <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-warning mr-2" style="font-size:12px">{{ __('Cancel Request Pending') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$product->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
                                                                        
                                                                         @elseif($product->reqCancelOrder->status == 'Rejected')
-                                                                        <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Request Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
+                                                                        <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Request Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$product->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
                                                                         @endif
                                                                         @endif
 
@@ -611,11 +612,11 @@ $timezone = Auth::user()->timezone;
                                                                         </li>
                                                                         @elseif($vendor->order_status_option_id==2 && $client_preference_detail->is_cancel_order_user == 1 && $vendor->vendor->cancel_order_in_processing == 1)
                                                                         @if(empty($order->reqCancelOrder))
-                                                                        <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->order_id??0}}" data-id="{{$vendor->id??0}}" data-vendor_id="{{$vendor->vendor_id??0}}" style="width: auto;display: inline-block;">
+                                                                        <!-- <label class="rating-star request_cancel_order" data-order_vendor_id="{{$vendor->order_id??0}}" data-id="{{$vendor->id??0}}" data-vendor_id="{{$vendor->vendor_id??0}}" style="width: auto;display: inline-block;">
                                                                             {{ __('Cancel Order') }}
-                                                                        </label>
+                                                                        </label> -->
                                                                         @elseif($order->reqCancelOrder->status == 'Rejected')
-                                                                        <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Order Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
+                                                                        <!-- <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Order Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li> -->
                                                                         @endif
                                                                         @endif
                                                                         {{-- Check if order is created only --}}

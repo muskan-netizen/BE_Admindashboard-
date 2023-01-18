@@ -124,23 +124,21 @@ class OrderController extends FrontController
             $pastOrders     =  $pastOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
-                $q->where('order_status_option_id', '!=', 6);
-                $q->where('order_status_option_id', '!=', 3);
-                $q->where('order_status_option_id', '!=', 9);
+                $q->with(['products', 'products.media.image', 'products.pvariant.media.pimage.image']);
+                if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
+                    $q->with('exchanged_of_order.orderDetail');
+                }
+                $q->whereNotIn('order_status_option_id',  [3,6,9]);
             },
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address','reqCancelOrder'
+            }, 'vendors.dineInTable.category', 'user', 'address','reqCancelOrder'
 
 
         ]);
-        if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
-            $activeOrders = $activeOrders->with('vendors.exchanged_of_order.orderDetail');
-        }
+        
         $activeOrders->whereHas('vendors', function ($q) {
-            $q->where('order_status_option_id', '!=', 6);
-            $q->where('order_status_option_id', '!=', 3);
-            $q->where('order_status_option_id', '!=', 9);
+            $q->whereNotIn('order_status_option_id',  [3,6,9]);
         })
             ->where(function ($q1) {
                 $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
