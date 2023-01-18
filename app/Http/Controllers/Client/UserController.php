@@ -122,7 +122,8 @@ class UserController extends BaseController
                 if (!empty($users->is_admin) && $users->is_admin == 1) {
                     return 'Vendor';
                 } else {
-                    return 'Customer';
+                    return 'Customer'.((count($users->getRoleNames())>0)?
+                    ' ('.$users->getRoleNames()[0].')':'');
                 }
             })
             ->addColumn('login_type', function ($users) {

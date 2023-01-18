@@ -27,6 +27,7 @@ class MainPermissionSeeder extends Seeder{
 
             //Vendor Page
             array('name' => 'vendor-view','controller'=>'VendorController'),
+            array('name' => 'vendor-add','controller'=>'VendorController'),
             array('name' => 'vendor-setting','controller'=>'VendorController'),
             array('name' => 'vendor-catalog','controller'=>'VendorController'),
             array('name' => 'vendor-config','controller'=>'VendorController'),

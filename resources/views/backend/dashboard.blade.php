@@ -10,7 +10,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
 </style>
 @endsection
 @section('content')
-
+@include('alert')
 <!-- Dashboard start here -->
 <div class="container-fluid py-md-2" id="alDashboardStyle">
     <div class="row d-flex align-items-center ">
@@ -77,7 +77,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
             </div>
 
             <div class="row">
-                @can('dashboard-totalRevenue')
+                @if(auth()->user()->can('dashboard-totalRevenue') || auth()->user()->is_superadmin)
                 <div class="col-sm-6">
                     <!-- Revenue box start here -->
                     <div class="card alDasBoxItems">
@@ -94,7 +94,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         </div>
                     </div><!-- Revenue box end here -->
                 </div>
-                @endcan
+                @endif
                 <div class="col-sm-6">
                     <!-- Growth box start here -->
                     <div class="card alDasBoxItems">
@@ -113,7 +113,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
             </div>
         </div>
-        @can('dashboard-monthRevenue')
+        @if(auth()->user()->can('dashboard-monthRevenue') || auth()->user()->is_superadmin)
         <div class="col-xl-7 col-lg-6">
             <div class="card card-h-100">
                 <!-- month wise data shown start here  -->
@@ -138,12 +138,12 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div><!-- month wise data shown end here  -->
             </div>
         </div>
-        @endcan
+        @endif
 
     </div>
 
     <div class="row">
-        @can('dashboard-weekRevenue')
+        @if(auth()->user()->can('dashboard-weekRevenue') || auth()->user()->is_superadmin)
         <div class="col-lg-8">
             <!-- total revenue sec start here -->
             <div class="card alRevenueByLocation">
@@ -207,8 +207,8 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
             </div>
         </div>
-        @endcan
-        @can('dashboard-locationRevenue')
+        @endif
+        @if(auth()->user()->can('dashboard-locationRevenue') || auth()->user()->is_superadmin)
         <div class="col-lg-4">
             <div class="card alRevenueByLocation">
                 <div class="card-body">
@@ -266,7 +266,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
             </div>
         </div>
-        @endcan
+        @endif
 
     </div>
 

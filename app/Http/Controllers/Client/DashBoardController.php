@@ -367,6 +367,12 @@ class DashBoardController extends BaseController
     public function postFilterDataNew(Request $request)
     {
         try {
+            $vendorIds = [];
+            if(auth()->user()->getRoleNames()[0]=='App Managers')
+            {
+                $vendorIds = Vendor::where('refference_id',auth()->id())->pluck('id')->toArray();
+            }
+            
             $date_filter = $request->date_filter;
             if($date_filter){
                 $date_explode = explode('to', $date_filter);
@@ -383,6 +389,11 @@ class DashBoardController extends BaseController
                 $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
                 });
+
+                if(count($vendorIds)>0)
+                {
+                    $total_products = $total_products->whereIn('vendor_id',$vendorIds);
+                }
             }
             
             $total_products = $total_products->where('deleted_at', NULL)->count();
@@ -390,10 +401,20 @@ class DashBoardController extends BaseController
             # Revenue sum
             $orders = new Order;
             $total_revenue = clone $orders;
+            $order_revenue = clone $orders;
             if (Auth::user()->is_superadmin == 0) {
                 $total_revenue = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
                 });
+
+                if(count($vendorIds)>0)
+                {
+                    $total_revenue = $orders->whereHas('vendors.vendor', function ($query) use($vendorIds) {
+                        $query->whereIn('vendor_id', $vendorIds);
+                    });
+                    
+                    $order_revenue = clone $total_revenue;
+                }
             }
             
             $total_revenue = $total_revenue->sum('payable_amount');
@@ -408,15 +429,37 @@ class DashBoardController extends BaseController
                  $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
                  $query->where('user_id', Auth::user()->id);
              });
+
+             if(count($vendorIds)>0)
+                {
+                    $vendor_orders = $vendor_orders->whereIn('vendor_id',$vendorIds);
+                    $order_revenue = clone $vendor_orders;
+                }
+
             }
+            
             $total_orders = $vendor_orders->count();
+            
+            $revenueCurrentWeek = clone $order_revenue;
+            $revenueLastWeek = clone $order_revenue;
+            $orders_currentmonth = clone $order_revenue;
+            $orders_lastmonth = clone $order_revenue;
+            $revenue_currentmonth = clone $order_revenue;
+            $revenue_lastmonth = clone $order_revenue;
+
+            $sale = clone $order_revenue;
+            $data = clone $order_revenue;
+            $data1 = clone $order_revenue;
+            $locationwise_revenue =  $vendor_orders;
+            $locationwise_revenue2 = clone $order_revenue;
+            $currentyear_ordercount = clone $order_revenue;
 
             # Current week revenue sum
-            $revenueCurrentWeek = $orders->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
+            $revenueCurrentWeek = $revenueCurrentWeek->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
 
             # Previous week revenue sum
-            $revenueLastWeek = $orders->whereBetween('created_at', [Carbon::now()->startOfWeek()->subWeek(), Carbon::now()->endOfWeek()->subWeek()])->sum('payable_amount');
-
+            $revenueLastWeek = $revenueLastWeek->whereBetween('created_at', [Carbon::now()->startOfWeek()->subWeek(), Carbon::now()->endOfWeek()->subWeek()])->sum('payable_amount');
+        
             $currentmonth_start = Carbon::now()->startOfMonth();
             $currentmonth_end = Carbon::now()->endOfMonth();
             $previousmonth_start = Carbon::now()->startOfMonth()->subMonth();
@@ -450,8 +493,8 @@ class DashBoardController extends BaseController
             }
 
             #Get orders percentage since last month
-            $orders_currentmonth = $orders->whereBetween('created_at', [$currentmonth_start, $currentmonth_end])->count();
-            $orders_lastmonth = $orders->whereBetween('created_at', [$previousmonth_start, $previousmonth_end])->count();
+            $orders_currentmonth = $orders_currentmonth->whereBetween('created_at', [$currentmonth_start, $currentmonth_end])->count();
+            $orders_lastmonth = $orders_lastmonth->whereBetween('created_at', [$previousmonth_start, $previousmonth_end])->count();
             $orders_increase = '';
             $orders_decrease = '';
             if ($orders_lastmonth < $orders_currentmonth) {
@@ -477,8 +520,8 @@ class DashBoardController extends BaseController
             }
 
             #Get revenue percentage since last month
-            $revenue_currentmonth = $orders->whereBetween('created_at', [$currentmonth_start, $currentmonth_end])->sum('payable_amount');
-            $revenue_lastmonth = $orders->whereBetween('created_at', [$previousmonth_start, $previousmonth_end])->sum('payable_amount');
+            $revenue_currentmonth = $revenue_currentmonth->whereBetween('created_at', [$currentmonth_start, $currentmonth_end])->sum('payable_amount');
+            $revenue_lastmonth = $revenue_lastmonth->whereBetween('created_at', [$previousmonth_start, $previousmonth_end])->sum('payable_amount');
             $revenue_increase = '';
             $revenue_decrease = '';
             if ($revenue_lastmonth < $revenue_currentmonth) {
@@ -529,40 +572,47 @@ class DashBoardController extends BaseController
             if ($products_decrease != '') {
                 $products_decrease = round($products_decrease, 2);
             }
-
+            // dd($sale->sum('payable_amount'));
             # Month wise revenue total
             $monthwise_revenue = [];
             for ($i = 1; $i <= 12; $i++) {
-                $sale = $orders->whereYear('created_at', date('Y'))->whereMonth('created_at', date($i))->sum('payable_amount');
-                $monthwise_revenue[] = round($sale);
+                $saleSum = $sale->whereYear('created_at', date('Y'))->whereMonth('created_at', date($i))->sum('payable_amount');
+                $monthwise_revenue[] = round($saleSum);
             }
 
             # Previous week day wise revenue total
             $previousweek_startdate = Carbon::now()->startOfWeek()->subWeek()->format('Y-m-d');
             $previousweek_revenue_daywise = [];
             for ($i = 0; $i < 7; $i++) {
-                $data = $orders->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($previousweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
-                $previousweek_revenue_daywise[] = round($data);
+                $dataSum = $data->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($previousweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
+                $previousweek_revenue_daywise[] = round($dataSum);
             }
 
             # Current week day wise revenue total
             $currentweek_startdate = Carbon::now()->startOfWeek()->format('Y-m-d');
             $currentweek_revenue_daywise = [];
             for ($i = 0; $i < 7; $i++) {
-                $data = $orders->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($currentweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
-                $currentweek_revenue_daywise[] = round($data);
+                $dataSum2 = $data1->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($currentweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
+                $currentweek_revenue_daywise[] = round($dataSum2);
             }
 
             # Revenue location wise
-            $locationwise_revenue = $orders->with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereYear('created_at', date('Y'))->whereNotNull('address_id');
-            $currentyear_ordercount = $orders->whereYear('created_at', date('Y'))->count();
+            // dd($orders->with('address:id,city')->get());
+
+            $locationwise_revenueNew = $orders->with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereYear('created_at', date('Y'))->whereNotNull('address_id');
+            // dd($locationwise_revenueNew->get());
+
+            $currentyear_ordercountNew = $currentyear_ordercount->whereYear('created_at', date('Y'))->count();
+            
             if($date_filter)
             {
-                $locationwise_revenue->whereBetween('created_at', [$from_date, $end_date]);
-                $currentyear_ordercount = $orders->whereBetween('created_at', [$from_date, $end_date])->count();
+                $locationwise_revenueNew->whereBetween('created_at', [$from_date, $end_date]);
+                $currentyear_ordercount = $currentyear_ordercountNew->whereBetween('created_at', [$from_date, $end_date])->count();
             }
-            $address_ids = $locationwise_revenue->pluck('address_id')->toArray();
-            $locationwise_revenue = $locationwise_revenue->get();
+            // dd(currentyear_ordercountNew);
+            $address_ids = $locationwise_revenueNew->pluck('address_id')->toArray();
+
+            $locationwise_revenue = $locationwise_revenueNew->get();
             $address_details = UserAddress::whereIn('id', $address_ids)->get();
 
             # Locations latitude and longitude for map marking

@@ -13,7 +13,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Spatie\Permission\Contracts\Role;
 
 class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
@@ -176,5 +176,10 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function bidRequests()
     {
         return $this->hasMany(BidRequest::class, 'user_id');
+    }
+
+    public function manager()
+    {
+        return $this->hasOne(Role::class, 'id');
     }
 }

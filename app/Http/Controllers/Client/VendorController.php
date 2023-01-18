@@ -59,50 +59,23 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function getFilterData(Request $request){
-        // $dinein_check = '';
-        // $takeaway_check = '';
-        // $delivery_check = '';
         $client_preference = (object)Session::get('preferences');
-        // if($client_preference){
-        //     $dinein_check = $client_preference->dinein_check;
-        //     $takeaway_check = $client_preference->takeaway_check;
-        //     $delivery_check = $client_preference->delivery_check;
-        // }
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->where('is_seller', 0)->orderBy('id', 'desc');
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
             });
-        }
+            if(auth()->user()->getRoleNames()[0]=='App Managers')
+            {
+                $vendors = $vendors->where('refference_id',auth()->id());
+            }
 
-        $vendors = $vendors->get();
+        }
+        $users = User::whereHas('roles',function($q){
+            $q->where('name','App Managers');
+        })->orderBy('id','desc')->select('id','name')->get();
+
         // $vendors = $vendors->get();
-        // foreach ($vendors as $vendor) {
-        //     $offers = [];
-        //     $vendor->show_url = route('vendor.catalogs', $vendor->id);
-        //     $vendor->destroy_url = route('vendor.destroy', $vendor->id);
-        //     $vendor->add_category_option = ($vendor->add_category == 0) ? __('No') : __('Yes');
-        //     if($vendor->show_slot == 1){
-        //         $vendor->show_slot_option ="Open";
-        //         $vendor->show_slot_label ="success";
-        //     }elseif ($vendor->slot->count() > 0) {
-        //         $vendor->show_slot_option = "Open";
-        //         $vendor->show_slot_label ="success";
-        //     }else{
-        //         $vendor->show_slot_label="danger";
-        //         $vendor->show_slot_option = "Closed";
-        //     }
-        //     foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
-        //         $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-        //         $clientVendorTypes = $vendor_typ_key.'_check';
-        //         $NomenclitureName =  $vendor_typ_key == "dinein" ? 'Dine-In' : $vendor_typ_value;
-        //         if($client_preference->$clientVendorTypes == 1 && $vendor->$VendorTypesName){
-        //             $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
-        //             $offers[]=  $vendor->$VendorTypesName == 1 ? getNomenclatureName($NomenclitureName) : $NomenclitureName;
-        //         }
-        //     }
-        //     $vendor->offers = $offers;
-        // }
         return Datatables::of($vendors)
             ->addColumn('checkbox', function($row){
                 $btn = '<input type="checkbox" class="single_vendor_check" name="vendor_id[]" id="single_vendor" value="'.$row->id.'"></a>';
@@ -128,6 +101,15 @@ class VendorController extends BaseController
                     $show_slot_option ="Closed";
                 }
                 return $show_slot_option;
+            })
+            ->addColumn('manager', function ($row) use ($users) {
+                $select = '<select name="manager_id" id="select_manager" data-id="'.$row->id.'" class="form-control select_manager"><option>Select Manager</option>';
+                foreach($users as $item){
+                    $selected = (($item->id==$row->refference_id)?'Selected':'');
+                    $select .= '<option value="'.$item->id.'" '.$selected.'>'.$item->name.'</option>';
+                }
+                $select .= '</select>';
+                return $select;
             })
           
             ->addColumn('show_slot_label', function ($row) {
@@ -163,13 +145,30 @@ class VendorController extends BaseController
                     });
                 }
             })
-            ->rawColumns(['checkbox','offers','show_slot_label','show_slot_option','add_category_option','show_url','destroy_url'])
+            ->rawColumns(['checkbox','offers','show_slot_label','show_slot_option','add_category_option','show_url','destroy_url','manager'])
             ->make(true);
     }
 
+    public function assignManager(Request $request){
+        try{
 
+        if(!auth()->user()->can('vendor-add') && !auth()->user()->is_superadmin)
+            {
+                return response('You do not have permission to do this task.',400);
+            }
+
+            $user = vendor::where('id',$request->vendor_id)->first();
+            $user->refference_id=$request->manager_id;
+            $user->save();
+            return response(['status'=>'200','msg'=>'Done']);
+        }catch(\Exception $e)
+        {
+            return response(['status'=>'404','msg'=>$e->getMessage()]);
+        }
+    }
 
     public function index(){
+
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
 
@@ -181,6 +180,10 @@ class VendorController extends BaseController
             $vendors = $vendors->whereHas('permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
             });
+        }
+        if(auth()->user()->getRoleNames()[0]=='App Managers')
+        {
+            $vendors = $vendors->where('refference_id',auth()->id());
         }
         $only_active_vendors = $vendors;
         $vendors = $vendors->get();
@@ -229,8 +232,6 @@ class VendorController extends BaseController
                 $build = $this->buildTree($categories->toArray());
             }
             $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
-
-
             return view('backend/vendor/index')->with([
                 'vendors' => $vendors,
                 'vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,
@@ -261,6 +262,13 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request){
+
+        if(!auth()->user()->can('vendor-add') && !auth()->user()->is_superadmin)
+        {
+            return redirect('client/dashboard')->with('error','You do not have permission to do this task.');
+        }
+
+
         $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration']);
 
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
@@ -389,11 +397,19 @@ class VendorController extends BaseController
         $vendor->city = $request->city;
         $vendor->state = $request->state;
         $vendor->country = $request->country;
-
+        if(auth()->user()->getRoleNames()[0]=='App Managers')
+        {
+            $vendor->refference_id = auth()->id();
+        }
         $vendor->slug = Str::slug($request->name, "-");
         if(Vendor::where('slug',$vendor->slug)->count() > 0)
         $vendor->slug = Str::slug($request->name, "-").rand(10,100);
         $vendor->save();
+
+        if(auth()->user()->getRoleNames()[0]=='App Managers')
+        {
+            UserVendor::updateOrCreate(['user_id' =>  auth()->id(),'vendor_id' => $vendor->id]);
+        }
 
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         if ($vendor_registration_documents->count() > 0) {
@@ -484,6 +500,11 @@ class VendorController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
+        if(!auth()->user()->can('vendor-add') && !auth()->user()->is_superadmin)
+        {
+            return redirect('client/dashboard')->with('error','You do not have permission to do this task.');
+        }
+        
         $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration']);
 
         $rules = array(
@@ -739,6 +760,12 @@ class VendorController extends BaseController
 
     /**   show vendor page - catalog tab      */
     public function vendorCatalog($domain = '', $id){
+
+        if(!auth()->user()->can('vendor-add') && !auth()->user()->is_superadmin)
+        {
+            return redirect('client/dashboard')->with('error','You do not have permission to do this task.');
+        }
+
         $product_categories = [];
         $active = array();
         $type = Type::all();
@@ -1303,6 +1330,13 @@ class VendorController extends BaseController
 
     /**       delete vendor       */
     public function destroy($domain = '', $id){
+
+        if(!auth()->user()->can('vendor-add') && !auth()->user()->is_superadmin)
+        {
+            return response(['You do not have permission to do this task.'],400);
+
+        }
+        
         $vendor = Vendor::where('id', $id)->first();
         $vendor->status = 2;
         $vendor->save();
