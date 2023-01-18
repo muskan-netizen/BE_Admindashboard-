@@ -1139,13 +1139,13 @@ if (!function_exists('getServiceTypesCategory')) {
         try {
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
-            if(isset($set_template)  && $set_template->template_id == 9){
+            // if(isset($set_template)  && $set_template->template_id == 9){
                
-                if(@$client_preference->p2p_check){
-                    $vendorType = 'p2p';
-                    // session()->put('vendorType', 'p2p');
-                }
-            }
+            //     if(@$client_preference->p2p_check){
+            //         $vendorType = 'p2p';
+            //         // session()->put('vendorType', 'p2p');
+            //     }
+            // }
 
             $types =   Type::query();
             $service_types = [];
@@ -1166,7 +1166,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             elseif ($vendorType == "p2p") {
-                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
+                $service_types = ['p2p'];
             }
 
             if ($client_preference->business_type == 'taxi') {
@@ -1183,7 +1183,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             if ($client_preference->business_type == 'p2p') {
-                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
+                $service_types = ['p2p'];
             }
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
