@@ -1255,7 +1255,7 @@ if (!function_exists('getCategoryTypesServices')) {
                 $typeArray = ['rental_service'];
                 break;
             case "p2p":
-                $typeArray = ['products_service', 'on_demand_service', 'appointment_service', 'p2p' ];
+                $typeArray = ['p2p' ];
                 break;
             case "super_app":
                 $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p'];
