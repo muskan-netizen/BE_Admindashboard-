@@ -649,7 +649,7 @@ $timezone = Auth::user()->timezone;
                             $adminDiscount = 0;
                             // dd($vendor);
                             if ($vendor->coupon_code) {
-                                if ($vendor->coupon_paid_by == 1) {
+                                if ($vendor->coupon_paid_by == 1) { 
                                     $couponFrom = 'From Admin';
                                     $adminDiscount = $vendor->discount_amount;
                                 } else {
