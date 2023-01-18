@@ -1364,7 +1364,7 @@
         </div>
 
         @php
-            $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card']);
+            $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable']);
         @endphp
         <div class="row">
             {{-- hubspot form --}}
@@ -2283,10 +2283,10 @@
                                     <span> <input type="checkbox" data-plugin="switchery" name="is_cab_pooling_switch"
                                             id="is_cab_pooling_switch" class="form-control checkbox_change"
                                             data-className="is_cab_pooling" data-color="#43bee1"
-                                            @if (@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) checked='checked' @endif>
+                                            @if ($getAdditionalPreference['is_cab_pooling'] == 1) checked='checked' @endif>
                                     </span>
                                     <input type="hidden"
-                                        @if (@getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'] == 1) value="1" @else value="0" @endif
+                                        @if ($getAdditionalPreference['is_cab_pooling'] == 1) value="1" @else value="0" @endif
                                         name="is_cab_pooling" id="is_cab_pooling" />
                                 </div>
                             </div>
@@ -2392,9 +2392,9 @@
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                    <label for="is_bid_ride_enable_switch" class="mr-2 mb-0">{{__('Bid & Ride')}}<small class="d-block pr-5">{{__("Enable to Receive and accept Bids for requested Ride.")}}</small></label>
-                                  <span> <input type="checkbox" data-plugin="switchery" name="is_bid_ride_enable_switch" id="is_bid_ride_enable_switch" class="form-control checkbox_change" data-className="is_bid_ride_enable"  data-color="#43bee1" @if( @getAdditionalPreference(['is_bid_ride_enable'])['is_bid_ride_enable'] == '1') checked='checked' @endif>
+                                  <span> <input type="checkbox" data-plugin="switchery" name="is_bid_ride_enable_switch" id="is_bid_ride_enable_switch" class="form-control checkbox_change" data-className="is_bid_ride_enable"  data-color="#43bee1" @if( $getAdditionalPreference['is_bid_ride_enable'] == '1') checked='checked' @endif>
                                    </span>
-                                   <input type="hidden"  @if(@getAdditionalPreference(['is_bid_ride_enable'])['is_bid_ride_enable'] == 1) value="1" @else value="0" @endif  name="is_bid_ride_enable"  id="is_bid_ride_enable"/>
+                                   <input type="hidden"  @if($getAdditionalPreference['is_bid_ride_enable'] == 1) value="1" @else value="0" @endif  name="is_bid_ride_enable"  id="is_bid_ride_enable"/>
                                 </div>
                             </div>
                         </div>
