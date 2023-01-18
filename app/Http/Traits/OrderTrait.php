@@ -47,10 +47,6 @@ trait OrderTrait
 
     public function ProductVariantStockIncrease($product)
     {
-        // $order = Order::with(['vendors.products.pvariant'])->find($order_id);
-        // if (isset($order->vendors)) {
-        //     foreach ($order->vendors as $vendor) {
-        //         foreach ($vendor->products as $product) {
         $ProductVariant = ProductVariant::find($product->variant_id);
         if ($ProductVariant) {
             $update_quantity  = $ProductVariant->quantity + $product->quantity;
@@ -59,9 +55,7 @@ trait OrderTrait
             $ProductVariant->quantity  = $update_quantity;
             $ProductVariant->save();
         }
-        //         }
-        //     }
-        // }
+       
         return 1;
     }
 

@@ -637,170 +637,170 @@ class ReturnOrderController extends FrontController
     {
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-        // try {
-        $vendor_id = $request->vendor_id;
-        $product_id = $request->product_id;
-        $orderData = Order::with(array(
-            'luxury_option',
-            'vendors' => function ($query) use ($vendor_id) {
-                $query->where('vendor_id', $vendor_id);
-            }
-        ))->find($request->order_id);
-        $today = date('Y-m-d');
-        $user = Auth::user();
+        try {
+            $vendor_id = $request->vendor_id;
+            $product_id = $request->product_id;
+            $orderData = Order::with(array(
+                'luxury_option',
+                'vendors' => function ($query) use ($vendor_id) {
+                    $query->where('vendor_id', $vendor_id);
+                }
+            ))->find($request->order_id);
+            $today = date('Y-m-d');
+            $user = Auth::user();
 
 
-        $currentOrderStatus = OrderVendor::with('products')->where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
-        $orderVendorProduct = OrderProduct::with('addon', 'addon.option', 'variant')->where('order_vendor_id', $currentOrderStatus->id)->where('product_id', $product_id)->first();
-        $cancelledProductPrice = $this->checkreplaceProduct($request, $orderVendorProduct) * $orderVendorProduct->quantity;
+            $currentOrderStatus = OrderVendor::with('products')->where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+            $orderVendorProduct = OrderProduct::with('addon', 'addon.option', 'variant')->where('order_vendor_id', $currentOrderStatus->id)->where('product_id', $product_id)->first();
+            $cancelledProductPrice = $this->checkreplaceProduct($request, $orderVendorProduct) * $orderVendorProduct->quantity;
 
-        if ($client_preferences->business_type == 'laundry') {
-            if ($request->pickup_order_date == $today) {
-                if ($user->balanceFloat >= $request->pickup_cancelling_charges) {
-                    if ($user) {
-                        $wallet_amount_used = $user->balanceFloat;
-                        if ($wallet_amount_used >= $request->pickup_cancelling_charges) {
-                            if ($wallet_amount_used > 0) {
-                                $wallet->withdrawFloat($request->pickup_cancelling_charges, ['Wallet has been <b>debited</b> for cancelling the order on pickup day under order number <b>#' . $request->order_number . '</b>']);
+            if ($client_preferences->business_type == 'laundry') {
+                if ($request->pickup_order_date == $today) {
+                    if ($user->balanceFloat >= $request->pickup_cancelling_charges) {
+                        if ($user) {
+                            $wallet_amount_used = $user->balanceFloat;
+                            if ($wallet_amount_used >= $request->pickup_cancelling_charges) {
+                                if ($wallet_amount_used > 0) {
+                                    $wallet->withdrawFloat($request->pickup_cancelling_charges, ['Wallet has been <b>debited</b> for cancelling the order on pickup day under order number <b>#' . $request->order_number . '</b>']);
+                                }
                             }
                         }
+                    } else {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => __('Insufficient wallet balance, required cancelling charges are ' . $request->pickup_cancelling_charges . '. Please recharge your wallet.')
+                        ]);
                     }
-                } else {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => __('Insufficient wallet balance, required cancelling charges are ' . $request->pickup_cancelling_charges . '. Please recharge your wallet.')
-                    ]);
                 }
             }
-        }
 
 
-        $timezone = Auth::user()->timezone;
-        $request->status_option_id = 3;
+            $timezone = Auth::user()->timezone;
+            $request->status_option_id = 3;
 
-        $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
+            $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
 
-        if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
-            return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
-        }
-        if ($currentOrderStatus->order_status_option_id >= 2) { //$request->status_option_id == 2){
-            return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
-        }
+            if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
+                return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
+            }
+            if ($currentOrderStatus->order_status_option_id >= 2) { //$request->status_option_id == 2){
+                return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
+            }
 
-        //check if $currentOrderStatus->products more than 1
-        if (count($currentOrderStatus->products) == 1) {
-            // get vendor return amount from order
-            $return_response =  $this->GetVendorReturnAmount($request, $orderData);
+            //check if $currentOrderStatus->products more than 1
+            if (count($currentOrderStatus->products) == 1) {
+                // get vendor return amount from order
+                $return_response =  $this->GetVendorReturnAmount($request, $orderData);
 
-            if (!$vendor_order_status_check) {
-                $vendor_order_status = new VendorOrderStatus();
-                $vendor_order_status->order_id = $request->order_id;
-                $vendor_order_status->vendor_id = $request->vendor_id;
-                $vendor_order_status->order_vendor_id = $request->order_vendor_id;
-                $vendor_order_status->order_status_option_id = $request->status_option_id;
-                $vendor_order_status->save();
-                if ($request->status_option_id == 2 || $request->status_option_id == 3) {
-                    $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
-                    AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
-                }
+                if (!$vendor_order_status_check) {
+                    $vendor_order_status = new VendorOrderStatus();
+                    $vendor_order_status->order_id = $request->order_id;
+                    $vendor_order_status->vendor_id = $request->vendor_id;
+                    $vendor_order_status->order_vendor_id = $request->order_vendor_id;
+                    $vendor_order_status->order_status_option_id = $request->status_option_id;
+                    $vendor_order_status->save();
+                    if ($request->status_option_id == 2 || $request->status_option_id == 3) {
+                        $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
+                        AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
+                    }
 
-                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update([
-                    'order_status_option_id' => $request->status_option_id,
-                    'reject_reason' => $request->reject_reason,  'cancelled_by' => Auth::id(), 'return_reason_id' => $request->return_reason_id,
-                ]);
+                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update([
+                        'order_status_option_id' => $request->status_option_id,
+                        'reject_reason' => $request->reject_reason,  'cancelled_by' => Auth::id(), 'return_reason_id' => $request->return_reason_id,
+                    ]);
 
 
-                if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
-                    if (isset($orderData->luxury_option->title) && $orderData->luxury_option->title == "pick_drop") {
-                        $new_dispatch_traking_url = str_replace('/order/', '/order-details/', $currentOrderStatus->dispatch_traking_url);
-                        $tracking_response = Http::get($new_dispatch_traking_url);
-                        if ($tracking_response->status() == 200) {
-                            if (!empty($tracking_response['tasks'])) {
-                                foreach ($tracking_response['tasks'] as $order_tasks) {
-                                    if ($order_tasks['task_status'] > 0 && $order_tasks['task_status'] < 5) {
-                                        return response()->json(['status' => 'error', 'message' => __('Order initiated, you can not cancel this order !!!')]);
+                    if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
+                        if (isset($orderData->luxury_option->title) && $orderData->luxury_option->title == "pick_drop") {
+                            $new_dispatch_traking_url = str_replace('/order/', '/order-details/', $currentOrderStatus->dispatch_traking_url);
+                            $tracking_response = Http::get($new_dispatch_traking_url);
+                            if ($tracking_response->status() == 200) {
+                                if (!empty($tracking_response['tasks'])) {
+                                    foreach ($tracking_response['tasks'] as $order_tasks) {
+                                        if ($order_tasks['task_status'] > 0 && $order_tasks['task_status'] < 5) {
+                                            return response()->json(['status' => 'error', 'message' => __('Order initiated, you can not cancel this order !!!')]);
+                                        }
                                     }
                                 }
                             }
                         }
+                        $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
+                        $response = Http::get($dispatch_traking_url);
                     }
-                    $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
-                    $response = Http::get($dispatch_traking_url);
+
+
+
+                    //  $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
+
                 }
+            } else {
 
 
+                //remove product from order
+                $orderProduct = OrderProduct::where('order_vendor_id', $currentOrderStatus->id)->where('product_id', $product_id)->delete();
+                $return_response =  $this->GetVendorProductReturnAmount($request, $orderData, $cancelledProductPrice);
 
-                //  $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
+                /***************save cancel reason  start   ********************/
 
+                $orderProductCancelReason = new OrderCancelRequest();
+                $orderProductCancelReason->order_id = $request->order_id;
+                $orderProductCancelReason->vendor_id = $request->vendor_id;
+                $orderProductCancelReason->order_vendor_id = $request->order_vendor_id;
+                // $orderProductCancelReason->order_vendor_product_id = '';
+                $orderProductCancelReason->return_reason_id = $request->return_reason_id;
+                $orderProductCancelReason->status = 1;
+                $orderProductCancelReason->reject_reason = $request->reject_reason;
+                $orderProductCancelReason->save();
+
+                $currentOrderStatus->payable_amount = $currentOrderStatus->payable_amount - $cancelledProductPrice;
+                $currentOrderStatus->subtotal_amount = $currentOrderStatus->subtotal_amount - $cancelledProductPrice;
+                $currentOrderStatus->save();
+                // order amount update
+                $orderData->total_amount = $orderData->total_amount - $cancelledProductPrice;
+                $orderData->payable_amount = $orderData->payable_amount - $cancelledProductPrice;
+                $orderData->save();
+
+                /***************cancel product from dispatcher  start  total_amount ********************/
+                //code--------
+                /***************cancel product from dispatcher  end   ********************/
             }
-        } else {
-
-
-            //remove product from order
-            $orderProduct = OrderProduct::where('order_vendor_id', $currentOrderStatus->id)->where('product_id', $product_id)->delete();
-            $return_response =  $this->GetVendorProductReturnAmount($request, $orderData, $cancelledProductPrice);
-
-            /***************save cancel reason  start   ********************/
-
-            $orderProductCancelReason = new OrderCancelRequest();
-            $orderProductCancelReason->order_id = $request->order_id;
-            $orderProductCancelReason->vendor_id = $request->vendor_id;
-            $orderProductCancelReason->order_vendor_id = $request->order_vendor_id;
-            // $orderProductCancelReason->order_vendor_product_id = '';
-            $orderProductCancelReason->return_reason_id = $request->return_reason_id;
-            $orderProductCancelReason->status = 1;
-            $orderProductCancelReason->reject_reason = $request->reject_reason;
-            $orderProductCancelReason->save();
-
-            $currentOrderStatus->payable_amount = $currentOrderStatus->payable_amount - $cancelledProductPrice;
-            $currentOrderStatus->subtotal_amount = $currentOrderStatus->subtotal_amount - $cancelledProductPrice;
-            $currentOrderStatus->save();
-            // order amount update
-            $orderData->total_amount = $orderData->total_amount - $cancelledProductPrice;
-            $orderData->payable_amount = $orderData->payable_amount - $cancelledProductPrice;
+            if ($return_response['vendor_return_amount'] > 0) {
+                $user = User::find(Auth::id());
+                $wallet = $user->wallet;
+                $credit_amount = $return_response['vendor_return_amount']; //$currentOrderStatus->payable_amount;
+                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
+            }
+            // diarise loyalty
+            $orderData->loyalty_points_used    =  $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];
+            $orderData->loyalty_amount_saved   =  $orderData->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
+            $orderData->loyalty_points_earned  =  $orderData->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
             $orderData->save();
+            $vendor_return_payment                          = new VendorOrderCancelReturnPayment();
+            $vendor_return_payment->order_id                = $orderData->id;
+            $vendor_return_payment->order_vendor_id         = $currentOrderStatus->id;
+            $vendor_return_payment->wallet_amount           = $return_response['vendor_wallet_amount'];
+            $vendor_return_payment->online_payment_amount   = $return_response['vendor_online_payment_amount'];
+            $vendor_return_payment->loyalty_amount          = $return_response['vendor_loyalty_amount'];
+            $vendor_return_payment->loyalty_points          = $return_response['vendor_loyalty_points'];
+            $vendor_return_payment->loyalty_points_earned   = $return_response['vendor_loyalty_points_earned'];
+            $vendor_return_payment->total_return_amount     = $return_response['vendor_return_amount'];
+            $vendor_return_payment->save();
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => __('Order Cancelled Successfully.')
+            ]);
 
-            /***************cancel product from dispatcher  start  total_amount ********************/
-            //code--------
-            /***************cancel product from dispatcher  end   ********************/
+
+
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
         }
-        if ($return_response['vendor_return_amount'] > 0) {
-            $user = User::find(Auth::id());
-            $wallet = $user->wallet;
-            $credit_amount = $return_response['vendor_return_amount']; //$currentOrderStatus->payable_amount;
-            $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
-        }
-        // diarise loyalty
-        $orderData->loyalty_points_used    =  $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];
-        $orderData->loyalty_amount_saved   =  $orderData->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
-        $orderData->loyalty_points_earned  =  $orderData->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
-        $orderData->save();
-        $vendor_return_payment                          = new VendorOrderCancelReturnPayment();
-        $vendor_return_payment->order_id                = $orderData->id;
-        $vendor_return_payment->order_vendor_id         = $currentOrderStatus->id;
-        $vendor_return_payment->wallet_amount           = $return_response['vendor_wallet_amount'];
-        $vendor_return_payment->online_payment_amount   = $return_response['vendor_online_payment_amount'];
-        $vendor_return_payment->loyalty_amount          = $return_response['vendor_loyalty_amount'];
-        $vendor_return_payment->loyalty_points          = $return_response['vendor_loyalty_points'];
-        $vendor_return_payment->loyalty_points_earned   = $return_response['vendor_loyalty_points_earned'];
-        $vendor_return_payment->total_return_amount     = $return_response['vendor_return_amount'];
-        $vendor_return_payment->save();
-        DB::commit();
-        return response()->json([
-            'status' => 'success',
-            'message' => __('Order Cancelled Successfully.')
-        ]);
-
-
-
-
-        // } catch (\Exception $e) {
-        //     DB::rollback();
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => $e->getMessage()
-        //     ]);
-        // }
     }
 
     public function vendorOrderForCancelReq(Request $request)
