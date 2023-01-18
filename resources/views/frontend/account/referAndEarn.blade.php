@@ -112,89 +112,89 @@
                                     <h2>{{ __('Refer and earn') }}</h2>
                             </div>
                             <div class="box-account box-info order-address">
-                                @if( !empty($influencer_category) && count($influencer_category) > 0)
-                                    <div class="row">
-                                        @foreach($influencer_category as $key => $val)
-                                            <div class="col-md-4">
-                                                <a class="alert alert-dark cursor-pointer d-block" role="alert" href="{{ route('refer-earn.form', $val->id) }}">
-                                                    {{$val->name ?? ''}}
-                                                </a>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                <div class="text-center"><h3><strong>{{__('No Data Found')}}</strong></h3></div>
-                                @endif
+                            @if( !empty($influencer_category) && count($influencer_category) > 0) 
+                                <div class="row">
+                                    @foreach($influencer_category as $key => $val)
+                                        <div class="col-md-4">
+                                            <a class="alert alert-dark cursor-pointer d-block" role="alert" href="{{ route('refer-earn.form', $val->id) }}">
+                                                {{$val->name ?? ''}}
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else 
+                            <div class="text-center"><h3><strong>{{__('No Data Found')}}</strong></h3></div> 
+                            @endif 
                             </div>
+                        @else
+                            @if($influencer_user->is_approved == 1) {{-- && $influencer_user->status == 1 --}}
+                                <div class="row welcome-msg justify-content-between refer_code">
+                                    <div class="col-md-6 mt-3">
+                                        <h4 class="d-inline-block m-0 mb-3">
+                                            <span>{{__('Your Referral Code:')}}</span> <input type="text" class="referral_code" name="referral_code" value="{{$influencer_user->reffered_code}}" readonly>
+                                            <span id="copy_message" class="copy-message text-success" style="font-size: 14px;"></span>    
+                                        </h4>
+                                        <sup class="position-relative">
+                                            <a class="copy-icon ml-1" id="copy_icon" title="Copy" style="cursor:pointer;"><i class="fa fa-copy"></i></a>
+                                            <a class="edit-icon ml-1" id="edit_refferal_icon" title="Edit" data-code="{{$influencer_user->reffered_code}}" data-id="{{$influencer_user->id}}" style="cursor:pointer;"><i class="fa fa-edit"></i></a>
+                                        </sup>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="total_amount_details">
+                                            <div class="total-amount">
+                                                <label>Earning Amount ({{Session::get('currencySymbol')}})</label>
+                                                <h3>00.00</h3>
+                                            </div>
+                                            <div class="Earning-amount">
+                                                <label>Discount per order ({{Session::get('currencySymbol')}})</label>
+                                                <h3>{{$influencer_user->tier->commision}} ({{($influencer_user->tier->commision_type==1)?'% Percentage':(($influencer_user->tier->commision_type==2)?'Fixed':'')}})</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-1 profile-page">
+                                    <div class="col-md-12">
+                                        <div class="custom-table">
+                                            <div class="group-item">
+                                                <input type="text" placeholder="Search by order id">
+                                            </div>
+                                            <table class="table table-responsive">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Order ID</th>
+                                                        <th scope="col">Customer Name</th>
+                                                        <th scope="col">Product Name</th>
+                                                        <th scope="col">Total Amount</th>
+                                                        <th scope="col">User Discount</th>
+                                                        <th scope="col">Earning Amount</th>
+                                                        <th scope="col">Order Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if(!empty($order_user_promo_product) && $order_user_promo_product->count() > 0)
+                                                        @foreach($order_user_promo_product as $order)
+                                                            <tr>
+                                                                <td>{{$order->orderDetail->order_number ?? ''}}</td>
+                                                                <td>{{$order->user->name ?? ''}}</td>
+                                                                <td>Bruschetta</td>
+                                                                <td>{{Session::get('currencySymbol')}} {{$order->subtotal_amount??0}}</td>
+                                                                <td>{{Session::get('currencySymbol')}} {{$order->discount_amount??0}}</td>
+                                                                <td>{{$influencer_user->tier->commision}}</td>
+                                                                <td>{{$order->created_at??0}}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif ($influencer_user->is_approved == 2)
+                                <div class="text-center"><h3><strong>Request Rejected By Admin</strong></h3></div>
                             @else
-                                @if($influencer_user->is_approved == 1) {{-- && $influencer_user->status == 1 --}}
-                                    <div class="row welcome-msg justify-content-between refer_code">
-                                        <div class="col-md-6 mt-3">
-                                            <h4 class="d-inline-block m-0 mb-3">
-                                                <span>{{__('Your Referral Code:')}}</span> <input type="text" class="referral_code" name="referral_code" value="{{$influencer_user->reffered_code}}" readonly>
-                                                <span id="copy_message" class="copy-message text-success" style="font-size: 14px;"></span>    
-                                            </h4>
-                                            <sup class="position-relative">
-                                                <a class="copy-icon ml-1" id="copy_icon" title="Copy" style="cursor:pointer;"><i class="fa fa-copy"></i></a>
-                                                <a class="edit-icon ml-1" id="edit_refferal_icon" title="Edit" data-code="{{$influencer_user->reffered_code}}" data-id="{{$influencer_user->id}}" style="cursor:pointer;"><i class="fa fa-edit"></i></a>
-                                            </sup>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="total_amount_details">
-                                                <div class="total-amount">
-                                                    <label>Earning Amount ({{Session::get('currencySymbol')}})</label>
-                                                    <h3>00.00</h3>
-                                                </div>
-                                                <div class="Earning-amount">
-                                                    <label>Discount per order ({{Session::get('currencySymbol')}})</label>
-                                                    <h3>{{$influencer_user->tier->commision}} ({{($influencer_user->tier->commision_type==1)?'% Percentage':(($influencer_user->tier->commision_type==2)?'Fixed':'')}})</h3>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-1 profile-page">
-                                        <div class="col-md-12">
-                                            <div class="custom-table">
-                                                <div class="group-item">
-                                                    <input type="text" placeholder="Search by order id">
-                                                </div>
-                                                <table class="table table-responsive">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">Order ID</th>
-                                                            <th scope="col">Customer Name</th>
-                                                            <th scope="col">Product Name</th>
-                                                            <th scope="col">Total Amount</th>
-                                                            <th scope="col">User Discount</th>
-                                                            <th scope="col">Earning Amount</th>
-                                                            <th scope="col">Order Date</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @if(!empty($order_user_promo_product) && $order_user_promo_product->count() > 0)
-                                                            @foreach($order_user_promo_product as $order)
-                                                                <tr>
-                                                                    <td>{{$order->orderDetail->order_number ?? ''}}</td>
-                                                                    <td>{{$order->user->name ?? ''}}</td>
-                                                                    <td>Bruschetta</td>
-                                                                    <td>{{Session::get('currencySymbol')}} {{$order->subtotal_amount??0}}</td>
-                                                                    <td>{{Session::get('currencySymbol')}} {{$order->discount_amount??0}}</td>
-                                                                    <td>{{$influencer_user->tier->commision}}</td>
-                                                                    <td>{{$order->created_at??0}}</td>
-                                                                </tr>
-                                                            @endforeach
-                                                        @endif
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @elseif ($influencer_user->is_approved == 2)
-                                    <div class="text-center"><h3><strong>Request Rejected By Admin</strong></h3></div>
-                                @else
-                                    <div class="text-center"><h3><strong>Waiting For Admin Approval</strong></h3></div>
-                                @endif
+                                <div class="text-center"><h3><strong>Waiting For Admin Approval</strong></h3></div>
                             @endif
+                        @endif
                         </div>
                     </div>
                 </div>
