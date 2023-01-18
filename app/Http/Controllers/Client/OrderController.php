@@ -935,6 +935,20 @@ class OrderController extends BaseController
                     }
 
                 }
+
+                if($request->order_luxury_option_id == 4){
+                    foreach($orderVendorProductIds as $key => $id){
+                        $vendor_order_product_status = new VendorOrderProductStatus();
+                        $vendor_order_product_status->order_id = $request->order_id;
+                        $vendor_order_product_status->order_vendor_id = $request->order_vendor_id;
+                        $vendor_order_product_status->vendor_id = $request->vendor_id;
+                        $vendor_order_product_status->product_id = $productIds[$key];
+                        $vendor_order_product_status->order_status_option_id = $request->status_option_id;
+                        $vendor_order_product_status->order_vendor_product_id = $id;
+                        $vendor_order_product_status->save();
+                    }
+                }
+                
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type == 'D') {
@@ -981,19 +995,6 @@ class OrderController extends BaseController
                 }
 
                 if ($orderPlaced) {
-
-                    if($request->order_luxury_option_id == 4){
-                        foreach($orderVendorProductIds as $key => $id){
-                            $vendor_order_product_status = new VendorOrderProductStatus();
-                            $vendor_order_product_status->order_id = $request->order_id;
-                            $vendor_order_product_status->order_vendor_id = $request->order_vendor_id;
-                            $vendor_order_product_status->vendor_id = $request->vendor_id;
-                            $vendor_order_product_status->product_id = $productIds[$key];
-                            $vendor_order_product_status->order_status_option_id = $request->status_option_id;
-                            $vendor_order_product_status->order_vendor_product_id = $id;
-                            $vendor_order_product_status->save();
-                        }
-                    }
 
                     $vendorOrderStatus = VendorOrderStatus::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
 

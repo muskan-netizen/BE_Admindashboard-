@@ -187,6 +187,17 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             <label class="items_price">
                                                                 (<%= product.product_name %>)
                                                                 {{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %>
+                                                                <% if(order.luxury_option_id == 4 && vendor.order_status_option_id == 2) { %>
+                                                                    <div class="accept_reject_div">
+                                                                        <% if(product.order_product_status && product.order_product_status.order_status_option_id && product.order_product_status.order_status_option_id  == 3) { %>
+                                                                            <span class="badge badge-danger">Rejected</span>
+                                                                        <% }else if(product.order_product_status && product.order_product_status.order_status_option_id && product.order_product_status.order_status_option_id  == 2){ %>
+                                                                            <span class="badge badge-success">Accepted</span>
+                                                                        <% }else{ %>
+                                                                            <span class="badge badge-info">Pending</span>
+                                                                        <% } %>
+                                                                    </div>
+                                                                <% } %>
                                                             </label>
                                                             <% if(order.luxury_option_id == 4 && vendor.order_status_option_id == 1) { %>
                                                                 <div class="accept_reject_div">

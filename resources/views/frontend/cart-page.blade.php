@@ -182,9 +182,6 @@
                         $other_taxes_string = $cart_details->other_taxes_string;
                     @endphp
                     @foreach ($cart_details->products as $product)
-                        {{-- @php
-            dd($product->is_vendor_closed.' -- '.$product->closed_store_order_scheduled);
-            @endphp --}}
                         <div id="thead_{{ $product->vendor->id }}" class="mt-2 px-0">
                             <div class="row">
 
@@ -248,7 +245,7 @@
 
                             @foreach ($product->vendor_products as $vendor_product)
                                 {{-- @php
-            pr($vendor_product);
+            pr($vendor_product->product->security_amount);
             @endphp --}}
                                 <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
@@ -422,9 +419,9 @@
                                             </div>
 
                                         </div>
-                                        @if ($serviceType == 'rental')
+                                        
+                                        @if($serviceType == 'rental')
                                             <hr class="my-2">
-
                                             <div class="row align-items-md-center alRentalStartDate">
                                                 <div class="col-3">
                                                     <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
@@ -436,9 +433,13 @@
                                                     <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->end_date_time)) }}
                                                     </p>
                                                 </div>
+                                                <div class="col-3">
+                                                    <h6 class="m-0 pl-0" style="font-weight: 600;">{{ __('Security Amount') }}</h6>
+                                                    <p>{{ Session::get('currencySymbol') . decimal_format($vendor_product->product->security_amount) }}</p>
+                                                </div>
                                             </div>
                                         @endif
-
+                                        
                                         @if (count($vendor_product->addon) != 0)
                                             <hr class="my-2">
                                             <div class="row align-items-md-center add_head">
@@ -593,6 +594,10 @@
                                                 @endif
                                             @endif
                                         @endif
+                                        @if ($vendor_product->product->is_long_term_service == 1)
+                                            @include('frontend.cart.longTermTimeSelection')
+                                        @endif
+
                                         @if ($vendor_product->product->is_long_term_service == 1)
                                             @include('frontend.cart.longTermTimeSelection')
                                         @endif
@@ -1041,6 +1046,15 @@
                                                 {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->sub_total) }}
                                             @endif
                                         </b>
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+                            @if ($serviceType == 'rental')
+                                <div class="row">
+                                    <div class="col-6">{{ __('Security Amount') }}</div>
+                                    <div class="col-6 text-right">
+                                        <b>{{ Session::get('currencySymbol') . decimal_format($cart_details->security_amount) }}</b>
                                     </div>
                                 </div>
                                 <hr class="my-2">
@@ -1571,12 +1585,23 @@
                                     <input type="hidden" id="edit_order_schedule_slot"
                                         value="{{ $schedule_slots_edit }}">
                                 @endif
-
+                                @if ($serviceType == 'rental')
+                                    <div class="text-sm-left mb-2">
+                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">Agree Term</a>
+                                    </div>
+                                @endif
+                                @php
+                                    $disablePlaceBtn = '';
+                                    if(count($cart_details->user_allAddresses) == 0 || $serviceType == 'rental'){
+                                        $disablePlaceBtn = 'disabled';
+                                    }
+                                @endphp
                                 @if ($additionalPreference['is_token_currency_enable'] == 1)
+                               
                                     @if ($cart_details->wallet_amount_used > 0)
                                         @if ($cart_error_message == '')
                                             <button id="order_placed_btn" class="btn btn-solid d-none" type="button"
-                                                {{ count($cart_details->user_allAddresses) == 0 ? 'disabled' : '' }}>{{ __('Place Order') }}</button>
+                                                {{ $disablePlaceBtn}}>{{ __('Place Order') }}</button>
                                         @else
                                             <div class="alert p-0" role="alert">
                                                 <div class="alert-danger p-1">{{ $cart_error_message }}</div>
@@ -1589,7 +1614,7 @@
                                 @else
                                     @if ($cart_error_message == '')
                                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button"
-                                            {{ count($cart_details->user_allAddresses) == 0 ? 'disabled' : '' }}>{{ __('Place Order') }}</button>
+                                        {{ $disablePlaceBtn}}>{{ __('Place Order') }}</button>
                                     @else
                                         <div class="alert p-0" role="alert">
                                             <div class="alert-danger p-1">{{ $cart_error_message }}</div>
@@ -1703,7 +1728,9 @@
     </div>
 
 @endif
-
+@if ($serviceType == "rental")
+    @include('frontend.cart.rentalConsentFormModal')
+@endif
 
 <script>
     $(document).ready(function() {
@@ -1736,6 +1763,24 @@
                 }
             }]
         });
+        var serviceType = "{{$serviceType}}";
+        if(serviceType == "rental"){
+            $("#order_placed_btn").attr('disabled', true);
+        }
+    });
+
+    $(document).on('click', '.agree_term_btn', function(){
+        $('#consent_form_rental').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+
+    $(document).on('click', '#agree_btn', function(){
+        $('#agree_term_check').prop('checked', true);
+        $('#agree_term_check').attr('disabled', false);
+        $("#order_placed_btn").attr('disabled', false);
+        $('#consent_form_rental').modal('hide');
     });
 </script>
 

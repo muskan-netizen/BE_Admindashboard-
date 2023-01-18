@@ -462,7 +462,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <div class="col-4 mb-2">
                                 {!! Form::label('title', __('Security Amount'), ['class' => 'control-label']) !!}
                                 @include('backend.primary_currency')
-                                {!! Form::text('compare_at_price', decimal_format($product->variant[0]->security_amount), ['class'=>'form-control', 'id' => 'security_amount', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                {!! Form::text('security_amount', decimal_format($product->security_amount), ['class'=>'form-control', 'id' => 'security_amount', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
 
                         </div>

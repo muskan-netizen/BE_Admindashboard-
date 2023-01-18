@@ -514,6 +514,7 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
+            $product->security_amount = ($request->has('security_amount')) ? $request->security_amount : null;
 
             $product->save();
 

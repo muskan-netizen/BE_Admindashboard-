@@ -388,7 +388,7 @@ trait cartManager{
 
 
         $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-
+        // pr($cartData);
        //Get All Taxes
        $taxRates = $this->getTaxes();
 
@@ -551,8 +551,9 @@ trait cartManager{
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
+                $security_amount = 0.00;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-
+                    // pr($prod->product->security_amount);
                     $prod->product->ServicePeriods = [];
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
@@ -623,10 +624,14 @@ trait cartManager{
                                 $prod->additional_price = 0.00;
                             }
 
+                            if($prod->product->security_amount != '' && $prod->product->security_amount > 0){
+                                $security_amount += $prod->product->security_amount;
+                            }
+
                             //$payable_amount =  $price_in_currency + $prod->additional_price;
                             $sub_total += $prod->additional_price;
                         }
-
+                        // dd($security_amount);
                    // } ///// Notable
 
                     $totalMarkup += $prod->pvariant->markup_price * $prod->quantity??0;
@@ -929,7 +934,7 @@ trait cartManager{
                     }
 
                 }
-
+                // dd($security_amount);
                 // $couponGetAmount = $payable_amount ;
 
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
@@ -1032,7 +1037,7 @@ trait cartManager{
 
                 $subtotal_amount = $payable_amount;
                 // if($PromoFreeDeliver != 1){
-                $payable_amount = $payable_amount + $deliveryCharges_real;
+                $payable_amount = $payable_amount + $deliveryCharges_real + $security_amount;
                 //}
                 //$payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total
@@ -1415,6 +1420,7 @@ trait cartManager{
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;
             $cart->giftCardUsedAmount = $giftCardUsed;
+            $cart->security_amount = $security_amount;
 
             if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                 if($cart->pickupSlotsCnt==0){
@@ -1457,7 +1463,7 @@ trait cartManager{
             $cart->sub_total =  $sub_total??0;
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
-            // dd($cart->toArray());
+            // pr($cart->toArray());
             $cart->products = $cartData->toArray();
         }
         return $cart;

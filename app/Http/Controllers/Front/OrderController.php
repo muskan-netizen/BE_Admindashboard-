@@ -381,7 +381,7 @@ class OrderController extends FrontController
             $total_other_taxes += (float)$row;
         }
         $order->total_other_taxes_amount = $total_other_taxes;
-        //pr($order->toArray());
+        // pr($order->toArray());
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency', 'fixedFeeNomenclatures'));
     }
@@ -1008,6 +1008,7 @@ class OrderController extends FrontController
             $total_other_taxes = 0.00;
             $additionalPrice = 0.00;
             $totalAdditionalPrice = 0.00;
+            $security_amount = 0.00;
             $is_long_term_order = 0;
             $checkLongTermInDB = checkColumnExists('products', 'is_long_term_service');
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
@@ -1060,7 +1061,7 @@ class OrderController extends FrontController
                 $bid_vendor_discount = 0;
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
-                    //pr($vendor_cart_product->toArray());
+                    // pr($vendor_cart_product->product->security_amount);
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (!empty($latitude) && !empty($longitude)) {
                             if (($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)) {
@@ -1078,6 +1079,10 @@ class OrderController extends FrontController
                                 }
                             }
                         }
+                    }
+
+                    if($luxury_option->id == 4){
+                        $security_amount += $vendor_cart_product->product->security_amount;
                     }
 
                     if ($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1) {
@@ -1253,6 +1258,10 @@ class OrderController extends FrontController
                     $order_product->start_date_time = $vendor_cart_product->start_date_time;
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
+
+                    if ($luxury_option->id == 4) {
+                        $order_product->security_amount = $vendor_cart_product->product->security_amount;
+                    }
 
                     $order_product->save();
 
@@ -1444,7 +1453,7 @@ class OrderController extends FrontController
                     }
                   
                 } //End products loop
-
+                
                 $payable_amount += $vendor_total_container_charges;
                 //dump("+Container_charges ".$vendor_total_container_charges."/- ---".$payable_amount);
 
@@ -1603,7 +1612,7 @@ class OrderController extends FrontController
                     $order->tip_amount = $tip_amount;
                 }
             }
-            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes + $security_amount;
             // ---------------------------------------
             $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
 
