@@ -969,7 +969,7 @@ $(document).ready(function () {
             return false;
         }
         var address = $("input[name='address_id']").val();
-        if ((vendor_type == 'delivery') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
+        if ((vendor_type == 'delivery' || vendor_type == 'on_demand') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
             return false;
         }
@@ -2321,6 +2321,11 @@ $(document).ready(function () {
                         }
 
                     }
+                    $.each($('.vendor_schedule_slot'), function() { 
+                        if($(this).val()!=''){
+                            $responst = checkSlotAvailability(this);
+                        }
+                    });
                 }
             },
             complete: function (data) {
@@ -3857,7 +3862,6 @@ $(document).ready(function () {
     // Check Slot Availability
     async function checkSlotAvailability(obj)
     {
-
         var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         var schedule_slot = $(obj).val();
         var vendor_id = $(obj).data('vendor_id');
@@ -3882,6 +3886,7 @@ $(document).ready(function () {
                     $('#order_placed_btn').attr("disabled", true);
                      res =0;
                 }else{
+                    $( ".cart_response " ).find( ".alert" ).css( "display", "none" );
                     // Enable the place order button
                     $('#order_placed_btn').attr("disabled", false);
                     res = 1;

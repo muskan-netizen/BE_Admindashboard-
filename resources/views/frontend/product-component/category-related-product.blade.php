@@ -56,7 +56,15 @@
                 <div class="media-body align-self-start">
                     <div class="inner_spacing px-0">
                         <div class="product-description">
-                        <span class="flag-discount">30% Off</span>
+                        @php
+                                $price = $scp->variant[0]->price ?? 0;
+                                $compare_at_price = $scp->variant[0]->compare_at_price ?? 0;
+                                $multiplier = $scp->variant[0]->multiplier  ?? 0;
+                                $priceVal = $price * $multiplier;
+                                @endphp
+                            @if(productDiscountPercentage($price, $compare_at_price))
+                                <span class="flag-discount">{{productDiscountPercentage($price, $compare_at_price)}}% Off</span>
+                            @endif
                         <span class="rating">4.0 <i class="fa fa-star text-white p-0"></i></span>
                             <div class="d-flex align-items-center justify-content-between">
                                 <h6 class="card_title ellips">{{ (!empty($scp->translation) && isset($scp->translation[0])) ? $scp->translation[0]->title : ''}}</h6>                             
@@ -72,11 +80,7 @@
                                 </p>
                             </div>
                             <div class="d-flex align-items-center justify-content-between al_clock pt-2">
-                                @php
-                                $price = $scp->variant[0]->price ?? 0;
-                                $multiplier = $scp->variant[0]->multiplier  ?? 0;
-                                $priceVal = $price * $multiplier;
-                                @endphp
+                                
                                 @if($additionalPreference ['is_token_currency_enable'])
                                     <b>{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!} {{getInToken($priceVal)}} </b>
                                 @else

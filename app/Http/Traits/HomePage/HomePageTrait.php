@@ -122,6 +122,8 @@ trait HomePageTrait
                     'vendor_name' => $product->vendor ? $product->vendor->name : '',
                     'vendor' => $product->vendor,
                     'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$product->variant->first()->price * $multiply, ',')),
+                    'compare_price' =>@$product->variant->first()->compare_at_price * $multiply,
+                    'price_numeric' =>@$product->variant->first()->price * $multiply,
                     'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug,
                     'categoryDetail' => (@$product->category->categoryDetail) ? @$product->category->categoryDetail: []
                 );
@@ -193,6 +195,8 @@ trait HomePageTrait
                         'vendor_name' => $product->vendor ? $product->vendor->name : '',
                         'vendor' => $product->vendor,
                         'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$product->variant->first()->price * $multiply, ',')),
+                        'compare_price' =>@$product->variant->first()->compare_at_price * $multiply,
+                        'price_numeric' =>@$product->variant->first()->price * $multiply,
                         'categoryDetail' => (@$product->category->categoryDetail) ? @$product->category->categoryDetail: [],
                         'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
                     );

@@ -520,7 +520,7 @@
                                         {{-- Home Service Schedual code Start at down --}}
                                         {{-- @php
                        pr($cart_details->closed_store_order_scheduled);
-                        @endphp --}}
+                        @endphp --}} 
                                         @if (($cart_details->closed_store_order_scheduled == 1 ||
                                             $client_preference_detail->off_scheduling_at_cart != 1) &&
                                             (in_array($serviceType, ['appointment', 'on_demand']) && $vendor_product->product->mode_of_service == 'schedule'))
@@ -528,7 +528,7 @@
                                             @if ($client_preference_detail->business_type != 'laundry')
                                                 @if (@$vendor_product->product->is_slot_from_dispatch != 1 || $vendor_product->product->Requires_last_mile != 1)
                                                     <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime"
-                                                        style="{{ $cart_details->schedule_type == 'schedule' ? '' : 'display:none!important' }}">
+                                                        style="{{ ($cart_details->schedule_type == 'schedule' || $vendor_product->product->mode_of_service=='schedule') ? '' : 'display:none!important' }}">
                                                         <div class="col-5 offset-3 text-lg-right">
                                                             <label class="m-0 radio">
                                                                 {{ __('Scheduled Slot') }} :</label>
