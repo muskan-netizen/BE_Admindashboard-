@@ -19,7 +19,6 @@ use App\Http\Controllers\Front\CartController;
 
 Route::group(['middleware' => ['domain']], function () {
 	//easypay test
-	Route::get('test_notification', 'Front\FrontController@test_notification');
 	Route::get('testpayment', 'Front\EasypaisaControllertest@testpayment')->name('testpayment');
 	Route::get('response', 'Front\EasypaisaControllertest@response')->name('response_payment');
     Route::get('responseConf', 'Front\EasypaisaControllertest@responseConformation')->name('responseConformation');
@@ -36,7 +35,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-order-cancel-request/{id?}', 'Front\DispatcherController@dispatchOrderCancelRequest')->name('dispatch-order-cancel-request'); // Order Status update Dispatch details
 	Route::post('dispatch/customer/distance/notification/{id?}', 'Front\DispatcherController@dispatchCustomerDetails')->name('dispatch-customer-details'); // send distance & co2 emission push notification from dispatch to customer
     Route::get('dispatch-order-product-status-update/{id?}', 'Front\DispatcherController@dispatchOrderSingleProductStatusUpdate')->name('dispatch-order-product-status-update'); // Order Status update Dispatch
-	Route::get('dispatch-order-service-status-update/{id?}', 'Front\DispatcherController@dispatchOrderServiceProductStatusUpdate')->name('dispatch-order-service-status-update'); // Order Status update Dispatch
 	Route::get('testsms', 'Front\FrontController@testsms');
 
     Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
@@ -46,6 +44,22 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('send-notification', 'Front\CustomerAuthController@sendNotification');
     Route::get('vendor-notification', 'Front\DispatcherController@test');
 	Route::get('test/email1', 'Front\FrontController@sendmailtest');
+	Route::get('test/email', function () {
+		$send_mail = 'test@yopmail.com';
+		// App\Jobs\SendRefferalCodeEmailJob::dispatch($send_mail);
+		// dispatch(new App\Jobs\SendRefferalCodeEmailJob($send_mail));
+		$details = [
+			'title' => 'Mail from ItSolutionStuff.com',
+			'body' => 'This is for testing email using smtp'
+		];
+
+		try {
+				\Mail::to('sandeep.kumar@codebrewinnovations.com')->send(new \App\Mail\MyTestMail($details));
+				dd('send mail successfully !!');
+			}catch(\Exception $e) {
+					return response()->json(['data' => $e->getMessage()]);
+			}
+	});
 
 
 	// Start edit order routes
@@ -88,7 +102,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/check_stripe_return_data', 'Front\StripeGatewayController@checkStripeReturnDataFrom3DAuth')->name('check_stripe_return_data');
 	Route::post('/payment/payment_init', 'Front\StripeGatewayController@paymentInit')->name('payment_init');
 	Route::post('payment/webhook/stripe', 'Front\StripeGatewayController@stripeWebhook')->name('payment.webhook.stripe');
-	Route::get('/payment/checkgift', 'Front\StripeGatewayController@checkgift')->name('checkgift');
+
 	// Stripe FPX
 	Route::post('payment/create/stripe_fpx', 'Front\StripeGatewayController@createStripeFPXPaymentIntent')->name('payment.create.stripe_fpx');
 	Route::get('payment/retrieve/stripe_fpx', 'Front\StripeGatewayController@retrieveStripeFPXPaymentIntent')->name('payment.retrieve.stripe_fpx');
@@ -143,6 +157,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/gcash','Front\GCashController@beforePayment')->name('payment.gcash.beforePayment');
 	Route::get('payment/gcash/view','Front\GCashController@webView')->name('payment.gcash.webView');
 
+    //plugnpay
+    Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
+
 
 	//Simplify
 	Route::match(['get','post'],'payment/simplify/page','Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
@@ -179,7 +196,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/upay','Front\ConektaController@afterPayment')->name('payment.upay.afterPayment');
 	//Conekta
 	Route::match(['get','post'],'payment/conekta/page','Front\ConektaController@beforePayment')->name('payment.conekta.beforePayment');
-	Route::match(['get','post'],'payment/conekta/{status}/{payment_from}/{come_from}/{amount}/{order_number?}','Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
+	Route::match(['get','post'],'payment/conekta/{status?}','Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
+
 	//Telr
 	Route::match(['get','post'],'payment/telr/page','Front\TelrController@beforePayment')->name('payment.telr.beforePayment');
 	Route::match(['get','post'],'payment/telr/{status}/{payment_from}/{come_from}/{amount}/{order_number?}','Front\TelrController@afterPayment')->name('payment.telr.afterPayment');
@@ -328,6 +346,13 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
 
+	// Mtn Momo payment gateway
+
+	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createTocken')->name('mtn.momo.createTocken');
+	// Route::get('payment/dpo/redirect', 'Front\DpoController@successPage')->name('dpo.redirect');
+	// Route::get('payment/dpo/success', 'Front\DpoController@successPage')->name('dpo.success');
+	// Route::get('payment/dpo/fail', 'Front\DpoController@failPage')->name('dpo.fail');
+
 	Route::get('user/login', [
 		'as' => 'customer.login',
 		'uses' => 'Front\CustomerAuthController@loginForm'
@@ -357,9 +382,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
 	Route::get('driver-documents', 'Front\UserhomeController@driverDocuments')->name('driver-documents');
 	Route::get('page/{slug}', 'Front\UserhomeController@getExtraPage')->name('extrapage');
-	Route::get('order/track/{id}/{order_id}', 'Front\OrderController@TrackOrder')->name('track.order');
-	Route::post('order/track/token', 'Front\OrderController@TrackOrderTokenVerify')->name('track.order.token.verify');
-	Route::post('order/track/otpresend', 'Front\OrderController@ResendOtpForTrackingUrl')->name('track.order.otp.resend');
 
 	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
 	Route::post('/postHomePageDataSingle', 'Front\UserhomeController@postHomePageDataSingle')->name('postHomePageDataSingle');
@@ -462,11 +484,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('getSlotFromDispatchDemand', 'Front\FrontController@getSlotFromDispatchDemand')->name('getSlotFromDispatchDemand');
 	//chatNotification to all users from dispacther
 	Route::any('sendNotificationToUserByDispatcher', 'Front\ChatDispatcherNotificationController@sendNotificationToUserByDispatcher')->name('sendNotificationToUserByDispatcher'); // Order Status update Dispatch
-	Route::get('recentViewProduct/all', 'Front\RecentViewProductController@viewAll')->name('recent.view.product.all');
-	/**
-	 * booking routes
-	 */
-	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
@@ -550,16 +567,13 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
 		Route::get('get-order-data-in-model', 'Front\ReturnOrderController@getOrderDatainModel')->name('getOrderDatainModel');
-		Route::get('get-replace-order-data-in-model', 'Front\ReturnOrderController@getReplaceOrderDatailModel')->name('getReplaceOrderDatailModel');
 		Route::get('get-return-products', 'Front\ReturnOrderController@getReturnProducts')->name('get-return-products');
-		Route::get('get-replace-products', 'Front\ReturnOrderController@getReplaceProducts')->name('get-replace-products');
 		Route::post('update-product-return', 'Front\ReturnOrderController@updateProductReturn')->name('update.order.return');
-		Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
 
 		Route::get('get-vendor-order-for-cancel', 'Front\ReturnOrderController@getVendorOrderForCancel')->name('get-vendor-order-for-cancel');
 		Route::post('vendor-order-for-cancel', 'Front\ReturnOrderController@vendorOrderForCancel')->name('order.cancel.customer');
-
 		Route::post('vendor-order-for-cancel-req', 'Front\ReturnOrderController@vendorOrderForCancelReq')->name('order.cancel.req.customer');
+
 	});
 	// Return product
 	Route::group(['prefix' => 'looking'], function () {
@@ -585,7 +599,6 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
 	Route::match(['get','post'],'passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 	Route::get('user/chat/userVendor/{room_id?}', 'Front\ChatController@UservendorChat')->name("userChat.UservendorChat");
-	Route::get('user/chat/userToUser/{room_id?}', 'Front\ChatController@UserToUserChat')->name("userChat.UserToUserChat");
 	Route::get('user/chat/userAgent/{room_id?}', 'Front\ChatController@UserAgentChat')->name("userChat.UserAgentChat");
 
 	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
@@ -621,8 +634,10 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('user/giftCard/mailTest', 'Front\giftCard\GiftcardController@textGiftMail')->name('giftCard.mail');
 
 
-	Route::resource('posts', 'Front\PostController');
-	Route::get('get-attributes', 'Front\PostController@getCategoryAttributes')->name("category.attributes");
+	/**
+	 * booking routes
+	 */
+	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
 });
 

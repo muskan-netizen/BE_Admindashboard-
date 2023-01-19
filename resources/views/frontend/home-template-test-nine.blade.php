@@ -5,8 +5,8 @@
 @section('css')
 <style>
 	.logoArea_bar {
-		height: 300px;
-		margin: 0 0 30px;
+		height: 70px;
+		margin: 0 0 1px;
 	}
 
 	.alMainMenuView {
@@ -105,54 +105,6 @@
 						<div class="card_line loading"></div>
 						<div class="card_price loading"></div>
 					</div>
-				</div>
-			</div>
-		</div>
-
-	</div>
-	<div class="container mb-md-5 shimmer_effect main_shimer">
-		<div class="row">
-			<div class="col-12 cards">
-				<h2 class="h2-heading loading mb-3"></h2>
-			</div>
-		</div>
-		<div class="row">
-
-			<div class="col-sm-12">
-				<div class="grid-row grid-4-4">
-					<div class="cards">
-						<div class="card_image loading"></div>
-						<div class="d-flex align-items-center justify-content-between">
-							<div class="card_title loading"></div>
-							<div class="card_icon loading"></div>
-						</div>
-						<div class="card_content loading mt-0 w-75"></div>
-						<div class="card_content loading mt-0 w-50"></div>
-						<div class="card_line loading"></div>
-						<div class="card_price loading"></div>
-					</div>
-					<div class="cards">
-						<div class="card_image loading"></div>
-						<div class="d-flex align-items-center justify-content-between">
-							<div class="card_title loading"></div>
-							<div class="card_icon loading"></div>
-						</div>
-						<div class="card_content loading mt-0 w-75"></div>
-						<div class="card_content loading mt-0 w-50"></div>
-						<div class="card_line loading"></div>
-						<div class="card_price loading"></div>
-					</div>
-					<div class="cards">
-						<div class="card_image loading"></div>
-						<div class="d-flex align-items-center justify-content-between">
-							<div class="card_title loading"></div>
-							<div class="card_icon loading"></div>
-						</div>
-						<div class="card_content loading mt-0 w-75"></div>
-						<div class="card_content loading mt-0 w-50"></div>
-						<div class="card_line loading"></div>
-						<div class="card_price loading"></div>
-					</div>
 					<div class="cards">
 						<div class="card_image loading"></div>
 						<div class="d-flex align-items-center justify-content-between">
@@ -166,90 +118,10 @@
 					</div>
 				</div>
 			</div>
-			<!-- <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-                <div class="card_image loading"></div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="card_title loading"></div>
-                    <div class="card_icon loading"></div>
-                </div>
-                <div class="card_content loading mt-0 w-75"></div>
-                <div class="card_content loading mt-0 w-50"></div>
-                <div class="card_line loading"></div>
-                <div class="card_price loading"></div>
-            </div> -->
 		</div>
 
 	</div>
-	<div class="container mb-md-5 shimmer_effect main_shimer">
-		<div class="row">
-			<div class="col-12 cards">
-				<h2 class="h2-heading loading mb-3"></h2>
-			</div>
-		</div>
-		<div class="row">
 
-			<div class="col-sm-12">
-				<div class="grid-row grid-4-4">
-					<div class="cards">
-						<div class="card_image loading"></div>
-						<div class="d-flex align-items-center justify-content-between">
-							<div class="card_title loading"></div>
-							<div class="card_icon loading"></div>
-						</div>
-						<div class="card_content loading mt-0 w-75"></div>
-						<div class="card_content loading mt-0 w-50"></div>
-						<div class="card_line loading"></div>
-						<div class="card_price loading"></div>
-					</div>
-					<div class="cards">
-						<div class="card_image loading"></div>
-						<div class="d-flex align-items-center justify-content-between">
-							<div class="card_title loading"></div>
-							<div class="card_icon loading"></div>
-						</div>
-						<div class="card_content loading mt-0 w-75"></div>
-						<div class="card_content loading mt-0 w-50"></div>
-						<div class="card_line loading"></div>
-						<div class="card_price loading"></div>
-					</div>
-					<div class="cards">
-						<div class="card_image loading"></div>
-						<div class="d-flex align-items-center justify-content-between">
-							<div class="card_title loading"></div>
-							<div class="card_icon loading"></div>
-						</div>
-						<div class="card_content loading mt-0 w-75"></div>
-						<div class="card_content loading mt-0 w-50"></div>
-						<div class="card_line loading"></div>
-						<div class="card_price loading"></div>
-					</div>
-					<div class="cards">
-						<div class="card_image loading"></div>
-						<div class="d-flex align-items-center justify-content-between">
-							<div class="card_title loading"></div>
-							<div class="card_icon loading"></div>
-						</div>
-						<div class="card_content loading mt-0 w-75"></div>
-						<div class="card_content loading mt-0 w-50"></div>
-						<div class="card_line loading"></div>
-						<div class="card_price loading"></div>
-					</div>
-				</div>
-			</div>
-			<!-- <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-                <div class="card_image loading"></div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="card_title loading"></div>
-                    <div class="card_icon loading"></div>
-                </div>
-                <div class="card_content loading mt-0 w-75"></div>
-                <div class="card_content loading mt-0 w-50"></div>
-                <div class="card_line loading"></div>
-                <div class="card_price loading"></div>
-            </div> -->
-		</div>
-
-	</div>
 </section>
 
 <!-- Shimmer Efferct End -->
@@ -269,9 +141,10 @@
 				</ol>
 			<div class="carousel-inner">
 				@foreach($banners as $key => $banner)
-				@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+				@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}
+				else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
 				<div class="carousel-item @if($key == 0) active @endif">
-					<a class="banner-img-outer" href="{{$url??'#'}}">
+					<a class="banner-img-outer" href="{{$url??'#'}}" target="_blank">
 						<link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1170/500' . $banner->image['image_path']}}" />
 						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1170/400' . $banner->image['image_path']}}">
 					</a>
@@ -340,13 +213,13 @@
 					<div class="col-md-2">
 						<div class="cate-item text-center">
 							<a href="{{route('categoryDetail', $cate['slug'])}}">
-								<img 
-									class="blur-up lazyload" 
-									data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" 
-									data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" 
-									data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" 
-									alt="" 
-									onmouseover='changeImage(this,1)' 
+								<img
+									class="blur-up lazyload"
+									data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}"
+									data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}"
+									data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}"
+									alt=""
+									onmouseover='changeImage(this,1)'
 									onmouseout='changeImage(this,0)'
 								>
 								<h3>{{$cate['name']}}</h3>
@@ -598,13 +471,13 @@
 		<section class="d-none container popular-brands left-shape_ position-relative">
 			<div class="al_top_heading text-center d-flex align-items-center">
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
-				<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+				<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a>
 			</div>
 			<div class="row">
 				<div class=" col-12 al_custom_brand">
 					<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						<div class="row">
-							
+
 								@foreach ($homePageData[$homePageLabel->slug] as $brand )
 								@include('frontend.home_page_8.brands')
 								@endforeach
@@ -691,12 +564,12 @@
 		</section>
         @elseif($homePageLabel->slug == 'recently_viewed' && (count($homePageData['recently_viewed']) != 0))
 		<section class="d-none main-pro-slider suppliers-section container mb-4" id="homepage_recently_viewed">
-			
+
 			<div class="row">
 				<div class="col-md-3">
 					<div class=" top-heading mt-4 pt-5">
 						<h2 class="h2-heading">{{$homePageLabel->slug=='recently_viewed' ? __('Recently')." ".getNomenclatureName('Viewed', true) : __($homePageLabel->title)}}</h2>
-						<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a>
 					</div>
 				</div>
 				<div class="col-md-9 p-0 mb-4">
@@ -715,7 +588,7 @@
 					<div class="col-md-12">
 						<div class=" top-heading text-center">
 							<h2 class="h2-heading">{{$homePageLabel->slug=='top_rated' ? __('Top')." ".getNomenclatureName('Rated', true) : __($homePageLabel->title)}}</h2>
-							<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+							<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a>
 						</div>
 					</div>
 					<div class="col-md-12 mb-4">
@@ -752,14 +625,14 @@
 			</div>
 		</section>
         @elseif($homePageLabel->slug == 'spotlight_deals' && (count($homePageData['spotlight_deals']) != 0))
-		
+
 		<section class="d-none mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container">
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="h2-heading"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a>
 				</div>
 				<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					<div class="row">
@@ -794,7 +667,7 @@
 				<h2 class="h2-heading mb-3"> @php
 					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 					@endphp </h2>
-					<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+					<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a>
 			</div>
 			<div class="row">
 				<div class="col-12">
@@ -817,7 +690,7 @@
 					<h2 class="h2-heading mb-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a>
 				</div>
 				<div class="row">
 					<div class="col-12">
@@ -839,7 +712,7 @@
 					<h2 class="h2-heading mb-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+						<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a>
 				</div>
 				<div class="row">
 					<div class="col-12">
@@ -864,13 +737,13 @@
 							<h2 class="h2-heading"> @php
 								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 								@endphp </h2>
-								<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> 
+								<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a>
 						</div>
 					</div>
 				</div>
 			</div>
 		</section> -->
-		
+
 		@if( $homePageLabel->slug == 'featured_products' )
 			<section class="product-1 main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 				<div class="container">
@@ -880,7 +753,7 @@
 								<h2 class="h2-heading"> @php
 									echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 									@endphp </h2>
-									<a class="" href="">View all</a> 
+									<a class="" href="">View all</a>
 							</div>
 						</div>
 					</div>
@@ -893,7 +766,7 @@
 					</div>
 				</div>
 			</section>
-		
+
 		@elseif( $homePageLabel->slug == 'new_products' )
 			<section class="product-2 main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 				<div class="container">
@@ -903,7 +776,7 @@
 								<h2 class="h2-heading"> @php
 									echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 									@endphp </h2>
-									<a class="" href="">View all </a> 
+									<a class="" href="">View all </a>
 							</div>
 						</div>
 					</div>
@@ -925,7 +798,7 @@
 								<h2 class="h2-heading"> @php
 									echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 									@endphp </h2>
-									<a class="" href="">View all </a> 
+									<a class="" href="">View all </a>
 							</div>
 						</div>
 					</div>

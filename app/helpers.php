@@ -18,11 +18,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
 
-function setUserCode(){
-    $userCode = session()->has('userCode');
-    if(!$userCode){
-        $user = ClientData::first();
-        session()->put('userCode', $user->code);
+if (!function_exists('setUserCode')) {
+    function setUserCode(){
+        $userCode = session()->has('userCode');
+        if(!$userCode){
+            $user = ClientData::first();
+            session()->put('userCode', $user->code);
+        }
     }
 }
 
@@ -101,7 +103,7 @@ if (!function_exists('getInToken')) {
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             session()->put('compareCurrency', $clientCurrency->doller_compare);
         }
-        
+
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
         if($tokenCurrency == null){
@@ -116,7 +118,7 @@ if (!function_exists('getInToken')) {
 if (!function_exists('getJsToken')) {
     function getJsToken(){
         setUserCode();
-        $redis = Redis::connection();        
+        $redis = Redis::connection();
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
         if($tokenCurrency == null){
@@ -626,7 +628,7 @@ if (!function_exists('SplitTime')) {
             if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
                 $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
             }
-            
+
             $StartTime += $AddMins;
             $endtm = 0;
         }
@@ -1140,7 +1142,7 @@ if (!function_exists('getServiceTypesCategory')) {
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
             if(isset($set_template)  && $set_template->template_id == 9){
-               
+
                 if(@$client_preference->p2p_check){
                     $vendorType = 'p2p';
                     // session()->put('vendorType', 'p2p');
@@ -1237,7 +1239,9 @@ if (!function_exists('getCategoryTypesServices')) {
      * config('constants.ServiceTypes')
      */
     function getCategoryTypesServices() {
+
         $client_preference = ClientPreference::select('business_type')->first();
+
         switch($client_preference->business_type){
             case "taxi":
                 $typeArray =['pick_drop_service'];
@@ -1331,6 +1335,36 @@ if (!function_exists('sendSmsTemplate')) {
     }
 }
 
+
+
+if (!function_exists('inventorySyncOnOff')) {
+    function inventorySyncOnOff($vendor_id)
+    {
+        if (!empty($vendor_id)) {
+            $client_preferences = ClientPreference::first();
+
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'shortcode' => $client_preferences->inventory_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+            $url = $client_preferences->inventory_service_key_url;
+
+            $request = $client->get($url . '/api/v1/sync-status', [
+                'json' => ['royo_vendor_id' => $vendor_id]
+            ]);
+
+            $response = json_decode($request->getBody());
+
+            if ($response->status) {
+                return $response->msg;
+            }
+        } else {
+            return false;
+        }
+    }
+}
 // Returns the values of the additional preferences.
 if (!function_exists('checkTableExists')) {
     /** check if column exits in table
@@ -1404,7 +1438,7 @@ if( !function_exists('check_influencer_enable') ) {
             return true;
         }
         return false;
-    }   
+    }
 }
 
 if( !function_exists('is_p2p_vendor') ) {
@@ -1498,7 +1532,7 @@ if( !function_exists('generateSlug') ) {
 
 if( !function_exists('printOldOrDbValue') ) {
     function printOldOrDbValue($key, $data=null) {
-        
+
         $value = '';
 
         if( !empty($key) ) {
@@ -1552,4 +1586,5 @@ if( !function_exists('makeCartEmpty') ) {
         return true;
     }
 }
+
 
