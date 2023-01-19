@@ -119,14 +119,22 @@
             $('.modal .category_vendor').show();
             $('.modal .category_list').show();
             $('.modal .vendor_list').hide();
+            $('.modal .url_link').hide();
         }else if(val == 'vendor'){
             $('.modal .category_vendor').show();
             $('.modal .category_list').hide();
             $('.modal .vendor_list').show();
+            $('.modal .url_link').hide();
+        }else if(val == 'url'){
+            $('.modal .category_vendor').show();
+            $('.modal .category_list').hide();
+            $('.modal .vendor_list').hide();
+            $('.modal .url_link').show();
         }else{
             $('.modal .category_vendor').hide();
             $('.modal .category_list').hide();
             $('.modal .vendor_list').hide();
+            $('.modal .url_link').hide();
         }
     });
 

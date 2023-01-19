@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, ClientPreferenceAdditional,OrderDeliveryStatusIcon, WebStyling,WebStylingOption, HomeProduct, Product};
+use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout, CabBookingLayoutBanner, CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, ClientPreferenceAdditional,OrderDeliveryStatusIcon, WebStyling,WebStylingOption, HomeProduct, Product};
 
 use Illuminate\Http\Request;
 use App\Models\Client;
@@ -13,6 +13,7 @@ use DB,Log;
 use Session;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\HomePage\WebStylingTrait;
+use Illuminate\Support\Str;
 class WebStylingController extends BaseController{
     use WebStylingTrait;
     //
@@ -458,6 +459,12 @@ class WebStylingController extends BaseController{
             //    Log::info($is_cat);
             }
 
+            if(isset($request->banner_image[$key]) && !empty($request->banner_image[$key])){
+                $is_img =$request->banner_image[$key]['check'];
+            } else{
+                $is_img =  0;
+            }
+
 
 
             if($is_cat != 0)
@@ -467,6 +474,26 @@ class WebStylingController extends BaseController{
                 $cate->cab_booking_layout_id  = $request->pickup_labels[$key];
                 $cate->category_id  = $is_cat;
                 $cate->save();
+            }
+
+            if($is_img != 0){
+                $del = CabBookingLayoutBanner::where('cab_booking_layout_id',$request->pickup_labels[$key])->where('type', 1)->delete();
+                    $folderName='banner';
+                    $filePath = $folderName . '/' . Str::random(40);
+                    $file = $is_img;
+                   
+                    $orignal_name = $is_img->getClientOriginalName();
+                    $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                  
+                    $url = Storage::disk('s3')->url($file_name);
+                
+                
+                $cate = new CabBookingLayoutBanner();
+                $cate->cab_booking_layout_id  = $request->pickup_labels[$key];
+                $cate->banner_image_url  = $url;
+                $cate->type  = 1; //1 = Web Styling
+                $cate->save();
+
             }
 
 
