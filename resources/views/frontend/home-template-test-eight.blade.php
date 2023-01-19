@@ -701,12 +701,12 @@
 		<section class="popular-brands left-shape_ position-relative bg-light-gray">
 			<div class="container">
 				<div class="al_top_heading text-center d-flex align-items-center">
-					<h2 class="col h2-heading">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
+					<h2 class="col h2-heading pb-2">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
 				</div>
 				<div class="row">
 					<div class=" col-12 al_custom_categories">
 						<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="row">
+							<div class="col-12 d-flex align-items-center justify-content-center">
 								@foreach ( $homePageLabel->nav_categories as $category )
 									@include('frontend.home_page_8.category')
 								@endforeach
