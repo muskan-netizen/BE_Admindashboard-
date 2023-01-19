@@ -898,8 +898,8 @@ class OrderController extends BaseController
     {
         $orderPlaced = true;
         $orderPlacedNo = '';
-        $productIds = $request->productIds??'';
-        $orderVendorProductIds = $request->order_vendor_product_id??'';
+        $productIds = $request->productIds??[];
+        $orderVendorProductIds = $request->order_vendor_product_id??[];
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
          try {

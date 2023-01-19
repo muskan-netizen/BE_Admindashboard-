@@ -56,7 +56,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     }
 
     label.rating-star.cancel_order,
-    .rating-star.single-track-order {
+    .rating-star.single-track-order, .extend-order {
         position: relative;
         left: 0px;
         top: 4px;
@@ -1108,6 +1108,11 @@ $timezone = Auth::user()->timezone;
                                                                                 $total_tax_order_price += $product->taxable_amount;
                                                                                 @endphp
                                                                                 @endif
+                                                                            </li>
+                                                                            <li>
+                                                                                <label class="rating-star extend-order">
+                                                                                    {{ __('Extend') }}
+                                                                                </label>
                                                                             </li>
                                                                             @endforeach
                                                                         </ul>
