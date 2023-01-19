@@ -108,6 +108,8 @@
                             </div>
                         </div>
 
+                        @if(auth()->user()->can('user-add-role-permission') || auth()->user()->is_superadmin)
+                      
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -131,7 +133,6 @@
                                     </select>
                                     </div>
                             </div>
-
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="password" class="control-label">{{ __("Status") }}</label>
@@ -363,6 +364,7 @@
                             </div>
 
                         </div>
+                        @endif
 
                         <div class="row mb-2 mt-4">
                             <div class="col-12">

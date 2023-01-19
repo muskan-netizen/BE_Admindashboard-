@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency};
+use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency, UserVendor};
 
 class DashBoardController extends BaseController
 {
@@ -344,6 +344,11 @@ class DashBoardController extends BaseController
             if(auth()->user()->getRoleNames()[0]=='App Managers' || $request->manager_id)
             {
                 $vendors = $vendors->where('refference_id',$managerId);
+                $vendorIds = $vendors->pluck('id')->toArray();
+            }elseif(auth()->user()->getRoleNames()[0]=='Seller' || $request->manager_id)
+            {
+                $managerId = UserVendor::where('user_id',$managerId)->value('vendor_id');
+                $vendors = $vendors->where('id',$managerId);
                 $vendorIds = $vendors->pluck('id')->toArray();
             }
 

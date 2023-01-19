@@ -20,8 +20,6 @@ use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
 use Http\Message\Cookie;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 
 class CartController extends FrontController
@@ -42,18 +40,7 @@ class CartController extends FrontController
 
     public function showCart(Request $request, $domain = '')
     {
-        // //$user = auth()->user();
-        // // $user = User::with('roles')->where('id',$userId)->get();
-        // // dd($user);
-
-        // // $user->assignRole('1');
-        //  $role = Role::first();
-        //  $permission = Permission::all();
-        //  $role->syncPermissions($permission);
-        // // dd($user->roles[0]->permissions);
-        // //  $role->revokePermissionTo($permission);
-        // // $role = $user->getRoleNames(); 
-        // dd('$user');
+       
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
                 $order = Order::where('order_number', $request->order)->first();

@@ -56,6 +56,7 @@ class MainPermissionSeeder extends Seeder{
             //Customers Page
             array('name' => 'customers-view','controller'=>'UserController'),
             array('name' => 'customers-add','controller'=>'UserController'),
+            array('name' => 'user-add-role-permission','controller'=>'UserController'),
             
 
             //Review Page

@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, Bid, BidRequest, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, RoleOld, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, Bid, BidRequest, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, OrderVendorProduct, RoleOld, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
@@ -768,7 +768,6 @@ class VendorController extends BaseController
 
         $product_categories = [];
         $active = array();
-        $type = Type::all();
         $categoryToggle = array();
         $vendor = Vendor::where('id',$id);
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
@@ -848,7 +847,6 @@ class VendorController extends BaseController
         })
         ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
 
-
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -882,30 +880,13 @@ class VendorController extends BaseController
         if(isset($vendor_name) && !empty($vendor_name))
         $sku_url = $sku_url.".".$vendor_name;
         $taxCate = TaxCategory::all();
-        $live_status=([0=>'Draft',1=>'Published',2=>'Blocked']);
-        $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
-        $vendor_for_appointment_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',12);})->count();
-        $ship_creds = ShippingOption::select('status', 'test_mode')->where('code', 'shiprocket')->where('status', 1)->first();
-        $ahoys = ShippingOption::select('status', 'test_mode')->where('code', 'ahoy')->where('status', 1)->first();
-        $checkShip = ($ship_creds->status) ?? 0;
-        $checkAhoyShip = ($ahoys->status) ?? 0;
+        
+       
+       
         $taxRates=TaxRate::all();
         $files = CsvQrcodeImport::latest()->get();
         $facilties = Facilty::with(['primary'])->get();
-        $vendor_facilty_ids = VendorFacilty::where('vendor_id',$vendor->id)->pluck('facilty_id')->toArray();
-        $vendorMultiBanner = $this->getMultiBanner($vendor->id);
-
-        $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
-                    ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
-                    ->where('client_languages.client_code', Auth::user()->code)
-                    ->where('client_languages.is_active', 1)
-                    ->orderBy('client_languages.is_primary', 'desc')->get();
-
-        $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
-
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-
         $roles = RoleOld::get();
         if($getAdditionalPreference['is_price_by_role'] == 1){
             if($roles){
@@ -914,17 +895,105 @@ class VendorController extends BaseController
                 }
             }
         }
-        
-        // $accepted = Bid::whereHas('bidRequests',function($q)use($vendor)
-        // {
-        //     $q->where(['user_id'=>$vendor->id]);
-        // })->where('status','==',0)->first();
+
+        $data = $this->SettingFunction($vendor,$id);
+     
+        $dataMerge = array_merge($data,['categoryToggle' => $categoryToggle,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog',  'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'roles' => $roles,'getAdditionalPreference' => $getAdditionalPreference,'categories' => $categories]);
 
 
-        $reqBidCnt = Bid::where('vendor_id','!=',$id)->groupBy('bid_req_id')->count();
-        
-        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages, 'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference,'reqBidCnt'=>$reqBidCnt]);
+        return view('backend.vendor.vendorCatalog')->with($dataMerge);
     }
+
+
+    public function SettingFunction($vendor,$id)
+    {
+        $ship_creds = ShippingOption::select('status', 'test_mode')->where('code', 'shiprocket')->where('status', 1)->first();
+        $ahoys = ShippingOption::select('status', 'test_mode')->where('code', 'ahoy')->where('status', 1)->first();
+        $type = Type::all();
+        $checkShip = ($ship_creds->status) ?? 0;
+        $checkAhoyShip = ($ahoys->status) ?? 0;
+        $vendor_facilty_ids = VendorFacilty::where('vendor_id',$vendor->id)->pluck('facilty_id')->toArray();
+        $vendorMultiBanner = $this->getMultiBanner($vendor->id);
+        $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
+                    ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
+                    ->where('client_languages.client_code', Auth::user()->code)
+                    ->where('client_languages.is_active', 1)
+                    ->orderBy('client_languages.is_primary', 'desc')->get();
+
+        $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
+        $live_status=([0=>'Draft',1=>'Published',2=>'Blocked']);
+        $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
+        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        $vendor_for_appointment_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',12);})->count();
+        $reqBidCnt = Bid::where('vendor_id','!=',$id)->groupBy('bid_req_id')->count();
+
+        return ['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'typeArray' => $type, 'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages, 'reqBidCnt'=>$reqBidCnt];
+    }
+
+    /**   show vendor page - catalog tab      */
+    public function vendorDashboard($domain = '', $id){
+
+        $categoryToggle = array();
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
+        $vendor_registration_documents = VendorRegistrationDocument::get();
+        $vendor = Vendor::where('id',$id);
+        if (Auth::user()->is_superadmin == 0) {
+            $vendor = $vendor->whereHas('permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $vendor  =  $vendor->first();
+        if(empty($vendor))
+        abort(404);
+        $vendor->fixedFeeNomenclatures = $this->fixedFee($langId);
+
+    
+        $client_preferences = ClientPreference::first();
+        $user = auth()->user();
+        $client = Client::orderBy('id','asc')->first();
+        if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
+        $sku_url =  ($client->custom_domain);
+        else
+        $sku_url =  ($client->sub_domain.env('SUBMAINDOMAIN'));
+
+        $sku_url = array_reverse(explode('.',$sku_url));
+        $sku_url = implode(".",$sku_url);
+        $vendor_name = $vendor->name;
+        $vendor_name = preg_replace('/\s+/', '', $vendor_name);
+        if(isset($vendor_name) && !empty($vendor_name))
+        $sku_url = $sku_url.".".$vendor_name;
+        
+        $total_delivery_fees = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        if ($user->is_superadmin == 0) {
+            $total_delivery_fees = $total_delivery_fees->whereHas('vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
+            });
+        }
+        $total_delivery_fees = $total_delivery_fees->sum('delivery_fee');
+
+        $total_order_value = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        if ($user->is_superadmin == 0) {
+            $total_order_value = $total_order_value->whereHas('vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
+            });
+        }
+        $lifetimeEarning = $total_order_value->sum('payable_amount') - $total_delivery_fees;
+       
+        $total_sold_products = OrderVendorProduct::where('order_vendor_id',$id);
+        // if ($user->is_superadmin == 0) {
+        //     $total_sold_products = $total_sold_products->whereHas('vendor.permissionToUser', function ($query) use($user) {
+        //         $query->where('user_id', $user->id);
+        //     });
+        // }
+        $total_sold_products = $total_sold_products->sum('quantity');
+       
+
+        $data = $this->SettingFunction($vendor,$id);
+     
+        $dataMerge = array_merge($data,['categoryToggle' => $categoryToggle,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'dashboard','lifetimeEarning'=> $lifetimeEarning,'total_sold_products'=>$total_sold_products]);
+        return view('backend.vendor.vendorDashboard')->with($dataMerge);
+    }
+
     // vendor product datatable
     public function VendorProductFilter(Request $request,$domain='',$vendor_id)
     {
@@ -1079,7 +1148,6 @@ class VendorController extends BaseController
       
         $product_categories = [];
         $active = array();
-        $type = Type::all();
         $categoryToggle = array();
         $vendor = Vendor::where('id',$id);
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
@@ -1190,12 +1258,17 @@ class VendorController extends BaseController
         $payout_options = $vendorPayoutController->payoutConnectDetails($id);
 
         $taxCate = TaxCategory::all();
-        $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
-        $vendor_for_appointment_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',12);})->count();
+       
+     
         $vendorMultiBanner = $this->getMultiBanner($vendor->id);
-        $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
-        return view('backend.vendor.vendorPayout')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory, 'tab' => 'payout', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>decimal_format($available_funds), 'payout_options' => $payout_options,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls]);
+        $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get(); 
+
+        
+        $data = $this->SettingFunction($vendor,$id);
+     
+        $dataMerge = array_merge($data,['categoryToggle' => $categoryToggle,'taxCate' => $taxCate,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'tab' => 'payout',  'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled,'categories' => $categories,'total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>decimal_format($available_funds), 'payout_options' => $payout_options,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls]);
+
+        return view('backend.vendor.vendorPayout')->with($dataMerge);
     }
 
     public function vendorPayoutCreate(Request $request, $domain = '', $id){

@@ -74,7 +74,7 @@
             ?>
             
             <ul id="side-menu">
-                 @if(count(array_intersect($order_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
+                 @if(@auth()->user()->can('dashboard-view') || Auth::user()->is_superadmin)
                 <li>
                     <a class="menu-title pl-1" href="#">
                         <!-- <span class="icon-orders"></span> -->
