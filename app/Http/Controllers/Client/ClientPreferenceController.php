@@ -400,6 +400,12 @@ class ClientPreferenceController extends BaseController{
             foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                 $vendor_typ_name = $vendor_typ_key."_check";
                 $preference->$vendor_typ_name = ($request->has($vendor_typ_name) && $request->$vendor_typ_name == 'on') ? 1 : 0;
+                if($vendor_typ_key == 'p2p'){
+                    $request->request->add(['is_attribute' => $preference->$vendor_typ_name]);
+                    $this->updatePreferenceAdditional($request);
+                    $request->request->remove('is_attribute');
+                }
+               
             }
             // if((!$request->has('dinein_check') && !$request->dinein_check == 'on') && (!$request->has('takeaway_check') && !$request->dinein_check == 'on') && (!$request->has('delivery_check') && !$request->dinein_check == 'on')){
             //     return redirect()->route('configure.customize')->with('error', 'One Option must be acitve');

@@ -454,8 +454,8 @@ trait cartManager{
 
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
-                $user->timezone = $client_timezone->timezone ?? $user->timezone;
-                $user_timezone = $user->timezone ;
+                $user->timezone = $user->timezone ?? $client_timezone->timezone;
+                $user_timezone = $user->timezone;
             }
           // $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */
@@ -556,6 +556,7 @@ trait cartManager{
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
+                $deliveryfeeOnCoupon = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                    // pr($prod);
                     $prod->product->ServicePeriods = [];
@@ -1178,7 +1179,9 @@ trait cartManager{
                                 $PromoFreeDeliver = 1;
                               // $coupon_amount_used = $coupon_amount_used ;
                                 $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
+                                $deliveryfeeOnCoupon = 1;
                                 $payable_amount = $payable_amount;
+                                $deliveryfeeOnCoupon = 1;
                             }
                         }
                     }
@@ -1195,17 +1198,18 @@ trait cartManager{
                     }
                 }
 
+                $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $deliveryCharges_real : 0;
                 if($user){
                     // calculate subscription discount On admin and vendor
                     $vendor_subs_disc_percent       = isset($vendorData->vendor->subscription_discount_percent) ? $vendorData->vendor->subscription_discount_percent : 0;
-                    $subscription_discount_arr      = $this->calCulateSubscriptionDiscount($user->id, $deliveryCharges_real, $payable_amount  +  $deliveryCharges_real, $vendor_subs_disc_percent);
+                    $subscription_discount_arr      = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_ifnot_discounted, $payable_amount  +  $deliveryfee_ifnot_discounted, $vendor_subs_disc_percent);
                     $subscription_discount_admin    = $subscription_discount_arr['admin'];
                     $subscription_discount_vendor   = $subscription_discount_arr['vendor'];
                     $subscription_discount_delivery = $subscription_discount_arr['delivery_discount'];
                 }
                 // add total delivery fee
                 if($vendorData->vendor->delivery_charges_tax_id)
-                $total_deliver_charges +=  $deliveryCharges_real;
+                $total_deliver_charges +=  $deliveryfee_ifnot_discounted;
 
                 if($vendorData->vendor->add_markup_price)
                 $total_markup_charges +=  $totalMarkup;
@@ -1215,7 +1219,7 @@ trait cartManager{
                 $subtotal_amount = $payable_amount;
 
                 // if($PromoFreeDeliver != 1){
-                $payable_amount = $payable_amount + $deliveryCharges_real;
+                $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted;;
                 //}
                 //$payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total

@@ -77,6 +77,7 @@
                         <option value="">{{ __("Select") }}</option>
                         <option value="category" {{($banner->link == 'category') ? 'selected' : ''}}>{{ __('Category') }}</option>
                         <option value="vendor" {{($banner->link == 'vendor') ? 'selected' : ''}}>{{ __("Vendor") }}</option>
+                        <option value="url" {{($banner->link == 'url') ? 'selected' : ''}}>{{ __("URL Link") }}</option>
                     </select>
 
                     <span class="invalid-feedback" role="alert">
@@ -110,6 +111,12 @@
                             <option value="{{$vend->id}}" {{($vend->id == $banner->redirect_vendor_id) ? 'selected' : ''}}>{{$vend->name}}</option>
                         @endforeach
                     </select>
+                </div>
+            </div>
+            <div class="col-md-6 url_link" style="{{($banner->link == 'url') ? '' : 'display: none;'}}">
+                <div class="form-group">
+                    {!! Form::label('title', __('Enter Link'),['class' => 'control-label']) !!}
+                    <input type="url" id="link_url" name="link_url" value="{{$banner->link_url ?? ''}}" class="form-control">
                 </div>
             </div>
         </div>

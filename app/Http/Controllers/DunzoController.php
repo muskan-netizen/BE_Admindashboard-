@@ -285,7 +285,8 @@ class DunzoController extends Controller
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
         }
 
-    }else{
+    }elseif(@$json->awb){
+
         //shiprocket webhook
 
         Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);

@@ -197,7 +197,12 @@ if(session()->has('applocale')){
                 <div class="row d-flex align-items-center">
                     <div class="col-xl-6 col-md-6 col-sm-12">
                         <div class="footer-end">
-                            <p><i class="fa fa-copyright" aria-hidden="true"></i> 2020-21</p>
+                            @php
+                            $currYear = \Carbon\Carbon::now()->year;
+                            $prevYear = $currYear - 1;
+                            $currYear = substr($currYear, -2);
+                            @endphp
+                            <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} | {{__('All rights reserved')}}</p>
                         </div>
                     </div>
                     @if($client_preference_detail->show_payment_icons == 1)
