@@ -734,7 +734,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                         @endif
 
-
+                        @if(checkColumnExists('vendors', 'is_vendor_instant_booking'))
+                            @if($product->vendor->pick_drop == 1 && $product->vendor->is_vendor_instant_booking == 1 && $configData->is_one_push_book_enable == 1 && $product->category->categoryDetail->type_id == 7)
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Available for Instant Booking'),['class' => 'control-label']) !!}
+                                <input type="checkbox" data-plugin="switchery" name="is_product_instant_booking" id="is_product_instant_booking" class="form-control" data-color="#43bee1" @if($product->is_product_instant_booking == 1) checked @endif>
+                            </div>
+                            @endif
+                        @endif
 
                         @if(($configData->need_dispacher_home_other_service == 1 && ($product->category->categoryDetail->type_id == 8)) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 ) )
                         @if($product->Requires_last_mile == 1 )
@@ -1107,6 +1114,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
                     @endif
+
                     @if($product->vendor->pick_drop == 1 && $configData->is_cab_pooling == 1 && $product->category->categoryDetail->type_id == 7)
                     <div class="row">
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">

@@ -458,6 +458,11 @@ class PickupDeliveryController extends BaseController{
                 $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0;
                 $order_product->is_cab_pooling = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
 
+                if(checkColumnExists('order_vendor_products', 'is_one_push_booking'))
+                {
+                    $order_product->is_one_push_booking = isset($request->is_one_push_booking)?$request->is_one_push_booking:0;
+                }
+
                 if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
                 $user_product_order_form = json_encode($request->user_product_order_form);
                 else
@@ -739,9 +744,9 @@ class PickupDeliveryController extends BaseController{
                             'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI'),
                             'no_seats_for_pooling' =>(isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
                             'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
+                            'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
                             'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
                         ];
-
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                     'content-type' => 'application/json']

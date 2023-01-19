@@ -1364,7 +1364,7 @@
         </div>
 
         @php
-            $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable']);
+            $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable']);
         @endphp
         <div class="row">
             {{-- hubspot form --}}
@@ -1600,7 +1600,7 @@
             <div class="col-xl-4 col-lg-4 mb-3">
                 <!-- Social Logins title start -->
                 <div class="page-title-box">
-                    <h4 class="page-title text-uppercase">Post Pay</h4>
+                    <h4 class="page-title text-uppercase">{{ __('Edit Order') }} <!-- {{ __('Post Pay & Edit Order') }} --></h4>
                 </div><!-- Social Logins title end -->
 
                 <form method="POST" action="{{ route('additional.update') }}">
@@ -1613,22 +1613,23 @@
                             <div class="col-12">
                                 <div class="form-group mb-0 switchery-demo">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <h4 class="header-title text-uppercase mb-0">{{ __('Post Pay & Edit Order') }}
+                                        <h4 class="header-title text-uppercase mb-0">{{ __('Edit Order') }}<!-- {{ __('Post Pay & Edit Order') }} -->
                                         </h4>
                                         <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
                                         </button>
                                     </div>
                                     <p class="sub-header">
-                                        {{ __('Post Pay allows customers to pay after placing order. Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.') }}
+                                        {{ __('Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.') }}
+                                        <!-- {{ __('Post Pay allows customers to pay after placing order. Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.') }} -->
                                     </p>
-                                    <label for="" class="mr-3">{{ __('Post Pay Enable') }}</label>
+                                    <!-- <label for="" class="mr-3">{{ __('Post Pay Enable') }}</label>
                                     <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch"
                                         id="is_postpay_enable_switch" class="form-control checkbox_change"
                                         data-className="is_postpay_enable" data-color="#43bee1"
                                         @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) checked='checked' @endif>
                                     <input type="hidden"
                                         @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) value="1" @else value="0" @endif
-                                        name="is_postpay_enable" id="is_postpay_enable" />
+                                        name="is_postpay_enable" id="is_postpay_enable" /> -->
                                 </div>
                                 <div class="form-group mt-2 switchery-demo">
                                     <label for="" class="mr-3">{{ __('Edit Order Enable') }}</label>
@@ -2395,6 +2396,15 @@
                                   <span> <input type="checkbox" data-plugin="switchery" name="is_bid_ride_enable_switch" id="is_bid_ride_enable_switch" class="form-control checkbox_change" data-className="is_bid_ride_enable"  data-color="#43bee1" @if( $getAdditionalPreference['is_bid_ride_enable'] == '1') checked='checked' @endif>
                                    </span>
                                    <input type="hidden"  @if($getAdditionalPreference['is_bid_ride_enable'] == 1) value="1" @else value="0" @endif  name="is_bid_ride_enable"  id="is_bid_ride_enable"/>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                   <label for="is_one_push_book_enable_switch" class="mr-2 mb-0">{{__('One Push Button For Booking (Pick & Drop)')}}<small class="d-block pr-5">{{__("Enable to Book Ride On One Push Button.")}}</small></label>
+                                  <span> <input type="checkbox" data-plugin="switchery" name="is_one_push_book_enable_switch" id="is_one_push_book_enable_switch" class="form-control checkbox_change" data-className="is_one_push_book_enable"  data-color="#43bee1" @if( $getAdditionalPreference['is_one_push_book_enable'] == '1') checked='checked' @endif>
+                                   </span>
+                                   <input type="hidden"  @if($getAdditionalPreference['is_one_push_book_enable'] == 1) value="1" @else value="0" @endif  name="is_one_push_book_enable"  id="is_one_push_book_enable"/>
                                 </div>
                             </div>
                         </div>
