@@ -13,10 +13,10 @@ class WebStylingSeeder extends Seeder{
      */
     public function run(){
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('web_stylings')->truncate();    
+        DB::table('web_stylings')->truncate();
         DB::table('web_styling_options')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');   
-      
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
 
         $app_styling = WebStyling::insertGetId([
             'name' => 'Home Page Style',
@@ -54,8 +54,5 @@ class WebStylingSeeder extends Seeder{
             'is_selected' => '0',
             'template_id' => '4',
         ]);
-
-
-     
     }
 }

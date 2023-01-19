@@ -124,23 +124,21 @@ class OrderController extends FrontController
             $pastOrders     =  $pastOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
-                $q->where('order_status_option_id', '!=', 6);
-                $q->where('order_status_option_id', '!=', 3);
-                $q->where('order_status_option_id', '!=', 9);
+                $q->with(['products', 'products.media.image', 'products.pvariant.media.pimage.image']);
+                if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
+                    $q->with('exchanged_of_order.orderDetail');
+                }
+                $q->whereNotIn('order_status_option_id',  [3,6,9]);
             },
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address','reqCancelOrder'
+            }, 'vendors.dineInTable.category', 'user', 'address','reqCancelOrder'
 
 
         ]);
-        if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
-            $activeOrders = $activeOrders->with('vendors.exchanged_of_order.orderDetail');
-        }
+        
         $activeOrders->whereHas('vendors', function ($q) {
-            $q->where('order_status_option_id', '!=', 6);
-            $q->where('order_status_option_id', '!=', 3);
-            $q->where('order_status_option_id', '!=', 9);
+            $q->whereNotIn('order_status_option_id',  [3,6,9]);
         })
             ->where(function ($q1) {
                 $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
@@ -1061,6 +1059,7 @@ class OrderController extends FrontController
 
                 $vendorProductIds = array();
                 $bid_vendor_discount = 0;
+                $vendor_service_fee_percentage_amount = 0;
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
                     // pr($vendor_cart_product->product->security_amount);
@@ -1423,15 +1422,17 @@ class OrderController extends FrontController
                             // if(!in_array($vendor_cart_product->vendor_id, $addonArray)){
                             //     $vendor_payable_amount_for_service = $vendor_payable_amount;
                             // }
+
+                            $quantity_price = $quantity_price + $opt_quantity_price;
                         }
                     }
 
-                    $vendor_service_fee_percentage_amount = 0;
                     if ($vendor_cart_product->vendor->service_fee_percent > 0) {
                         // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
-                        $vendor_service_fee_percentage_amount = ( $quantity_price * $vendor_cart_product->vendor->service_fee_percent) / 100;
-                        $payable_amount += $vendor_service_fee_percentage_amount;
-                        $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                        $service_fee_percentage_amount        = ( $quantity_price * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                        $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
+                        $payable_amount += $service_fee_percentage_amount;
+                        $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
                     }
 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
@@ -1666,7 +1667,6 @@ class OrderController extends FrontController
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
             //echo  " total_service_fee=".$total_service_fee." total_delivery_fee=".$total_delivery_fee;
             //echo  " Total payable_amount 3=".$payable_amount."; <br>";
-
 
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
             $order->scheduled_slot = (($cart->scheduled_slot) ? $cart->scheduled_slot : null);

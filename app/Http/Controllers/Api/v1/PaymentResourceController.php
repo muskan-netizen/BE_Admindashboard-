@@ -264,7 +264,7 @@ class PaymentResourceController extends BaseController
                 return $this->successResponse($order, __('Order placed successfully.'), 200);
                 
             } elseif($payment_form == 'wallet'){
-                // $walletController = new WalletController();
+               // $walletController = new WalletController();
                 // $result  =  $this->creditMyWallet($parameters);
                 // $returnUrl = $result;
                 return $this->successResponse('', __('Wallet has been credited successfully'), 200);

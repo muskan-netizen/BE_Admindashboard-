@@ -298,7 +298,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                         @endif
                                     </span></li>
                                     <li class="Shipping col-8">
-                                        @if($order->luxury_option_id == 1)
+                                        @if($order->luxury_option_id == 1 || $order->luxury_option_id == 6)
                                            <span> {{__('Delivery Address')}}:</span>
                                         <span>
                                         {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{ $order->address ? $order->address->address : ''}}{{$order->address ? ($order->address->pincode ? ", ".$order->address->pincode : '') : ''}}

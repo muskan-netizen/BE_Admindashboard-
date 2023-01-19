@@ -173,7 +173,9 @@ class ProfileController extends FrontController
         $timezone = $request->timezone ? $request->timezone : NULL;
         $user = User::where('id', Auth::user()->id)->first();
         if ($user){
+            $user = Auth::user();
             $user->timezone = $timezone;
+            Auth::user()->timezone = $timezone;
             $user->save();
             return redirect()->back()->with('success', 'Timezone has been updated');
         }
