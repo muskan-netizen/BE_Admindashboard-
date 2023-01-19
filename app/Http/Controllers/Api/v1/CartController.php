@@ -154,6 +154,7 @@ class CartController extends BaseController
     public function add(Request $request)
     {
         try {
+
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
             $user = Auth::user();
@@ -168,13 +169,70 @@ class CartController extends BaseController
             }
 
             $product = Product::where('sku', $request->sku)->first();
+
             if (!$product) {
                 return $this->errorResponse(__('Invalid product.'), 404);
             }
             $productVariant = ProductVariant::where('product_id', $product->id)->where('id', $request->product_variant_id)->first();
+
             if (!$productVariant) {
                 return $this->errorResponse(__('Invalid product variant.'), 404);
             }
+
+            //Recurring Booking
+            $recurring_days = '';
+
+            if(checkColumnExists('products','is_recurring_booking') && $product->is_recurring_booking == 1){
+
+                    if (empty($request->recurring_booking_type)) {
+                        return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
+                    }
+                    if ($request->recurring_booking_type == 1) {
+                        if (empty($request->recurring_day_data)) {
+                            return $this->errorResponse(__('Recurring start date and end date not be empty.'), 404);
+                        }else{
+                            $recurring_day_data     = $request->recurring_day_data[0];
+                            $start_date             = current($recurring_day_data);
+                            $end_date               = end($recurring_day_data);
+                            $recurring_days         = $start_date.','.$end_date;
+
+                        }
+                    }elseif ($request->recurring_booking_type == 2) {
+                        if (empty($request->recurring_day_data)) {
+                            return $this->errorResponse(__('Recurring start date and end date not be empty.'), 404);
+                        }else{
+                            $recurring_day_data     = $request->recurring_day_data[0];
+                            $start_date             = current($recurring_day_data);
+                            $end_date               = end($recurring_day_data);
+                            $recurring_days         = $start_date.','.$end_date;
+                        }
+                    }
+                    elseif ($request->recurring_booking_type == 3) {
+                        if (empty($request->recurring_day_data)) {
+                            return $this->errorResponse(__('Recurring start date and end date not be empty.'), 404);
+                        }else{
+                            $recurring_day_data     = $request->recurring_day_data[0];
+                            $start_date             = current($recurring_day_data);
+                            $end_date               = end($recurring_day_data);
+                            $recurring_days         = $start_date.','.$end_date;
+                        }
+                    }
+                    elseif ($request->recurring_booking_type == 4) {
+                        if (empty($request->recurring_day_data)) {
+                            return $this->errorResponse(__('Recurring start date and end date not be empty.'), 404);
+                        }else{
+                            $recurring_day_data     = $request->recurring_day_data[0];
+                            $start_date             = current($recurring_day_data);
+                            $end_date               = end($recurring_day_data);
+                            $recurring_days         = $start_date.','.$end_date;
+                        }
+                    }
+                if (empty($request->recurring_booking_time)) {
+                    return $this->errorResponse(__('Recurring booking time not be empty.'), 404);
+                }
+            }
+
+
 
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $cart_detail = [
@@ -239,12 +297,14 @@ class CartController extends BaseController
             foreach ($addon_options as $key => $opt) {
                 $addonSets[$addon_ids[$key]][] = $opt;
             }
+
             foreach ($addonSets as $key => $value) {
                 $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
                     ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
                     ->where('ast.language_id', $langId)
                     ->where('addon_sets.status', '!=', '2')
                     ->where('addon_sets.id', $key)->first();
+
                 if (!$addon) {
                     return $this->errorResponse(__('Invalid addon or delete by admin. Try again with remove some.'), 404);
                 }
@@ -297,6 +357,7 @@ class CartController extends BaseController
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
             }
+
             if ($cart_detail->id > 0) {
                 $oldquantity = $isnew = 0;
                 $cart_product_detail = [
@@ -318,7 +379,13 @@ class CartController extends BaseController
                     'service_date'        => $request->has('service_date') ? $request->service_date : null,
                     'service_period'      => $request->has('service_period') ? $request->service_period : null,
                     'service_start_date'  => @$service_start_date,
+                    'recurring_booking_type'  => $request->has('recurring_booking_type') ? $request->recurring_booking_type : null,
+                    'recurring_week_day'  => $request->has('recurring_week_day') ? $request->recurring_week_day : null,
+                    'recurring_week_type'  => $request->has('recurring_week_type') ? $request->recurring_week_day : null,
+                    'recurring_day_data'  => $request->has('recurring_day_data') ? $recurring_days : null,
+                    'recurring_booking_time'  => $request->has('recurring_booking_time') ? $request->recurring_booking_time : null,
                 ];
+
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
                     ->where('variant_id', $productVariant->id)->first();
@@ -366,6 +433,7 @@ class CartController extends BaseController
                 $cartData->cart_product_id = $cartProduct->id;
                 $product_total_quantity_in_cart = CartProduct::where(['cart_id'=>$cartProduct->cart_id,'product_id'=> $product->id])->sum('quantity');
                 $cartData->product_total_qty_in_cart = intval($product_total_quantity_in_cart);
+                // dd($cartData-);
                 return $this->successResponse($cartData);
             } else {
                 return $this->successResponse($cartData);
@@ -587,8 +655,11 @@ class CartController extends BaseController
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
 
+
         try{
+
         $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
+        $isRecurringInDB = checkColumnExists('products','is_recurring_booking') ;
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -605,7 +676,6 @@ class CartController extends BaseController
         }
         $nowdate = Carbon::now()->toDateTimeString();
         $nowdate = convertDateTimeInClientTimeZone($nowdate);
-
         $vondorCnt = 0;
         $address = [];
         $category_array = [];
@@ -817,6 +887,7 @@ class CartController extends BaseController
 
                             $prod->product->long_term_products=$LongTermProducts;
                         }
+
                         if($prod->product->pharmacy_check == 1){
                             $productPrescription = CartProductPrescription::where('cart_id', $cartID)->where('product_id', $prod->product->id)->get()->toArray();
                             $uploadedPrescriptions = [];
@@ -846,10 +917,13 @@ class CartController extends BaseController
                         $container_charges_in_currency = $prod->pvariant->container_charges??0.00;
                         $container_charges_in_doller_compare = $prod->pvariant->container_charges??0.00;
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
+
+
                         $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                         $quantity_container_charges = decimal_format($quantity_container_charges);
                         $item_count = $item_count + $prod->quantity;
                         $proSum = $proSum + $quantity_price + $quantity_container_charges;
+
                         $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                         $total_container_charges = $total_container_charges + $quantity_container_charges;
                         $prod->luxury_option_id= $prod->luxury_option_id??'';
@@ -928,8 +1002,12 @@ class CartController extends BaseController
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
                             $variantsData['quantity_container_charges'] = $quantity_container_charges;
+
+
                             $only_products_amount += $quantity_price;
                             $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
+
+
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
@@ -1078,6 +1156,8 @@ class CartController extends BaseController
                         }
                     }
                 }
+
+
                 // echo $payable_amount ;
                 // exit();
                 $couponGetAmount = $payable_amount ;
@@ -1160,7 +1240,6 @@ class CartController extends BaseController
 
 
                 $payable_amount = $payable_amount + $deliveryCharges_real ;
-
                 $deliver_charge = $deliveryCharges_real * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
@@ -1446,6 +1525,8 @@ class CartController extends BaseController
             ['label' => 'Container fee tax', 'value' => decimal_format($container_charges_tax)],
             ['label' => 'Total taxable amount', 'value' => decimal_format($total_taxable_amount)]
         );
+
+
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
@@ -1455,6 +1536,25 @@ class CartController extends BaseController
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
+
+        if(checkColumnExists('cart_products','recurring_booking_type')){
+            if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                $date       = explode(",",$prod->recurring_day_data);
+                $start_date = $end_date = '';
+                if(isset($date[0])){
+                    $start_date = $date[0];
+                }
+                if(isset($date[1])){
+                    $end_date   = $date[1];
+                }
+                if(!empty($start_date) && !empty($end_date)){
+                    $days_count                 = Carbon::parse( $start_date )->diffInDays( $end_date );
+                    $days_count                 = $days_count + 1;
+                    $order_sub_total            = $order_sub_total * $days_count;
+                    $cart->gross_paybale_amount = $order_sub_total;
+                }
+            }
+        }
         $cart->total_addon_price = $total_addon_price;
         $cart->total_discount_amount = $total_disc_amount * $clientCurrency->doller_compare;
         $cart->products = $cartData;
@@ -1479,6 +1579,7 @@ class CartController extends BaseController
         if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
         }
+
 
         // add other taxes amount as well in total payable amount.
         if($cart->other_taxes>0){

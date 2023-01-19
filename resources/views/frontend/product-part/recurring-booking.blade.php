@@ -16,6 +16,9 @@ ul.list.week-list li {
 }
 ul.list.week-list li.active,
 ul.list.week-list li:hover{background-color: #ddd}
+.datetime-datepicker.error {
+    border: 1px solid red;
+}
 
 .alRecurringBookingSinglePageView .single_product-input input {
     width: 48%;
@@ -255,7 +258,7 @@ div#custom_date_recurring {
             </div>
         </div>
 
-        <input type="hidden" id="is_recurring_booking" value="1">
+        <input type="hidden" id="is_recurring_booking" value="0">
 
 
         <!--<div id="date_recurring" class="d-none">
@@ -328,30 +331,51 @@ div#custom_date_recurring {
             $("#weekly_booking").removeClass('d-block').addClass('d-none');
             $("#month_booking").removeClass('d-block').addClass('d-none');
             $("#custom_booking").removeClass('d-block').addClass('d-none');
+            $("#is_recurring_booking").val(1);
+            $("#weekly-datepicker").val('');
+            $("#month-datepicker").val('');
+            $("#custom-datepicker").val('');
         }
         else if($(this).val() == 2){
             $("#weekly_booking").removeClass('d-none').addClass('d-block');
             $("#daily_booking").removeClass('d-block').addClass('d-none');
             $("#month_booking").removeClass('d-block').addClass('d-none');
             $("#custom_booking").removeClass('d-block').addClass('d-none');
+            $("#is_recurring_booking").val(1);
+            $("#daily-datepicker").val('');
+            $("#month-datepicker").val('');
+            $("#custom-datepicker").val('');
         }
         else if($(this).val() == 3){
             $("#month_booking").removeClass('d-none').addClass('d-block');
             $("#daily_booking").removeClass('d-block').addClass('d-none');
             $("#weekly_booking").removeClass('d-block').addClass('d-none');
             $("#custom_booking").removeClass('d-block').addClass('d-none');
+            $("#is_recurring_booking").val(1);
+            $("#daily-datepicker").val('');
+            $("#weekly-datepicker").val('');
+            $("#custom-datepicker").val('');
         }
         else if($(this).val() == 4){
             $("#custom_booking").removeClass('d-none').addClass('d-block');
             $("#daily_booking").removeClass('d-block').addClass('d-none');
             $("#weekly_booking").removeClass('d-block').addClass('d-none');
             $("#month_booking").removeClass('d-block').addClass('d-none');
+            $("#is_recurring_booking").val(1);
+            $("#daily-datepicker").val('');
+            $("#weekly-datepicker").val('');
+            $("#month-datepicker").val('');
         }
         else if($(this).val() == 5){
             $("#custom_booking").removeClass('d-block').addClass('d-none');
             $("#daily_booking").removeClass('d-block').addClass('d-none');
             $("#weekly_booking").removeClass('d-block').addClass('d-none');
             $("#month_booking").removeClass('d-block').addClass('d-none');
+            $("#is_recurring_booking").val(0);
+            $("#daily-datepicker").val('');
+            $("#weekly-datepicker").val('');
+            $("#month-datepicker").val('');
+            $("#custom-datepicker").val('');
         }
     });
 
@@ -374,9 +398,20 @@ div#custom_date_recurring {
             minDate:new Date(),
             autoUpdateInput: false,
         }, function(start, end, label) {
-            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            //console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
             var date = start.format('YYYY-MM-DD')+','+ end.format('YYYY-MM-DD');
-            $("#daily-datepicker").val(date);
+            var start_date  = start.format('YYYY-MM-DD');
+            var end_date    = end.format('YYYY-MM-DD');
+
+            if (start_date == end_date) {
+                $("#daily-datepicker").val('');
+                $("#daily-datepicker").addClass('error');
+            }else{
+                $("#daily-datepicker").val(date);
+                $("#daily-datepicker").removeClass('error');
+            }
+
+            $("#is_recurring_booking").val(1);
         });
 
 
@@ -385,9 +420,6 @@ div#custom_date_recurring {
                   format: 'M/DD/YY'
             },
             opens: 'left',
-            maxSpan: {
-                "days": 7
-            },
             startDate: moment(),
             endDate: moment(),
             minDate:new Date(),
@@ -396,6 +428,7 @@ div#custom_date_recurring {
             console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
             var date = start.format('YYYY-MM-DD')+','+ end.format('YYYY-MM-DD');
             $("#weekly-datepicker").val(date);
+            $("#is_recurring_booking").val(1);
         });
 
 
@@ -412,6 +445,7 @@ div#custom_date_recurring {
             console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
             var date = start.format('YYYY-MM-DD')+','+ end.format('YYYY-MM-DD');
             $("#month-datepicker").val(date);
+            $("#is_recurring_booking").val(1);
         });
 
         $('#custom-datepicker').daterangepicker({
@@ -427,6 +461,7 @@ div#custom_date_recurring {
             console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
             var date = start.format('YYYY-MM-DD')+','+ end.format('YYYY-MM-DD');
             $("#custom-datepicker").val(date);
+            $("#is_recurring_booking").val(1);
         });
 
         async function check_product_availibility(formData){

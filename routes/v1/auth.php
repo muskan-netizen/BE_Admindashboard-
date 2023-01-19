@@ -244,6 +244,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('bid/accept',   'Api\v1\BiddingController@bidAccept');
         Route::post('bid/placeBid',   'Api\v1\BiddingController@placeBid');
 
+
         // gift Card Order
         Route::group(['prefix' => 'giftCard'], function () {
             Route::get('list', 'Api\v1\GiftcardController@getGiftCard');
@@ -255,6 +256,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-influencer-form/{id}', 'Api\v1\InfluencerController@getInfluencerForm');
             Route::post('save-influencer-form', 'Api\v1\InfluencerController@save');
         });
+
+
+
 
     });
 });

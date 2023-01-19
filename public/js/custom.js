@@ -2897,7 +2897,7 @@ $(document).ready(function () {
             }
         }
 
-        if($('#is_recurring_booking').length > 0){
+        if($('#is_recurring_booking').val() > 0){
             addRecurringBooking =1;
             if(product_id == OrderStorage.getStorage('cartFirstProductId')  ){
                 Swal.fire({
@@ -2926,7 +2926,8 @@ $(document).ready(function () {
                 }
             }else if(booking_type == 2){
                 var recurringBookingTime      = $("#weekly_booking_time").val();
-                var recurringBookingDate      = $("#weekly-datepicker").val();
+                //var recurringBookingDate      = $("#weekly-datepicker").val();
+                var recurringBookingDate      = '2023-01-23,2023-01-24,2023-01-30,2023-01-31';
                 var message                   = _language.getLanString('Please select Weekly dates');
                 var recurring_week_type       =  1;
                 var recurring_week_day        = $('.weeknames ul li.active').map(function(){
@@ -2935,11 +2936,13 @@ $(document).ready(function () {
 
             }else if(booking_type == 3){
                 var recurringBookingTime      = $("#month_booking_time").val();
-                var recurringBookingDate      = $("#month-datepicker").val();
+                var recurringBookingDate      = '2023-01-23,2023-01-24,2023-01-30,2023-01-31';
+               // var recurringBookingDate      = $("#month-datepicker").val();
                 var message                   = _language.getLanString('Please select monthly dates');
             }else if(booking_type == 4){
                 var recurringBookingTime      = $("#custom_booking_time").val();
-                var recurringBookingDate      = $("#custom-datepicker").val();
+                var recurringBookingDate      = '2023-01-23,2023-01-24,2023-01-30,2023-01-31';
+                //var recurringBookingDate      = $("#custom-datepicker").val();
                 var message                   = _language.getLanString('Please select custom dates');
             }
 
@@ -3819,6 +3822,8 @@ $(document).ready(function () {
                 "variant_id": variant_id,
             },
             success: function (response) {
+
+
                 if (response.status == 'success') {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     cartHeader();

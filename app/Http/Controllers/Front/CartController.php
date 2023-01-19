@@ -285,7 +285,6 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -455,6 +454,7 @@ class CartController extends FrontController
                 $cart_product_detail['recurring_booking_time']  =@$request->recurring_booking_time??null;
                 // dd($request->bid_number);
             }
+
 
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
@@ -2199,6 +2199,7 @@ class CartController extends FrontController
 
     public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='',$totalRoute = '1')
     {
+
         $option = array();
         $delivery_count = 0;
         try {
@@ -2209,7 +2210,6 @@ class CartController extends FrontController
 
                 $getAdditionalPreference = getAdditionalPreference(['is_free_delivery_by_roles']);
                 $skip_delivery_fees = false;
-
                 if($getAdditionalPreference['is_free_delivery_by_roles'] == 1 ){
                     $product_id = $vendorData->vendorProducts[0]['product_id'];
                     $result = ProductDeliveryFeeByRole::where('product_id', $product_id)->where('role_id', Auth::user()->role_id)
@@ -2217,6 +2217,8 @@ class CartController extends FrontController
                     if($result != null){
                         $skip_delivery_fees = true;
                     }
+                    Log::info('is_free_delivery_by_roles');
+
                 }
                 if( $skip_delivery_fees == true ){
                     // skip
@@ -2363,6 +2365,7 @@ class CartController extends FrontController
                     }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
                         $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_minimum);
                     }
+
 
                     $option[] = array(
                         'type'=>'D',
