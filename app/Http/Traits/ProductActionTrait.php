@@ -144,7 +144,7 @@ trait ProductActionTrait{
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     },
                     'variant' => function ($q) use ($langId) {
-                        $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                        $q->select('sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
                         $q->groupBy('product_id');
                     },
                 ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
@@ -176,7 +176,10 @@ trait ProductActionTrait{
                         $value->averageRating = number_format($value->averageRating, 1, '.', '');
                         $value->inquiry_only = $value->inquiry_only;
                         $value->vendor_name = $value->vendor ? $value->vendor->name : '';
+                        
                         $value->price = Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price??0 * $multiply,','));
+
+                        $value->compare_at_price = Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->compare_at_price??0 * $multiply,','));
                         $value->category =  (@$value->category->categoryDetail->translation) ? @$value->category->categoryDetail->translation->first()->name : @$value->category->categoryDetail->slug;
                     }
                     return $products;
@@ -202,6 +205,8 @@ trait ProductActionTrait{
                             'vendor_name' => $value->vendor ? $value->vendor->name : '',
                             'vendor' => $value->vendor,
                             'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price??0 * $multiply,',')),
+                            'compare_price' =>@$value->variant->first()->compare_at_price * $multiply,
+                            'price_numeric' =>@$value->variant->first()->price * $multiply,
                             'category' => (@$value->category->categoryDetail->translation) ? @$value->category->categoryDetail->translation->first()->name : @$value->category->categoryDetail->slug
                         );
                         
