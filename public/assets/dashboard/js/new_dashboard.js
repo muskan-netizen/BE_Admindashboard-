@@ -5,6 +5,10 @@ $(document).ready(function () {
             getDashboardData(dashboard_filter_url);
         }
     });
+    $("#app_managers").on('change',function () {
+        getDashboardData(dashboard_filter_url);
+    });
+
     $("#dashboard_refresh_btn").click(function () {
         $flatpickr.clear();
         getDashboardData(dashboard_filter_url);
@@ -13,12 +17,15 @@ $(document).ready(function () {
 
     function getDashboardData(dashboard_filter_url) {
         var date_filter = $('#range-datepicker').val();
-        $.getJSON(dashboard_filter_url, { date_filter: date_filter }, function (response) {
+        var manager_id = $('#app_managers').val();
+        $.getJSON(dashboard_filter_url, { manager_id : manager_id ,date_filter: date_filter}, function (response) {
             if (response.status == 'Success') {
                 $('#total_products').html('+ ' + response.data.total_products);
                 $('#total_revenue').html(response.data.currencySymbol + response.data.total_revenue);
                 $('#total_customers').html(response.data.total_customers);
                 $('#total_orders').html(response.data.total_orders);
+                $('#total_vendors').html(response.data.total_vendors);
+                $('#total_managers').html(response.data.managersCount);
                 $('#revenueCurrentWeek').html(response.data.currencySymbol + response.data.revenueCurrentWeek);
                 $('#revenueLastWeek').html(response.data.currencySymbol + response.data.revenueLastWeek);
                 if (response.data.customers_increase != '') {

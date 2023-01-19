@@ -25,40 +25,10 @@ class DashBoardController extends BaseController
 
     public function index()
     {  
-        // $currentmonth_start = Carbon::now()->startOfMonth();
-        //     $currentmonth_end = Carbon::now()->endOfMonth();
-        //     $previousmonth_start = Carbon::now()->startOfMonth()->subMonth();
-        //     $previousmonth_end = Carbon::now()->endOfMonth()->subMonth();
- 
-        // $revenue_currentmonth = Order::whereBetween('created_at', [$currentmonth_start, $currentmonth_end])->sum('payable_amount');
-        // $revenue_lastmonth = Order::whereBetween('created_at', [$previousmonth_start, $previousmonth_end])->sum('payable_amount');
-        // $revenue_increase = '';
-        // $revenue_decrease = '';
-        // if ($revenue_lastmonth < $revenue_currentmonth) {
-        //     if ($revenue_lastmonth > 0) {
-        //         $percent_from = $revenue_currentmonth - $revenue_lastmonth;
-        //         $revenue_increase = $percent_from / $revenue_lastmonth * 100; //increase percent
-        //     } else {
-        //         $revenue_increase = 100; //increase percent
-        //     }
-        // } else {
-        //     if ($revenue_currentmonth > 0) {
-        //         $percent_from = $revenue_lastmonth - $revenue_currentmonth;
-        //         $revenue_decrease = $percent_from / $revenue_lastmonth * 100; //decrease percent
-        //     } else {
-        //         $revenue_decrease = 0;
-        //     }
-        // }
-        // if ($revenue_increase != '') {
-        //     $revenue_increase = round($revenue_increase, 2);
-        // }
-        // if ($revenue_decrease != '') {
-            
-        //     $revenue_decrease = round($revenue_decrease, 2);
-        // }
-        // echo 'incccc' . $revenue_increase . ' desccc' . $revenue_decrease;
-        // die;
-        return view('backend/dashboard');
+       $managers = User::whereHas('roles',function($q){
+            $q->where('name','App Managers');
+       })->get();
+        return view('backend/dashboard',compact('managers'));
     }
 
     public function dashboard_old()
@@ -368,11 +338,19 @@ class DashBoardController extends BaseController
     {
         try {
             $vendorIds = [];
-            if(auth()->user()->getRoleNames()[0]=='App Managers')
-            {
-                $vendorIds = Vendor::where('refference_id',auth()->id())->pluck('id')->toArray();
-            }
             
+            $managerId = (($request->manager_id)?$request->manager_id:auth()->id());
+            $vendors = Vendor::latest();
+            if(auth()->user()->getRoleNames()[0]=='App Managers' || $request->manager_id)
+            {
+                $vendors = $vendors->where('refference_id',$managerId);
+                $vendorIds = $vendors->pluck('id')->toArray();
+            }
+
+            $vendorCounts = $vendors->count();
+            $managersCount = User::whereHas('roles',function($q){
+                $q->where('name','App Managers');
+            })->count();
             $date_filter = $request->date_filter;
             if($date_filter){
                 $date_explode = explode('to', $date_filter);
@@ -385,10 +363,10 @@ class DashBoardController extends BaseController
             $total_products = $products->whereHas('vendor', function ($query){
                 $query->where(['vendors.status' => 1]);
             });
-            if (Auth::user()->is_superadmin == 0) {
-                $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
-                });
+            if (Auth::user()->is_superadmin == 0 || $request->manager_id) {
+                // $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) {
+                //     $query->where('user_id', Auth::user()->id);
+                // });
 
                 if(count($vendorIds)>0)
                 {
@@ -402,10 +380,10 @@ class DashBoardController extends BaseController
             $orders = new Order;
             $total_revenue = clone $orders;
             $order_revenue = clone $orders;
-            if (Auth::user()->is_superadmin == 0) {
-                $total_revenue = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
-                });
+            if (Auth::user()->is_superadmin == 0 || $request->manager_id) {
+                // $total_revenue = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
+                //     $query->where('user_id', Auth::user()->id);
+                // });
 
                 if(count($vendorIds)>0)
                 {
@@ -425,15 +403,14 @@ class DashBoardController extends BaseController
 
             # Orders count
             $vendor_orders = OrderVendor::with(['user','vendor']);
-            if (Auth::user()->is_superadmin == 0) {
-                 $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
-                 $query->where('user_id', Auth::user()->id);
-             });
+            if (Auth::user()->is_superadmin == 0 || $request->manager_id) {
+                //  $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
+                //         $query->where('user_id', Auth::user()->id);
+                //     });
 
              if(count($vendorIds)>0)
                 {
                     $vendor_orders = $vendor_orders->whereIn('vendor_id',$vendorIds);
-                    $order_revenue = clone $vendor_orders;
                 }
 
             }
@@ -450,8 +427,7 @@ class DashBoardController extends BaseController
             $sale = clone $order_revenue;
             $data = clone $order_revenue;
             $data1 = clone $order_revenue;
-            $locationwise_revenue =  $vendor_orders;
-            $locationwise_revenue2 = clone $order_revenue;
+            $locationwise_revenue = clone $order_revenue;
             $currentyear_ordercount = clone $order_revenue;
 
             # Current week revenue sum
@@ -597,17 +573,17 @@ class DashBoardController extends BaseController
             }
 
             # Revenue location wise
-            // dd($orders->with('address:id,city')->get());
+            // dd($orders->with('address:id,city')->get());  
 
-            $locationwise_revenueNew = $orders->with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereYear('created_at', date('Y'))->whereNotNull('address_id');
+            $locationwise_revenueNew = $locationwise_revenue->with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereYear('created_at', date('Y'))->whereNotNull('address_id');
             // dd($locationwise_revenueNew->get());
 
-            $currentyear_ordercountNew = $currentyear_ordercount->whereYear('created_at', date('Y'))->count();
+            $currentyear_orderCount = $currentyear_ordercount->whereYear('created_at', date('Y'))->count();
             
             if($date_filter)
             {
                 $locationwise_revenueNew->whereBetween('created_at', [$from_date, $end_date]);
-                $currentyear_ordercount = $currentyear_ordercountNew->whereBetween('created_at', [$from_date, $end_date])->count();
+                $currentyear_orderCount = $currentyear_ordercount->whereBetween('created_at', [$from_date, $end_date])->count();
             }
             // dd(currentyear_ordercountNew);
             $address_ids = $locationwise_revenueNew->pluck('address_id')->toArray();
@@ -651,8 +627,10 @@ class DashBoardController extends BaseController
                 'previousweek_revenue_daywise' => $previousweek_revenue_daywise,
                 'currentweek_revenue_daywise' => $currentweek_revenue_daywise,
                 'locationwise_revenue' => $locationwise_revenue,
-                'currentyear_ordercount' => $currentyear_ordercount,
+                'currentyear_ordercount' => $currentyear_orderCount,
                 'currencySymbol' => $currencySymbol,
+                'total_vendors' => $vendorCounts,
+                'managersCount' => $managersCount??0,
             ];
             return $this->successResponse($response);
         } catch (Exception $e) {
