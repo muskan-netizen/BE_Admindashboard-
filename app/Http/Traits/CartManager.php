@@ -338,6 +338,7 @@ trait cartManager{
         $user_timezone = 'Asia/Kolkata';
         $giftCardUsed = 0;
         $giftCardAmount = 0;
+        $security_amount = 0.00;
         if($user){
             $user_timezone =  $user->timezone;
             //Get User Address Details
@@ -551,7 +552,6 @@ trait cartManager{
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
-                $security_amount = 0.00;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                     // pr($prod->product->security_amount);
                     $prod->product->ServicePeriods = [];

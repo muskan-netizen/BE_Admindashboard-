@@ -154,6 +154,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                             <div class="tab-pane fade {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
                                                 id="active-orders" role="tabpanel" aria-labelledby="active-orders-tab">
                                                 <div class="row">
+                                                    {{-- @dd($activeOrders) --}}
                                                     @if ($activeOrders->isNotEmpty())
                                                         @foreach ($activeOrders as $key => $order)
                                                         @php
@@ -428,9 +429,13 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         </ul>
                                                                                     </div>
                                                                                     <div class="col-6 col-sm-3">
+                                                                                        @php
+                                                                                            $security_amount = 0.00;
+                                                                                        @endphp
                                                                                         <ul
                                                                                             class="product_list p-0 m-0 text-center">
                                                                                             @foreach ($vendor->products as $product)
+                                                                                            {{-- @dd($product) --}}
                                                                                                 @if ($vendor->vendor_id == $product->vendor_id)
                                                                                                     <li class="text-center mb-0 alOrderImg">
                                                                                                         <img src="{{ $product->image_url }}" alt="">
@@ -439,11 +444,17 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     <li>
                                                                                                         <label class="items_price">{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                                                     </li>
+                                                                                                    @if($order->luxury_option_id == 4)
+                                                                                                        <li>
+                                                                                                            <a class="btn btn-primary btn-sm track_btn" target="_blank" href="#" role="button">Track</a>
+                                                                                                        </li>
+                                                                                                    @endif
                                                                                                     @php
                                                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
                                                                                                         $product_total_count += $product->quantity * $product_total_price;
                                                                                                         $product_taxable_amount += $product->taxable_amount;
                                                                                                         $total_tax_order_price += $product->taxable_amount;
+                                                                                                        $security_amount += $product->security_amount;
                                                                                                     @endphp
                                                                                                 @endif
                                                                                             @endforeach
@@ -656,6 +667,12 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                         *
                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                 </li>
+                                                                                @if($order->luxury_option_id == 4)
+                                                                                    <li class="d-flex align-items-center justify-content-between">
+                                                                                        <label class="m-0">{{ __('Security Amount') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') .decimal_format($security_amount)}}</span>
+                                                                                    </li>
+                                                                                @endif
                                                                                 @if ($order->wallet_amount_used > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -1106,6 +1123,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
+                                                                                            
                                                                                             @if ($vendor->discount_amount > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">

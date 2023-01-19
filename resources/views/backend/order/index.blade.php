@@ -201,8 +201,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             </label>
                                                             <% if(order.luxury_option_id == 4 && vendor.order_status_option_id == 1) { %>
                                                                 <div class="accept_reject_div">
-                                                                    
-                                                                    
                                                                     <% if(product.order_product_status && product.order_product_status.order_status_option_id && product.order_product_status.order_status_option_id  == 3) { %>
                                                                         <span class="badge badge-danger">Rejected</span>
                                                                     <% }else{ %>
