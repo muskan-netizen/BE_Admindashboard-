@@ -1981,7 +1981,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                  </form>
              </div>
 
-            <div class="col-lg-4 col-xl-3 mb-3">
+            <div class="col-lg-4 col-xl-3 mb-3 d-none">
                 <div class="col-12">
                     <div class="page-title-box">
                         <h4 class="page-title text-uppercase">{{ __("Token") }}</h4>

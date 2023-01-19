@@ -3,6 +3,7 @@
 @php
 //$total_amount = $order->payable_amount+$order->total_other_taxes_amount;
 $total_amount = $order->payable_amount;
+$total_bid_discount = @$order->bid_discount;
 $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges;
 $additional_price=0;
 $vendor_total_discount = 0;
@@ -168,24 +169,18 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                                 @include('frontend.order.longTermDetails')
                                             @endif
                                         </div>
+                                    
+                                    @endforeach {{--  End vendor Products loop --}}
 
-                                         @php
-                                            if(@$product->bid_discount){
-                                                $bid_vendor_discount += (($product->price * $product->bid_discount)/100);
-                                             }
-                                        @endphp
-
-                                @endforeach {{--  End vendor Products loop --}}
-
-                                @if(@$bid_vendor_discount)
-                                    <div class="col-12 offset-6 border-top pt-1 mt-1">
-                                        <div class="row mr-0">
-                                            <div class="col-md-3">
-                                                {{__('Bid Discount')}}
-                                            </div>
-                                            <div class="col-md-3 text-right"><b style="color:#000">
-                                                {{Session::get('currencySymbol')}}{{decimal_format(($bid_vendor_discount) * @$clientCurrency->doller_compare)}}
-                                            </b></div>
+                                    @if(@$total_bid_discount && $total_bid_discount>0)
+                                        <div class="col-12 offset-6 border-top pt-1 mt-1">
+                                            <div class="row mr-0">  
+                                                <div class="col-md-3">
+                                                    {{__('Bid Discount')}}
+                                                </div> 
+                                                <div class="col-md-3 text-right"><b style="color:#000">
+                                                    {{Session::get('currencySymbol')}}{{decimal_format(($total_bid_discount) * @$clientCurrency->doller_compare)}}
+                                                </b></div>
                                         </div>
                                     </div>
                                     @endif
@@ -303,7 +298,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                         @endif
                                     </span></li>
                                     <li class="Shipping col-8">
-                                        @if($order->luxury_option_id == 1)
+                                        @if($order->luxury_option_id == 1 || $order->luxury_option_id == 6)
                                            <span> {{__('Delivery Address')}}:</span>
                                         <span>
                                         {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{ $order->address ? $order->address->address : ''}}{{$order->address ? ($order->address->pincode ? ", ".$order->address->pincode : '') : ''}}

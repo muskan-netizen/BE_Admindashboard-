@@ -23,7 +23,10 @@ class VendorBidController extends BaseController{
 
     public function bidRequests(Request $request,$domain = '',$id = null)
     {
-        $prescriptions = BidRequest::where('status' , '=' , 0)->get();
+        $prescriptions = BidRequest::withCount(['bids'=>function($q)use($id){
+            $q->where('vendor_id',$id);
+         }])->where('status' , '=' , 0)->get();
+        
         return view('backend.bidding_module.vendorBidRequests', compact('prescriptions','id'));
     }
 
@@ -96,20 +99,11 @@ class VendorBidController extends BaseController{
     public function search(Request $request)
     {
         $response = [];
-        $user = Auth::user();
         $keyword = $request->input('keyword');
         $vendorId[] = $request->input('vendor_id');
         $language_id = Session()->get('customerLanguage')??1;
-        $area = new FrontController();
-        $allowed_vendors = $area->getServiceAreaVendors();
-        // $vendors = Vendor::where('status','1');
-        // if (Auth::user()->is_superadmin == 0) {
-        //     $vendors = $vendors->whereHas('permissionToUser', function ($query) {
-        //         $query->where('user_id', $vendorId);
-        //     });
-        // }
-        // $vendor_ids =  $vendors->pluck('id');
-        
+        // $area = new FrontController();
+        // $allowed_vendors = $area->getServiceAreaVendors();
         $response  = $this->searchProduct($language_id,$keyword,$vendorId);
         return $this->successResponse($response);
     }

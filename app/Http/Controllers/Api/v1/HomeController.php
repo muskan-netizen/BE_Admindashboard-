@@ -150,7 +150,7 @@ class HomeController extends BaseController
                     unset($value->redirect_vendor_id);
                 }
             }
-            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
                 ->where('status', 1)->where('validity_on', 1)
                 ->with(['category:id,type_id', 'category.type', 'vendor'])
                 ->where(function ($q) {
@@ -247,6 +247,7 @@ class HomeController extends BaseController
             $homeData['domain_link'] = $domain_link;
             $homeData['profile']->preferences->is_postpay_enable = (int) @getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
             $homeData['profile']->preferences->is_order_edit_enable = (int) @getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
+            $homeData['profile']->preferences->is_bid_enable = (int) @getAdditionalPreference(['is_bid_enable'])['is_bid_enable'];
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -467,7 +468,7 @@ class HomeController extends BaseController
             $isVendorArea = 0;
 
             // Start Mobile Banners
-            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
             ->where('status', 1)->where('validity_on', 1)
             ->with(['category:id,type_id', 'category.type', 'vendor'])
             ->where(function ($q) {

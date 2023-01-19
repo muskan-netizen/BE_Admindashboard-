@@ -731,6 +731,9 @@ body.al_body_template_eight section.suppliers-section.container.vender_slider {
     max-width: 98% !important;
     padding-top: 10px !important;
 }
+.al_body_template_eight .fixed-bar .menu-navigation.alThreeMenu .slick-list.draggable li.al_main_category {
+    top: 0px;
+}
 
 /* shimmer_effect end */
 
@@ -742,7 +745,7 @@ body.al_body_template_eight section.suppliers-section.container.vender_slider {
     body.al_body_template_eight .recent-orders-8 .order_detail .ul.price_box_bottom li label {
         font-size: 14px;
     }
-    
+
     body.al_body_template_eight .recent-orders-8 .order_detail  ul.price_box_bottom li span {
         font-size: 12px;
     }
@@ -1112,12 +1115,12 @@ div#most_popular_products12 .col {
 .al_body_template_eight .render_nav_categories .row {
     flex-wrap: wrap;
 }
-
+/*
 .al_body_template_eight .render_nav_categories .row .col {
     width: 20%;
     max-width: 20%;
     flex: 20%;
-}
+} */
 
 section.popular-brands.left-shape_.position-relative.categories {
     padding: 60px 0 !important;
@@ -1543,6 +1546,8 @@ body.al_body_template_eight .category-block {
     padding: 10px;
     border-radius: 15px;
     box-shadow: 0px 4px 10px rgb(0 0 0 / 25%);
+    max-width: 155px;
+    width: 100%;
 }
 
 

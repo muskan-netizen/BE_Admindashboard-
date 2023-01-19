@@ -35,7 +35,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '19', 'path' => 'omnipay/stripe', 'code' => 'stripe_fpx', 'title' => 'Stripe FPX', 'off_site' => '1', 'status' => '0'),
         array('id' => '20', 'path' => 'kongapay/pay', 'code' => 'kongapay', 'title' => 'KongaPay', 'off_site' => '1', 'status' => '0'),
         array('id' => '21', 'path' => 'vivawallet/pay', 'code' => 'viva_wallet', 'title' => 'Viva Wallet', 'off_site' => '1', 'status' => '0'),
-        array('id' => '22', 'path' => 'ccavenue/pay', 'code' => 'ccavenue', 'title' => 'CCAvenue', 'off_site' => '1', 'status' => '0'), 
+        array('id' => '22', 'path' => 'ccavenue/pay', 'code' => 'ccavenue', 'title' => 'CCAvenue', 'off_site' => '1', 'status' => '0'),
         array('id' => '23', 'path' => 'easypaisa/pay', 'code' => 'easypaisa', 'title' => 'Easypaisa', 'off_site' => '1', 'status' => '0'),
         array('id' => '24', 'path' => 'cashfree', 'code' => 'cashfree', 'title' => 'Cashfree', 'off_site' => '1', 'status' => '0'),
         array('id' => '25', 'path' => 'easebuzz', 'code' => 'easebuzz', 'title' => 'PAYMENT GATEWAY - EASEBUZZ', 'off_site' => '1', 'status' => '0'),
@@ -60,7 +60,9 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '44', 'path' => 'conekta/conekta-php', 'code' => 'conekta', 'title' => 'Conekta', 'off_site' => '1', 'status' => '0'),
         array('id' => '45', 'path' => 'laravel_payment/telr', 'code' => 'telr', 'title' => 'Telr', 'off_site' => '1', 'status' => '0'),
         array('id' => '46', 'path' => '', 'code' => 'mastercard', 'title' => 'Mastercard', 'off_site' => '1', 'status' => '0'),
-        array('id' => '47', 'path' => 'khalti/khalti', 'code' => 'khalti', 'title' => 'Khalti', 'off_site' => '1', 'status' => '0')
+        array('id' => '47', 'path' => 'khalti/khalti', 'code' => 'khalti', 'title' => 'Khalti', 'off_site' => '1', 'status' => '0'),
+        array('id' => '48', 'path' => '', 'code' => 'mtn_momo', 'title' => 'Mtn Momo', 'off_site' => '1', 'status' => '0'),
+        array('id' => '49', 'path' => '', 'code' => 'plugnpay', 'title' => 'plugnpay', 'off_site' => '1', 'status' => '0')
       );
 
       if($option_count == 0)
