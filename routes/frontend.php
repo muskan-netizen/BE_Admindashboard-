@@ -603,6 +603,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::match(['get', 'post'], 'passbase/store', 'Front\PassbaseController@storeAuthkey')->name('passbase.store');
 	Route::get('user/chat/userVendor/{room_id?}', 'Front\ChatController@UservendorChat')->name("userChat.UservendorChat");
 	Route::get('user/chat/userAgent/{room_id?}', 'Front\ChatController@UserAgentChat')->name("userChat.UserAgentChat");
+	Route::get('user/chat/userToUser/{room_id?}', 'Front\ChatController@UserToUserChat')->name("userChat.UserToUserChat");
 
 	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
 	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');

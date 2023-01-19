@@ -424,7 +424,7 @@ $timezone = Auth::user()->timezone;
                                                                                 @if(@$is_exchanged_order)
                                                                                 {{__('Exchange Order')}}
                                                                                 @endif
-                                                                                @if(@$order->reqCancelOrder->status == 'Pending')
+                                                                                @if(@$vendor->reqCancelOrder->status == 'Pending')
                                                                                 {{__('Cancel Order Pending')}}
                                                                                 @else
                                                                                 {{__( ucfirst( $vendor->order_status)) }}</label>
