@@ -124,23 +124,21 @@ class OrderController extends FrontController
             $pastOrders     =  $pastOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
-                $q->where('order_status_option_id', '!=', 6);
-                $q->where('order_status_option_id', '!=', 3);
-                $q->where('order_status_option_id', '!=', 9);
+                $q->with(['products', 'products.media.image', 'products.pvariant.media.pimage.image']);
+                if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
+                    $q->with('exchanged_of_order.orderDetail');
+                }
+                $q->whereNotIn('order_status_option_id',  [3,6,9]);
             },
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address','reqCancelOrder'
+            }, 'vendors.dineInTable.category', 'user', 'address','reqCancelOrder'
 
 
         ]);
-        if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
-            $activeOrders = $activeOrders->with('vendors.exchanged_of_order.orderDetail');
-        }
+        
         $activeOrders->whereHas('vendors', function ($q) {
-            $q->where('order_status_option_id', '!=', 6);
-            $q->where('order_status_option_id', '!=', 3);
-            $q->where('order_status_option_id', '!=', 9);
+            $q->whereNotIn('order_status_option_id',  [3,6,9]);
         })
             ->where(function ($q1) {
                 $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
@@ -346,7 +344,7 @@ class OrderController extends FrontController
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
 
-        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'cancellation_reason' => $cancellation_reason, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee' => $fixedFee, 'longTermOrder' => $longTermOrder, 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
+        return view('frontend.account.orders_new')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'cancellation_reason' => $cancellation_reason, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee' => $fixedFee, 'longTermOrder' => $longTermOrder, 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
     }
 
     public function getOrderSuccessPage(Request $request)
