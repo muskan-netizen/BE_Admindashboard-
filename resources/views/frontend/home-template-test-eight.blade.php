@@ -701,7 +701,7 @@
 		<section class="popular-brands left-shape_ position-relative bg-light-gray">
 			<div class="container">
 				<div class="al_top_heading text-center d-flex align-items-center">
-					<h2 class="col h2-heading pb-2">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
+					<h2 class="col h2-heading text-center">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
 				</div>
 				<div class="row">
 					<div class=" col-12 al_custom_categories">
