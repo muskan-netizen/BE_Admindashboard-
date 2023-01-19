@@ -124,7 +124,7 @@ class OrderController extends FrontController
             $pastOrders     =  $pastOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
-                $q->with(['products', 'products.media.image', 'products.pvariant.media.pimage.image']);
+                $q->with(['products', 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
                     $q->with('exchanged_of_order.orderDetail');
                 }
@@ -344,7 +344,7 @@ class OrderController extends FrontController
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
 
-        return view('frontend.account.orders_new')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'cancellation_reason' => $cancellation_reason, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee' => $fixedFee, 'longTermOrder' => $longTermOrder, 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
+        return view('frontend.account.orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'cancellation_reason' => $cancellation_reason, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee' => $fixedFee, 'longTermOrder' => $longTermOrder, 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
     }
 
     public function getOrderSuccessPage(Request $request)
