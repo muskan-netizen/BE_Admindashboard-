@@ -99,10 +99,13 @@ class OrderController extends FrontController
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->whereIn('order_status_option_id', [6, 9]);
+                $q->with('products', function(){
+                    $this->with('product', 'media.image', 'pvariant.media.pimage.image', 'productRating', 'productReturn');
+                });
             }, 'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.product', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports',
+            }, 'vendors.dineInTable.category',  'user', 'address','driver_rating','reports',
 
         ]);
         if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {

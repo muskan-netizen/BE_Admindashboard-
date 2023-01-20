@@ -55,10 +55,14 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         text-transform: uppercase;
     }
 
-    label.rating-star.cancel_order,
-    .rating-star.single-track-order, .extend-order {
+
+    .single-cancel-order {
+        left: 0px !important;
+        top: 0px !important;
+    }
+    .rental_return {
         position: relative;
-        left: 0px;
+        left: 70px;
         top: 4px;
         background: #a22c7f;
         color: #fff;
@@ -66,11 +70,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         font-size: 10px;
         padding: 5px 10px 4px 10px;
         text-transform: uppercase;
-    }
 
-    .single-cancel-order {
-        left: 0px !important;
-        top: 0px !important;
     }
 </style>
 @endsection
@@ -500,6 +500,7 @@ $timezone = Auth::user()->timezone;
                                                                     <ul class="product_list p-0 m-0 text-center">
                                                                         @foreach ($vendor->products as $product)
                                                                         {{-- @dd($product) --}}
+
                                                                         @if ($vendor->vendor_id == $product->vendor_id)
                                                                         <li class="text-center mb-0 alOrderImg">
                                                                             <img src="{{ $product->image_url }}" alt="">
@@ -508,6 +509,7 @@ $timezone = Auth::user()->timezone;
                                                                         <li>
                                                                             <label class="items_price">{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                         </li>
+
                                                                         @if(@$product->order_product_status->order_status_option_id == 2 && $order->luxury_option_id == 4 && $vendor->order_status_option_id==2)
                                                                             @if(@$product->Routes[0] && $product->Routes[0]['dispatch_traking_url'] != '')
                                                                                 <li>
@@ -551,6 +553,7 @@ $timezone = Auth::user()->timezone;
                                                                         @endif
                                                                         @endforeach
                                                                     </ul>
+
 
                                                                 </div>
                                                                 <div class="col-md-5 mt-md-0 mt-sm-2">
@@ -743,12 +746,14 @@ $timezone = Auth::user()->timezone;
                                                                                         *
                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                 </li>
+
                                                                 @if($order->luxury_option_id == 4)
                                                                     <li class="d-flex align-items-center justify-content-between">
                                                                         <label class="m-0">{{ __('Security Amount') }}</label>
                                                                         <span>{{ Session::get('currencySymbol') .decimal_format($security_amount)}}</span>
                                                                     </li>
                                                                 @endif
+
                                                                 @if ($order->wallet_amount_used > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Wallet') }}</label>
@@ -1069,6 +1074,7 @@ $timezone = Auth::user()->timezone;
                                                                             @php
                                                                             $returnable = 0;
                                                                             $replaceable = 0;
+
                                                                             @endphp
                                                                             @foreach ($vendor->products as $product)
                                                                             @php
@@ -1080,7 +1086,12 @@ $timezone = Auth::user()->timezone;
                                                                             if(@$product->product->replaceable && $product->product->replaceable == 1 && @$vendor->is_order_days_for_return){
                                                                             $replaceable = 1;
                                                                             }
+                                                                            $rental_return = 0;
+                                                                            if($order->luxury_option_id == 4){
+                                                                                $rental_return = 1;
+                                                                            }
                                                                             @endphp
+                                                                            
 
 
 
@@ -1109,11 +1120,27 @@ $timezone = Auth::user()->timezone;
                                                                                 @endphp
                                                                                 @endif
                                                                             </li>
+
                                                                             <li>
                                                                                 <label class="rating-star extend-order">
                                                                                     {{ __('Extend') }}
                                                                                 </label>
                                                                             </li>
+
+                                                                            @if(@$rental_return)
+                                                                            @if(@$product->productReturn->type && $product->productReturn->type == 1)
+                                                                            <li>
+                                                                            {{__('Return')}} {{$product->productReturn->status}}
+                                                                            </li>
+                                                                            @else
+                                                                            <li>
+                                                                                <label class="rating-star rental_return" data-order_vendor_product_id="{{$product->id}}" style="width: auto;display: inline-block;">
+                                                                                    {{__('Return')}}
+                                                                                </label>
+                                                                            </li>
+                                                                            @endif
+                                                                            @endif
+
                                                                             @endforeach
                                                                         </ul>
                                                                     </div>
@@ -1197,7 +1224,8 @@ $timezone = Auth::user()->timezone;
                                                                         <button class="btn btn-solid"> {{__('Return Pending')}} </button>
                                                                         @else
 
-                                                                        @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
+
+                                                                        @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request && $rental_return == 0)
                                                                         @if(@$returnable && $order->vendors[0]->exchanged_of_order == null)
                                                                         <button class="return-order-product btn btn-solid" data-id="{{ $order->id ?? 0 }}" data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
                                                                             <td class="text-center" colspan="3">
@@ -2044,6 +2072,24 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 
+
+<div class="modal fade return-rental-order" id="return_rental_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+
+                <div id="return-rental-order-form-modal"></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -2056,6 +2102,7 @@ $timezone = Auth::user()->timezone;
         </div>
     </div>
 </div>
+
 
 <!-- start cancel order -->
 <div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
@@ -2373,6 +2420,16 @@ $timezone = Auth::user()->timezone;
         });
     });
 
+
+    $('body').on('click', '.rental_return', function(event) {
+        event.preventDefault();
+        var order_vendor_product_id = $(this).data('order_vendor_product_id');
+        $.get('/return-order/get-order-rental-data-in-model?order_vendor_product_id=' + order_vendor_product_id, function(markup) {
+            $('#return_rental_model').modal('show');
+            $('#return-rental-order-form-modal').html(markup);
+        });
+    });
+
     $('body').on('click', '.replace-order-product', function(event) {
         event.preventDefault();
         var id = $(this).data('id');
@@ -2390,6 +2447,7 @@ $timezone = Auth::user()->timezone;
             dataType: 'json',
             url: cart_details_url,
             success: function(response) {
+
 
                 if (response.data != "") {
                     let cartProducts = response.data.products;

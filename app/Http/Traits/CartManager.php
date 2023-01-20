@@ -552,6 +552,8 @@ trait cartManager{
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
+
+                $security_amount = 0.00;
                 $deliveryfeeOnCoupon = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                     // pr($prod->product->security_amount);

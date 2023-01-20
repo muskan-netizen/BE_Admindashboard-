@@ -834,4 +834,56 @@ class ReturnOrderController extends FrontController
             return response()->json(['status' => 'error', 'message' => __('Something went wrong. Please try again later.')]);
         }
     }
+
+    /**
+     * order rental product details in modal
+     */
+    public function getOrderRentalDatainModel(Request $request)
+    {
+        try {
+            $product = OrderProduct::whereHas('order', function($q){
+                $q->where('user_id', Auth::user()->id);
+            })
+                ->where('id', $request->order_vendor_product_id)->first();
+
+            if (isset($product)) {
+
+                if ($request->ajax()) {
+                    return \Response::json(\View::make('frontend.modals.return-rental-product-order', array('product' => $product))->render());
+                }
+            }
+            return $this->errorResponse('Invalid order', 404);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+
+    /**
+     * return rental order product
+     */
+    public function updateRentalProductReturn(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $order_deliver = 0;
+            $order_details = OrderProduct::where('id', $request->order_vendor_product_id)->whereHas('order', function ($q) {
+                $q->where('user_id', Auth::id());
+            })->first();
+
+            $this->markAsReturnPending($order_details);
+            $type = 1; // 1 = return
+            $returns = $this->saveReturnExchangeRequest($request, $order_details, $type);
+            if (@$returns) {
+                $this->sendSuccessNotification($user->id, $order_details->vendor_id);
+                $this->sendSuccessEmail($request);
+                return redirect()->back();
+                // return $this->successResponse($returns, 'Return Submitted.');
+            }
+            return redirect()->back();
+           
+        } catch (Exception $e) {
+            return redirect()->back();
+        }
+    }
 }

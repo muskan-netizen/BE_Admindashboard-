@@ -281,7 +281,7 @@ trait OrderTrait
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
 
             $order_vendor = OrderVendor::with(['products.product', 'products.order_product_status'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-            // pr($order_vendor);
+            
             foreach( $order_vendor->products as $product){
                 $allocation_type = 'a';
                 $agent = '';
@@ -407,6 +407,7 @@ trait OrderTrait
                             'service_time' =>  $service_time,
                             'is_assign_warehouse' => $is_assign_warehouse
                         ];
+
 
                         if($order_vendor->is_restricted == 1)
                         {
