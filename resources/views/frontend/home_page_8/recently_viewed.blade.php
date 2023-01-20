@@ -15,7 +15,9 @@
                         @if($product["averageRating"] >0)<span class="rating-number">{{ $product["averageRating"] }}</span>
                         @endif @endif @endif </div>
                     <div class="product-description_list border-bottom">
-                        <span class="flag-discount">30% Off</span>
+                    @if($dicountPercentage = productDiscountPercentage($product["price_numeric"], $product["compare_price"]))
+                            <span class="flag-discount">{{$dicountPercentage}}% Off</span>
+                        @endif
                         <p>
                             {{ $product["vendor_name"] }}
                         </p>

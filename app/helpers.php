@@ -1141,13 +1141,13 @@ if (!function_exists('getServiceTypesCategory')) {
         try {
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
-            if(isset($set_template)  && $set_template->template_id == 9){
+            // if(isset($set_template)  && $set_template->template_id == 9){
 
-                if(@$client_preference->p2p_check){
-                    $vendorType = 'p2p';
-                    // session()->put('vendorType', 'p2p');
-                }
-            }
+            //     if(@$client_preference->p2p_check){
+            //         $vendorType = 'p2p';
+            //         // session()->put('vendorType', 'p2p');
+            //     }
+            // }
 
             $types =   Type::query();
             $service_types = [];
@@ -1168,7 +1168,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             elseif ($vendorType == "p2p") {
-                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
+                $service_types = ['p2p'];
             }
 
             if ($client_preference->business_type == 'taxi') {
@@ -1185,7 +1185,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             if ($client_preference->business_type == 'p2p') {
-                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
+                $service_types = ['p2p'];
             }
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
@@ -1259,7 +1259,7 @@ if (!function_exists('getCategoryTypesServices')) {
                 $typeArray = ['rental_service'];
                 break;
             case "p2p":
-                $typeArray = ['products_service', 'on_demand_service', 'appointment_service', 'p2p' ];
+                $typeArray = ['p2p' ];
                 break;
             case "super_app":
                 $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p'];
@@ -1513,6 +1513,17 @@ if( !function_exists('is_category_p2p') ) {
 //         return false;
 //     }
 // }
+
+if( !function_exists('productDiscountPercentage()') ) {
+    function productDiscountPercentage($product_price, $product_compare_price)
+    {
+        if($product_compare_price > 0) {
+            $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;
+            return round($discount);
+        }
+        return 0;
+    }
+}
 
 if( !function_exists('generateSlug') ) {
     function generateSlug($name)

@@ -159,7 +159,7 @@ class HomeController extends BaseController
                     unset($value->redirect_vendor_id);
                 }
             }
-            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
                 ->where('status', 1)->where('validity_on', 1)
                 ->with(['category:id,type_id', 'category.type', 'vendor'])
                 ->where(function ($q) {
@@ -477,7 +477,7 @@ class HomeController extends BaseController
             $isVendorArea = 0;
 
             // Start Mobile Banners
-            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
             ->where('status', 1)->where('validity_on', 1)
             ->with(['category:id,type_id', 'category.type', 'vendor'])
             ->where(function ($q) {

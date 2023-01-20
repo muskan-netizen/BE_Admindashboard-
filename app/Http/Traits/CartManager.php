@@ -449,8 +449,8 @@ trait cartManager{
 
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
-                $user->timezone = $client_timezone->timezone ?? $user->timezone;
-                $user_timezone = $user->timezone ;
+                $user->timezone = $user->timezone ?? $client_timezone->timezone;
+                $user_timezone = $user->timezone;
             }
           // $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */

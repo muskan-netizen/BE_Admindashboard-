@@ -55,6 +55,11 @@ class OrderVendor extends Model{
 	{
 		return $this->belongsTo('App\Models\User','cancelled_by','id')->select('id','name')->withTrashed();
 	}
+
+	public function reqCancelOrder()
+    {
+        return $this->hasOne('App\Models\OrderCancelRequest'); //, 'order_id', 'id'
+    }
 	public function acceptedBy()
 	{
 		return $this->belongsTo('App\Models\User','accepted_by','id')->select('id','name')->withTrashed();

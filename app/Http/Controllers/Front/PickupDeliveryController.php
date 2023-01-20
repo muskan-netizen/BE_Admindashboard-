@@ -332,8 +332,7 @@ class PickupDeliveryController extends FrontController{
                         $product->tags_price = decimal_format(($tags_price['delivery_fee'] + $tags_price['toll_fee'])/$product->seats_for_booking);
                     }else{
                         $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
-                    }Log::info("Tag Price".$product->tags_price);
-
+                    }
                     $product->original_tags_price = $product->tags_price + $product->service_charge_amount;
 
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
