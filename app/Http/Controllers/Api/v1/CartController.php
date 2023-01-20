@@ -1249,12 +1249,7 @@ class CartController extends BaseController
                     }
                 }
                 $vendorData->is_promo_code_available = $is_promo_code_available;
-                if($type == "services" || $type = "delivery"){
-                    $cat_type = "on_demand";
-                }else{
-                    $cat_type = "delivery";
-                }
-                $slotsDate = findSlot('',$vendorData->vendor->id,$cat_type,'api');
+                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'api');
                 $vendorData->delaySlot = $slotsDate;
                 $totalDeliveryCharges+=$deliveryCharges_real;
 
@@ -1379,11 +1374,11 @@ class CartController extends BaseController
             $vendorId = $cartData[0]->vendor_id;
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
-            $slotsDate = findSlot('',$vendorId,$cat_type,'api');
-            $slots = showSlot($slotsDate,$vendorId,$cat_type,$duration->slot_minutes, 1);
+            $slotsDate = findSlot('',$vendorId,$type,'api');
+            $slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 1);
             $cart->slots = $slots;
             if($preferences->business_type == 'laundry'){
-                $dropoff_slots = showSlot($slotsDate,$vendorId,$cat_type,$duration->slot_minutes, 2);
+                $dropoff_slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 2);
                 $cart->dropoff_slots = $dropoff_slots;
             }else{
                 $cart->dropoff_slots = [];
