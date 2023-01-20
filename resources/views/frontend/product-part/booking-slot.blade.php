@@ -52,6 +52,7 @@
     </div>
     
   </div>
+  
   <div id="product_variant_additional_increment_wrapper" >
     <div class="product-description border-product pb-0">
         {{-- <h6 class="product-title mt-0">{{__('Extended duration By('.@$product->additional_increments.'hr:'.@$product->additional_increments_min.'min/'.Session::get('currencySymbol').number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",").')')}}:

@@ -581,6 +581,10 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::post('update-rental-product-return', 'Front\ReturnOrderController@updateRentalProductReturn')->name('update.rental.product.return');
 
 	});
+	// Rental Extend Routes
+	Route::group(['prefix' => 'extend-durartion'], function () {
+		Route::get('get-order-vendor-product-duration-data-in-model', 'Front\ExtendOrderController@getOrderProductDurationDatainModel')->name('getOrderProductDurationDatainModel');
+	});
 	// Return product
 	Route::group(['prefix' => 'looking'], function () {
 		Route::get('/', 'Front\BookingController@index')->name('bookingIndex');

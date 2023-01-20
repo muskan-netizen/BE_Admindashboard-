@@ -29,7 +29,6 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, $domain = '',$vendor,$url_slug){
-        
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
 
