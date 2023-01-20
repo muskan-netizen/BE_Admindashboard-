@@ -59,6 +59,19 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         left: 0px !important;
         top: 0px !important;
     }
+    .rental_return {
+        position: relative;
+        left: 70px;
+        top: 4px;
+        background: #a22c7f;
+        color: #fff;
+        font-weight: 600;
+        font-size: 10px;
+        padding: 5px 10px 4px 10px;
+        text-transform: uppercase;
+        left: 0px !important;
+        top: 0px !important;
+    }
 </style>
 @endsection
 @section('content')
@@ -1044,7 +1057,12 @@ $timezone = Auth::user()->timezone;
                                                                             if(@$product->product->replaceable && $product->product->replaceable == 1 && @$vendor->is_order_days_for_return){
                                                                             $replaceable = 1;
                                                                             }
+                                                                            $rental_return = 0;
+                                                                            if($order->luxury_option_id == 4){
+                                                                                $rental_return = 1;
+                                                                            }
                                                                             @endphp
+                                                                            
 
 
 
@@ -1073,6 +1091,19 @@ $timezone = Auth::user()->timezone;
                                                                                 @endphp
                                                                                 @endif
                                                                             </li>
+                                                                            @if(@$rental_return)
+                                                                            @if(@$product->productReturn->type && $product->productReturn->type == 1)
+                                                                            <li>
+                                                                            {{__('Return')}} {{$product->productReturn->status}}
+                                                                            </li>
+                                                                            @else
+                                                                            <li>
+                                                                                <label class="rating-star rental_return" data-order_vendor_product_id="{{$product->id}}" style="width: auto;display: inline-block;">
+                                                                                    {{__('Return')}}
+                                                                                </label>
+                                                                            </li>
+                                                                            @endif
+                                                                            @endif
                                                                             @endforeach
                                                                         </ul>
                                                                     </div>
@@ -1156,7 +1187,7 @@ $timezone = Auth::user()->timezone;
                                                                         <button class="btn btn-solid"> {{__('Return Pending')}} </button>
                                                                         @else
 
-                                                                        @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
+                                                                        @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request && $rental_return == 0)
                                                                         @if(@$returnable && $order->vendors[0]->exchanged_of_order == null)
                                                                         <button class="return-order-product btn btn-solid" data-id="{{ $order->id ?? 0 }}" data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
                                                                             <td class="text-center" colspan="3">
@@ -2003,6 +2034,19 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 
+<div class="modal fade return-rental-order" id="return_rental_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div id="return-rental-order-form-modal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -2329,6 +2373,15 @@ $timezone = Auth::user()->timezone;
         $.get('/return-order/get-order-data-in-model?id=' + id + '&vendor_id=' + vendor_id, function(markup) {
             $('#return_order_model').modal('show');
             $('#return-order-form-modal').html(markup);
+        });
+    });
+
+    $('body').on('click', '.rental_return', function(event) {
+        event.preventDefault();
+        var order_vendor_product_id = $(this).data('order_vendor_product_id');
+        $.get('/return-order/get-order-rental-data-in-model?order_vendor_product_id=' + order_vendor_product_id, function(markup) {
+            $('#return_rental_model').modal('show');
+            $('#return-rental-order-form-modal').html(markup);
         });
     });
 
