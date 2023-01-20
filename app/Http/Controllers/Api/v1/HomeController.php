@@ -349,7 +349,7 @@ class HomeController extends BaseController
                 $slotsDate = 0;
                 $vendor->date_with_slots = [];
                 if($vendor->closed_store_order_scheduled == 1){
-                    $slotsDate = findSlot('',$vendor->id,'');
+                    $slotsDate = findSlot('',$vendor->id,$type );
                     $vendor->delaySlot = $slotsDate;
                     $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
 
@@ -644,7 +644,7 @@ class HomeController extends BaseController
                 $slotsDate = 0;
                 $vendor->date_with_slots = [];
                 if($vendor->closed_store_order_scheduled == 1){
-                    $slotsDate = findSlot('',$vendor->id,'');
+                    $slotsDate = findSlot('',$vendor->id,$type );
                     $vendor->delaySlot = $slotsDate;
                     $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
 

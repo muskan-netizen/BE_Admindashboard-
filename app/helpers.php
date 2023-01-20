@@ -854,20 +854,21 @@ if (!function_exists('findSlot')) {
     {
         $myDate  = date('Y-m-d');
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-        $slots = showSlot($myDate, $vid, 'delivery');
+        $slots = showSlot($myDate, $vid,  $type);
+
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+1 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+2 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+3 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
         if (isset($slots) && count((array)$slots)>0) {
             $time = explode(' - ', $slots[0]['value']);
@@ -889,22 +890,22 @@ if (!function_exists('findSlot')) {
     }
 }
 if (!function_exists('findSlotNew')) {
-    function findSlotNew($myDate,$vid,$type=0)
+    function findSlotNew($myDate,$vid,$type = 'delivery', $duration = 0)
     {
-            $slots = showSlot($myDate,$vid,'delivery', $type);
+            $slots = showSlot($myDate,$vid,$type, $duration);
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+1 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
 
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+2 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
 
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+3 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
                 if(isset($slots)){
                     $slots = $slots;
