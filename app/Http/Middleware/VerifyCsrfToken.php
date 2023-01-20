@@ -42,6 +42,7 @@ class VerifyCsrfToken extends Middleware
         'payment/paytab/return',
         'payment/paytab/callback',
         'sendNotificationToUserByDispatcher',
-        'dispatch/customer/distance/notification/*'
+        'dispatch/customer/distance/notification/*',
+        'dispatch/driver/bids/update/*'
     ];
 }

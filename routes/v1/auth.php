@@ -73,6 +73,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('order-detail', 'Api\v1\OrderController@postOrderDetail');
         Route::post('order-update', 'Api\v1\OrderController@orderUpdate');
 
+        Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
+        Route::post('accept-ride-bid', 'Api\v1\PickupDeliveryController@acceptBidsRelatedToOrderRide');
+
         Route::post('create-payment-intent', 'Api\v1\PaymentResourceController@createPaymentIntent');
         Route::post('confirm-payment-intent', 'Api\v1\PaymentResourceController@confirmPaymentIntent');
 
