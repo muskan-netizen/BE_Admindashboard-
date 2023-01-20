@@ -136,10 +136,9 @@ div#custom_date_recurring {
     padding: 10px;
     margin-left: 10px;
 }
-
 </style>
 
-
+{{-- <link href="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}" /> --}}
 <div class="alRecurringBookingSinglePageView">
   <div class="addManualTime">
     <div class="addManualTimeGroup" style="text-align:left;">
@@ -211,9 +210,7 @@ div#custom_date_recurring {
                         </div>
                     </div>
                     <div class="col-md-7">
-
                         <div class="form-group" id="weekly_timeInput">
-
                             {!! Form::text('weekly_date_time','', ['class' => 'form-control downside datetime-datepicker','id' => 'weekly-datepicker','readonly'=>'true','placeholder'=>'Select Week Days']) !!}
                         </div>
                     </div>
@@ -257,31 +254,7 @@ div#custom_date_recurring {
                 </div>
             </div>
         </div>
-
         <input type="hidden" id="is_recurring_booking" value="0">
-
-
-        <!--<div id="date_recurring" class="d-none">
-            <div class="single_cart-temp_label">
-                <label class="text-left mb-0">Start/Date</label>
-                <label class="text-left mb-0">End/Date</label>
-            </div>
-            <div class="single_product-input mb-2">
-                <input id="blocktime" class="form-control" autofocus readonly>
-                <input id="blocktime2" class="form-control" readonly>
-            </div>
-        </div>
-        <div id="custom_date_recurring" class="d-none">
-			<div class="col-md-12">
-				<div class="form-group" id="start_date_timeInput">
-					{!! Form::text('start_date_time','', ['class' => 'form-control downside datetime-datepicker','id' => 'start-datepicker','readonly'=>'true','placeholder'=>'Select Custom days']) !!}
-					<span class="invalid-feedback" role="alert">
-						<strong></strong>
-					</span>
-				</div>
-			</div>
-		</div>-->
-
     </div>
   </div>
 </div>
@@ -289,8 +262,10 @@ div#custom_date_recurring {
 @section('script-bottom-js')
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" ></script> --}}
   {{-- <script src="{{ asset('assets/js/backend/product/productSchedule.js')}}"></script> --}}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
-  <script type="text/javascript" src="{{asset('assets/libs/jquery-clock-timepicker/jquery-clock-timepicker.js')}}"></script>
+  {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+  <script type="text/javascript" src="{{asset('assets/libs/jquery-clock-timepicker/jquery-clock-timepicker.js')}}"></script> --}}
+
+  <script type="text/javascript" src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
   <script type="text/javascript">
     $( document ).ready(function() {
         //$('.booking-time').clockTimePicker();

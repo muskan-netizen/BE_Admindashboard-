@@ -101,25 +101,7 @@ class RecurringBooking extends Command
                         $vendor         = $product->vendor_id;
 
                         $tasks          = array();
-                        if ($order->payment_option_id == 1) {
-                            $cash_to_be_collected   = 'Yes';
-                            $payable_amount         = $order->payable_amount;
-                        } else {
-                            if(checkColumnExists('orders', 'is_postpay'))
-                            {
-                                if($order->is_postpay==1 && $order->payment_status == 0)
-                                {
-                                    $cash_to_be_collected   = 'Yes';
-                                    $payable_amount         = $order->payable_amount;
-                                }else{
-                                    $cash_to_be_collected   = 'No';
-                                    $payable_amount         = 0.00;
-                                }
-                            }else{
-                                $cash_to_be_collected       = 'No';
-                                $payable_amount             = 0.00;
-                            }
-                        }
+
 
                         $dynamic = uniqid($order->id . $vendor);
                         $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
@@ -245,21 +227,13 @@ class RecurringBooking extends Command
                                 ['form_params' => ($postdata)]
                             );
 
-
-
-
                         $response = json_decode($res->getBody(), true);
                         if ($response && $response['task_id'] > 0) {
-                            $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
-                            $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
-                                ->update(['web_hook_code' => $dynamic, 'dispatch_traking_url' => $dispatch_traking_url]);
+                            $dispatch_traking_url                   = $response['dispatch_traking_url'] ?? '';
                             $recurring_data->web_hook_code          = $dynamic;
                             $recurring_data->dispatch_traking_url   = $dispatch_traking_url;
                             $recurring_data->save();
-
                         }
-
-
                     }
 
                 }
