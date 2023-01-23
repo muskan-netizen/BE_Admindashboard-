@@ -14,7 +14,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 @endphp
 @extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"/>
 <style type="text/css">
     .main-menu .brand-logo {
         display: inline-block;
@@ -43,9 +43,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     }
 
     label.rating-star.cancel_order,
-    .rating-star.request_cancel_order {
+    .rating-star.request_cancel_order,.extend-order {
         position: relative;
-        left: 70px;
+        left: 0px;
         top: 4px;
         background: #a22c7f;
         color: #fff;
@@ -509,7 +509,6 @@ $timezone = Auth::user()->timezone;
                                                                         <li>
                                                                             <label class="items_price">{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                         </li>
-
                                                                         @if(@$product->order_product_status->order_status_option_id == 2 && $order->luxury_option_id == 4 && $vendor->order_status_option_id==2)
                                                                             @if(@$product->Routes[0] && $product->Routes[0]['dispatch_traking_url'] != '')
                                                                                 <li>
@@ -1120,13 +1119,13 @@ $timezone = Auth::user()->timezone;
                                                                                 @endphp
                                                                                 @endif
                                                                             </li>
-
-                                                                            <li>
-                                                                                <label class="rating-star extend-order">
-                                                                                    {{ __('Extend') }}
-                                                                                </label>
-                                                                            </li>
-
+                                                                            @if($order->luxury_option_id == 4 && $vendor->order_status_option_id == 6)
+                                                                                <li>
+                                                                                    <label class="rating-star extend-order" data-order_vendor_product_id="{{$product->id}}" data-vendor_product_id="{{$product->product_id}}" data-vendor_end_date_time="{{$product->end_date_time}}">
+                                                                                        {{ __('Extend') }}
+                                                                                    </label>
+                                                                                </li>
+                                                                            @endif
                                                                             @if(@$rental_return)
                                                                             @if(@$product->productReturn->type && $product->productReturn->type == 1)
                                                                             <li>
@@ -1140,7 +1139,6 @@ $timezone = Auth::user()->timezone;
                                                                             </li>
                                                                             @endif
                                                                             @endif
-
                                                                             @endforeach
                                                                         </ul>
                                                                     </div>
@@ -2074,21 +2072,57 @@ $timezone = Auth::user()->timezone;
 
 
 <div class="modal fade return-rental-order" id="return_rental_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
-
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
-
                 <div id="return-rental-order-form-modal"></div>
-
             </div>
         </div>
     </div>
 </div>
 
+<div class="modal fade extend-order-rental" id="extend_order_rental" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Extend Order Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="extend-rental-order-form-modal"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Modal body text goes here.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -2251,6 +2285,7 @@ $timezone = Auth::user()->timezone;
 @endif
 <script src="{{ asset('js/payment.js') }}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
 <script type="text/javascript">
     $(document).delegate(".topup_wallet_btn_tip", "click", function() {
         $('#topup_wallet').modal('show');
@@ -2430,6 +2465,17 @@ $timezone = Auth::user()->timezone;
         });
     });
 
+    $('body').on('click', '.extend-order', function(event) {
+        event.preventDefault();
+        var order_vendor_product_id = $(this).data('order_vendor_product_id');
+        var vendor_product_id = $(this).data('vendor_product_id');vendor_end_date_time
+        var vendor_end_date_time = $(this).data('vendor_end_date_time');
+        $.get('/extend-durartion/get-order-vendor-product-duration-data-in-model?order_vendor_product_id=' + order_vendor_product_id +'&vendor_product_id=' + vendor_product_id +'&vendor_end_date_time=' + vendor_end_date_time, function(markup) {
+            $('#extend_order_rental').modal('show');
+            $('#extend-rental-order-form-modal').html(markup);
+        });
+    });
+
     $('body').on('click', '.replace-order-product', function(event) {
         event.preventDefault();
         var id = $(this).data('id');
@@ -2447,8 +2493,6 @@ $timezone = Auth::user()->timezone;
             dataType: 'json',
             url: cart_details_url,
             success: function(response) {
-
-
                 if (response.data != "") {
                     let cartProducts = response.data.products;
 
