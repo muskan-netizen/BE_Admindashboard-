@@ -1806,6 +1806,17 @@ $(document).ready(function () {
             return false;
         }
 
+        if(payment_option_id == 49){
+            cno = $('#plugnpay-card-element').val();
+            dt = $('#plugnpay-date-element').val();
+            cv = $('#plugnpay-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill Details', "#plugnpay_card_error");
+                return false;
+            }
+        }
+
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
          $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1947,6 +1958,18 @@ $(document).ready(function () {
         } else {
             $('#wallet_amount_error').html('');
         }
+
+        if(payment_option_id == 49){
+            cno = $('#plugnpay-card-element').val();
+            dt = $('#plugnpay-date-element').val();
+            cv = $('#plugnpay-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill Details', ".payment_response");
+                return false;
+            }
+        }
+
         if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
             $('#wallet_payment_methods_error').html(payment_method_required_error_msg);
             return false;
@@ -4444,6 +4467,12 @@ $(document).ready(function () {
             case 47:
                 paymentViaKhalti('', '');
             break;
+            case 48:
+                paymentViaMtnMomo('', payment_option_id, '');
+            break;
+            case 49:
+                paymentViaplugnpay('', payment_option_id, '');
+            break;
         }
 
     }
@@ -4899,6 +4928,28 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+            case '48':
+
+                //console.log('address_id',address_id,'payment_option_id',payment_option_id,'tip',tip);
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    console.log('order',order);
+                    paymentViaMtnMomo(address_id, order, payment_from='cart');
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '49':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaplugnpay(address_id, payment_option_id,order);
+                }
+                else{
+                    return false;
+                }
+            break;
         }
 
     }
@@ -5114,6 +5165,12 @@ $(document).ready(function () {
                 break;
             case 47:
                 paymentViaKhalti('', '');
+                break;
+            case 48:
+                paymentViaMtnMomo('', payment_option_id, '');
+                break;
+            case 49:
+                paymentViaplugnpay('',payment_option_id,'');
                 break;
         }
     }

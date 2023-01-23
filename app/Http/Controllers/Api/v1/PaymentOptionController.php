@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController,OpenpayPaymentController,UseRedePaymentController,UPayGatewayController,ConektaGatewayController, TelrGatewayController, KhaltiGatewayController};
+use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController,OpenpayPaymentController,UseRedePaymentController,UPayGatewayController,ConektaGatewayController, TelrGatewayController, KhaltiGatewayController,PlugnpayGatewayController};
 use App\Http\Controllers\Front\DpoController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
@@ -30,13 +30,13 @@ class PaymentOptionController extends BaseController{
 
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
-            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti');
+            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
         }
         elseif($page == 'pickup_delivery'){
-            $code = array('cod', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave');
+            $code = array('cod', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay');
         }
         else{
-            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti');
+            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
         foreach($payment_options as $option){
@@ -66,7 +66,7 @@ class PaymentOptionController extends BaseController{
     }
 
     public function postPayment(Request $request, $gateway = ''){
-        if(!empty($gateway)){            
+        if(!empty($gateway)){
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
             $domain = '';
@@ -79,7 +79,7 @@ class PaymentOptionController extends BaseController{
             $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
-            
+
             $function = 'postPaymentVia_'.$gateway;
             if(method_exists($this, $function)) {
                 if(!empty($request->action)){
@@ -129,7 +129,7 @@ class PaymentOptionController extends BaseController{
         $gateway = new StripeGatewayController();
         return $gateway->paymentWebViewStripeIdeal($request);
     }
-    
+
     public function postPaymentVia_stripe_oxxo(Request $request){
         $gateway = new StripeGatewayController();
         return $gateway->paymentWebViewStripeOXXO($request);
@@ -177,7 +177,7 @@ class PaymentOptionController extends BaseController{
         $gateway = new PagarmeGatewayController();
         return $gateway->pagarmePurchase($request);
     }
-    public function postPaymentVia_upay(Request $request){ 
+    public function postPaymentVia_upay(Request $request){
         $gateway = new UPayGatewayController();
         return $gateway->upayPurchase($request);
     }
@@ -196,7 +196,7 @@ class PaymentOptionController extends BaseController{
     }
     public function postPaymentVia_authorize_net(Request $request){
         $gateway = new AuthorizeGatewayController();
-        return $gateway->authorizePurchase($request); 
+        return $gateway->authorizePurchase($request);
     }
 
     public function postPaymentVia_cashfree(Request $request){
@@ -228,9 +228,9 @@ class PaymentOptionController extends BaseController{
         return $gateway->createPayLinkApp($request);
     }
 
-    public function postPaymentVia_toyyibpay(Request $request){ 
+    public function postPaymentVia_toyyibpay(Request $request){
 
-        //for getting server main url from header        
+        //for getting server main url from header
         $code = $request->header('code');
         $client = Client::where('code',$code)->first();
         $domain = '';
@@ -241,7 +241,7 @@ class PaymentOptionController extends BaseController{
         }
         $server_url = "https://".$domain."/";
         $request['serverUrl'] = $server_url;
-        $request['currencyId'] = $request->header('currency'); 
+        $request['currencyId'] = $request->header('currency');
         $request['auth_token'] = $request->header('authorization') ?? "";
 
         $gateway = new ToyyibPayController();
@@ -261,10 +261,17 @@ class PaymentOptionController extends BaseController{
         $gateway = new UseRedePaymentController();
         return $gateway->beforePayment($request);
     }
-    
+
     public function postPaymentVia_khalti(Request $request){
         $gateway = new KhaltiGatewayController();
         return $gateway->khaltiPurchase($request);
+    }
+
+    public function postPaymentVia_plugnpay(Request $request){
+
+        $gateway = new PlugnpayGatewayController();
+
+        return $gateway->PlugPayPurchase($request);
     }
 
     public function postPaymentVia_paypal(Request $request){
@@ -779,7 +786,7 @@ class PaymentOptionController extends BaseController{
         }
         //Send SMS to customer
         $orderController->sendSuccessSMS($request, $order);
-    
+
         return true;
     }
 

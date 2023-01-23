@@ -30,14 +30,14 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        
-        $payment_codes = array('cod', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti');
+
+        $payment_codes = array('cod', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo','plugnpay');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
         $payout_codes = array('cash', 'stripe', 'pagarme','razorpay');
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
 
-       
+
         return view('backend/payoption/index')->with(['payOption' => $payOption, 'payoutOption' => $payoutOption]);
     }
 
@@ -127,7 +127,7 @@ class PaymentOptionController extends BaseController
                                 'signature' => $request->paypal_signature,
                             ));
                             break;
-                        
+
                         case 'stripe':
                             $validatedData = $request->validate([
                                 'stripe_api_key'        => 'required',
@@ -147,7 +147,7 @@ class PaymentOptionController extends BaseController
                                 $json_creds = json_encode($stripe_arr);
                             }
                             break;
-                        
+
                         case 'toyyibpay':
                             $validatedData = $request->validate([
                                 'toyyibpay_api_key'        => 'required',
@@ -161,7 +161,7 @@ class PaymentOptionController extends BaseController
                                     'toyyibpay_api_key' => $request->toyyibpay_api_key,
                                     'toyyibpay_redirect_uri' => $request->toyyibpay_redirect_uri
                                 );
-                            
+
                                 $json_creds = json_encode($toyyibpay_arr);
                             }
                             break;
@@ -189,7 +189,7 @@ class PaymentOptionController extends BaseController
                                 'public_key' => $request->yoco_public_key
                             ));
                             break;
-                        
+
                         case 'paystack':
                             $validatedData = $request->validate([
                                 'paystack_secret_key' => 'required',
@@ -211,7 +211,7 @@ class PaymentOptionController extends BaseController
                                 'api_secret_key' => $request->paylink_api_secret_key
                             ));
                             break;
-                        
+
                         case 'razorpay':
                             $validatedData = $request->validate([
                                 'razorpay_api_key' => 'required',
@@ -387,7 +387,7 @@ class PaymentOptionController extends BaseController
                                 'secret_key' => $request->cashfree_secret_key
                             ));
                             break;
-                        
+
                         case 'easebuzz':
                             $validatedData = $request->validate([
                                 'easebuzz_merchant_key' => 'required',
@@ -399,7 +399,7 @@ class PaymentOptionController extends BaseController
                                 'easebuzz_salt' => $request->easebuzz_salt
                             ));
                             break;
-                        
+
                         case 'paytab':
                             $validatedData = $request->validate([
                                 'paytab_profile_id' => 'required',
@@ -438,7 +438,7 @@ class PaymentOptionController extends BaseController
                                 'secret_key' => $request->mvodafone_secret_key
                             ));
                             break;
-                        
+
                         case 'flutterwave':
                             $validatedData = $request->validate([
                                 'flutterwave_client_id' => 'required',
@@ -557,7 +557,7 @@ class PaymentOptionController extends BaseController
                             $json_creds = json_encode(array(
                                 'manule_payment_title' => $request->manule_payment_title
                             ));
-                            break; 
+                            break;
                         case 'userede':
                             $validatedData = $request->validate([
                                 'userede_Rede_PV' => 'required',
@@ -567,7 +567,7 @@ class PaymentOptionController extends BaseController
                                 'userede_Rede_PV' => $request->userede_Rede_PV,
                                 'userede_Rede_token' => $request->userede_Rede_token
                             ));
-                            break;    
+                            break;
                         case 'openpay':
                             $validatedData = $request->validate([
                                 'openpay_merchant_id' => 'required',
@@ -631,7 +631,7 @@ class PaymentOptionController extends BaseController
                                 'api_key' => $request->khalti_public_key,
                                 'api_secret_key' => $request->khalti_secret_key
                             ));
-                        
+
 
                     }
                 }
