@@ -1,11 +1,11 @@
                         <ul class="nav nav-pills navtab-bg nav-justified">
                         
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a href="{{ route('vendor.dashboard', $vendor->id) }}" aria-expanded="false"
                                     class="nav-link {{ $tab == 'dashboard' ? 'active' : '' }} {{ $vendor->status == 1 ? '' : 'disabled' }}">
                                     {{ __('Dashboard') }}
                                 </a>
-                            </li>
+                            </li> --}}
 
                         <li class="nav-item">
                             <a href="{{ route('vendor.catalogs', $vendor->id) }}" aria-expanded="false"

@@ -394,6 +394,7 @@ class UserController extends BaseController
         $roles = RoleOld::where('status', 1)->get();
         $rolesNew = Role::where('id','>','0')->get();
         $serviceArea = ServiceArea::all();
+        // dd($serviceArea);
 
         return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions, 'user_docs' => $user_docs, 'user_registration_documents' => $user_registration_documents, 'active_orders' => $active_orders, 'completed_orders' => $completed_orders, 'clientCurrency' => $clientCurrency, 'fixedFee' => $fixedFee, 'getAdditionalPreference' => $getAdditionalPreference, 'roles' => $roles,'rolesNew'=>$rolesNew,'userRole'=>$userRole,'serviceArea'=>$serviceArea,'geoIds'=>$geoIds]);
     }

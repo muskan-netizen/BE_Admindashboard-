@@ -29,6 +29,15 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             @endforeach    
                             </select>
                         </div>
+
+                        <div class="input-group mr-2">
+                            <select name="type" id="reportType" class="form-control mr-2" >
+                            <option value="" >Select Type</option>
+                                <option value="Vendor" >Vendor</option>
+                                <option value="Zone" >Zonal</option>
+                                <option value="Both" >Both (Vendor and Zonal)</option>
+                            </select>
+                        </div>
                         @endif
                         <div class="input-group">
                             <input type="text" class="form-control form-control-light" id="range-datepicker" placeholder="2022-08-10 to 2022-08-22">
@@ -114,6 +123,24 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                     </div><!-- Revenue box end here -->
                 </div>
                 @endif
+
+                @if(auth()->user()->getRoleNames()[0]=='Seller')
+                <div class="col-sm">
+                    <!-- Revenue box start here -->
+                    <div class="card alDasBoxItems">
+                        <div class="card-body">
+                            <div class="float-right">
+                                <i class="mdi mdi-currency-usd widget-icon"></i>
+                            </div>
+                            <h5 class="" title="Number of Revenue">{{ __('Total Sold Products') }}</h5>
+                            <h3 class="mt-3 mb-3" id="total_sold_products">0</h3>
+                            <p class="mb-0" id="total_sold_products">
+                            </p>
+                        </div>
+                    </div><!-- Revenue box end here -->
+                </div>
+                @endif
+
                 <div class="col-sm">
                     <!-- Growth box start here -->
                     <div class="card alDasBoxItems">

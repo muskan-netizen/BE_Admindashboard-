@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency, UserVendor};
+use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency, OrderVendorProduct, ServiceArea, UserVendor};
 
 class DashBoardController extends BaseController
 {
@@ -341,16 +341,28 @@ class DashBoardController extends BaseController
             
             $managerId = (($request->manager_id)?$request->manager_id:auth()->id());
             $vendors = Vendor::latest();
+
             if(auth()->user()->getRoleNames()[0]=='App Managers' || $request->manager_id)
             {
                 $vendors = $vendors->where('refference_id',$managerId);
                 $vendorIds = $vendors->pluck('id')->toArray();
-            }elseif(auth()->user()->getRoleNames()[0]=='Seller' || $request->manager_id)
+            }elseif(auth()->user()->getRoleNames()[0]=='Seller')
             {
                 $managerId = UserVendor::where('user_id',$managerId)->value('vendor_id');
                 $vendors = $vendors->where('id',$managerId);
                 $vendorIds = $vendors->pluck('id')->toArray();
             }
+
+            if(($request->reportType !='Vendor' && !empty($request->reportType)) && isset(auth()->user()->geo_ids))
+            {
+                $areaVendors = ServiceArea::whereIn('id',explode(',',auth()->user()->geo_ids))->pluck('vendor_id')->toArray();          
+                if(count($areaVendors)>0 && ($request->reportType =='Both')){
+                    $vendorIds = array_merge($areaVendors,$vendorIds);
+                }elseif(count($areaVendors)>0 && ($request->reportType =='Zone')){               
+                    $vendorIds = $areaVendors;
+                }
+            }
+
 
             $vendorCounts = $vendors->count();
             $managersCount = User::whereHas('roles',function($q){
@@ -378,6 +390,10 @@ class DashBoardController extends BaseController
                     $total_products = $total_products->whereIn('vendor_id',$vendorIds);
                 }
             }
+
+            if($date_filter)
+            $total_products->whereBetween('created_at', [$from_date, $end_date]);
+            
             
             $total_products = $total_products->where('deleted_at', NULL)->count();
 
@@ -400,11 +416,19 @@ class DashBoardController extends BaseController
                 }
             }
             
+            if($date_filter)
+            $total_revenue = $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
+
             $total_revenue = $total_revenue->sum('payable_amount');
 
             # Customers count
             $users = new User;
-            $total_customers = $users->where(['status' => 1, 'is_superadmin' => 0])->count();
+            $total_customers = $users->where(['status' => 1, 'is_superadmin' => 0]);
+            
+            if($date_filter)
+            $total_customers = $total_customers->whereBetween('created_at', [$from_date, $end_date]);
+            
+            $total_customers = $total_customers->count();
 
             # Orders count
             $vendor_orders = OrderVendor::with(['user','vendor']);
@@ -417,10 +441,21 @@ class DashBoardController extends BaseController
                 {
                     $vendor_orders = $vendor_orders->whereIn('vendor_id',$vendorIds);
                 }
-
             }
             
+            if($date_filter)
+            $vendor_orders->whereBetween('created_at', [$from_date, $end_date]);
+
             $total_orders = $vendor_orders->count();
+
+            if(auth()->user()->getRoleNames()[0]=='Seller'){
+                $total_sold_products = OrderVendorProduct::where('order_vendor_id',$vendorIds);
+
+                if($date_filter)
+                $total_sold_products = $total_sold_products->whereBetween('created_at', [$from_date, $end_date]);
+
+                $total_sold_products =$total_sold_products->sum('quantity');
+            }
             
             $revenueCurrentWeek = clone $order_revenue;
             $revenueLastWeek = clone $order_revenue;
@@ -636,6 +671,7 @@ class DashBoardController extends BaseController
                 'currencySymbol' => $currencySymbol,
                 'total_vendors' => $vendorCounts,
                 'managersCount' => $managersCount??0,
+                'total_sold_products' => $total_sold_products??0,
             ];
             return $this->successResponse($response);
         } catch (Exception $e) {

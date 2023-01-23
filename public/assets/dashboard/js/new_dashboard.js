@@ -8,6 +8,10 @@ $(document).ready(function () {
     $("#app_managers").on('change',function () {
         getDashboardData(dashboard_filter_url);
     });
+    
+    $("#reportType").on('change',function () {
+        getDashboardData(dashboard_filter_url);
+    });
 
     $("#dashboard_refresh_btn").click(function () {
         $flatpickr.clear();
@@ -18,10 +22,13 @@ $(document).ready(function () {
     function getDashboardData(dashboard_filter_url) {
         var date_filter = $('#range-datepicker').val();
         var manager_id = $('#app_managers').val();
-        $.getJSON(dashboard_filter_url, { manager_id : manager_id ,date_filter: date_filter}, function (response) {
+        var reportType = $('#reportType').val();
+
+        $.getJSON(dashboard_filter_url, { manager_id : manager_id ,date_filter: date_filter,reportType:reportType}, function (response) {
             if (response.status == 'Success') {
                 $('#total_products').html('+ ' + response.data.total_products);
                 $('#total_revenue').html(response.data.currencySymbol + response.data.total_revenue);
+                $('#total_sold_products').html(response.data.total_sold_products);
                 $('#total_customers').html(response.data.total_customers);
                 $('#total_orders').html(response.data.total_orders);
                 $('#total_vendors').html(response.data.total_vendors);
