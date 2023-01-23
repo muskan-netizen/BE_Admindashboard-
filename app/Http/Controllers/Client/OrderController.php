@@ -15,7 +15,7 @@ use App\Http\Controllers\DunzoController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct, OrderVendorProduct, VendorOrderProductStatus};
+use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, OrderProductDispatchReturnRoute, ProcessorProduct, OrderVendorProduct, VendorOrderProductStatus};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -2188,7 +2188,7 @@ class OrderController extends BaseController
                     $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
                     $dispatch_domain = $this->getDispatchDomain();
                     $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
-                    $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain);
+                    $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain, $order_details);
                 }
                 DB::commit();
                 return $this->successResponse($returns, 'Updated.');
@@ -2201,7 +2201,7 @@ class OrderController extends BaseController
     }
 
     // place Request To Dispatch
-    public function placeReturnRequestToDispatch($order, $vendor, $dispatch_domain)
+    public function placeReturnRequestToDispatch($order, $vendor, $dispatch_domain, $order_product)
     {
         try {
 
@@ -2350,6 +2350,19 @@ class OrderController extends BaseController
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
                     ->update(['web_hook_code' => $dynamic, 'dispatch_traking_url' => $dispatch_traking_url]);
+
+                //track url
+                // OrderReturnRequest
+
+                $dispatch_route                                 = new OrderProductDispatchReturnRoute();
+                $dispatch_route->order_id                       = $order->id;
+                $dispatch_route->order_vendor_id                = $order_product->order_vendor_id;
+                $dispatch_route->order_vendor_product_id        = $order_product->id;
+                $dispatch_route->web_hook_code                  = $dynamic;
+                $dispatch_route->dispatch_traking_url           = $dispatch_traking_url;
+                $dispatch_route->dispatcher_status_option_id    = 1;
+                $dispatch_route->order_status_option_id         = 1;
+                $dispatch_route->save();
 
                 return 1;
             }
