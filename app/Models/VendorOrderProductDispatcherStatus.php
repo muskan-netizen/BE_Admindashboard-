@@ -9,7 +9,7 @@ class VendorOrderProductDispatcherStatus extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'dispatcher_id', 'order_id', 'dispatcher_status_option_id', 'vendor_id','type','order_vendor_product_id','order_product_route_id','order_status_option_id'
+        'dispatcher_id', 'order_id', 'dispatcher_status_option_id', 'vendor_id','type','order_vendor_product_id','order_product_route_id','order_status_option_id','long_term_schedule_id'
     ];
 
     protected $appends = ['status_data'];
@@ -26,7 +26,13 @@ class VendorOrderProductDispatcherStatus extends Model
                 $query->where('vendor_id', $vendor_id);
             }
        })->find($order_id);
-       $productcategorytype = $order->vendors[0]->products[0]->product->category->categoryDetail->type->title;
+       $isLongTerm = 0;
+       if(checkColumnExists('orders','is_long_term') && ($order->is_long_term ==1 )){
+        $productcategorytype =   @$order->vendors[0]->products->first()->LongTermService->product->category->categoryDetail->type->title ;
+        $isLongTerm = 1;
+       }else{
+           $productcategorytype =  $order->vendors[0]->products[0]->product->category->categoryDetail->type->title ;
+       }
 
        $status_data = [];
 
@@ -34,7 +40,7 @@ class VendorOrderProductDispatcherStatus extends Model
         case 1:
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_1_1.png');
-                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" ):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" || ($isLongTerm==1) ):
                     $status_data['driver_status'] = __('Service Accepted');
                 else:
                     $status_data['driver_status'] = __('Order Accepted');
@@ -47,7 +53,7 @@ class VendorOrderProductDispatcherStatus extends Model
             
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_2_1.png');
-                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" ):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" || ($isLongTerm==1) ):
                     $status_data['driver_status'] = __('Service Executive Assigned');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Delivery Executive Assigned');
@@ -67,7 +73,7 @@ class VendorOrderProductDispatcherStatus extends Model
             
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_3_1.png');
-                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" || ($isLongTerm==1)):
                     $status_data['driver_status'] = __('Service Executive heading to you');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Delivery Executive heading to the store');
@@ -80,7 +86,7 @@ class VendorOrderProductDispatcherStatus extends Model
                 endif;
             } else {
                 $status_data['icon'] = asset('assets/icons/driver_3_2.png');
-                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" || ($isLongTerm==1)):
                     $status_data['driver_status'] = __('Service Executive arrived at your location');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Delivery Executive heading to you');
@@ -97,7 +103,7 @@ class VendorOrderProductDispatcherStatus extends Model
         case 4:
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_4_1.png');
-                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" || ($isLongTerm==1)):
                     $status_data['driver_status'] = __('Service Executive reaching at your location soon');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Delivery Executive arrived at store');
@@ -111,7 +117,7 @@ class VendorOrderProductDispatcherStatus extends Model
 
             }else{
                 $status_data['icon'] = asset('assets/icons/driver_4_2.png');
-                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" || ($isLongTerm==1)):
                     $status_data['driver_status'] = __('Service Under Process');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Delivery Executive arrived at your location');
@@ -128,7 +134,7 @@ class VendorOrderProductDispatcherStatus extends Model
         case 5:
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_5_1.png');
-                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment"):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" || ($isLongTerm==1)):
                     $status_data['driver_status'] = __('Service Executive is nearby your location');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Order picked up');
@@ -141,7 +147,7 @@ class VendorOrderProductDispatcherStatus extends Model
                 endif;
             }else{
                 $status_data['icon'] = asset('assets/icons/driver_5_2.png');
-                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" ):
+                if($productcategorytype == "On Demand Service" || $productcategorytype == "Appointment" || ($isLongTerm==1) ):
                     $status_data['driver_status'] = __('Service Completed');
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Order Delivered');
@@ -163,4 +169,6 @@ class VendorOrderProductDispatcherStatus extends Model
        return $status_data;
 
     }
+
+   
 }

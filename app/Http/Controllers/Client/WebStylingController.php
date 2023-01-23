@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, ClientPreferenceAdditional, WebStyling,WebStylingOption};
+use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, ClientPreferenceAdditional,OrderDeliveryStatusIcon, WebStyling,WebStylingOption, HomeProduct, Product};
+
 use Illuminate\Http\Request;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use DB,Log;
+use Session;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Traits\HomePage\WebStylingTrait;
 class WebStylingController extends BaseController{
+    use WebStylingTrait;
     //
      /**
      * Display a listing of the resource.
@@ -20,7 +24,6 @@ class WebStylingController extends BaseController{
     public function index()
     {
         $client_preferences = ClientPreference::first();
-
         switch($client_preferences->business_type){
             case "taxi":
             $home_page_labels = HomePageLabel::whereIn('slug',['dynamic_page','pickup_delivery'])->with('translations')->orderBy('order_by');
@@ -34,7 +37,7 @@ class WebStylingController extends BaseController{
             $home_page_labels = HomePageLabel::with('translations')->orderBy('order_by');
             $cab_booking_layouts = CabBookingLayout::with('translations');
         }
-
+            $cab_booking_layouts = $cab_booking_layouts->web();
 
         $all_pickup_category = Category::with('translation_one')->where('type_id',7)->get();
         if(count($all_pickup_category) == 0){
@@ -47,7 +50,7 @@ class WebStylingController extends BaseController{
             $home_page_labels = $home_page_labels->orderBy('order_by')->get();
 
         }
-
+// dd($home_page_labels);
 
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
@@ -64,9 +67,17 @@ class WebStylingController extends BaseController{
         $user = Auth::user();
         $client = Client::where('code', $user->code)->first();
         $payment_methods = PaymentMethod::get();
+        $orderDeliveryIcons = OrderDeliveryStatusIcon::get();
        // pr( $payment_methods->toArray());
 
-        return view('backend/web_styling/index')->with(['clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId]);
+       $slug = 'single_category_products';
+       $single_category_products = $this->getCategories($slug); // get categories listing for single cat products  section 
+       $selected_single_category_products = $this->getSingleCategoryProducts($slug); // get categories listing for single cat products  section 
+
+       $categories =  $this->getCategoryListing();
+       $selectedProducts =  $this->getSelectedProducts();
+       $products = $this->getProducts(['products' => $selectedProducts]);
+        return view('backend/web_styling/index')->with(['products' => $products, 'selectedProducts' => $selectedProducts, 'categories' => $categories, 'clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId,'orderDeliveryIcons'=>$orderDeliveryIcons, 'single_category_products'=> $single_category_products, 'selected_single_category_products' => $selected_single_category_products]);
     }
 
 
@@ -149,6 +160,7 @@ class WebStylingController extends BaseController{
                 }
             }
 
+        
             $client_preferences->web_color = $request->primary_color;
             $client_preferences->cart_enable = $request->cart_enable == 'on' ? 1 : 0;
             $client_preferences->age_restriction = $request->age_restriction == 'on' ? 1 : 0;
@@ -170,6 +182,34 @@ class WebStylingController extends BaseController{
             'message' => 'Web Styling Updated Successfully!'
         ]);
     }
+    public function updateOrderStatusIcons(Request $request){
+        try{
+                $orderIcons = OrderDeliveryStatusIcon::get();
+                foreach($orderIcons as  $k => $value){
+                    $nmm = 'image_'.$value->id;
+                    if($request->has($nmm)){
+                        $orderValue = OrderDeliveryStatusIcon::where('id',$value->id)->first();
+                        $orderVal = Storage::disk('s3')->put('ODSI', $request->$nmm, 'public');
+                        $orderValue->image_url = $orderVal;
+                        $orderValue->save();
+                    }
+                }
+                
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Delivery Icon Updated Successfully!'
+            ]);
+
+        }catch(\Exception $e)
+        {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage()
+                ]);
+        }
+
+    }
+
     public function updatePaymentIcons(Request $request){
         $client_preferences = ClientPreference::first();
         $client_preferences->show_payment_icons = $request->show_payment_icons == 'on' ? 1 : 0;
@@ -177,6 +217,7 @@ class WebStylingController extends BaseController{
         return back()->with('success',__('Payment Method Updated Successfully!'));
 
     }
+
     public function updatePaymentMethods(Request $request){
         $status = $request->has('state') ? $request->state : null;
         $is_show  = ($status == 'true') ? 1 : 0;
@@ -332,6 +373,7 @@ class WebStylingController extends BaseController{
         $featured_products->title = $home_page->title??null;
         $featured_products->slug = $home_page->slug??null;
         $featured_products->is_active = 1;
+        $featured_products->type = 1;
         $featured_products->order_by = $order_no??1;
         $featured_products->save();
 
@@ -383,6 +425,10 @@ class WebStylingController extends BaseController{
 
 
         }
+        if(@$request->product_category){
+            $this->updateSingleCategoryProductsToDb($request);
+        }
+        
 
         foreach ($request->pickup_labels as $key => $value) {
 
@@ -475,6 +521,67 @@ class WebStylingController extends BaseController{
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+
+    /**
+     * get Products for selected product home section
+    */
+
+    public function getProducts($request)
+    {
+        $language_id = Session::get('customerLanguage') ?? 1;
+        $products = Product::with([
+        'translation' => function ($q) use ($language_id){
+            $q->select('product_id', 'title')->where('language_id', $language_id);
+        }]);
+        if(@$request['category_id']){
+            $products->wherehas('category', function($q) use($request){
+                $q->where('category_id', $request['category_id']);
+            });
+        }
+        if(@$request['products']){
+            $products->whereIn('id', $request['products']);
+        }
+        $products = $products->select('id')->where('is_live', 1)
+                    ->get();
+        return $products;
+    }
+
+
+    public function getProductDatainModal(Request $request){
+        try {
+            $products = [];
+            if(@$request->category_id){
+                $products = $this->getProducts($request);
+            }
+            $returnHTML = view('backend.web_styling.product-modal')->with(['products' => $products])->render();
+            return response()->json(array('success' => true, 'html'=>$returnHTML));
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * updateProduct Data in Modal
+    */
+    public function updateProductsDatainModal(Request $request){
+
+        if ($request->has('product_ids')) {    /* upload logo file */
+            $rules['product_ids'] =  'required';
+        }
+        $validation  = Validator::make($request->all(), $rules)->validate();
+        if (checkTableExists('home_products')) {
+            $insert = ['slug' => 'selected_products', 'products' => json_encode($request->product_ids)];
+            HomeProduct::updateOrCreate(
+                ['slug' => $insert['slug']],
+                ['products' => $insert['products']]
+            );
+        }
+        return response()->json([
+            'status'=>'success',
+            'message' => __('Products updated Successfully!')
+        ]);
     }
 
       /**
@@ -573,4 +680,10 @@ class WebStylingController extends BaseController{
         $client->save();
         return redirect()->back()->with('success', 'Contact Us Updated successfully!');
     }
+
+    // public function updateSingleCategoryProducts(Request $request){
+        
+        
+    //     return redirect()->back()->with('success', 'Category Updated successfully!');
+    // }
 }

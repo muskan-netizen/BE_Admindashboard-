@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order,CaregoryKycDoc,Rider};
+use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order,CaregoryKycDoc,Rider, Attribute};
 use Redirect;
 use Log;
 class CategoryController extends FrontController{
@@ -27,7 +27,6 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0)
     {
-        
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -137,15 +136,23 @@ class CategoryController extends FrontController{
      
       //  pr($listData);
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
-        $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
+        // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
+        $productAttributes = '';        
+        if( checkTableExists('product_attributes') ) {
+            $getAdditionalPreference = getAdditionalPreference(['is_attribute']);
+            
+            if( $category->type_id == 13 && $getAdditionalPreference['is_attribute'] ) {
 
-        foreach($np as $new){
-            $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
-            $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
-            $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
+                $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+                    ->select('attributes.*')
+                    ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+                    ->where('attribute_categories.category_id', $category->id)
+                    ->where('attributes.status', '!=', 2)
+                    ->orderBy('position', 'asc')->get();
+            }
         }
-        $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
-
+        
+        $newProducts = [];
         if($page == 'pickup/delivery'){
             if(!Auth::user()){
                 return redirect()->route('customer.login');
@@ -155,7 +162,7 @@ class CategoryController extends FrontController{
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
 
-                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders]);
+                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'], 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
 
@@ -165,7 +172,7 @@ class CategoryController extends FrontController{
                 foreach($cartDataGet['cartData'] as $cp){
                     if(count($cp->product->addOn) > 0)
                     $addos = 1;
-               }
+                }
                if($addos == 1){
                 $name = \Request::route()->getName();
                 $new_url = $request->path()."?step=1&addons=1";
@@ -194,9 +201,9 @@ class CategoryController extends FrontController{
 
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
-
+                // dd($listData[0]->variant);
                 if(view()->exists('frontend/cate-'.$page.'s')){
-                    return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets]);
+                    return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'productAttributes'=> $productAttributes]);
                 }else{
                 
                     abort(404);
@@ -204,6 +211,19 @@ class CategoryController extends FrontController{
         }
     }
 
+    public function getNewProducts($vendorIds, $langId, $curId)
+    {
+        $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
+
+        foreach($np as $new){
+            $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
+            $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
+            $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
+        }
+        return $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
+    }
+
+   
     public function listData($langId, $category_id, $type = '',$vendorIds = array()){
         //pr($category_id);
 
@@ -299,7 +319,7 @@ class CategoryController extends FrontController{
                           $q->groupBy('language_id','product_id');
                         },
                         'variant' => function($q) use($langId,$column,$value){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','id');
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','id', 'compare_at_price');
                             $q->groupBy('product_id');
                         },'variant.checkIfInCart'])
                         ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count')
@@ -316,6 +336,7 @@ class CategoryController extends FrontController{
                     $value->translation_description = (!empty($value->translation->first())) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : $value->sku;
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
+                    $value->variant_compare_at_price = (!empty($value->variant->first())) ? $value->variant->first()->compare_at_price : 0;
                     $value->image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                     // foreach ($value->variant as $k => $v) {
                     //     $value->variant[$k]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
@@ -389,13 +410,8 @@ class CategoryController extends FrontController{
         })
         ->groupBy('product_variant_sets.variant_type_id')->get();
         $redirect_to = $category->type->redirect_to;
-        $np = $this->productList([$vendor->id], $langId, $curId, 'is_new');
-        foreach($np as $new){
-            $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
-            $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
-            $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
-        }
-        $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
+        // $newProducts =  $this->getNewProducts([$vendor->id], $langId, $curId,);
+        $newProducts = [];
 
         $products = Product::with(['media.image',
             'translation' => function($q) use($langId){
@@ -526,6 +542,32 @@ class CategoryController extends FrontController{
                             ->where('price', '>=', $startRange)
                             ->where('price', '<=', $endRange);
                     });
+            
+            $getAdditionalPreference = getAdditionalPreference(['is_attribute']);
+            
+            // Dynamic search fields
+            if($getAdditionalPreference['is_attribute']) {
+                \Log::info(json_encode($request->dynamic_options));
+                if( !empty($request->dynamic_options) ) {
+                    foreach($request->dynamic_options as $key => $val) {
+                        foreach($val as $inn_key => $inn_val) {
+                            if( !empty($inn_key) && !empty($inn_val) ) {
+                                $products->whereHas('ProductAttribute', function($q) use($inn_key, $inn_val){
+                                    $q->where('key_name', $inn_key);
+                                    if( is_array($inn_val) ) {
+                                        $q->whereIn('key_value', $inn_val);
+                                    }
+                                    else {
+                                        $q->where('key_value', $inn_val);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+                
+            }
+
             if( $vendor_id ){
                 $products = $products->where('vendor_id', $vendor_id);
             }

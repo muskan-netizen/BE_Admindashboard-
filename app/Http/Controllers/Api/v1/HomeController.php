@@ -12,7 +12,7 @@ use Carbon\CarbonPeriod;
 use ConvertCurrency;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,ProductActionTrait};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +26,7 @@ use DateTimeZone;
 
 class HomeController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser,ProductActionTrait;
 
     private $curLang = 0;
     private $field_status = 2;
@@ -61,13 +61,28 @@ class HomeController extends BaseController
                     }
             }
             //pr($vendorMode);
+            //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price']);
+            $homeData['profile']->preferences->advance_booking_amount = 0;
+            $homeData['profile']->preferences->advance_booking_amount_percentage = 0;
+            if(!empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+                $homeData['profile']->preferences->advance_booking_amount = ($getAdditionalPreference['advance_booking_amount'] == 1)? true : false;
+                $homeData['profile']->preferences->advance_booking_amount_percentage = $getAdditionalPreference['advance_booking_amount_percentage'];
+            }
+            //till here
+
+            $homeData['profile']->preferences->update_order_product_price = (!empty($getAdditionalPreference['update_order_product_price']) && $getAdditionalPreference['update_order_product_price'] == 1)? true : false;
+            $homeData['profile']->preferences->is_cab_pooling = (int) getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+            $homeData['profile']->preferences->chat_button = (int) getAdditionalPreference(['chat_button'])['chat_button'];
+            $homeData['profile']->preferences->call_button = (int) getAdditionalPreference(['call_button'])['call_button'];
             //dd($homeData['profile']);
             $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
             $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
             $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
+            $sellers_nomenclature = $this->getNomenclatureName('sellers', $langId, false);
             $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
             $referral_code = $this->getNomenclatureName('Referral Code', $langId, false);
             $want_to_tip = $this->getNomenclatureName('want_to_tip', $langId, false);
@@ -80,6 +95,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
             $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
             $homeData['profile']->preferences->vendors_nomenclature = $vendors_nomenclature;
+            $homeData['profile']->preferences->sellers_nomenclature = $sellers_nomenclature;
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
             $homeData['profile']->preferences->want_to_tip_nomenclature = $want_to_tip;
             $homeData['profile']->preferences->referral_code = $referral_code;
@@ -229,7 +245,8 @@ class HomeController extends BaseController
             else
                 $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
             $homeData['domain_link'] = $domain_link;
-
+            $homeData['profile']->preferences->is_postpay_enable = (int) @getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
+            $homeData['profile']->preferences->is_order_edit_enable = (int) @getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -258,7 +275,8 @@ class HomeController extends BaseController
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
             $type = $request->has('type') ? $request->type : 'delivery';
-
+            \Log::info($request->all());
+            \Log::info($type);
             if (empty($type))
             $type = 'delivery';
 
@@ -331,7 +349,7 @@ class HomeController extends BaseController
                 $slotsDate = 0;
                 $vendor->date_with_slots = [];
                 if($vendor->closed_store_order_scheduled == 1){
-                    $slotsDate = findSlot('',$vendor->id,'');
+                    $slotsDate = findSlot('',$vendor->id,$type );
                     $vendor->delaySlot = $slotsDate;
                     $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
 
@@ -523,6 +541,14 @@ class HomeController extends BaseController
             $homeData['brands'] = $brands;
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+            // long term service
+            $long_term_service_products =[];
+            if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
+                $requestFrom='app';
+                $long_term_service_products = $this->longTermServiceProducts($venderIds, $langId, $clientCurrency,'', $type,'', $requestFrom);
+            }
+            $homeData['long_term_service'] = $long_term_service_products;
+            \Log::info($homeData['categories']);
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -618,7 +644,7 @@ class HomeController extends BaseController
                 $slotsDate = 0;
                 $vendor->date_with_slots = [];
                 if($vendor->closed_store_order_scheduled == 1){
-                    $slotsDate = findSlot('',$vendor->id,'');
+                    $slotsDate = findSlot('',$vendor->id,$type );
                     $vendor->delaySlot = $slotsDate;
                     $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
 
@@ -737,7 +763,7 @@ class HomeController extends BaseController
 
     public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type)
     {
-        $products = Product::byProductCategoryServiceType($type)->with([
+        $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
@@ -769,7 +795,7 @@ class HomeController extends BaseController
         if ($pndCategories) {
             $products = $products->whereNotIn('category_id', $pndCategories);
         }
-        $products = $products->whereNotNull('category_id')->where('is_live', 1)->take(10)->inRandomOrder()->get();
+        $products = $products->whereNotNull('category_id')->take(10)->inRandomOrder()->get(); //->where('is_live', 1) set in byProductWhereCheck
         if (!empty($products)) {
             foreach ($products as $key => $value) {
                 foreach ($value->variant as $k => $v) {

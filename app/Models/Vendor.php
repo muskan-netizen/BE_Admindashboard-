@@ -7,17 +7,20 @@ use OwenIt\Auditing\Contracts\Auditable;
 //use Laravel\Scout\Searchable;
 
 class Vendor extends Model implements Auditable{
-  
+
   use \OwenIt\Auditing\Auditable;
 
   //use Searchable;
-    protected $fillable = ['name','slug','desc','short_desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country','fixed_fee','fixed_fee_amount','price_bifurcation','instagram_url','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id', 'cron_for_service_area','markup_price_tax_id','razorpay_bank_json','razorpay_contact_json', 'fixed_service_charge', 'service_charge_amount'];
+    protected $fillable = ['name','slug','desc','short_desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country','fixed_fee','fixed_fee_amount','price_bifurcation','instagram_url','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id', 'cron_for_service_area','markup_price_tax_id','razorpay_bank_json','razorpay_contact_json', 'is_seller', 'fixed_service_charge', 'service_charge_amount'];
 
     public function serviceArea(){
        return $this->hasMany('App\Models\ServiceArea')->select('vendor_id', 'geo_array', 'name');
     }
 
     public function products(){
+      if(checkColumnExists('products','is_long_term_service')){
+        return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_long_term_service',0);
+      }
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
     }
 
@@ -43,7 +46,7 @@ class Vendor extends Model implements Auditable{
       return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id')->where('slot_type', '2');
     }
 
-    
+
     public function slotDates(){
       return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id');
     }
@@ -58,7 +61,7 @@ class Vendor extends Model implements Auditable{
       $current_time = $mytime->toTimeString();
       return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id')->where('specific_date', '=', $current_date)->where('start_time', '<', $current_time)->where('end_time', '>', $current_time);
     }
-    
+
     public function avgRating(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->avg('averageRating');
     }
@@ -139,7 +142,7 @@ class Vendor extends Model implements Auditable{
   public function getCustomCategory(){
     return $this->hasMany('App\Models\Category','vendor_id','id');
   }
-  
+
   // public function getTaxFixedFee(){
   //   return $this->hasOne('App\Models\TaxRate', 'id', 'fixed_fee_tax_id');
   // }
@@ -194,6 +197,15 @@ class Vendor extends Model implements Auditable{
     public function getVendorBankJsonAttribute()
     {
           return json_decode($this->razorpay_bank_json);
+    }
+
+    public function VendorAdditionalInfo(){
+      return $this->hasOne(\App\Models\VendorAdditionalInfo::class);
+    }
+
+    public function bids()
+    {
+        return $this->hasMany(Bid::class, 'vendor_id');
     }
 
 }

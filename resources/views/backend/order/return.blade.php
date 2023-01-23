@@ -36,7 +36,7 @@ $timezone = Auth::user()->timezone;
                                     <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
                                         <i class="mdi mdi-close"></i>
                                     </button>
-                                    <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                                    <input type="search" class="form-control" placeholder="{{ __('Search') }}..." id="search_via_keyword">
                                 </div>
                             </div>
                     </div>
@@ -106,9 +106,13 @@ $timezone = Auth::user()->timezone;
                                                 </b>
                                             </td>
                                             <td class="">
-                                                <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
+                                                <b class="text-black">{{@$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                             </td>
-                                            <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
+                                            <td>
+                                                @if(@$order->order->created_at)
+                                                {{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}
+                                                @endif
+                                            </td>
                                             <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
                                         </tr>
                                         @endforeach
@@ -161,7 +165,7 @@ $timezone = Auth::user()->timezone;
                                                     </b>
                                                 </td>
                                                 <td class="">
-                                                    <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
+                                                    <b class="text-black">{{@$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                                 </td>
                                                 <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
                                                 <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
@@ -216,7 +220,7 @@ $timezone = Auth::user()->timezone;
                                                     </b>
                                                 </td>
                                                 <td class="">
-                                                    <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
+                                                    <b class="text-black">{{@$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                                 </td>
                                                 <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
                                                 <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
@@ -285,7 +289,7 @@ $timezone = Auth::user()->timezone;
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        // setTimeout(function(){$('#awaiting_review-tab').trigger('click');}, 200);
+        //setTimeout(function(){$('#awaiting_review-tab').trigger('click');}, 200);
 
         $(document).on("click",".nav-link",function() {
             let rel= $(this).data('rel');

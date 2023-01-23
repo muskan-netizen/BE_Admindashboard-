@@ -197,7 +197,12 @@ if(session()->has('applocale')){
                 <div class="row d-flex align-items-center">
                     <div class="col-xl-6 col-md-6 col-sm-12">
                         <div class="footer-end">
-                            <p><i class="fa fa-copyright" aria-hidden="true"></i> 2020-21</p>
+                            @php
+                            $currYear = \Carbon\Carbon::now()->year;
+                            $prevYear = $currYear - 1;
+                            $currYear = substr($currYear, -2);
+                            @endphp
+                            <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} | {{__('All rights reserved')}}</p>
                         </div>
                     </div>
                     @if($client_preference_detail->show_payment_icons == 1)
@@ -242,8 +247,8 @@ if(session()->has('applocale')){
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal-body"> 
-                <h6 class="m-0">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?')}}</h6>
+            <div class="modal-body">
+                <h6 class="m-0" id="single_vendor_order_modal_text">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>

@@ -11,7 +11,8 @@ use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
-use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist};
+use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client};
+use Log;
 
 
 class StoreController extends BaseController{
@@ -750,7 +751,32 @@ class StoreController extends BaseController{
 			$user = Auth::user();	
 			$productid = $request->product_id;
 
-			$data = $this->preProductDetail($productid);			
+			$data = $this->preProductDetail($productid);		
+			
+			
+			// product attributes
+			if( clientPrefrenceModuleStatus('p2p_check') ) {
+				
+				$product = Product::findOrFail($request->product_id);
+
+				// All attribute list
+				$productAttributes = Attribute::with('option', 'varcategory.cate.primary', 'productAttribute')
+				->select('attributes.*')
+				->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+				->where('attribute_categories.category_id', $product->category_id)
+				->where('attributes.status', '!=', 2)
+				->orderBy('position', 'asc')->get();
+				
+				$data['attributes'] = $productAttributes;
+				$data['p2p_active'] = true;
+				
+			}
+			else {
+				$data['attributes'] = [];
+				$data['p2p_active'] = false;
+				
+			}
+
 			return $this->successResponse($data, 'Product detail!', 200);
 
 		} catch (Exception $e) {
@@ -897,6 +923,73 @@ class StoreController extends BaseController{
 			if ($validator->fails()) {			
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
+
+			// Save Product Attribute
+			if( checkTableExists('product_attributes') ) {
+				if( !empty($request->attribute) ) {
+					$attribute = json_decode($request->attribute, true);
+					
+					if( !empty($attribute) ) {
+						$insert_arr = [];
+                        $insert_count = 0;
+
+                        foreach($attribute as $key => $value) {
+                            if( !empty($value) && !empty($value['option'] && is_array($value) )) {
+                                
+                                if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+                                    $value_arr = @$value['value'];
+                                    
+                                    foreach( $value['option'] as $key1 => $val1 ) {
+                                        if( @in_array($val1['option_id'], $value_arr) ) {
+
+                                            $insert_arr[$insert_count]['product_id'] = $request->product_id;
+                                            $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                            $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                            $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['is_active'] = 1;
+                                        }
+                                        $insert_count++;
+                                    }
+                                }
+                                else {
+									$value_arr = @$value['value'];
+									
+									// \Log::info($option['option_id']);
+                                    foreach($value['option'] as $option_key => $option) {
+                                        if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
+											$insert_arr[$insert_count]['product_id'] = $request->product_id;
+											$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+											$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+											$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+											$insert_arr[$insert_count]['key_value'] = (!empty($value['value']) && !empty($value['value'][0]) ? $value['value'][0] : '');
+											$insert_arr[$insert_count]['is_active'] = 1;
+										}
+										elseif( @in_array($option['option_id'], $value_arr) ) {
+											
+											$insert_arr[$insert_count]['product_id'] = $request->product_id;
+											$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+											$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+											$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+											$insert_arr[$insert_count]['key_value'] = $option['option_id'];
+											$insert_arr[$insert_count]['is_active'] = 1;
+										}
+										
+                                        $insert_count++;
+                                    }
+                                }
+                            }
+
+                        
+                        }
+                        if( !empty($insert_arr) ) {
+                            ProductAttribute::where('product_id',$request->product_id)->delete();
+                            ProductAttribute::insert($insert_arr);
+                        }
+					}
+				}
+			}
+
 			$user = Auth::user();	
 			$productid = $product->id;
 
@@ -1504,6 +1597,9 @@ class StoreController extends BaseController{
 			$product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
 			foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
+				if( getClientPreferenceDetail()->p2p_check ) {
+                    $myArr[] = 13;
+                }
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
                     unset($product_categories_hierarchy[$k]);
                 }
@@ -1585,7 +1681,7 @@ class StoreController extends BaseController{
 	private function preProductDetail($productid)
 	{		
 		$user = Auth::user();
-		$product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $productid)->firstOrFail();
+		$product = Product::with('brand', 'variant.set', 'vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $productid)->firstOrFail();
 		$productVariants = Variant::with('option', 'varcategory.cate.primary')
 		->select('variants.*')
 		->join('variant_categories', 'variant_categories.variant_id', 'variants.id')
@@ -1617,7 +1713,7 @@ class StoreController extends BaseController{
 		return $data;
 	}
 
-	private function generateBarcodeNumber()
+	public function generateBarcodeNumber()
     {
         $random_string = substr(md5(microtime()), 0, 14);
         while (ProductVariant::where('barcode', $random_string)->exists()) {
@@ -1837,6 +1933,392 @@ class StoreController extends BaseController{
         }
     }
 
-	
+	/**
+	 * Add product Attribute
+	 */
+	public function addProductAttribute(Request $request) {
+		try {
+			if( clientPrefrenceModuleStatus('p2p_check') ) {
+				
+				$product = Product::findOrFail($request->product_id);
+				if(!$product)
+				{
+					return $this->errorResponse('Product not found', 422);
+				}
 
+				if( !empty($request->attribute) ) {
+					$insert_arr = [];
+					$insert_count = 0;
+					foreach($request->attribute as $key => $value) {
+						if( !empty($value) && !empty($value['option'] && is_array($value) )) {
+							
+							if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+								$value_arr = @$value['value'];
+								
+								foreach( $value['option'] as $key1 => $val1 ) {
+								
+									if( @in_array($val1['option_id'], $value_arr) ) {
+								
+										$insert_arr[$insert_count]['product_id'] = $request->product_id;
+										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+										$insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+										$insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+										$insert_arr[$insert_count]['is_active'] = 1;
+									}
+									$insert_count++;
+								}
+							}
+							else {
+								foreach($value['option'] as $option_key => $option) {
+									if(@$option['value']){
+										$insert_arr[$insert_count]['product_id'] = $request->product_id;
+										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+										$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+										$insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+										$insert_arr[$insert_count]['is_active'] = 1;
+
+									}
+									$insert_count++;
+								}
+							}
+						}
+
+					
+					}
+					if( !empty($insert_arr) ) {
+						ProductAttribute::where('product_id',$request->product_id)->delete();
+						ProductAttribute::insert($insert_arr);
+					}
+				}
+				
+
+				return $this->successResponse([], 'Attribute Added Successfully', 200);
+			}
+			else {
+				return $this->errorResponse('Attribute option is not enabled', 500);
+			}
+		} catch (\Exception $ex) {
+			return $this->errorResponse('Exception occured', 500);
+		}	
+	}
+
+	/**
+	 * Product Attribute list which is save on db of particular product
+	 */
+	public function getProductAttribute(Request $request) {
+
+		try	{
+			if( clientPrefrenceModuleStatus('p2p_check') ) {
+
+				$product = Product::findOrFail($request->product_id);
+				if(!$product) {
+					return $this->errorResponse('Product not found', 422);
+				}
+
+				// Fetch product attribute
+				$product_attr = ProductAttribute::where('product_id',$request->product_id)->get();
+				return $this->successResponse($product_attr, 'Product Attribute List', 200);
+			}
+			else {
+				return $this->errorResponse('Attribute option is not enabled', 500);
+			}
+		}
+		catch(\Exception $e) {
+			return $this->errorResponse('Exception occured', 500);
+		}
+		
+	}
+
+	/**
+	 * Attribute List
+	 */
+	public function availableListOfAttribute(Request $request) {
+		try{
+			if( clientPrefrenceModuleStatus('p2p_check') ) {
+				
+				if(empty($request->category_id)) {
+					return $this->errorResponse('Category not found', 422);
+				}
+
+				$productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+				->select('attributes.*')
+				->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+				->where('attribute_categories.category_id', $request->category_id)
+				->where('attributes.status', '!=', 2)
+				->orderBy('position', 'asc')->get();
+
+				return $this->successResponse($productAttributes, 'Attribute List', 200);
+			}
+			else {
+				return $this->errorResponse('Attribute option is not enabled', 500);
+			}
+		}
+		catch(\Exception $e) {
+			\Log::info($e);
+			return $this->errorResponse('Exception occured', 500);
+		}
+	}
+
+	/**
+	 * Save Product for p2p
+	 */
+
+	 function addProductWithAttribute(Request $request) {
+		\Log::info($request->all());
+		try {
+			$validator = Validator::make($request->all(), [
+				// 'sku' => 'required|unique:products',
+				// 'url_slug' => 'required|unique:products',
+				'category_id' => 'required',
+				'product_name' => 'required',
+				// 'vendor_id'	=>	'required'
+			]);
+
+			if ($validator->fails()) {
+			
+				return $this->errorResponse($validator->errors()->first(), 422);
+			}
+			
+			$client = Client::orderBy('id','asc')->first();
+			if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain) {
+				$sku_url =  ($client->custom_domain);
+			} else {
+				$sku_url =  ($client->sub_domain.env('SUBMAINDOMAIN'));
+			}
+
+			$slug = generateSlug($request->product_name);
+			$slug = str_replace(' ', '-',$slug);
+			$generated_slug = $sku_url.'.'.$slug;
+
+			$user = Auth::user();		
+			$user_vendor = UserVendor::where('user_id', $user->id)->first();
+			$product = new Product();
+			$product->sku = $slug;
+			$product->url_slug = $generated_slug;
+			$product->title = $request->product_name;        
+			$product->category_id = $request->category_id;
+			$product->type_id = 1;
+			$product->is_live = 1;
+			$product->publish_at = date('Y-m-d H:i:s');
+			$product->vendor_id = $user_vendor->vendor_id;
+			$client_lang = ClientLanguage::where('is_primary', 1)->first();
+			if (!$client_lang) {
+				$client_lang = ClientLanguage::where('is_active', 1)->first();
+			}
+			$product->save();
+			if ($product->id > 0) {
+				$datatrans[] = [
+					'title' => $request->product_name??null,
+					'body_html' => $request->body_html??null,
+					'meta_title' => '',
+					'meta_keyword' => '',
+					'meta_description' => '',
+					'product_id' => $product->id,
+					'language_id' => $client_lang->language_id
+				];
+				$product_category = new ProductCategory();
+				$product_category->product_id = $product->id;
+				$product_category->category_id = $request->category_id;
+				$product_category->save();
+				$proVariant = new ProductVariant();
+				$proVariant->price = $request->price ?? 0;
+				$proVariant->sku = $slug;
+				$proVariant->title =$slug . '-' .  empty($request->product_name) ?$slug : $request->product_name;
+				$proVariant->product_id = $product->id;
+				$proVariant->quantity = 1;            
+				$proVariant->status = 1;            
+				$proVariant->barcode = $this->generateBarcodeNumber();
+				$proVariant->save();
+				ProductTranslation::insert($datatrans);
+				
+				$product_detail = Product::where('id', $product->id)->firstOrFail();
+				
+				$data = ['product_detail' => $product_detail];
+
+
+				// Upload Image
+				if ($request->has('file')) {
+					$imageId = '';
+					$files = $request->file('file');
+					if(is_array($files)) {
+						foreach ($files as $file) {
+							$img = new VendorMedia();
+							$img->media_type = 1;
+							$img->vendor_id = $product->vendor_id;
+							$img->path = Storage::disk('s3')->put($this->folderName, $file, 'public');
+							$img->save();
+							$path1 = $img->path['proxy_url'] . '40/40' . $img->path['image_path'];
+							if ($img->id > 0) {
+								$imageId = $img->id;
+								$image = new ProductImage();
+								$image->product_id = $product->id;
+								$image->is_default = 1;
+								$image->media_id = $imageId;
+								$image->save();
+								// if($image->id > 0 && $variant_id!="")
+								// {
+								// 	$varientimage = new ProductVariantImage();
+								// 	$varientimage->product_variant_id = $variant_id;
+								// 	$varientimage->product_image_id = $image->id;
+								// 	$varientimage->save();
+								// }							
+							}
+						}
+						//return response()->json(['htmlData' => $resp]);
+					} else {
+						$img = new VendorMedia();
+						$img->media_type = 1;
+						$img->vendor_id = $product->vendor_id;
+						$img->path = Storage::disk('s3')->put($this->folderName, $files, 'public');
+						$img->save();					
+						if ($img->id > 0) {
+							$imageId = $img->id;
+							$image = new ProductImage();
+							$image->product_id = $product->id;
+							$image->is_default = 1;
+							$image->media_id = $img->id;
+							$image->save();
+							// if($image->id > 0 && $variant_id!="")
+							// {
+							// 	$varientimage = new ProductVariantImage();
+							// 	$varientimage->product_variant_id = $variant_id;
+							// 	$varientimage->product_image_id = $image->id;
+							// 	$varientimage->save();
+							// }						
+						}
+					}					
+				}
+
+
+				if ($request->has('file_360')) {
+					$imageId = '';
+					$files = $request->file('file_360');
+					if(is_array($files)) {
+						foreach ($files as $file) {
+							$img = new VendorMedia();
+							$img->media_type = 4;
+							$img->vendor_id = $product->vendor_id;
+							$img->path = Storage::disk('s3')->put($this->folderName, $file, 'public');
+							$img->save();
+							$path1 = $img->path['proxy_url'] . '40/40' . $img->path['image_path'];
+							if ($img->id > 0) {
+								$imageId = $img->id;
+								$image = new ProductImage();
+								$image->product_id = $product->id;
+								$image->is_default = 1;
+								$image->media_id = $imageId;
+								$image->save();
+								// if($image->id > 0 && $variant_id!="")
+								// {
+								// 	$varientimage = new ProductVariantImage();
+								// 	$varientimage->product_variant_id = $variant_id;
+								// 	$varientimage->product_image_id = $image->id;
+								// 	$varientimage->save();
+								// }							
+							}
+						}
+						//return response()->json(['htmlData' => $resp]);
+					} else {
+						$img = new VendorMedia();
+						$img->media_type = 4;
+						$img->vendor_id = $product->vendor_id;
+						$img->path = Storage::disk('s3')->put($this->folderName, $files, 'public');
+						$img->save();					
+						if ($img->id > 0) {
+							$imageId = $img->id;
+							$image = new ProductImage();
+							$image->product_id = $product->id;
+							$image->is_default = 1;
+							$image->media_id = $img->id;
+							$image->save();
+							// if($image->id > 0 && $variant_id!="")
+							// {
+							// 	$varientimage = new ProductVariantImage();
+							// 	$varientimage->product_variant_id = $variant_id;
+							// 	$varientimage->product_image_id = $image->id;
+							// 	$varientimage->save();
+							// }						
+						}
+					}					
+				}
+
+				// Add Attributes
+				if( checkTableExists('product_attributes') ) {
+					if( !empty($request->attribute) ) {
+					
+						$attribute = json_decode($request->attribute, true);
+						
+						if( !empty($attribute) ) {
+					
+							$insert_arr = [];
+							$insert_count = 0;
+	
+							foreach($attribute as $key => $value) {
+								if( !empty($value) && !empty($value['option'] && is_array($value) )) {
+									
+									if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+										$value_arr = @$value['value'];
+										
+										foreach( $value['option'] as $key1 => $val1 ) {
+											if( @in_array($val1['option_id'], $value_arr) ) {
+	
+												$insert_arr[$insert_count]['product_id'] = $product->id;
+												$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+												$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+												$insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+												$insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+												$insert_arr[$insert_count]['is_active'] = 1;
+											}
+											$insert_count++;
+										}
+									}
+									else {
+										$value_arr = @$value['value'];
+										
+										// \Log::info($option['option_id']);
+										foreach($value['option'] as $option_key => $option) {
+											if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
+												$insert_arr[$insert_count]['product_id'] = $product->id;
+												$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+												$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+												$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+												$insert_arr[$insert_count]['key_value'] = (!empty($value['value']) && !empty($value['value'][0]) ? $value['value'][0] : '');
+												$insert_arr[$insert_count]['is_active'] = 1;
+											}
+											elseif( @in_array($option['option_id'], $value_arr) ) {
+												
+												$insert_arr[$insert_count]['product_id'] = $request->product_id;
+												$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+												$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+												$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+												$insert_arr[$insert_count]['key_value'] = $option['option_id'];
+												$insert_arr[$insert_count]['is_active'] = 1;
+											}
+											
+											$insert_count++;
+										}
+									}
+								}
+	
+							
+							}
+							\Log::info($insert_arr);
+							if( !empty($insert_arr) ) {
+								ProductAttribute::where('product_id',$request->product_id)->delete();
+								ProductAttribute::insert($insert_arr);
+							}
+						}
+					}
+				}
+
+				return $this->successResponse($data, 'Product added successfully!', 200);
+			}
+		} catch (\Exception $e) {
+			Log::info($e->getLine());
+			Log::info($e->getMessage());
+			return $this->errorResponse('Exception occured', 500);
+		}
+	 }
 }

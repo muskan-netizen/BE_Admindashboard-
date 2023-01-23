@@ -109,6 +109,7 @@ class PickupDeliveryController extends FrontController{
     public function postVendorListByCategoryId(Request $request, $domain = '',$category_id = 0){
         $vendor_type = Session::get('vendorType');
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
+        $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
         $vendor_ids = [];
         $pickup_latitude = '';
         $pickup_longitude = '';
@@ -153,6 +154,8 @@ class PickupDeliveryController extends FrontController{
     public function postCabProductById(Request $request, $domain = '',$product_id = 0){
         $user = Auth::user();
         $language_id = Session::get('customerLanguage');
+        $preferences = ClientPreference::where('id', '>', 0)->first();
+        $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
 
         if(!empty($user)){
             $client_timezone = DB::table('clients')->first('timezone');
@@ -166,20 +169,31 @@ class PickupDeliveryController extends FrontController{
             $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
         }
 
-        $product = Product::with(['category.categoryDetail','media.image', 'vendor', 'translation' => function($q) use($language_id){
+        $product = Product::with(['category.categoryDetail','media.image', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
                         },'variant' => function($q) use($language_id){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
-                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
         $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
-        $product->original_tags_price = $tags_price['delivery_fee'];
+        $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
-        $product->total_tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee'] + $product->service_charge_amount);
+
+        //for cab pooling
+        $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
+        $no_seats_for_pooling = isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:1;
+        $product->no_seats_for_pooling = $no_seats_for_pooling;
+        if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+        {
+            $product->original_tags_price = decimal_format(($product->original_tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+            $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+            $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
+        }//------
+        $product->total_tags_price = decimal_format($product->tags_price + $product->toll_fee + $product->service_charge_amount);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
@@ -202,7 +216,7 @@ class PickupDeliveryController extends FrontController{
         if ($loyalty_card) {
             $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
         }
-        $loyalty_points_used;
+        $loyalty_points_used = 0;
         $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
         if ($order_loyalty_points_earned_detail) {
             $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
@@ -249,6 +263,8 @@ class PickupDeliveryController extends FrontController{
                 return response()->json(['error' => 'No record found.'], 404);
             }
 
+            $preferences = ClientPreference::where('id', '>', 0)->first();
+            $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
             $user = Auth::user();
             $userid = $user->id;
             if(!empty($user)){
@@ -272,7 +288,7 @@ class PickupDeliveryController extends FrontController{
             if(!$vendor){
                 return response()->json(['error' => 'No record found.'], 200);
             }
-            $products = Product::with(['category.categoryDetail', 'inwishlist' => function($qry) use($userid){
+            $products = Product::with(['category.categoryDetail', 'tollpass', 'travelmode', 'emissiontype', 'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },'media.image', 'translation' => function($q) use($language_id){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
@@ -288,10 +304,15 @@ class PickupDeliveryController extends FrontController{
                     ->whereHas('category.categoryDetail' ,function($qryd) {
                         $qryd->where('type_id', 7);   # check only products get of pickup
                     })
-                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags')
+                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')
                     ->where('products.vendor_id', $vid);
                     if($cid > 0){
                         $products = $products->where('products.category_id', $cid);
+                    }
+
+                    if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+                    {
+                        $products = $products->where('products.available_for_pooling', 1);
                     }
                     $products = $products->where('products.is_live', 1)->distinct()->get();
 
@@ -303,8 +324,15 @@ class PickupDeliveryController extends FrontController{
                     $product->service_charge_amount  = ($vendor->fixed_service_charge == 1)?$vendor->service_charge_amount:0.00;
                     $product->name = $product->translation->first() ? $product->translation->first()->title :'';
                     $product->description = $product->translation->first() ? $product->translation->first()->meta_description :'';
-                    $product->original_tags_price = $tags_price['delivery_fee'] + $tags_price['toll_fee'] + $product->service_charge_amount;
-                    $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
+
+                    $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
+                    if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1 && !empty($preferences) && $preferences->is_cab_pooling == 1){
+                        $product->tags_price = decimal_format(($tags_price['delivery_fee'] + $tags_price['toll_fee'])/$product->seats_for_booking);
+                    }else{
+                        $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee']);
+                    }
+                    $product->original_tags_price = $product->tags_price + $product->service_charge_amount;
+
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -318,7 +346,7 @@ class PickupDeliveryController extends FrontController{
             if ($loyalty_card) {
                 $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
             }
-            $loyalty_points_used;
+            $loyalty_points_used = 0;
             $order_loyalty_points_earned_detail = Order::where('user_id', $userid)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
             if ($order_loyalty_points_earned_detail) {
                 $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
@@ -381,11 +409,12 @@ class PickupDeliveryController extends FrontController{
 
     }
 
-    public function listData($langId, $category_id, $type = '', $userid,$request, $schedule_datetime_del=''){
+    public function listData($langId, $category_id, $type = '', $userid, $request, $schedule_datetime_del=''){
         if ($type == 'Pickup/Delivery') {
             $category_details = [];
             $deliver_charge = $this->getDeliveryFeeDispatcher($request, null, $schedule_datetime_del);
-            $deliver_charge = $deliver_charge??0.00;
+            $deliver_charge = $delivercharge['delivery_fee']??0.00;
+            $toll_charge = $delivercharge['toll_fee']??0.00;
             $category_list = Category::where('parent_id', $category_id)->get();
             foreach ($category_list as $category) {
                 $category_details[] = array(
@@ -393,7 +422,8 @@ class PickupDeliveryController extends FrontController{
                     'name' => $category->slug,
                     'icon' => $category->icon,
                     'image' => $category->image,
-                    'price' => $deliver_charge
+                    'price' => $deliver_charge + $toll_charge,
+                    'toll_price' => $toll_charge,
                 );
             }
             return $category_details;
@@ -410,7 +440,7 @@ class PickupDeliveryController extends FrontController{
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $all_location = array();
-                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => 'IN_FASTAG', 'VehicleEmissionType' => 'GASOLINE', 'travelMode' => 'TAXI'];
+                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI')];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/get-delivery-fee',
@@ -419,7 +449,7 @@ class PickupDeliveryController extends FrontController{
                 $response = json_decode($res->getBody(), true);
                 //pr($response);
                 if($response && $response['message'] == 'success'){
-                    return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?$response['toll_fee']:0.00);
+                    return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00);
                 }else{
                     return array('delivery_fee' => 0, 'toll_fee' => 0);
                 }
@@ -440,8 +470,6 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-         //pr($request->all());
-
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -455,9 +483,7 @@ class PickupDeliveryController extends FrontController{
 
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
-            // $orderrequest = new Request($order_place['data']->toArray());
-            // return $this->orderUpdateAfterPaymentPickupDelivery($orderrequest);
-            //pr($order_place);
+
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
@@ -608,37 +634,37 @@ class PickupDeliveryController extends FrontController{
                 else{
                     $payment_option = $request->payment_option_id;
                 }
-                $order = new Order;
-                $order->user_id = $user->id;
-                $order->order_number = generateOrderNo();
-                $order->address_id = $request->address_id;
-                $order->payment_option_id = $payment_option;
-
-                $schedule_datetime_del = NULL;
+                $order                      = new Order;
+                $order->user_id             = $user->id;
+                $order->order_number        = generateOrderNo();
+                $order->address_id          = $request->address_id;
+                $order->payment_option_id   = $payment_option;
+                $order->is_postpay          = ($request->postpay_enable)?$request->postpay_enable:0;
+                $schedule_datetime_del      = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
+                    $schedule_datetime_del  = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
                 }
 
-                $schedule_datetime_del = NULL;
+                $schedule_datetime_del      = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
+                    $schedule_datetime_del  = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
                 }
                 $order->scheduled_date_time = $schedule_datetime_del;
                 /*book for a friend*/
-                $order->type = $request->type;
-                $order->friend_name = $request->friendName;
+                $order->type                = $request->type;
+                $order->friend_name         = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
-                $order->luxury_option_id = $luxury_option->id;
+                $order->luxury_option_id    = $luxury_option->id;
                 $order->save();
 
                 // save pickup delivery task
-                $order_location = new OrderLocations();
-                $order_location->order_id = $order->id;
-                $order_location->product_id = $request->product_id;
-                $order_location->vendor_id = $request->vendor_id;
+                $order_location               = new OrderLocations();
+                $order_location->order_id     = $order->id;
+                $order_location->product_id   = $request->product_id;
+                $order_location->vendor_id    = $request->vendor_id;
                 $order_location->phone_number = $request->phone_number ?? null;
-                $order_location->email = $request->email ?? null;
-                $order_location->tasks = json_encode($request->tasks );
+                $order_location->email        = $request->email ?? null;
+                $order_location->tasks        = json_encode($request->tasks );
                 $order_location->save();
 
 
@@ -646,77 +672,79 @@ class PickupDeliveryController extends FrontController{
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
                     $q->where('id', $request->product_id);
                 })->select('*','id as vendor_id')->orderBy('created_at', 'asc')->first();
-                $vendor_id = $vendor->id;
-                $product = Product::where('id',$request->product_id)->with('pimage', 'variants', 'taxCategory.taxRate', 'addon')->first();
-                $total_delivery_fee = 0;
-                $delivery_fee = 0;
-                $vendor_payable_amount = 0;
-                $vendor_discount_amount = 0;
-                $order_vendor = new OrderVendor;
-                $order_vendor->status = 0;
-                $order_vendor->user_id= $user->id;
-                $order_vendor->order_id= $order->id;
-                $order_vendor->vendor_id= $vendor->id;
+                $vendor_id                = $vendor->id;
+                $product                  = Product::where('id',$request->product_id)->with('pimage', 'variants', 'taxCategory.taxRate', 'addon')->first();
+                $total_delivery_fee       = 0;
+                $delivery_fee             = 0;
+                $vendor_payable_amount    = 0;
+                $vendor_discount_amount   = 0;
+                $order_vendor             = new OrderVendor;
+                $order_vendor->status     = 0;
+                $order_vendor->user_id    = $user->id;
+                $order_vendor->order_id   = $order->id;
+                $order_vendor->vendor_id  = $vendor->id;
                 $order_vendor->save();
-                $variant = $product->variants->where('product_id', $request->product_id)->first();
-                $variant->price = $request->amount;
-                $variant->toll_price = $request->tollamount;
-                $quantity_price = 0;
-                $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
-                $divider = isset($divider) ? $divider : 1;
-                $price_in_currency = $request->amount / $divider;
-                $price_in_dollar_compare = $price_in_currency * $divider;
-                $quantity_price = $price_in_dollar_compare * 1;
-                $payable_amount = $payable_amount + $quantity_price;
-                $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
-                $product_taxable_amount = 0;
-                $product_payable_amount = 0;
-                $vendor_taxable_amount = 0;
+                $variant                  = $product->variants->where('product_id', $request->product_id)->first();
+                $variant->price           = $request->amount;
+                $variant->toll_price      = $request->tollamount;
+                $quantity_price           = 0;
+                $divider                  = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
+                $divider                  = isset($divider) ? $divider : 1;
+                $price_in_currency        = $request->amount / $divider;
+                $price_in_dollar_compare  = $price_in_currency * $divider;
+                $quantity_price           = $price_in_dollar_compare * 1;
+                $payable_amount           = $payable_amount + $quantity_price;
+                $vendor_payable_amount    = $vendor_payable_amount + $quantity_price;
+                $product_taxable_amount   = 0;
+                $product_payable_amount   = 0;
+                $vendor_taxable_amount    = 0;
                 if ($product['taxCategory']) {
                     foreach ($product['taxCategory']['taxRate'] as $tax_rate_detail) {
-                        $rate = round($tax_rate_detail->tax_rate);
-                        $tax_amount = ($price_in_dollar_compare * $rate) / 100;
-                        $product_tax = $quantity_price * $rate / 100;
-                        $taxable_amount = $taxable_amount + $product_tax;
-                        $payable_amount = $payable_amount + $product_tax;
+                        $rate                  = round($tax_rate_detail->tax_rate);
+                        $tax_amount            = ($price_in_dollar_compare * $rate) / 100;
+                        $product_tax           = $quantity_price * $rate / 100;
+                        $taxable_amount        = $taxable_amount + $product_tax;
+                        $payable_amount        = $payable_amount + $product_tax;
                         $vendor_payable_amount = $vendor_payable_amount;
                     }
                 }
-                $vendor_taxable_amount += $taxable_amount;
-                $total_amount += $variant->price;
-                $order_product = new OrderProduct;
-                $order_product->order_vendor_id = $order_vendor->id;
-                $order_product->order_id = $order->id;
-                $order_product->price = $variant->price;
-                $order_product->toll_price = $variant->toll_price;
-                $order_product->quantity = 1;
-                $order_product->vendor_id = $vendor->id;
-                $order_product->product_id = $product->id;
-                $order_product->created_by = null;
-                $order_product->variant_id = $variant->id;
-                $order_product->product_name = $product->sku;
+                $vendor_taxable_amount              += $taxable_amount;
+                $total_amount                       += $variant->price;
+                $order_product                       = new OrderProduct;
+                $order_product->order_vendor_id      = $order_vendor->id;
+                $order_product->order_id             = $order->id;
+                $order_product->price                = $variant->price;
+                $order_product->toll_price           = $variant->toll_price;
+                $order_product->quantity             = 1;
+                $order_product->vendor_id            = $vendor->id;
+                $order_product->product_id           = $product->id;
+                $order_product->created_by           = null;
+                $order_product->variant_id           = $variant->id;
+                $order_product->product_name         = $product->sku;
+                $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0;
+                $order_product->is_cab_pooling       = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
 
                 if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
-                $user_product_order_form = json_encode($request->user_product_order_form);
+                $user_product_order_form             = json_encode($request->user_product_order_form);
                 else
-                $user_product_order_form = null;
+                $user_product_order_form             = null;
 
                 $order_product->user_product_order_form = $user_product_order_form;
                 if ($product->pimage) {
-                    $order_product->image = $product->pimage->first() ? $product->pimage->first()->path : '';
+                    $order_product->image            = $product->pimage->first() ? $product->pimage->first()->path : '';
                 }
                 $order_product->save();
-                $coupon_id = null;
-                $coupon_name = null;
+                $coupon_id     = null;
+                $coupon_name   = null;
                 $actual_amount = $vendor_payable_amount;
                 if ($request->coupon_id) {
-                    $coupon = Promocode::find($request->coupon_id);
-                    $coupon_id = $coupon->id;
+                    $coupon      = Promocode::find($request->coupon_id);
+                    $coupon_id   = $coupon->id;
                     $coupon_name = $coupon->name;
                     if ($coupon->promo_type_id == 2) {
-                        $coupon_discount_amount = $coupon->amount;
-                        $total_discount += $coupon_discount_amount;
-                        $vendor_payable_amount -= $coupon_discount_amount;
+                        $coupon_discount_amount  = $coupon->amount;
+                        $total_discount         += $coupon_discount_amount;
+                        $vendor_payable_amount  -= $coupon_discount_amount;
                         $vendor_discount_amount +=$coupon_discount_amount;
                     } else {
                         $coupon_discount_amount = ($quantity_price * $coupon->amount / 100);
@@ -726,8 +754,8 @@ class PickupDeliveryController extends FrontController{
                         $vendor_discount_amount +=$final_coupon_discount_amount;
                     }
                 }
-                $total_toll_amount +=(isset($request->tollamount))?$request->tollamount:0.00;
-                $total_service_fee +=(isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
+                $total_toll_amount     +=(isset($request->tollamount))?$request->tollamount:0.00;
+                $total_service_fee     +=(isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
 
                 $vendor_payable_amount +=(isset($request->tollamount))?$request->tollamount:0.00;
                 $vendor_payable_amount +=(isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
@@ -919,7 +947,10 @@ class PickupDeliveryController extends FrontController{
                     'user_icon' => $customer->image,
                     'toll_passes' => 'IN_FASTAG',
                     'VehicleEmissionType' => 'GASOLINE',
-                    'travelMode' => 'TAXI'
+                    'travelMode' => 'TAXI',
+                    'no_seats_for_pooling' => (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
+                    'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
+                    'available_seats' => $product->seats_for_booking,
                 ];
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;

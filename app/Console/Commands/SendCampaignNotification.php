@@ -51,8 +51,7 @@ class SendCampaignNotification extends Command
     public function handle()
     {
         $clients = Client::select('database_name', 'sub_domain')->get();
-        $intervalTime = Carbon::now();
-        $add1Minute = Carbon::now()->addMinutes(1);
+        $intervalTime = date('Y-m-d h:i:00');
         foreach ($clients as $client) {
             $database_name = 'royo_' . $client->database_name;
             // Log::info("checking cart start: {$database_name}!");
@@ -84,33 +83,11 @@ class SendCampaignNotification extends Command
                 // Log::info("CampaignRoster data: {$notifications}!");
                 if($notifications)
                 {
-                    // //test sms
-                    // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
-                    //     $to = '+919996687653';
-                    //     $provider = $client_preferences->sms_provider;
-                    //     $body = "Hi ".$client_preferences->sms_key;
-                        
-                    //     $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
-                        
-
-                    // //test email
-                    // $sendto = "testu00091@gmail.com";
-                    // $subject = "Test subject for email notification";
-                    // $body = "test body message from notification";
-
-                    // $email_data = [
-                    //     'email' => $sendto,
-                    //     'mail_from' => $client_preferences->mail_from,                        
-                    //     'subject' => $subject,
-                    //     'email_template_content' => $body,
-                    //     'send_to_cc' => 0
-                    // ];
-                    // dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                    // //$this->sendEmail($client_preferences,$sendto,$subject,$body);
-                    CampaignRoster::where('id',6290)->delete();
-                    foreach($notifications as $singlenotification)
+                
+                  foreach($notifications as $singlenotification)
                     {
                         //CampaignRoster::where('id',6290)->delete();
+                        CampaignRoster::where(['campaign_id'=>$singlenotification->campaign_id])->delete();
                         $type = $singlenotification->notofication_type;
                         //	type => 1 sms, 2 email, 3 push notification
                         switch ($type) {
@@ -126,21 +103,21 @@ class SendCampaignNotification extends Command
                                     $provider = $client_preferences->sms_provider;
                                     $body = "Hi " . $singlenotification->user->name . ", " . $singlenotification->campaign->sms_text;
                                     if (!empty($client_preferences->sms_provider)) {
-                                        $send = $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
-                                        if($send)
-                                        {
-                                            if($send==2)
-                                            {
-                                                //change status if failed
-                                                CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-                                            }else{
-                                                //remove notification if success
-                                                CampaignRoster::where('id',$singlenotification->id)->delete();
-                                            } 
-                                        }else{
-                                            //change status if failed
-                                            CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-                                        }    
+                                        $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                                        // if($send)
+                                        // {
+                                        //     if($send==2)
+                                        //     {
+                                        //         //change status if failed
+                                        //         CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                        //     }else{
+                                        //         //remove notification if success
+                                        //         CampaignRoster::where('id',$singlenotification->id)->delete();
+                                        //     } 
+                                        // }else{
+                                        //     //change status if failed
+                                        //     CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                        // }    
                                     }
                                     
                                 } catch (\Exception $ex) {
@@ -161,24 +138,25 @@ class SendCampaignNotification extends Command
                                             'email_template_content' => $email_body,
                                             'send_to_cc' => 0
                                         ];
-                                        $sendemail = dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                                        if($sendemail)
-                                        {
-                                            //remove notification if success
-                                            CampaignRoster::where('id',$singlenotification->id)->delete();
-                                        }else{
-                                           //change status if failed
-                                            CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-                                        }
+                                        dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                                        // if($sendemail)
+                                        // {
+                                        //     //remove notification if success
+                                        //     CampaignRoster::where('id',$singlenotification->id)->delete();
+                                        // }else{
+                                        //    //change status if failed
+                                        //     CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                        // }
                                         //$this->sendEmail($client_preferences,$useremail,$email_subject,$email_body);
                                     }
                                 } catch (\Exception $ex) {
                                 }
                                 break;
                             case '3':
-                                //send push                                
-                                //$redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/viewcart";
+                                //send push                             
                                 $redirect_URL = $singlenotification->campaign->push_url_option_value;
+                                $attachmentImg = (!empty($singlenotification->campaign->push_image['proxy_url'])) ? $singlenotification->campaign->push_image['proxy_url'] . '200/200' . $singlenotification->campaign->push_image['image_path'] : '';
+
                                 $data = [
                                     "registration_ids" => [$singlenotification->device_token],
                                     "notification" => [
@@ -192,19 +170,20 @@ class SendCampaignNotification extends Command
                                     "data" => [
                                         'title' => $singlenotification->campaign->push_title,
                                         'body'  => $singlenotification->campaign->push_message_body,
-                                        'type' => "reminder_notification"
+                                        'type' => "reminder_notification",
+                                        'click_action' => $redirect_URL,
                                     ],
                                     "priority" => "high"
                                 ];
-                                $result=sendFcmCurlRequest($data);
-                                if($result)
-                                {
-                                    //remove notification if success
-                                    CampaignRoster::where('id',$singlenotification->id)->delete();
-                                }else{
-                                    //change status if failed
-                                    CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-                                }                            
+                                sendFcmCurlRequest($data);
+                                // if($result)
+                                // {
+                                //     //remove notification if success
+                                //     CampaignRoster::where('id',$singlenotification->id)->delete();
+                                // }else{
+                                //     //change status if failed
+                                //     CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                // }                            
                             break;
                         }
                     }

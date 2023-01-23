@@ -4,7 +4,6 @@
 use Illuminate\Support\Arr;
 @endphp
 
-
 @include('frontend.ondemand.ondemandSection');
 
 <!-- remove_item_modal -->

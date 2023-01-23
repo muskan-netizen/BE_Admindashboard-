@@ -38,31 +38,38 @@ class PaymentOptionController extends BaseController{
         else{
             $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
         }
-        $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
-        foreach($payment_options as $option){
-            if($option->code == 'stripe'){
-                $option->title = __('Credit/Debit Card (Stripe)');
-            }elseif($option->code == 'kongapay'){
-                $option->title = 'Pay Now';
-            }elseif($option->code == 'mvodafone'){
-                $option->title = 'Vodafone M-PAiSA';
-            }elseif($option->code == 'mobbex'){
-                $option->title = __('Mobbex');
-            }elseif($option->code == 'offline_manual'){
-                $json = json_decode($option->credentials);
-                $option->title = $json->manule_payment_title;
-            }elseif($option->code == 'mycash'){
-                $option->title = __('Digicel MyCash');
-            }elseif($option->code == 'windcave'){
-                $option->title = __('Windcave (Debit/Credit card)');
-            }elseif($option->code == 'stripe_ideal'){
-                $option->title = __('iDEAL');
-            }elseif($option->code == 'authorize_net'){
-                $option->title = __('Credit/Debit Card');
+        //mohit sir branch code added by sohail
+        $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+        if($request->service_type == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+            $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->where('id', '!=', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
+        }else{
+        //Till here
+            $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
+            foreach($payment_options as $option){
+                if($option->code == 'stripe'){
+                    $option->title = __('Credit/Debit Card (Stripe)');
+                }elseif($option->code == 'kongapay'){
+                    $option->title = 'Pay Now';
+                }elseif($option->code == 'mvodafone'){
+                    $option->title = 'Vodafone M-PAiSA';
+                }elseif($option->code == 'mobbex'){
+                    $option->title = __('Mobbex');
+                }elseif($option->code == 'offline_manual'){
+                    $json = json_decode($option->credentials);
+                    $option->title = $json->manule_payment_title;
+                }elseif($option->code == 'mycash'){
+                    $option->title = __('Digicel MyCash');
+                }elseif($option->code == 'windcave'){
+                    $option->title = __('Windcave (Debit/Credit card)');
+                }elseif($option->code == 'stripe_ideal'){
+                    $option->title = __('iDEAL');
+                }elseif($option->code == 'authorize_net'){
+                    $option->title = __('Credit/Debit Card');
+                }
+                $option->title = __($option->title);
             }
-            $option->title = __($option->title);
+            return $this->successResponse($payment_options, '', 201);
         }
-        return $this->successResponse($payment_options, '', 201);
     }
 
     public function postPayment(Request $request, $gateway = ''){

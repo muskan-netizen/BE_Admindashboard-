@@ -79,7 +79,14 @@ class HomePageLabelSeederDefault extends Seeder
             'slug' => 'brands',
             'order_by' => 6,
         ]);
-
+        $already = CabBookingLayout::where('slug', 'long_term_service')->count();
+        if($already == 0)
+        $home_page = CabBookingLayout::insertGetId([
+            'title'    => 'Long Term Service',
+            'slug'     => 'long_term_service',
+            'order_by' => 7,
+        ]);
+        
         $already = CabBookingLayout::where('slug', 'recently_viewed')->count();
 
         if($already == 0)
@@ -100,5 +107,55 @@ class HomePageLabelSeederDefault extends Seeder
             'created_at' => Carbon::now(),
         ]);
 
+        $already = CabBookingLayout::where('slug', 'top_rated')->count();
+
+        if($already == 0)
+        $home_page = CabBookingLayout::insertGetId([
+            'title'      => 'Top Rated',
+            'slug'       => 'top_rated',
+            'order_by'   => 9,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $already = CabBookingLayout::where('slug', 'nav_categories')->count();
+
+        if($already == 0)
+        $home_page = CabBookingLayout::insertGetId([
+            'title'      => 'NavCategories',
+            'slug'       => 'nav_categories',
+            'order_by'   => 10,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $already = CabBookingLayout::where('slug', 'single_category_products')->count();
+        if($already == 0){
+            $home_page = CabBookingLayout::insertGetId([
+                'title'      => 'Single Category Products',
+                'slug'       => 'single_category_products',
+                'order_by'   => 11,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+
+        $already = CabBookingLayout::where('slug', 'selected_products')->count();
+        if($already == 0){
+            $home_page = CabBookingLayout::insertGetId([
+                'title'      => 'Selected Products',
+                'slug'       => 'selected_products',
+                'order_by'   => 11,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+
+        $already = CabBookingLayout::where('slug', 'most_popular_products')->count();
+        if($already == 0){
+            $home_page = CabBookingLayout::insertGetId([
+                'title'      => 'Most Popular Products',
+                'slug'       => 'most_popular_products',
+                'order_by'   => 12,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+        
     }
 }

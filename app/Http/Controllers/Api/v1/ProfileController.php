@@ -301,6 +301,7 @@ class ProfileController extends BaseController{
                 $to = $request->phone_number;
                 $provider = $prefer->sms_provider;
                 $body = "Dear ".ucwords($request->phone_number).", Please enter OTP ".$phoneCode." to verify your account.";
+                // $body = 
                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 $response['send_otp'] = 1;
             }
@@ -355,7 +356,7 @@ class ProfileController extends BaseController{
                         $file = $request->file($doc_name);
                         $orignal_name = $request->file($doc_name)->getClientOriginalName();
                         $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
-                        Log::info($orignal_name);
+                       // Log::info($orignal_name);
                         UserDocs::updateOrCreate(
                             
                             ['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id]

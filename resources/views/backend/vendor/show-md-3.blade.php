@@ -8,7 +8,7 @@
     <div class="background pt-3 pb-2 px-2" style="background:url({{$vendor->banner['proxy_url'] . '200/100' . $vendor->banner['image_path']}}) no-repeat center center;background-size:cover;">
         <div class="vendor_text">
             <img src="{{$vendor->logo['proxy_url'] . '90/90' . $vendor->logo['image_path']}}" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image">
-            <h4 class="mb-0 text-white">{{ucfirst($vendor->name)}}</h4>
+            <h4 class="mb-0 text-white">{{ucfirst(@$vendor->name)}}</h4>
             <p class="text-white">{{$vendor->address}}</p>
             <button type="button" class="btn btn-success btn-sm waves-effect mb-2 waves-light openEditModal" data-toggle="modal" data-target="#exampleModal"> {{ __("Edit") }} </button>
             @if($vendor->status == 0 && Auth::user()->is_superadmin == 1)
@@ -108,6 +108,7 @@
         </div>
     </div>
 </div> -->
+
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -160,7 +161,7 @@
 
                     <div class="col-md-12 mb-2">
                         <div class="form-group" id="orders_per_slotInput">
-                            {!! Form::label('title', 'Maximum Orders Per Slot',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Maximum Orders Per Slot'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="orders_per_slot" type="text" value="{{$vendor->orders_per_slot}}">
                         </div>
                     </div>
@@ -176,7 +177,7 @@
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="fixed_fee_amount" type="text" value="{{$vendor->fixed_fee_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between inline-toltip">
-                        <label class="position-relative control-label" >Hide Price Bifurcation
+                        <label class="position-relative control-label" >{{ __('Hide Price Bifurcation') }}
                             <div class="alInfoIocn">
                                 <i class="fa fa-info-circle"></i>
                                 <span class="tooltiptext">Hide Fixed Price, Service Fee, Container Charges, Taxes, Subtotal</span>
@@ -202,6 +203,17 @@
                             <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if($vendor->return_request == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     @endif
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Cancel Order In Processing'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="cancel_order_in_processing" class="form-control" data-color="#43bee1" @if($vendor->cancel_order_in_processing == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Return Auto Approve'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="return_auto_approve" class="form-control" data-color="#43bee1" @if($vendor->return_auto_approve == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
                             {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}
@@ -273,7 +285,7 @@
                                     {!! Form::label('title', 'Vendor Tags',['class' => 'control-label']) !!}
                                     <select class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." id="facilty_list" name="facilty_ids[]">
                                         @foreach ($facilties as $facilty)
-                                        <option value="{{ $facilty->id }}" {{ in_array($facilty->id, $vendor_facilty_ids) ? "selected" : '' }}>{{ $facilty->primary->name }}</option>
+                                        <option value="{{ $facilty->id }}" {{ in_array($facilty->id, $vendor_facilty_ids) ? "selected" : '' }}>{{ @$facilty->primary->name }}</option>
                                         @endforeach
 
                                     </select>
@@ -281,6 +293,13 @@
                             </div>
                         @endif
                     @endif
+
+                    <div class="col-md-12">
+                        <div class="form-group" id="social_link">
+                            {!! Form::label('title', '(%) Discount On Subscription',['class' => 'control-label']) !!}
+                            <input class="form-control" name="subscription_discount_percent" type="text" value="{{$vendor->subscription_discount_percent}}" >
+                        </div>
+                    </div>
                     {{-- <div class="col-md-12">
                         <div class="form-group" id="social_link">
                             {!! Form::label('title', 'Dynamic Html',['class' => 'control-label']) !!}
@@ -628,7 +647,7 @@
         <div class="col-md-12 mb-3">
             <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' : 'disabled'}}>
                 @foreach($templetes as $templete)
-                    <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{$templete->title}}</option>
+                    <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{ __($templete->title)}}</option>
                 @endforeach
             </select>
         </div>
@@ -691,7 +710,7 @@
                     <div class="inbox-item-img">
                         <img src="{{$users->user ? $users->user->image['proxy_url'].'40/40'.$users->user->image['image_path'] : asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt="">
                     </div>
-                    <p class="inbox-item-author">{{ $users->user->name??'' }}  </p>
+                    <p class="inbox-item-author">{{ @$users->user->name??'' }}  </p>
                     <p class="inbox-item-text"><label class="d-block"><i class="fa fa-envelope mr-1" aria-hidden="true"></i> {{ $users->user->email??'' }}
                         @if($users->user)
                         </label><label class="d-block"><i class="fa fa-phone mr-1" aria-hidden="true"></i> {{ $users->user->phone_number??'' }}</label> </p>
@@ -699,11 +718,10 @@
                     </p>
                     @if($users->user && $users->user->id != Auth::id())
                     <form class="delete-user position-absolute" method="POST" action="{{route('user.vendor.permission.destroy', $users->id)}}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
-
-                            </form>
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
+                    </form>
                     @endif
                 </div>
             @endif
@@ -1250,75 +1268,78 @@ $( document ).ready(function() {
     });
 });
 
-    $("input[name='auto_accept_order']").change(function() {
-        if($(this).prop('checked')){
-            $("#auto_reject_timeInput").css("display", "none");
-        } else {
-            $("#auto_reject_timeInput").css("display", "block");
-        }
-    })
+$("input[name='auto_accept_order']").change(function() {
+    if($(this).prop('checked')){
+        $("#auto_reject_timeInput").css("display", "none");
+    } else {
+        $("#auto_reject_timeInput").css("display", "block");
+    }
+});
 
-    $("input[name='show_slot']").change(function() {
-        if($(this).prop('checked')){
-            $("#sch_vendor_close").css("display", "none");
-        } else {
-            $("#sch_vendor_close").css("display", "block");
-        }
-    })
+$("input[name='show_slot']").change(function() {
+    if($(this).prop('checked')){
+        $("#sch_vendor_close").css("display", "none");
+    } else {
+        $("#sch_vendor_close").css("display", "block");
+    }
+})
 
-    $("input[name='fixed_fee']").change(function() {
-        if($(this).prop('checked')){
-            $("#fixed_fee_amount").css("display", "block");
-        } else {
-            $("#fixed_fee_amount").css("display", "none");
-        }
-    })
+$("input[name='fixed_fee']").change(function() {
+    if($(this).prop('checked')){
+        $("#fixed_fee_amount").css("display", "block");
+    } else {
+        $("#fixed_fee_amount").css("display", "none");
+    }
+})
 
-    $("input[name='delivery_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#delivery_charges_tax_id").css("display", "block");
-        } else {
-            $("#delivery_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='service_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#service_charges_tax_id").css("display", "block");
-        } else {
-            $("#service_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='container_charges_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#container_charges_tax_id").css("display", "block");
-        } else {
-            $("#container_charges_tax_id").css("display", "none");
-        }
-    })
-    $("input[name='fixed_fee_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#fixed_fee_tax_id").css("display", "block");
-        } else {
-            $("#fixed_fee_tax_id").css("display", "none");
-        }
-    })
+$("input[name='delivery_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#delivery_charges_tax_id").css("display", "block");
+    } else {
+        $("#delivery_charges_tax_id").css("display", "none");
+    }
+})
 
-    $("input[name='markup_fee_tax']").change(function() {
-        if($(this).prop('checked')){
-            $("#markup_fee_tax_id").css("display", "block");
-        } else {
-            $("#markup_fee_tax_id").css("display", "none");
-        }
-    })
+$("input[name='service_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#service_charges_tax_id").css("display", "block");
+    } else {
+        $("#service_charges_tax_id").css("display", "none");
+    }
+})
 
-    $("input[name='need_container_charges']").change(function() {
-        if($(this).prop('checked')){
-            $("#need_container_charges").css("display", "none");
-        } else {
-            $("#need_container_charges").css("display", "block");
-        }
-    })
 
+$("input[name='container_charges_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#container_charges_tax_id").css("display", "block");
+    } else {
+        $("#container_charges_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='fixed_fee_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#fixed_fee_tax_id").css("display", "block");
+    } else {
+        $("#fixed_fee_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='markup_fee_tax']").change(function() {
+    if($(this).prop('checked')){
+        $("#markup_fee_tax_id").css("display", "block");
+    } else {
+        $("#markup_fee_tax_id").css("display", "none");
+    }
+})
+
+$("input[name='need_container_charges']").change(function() {
+    if($(this).prop('checked')){
+        $("#need_container_charges").css("display", "none");
+    } else {
+        $("#need_container_charges").css("display", "block");
+    }
+})
     $("input[name='fixed_service_charge']").change(function() {
         if($(this).prop('checked')){
             $("#fixed_service_charge_div").css("display", "block");

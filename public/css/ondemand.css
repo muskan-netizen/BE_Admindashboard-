@@ -86,3 +86,11 @@ color: var(--theme-deafult);
 .agentInfo .brand-ing{transition: 0.5s}
 .alCustomHomeServiceAgentRadio{flex-wrap: nowrap;white-space: nowrap;overflow: auto;}
 .alCustomHomeServiceAgentRadio .agent_slot{display: inline-block;margin: 0px 10px;}
+.booking-time-wrapper .radio-btns input[type="radio"]+label .customCheckbox {
+    width: auto;
+    border-radius: 5px;
+    padding: 0 10px;
+    height: auto;
+    line-height: 2.5;
+    margin: 0 3px;
+}

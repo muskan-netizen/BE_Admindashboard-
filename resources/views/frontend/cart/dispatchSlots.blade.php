@@ -23,14 +23,3 @@
             
     </div>
 </div>
-{{-- <div class="row align-items-md-center alVendorDispatchDate">
-<div class="col-6"></div>
-    <div class="col-3">
-        <h6 class="m-0 pl-0">{{ __('Booking Date') }}</h6>
-        <p class="m-0">{{date("m/d/Y ", strtotime($vendor_product->scheduled_date_time))}}</p>
-    </div>
-    <div class="col-3">
-        <h6 class="m-0 pl-0">{{ __('Slot') }}</h6>
-        <p class="m-0">{{$product->schedule_slot}}</p>
-    </div>
-</div> --}}

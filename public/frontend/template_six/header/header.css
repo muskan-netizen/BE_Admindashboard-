@@ -45,7 +45,16 @@ body {
     font-family: 'MontserratRegular' !important;
     overflow-x: hidden;
 }
-
+body.al_body_template_six span.rating.main-rating {
+    display: none;
+}
+.al_body_template_six .common-product-box, .al_body_template_six .product-card-box {
+    border: 1px solid#ccc;
+}
+.al_body_template_six .col-md-12.text-left.vender-peragraph.mt-3.mb-2 {
+    padding-left: 58px;
+    margin-top: 0 !important;
+}
 .main-menu {
     position: relative;
     left: 0;
@@ -118,7 +127,7 @@ body .footer-contant ul li {
 .al_body_template_six .onhover-show-div li {
     text-align: center;
 }
-}
+/* } */
 
 .alProductViewPriceMin span {
     display: block;
@@ -1094,7 +1103,37 @@ body .royo_whatsapp_img {
 
 /*hotfix product page css*/
 @media (max-width:767px){
-
+    body.al_body_template_six .logo a.navbar-brand img {
+        width: 100px;
+        height: 40px !important;
+    }
+    body.al_body_template_six .alTesimonialsText, .alLgFontSize {
+        text-align: left;
+    }
+    .al_body_template_six .common-product-box, .al_body_template_six .product-card-box {
+        border: 1px solid#ccc;
+    }
+    body.al_body_template_six span.rating.main-rating {
+        display: none;
+    }
+    body.al_body_template_six section.singleProductContent.pb-md-5.pb-2 .row.py-5.border-bottom {
+        padding: 0 !important;
+    }
+    .al_body_template_six .outter-fillter-data .product-wrapper-grid .col-xl-3.col-md-3.col-6.mt-3 {
+        width: 50%;
+        max-width: 50%;
+        flex: 50%;
+    }
+    .al_body_template_six .displayProducts .product-box .inner_spacing p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .al_body_template_six a.media.flex-shrink-0 img.mr-2.blur-up.lazyloaded {
+        border-radius: 10px;
+        width: 70px;
+    }
+    .al_body_template_six .collection-filter-block{border-radius:0 !important;}
     body.al_body_template_six .list-box {
         width: 200px !important;
         max-width: 200px !important;
@@ -1210,6 +1249,9 @@ body .royo_whatsapp_img {
         right: 26px;
         top: 42px;
     }
+    .al_body_template_six .breadcrumb-section.bg-transparent{
+        margin-top: 40px;
+    }
     body.al_body_template_six .al_body_template_six .alSixMainMenu{
         overflow-x: hidden !important;
     }
@@ -1242,8 +1284,8 @@ body .royo_whatsapp_img {
     }
 }
 
-    .al_body_template_six .vendor_mods_section {
+    /* .al_body_template_six .vendor_mods_section {
         width: 100%;
     }
 
-}
+} */

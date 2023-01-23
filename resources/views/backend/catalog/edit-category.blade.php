@@ -71,9 +71,10 @@
                 <input type="file" accept="image/*" data-plugins="dropify" name="icon_two" class="dropify" data-default-file="{{ !is_null($category->icon_two ) ? $category->icon_two['proxy_url'].'80/80'.$category->icon_two['image_path'] : ''}}" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 ">
                 <label>Banner image</label>
-                <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$category->image['proxy_url'].'1000/200'.$category->image['image_path']}}" />
+                <input type="hidden" name="remove_image" id="remove_image" value="" />
+                <input type="file" accept="image/*" data-plugins="dropify"  name="image" class="dropify_banner_image" data-default-file="{{$category->image['proxy_url'].'1000/200'.$category->image['image_path']}}" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
             </div>
         </div>
@@ -220,5 +221,15 @@ $(function() {
         }
     });
 
-});
+}); 
+$('.dropify_banner_image').dropify();
+$(document).on('click', '.dropify-clear', function(e){
+    e.preventDefault();
+    // alert('Remove Hit'); //Here you can manage you ajax request to delete 
+                         //file from database.
+                        
+     if($(this).siblings('.dropify_banner_image').attr('class') == 'dropify_banner_image'){
+        $('#remove_image').val(1);
+     }         
+  });
 </script>
