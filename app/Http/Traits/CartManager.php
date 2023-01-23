@@ -690,8 +690,8 @@ trait cartManager{
                     $quantity_price = $price_in_doller_compare * $prod->quantity;
 
                     // Recurring Booking Enabled
-                    if(checkColumnExists('cart_products','recurring_booking_type')){
-                        if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                    if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                        if(checkColumnExists('cart_products','recurring_booking_type')){
                             $date       = explode(",",$prod->recurring_day_data);
 
                             if($prod->recurring_booking_type == 1){
@@ -765,9 +765,8 @@ trait cartManager{
                                     $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
                                 }
 
-
-                                if(checkColumnExists('cart_products','recurring_booking_type')){
-                                    if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                                if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                                    if(checkColumnExists('cart_products','recurring_booking_type')){
                                         $date       = explode(",",$prod->recurring_day_data);
                                         if($prod->recurring_booking_type == 1){
                                             $start_date = $end_date = '';
@@ -824,8 +823,9 @@ trait cartManager{
 
 
                                 // Recurring Booking Enabled
-                                if(checkColumnExists('cart_products','recurring_booking_type')){
-                                    if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                                if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+
+                                    if(checkColumnExists('cart_products','recurring_booking_type')){
                                         $date       = explode(",",$prod->recurring_day_data);
                                         if($prod->recurring_booking_type == 1){
                                             $start_date = $end_date = '';
@@ -858,8 +858,9 @@ trait cartManager{
 
 
                                 // Recurring Booking Enabled
-                                if(checkColumnExists('cart_products','recurring_booking_type')){
-                                    if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                                if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+
+                                    if(checkColumnExists('cart_products','recurring_booking_type')){
                                         $date       = explode(",",$prod->recurring_day_data);
 
                                         if($prod->recurring_booking_type == 1){
