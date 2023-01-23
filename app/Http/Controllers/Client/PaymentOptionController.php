@@ -555,6 +555,14 @@ class PaymentOptionController extends BaseController
                                 'publishable_key' => $request->stripe_ideal_publishable_key
                             ));
                             break;
+                        case 'plugnpay':
+                            $validatedData = $request->validate([
+                                'plugnpay_publisher_name' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'plugnpay_publisher_name' => $request->plugnpay_publisher_name
+                            ));
+                        break;
 
                         case 'offline_manual':
                             $validatedData = $request->validate([
