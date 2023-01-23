@@ -18,6 +18,7 @@
                             @else
                             @php $continue = 1; @endphp
                             <input id="item_one" type="hidden" name="order_vendor_product_id" value="{{ $product->id }}" required>
+                            <input id="request_type" type="hidden" name="request_type" value="{{ $type }}" required>
                             @endif
                             <label class="order-items d-flex" for="item_one">  
                                 <div class="item-img mx-1">

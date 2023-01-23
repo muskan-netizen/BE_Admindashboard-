@@ -849,7 +849,8 @@ class ReturnOrderController extends FrontController
             if (isset($product)) {
 
                 if ($request->ajax()) {
-                    return \Response::json(\View::make('frontend.modals.return-rental-product-order', array('product' => $product))->render());
+                    $type = $request->has('type') && $request->type != null ? $request->type: '';
+                    return \Response::json(\View::make('frontend.modals.return-rental-product-order', array('product' => $product,'type'=>$type))->render());
                 }
             }
             return $this->errorResponse('Invalid order', 404);
@@ -872,7 +873,7 @@ class ReturnOrderController extends FrontController
             })->first();
 
             $this->markAsReturnPending($order_details);
-            $type = 1; // 1 = return
+            $type = $request->has('request_type') && $request->request_type != null ? $request->request_type: 1;
             $returns = $this->saveReturnExchangeRequest($request, $order_details, $type);
             if (@$returns) {
                 $this->sendSuccessNotification($user->id, $order_details->vendor_id);

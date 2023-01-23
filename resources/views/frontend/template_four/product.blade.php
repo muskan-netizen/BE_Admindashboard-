@@ -297,7 +297,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                         {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}
 
-                                        @if( p2p_module_status() )
+                                        @if( p2p_module_status() || is_attribute_enabled() )
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
                                                     <div class="container-badge">

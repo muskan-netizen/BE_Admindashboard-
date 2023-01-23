@@ -1487,7 +1487,7 @@
                             @if ($cart_details->is_long_term_service != 1 &&
                                 ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) &&
                                 $cart_details->vendorCnt == 1 &&
-                                !in_array($serviceType, ['appointment', 'on_demand']))
+                                !in_array($serviceType, ['appointment', 'on_demand', 'rental']))
                                 @if ($client_preference_detail->business_type != 'laundry')
                                     <div class="row arabic-lng position-relative my-3" id="dateredio">
                                         <div class=" col-md-12 mb-2 mb-md-0 text-right">

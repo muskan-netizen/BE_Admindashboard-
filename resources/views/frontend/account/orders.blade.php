@@ -60,9 +60,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         left: 0px !important;
         top: 0px !important;
     }
-    .rental_return {
+    .rental_return, .rental_stop {
         position: relative;
-        left: 70px;
+        left: 0px;
         top: 4px;
         background: #a22c7f;
         color: #fff;
@@ -1139,6 +1139,15 @@ $timezone = Auth::user()->timezone;
                                                                             </li>
                                                                             @endif
                                                                             @endif
+                                                                            @if(@$rental_return)
+                                                                                @if(empty($product->productReturn))
+                                                                                    <li>
+                                                                                        <label class="rating-star rental_return" data-order_vendor_product_id="{{$product->id}}" data-type="3" style="width: auto;display: inline-block;">
+                                                                                            {{__('Stop')}}
+                                                                                        </label>
+                                                                                    </li>
+                                                                                @endif
+                                                                            @endif
                                                                             @endforeach
                                                                         </ul>
                                                                     </div>
@@ -1528,7 +1537,7 @@ $timezone = Auth::user()->timezone;
                                                                                 <i class="fa fa-star{{ $pro_rating >= 4 ? '' : '-o' }}"></i>
                                                                                 <i class="fa fa-star{{ $pro_rating >= 5 ? '' : '-o' }}"></i>
                                                                             </label>
-                                                                            {{ __($product->productReturn->status ?? '') }}
+                                                                            {{ __('Return '. $product->productReturn->status ?? '') }}
                                                                         </li>
                                                                         @php
                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
@@ -2097,8 +2106,7 @@ $timezone = Auth::user()->timezone;
                 <div id="extend-rental-order-form-modal"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Save changes</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="extend-btn">Extend</button>
             </div>
         </div>
     </div>
@@ -2192,6 +2200,9 @@ $timezone = Auth::user()->timezone;
 <!-- tip after order complete -->
 @include('frontend.modals.tip_after_order')
 
+<!-- tip after order complete -->
+@include('frontend.modals.extend_order_payment')
+
 <!-- end tip order after complete -->
 <!-- repeat order modal -->
 <div class="modal fade remove-cart-modal" id="repeat_cart_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
@@ -2234,7 +2245,6 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 <!-- end repat order modal -->
-
 
 @endsection
 @section('script')
@@ -2459,7 +2469,12 @@ $timezone = Auth::user()->timezone;
     $('body').on('click', '.rental_return', function(event) {
         event.preventDefault();
         var order_vendor_product_id = $(this).data('order_vendor_product_id');
-        $.get('/return-order/get-order-rental-data-in-model?order_vendor_product_id=' + order_vendor_product_id, function(markup) {
+        var attr = $(this).data('type');
+        var type = '';
+        if (typeof attr !== 'undefined' && attr !== false) {
+            var type = attr;
+        }
+        $.get('/return-order/get-order-rental-data-in-model?order_vendor_product_id=' + order_vendor_product_id +'&type=' + type, function(markup) {
             $('#return_rental_model').modal('show');
             $('#return-rental-order-form-modal').html(markup);
         });
@@ -2687,6 +2702,12 @@ $timezone = Auth::user()->timezone;
                 }
             }
         });
+    });
+
+    $(document).on('click', '#extend-btn', function(){
+        // alert('click');
+        // $('#extend_order_rental').modal('hide');
+        // $('#proceed_to_pay_modal').modal();
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>

@@ -1113,6 +1113,7 @@ $(document).ready(function () {
                             url: payment_option_list_url,
                             success: function (response) {
                                 if (response.status == "Success") {
+                                    // console.log(response.data);
                                     // $('#v_pills_tab').html('');
                                     $('#v_pills_tabContent').html('');
                                     // let payment_method_template = _.template($('#payment_method_template').html());

@@ -633,12 +633,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
                     @endif
-                    @if( p2p_module_status() )
-                        @if(!empty($productAttributes))
-                        <div id="attribute_section">
-                            @include('layouts.shared.product-attribute')
-                        </div>
-                        @endif
+                @endif
+                @if( p2p_module_status() || is_attribute_enabled())
+                    @if(!empty($productAttributes))
+                    <div id="attribute_section">
+                        @include('layouts.shared.product-attribute')
+                    </div>
                     @endif
                 @endif
             </div>

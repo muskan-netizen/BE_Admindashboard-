@@ -2039,7 +2039,7 @@ class OrderController extends BaseController
     {
         try {
             $user = Auth::user();
-            $orders_list = OrderReturnRequest::where('status', $status)->where('type', 1)->with('product', 'order')->orderBy('updated_at', 'DESC');
+            $orders_list = OrderReturnRequest::where('status', $status)->whereIn('type', [1,3])->with('product', 'order')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -2082,7 +2082,7 @@ class OrderController extends BaseController
                 });
             }
             if(checkColumnExists('order_return_requests', 'type')){
-                $orders_list = $orders_list->where('type', 1); // 1 = return , 2 = exchange
+                $orders_list = $orders_list->whereIn('type', [1,3]); // 1 = return , 2 = exchange
             }
             if (!empty($request->search_keyword)) {
                 $orders_list->whereHas('order', function ($query)  use ($request) {
@@ -2157,7 +2157,7 @@ class OrderController extends BaseController
     public function getReturnProductModal(Request $request, $domain = '')
     {
         try {
-            $return_details = OrderReturnRequest::where('id', $request->id)->where('type', 1)->with('returnFiles')->first();
+            $return_details = OrderReturnRequest::where('id', $request->id)->whereIn('type', [1,3])->with('returnFiles')->first();
             if (isset($return_details)) {
 
                 if ($request->ajax()) {
