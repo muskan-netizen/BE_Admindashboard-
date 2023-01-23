@@ -1137,20 +1137,4 @@ class PickupDeliveryController extends FrontController{
         }
     }
 
-    //-----function to get bids related to ride request/instant booking-----
-    public function getBidsRelatedToOrderRide(Request $request)
-    {
-        try
-        {
-            $order_bid_id = $request->order_bid_id;
-            $task_type    = $request->task_type;
-            $biddata      = PickDropDriverBid::where('order_bid_id', $order_bid_id)->where('task_type', $task_type)->whereDate('expired_at', '=', now()->format('Y-m-d'))->where('expired_at', '>', now()->format('H:i:s'))->get();
-            return $this->successResponse($biddata, "Request sent to customer successfully", 200);
-        }
-        catch (\Exception $e) {
-            \Log::error($e->getMessage());
-            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
-        }
-    }
-
 }

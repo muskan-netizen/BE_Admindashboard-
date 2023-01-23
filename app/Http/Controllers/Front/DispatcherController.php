@@ -936,7 +936,7 @@ class DispatcherController extends FrontController
                     'driver_image'                    => $request->driver_image,
                     'bid_price'                       => $request->bid_price,
                     'task_type'                       => $request->task_type,
-                    'expired_at'                      => Carbon::now()->addSeconds(30)->format('Y-m-d H:i:s')
+                    'expired_at'                      => Carbon::now()->addSeconds(3000)->format('Y-m-d H:i:s')
                 ];
                 
                 $PickDropDriverBid = PickDropDriverBid::create($PickDropDriverBid);
@@ -952,6 +952,38 @@ class DispatcherController extends FrontController
 
         } catch (Exception $e) {
             DB::rollback();
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+
+        }
+    }
+
+    /******************    ---- pickup delivery Driver Bid/pricing status -----   ******************/
+    public function dispatchDriverBidStatus(Request $request, $domain = '', $web_hook_code)
+    {
+        //dd($web_hook_code);
+        try {
+            $order_bid_id = 0;
+            if($request->task_type == 'Instant_Booking'){
+                $checkiftokenExist = OrderVendor::where('web_hook_code', $web_hook_code)->first();
+                $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->order_id : 0;
+            }else{
+                $checkiftokenExist = OrderVendor::where('web_hook_code', $web_hook_code)->first();
+                $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->order_id : 0;
+            }
+
+            if($order_bid_id > 0){
+                
+                $noofbids          = PickDropDriverBid::where('driver_id', '=', $request->driver_id)->where('order_bid_id', $order_bid_id)->orderBy('created_at', 'DESC')->count();
+                $PickDropDriverBid = PickDropDriverBid::where('driver_id', '=', $request->driver_id)->where('order_bid_id', $order_bid_id)->orderBy('created_at', 'DESC')->first();
+
+                return $this->successResponse(['noofbid'=> $noofbids, 'lastBidStatus' => !empty($PickDropDriverBid)? $PickDropDriverBid->status : 0], 200);
+
+            }else{
+                $message = "Invalid Token";
+                return $this->errorResponse($message, 400);
+               }
+
+        } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
 
         }

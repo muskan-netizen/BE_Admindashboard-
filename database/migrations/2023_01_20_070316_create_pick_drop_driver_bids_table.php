@@ -17,7 +17,7 @@ class CreatePickDropDriverBidsTable extends Migration
             $table->id();
             $table->bigInteger('order_bid_id')->nullable(); 
             $table->tinyInteger('status')->default(0)->comment('0=>placed, 1=>approved, 2=>declined');
-            $table->string('tasks')->nullable();
+            $table->string('tasks', 1000)->nullable();
             $table->integer('driver_id')->nullable();
             $table->string('driver_name')->nullable();
             $table->string('driver_image')->nullable();
