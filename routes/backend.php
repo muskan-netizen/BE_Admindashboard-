@@ -347,6 +347,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('order/updateReport', 'Client\OrderController@uploadReport')->name('order.upload.report');
         Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
 
+        Route::get('rental-return-modal/get-rental-return-product-modal', 'Client\OrderController@getRentalReturnProductModal')->name('get-rental-return-product-modal');
+        Route::post('order/update-product-rental-return-client', 'Client\OrderController@updateProductRentalReturn')->name('update.order.rental.return.client');
+
         Route::put('newUpdate/edit/{id}', 'Client\UserController@newUpdate')->name('customer.new.update');
         Route::put('profile/{id}', 'Client\UserController@updateProfile')->name('client.profile.update');
         Route::post('password/update', 'Client\UserController@changePassword')->name('cl.password.update');
@@ -462,6 +465,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
         Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
         Route::post('cancel-order/request/status/update', 'Client\OrderCancelRequestsController@updateStatus')->name('cancel-order.request.status.update');
+
+
+        Route::get('return/dispatcher_requests', 'Client\RentalProductDispatchReturnController@index')->name('return.dispatcher.form');
 
         /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
