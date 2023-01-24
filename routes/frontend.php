@@ -580,6 +580,10 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('get-order-rental-data-in-model', 'Front\ReturnOrderController@getOrderRentalDatainModel')->name('getOrderRentalDataInModel');
 		Route::post('update-rental-product-return', 'Front\ReturnOrderController@updateRentalProductReturn')->name('update.rental.product.return');
 
+		Route::get('get-replace-order-data-in-model', 'Front\ReturnOrderController@getReplaceOrderDatailModel')->name('getReplaceOrderDatailModel');
+		Route::get('get-replace-products', 'Front\ReturnOrderController@getReplaceProducts')->name('get-replace-products');
+		Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
+
 	});
 	// Rental Extend Routes
 	Route::group(['prefix' => 'extend-durartion'], function () {

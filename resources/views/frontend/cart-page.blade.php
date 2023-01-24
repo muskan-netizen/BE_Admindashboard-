@@ -349,6 +349,22 @@
                                                         </div>
 
                                                     </div>
+                                                    @if ($cart_details->pharmacy_check == 1)
+                                                    
+                                                    @if ($vendor_product->product->pharmacy_check == 1)
+                                                        <button type="button"
+                                                            class="float-left btn btn-solid prescription_btn mt-2"
+                                                            data-cart="{{ $vendor_product->cart_id }}"
+                                                            data-product="{{ $vendor_product->product->id }}"
+                                                            data-vendor_id="{{ $vendor_product->vendor_id }}">{{ __('Add Prescription') }}</button>
+                                                        @if ($vendor_product->cart_product_prescription > 0)
+                                                            <h4 class="mt-0 mb-1"
+                                                                style="word-wrap: break-word; line-height:20px">
+                                                                <strong>{{ $vendor_product->cart_product_prescription }}
+                                                                    {{ __('Prescription Added') }}</strong></h4>
+                                                        @endif
+                                                    @endif
+                                                @endif
                                                 </div>
                                             @elseif($serviceType == 'appointment')
                                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -387,6 +403,7 @@
                                                     </div>
 
                                                     @if ($cart_details->pharmacy_check == 1)
+                                                    
                                                         @if ($vendor_product->product->pharmacy_check == 1)
                                                             <button type="button"
                                                                 class="float-left btn btn-solid prescription_btn mt-2"
