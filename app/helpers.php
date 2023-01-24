@@ -1475,7 +1475,7 @@ if( !function_exists('is_p2p_vendor') ) {
 
 if( !function_exists('is_category_p2p') ) {
     function is_category_p2p($category) {
-        if($category->categoryDetail->type_id == 13){
+        if($category->categoryDetail->type_id == 13 || $category->categoryDetail->type_id == 10){
             return true;
         }
         return false;

@@ -177,6 +177,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                             <div class="col-7 col-sm-6">
                                                 <div class="row no-gutters product_list align-items-center flex-wrap">
                                                     <% _.each(vendor.products, function(product, pr){%>
+
                                                         <div class="col-4 text-center mb-2">
                                                             <div class="list-img" style="height:50px;">
                                                                 <img style="height:50px;" data-placement="right" data-toggle="tooltip" title="<%= product.product_name %>" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
@@ -369,7 +370,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Total') }}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat( ( (order.total_amount) +( order.bid_discount)) )) %></span>
                                     </li>
-
+                                    <% if(order.luxury_option_id == 4) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Security Amount') }}</label>
+                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat( ( (order.security_amount)) )) %></span>
+                                        </li>
+                                    <% } %>
                                     <% if(order.bid_discount > 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                                  <label class="m-0">{{ __('Bid Discount') }}</label>

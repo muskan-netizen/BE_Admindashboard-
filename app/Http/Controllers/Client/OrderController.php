@@ -431,7 +431,7 @@ class OrderController extends BaseController
             $orders = $orders->where('luxury_option_id', $lux_id);
         }
         $orders = $orders->paginate(30);
-        // dd($orders);
+        // pr($orders);
 
         // Pending orders count
         $pending_orders = $pending_orders->with('vendors', function ($query) use ($user) {
@@ -556,8 +556,10 @@ class OrderController extends BaseController
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
                 $vendor->vendor_name = $vendor->vendor->name ?? '';
                 $product_total_count = 0;
+                $security_amount = 0;
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
+                    $security_amount += $product->security_amount;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image) ? $product->media->first()->image->path : getDefaultImagePath();
                     if (!is_null($product->product) && ($product->has_inventory != 0) && ($product->quantity > ($product->product->variant->first() ? $product->product->variant[0]->quantity : 0))) {
                         $vendor->isAlert = true;
@@ -598,9 +600,10 @@ class OrderController extends BaseController
                 $orders->forget($key);
             }
             $order->scheduled_date_time = $scheduled_date_time;
+            $order->security_amount = $security_amount;
         }
         $admincurrency = ClientCurrency::getAdminCurrencySymbol();
-
+        // pr($orders);
         $response['orders'] = $orders;
         $response['pending_orders'] = $pending_orders;
         $response['active_orders'] = $active_orders;
