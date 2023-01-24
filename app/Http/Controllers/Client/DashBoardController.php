@@ -17,13 +17,13 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency, OrderVendorProduct, ServiceArea, UserVendor};
+use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency, OrderNotificationsLogs, OrderVendorProduct, ServiceArea, UserVendor};
 
 class DashBoardController extends BaseController
 {
     use ApiResponser;
 
-    public function index()
+    public function index(Request $request)
     {  
        $managers = User::whereHas('roles',function($q){
             $q->where('name','App Managers');
@@ -352,12 +352,11 @@ class DashBoardController extends BaseController
                 $vendors = $vendors->where('id',$managerId);
                 $vendorIds = $vendors->pluck('id')->toArray();
             }
-
             if(($request->reportType !='Vendor' && !empty($request->reportType)) && isset(auth()->user()->geo_ids))
             {
                 $areaVendors = ServiceArea::whereIn('id',explode(',',auth()->user()->geo_ids))->pluck('vendor_id')->toArray();          
                 if(count($areaVendors)>0 && ($request->reportType =='Both')){
-                    $vendorIds = array_merge($areaVendors,$vendorIds);
+                    $vendorIds = array_unique(array_merge($areaVendors,$vendorIds));
                 }elseif(count($areaVendors)>0 && ($request->reportType =='Zone')){               
                     $vendorIds = $areaVendors;
                 }
@@ -381,9 +380,9 @@ class DashBoardController extends BaseController
                 $query->where(['vendors.status' => 1]);
             });
             if (Auth::user()->is_superadmin == 0 || $request->manager_id) {
-                // $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) {
-                //     $query->where('user_id', Auth::user()->id);
-                // });
+                $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
+                });
 
                 if(count($vendorIds)>0)
                 {
@@ -402,9 +401,9 @@ class DashBoardController extends BaseController
             $total_revenue = clone $orders;
             $order_revenue = clone $orders;
             if (Auth::user()->is_superadmin == 0 || $request->manager_id) {
-                // $total_revenue = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                //     $query->where('user_id', Auth::user()->id);
-                // });
+                $total_revenue = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
+                });
 
                 if(count($vendorIds)>0)
                 {
@@ -646,6 +645,8 @@ class DashBoardController extends BaseController
             # Currency symbol
             $clientCurrency = ClientCurrency::with('currency')->where('is_primary', 1)->first();
             $currencySymbol = $clientCurrency->currency->symbol;
+            $orderNotificationCnt = OrderNotificationsLogs::whereIn('vendor_id',$vendorIds)->count();
+
 
             $response = [
                 'markers' => $markers,
@@ -672,9 +673,27 @@ class DashBoardController extends BaseController
                 'total_vendors' => $vendorCounts,
                 'managersCount' => $managersCount??0,
                 'total_sold_products' => $total_sold_products??0,
+                'orderNotificationCnt' => $orderNotificationCnt??0
             ];
             return $this->successResponse($response);
         } catch (Exception $e) {
         }
     }
+
+        # Filter for new admin dashboard
+        public function notificationList(Request $request)
+        {
+
+            $vendorIds = [];
+        
+            $managerId = auth()->id();
+            $vendors = Vendor::latest();
+            $vendorIds = $vendors->whereHas('permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+            $vendorIds =$vendorIds->pluck('id');
+
+            $notifications = OrderNotificationsLogs::whereIn('vendor_id',$vendorIds)->orderBy('id','desc')->get();
+            return  view('backend.vendor.notifications',compact('notifications'));
+        }
 }

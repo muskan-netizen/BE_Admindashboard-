@@ -51,7 +51,7 @@ use App\Models\CartDeliveryFee;
 use App\Models\ClientPreference;
 use App\Http\Traits\{ApiResponser, CartManager};
 use App\Models\AddonOption;
-use App\Models\{OrderLongTermServices, OrderLongTermServicesAddon, OrderLongTermServiceSchedule,Bid};
+use App\Models\{OrderLongTermServices, OrderLongTermServicesAddon, OrderLongTermServiceSchedule,Bid, OrderNotificationsLogs};
 use App\Models\ProductVariantSet;
 
 use GuzzleHttp\Client as GCLIENT;
@@ -1228,7 +1228,7 @@ class OrderController extends FrontController
                     if (!empty($vendor_cart_product->product->title)) {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->title;
                     } elseif (empty($vendor_cart_product->product->title)  && !empty($vendor_cart_product->product->translation)) {
-                        $vendor_cart_product->product->title = $vendor_cart_product->product->translation[0]->title;
+                        $vendor_cart_product->product->title = @$vendor_cart_product->product->translation[0]->title;
                     } else {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->sku;
                     }
@@ -1744,7 +1744,6 @@ class OrderController extends FrontController
                 CartDeliveryFee::where('cart_id', $cart->id)->delete();
                 // send sms
                 //$this->sendSuccessSMS($request, $order);
-
             }
 
             if (count($tax_category_ids)) {
@@ -1764,8 +1763,11 @@ class OrderController extends FrontController
                     'type' => 'cart'
                 ]);
             }
+
+            // if (!in_array($request->payment_option_id, $ex_gateways) && (isset($request->is_postpay) && $request->is_postpay == 1)) {
+
             $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor', 'products'])->where('order_number', $order->order_number)->first();
-            if (!in_array($request->payment_option_id, $ex_gateways) && (isset($request->is_postpay) && $request->is_postpay == 1)) {
+            if (!in_array($request->payment_option_id, $ex_gateways)) {
                 if (!empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {
                         $vendorDetail = $vendor_value->vendor;
@@ -1860,6 +1862,9 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
+        \Log::info(json_encode($user_ids));
+        try
+        {
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
         $from = '';
@@ -1867,11 +1872,23 @@ class OrderController extends FrontController
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
         }
-
         $notification_content = NotificationTemplate::where('id', 4)->first();
         if ($notification_content) {
             $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
-          //  dd($body_content);
+            //Order Notifications Logs
+            OrderNotificationsLogs::updateOrCreate(
+                [
+                    'order_vendor_id'=> $orderData->vendors[0]->id
+                ],
+                [
+                    'user_id' => auth()->id(),
+                    'order_number'=> $orderData->order_number,
+                    'vendor_id'=> $orderData->vendors[0]->vendor_id,
+                    'order_vendor_id'=> $orderData->vendors[0]->id,
+                    'order_id'=> $orderData->id,
+                    'message'=> $body_content .', <a href="/client/order">#'.$orderData->order_number.'</a>'
+            ]);
+
             $data = [
                 "registration_ids" => $devices,
                 "notification" => [
@@ -1909,6 +1926,10 @@ class OrderController extends FrontController
                 //Log::info($result);
             }
         }
+     }catch(\Exception $e)
+     {
+        \Log::info($g->getMessage());
+     }
     }
 
     public function makePayment(Request $request)

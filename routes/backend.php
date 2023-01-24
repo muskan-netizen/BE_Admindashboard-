@@ -50,6 +50,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
         Route::get('profile', 'Client\UserController@profile')->name('client.profile');
         
+        Route::get('notifications/list', 'Client\DashBoardController@notificationList')->name('noti.list');
         Route::get('role/add', 'Client\RolePermissionController@indexRole')->name('roles');
         Route::post('role/save', 'Client\RolePermissionController@saveRole')->name('save.roles');
         Route::POST('role/getRole', 'Client\RolePermissionController@getRole')->name('get.role');

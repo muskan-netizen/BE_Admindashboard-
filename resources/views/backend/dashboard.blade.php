@@ -6,6 +6,20 @@
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/dashboard/css/new_dashboard.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
+a.btn.btn-primary.alCartIcon {
+    position: relative;
+}
+.alBadge {
+    position: absolute;
+    right: 0;
+    top: -10px;
+    background-color: red;
+    height: 20px;
+    width: 20px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
 span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: #FFC;color: #384F34;display: block;font-weight: bold;margin: 2px auto 14px;padding: 15px !important;text-align: left;}
 </style>
 @endsection
@@ -29,7 +43,9 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             @endforeach    
                             </select>
                         </div>
+                        @endif
 
+                        @if(@auth()->user()->roles[0]->name == 'App Managers')
                         <div class="input-group mr-2">
                             <select name="type" id="reportType" class="form-control mr-2" >
                             <option value="" >Select Type</option>
@@ -45,9 +61,14 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                                 <i class="mdi mdi-calendar-range font-13"></i>
                             </span>
                         </div>
-                        <a href="javascript: void(0);" class="btn btn-primary mx-2" id="dashboard_refresh_btn">
+                        <a href="javascript: void(0);" class="btn btn-primary mx-1" id="dashboard_refresh_btn">
                             <i class="mdi mdi-autorenew"></i>
                         </a>
+                        @if(@auth()->user()->roles[0]->name == 'Seller')
+                        <a href="{{route('noti.list')}}" class="btn btn-primary alCartIcon" ><span id="notification_counts" class="alBadge">0</span>
+                            <i class="mdi mdi-cart-plus"></i>
+                        </a>
+                        @endif
                     </form>
                 </div><!-- page title right side here -->
                 <h4 class="page-title">{{ __('Dashboard') }}</h4>
