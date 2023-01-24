@@ -295,7 +295,6 @@
             .then(async response => {
             //console.log(response);
                 var data = response.data.variant_data;
-               
                 if(response.data.success){
                   
                   var available_product_variant = data.available_product_variant;
@@ -326,13 +325,14 @@
                     })
                   }
                  
-                } else{
-                  Swal.fire({
-                      icon: 'error',
-                      title: 'Oops...',
-                      text: 'Something went wrong, try again later!',
-                    })
-                }
+                } 
+                // else{
+                //   Swal.fire({
+                //       icon: 'error',
+                //       title: 'Oops...',
+                //       text: 'Something went wrong, try again later!',
+                //     })
+                // }
             })
             .catch(e => {
               //console.log(e);

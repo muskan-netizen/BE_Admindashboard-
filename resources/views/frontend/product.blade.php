@@ -329,7 +329,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         </div>
 
 
-                                        @if( is_category_p2p($product->category) )
+                                        @if( is_category_p2p($product->category) || is_attribute_enabled())
 
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
@@ -355,6 +355,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             {{-- Chat Button --}}
                                             <hr>
                                                 <h6 class="sold-by">
+                                            @if( !is_attribute_enabled())
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
 
 
@@ -365,6 +366,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             @endif
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
+                                            @endif
                                             @endif
                                                 </h6>
                                     @endif
@@ -515,7 +517,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             else
                                                 $checkSlot = 0;
                                         @endphp
-
                                         @if( !is_category_p2p($product->category) )
                                         <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
