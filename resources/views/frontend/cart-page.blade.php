@@ -880,6 +880,7 @@
                                             <th>Time</th>
                                         </thead>
                                         <tbody>
+                                            <tr>
                                             <td>{{ $booking_type }}</td>
                                             <td>{{ $vendor_product->recurring_day_data }}</td>
                                             @if($vendor_product->recurring_booking_type == 2)
@@ -888,6 +889,7 @@
                                             <td>
                                                 {{ Carbon\Carbon::parse($vendor_product->recurring_booking_time)->format('g:i A' ) }}
                                             </td>
+                                            <tr>
                                         </tbody>
                                     </table>
                                 </div>

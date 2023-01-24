@@ -160,7 +160,7 @@ div#custom_date_recurring {
             <div class="col-md-2">
                 <label class="check_recurring m-0">
                     <span>{{__('Weekly')}}</span>
-                    <input type="radio" name="booking_type" value="2">
+                    <input type="radio" name="booking_type"  value="2">
                     <span class="checkmark"></span>
                 </label>
             </div>
@@ -174,7 +174,7 @@ div#custom_date_recurring {
             <div class="col-md-3">
                 <label class="check_recurring m-0">
                     <span>{{__('Custom')}}</span>
-                    <input type="radio" name="booking_type" value="4">
+                    <input type="radio" name="booking_type"  value="4">
                     <span class="checkmark"></span>
                 </label>
             </div>
@@ -184,12 +184,12 @@ div#custom_date_recurring {
                 <div class="row">
                     <div class="col-md-7">
                         <div class="form-group" id="daily_timeInput">
-                            {!! Form::text('daily_date_time','', ['class' => 'form-control downside datetime-datepicker','id' => 'daily-datepicker','readonly'=>'true','placeholder'=>'Select day']) !!}
+                            {!! Form::text('date_time','', ['class' => 'form-control downside datetime-datepicker','id' => 'date-datepicker','readonly'=>'true','placeholder'=>'Select day']) !!}
                         </div>
                     </div>
                     <div class="col-md-5">
                         <div class="booking-time-section w-100">
-                            <input class="time booking-time form-control" type="time" name ="daily_booking_time" placeholder="Select time" id="daily_booking_time"  />
+                            <input class="time booking-time form-control" type="time" name ="booking_time" placeholder="Select time" id="booking_time"  />
                         </div>
                     </div>
                 </div>
@@ -211,7 +211,7 @@ div#custom_date_recurring {
                     </div>
                     <div class="col-md-7">
                         <div class="form-group" id="weekly_timeInput">
-                            {!! Form::text('weekly_date_time','', ['class' => 'form-control downside datetime-datepicker','id' => 'weekly-datepicker','readonly'=>'true','placeholder'=>'Select Week Days']) !!}
+                            {!! Form::text('date_time','', ['class' => 'form-control downside datetime-datepicker','id' => 'date-datepicker','readonly'=>'true','placeholder'=>'Select Week Days']) !!}
                         </div>
                     </div>
                     <div class="col-md-5">
@@ -227,7 +227,13 @@ div#custom_date_recurring {
                 <div class="row">
                     <div class="col-md-7">
                         <div class="form-group" id="month_timeInput">
-                            {!! Form::text('month_date_time','', ['class' => 'form-control downside datetime-datepicker','id' => 'month-datepicker','readonly'=>'true','placeholder'=>'Select Month Days']) !!}
+                            {{-- {!! Form::text('month_date_time','', ['class' => 'form-control downside datetime-datepicker','id' => 'month-datepicker','readonly'=>'true','placeholder'=>'Select Month Days']) !!} --}}
+                            <select class="form-control" id="months">
+                            <option value="">Select Month</option>
+                            @for($i=1;$i<=12;$i++)
+                                <option value="{{$i}}">{{$i}}</option>
+                            @endfor
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-5">
@@ -254,7 +260,7 @@ div#custom_date_recurring {
                 </div>
             </div>
         </div>
-        <input type="hidden" id="is_recurring_booking" value="0">
+        <input type="hidden" id="is_recurring_booking" value="1">
     </div>
   </div>
 </div>
@@ -363,7 +369,7 @@ div#custom_date_recurring {
         $checkinInput           = $('#blocktime');
         $checkoutInput          = $('#blocktime2');
 
-        $('#daily-datepicker').daterangepicker({
+        $('#date-datepicker').daterangepicker({
             locale: {
                   format: 'M/DD/YY'
             },
@@ -379,11 +385,11 @@ div#custom_date_recurring {
             var end_date    = end.format('YYYY-MM-DD');
 
             if (start_date == end_date) {
-                $("#daily-datepicker").val('');
-                $("#daily-datepicker").addClass('error');
+                $("#date-datepicker").val('');
+                $("#date-datepicker").addClass('error');
             }else{
-                $("#daily-datepicker").val(date);
-                $("#daily-datepicker").removeClass('error');
+                $("#date-datepicker").val(date);
+                $("#date-datepicker").removeClass('error');
             }
 
             $("#is_recurring_booking").val(1);

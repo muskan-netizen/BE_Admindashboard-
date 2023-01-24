@@ -2926,23 +2926,21 @@ $(document).ready(function () {
             }
         }
 
-        if($('#is_recurring_booking').val() > 0){
-            addRecurringBooking =1;
-            if(product_id == OrderStorage.getStorage('cartFirstProductId')  ){
-                Swal.fire({
-                    text: _language.getLanString('Product Already added in cart'),
-                    icon: "warning",
-                    button: "OK",
-                });
+
+        // Recuring booking code
+        if($('#is_recurring_booking').length > 0){
+            booking_type = $("input[type='radio'][name='booking_type']:checked").val();
+            var booking_time  =  $('#booking_time').val();
+
+            if(product_id == OrderStorage.getStorage('cartFirstProductId')){
+                var message  = _language.getLanString('Product Already added in cart');
+                sweetAlert.error('',message);
                 return false;
             }
 
-            var booking_type        = $('input[name="booking_type"]:checked').val();
-            var recurring_week_type = '';
-            var recurring_week_day  = '';
-            if(booking_type == 1){
-                var recurringBookingTime      = $("#daily_booking_time").val();
-                var recurringBookingDate      = $("#daily-datepicker").val();
+            var recurringBookingDate =  '';
+            if(booking_type == 1 || booking_type == 2){
+                var recurringBookingDate      = $("#date-datepicker").val();
                 var message                   = _language.getLanString('Please select daily dates');
                 if(recurringBookingDate != '' || recurringBookingDate!= undefined){
                     var date                  = recurringBookingDate.split(',');
@@ -2952,18 +2950,35 @@ $(document).ready(function () {
                     if(date[1]){
                         $('#end_time').val(date[1]);
                     }
+                }else{
+                    sweetAlert.error('',message);
+                    return false;
                 }
-            }else if(booking_type == 2){
-                var recurringBookingTime      = $("#weekly_booking_time").val();
-                //var recurringBookingDate      = $("#weekly-datepicker").val();
-                var recurringBookingDate      = '2023-01-23,2023-01-24,2023-01-30,2023-01-31';
-                var message                   = _language.getLanString('Please select Weekly dates');
-                var recurring_week_type       =  1;
-                var recurring_week_day        = $('.weeknames ul li.active').map(function(){
-                                                    return $(this).text();
-                                                }).get().join(',');
+            }
 
-            }else if(booking_type == 3){
+
+            if(booking_type != 5 && (booking_time == '' || booking_time== undefined)){
+                var message  = _language.getLanString('Please enter booking timing');
+                sweetAlert.error('',message);
+                return false;
+            }
+
+
+        }
+
+
+
+
+
+
+        if($('#is_recurring_bookingss').val() > 0){
+            addRecurringBooking =1;
+         
+
+            var booking_type        = $('input[name="booking_type"]:checked').val();
+            var recurring_week_type = '';
+            var recurring_week_day  = '';
+            if(booking_type == 3){
                 var recurringBookingTime      = $("#month_booking_time").val();
                 var recurringBookingDate      = '2023-01-23,2023-01-24,2023-01-30,2023-01-31';
                // var recurringBookingDate      = $("#month-datepicker").val();
