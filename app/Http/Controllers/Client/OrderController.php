@@ -15,7 +15,7 @@ use App\Http\Controllers\DunzoController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct, OrderVendorProduct, VendorOrderProductStatus};
+use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, OrderProductDispatchReturnRoute, ProcessorProduct, OrderVendorProduct, VendorOrderProductStatus};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -66,6 +66,10 @@ class OrderController extends BaseController
             });
         }
         $return_requests = $return_requests->count();
+
+        $return_form_requests = OrderProductDispatchReturnRoute::where('dispatcher_status_option_id', 4);
+        
+        $returnFormRequestCount = $return_form_requests->count();
 
         // cancel order requests
         $cancel_order_requests = OrderCancelRequest::where('status', 0);
@@ -175,7 +179,7 @@ class OrderController extends BaseController
         $fixedFee = $this->fixedFee($langId);
         $accounting = ThirdPartyAccounting::where('status', 1)->get();
         $del_order_count = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id', 6)->count();
-        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences'));
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting','returnFormRequestCount', 'del_order_count', 'rescheduleOrderCount', 'client_preferences'));
     }
 
     public function postOrderFilter(Request $request, $domain = '')
@@ -2170,6 +2174,28 @@ class OrderController extends BaseController
         }
     }
 
+
+     /**
+     * return rental orders details
+     */
+    public function getRentalReturnProductModal(Request $request, $domain = '')
+    {
+        // dd($request->all());
+        try {
+            $return_details = OrderProductDispatchReturnRoute::with(['order', 'orderProduct', 'orderProduct.pvariant', 'orderProduct.product'])->where('id', $request->id)->first();
+            // dd($return_details->orderProduct->product);
+            if (isset($return_details)) {
+
+                if ($request->ajax()) {
+                    return \Response::json(\View::make('frontend.modals.update-rental-return-product-client', array('return_details' => $return_details))->render());
+                }
+            }
+            return $this->errorResponse('Invalid order', 404);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
     /**
      * return  order product
      */
@@ -2188,7 +2214,7 @@ class OrderController extends BaseController
                     $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
                     $dispatch_domain = $this->getDispatchDomain();
                     $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
-                    $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain);
+                    $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain, $order_details);
                 }
                 DB::commit();
                 return $this->successResponse($returns, 'Updated.');
@@ -2200,8 +2226,42 @@ class OrderController extends BaseController
         }
     }
 
+    /**
+     * return  order product
+     */
+    public function updateProductRentalReturn(Request $request)
+    {
+        
+        DB::beginTransaction();
+        try {
+            $return = OrderProductDispatchReturnRoute::with(['order', 'orderProduct', 'orderProduct.pvariant', 'orderProduct.product'])->where('id', $request->id)->first();
+            if(@$request->status && $request->status == 'Accepted'){
+                $returns = OrderProductDispatchReturnRoute::where('id', $request->id)->update(['dispatcher_status_option_id' => 6]);
+            }
+            
+            if (isset($returns)) {
+                $security_amount = $return->orderProduct->security_amount;
+                if($request->damage > 0){
+                    $security_amount = $security_amount - $request->damage;
+                }
+               
+                $user = User::find($return->order->user_id);
+                $wallet = $user->wallet;
+                $order_product = OrderProduct::find($return->order_vendor_product_id);
+                $credit_amount = $security_amount;
+                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for secuirity return ' . $order_product->product_name]);
+                DB::commit();
+                return $this->successResponse($returns, 'Updated.');
+            }
+            return $this->errorResponse('Invalid order', 200);
+        } catch (Exception $e) {
+            DB::rollback();
+            return $this->errorResponse($e->getMessage(), 400);
+        }
+    }
+
     // place Request To Dispatch
-    public function placeReturnRequestToDispatch($order, $vendor, $dispatch_domain)
+    public function placeReturnRequestToDispatch($order, $vendor, $dispatch_domain, $order_product)
     {
         try {
 
@@ -2350,6 +2410,19 @@ class OrderController extends BaseController
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
                     ->update(['web_hook_code' => $dynamic, 'dispatch_traking_url' => $dispatch_traking_url]);
+
+                //track url
+                // OrderReturnRequest
+
+                $dispatch_route                                 = new OrderProductDispatchReturnRoute();
+                $dispatch_route->order_id                       = $order->id;
+                $dispatch_route->order_vendor_id                = $order_product->order_vendor_id;
+                $dispatch_route->order_vendor_product_id        = $order_product->id;
+                $dispatch_route->web_hook_code                  = $dynamic;
+                $dispatch_route->dispatch_traking_url           = $dispatch_traking_url;
+                $dispatch_route->dispatcher_status_option_id    = 1;
+                $dispatch_route->order_status_option_id         = 1;
+                $dispatch_route->save();
 
                 return 1;
             }

@@ -578,6 +578,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                             </b>
                         </a>
                         @endif
+                        @if ($client_preferences->business_type == 'rental' || $client_preferences->business_type == 'super_app')
+                        <a class="return-btn" href="{{route('return.dispatcher.form')}}">
+                            <b>{{ __("Rental Return Order Form") }} <sup class="total-items">({{$returnFormRequestCount}})</sup>
+                                <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
+                            </b>
+                        </a>
+                        @endif
                     </div>
                 </div>
 
