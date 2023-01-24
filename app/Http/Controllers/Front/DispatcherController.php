@@ -942,7 +942,7 @@ class DispatcherController extends FrontController
                 $PickDropDriverBid = PickDropDriverBid::create($PickDropDriverBid);
 
                 DB::commit();
-                return $this->successResponse($PickDropDriverBid, 200);
+                return $this->successResponse($PickDropDriverBid, __('Request Created Successfully.'), 200);
 
             }else{
                 DB::rollback();
@@ -976,7 +976,19 @@ class DispatcherController extends FrontController
                 $noofbids          = PickDropDriverBid::where('driver_id', '=', $request->driver_id)->where('order_bid_id', $order_bid_id)->orderBy('created_at', 'DESC')->count();
                 $PickDropDriverBid = PickDropDriverBid::where('driver_id', '=', $request->driver_id)->where('order_bid_id', $order_bid_id)->orderBy('created_at', 'DESC')->first();
 
-                return $this->successResponse(['noofbid'=> $noofbids, 'lastBidStatus' => !empty($PickDropDriverBid)? $PickDropDriverBid->status : 0], 200);
+                $statusText = '';
+                if(!empty($PickDropDriverBid)){
+                    if($PickDropDriverBid->status == 0){
+                        $statusText = "Pending";
+                    }
+                    if($PickDropDriverBid->status == 1){
+                        $statusText = "Accepted";
+                    }
+                    if($PickDropDriverBid->status == 2){
+                        $statusText = "Declined";
+                    }
+                }
+                return $this->successResponse(['noofbid'=> $noofbids, 'lastBidStatus' => $statusText], 200);
 
             }else{
                 $message = "Invalid Token";

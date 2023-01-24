@@ -1431,6 +1431,7 @@ class PickupDeliveryController extends BaseController{
                         OrderLocations::insert(['tasks' => $biddata->tasks, 'order_id' => $order->id, 'vendor_id' => $order_product->vendor_id, 'product_id' => $order_product->product_id]);
                     }
                 }
+                
                 //--------------------------------------------------------------------------------------------------------------
                 $request->request->add(['product_id' => $order_product->product_id]);
                 $request->request->add(['tags_amount' => $biddata->bid_price]);
@@ -1438,35 +1439,35 @@ class PickupDeliveryController extends BaseController{
                 $request->request->add(['tollamount' => 0]);
                 $request->request->add(['agent_id' => $biddata->driver_id]);
 
-                $variant = $product->variants->where('product_id', $product->id)->first();
-                $variant->price = $request->tags_amount;
-                $variant->toll_price = 0;
+                $variant                            = $product->variants->where('product_id', $product->id)->first();
+                $variant->price                     = $request->tags_amount;
+                $variant->toll_price                = 0;
                 
-                $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
-                $divider = isset($divider) ? $divider : 1;
-                $price_in_currency = $request->tags_amount / $divider;
-                $price_in_dollar_compare = $price_in_currency * $divider;
-                $quantity_price = $price_in_dollar_compare * 1;
-                $payable_amount = $quantity_price;
-                $vendor_payable_amount = $quantity_price;
+                $divider                            = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
+                $divider                            = isset($divider) ? $divider : 1;
+                $price_in_currency                  = $request->tags_amount / $divider;
+                $price_in_dollar_compare            = $price_in_currency * $divider;
+                $quantity_price                     = $price_in_dollar_compare * 1;
+                $payable_amount                     = $quantity_price;
+                $vendor_payable_amount              = $quantity_price;
                 
-                $total_amount = $variant->price;
+                $total_amount                       = $variant->price;
 
-                $order_product->price = $variant->price;
-                $order_product->toll_price = $variant->toll_price;
+                $order_product->price               = $variant->price;
+                $order_product->toll_price          = $variant->toll_price;
                 $order_product->save();
-                $coupon_id = null;
-                $coupon_name = null;
-                $actual_amount = $vendor_payable_amount;
+                $coupon_id                          = null;
+                $coupon_name                        = null;
+                $actual_amount                      = $vendor_payable_amount;
 
                 $order_vendor->service_fee_percentage_amount = 0;
-                $order_vendor->subtotal_amount = $actual_amount;
-                $order_vendor->payable_amount = $vendor_payable_amount;
-                $order_vendor->taxable_amount = 0;
-                $order_vendor->discount_amount= 0;
-                $order_vendor->toll_amount = 0;
+                $order_vendor->subtotal_amount               = $actual_amount;
+                $order_vendor->payable_amount                = $vendor_payable_amount;
+                $order_vendor->taxable_amount                = 0;
+                $order_vendor->discount_amount               = 0;
+                $order_vendor->toll_amount                   = 0;
 
-                $vendor_info = Vendor::where('id', $vendor_id)->first();
+                $vendor_info                                 = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
                         $order_vendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($vendor_payable_amount / 100), 2);
@@ -1478,16 +1479,17 @@ class PickupDeliveryController extends BaseController{
                 $order_vendor->save();
 
 
-                $order->total_delivery_fee = 0;
-                $order->loyalty_points_used = 0;
-                $order->loyalty_amount_saved = 0;
-                $order->total_toll_amount    = 0;
-                $order->total_service_fee    = 0;
+                $order->total_delivery_fee      = 0;
+                $order->loyalty_points_used     = 0;
+                $order->loyalty_amount_saved    = 0;
+                $order->total_toll_amount       = 0;
+                $order->total_service_fee       = 0;
 
-                $order->payable_amount = $payable_amount;
+                $order->total_amount            = $payable_amount;
+                $order->payable_amount          = $payable_amount;
                 
-                $order->loyalty_points_earned = 0;
-                $order->loyalty_membership_id = 0;
+                $order->loyalty_points_earned   = 0;
+                $order->loyalty_membership_id   = 0;
 
                 $order->save();
                 //-------------------------------------------------------------------------------------------------------------

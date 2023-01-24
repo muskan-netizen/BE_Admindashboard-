@@ -1600,7 +1600,7 @@
             <div class="col-xl-4 col-lg-4 mb-3">
                 <!-- Social Logins title start -->
                 <div class="page-title-box">
-                    <h4 class="page-title text-uppercase">{{ __('Edit Order /One Push Button For Booking') }} <!-- {{ __('Post Pay & Edit Order') }} --></h4>
+                    <h4 class="page-title text-uppercase">{{ __('Edit Order, Instant Booking and Bid & Ride') }} <!-- {{ __('Post Pay & Edit Order') }} --></h4>
                 </div><!-- Social Logins title end -->
 
                 <form method="POST" action="{{ route('additional.update') }}">
@@ -1666,8 +1666,18 @@
                                         @if ($getAdditionalPreference['is_one_push_book_enable'] == 1) value="1" @else value="0" @endif
                                         name="is_one_push_book_enable" id="is_one_push_book_enable" />
                                 </div>
+                                <div class="form-group mt-2 switchery-demo">
+                                    <label for="" class="mr-3">{{ __('Bid & Ride Enable') }}</label>
+                                    <input type="checkbox" data-plugin="switchery" name="is_bid_ride_enable_switch"
+                                        id="is_bid_ride_enable_switch" class="form-control checkbox_change"
+                                        data-className="is_bid_ride_enable" data-color="#43bee1"
+                                        @if ($getAdditionalPreference['is_bid_ride_enable'] == 1) checked='checked' @endif>
+                                    <input type="hidden"
+                                        @if ($getAdditionalPreference['is_bid_ride_enable'] == 1) value="1" @else value="0" @endif
+                                        name="is_bid_ride_enable" id="is_bid_ride_enable" />
+                                </div>
                                 <div class="row mt-2" id="bid_expire_time_limit_div"
-                                    style="display:@if ($getAdditionalPreference['is_one_push_book_enable'] == 1) @else none @endif;">
+                                    style="display:@if ($getAdditionalPreference['is_one_push_book_enable'] == 1 || $getAdditionalPreference['is_bid_ride_enable'] == 1) @else none @endif;">
                                     <div class="col-8">
                                         <label for=""
                                             class="mr-3">{{ __('Expire Bid Placed By Driver after (Seconds)') }}</label>
@@ -2412,15 +2422,6 @@
                                   <span> <input type="checkbox" data-plugin="switchery" name="is_cust_success_signup_email_switch" id="is_cust_success_signup_email_switch" class="form-control checkbox_change" data-className="is_cust_success_signup_email"  data-color="#43bee1" @if( @getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == '1') checked='checked' @endif>
                                    </span>
                                    <input type="hidden"  @if(@getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == 1) value="1" @else value="0" @endif  name="is_cust_success_signup_email"  id="is_cust_success_signup_email"/>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                   <label for="is_bid_ride_enable_switch" class="mr-2 mb-0">{{__('Bid & Ride')}}<small class="d-block pr-5">{{__("Enable to Receive and accept Bids for requested Ride.")}}</small></label>
-                                  <span> <input type="checkbox" data-plugin="switchery" name="is_bid_ride_enable_switch" id="is_bid_ride_enable_switch" class="form-control checkbox_change" data-className="is_bid_ride_enable"  data-color="#43bee1" @if( $getAdditionalPreference['is_bid_ride_enable'] == '1') checked='checked' @endif>
-                                   </span>
-                                   <input type="hidden"  @if($getAdditionalPreference['is_bid_ride_enable'] == 1) value="1" @else value="0" @endif  name="is_bid_ride_enable"  id="is_bid_ride_enable"/>
                                 </div>
                             </div>
                         </div>
@@ -3341,11 +3342,22 @@
             }
 
             var is_one_push_book_enable = $('#is_one_push_book_enable_switch');
+            var is_bid_ride_enable      = $('#is_bid_ride_enable_switch');
+
 
             is_one_push_book_enable[0].onchange = function() {
-                if ($('#is_one_push_book_enable_switch:checked').length != 1) {
+                if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
                     $('#bid_expire_time_limit_div').hide();
-                    $('#order_edit_before_hours').val(0);
+                    $('#bid_expire_time_limit_seconds').val(0);
+                } else {
+                    $('#bid_expire_time_limit_div').show();
+                }
+            }
+
+            is_bid_ride_enable[0].onchange = function() {
+                if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
+                    $('#bid_expire_time_limit_div').hide();
+                    $('#bid_expire_time_limit_seconds').val(0);
                 } else {
                     $('#bid_expire_time_limit_div').show();
                 }
