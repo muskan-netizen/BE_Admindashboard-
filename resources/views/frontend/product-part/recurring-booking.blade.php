@@ -679,161 +679,34 @@ div#custom_date_recurring {
 <script type="text/javascript">
  
 
-
-  $(document).on("click", ".check_recurring input", async function () {
-    $("#daily-datepicker").val('');
-    var picker = 1;
-    if($(this).val() == 5){
-      $("#daily_booking").addClass('d-none');
-    } else if($(this).val() == 4){
-      picker = 0;
-      $("#daily_booking").addClass('d-none');
-    } 
-    rangePicker(picker);
-    $("#daily_booking").removeClass('d-none');
-  });
+  var start_date = '';
+  var end_date = '';
+  var type = '';
+  actual_price            = '{{@$product->variant[0]->actual_price}}';
+  default_currency        = "{{Session::get('currencySymbol')}}";
+  var currentDate         = moment().format("M/DD/YY");
+  $checkinInput           = $('#blocktime');
+  $checkoutInput          = $('#blocktime2');
+  var selectedweek=[];
+  var selected_custom_dates = [];
+  var FormData = {};
+  //var formData = {};
+  
 
   $(function(e) {
-      var startDatePick = '';
-      var endDatePick = '';
-      actual_price            = '{{@$product->variant[0]->actual_price}}';
-      default_currency        = "{{Session::get('currencySymbol')}}";
-      var selectedStartDate   = ''; // selected start
-      var selectedEndDate     = ''; // selected end
-      var currentDate         = moment().format("M/DD/YY");
-      $checkinInput           = $('#blocktime');
-      $checkoutInput          = $('#blocktime2');
-
-      var selectedweek='';
-      var result_dates = [];
-      $(document).delegate( ".check_time_availability", "click", function() {
-          var selectedStartDate   = $("#blocktime").val();
-          var selectedEndDate     = $("#blocktime2").val();
-          var timeSlot		        = $("#booking-time").val();
-
-          var formData            =  {
-                        product_id:$("input[name='product_id']").val(),
-                        selectedStartDate:selectedStartDate,
-                        selectedEndDate:selectedEndDate,
-                        timeSlot:timeSlot
-                    }
-
-         check_product_availibility(formData);
-      });
-      $(document).on("click", ".week-list li", function() {
-          $(this).toggleClass('active');
-          selectedweek = $(this).data('id');
-          
-      });
-   });
-
-    async function check_product_availibility(formData){
-
-        console.log('formData',formData);
-
-        if(formData.selectedEndDate == undefined){
-            formData.selectedEndDate = '';
-        }
-        if(formData.selectedStartDate == undefined){
-            formData.selectedStartDate = '';
-        }
-        if(formData.selectedStartDate!='' && formData.selectedStartDate!=''){
-            $(".booking-time-section").removeClass('d-none').addClass('d-block');
-        }
-
-        axios.post(`vendor-time-slot`, formData)
-        .then(async response => {
-        //console.log(response);
-            var data = response.data.variant_data;
-
-            if(response.data.success){
-
-              var available_product_variant = data.available_product_variant;
-              var end_time = data.end_time;
-              var start_time = data.start_time;
-              if(available_product_variant) {
-                //console.log( data);
-                $('#available_product_variant').val(available_product_variant);
-                $('#start_time').val(start_time);
-                $('#end_time').val(end_time);
-                product_variant_data = data.product_variant_data;
-                if(product_variant_data) {
-                  var incremental_hrs = document.getElementById('incremental_hrs').value;
-                  populateProductData(product_variant_data);
-                  calculation(incremental_hrs,product_variant_data.incremental_price,product_variant_data.incremental_price_per_min);
-                  if(product_variant_data.check_if_in_cart.length > 0){
-                      product_variant_data.check_if_in_cart.map(checkIfInCart);
-                    //checkIfInCart(product_variant_data.check_if_in_cart);
-                  } else {
-                    localStorage.setItem('in_cart','false');
-                  }
-                }
-              } else {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Oops...',
-                  text: 'Already booked, Please select diffrent slot!',
-                })
-              }
-
-            } else{
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Oops...',
-                  text: 'Something went wrong, try again later!',
-                })
-            }
-        })
-        .catch(e => {
-          //console.log(e);
-            Swal.fire({
-                  icon: 'error',
-                  title: 'Oops...',
-                  text: 'Something went wrong, try again later!',
-            })
-        })
-    }
-
-    function calculation(incremental_min,incremental_price,incremental_price_per_min){
-        var total_additional_price = NumberFormatHelper.formatPrice((incremental_min/incremental_price_per_min));
-        // //console.log(total_additional_price);
-        var total_minutes =  (parseInt(default_minutes)+parseInt(incremental_min));
-        var total_calculated_price =  (parseInt(actual_price)+parseInt(total_additional_price));
-        //$('.total_duration').html(total_minutes);
-        //$('.total_price').html(NumberFormatHelper.formatPrice(total_calculated_price));
-
-    }
-
-    function populateProductData(productData){
-        if(productData){
-          actual_price = NumberFormatHelper.formatPrice(productData.actual_price);
-          incremental_price = productData.incremental_price;
-          $('.product_fixed_price').html(actual_price);
-          default_minutes = timeConvertCal(productData.product.minimum_duration,productData.product.minimum_duration_min);
-          default_step = timeConvertCal(productData.product.additional_increments,productData.product.additional_increments_min)
-          //$('.total_duration').html(default_minutes);
-          $('.total_price').html(actual_price);
-          $('.min_hrs').html(productData.product.minimum_duration);
-          $('.min_min').html(productData.product.minimum_duration_min);
-          $('.addtional_hrs').html(productData.product.additional_increments);
-          $('.addtional_min').html(productData.product.additional_increments_min);
-          $('.variant_incremental_price').html(productData.incremental_price);
-          //$('.disclaimer').html(`<p>(Extra minutes will be calculated in multiple of ${default_currency}${incremental_price} per ${default_step} min)</p>`);
-          $("#incremental_hrs").attr('step', default_step);
-        }
-    }
-
-    function init(){
-        $('.incremental_hrs').val(0);
-        $('#incremental_hrs_hidden').val(base_hours_min);
-        var formData = {
-        variant_option_id:$('.changeVariant:checked').val(),
-        product_id:$("input[name='product_id']").val(),
-        selectedStartDate:$('#blocktime').val(),
-        selectedEndDate:$('#blocktime2').val()
-        }
-        check_product_availibility(formData);
-    }
+    $(document).on("click", ".check_recurring input", async function () {
+      $("#daily-datepicker").val('');
+      var picker = 1;
+      if($(this).val() == 5){
+        $("#daily_booking").addClass('d-none');
+      } else if($(this).val() == 4){
+        picker = 0;
+        $("#daily_booking").addClass('d-none');
+      } 
+      rangePicker(picker);
+      $("#daily_booking").removeClass('d-none');
+    });
+    });
 
     function rangePicker(action=1){
         if($('#daily-datepicker').data('daterangepicker')){
@@ -848,27 +721,33 @@ div#custom_date_recurring {
         if(action ==1){
             $('#daily-datepicker').daterangepicker({
                 locale: {
-                      format: 'M/DD/YY'
+                      format: 'YYYY-MM-DD'
                 },
                 opens: 'left',
                 startDate: moment(),
                 endDate: moment(),
                 minDate:new Date(),
                 multidate: true,
-                autoUpdateInput: false,
             }, function(start, end, label) {
                 //console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
                 var date = start.format('YYYY-MM-DD')+','+ end.format('YYYY-MM-DD');
                 var start_date  = start.format('YYYY-MM-DD');
                 var end_date    = end.format('YYYY-MM-DD');
-
+                formData(1,start_date,end_date);
 
             });
         } else {
           $('#daily-datepicker').datepicker({
               multidate: true,
-              format: 'dd-mm-yyyy'
-          });
+              format: 'dd-mm-yyyy',
+              startDate:new Date()
+          }).on('changeDate', function(e) {  
+              //console.log(e.format());
+              //selected_custom_dates = [];  
+              formData(0,e.format());
+
+              //formData(start_date,end_date);
+          });  
         }
 
 
@@ -884,6 +763,30 @@ div#custom_date_recurring {
       if(v_p.variant_id == $('#prod_variant_id').val()){
           localStorage.setItem('in_cart','true');
       }
+    }
+
+    function formData(action='',start_date='',end_date=''){
+        if(action==1){
+          //pushslice(selected_custom_dates,start_date)
+          
+        } else {
+          pushslice(start_date)
+        }
+
+    }
+    function pushslice(item) {     
+        // Removing the specified element by value from the array
+        if(selected_custom_dates.includes(item)){
+          
+          const index = selected_custom_dates.indexOf(item);
+          if (index > -1) { // only splice array when item is found
+            selected_custom_dates.splice(index, 1); // 2nd parameter means remove one item only
+          }
+        } else {
+          if(item!=''){
+            selected_custom_dates.push(item);
+          }
+        }
     }
 </script>
 @endsection
