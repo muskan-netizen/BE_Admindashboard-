@@ -297,6 +297,8 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
+        // dd($request->recurringformPost);
+
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -456,14 +458,25 @@ class CartController extends FrontController
                 $cart_product_detail['bid_discount'] =@$request->bid_discount??null;
                 // dd($request->bid_number);
             }
+            // $request->recurringformPost
+            $recurringformPost = '';
+            if(isset($request->recurringformPost) && !empty($request->recurringformPost))
+            {
+                $recurringformPost = (object)$request->recurringformPost;
+                $weekTypes ='';
+                if(!empty($recurringformPost->weekDay)){
+                    $weekTypes = implode(',',$recurringformPost->weekDay);
+                }
+
+            }
 
              //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
              if(checkColumnExists('cart_products','recurring_booking_type')){
-                $cart_product_detail['recurring_booking_type']  =@$request->recurring_booking_type??null;
-                $cart_product_detail['recurring_week_day']      =@json_encode($request->recurring_week_day)??null;
-                $cart_product_detail['recurring_week_type']     =@$request->recurring_week_type??null;
-                $cart_product_detail['recurring_day_data']      =@$request->recurring_day_data??null;
-                $cart_product_detail['recurring_booking_time']  =@$request->recurring_booking_time??null;
+                $cart_product_detail['recurring_booking_type']  =@$recurringformPost->action??null;
+                $cart_product_detail['recurring_week_day']      =@$weekTypes??null;
+                $cart_product_detail['recurring_week_type']     =@$weekTypes??null;
+                $cart_product_detail['recurring_day_data']      =@$recurringformPost->recurring_day_data??null;
+                $cart_product_detail['recurring_booking_time']  =@$recurringformPost->schedule_time??null;
                 // dd($request->bid_number);
             }
 
