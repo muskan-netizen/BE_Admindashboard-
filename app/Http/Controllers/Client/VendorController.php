@@ -877,7 +877,12 @@ class VendorController extends BaseController
 
         $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
 
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_one_push_book_enable']);
+
+        if(!empty($client_preferences))
+        {
+            $client_preferences->is_one_push_book_enable = $getAdditionalPreference['is_one_push_book_enable'];
+        }
 
         $roles = Role::get();
         if($getAdditionalPreference['is_price_by_role'] == 1){
@@ -1418,7 +1423,11 @@ class VendorController extends BaseController
             $vendor->subscription_discount_percent = $request->has('subscription_discount_percent') ? $request->subscription_discount_percent : NULL;
         }
 
-       // $vendor->dynamic_html =  $request->has('dynamic_html') ? $request->dynamic_html : NULL;
+        if ($request->has('is_vendor_instant_booking')) {
+            $vendor->is_vendor_instant_booking = ($request->is_vendor_instant_booking == 'on') ? 1 : 0;
+        }
+
+
         $vendor->save();
 
         if ($request->has('facilty_ids')) {

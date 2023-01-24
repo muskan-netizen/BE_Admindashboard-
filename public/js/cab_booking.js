@@ -280,7 +280,7 @@ jQuery(function () {
         let friendPhoneNumber= $('input[name=friendPhoneNumber]').val();
 
         var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
-        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
+        var is_cab_pooling = $('input[name="is_cab_pooling_bid_ride"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -672,7 +672,7 @@ jQuery(function () {
         }
     });
 
-    $(document).on("change",".is_cab_pooling",function() {
+    $(document).on("change",".is_cab_pooling_bid_ride",function() {
         getListOfCabs();
     });
 
@@ -832,8 +832,7 @@ jQuery(function () {
             data.longitude = destination_location_longitudes[index];
             locations.push(data);
         });
-        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
-        $('input[name="no_seats_for_pooling"]').val(1);
+        var is_cab_pooling = $('input[name="is_cab_pooling_bid_ride"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -848,17 +847,33 @@ jQuery(function () {
                     $('#search_product_main_div').html('');
                     $('#search_product_rider_main_div').html('');
                     if(response.data.length != 0){
-                        // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                        //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                        //      } };
-                            var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
+                        var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
 
-                        let products_template = _.template($('#products_template').html());
+                        var is_booking_bid_ride = $('input[name="is_booking_bid_ride"]:checked').val();
+                        if(is_booking_bid_ride == 0 || is_booking_bid_ride == 1){
+                            var templateid = 'products_template';
+                            $('input[name="no_seats_for_pooling"]').val(1);
+                        }else{
+                            var templateid = 'products_template_bid_ride';
+                        }
+                        let products_template = _.template($('#'+templateid).html());
+
                         let products_rider_template = _.template($('#products_rider_template').html());
                         $("#search_product_main_div").append(products_template(productData));
                         $("#search_product_rider_main_div").append(products_rider_template(productData));
 
-                        if($('input[name="is_cab_pooling"]:checked').val() == 0)
+                        if(is_booking_bid_ride == 2){
+                            $('.slick-items').slick({
+                                infinite: false,
+                                slidesToShow: 3,
+                                slidesToScroll: 3,
+                            });
+
+                            $("#recommended_price_span, #recommended_distance_span").text('');
+                            $(".vehical-view-box-bid-ride").first().trigger('click');
+                        }
+
+                        if($('input[name="is_cab_pooling_bid_ride"]:checked').val() == 0)
                         {
                             $("#search_product_main_div .double_price_p").hide();
                             $("#search_product_main_div .single_price_p").show();
@@ -1020,7 +1035,7 @@ jQuery(function () {
             schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
         }
         var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
-        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
+        var is_cab_pooling = $('input[name="is_cab_pooling_bid_ride"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1049,7 +1064,7 @@ jQuery(function () {
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                         
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
-                        if($('input[name="is_cab_pooling"]:checked').val() == 0)
+                        if($('input[name="is_cab_pooling_bid_ride"]:checked').val() == 0)
                         {
                             $(".show_no_of_seats_if_pooling").hide();
                         }else{
@@ -2044,6 +2059,31 @@ function setLocationCoordinates(key, lat, lng) {
 google.maps.event.addDomListener(window, 'load', initMap);
 
 
+$(document).on("click",".btn-price-up-down",function(){    
+    var product_id = $("#bid_ride_now").attr('data-product_id');
+    type      = $(this).attr('data-type');
+    var input = $("input[name='cab_bid_price']");
+    var currentVal = parseInt(input.val());
+    if (!isNaN(currentVal)) {
+        if(type == 'minus') {
+            
+            if(currentVal > input.attr('min')) {
+                input.val(currentVal - 10).trigger('change');
+            } 
+            if(parseInt(input.val()) == input.attr('min')) {
+            }
 
+        } else if(type == 'plus') {
+
+            if(currentVal < input.attr('max')) {
+                input.val(currentVal + 10).trigger('change');
+            }
+            if(parseInt(input.val()) == input.attr('max')) {
+            }
+        }
+    } else {
+        input.val(input.attr('min'));
+    }
+});
 
 

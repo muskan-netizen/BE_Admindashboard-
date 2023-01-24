@@ -2,6 +2,8 @@
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/css/intlTelInput.css') }}">
     {{-- <link rel="stylesheet" href="{{asset('assets/libs/jquery.datetimepicker.min.css')}}"> --}}
+    <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/slick-theme.css')}}"/>
+    <link rel="stylesheet" href="{{asset('front-assets/css/slick.css')}}">
 @endsection
 @section('content')
     <style type="text/css">
@@ -192,6 +194,70 @@
             overflow-y: scroll;
             width: 100%;
         }
+
+        .slick_bid_ride .slick-items{
+  width:290%;
+  margin:0px auto;
+}
+.slick_bid_ride .slick-slide{
+  margin:6px;border:1px solid#eee;cursor: pointer;
+  border-radius:10px;
+}
+.slick_bid_ride .slick-slide img{
+  width:100%;
+  border-radius:11px;
+}
+
+.slick_bid_ride .slick-slide a:hover{
+  border-radius:10px;
+  border: 1px solid #6b6f74;
+}
+
+.slick_bid_ride .slick-slide .active{
+  border-radius:10px;
+  border: 1px solid #6b6f74;
+}
+
+.slick_bid_ride .slick-slide h5 {
+    font-size: 12px;
+    font-weight:400;
+}
+
+.slider .slick-prev:before, .slick-next:before{    font-size: 30px;
+    line-height: 1;
+    opacity: .75;
+    color: #000;}
+
+    .cab-bg {
+    background: #eee;
+    padding: 2px 0px;
+}
+.recommend-column p {
+    display: inline-block;
+}
+.recommend-column p {
+    font-size: 20px;
+}
+
+.recommendated_price {
+    font-size: 13px;
+   /*  background: #d1d0d0a6; */
+    padding: 2px 9px;
+    border-radius: 2px;
+}
+
+.recommendated_price span {
+    font-size: 12px;
+}
+
+.slick_bid_ride .slick-prev.slick-arrow{left:0px;}
+.slick_bid_ride .slick-next.slick-arrow{right:5px;}
+.slick_bid_ride .slick-prev:before {
+    font-size: 18px;
+}
+.slick_bid_ride .slick-next:before {
+    font-size: 18px;
+}
     </style>
     <section id="alTaxiBookingWrapper" class="cab-booking pt-0 pb-0">
         <div class="alFullMapArea col-md-12 p-0 h-100">
@@ -218,18 +284,27 @@
                         </div>
                     @endif
 
-                    @if ($is_cab_pooling == 1)
+                    @if ($is_cab_pooling == 1 && $is_bid_ride_enable == 1)
                         <div class="pool_radio_controls text-center">
-                            <input type="radio" class="pool_radio is_cab_pooling" id="cab_booking" name="is_cab_pooling"
+                            <input type="radio" class="pool_radio is_cab_pooling_bid_ride" id="cab_booking" name="is_cab_pooling_bid_ride"
                                 value="0" checked>
                             <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
                                 <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                             </label>
-                            <input type="radio" class="pool_radio is_cab_pooling" id="cab_pooling" name="is_cab_pooling"
+                            @if($is_cab_pooling ==1)
+                            <input type="radio" class="pool_radio is_cab_pooling_bid_ride" id="cab_pooling" name="is_cab_pooling_bid_ride"
                                 value="1">
                             <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
                                 <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
                             </label>
+                            @endif
+                            @if($is_bid_ride_enable ==1)
+                            <input type="radio" class="pool_radio is_cab_pooling_bid_ride" id="cab_bid_ride" name="is_cab_pooling_bid_ride"
+                                value="2">
+                            <label class="pool_label mb-0  my-2" for="cab_bid_ride" id="label_cab_bid_ride">
+                                <h5 class="m-0" id="pool_5">{{ __('Bid & Ride') }}</h5>
+                            </label>
+                            @endif
                         </div>
                     @endif
                     <div class="location-box check-pick-first">
@@ -483,7 +558,7 @@
                 </div>
             <% } %>
         </script>
-                <script type="text/template" id="products_template">
+        <script type="text/template" id="products_template">
             <% if(results != ''){ %>
             <% _.each(results, function(result, key){%>
                 <a class="vehical-view-box d-flex align-items-center no-gutters px-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
@@ -512,7 +587,63 @@
                 </div>
             <% } %>
         </script>
-                <script type="text/template" id="scheduleTime_template">
+
+        <script type="text/template" id="products_template_bid_ride">
+            <% if(results != ''){ %>
+                <div class="vehicle_view_bid_ride_container">
+                    <div class="slider pr-2 pl-2">
+                        <div class="row slick_bid_ride">
+                            <div class="slick-items text-center">
+                    <% _.each(results, function(result, key){%>
+                                <a href="javascript:void(0)" class="vehical-view-box-bid-ride" data-totalTagPrice="<%= result.tags_price%>" data-totalMinTagPrice="<%= result.total_minimum%>" data-totalDistance="<%= result.distance%>" data-product_id="<%= result.id %>" data-productName="<%= result.name %>"><img src="<%= result.image_url %>">
+                                <h5 class="m-0 text-center"><%= result.name %></h5>
+                                </a>
+                    <% }); %>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row recommendated_price mt-1">
+                        <div class="col-6 text-center">
+                            <div class="text-center">{{ __('Recommended Price') }} {{Session::get('currencySymbol')}}<span id="recommended_price_span"></span></div>
+                            <div class="text-center">{{ __('Distance') }} <span id="recommended_distance_span"></span> {{ __('KM') }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-get-value">
+                                <div class="input-group">
+                                    <span class="input-group-btn mr-10">
+                                        <button type="button" class="btn btn-danger btn-price-up-down" data-type="minus">
+                                            <i class="fa fa-minus" aria-hidden="true"></i> 10
+                                        </button>
+                                    </span>
+                                    <input type="text" name="cab_bid_price" id="cab_bid_price" class="form-control price-number-up-down text-center" value="" min="" max="">
+                                    <span class="input-group-btn ml-10">
+                                        <button type="button" class="btn btn-success btn-price-up-down" data-type="plus">
+                                            <i class="fa fa-plus" aria-hidden="true"></i> 10
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row pr-3 pl-3">
+                        <div class="col-12 mt-2">
+                            <span class="input-group-btn ml-10">
+                                <button type="button" class="btn btn-solid w-100" id="bid_ride_now" data-rel="bid_ride_now" data-product_id="">
+                                {{__('Bid Now')}}
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                <div>
+            <% }else{ %>
+                <div class="col-12 vehicle-details text-center">
+                    <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
+                    {{ __('No result found. Please try a new search') }}
+                </div>
+            <% } %>
+        </script>
+
+        <script type="text/template" id="scheduleTime_template">
             <div class="scheduleTime">
                 <select class="scheduleHour" onchange="checkScheduleDateTime(this)" ><option value="">HH</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>
                 <select class="scheduleMinute" onchange="checkScheduleDateTime(this)" ><option value="">MM</option><option value="0">00</option><option value="1">05</option><option value="2">10</option><option value="3">15</option><option value="4">20</option><option value="5">25</option><option value="6">30</option><option value="7">35</option><option value="8">40</option><option value="9">45</option><option value="10">50</option><option value="11">55</option></select>
@@ -545,7 +676,7 @@
                         <div class="row mt-2">
                             <div class="col-md-7">
                                 <div class="number_seats">
-                                    <h5>Number Of Seats</h5>
+                                    <h5>{{ __('Number Of Seats') }}</h5>
                                 </div>
                             </div>
                             <div class="col-md-5">
@@ -568,6 +699,7 @@
                         </div>
                     </div>
                     @endif
+
                     <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
                     <% if(result.toll_fee > 0){ %>

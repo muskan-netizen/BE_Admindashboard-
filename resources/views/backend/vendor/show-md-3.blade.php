@@ -307,7 +307,14 @@
                             </textarea>
                         </div>
                     </div> --}}
-
+                    @if(checkColumnExists('vendors', 'is_vendor_instant_booking'))
+                        @if(Auth::user()->is_superadmin == 1 && $client_preferences->is_one_push_book_enable == 1 && $vendor->pick_drop == 1)
+                            <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                                {!! Form::label('title', __('Instant Booking'),['class' => 'control-label']) !!}
+                                <input type="checkbox" data-plugin="switchery" name="is_vendor_instant_booking" class="form-control" data-color="#43bee1" @if($vendor->is_vendor_instant_booking == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                            </div>
+                        @endif
+                    @endif
 
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
