@@ -1140,7 +1140,11 @@ $timezone = Auth::user()->timezone;
                                                                             @endif
                                                                             @endif
                                                                             @if(@$rental_return)
-                                                                                @if(empty($product->productReturn))
+                                                                                @if(@$product->productReturn->type && $product->productReturn->type == 3)
+                                                                                <li>
+                                                                                    {{__('Stop')}} {{$product->productReturn->status}}
+                                                                                </li>
+                                                                                @else
                                                                                     <li>
                                                                                         <label class="rating-star rental_return" data-order_vendor_product_id="{{$product->id}}" data-type="3" style="width: auto;display: inline-block;">
                                                                                             {{__('Stop')}}

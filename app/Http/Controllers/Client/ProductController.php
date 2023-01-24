@@ -382,8 +382,7 @@ class ProductController extends BaseController
             foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id') as $k => $val) {
                 $product->{$k} = $val;
             }
-
-            if( clientPrefrenceModuleStatus('p2p_check') ) {
+            if( clientPrefrenceModuleStatus('p2p_check') || is_attribute_enabled() ) {
                 if( !empty($request->attribute) ) {
                     if( checkTableExists('product_attributes') ) {
                         $insert_arr = [];
