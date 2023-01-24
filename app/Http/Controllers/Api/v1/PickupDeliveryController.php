@@ -685,7 +685,7 @@ class PickupDeliveryController extends BaseController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "http://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
                 $tasks = array();
                 $meta_data = '';
                 $team_tag = $unique."_".$vendor;
@@ -1351,7 +1351,7 @@ class PickupDeliveryController extends BaseController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "http://".$domain."/dispatch-pickup-delivery/".$order_vendor->web_hook_code;
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$order_vendor->web_hook_code;
                 $tasks = array();
 
                 $product = Product::find($request->product_id);
@@ -1431,7 +1431,7 @@ class PickupDeliveryController extends BaseController{
                         OrderLocations::insert(['tasks' => $biddata->tasks, 'order_id' => $order->id, 'vendor_id' => $order_product->vendor_id, 'product_id' => $order_product->product_id]);
                     }
                 }
-                
+
                 //--------------------------------------------------------------------------------------------------------------
                 $request->request->add(['product_id' => $order_product->product_id]);
                 $request->request->add(['tags_amount' => $biddata->bid_price]);
@@ -1544,7 +1544,7 @@ class PickupDeliveryController extends BaseController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "http://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
                 
                 $client = Client::orderBy('id', 'asc')->first();
 
