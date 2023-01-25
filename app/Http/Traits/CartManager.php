@@ -864,7 +864,6 @@ trait cartManager{
                                     $if_previousdeliveryfee_added = 1;
                                 }
                             }
-                            Log::info("delivery".$vendorTotalDeliveryFee);
                             $deliveryCharges_real = $vendorTotalDeliveryFee;
 
                             if (isset($deliveryCharges_real) && !empty($deliveryCharges_real)) {
