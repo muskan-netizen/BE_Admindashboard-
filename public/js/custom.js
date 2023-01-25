@@ -2190,7 +2190,6 @@ $(document).ready(function () {
     }
     function checkIfInCart(v_p) {
         v_p.vendor_products.map((data)=>{
-                console.log(data);
                 if(data.pvariant.id == $('#prod_variant_id').val()){
                     localStorage.setItem('in_cart','true');
                 }
@@ -2883,7 +2882,6 @@ $(document).ready(function () {
     }
 
     function addToCart() {
-
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
         var addLongTerm = 0;
@@ -2927,49 +2925,16 @@ $(document).ready(function () {
         }
 
 
-        // Recuring booking code
-        // if($('#is_recurring_booking').length > 0){
-        //     // recurringformPost
-        //     booking_type = $("input[type='radio'][name='booking_type']:checked").val();
-        //     var booking_time  =  $('#booking_time').val();
-
-        //     if(product_id == OrderStorage.getStorage('cartFirstProductId')){
-        //         var message  = _language.getLanString('Product Already added in cart');
-        //         sweetAlert.error('',message);
-        //         return false;
-        //     }
-
-        //     var recurringBookingDate =  '';
-        //     if(booking_type == 1 || booking_type == 2){
-        //         var recurringBookingDate      = $("#date-datepicker").val();
-        //         var message                   = _language.getLanString('Please select daily dates');
-        //         if(recurringBookingDate != '' || recurringBookingDate!= undefined){
-        //             var date                  = recurringBookingDate.split(',');
-        //             if(date[0]){
-        //                 $('#start_time').val(date[0]);
-        //             }
-        //             if(date[1]){
-        //                 $('#end_time').val(date[1]);
-        //             }
-        //         }else{
-        //             sweetAlert.error('',message);
-        //             return false;
-        //         }
-        //     }
-
-
-        //     if(booking_type != 5 && (booking_time == '' || booking_time== undefined)){
-        //         var message  = _language.getLanString('Please enter booking timing');
-        //         sweetAlert.error('',message);
-        //         return false;
-        //     }
-
-
-        // }
-
-
-
-
+       // Recuring booking code
+        if($('#is_recurring_booking').length > 0){
+            // var booking_type   = $('input[name="booking_type"]:checked').val();
+            // recurringformPost
+            if(product_id == OrderStorage.getStorage('cartFirstProductId')){
+                var message  = _language.getLanString('Product Already added in cart');
+                sweetAlert.error('',message);
+                return false;
+            }
+        }
 
 
         // if($('#is_recurring_bookingss').val() > 0){

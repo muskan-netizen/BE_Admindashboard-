@@ -672,6 +672,18 @@ div#custom_date_recurring {
                           {!! Form::text('daily_date_time','', ['class' => 'form-control downside datetime-datepicker','id' => 'daily-datepicker','readonly'=>'true','placeholder'=>'Select day']) !!}
                       </div>
                   </div>
+
+                  <div class="col-md-7" id="months">
+                    <div class="form-group" >
+                        <select name="months" id="monthValue" class="form-control">
+                          <option value="">Select Month</option>
+                            @for ($i = 1; $i <=12; $i++)
+                                <option value="{{$i}}">{{$i}}</option>
+                            @endfor
+                        </select>
+                    </div>
+                </div>
+
                   <div class="col-md-5">
                       <div class="booking-time-section w-100">
                           <input class="time booking-time form-control" type="time" name ="daily_booking_time" placeholder="Select time" id="daily_booking_time"  />
@@ -691,7 +703,7 @@ div#custom_date_recurring {
 <script type="text/javascript">
  
 
-  var start_date=end_date=daily_booking_time=type=daily_booking_time = '';
+  var start_date=end_date=daily_booking_time=type = monthNumber = '';
   actual_price            = '{{@$product->variant[0]->actual_price}}';
   default_currency        = "{{Session::get('currencySymbol')}}";
   var currentDate         = moment().format("M/DD/YY");
@@ -709,13 +721,19 @@ div#custom_date_recurring {
         $("#daily-datepicker").val('');
         type = $(this).val();
         var picker = 1;
+
         $("#daily_booking").removeClass('d-none'); 
+        $("#daily_timeInput").removeClass('d-none'); 
         $(".week-list li").removeClass('active');
         $("#weeks").addClass('d-none');
+        $("#months").addClass('d-none');
         if(type == 5){
             $("#daily_booking").addClass('d-none');
         }else if(type == 2){
             $("#weeks").removeClass('d-none');
+        }else if(type == 3){
+            $("#months").removeClass('d-none');
+            $("#daily_timeInput").addClass('d-none');
         }else if(type == 4){
             picker = 0;
             $("#daily_booking").removeClass('d-none');
@@ -728,12 +746,29 @@ div#custom_date_recurring {
             recurringformPost.schedule_time  = this.value
             daily_booking_time  = this.value
         });
+
+        $('#monthValue').on('change',function(){
+            recurringformPost.month_number  = this.value
+            monthNumber  = this.value;
+            var booking_type = $("input[type='radio'][name='booking_type']:checked").val();
+            
+            recurringformPost =  {
+            selectedCustomdates:selected_custom_dates,
+            startDate:  start_date,
+            endDate  :  end_date,
+            action   :  booking_type ,
+            schedule_time : daily_booking_time,
+            month_number : monthNumber,
+            weekDay:weeks
+        };
+        
+        });
     });
     
     $(document).delegate( ".week-list li", "click", function() {
             $(this).toggleClass('active');
             var weekDay = $(this).attr('data-id');
-            pushslice(weeks,weekDay);
+            pushsliceWeeks(weeks,weekDay);
         });
 
     function rangePicker(action=1){
@@ -790,22 +825,23 @@ div#custom_date_recurring {
   
 
     function formData(action='',start_date='',end_date=''){
-        console.log(selected_custom_dates);
         var booking_type = $("input[type='radio'][name='booking_type']:checked").val();
         if(action!=1){
-            pushslice(selected_custom_dates,start_date)
+          pushsliceSelected_custom_dates(selected_custom_dates,start_date)
         } 
         recurringformPost =  {
             selectedCustomdates:selected_custom_dates,
             startDate:  start_date,
             endDate  :  end_date,
             action   :  booking_type ,
-            schedule_time :daily_booking_time,
+            schedule_time : daily_booking_time,
+            month_number : monthNumber,
             weekDay:weeks
         };
     }
 
-    function pushslice(array,item) {     
+    function pushsliceWeeks(array = '',item) {  
+          selected_custom_dates = [];  
         // Removing the specified element by value from the array
         if(array.includes(item)){
           
@@ -819,5 +855,22 @@ div#custom_date_recurring {
           }
         }
     }
+
+    function pushsliceSelected_custom_dates(array,item) {  
+          weeks = [];   
+        // Removing the specified element by value from the array
+        if(array.includes(item)){
+          
+          const index = array.indexOf(item);
+          if (index > -1) { // only splice array when item is found
+            array.splice(index, 1); // 2nd parameter means remove one item only
+          }
+        } else {
+          if(item!=''){
+            array.push(item);
+          }
+        }
+    }
+    
 </script>
 @endsection

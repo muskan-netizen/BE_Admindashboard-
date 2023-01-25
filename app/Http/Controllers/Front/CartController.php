@@ -297,7 +297,8 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-        // dd($request->recurringformPost);
+                //$recurringformPost = (object)$request->recurringformPost;
+                
 
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
@@ -458,28 +459,24 @@ class CartController extends FrontController
                 $cart_product_detail['bid_discount'] =@$request->bid_discount??null;
                 // dd($request->bid_number);
             }
-            // $request->recurringformPost
+
             $recurringformPost = '';
             if(isset($request->recurringformPost) && !empty($request->recurringformPost))
             {
-                $recurringformPost = (object)$request->recurringformPost;
-                $weekTypes ='';
-                if(!empty($recurringformPost->weekDay)){
-                    $weekTypes = implode(',',$recurringformPost->weekDay);
+                //This Function Return objected array of recurring data
+                $recurringformPost = $this->recurringCalculationFunction($request);
+
+                 //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
+                if(checkColumnExists('cart_products','recurring_booking_type')){
+                    $cart_product_detail['recurring_booking_type']  =@$recurringformPost->action??null;
+                    $cart_product_detail['recurring_week_day']      =@$recurringformPost->weekTypes??null;
+                    $cart_product_detail['recurring_week_type']     =@$recurringformPost->weekTypes??null;
+                    $cart_product_detail['recurring_day_data']      =@$recurringformPost->selectedCustomdates??null;
+                    $cart_product_detail['recurring_booking_time']  =@$recurringformPost->schedule_time??null;
+                    // dd($request->bid_number);
                 }
 
             }
-
-             //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
-             if(checkColumnExists('cart_products','recurring_booking_type')){
-                $cart_product_detail['recurring_booking_type']  =@$recurringformPost->action??null;
-                $cart_product_detail['recurring_week_day']      =@$weekTypes??null;
-                $cart_product_detail['recurring_week_type']     =@$weekTypes??null;
-                $cart_product_detail['recurring_day_data']      =@$recurringformPost->recurring_day_data??null;
-                $cart_product_detail['recurring_booking_time']  =@$recurringformPost->schedule_time??null;
-                // dd($request->bid_number);
-            }
-
 
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
@@ -2998,6 +2995,50 @@ class CartController extends FrontController
             return $AvailableSlots;
         }
 
+    }
+
+    public function recurringCalculationFunction($request)
+    {
+        $recurringformPost = (object)$request->recurringformPost;
+        $weekTypes ='';
+        if(!empty($recurringformPost->weekDay)){
+            $weekTypes = implode(',',$recurringformPost->weekDay);
+        }
+
+        $startDate = $recurringformPost->startDate;
+        $endDate = $recurringformPost->endDate;
+
+        $selectedCustomdates =[];
+        if($recurringformPost->action!='4' && $recurringformPost->action!='3'){
+            $selectedCustomdates[] = $startDate;
+            $selectedCustomdates[] = $endDate;
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+            
+        }elseif($recurringformPost->action=='2'){
+            $selectedCustomdates = getDaysArrayBetweenTwoDates($recurringformPost->startDate,$recurringformPost->endDate,$recurringformPost->weekDay);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='3'){
+            $startDate = Carbon::now()->addDays(1);
+            $endDate = Carbon::now()->addDays(1);
+            $endDate = $endDate->addMonths($recurringformPost->month_number);
+            $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }else{
+            if(!empty($recurringformPost->selectedCustomdates)){
+                $selectedCustomdates = implode(',',$recurringformPost->selectedCustomdates);
+            }
+        }
+
+
+            return (object)[
+                'weekTypes' => $weekTypes,
+                'selectedCustomdates' => $selectedCustomdates,
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'action'  => @$recurringformPost->action,
+                'schedule_time'=>@$recurringformPost->schedule_time??'10:00'
+            ];
 
     }
+
 }

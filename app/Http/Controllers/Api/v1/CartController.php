@@ -20,6 +20,7 @@ use App\Http\Controllers\DunzoController;
 use App\Http\Controllers\AhoyController;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
+use App\Http\Controllers\Front\CartController as FrontCartController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
@@ -154,7 +155,6 @@ class CartController extends BaseController
     public function add(Request $request)
     {
         try {
-
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
             $user = Auth::user();
@@ -184,52 +184,26 @@ class CartController extends BaseController
 
             if(checkColumnExists('products','is_recurring_booking') && $product->is_recurring_booking == 1){
 
-                    if (empty($request->recurring_booking_type)) {
-                        return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
-                    }
-                    if ($request->recurring_booking_type == 1) {
-                        if (empty($request->recurring_day_data)) {
-                            return $this->errorResponse(__('Recurring start date and end date not be empty.'), 404);
-                        }else{
-                            $recurring_day_data     = $request->recurring_day_data[0];
-                            $start_date             = current($recurring_day_data);
-                            $end_date               = end($recurring_day_data);
-                            $recurring_days         = $start_date.','.$end_date;
-
-                        }
-                    }elseif ($request->recurring_booking_type == 2) {
-                        if (empty($request->recurring_day_data)) {
-                            return $this->errorResponse(__('Recurring start date and end date not be empty.'), 404);
-                        }else{
-                            $recurring_day_data     = $request->recurring_day_data[0];
-                            $start_date             = current($recurring_day_data);
-                            $end_date               = end($recurring_day_data);
-                            $recurring_days         = $start_date.','.$end_date;
-                        }
-                    }
-                    elseif ($request->recurring_booking_type == 3) {
-                        if (empty($request->recurring_day_data)) {
-                            return $this->errorResponse(__('Recurring start date and end date not be empty.'), 404);
-                        }else{
-                            $recurring_day_data     = $request->recurring_day_data[0];
-                            $start_date             = current($recurring_day_data);
-                            $end_date               = end($recurring_day_data);
-                            $recurring_days         = $start_date.','.$end_date;
-                        }
-                    }
-                    elseif ($request->recurring_booking_type == 4) {
-                        if (empty($request->recurring_day_data)) {
-                            return $this->errorResponse(__('Recurring start date and end date not be empty.'), 404);
-                        }else{
-                            $recurring_day_data     = $request->recurring_day_data[0];
-                            $start_date             = current($recurring_day_data);
-                            $end_date               = end($recurring_day_data);
-                            $recurring_days         = $start_date.','.$end_date;
-                        }
-                    }
-                if (empty($request->recurring_booking_time)) {
-                    return $this->errorResponse(__('Recurring booking time not be empty.'), 404);
+                if (empty($request->recurringformPost)) {
+                    return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
                 }
+
+                \Log::info(json_encode($request));
+                \Log::info('json_encode($request)');
+                \Log::info(json_encode($request->recurringformPost));
+                $cartRecurringCall = new FrontCartController();
+                $recurringformPost = $cartRecurringCall->recurringCalculationFunction($request);
+                \Log::info(json_encode($recurringformPost));
+                
+                //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
+               if(checkColumnExists('cart_products','recurring_booking_type')){
+                   $start_date             = $recurringformPost->startDate;
+                   $end_date               = $recurringformPost->endDate;
+                   $recurring_days  = @$recurringformPost->selectedCustomdates??null;
+                   $weekTypes  = @$recurringformPost->weekTypes??null;
+                   $action = $recurringformPost->action??null;
+                   $schedule_time = $recurringformPost->schedule_time??null;
+               }
             }
 
 
@@ -378,13 +352,17 @@ class CartController extends BaseController
                     'service_day'         => $request->has('service_day') ? $request->service_day : null,
                     'service_date'        => $request->has('service_date') ? $request->service_date : null,
                     'service_period'      => $request->has('service_period') ? $request->service_period : null,
-                    'service_start_date'  => @$service_start_date,
-                    'recurring_booking_type'  => $request->has('recurring_booking_type') ? $request->recurring_booking_type : null,
-                    'recurring_week_day'  => $request->has('recurring_week_day') ? $request->recurring_week_day : null,
-                    'recurring_week_type'  => $request->has('recurring_week_type') ? $request->recurring_week_day : null,
-                    'recurring_day_data'  => $request->has('recurring_day_data') ? $recurring_days : null,
-                    'recurring_booking_time'  => $request->has('recurring_booking_time') ? $request->recurring_booking_time : null,
+                    'service_start_date'  => @$service_start_date
                 ];
+
+                //In case of on recurringformPost
+                if (!empty($request->recurringformPost)) {
+                    $cart_product_detail['recurring_booking_type'] = $action;
+                    $cart_product_detail['recurring_week_day'] = $weekTypes;
+                    $cart_product_detail['recurring_week_type'] = $weekTypes;
+                    $cart_product_detail['recurring_day_data'] = $recurring_days;
+                    $cart_product_detail['recurring_booking_time'] = $schedule_time;
+                }
 
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
