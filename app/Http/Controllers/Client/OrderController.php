@@ -184,6 +184,7 @@ class OrderController extends BaseController
 
     public function postOrderFilter(Request $request, $domain = '')
     {
+        // dd($request->all());
         $response = [];
         $user = Auth::user();
         $preferences = ClientPreference::first();
@@ -193,10 +194,31 @@ class OrderController extends BaseController
         $filter_order_status = $request->filter_order_status;
         $HasGiftCard = 0;
         $orders = Order::with([
-            'vendors.products' => function ($q) {
+            'vendors.products' => function ($q) use($filter_order_status) {
                 if (checkColumnExists('vendor_order_product_statuses', 'order_status_option_id')) {
                     $q->with('order_product_status');
                 }
+                if($filter_order_status == 'rental_pending_delivery'){
+                    $q->whereHas('Routes', function ($query) {
+                        $query->where('dispatcher_status_option_id', '!=' , 5);
+                    });
+                }
+                if($filter_order_status == 'rental_running_product'){
+                    $q->whereHas('Routes', function ($query) {
+                        $query->where('dispatcher_status_option_id', '=' , 5);
+                    });
+                    $q->whereDate('end_date_time', '>=', date('Y-m-d H:i:s'));
+                }
+
+                if($filter_order_status == 'rental_pending_return'){
+                    $q->whereHas('Routes', function ($query) {
+                        $query->where('dispatcher_status_option_id', '=' , 5);
+                    });
+                    
+                    $q->whereDoesntHave('productReturn');
+                    $q->whereDate('end_date_time', '<', date('Y-m-d H:i:s'));
+                }
+                
                 // $q->whereDoesntHave('order_product_status', function ($sq) {
                 //     $sq->where('order_status_option_id', '=', 3);
                 // });
@@ -342,6 +364,64 @@ class OrderController extends BaseController
                             }
                         });
                     break;
+
+                case 'rental_pending_delivery':
+                    $order_status_options = [1,6];
+                    $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
+                        
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
+                    }])->whereHas('vendors.products.Routes', function ($query) {
+                        $query->where('dispatcher_status_option_id', '!=' , 5);
+                    })
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                        $query->whereNotIn('order_status_option_id', $order_status_options);
+                        if (!empty($request->get('vendor_id'))) {
+                            $query->where('vendor_id', $request->get('vendor_id'));
+                        }
+                    });
+                break;
+                case 'rental_running_product':
+                    $order_status_options = [6];
+                    $orders = $orders->with(['vendors' => function ($query) use ($user) {
+                        
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
+                    }])->whereHas('vendors.products.Routes', function ($query) {
+                        $query->where('dispatcher_status_option_id', '=' , 5);
+                    })
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                        // $query->whereIn('order_status_option_id', $order_status_options);
+                        if (!empty($request->get('vendor_id'))) {
+                            $query->where('vendor_id', $request->get('vendor_id'));
+                        }
+                    });
+                break;
+                case 'rental_pending_return':
+                    $order_status_options = [6];
+                    $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
+                        
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
+                    }])->whereHas('vendors.products.Routes', function ($query) {
+                        $query->where('dispatcher_status_option_id', '=' , 5);
+                    })
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                        // $query->whereIn('order_status_option_id', $order_status_options);
+                        if (!empty($request->get('vendor_id'))) {
+                            $query->where('vendor_id', $request->get('vendor_id'));
+                        }
+                    });
+                break;
 
                     // /* luxury option orders */
                     // case 'delivery_orders':
@@ -512,7 +592,7 @@ class OrderController extends BaseController
         //     $laundry_orders = $laundry_orders->where('luxury_option_id', 7)->count();
         //     $response['laundry_orders'] = $laundry_orders;
         // }
-
+        // pr($orders[0]);
 
         foreach ($orders as $key => $order) {
 
@@ -2423,7 +2503,7 @@ class OrderController extends BaseController
                 $dispatch_route->order_vendor_product_id        = $order_product->id;
                 $dispatch_route->web_hook_code                  = $dynamic;
                 $dispatch_route->dispatch_traking_url           = $dispatch_traking_url;
-                $dispatch_route->dispatcher_status_option_id    = 1;
+                $dispatch_route->dispatcher_status_option_id    = 4;
                 $dispatch_route->order_status_option_id         = 1;
                 $dispatch_route->save();
 

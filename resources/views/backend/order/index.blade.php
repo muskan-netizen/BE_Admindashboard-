@@ -36,10 +36,47 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     background-color: transparent;
     border: 1px solid;
 }
+
+
+.rental_filter_tab {
+    position: absolute;
+    left: 0;
+    width: 100%;
+}
+.rental_filter_tab li.nav-item {
+    width: auto;
+    display: inline-block;
+}
 </style>
 
 <script type="text/template" id="order_page_template">
     <div class="row">
+        {{-- <div class="col-md-12 col-lg-12 mb-4" id="rental_filter_tab" style="display:none;">
+            <div class="tab-product pl-0 pr-2 flex-grow-1">
+                <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="false" data-rel="rental_pending_delivery">
+                            <i class="icofont icofont-man-in-glasses"></i>{{ __('Rental Pending Delivery') }} <sup class="total-items" id="rental-pending-delivery"></sup>
+                        </a>
+                        <div class="material-border"></div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="rental_running_product-tab" data-toggle="tab" href="#rental_running_product" role="tab" aria-selected="false" data-rel="rental_running_product">
+                            <i class="icofont icofont-man-in-glasses"></i>{{ __('Running Product') }} <sup class="total-items" id="rental-running-product"></sup>
+                        </a>
+                        <div class="material-border"></div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="rental_pending_return-tab" data-toggle="tab" href="#rental_pending_return" role="tab" aria-selected="true" data-rel="rental_pending_return">
+                            <i class="icofont icofont-ui-home"></i>{{ __('Rental Pending Returns') }} <sup class="total-items" id="rental-pending-return"></sup>
+                        </a>
+                        <div class="material-border"></div>
+                    </li> 
+                    
+                </ul>
+            </div>
+        </div> --}}
+
         <% _.each(orders, function(order, k){%>
             <% if(order.vendors.length !== 0) { %>
                 <div class="col-xl-6 al_order_sec"  id="full-order-div<%= k %>">
@@ -617,18 +654,50 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     </a>
                     <div class="material-border"></div>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
-                        <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
-                    </a>
-                    <div class="material-border"></div>
-                </li>
+                
+                
+                @if ($client_preferences->business_type == 'rental')
+                    <li class="nav-item">
+                        <a class="nav-link" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="true" data-rel="rental_pending_delivery">
+                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                        </a>
+                        <div class="material-border"></div>
+                        <ul class="nav nav-tabs nav-material rental_filter_tab" id="top-tab" role="tablist" style="display:none;">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="false" data-rel="rental_pending_delivery">
+                                    <i class="icofont icofont-man-in-glasses"></i>{{ __('Rental Pending Delivery') }} <sup class="total-items" id="rental-pending-delivery"></sup>
+                                </a>
+                                <div class="material-border"></div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="rental_running_product-tab" data-toggle="tab" href="#rental_running_product" role="tab" aria-selected="false" data-rel="rental_running_product">
+                                    <i class="icofont icofont-man-in-glasses"></i>{{ __('Running Product') }} <sup class="total-items" id="rental-running-product"></sup>
+                                </a>
+                                <div class="material-border"></div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="rental_pending_return-tab" data-toggle="tab" href="#rental_pending_return" role="tab" aria-selected="true" data-rel="rental_pending_return">
+                                    <i class="icofont icofont-ui-home"></i>{{ __('Rental Pending Returns') }} <sup class="total-items" id="rental-pending-return"></sup>
+                                </a>
+                                <div class="material-border"></div>
+                            </li>
+                        </ul>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
+                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                        </a>
+                        <div class="material-border"></div>
+                    </li> 
+                @endif
                 <li class="nav-item">
                     <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
                         <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
                     </a>
                     <div class="material-border"></div>
                 </li>
+               
             </ul>
         </div>
         <div class="pl-2 pr-2">
@@ -685,7 +754,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             </ul> --}}
 
     </div>
-    <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
+    <div class="tab-content nav-material  order_data_box scroll-style " id="top-tabContent">
         <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
         <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
         <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
@@ -694,6 +763,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 <p>{{ __("You don't have orders right now.") }}</p>
             </div>
         </div>
+        <div class="tab-pane fade position-relative h-100" id="rental_pending_delivery" role="tabpanel" aria-labelledby="rental_pending_delivery-tab"></div>
+        <div class="tab-pane fade position-relative h-100" id="rental_pending_return" role="tabpanel" aria-labelledby="rental_pending_return-tab"></div>
+        <div class="tab-pane fade position-relative h-100" id="rental_running_product" role="tabpanel" aria-labelledby="rental_running_product-tab"></div>
         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
             @php
                 $clientVendorTypes = $vendor_typ_key.'_check';
@@ -788,6 +860,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     }
 
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
+        console.log("fffffffffff");
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
     // var sort_order = $('#sort_order option:selected').val();
@@ -831,6 +904,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                         let order_page_template = _.template($('#order_page_template').html());
                         $("#" + filter_order_status).append(order_page_template(orderData));
+                        if(filter_order_status == 'rental_pending_delivery' || filter_order_status == 'rental_running_product' || filter_order_status == 'rental_pending_return'){
+                            $('.rental_filter_tab').css('display','block');
+                            $('.order_data_box').addClass('mt-4');
+                        }else{
+                            $('.order_data_box').removeClass('mt-4');
+                            $('.rental_filter_tab').css('display','none');
+                        }
                     } else {
                         let no_order_template = _.template($('#no_order_template').html());
                         $("#" + filter_order_status).html(no_order_template({}));
@@ -888,12 +968,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             $(this).remove();
         });
         $(".nav-link").click(function() {
+            console.log("asdf");
             $('#order_list_order').show();
             var rel = $(this).data('rel');
             var url = "{{ route('orders.filter') }}";
             $("#search_via_keyword").val("");
             // $(".tab-pane").html('');
             init(rel, url, '', false);
+            
         });
         // $(function() {
         //     var url = window.location.href;

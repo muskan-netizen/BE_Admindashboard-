@@ -102,7 +102,7 @@
     <div class="row align-items-center">
         <div class="col-sm-12">
             <div class="page-title-box alCancelOrderRequestsPageDashboard align-items-center d-md-flex justify-content-between my-2">
-                <h4 class="page-title">{{ __('Cancel Order Requests') }}</h4>
+                <h4 class="page-title">{{ __('Rental Return Order Form') }}</h4>
                 <div class="float-right">
                     <div class="row align-items-center ">
                         <div class="col-sm-4 mb-1">
@@ -154,8 +154,8 @@
                                             </thead>
                                             <tbody>
                                                 @forelse($return_form_requests as $return_form_request)
-                                                <tr data-id="{{ $return_form_request->id }}" class="show-return-product-modal">
-                                                    <td>
+                                                <tr  >
+                                                    <td >
                                                         <a href="javascript:;" class="text-body font-weight-bold">
                                                             {{ $return_form_request->order->order_number }}
                                                         </a>
@@ -174,22 +174,23 @@
                                                         <a href="{{str_replace('/tracking/', '/form-attribute/', $return_form_request->dispatch_traking_url)}}" target="_blank" class="text-body font-weight-bold">
                                                             View
                                                         </a>
-                                                    <td>
-                                                        <div class="dropdown">
+                                                    <td data-id="{{ $return_form_request->id }}" class="show-return-product-modal"> 
+                                                        {{ __('Action') }}
+                                                        {{-- <div class="dropdown">
                                                             <a href="#" class="dropdown-toggle arrow-none" data-toggle="dropdown" aria-expanded="false">
                                                                 <i class="mdi mdi-dots-horizontal font-size-18"></i>
                                                             </a>
                                                             <div class="dropdown-menu dropdown-menu-right">
                                                                 <a class="dropdown-item" href="javascript:void(0);" onclick="approveCancelRequest({{ $return_form_request->id }})">{{ __('Approve') }}</a>
                                                                 <a class="dropdown-item" href="javascript:void(0);" onclick="rejectCancelRequest({{ $return_form_request->id }})">{{ __('Reject') }}</a>
-                                                            </div>
+                                                            </div> --}}
 
                                                     </td>
                                                 </tr>
                                                 @empty
                                                 <tr>
                                                     <td colspan="8" class="text-center">
-                                                        {{ __('No Pending Cancel Requests Found') }}
+                                                        {{ __('No Pending Rental Return Order Product Found') }}
                                                     </td>
                                                 </tr>
                                                 @endforelse
