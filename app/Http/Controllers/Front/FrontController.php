@@ -28,6 +28,7 @@ class FrontController extends Controller
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
+         
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
             {

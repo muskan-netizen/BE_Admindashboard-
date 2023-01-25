@@ -55,7 +55,7 @@ class BrandController extends FrontController
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     },
                     'variant' => function($q) use($langId){
-                        $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                        $q->select('sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
                         $q->groupBy('product_id');
                     },
                 ])
@@ -72,6 +72,7 @@ class BrandController extends FrontController
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                 $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
+                $value->variant_compare_at_price = (!empty($value->variant->first())) ? $value->variant->first()->compare_at_price : 0;
                 $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 // foreach ($value->variant as $k => $v) {
                 //     $value->variant[$k]->multiplier = $clientCurrency->doller_compare;

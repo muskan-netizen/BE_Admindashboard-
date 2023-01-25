@@ -291,6 +291,7 @@ class OrderController extends BaseController
                     $total_container_charges = 0;
                     $fixed_fee_amount = 0.00;
                     $vendor_total_container_charges = 0;
+                    $deliveryfeeOnCoupon = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $delivery_fee = 0;
                         $deliver_charge = $delivery_fee_charges = 0.00;
@@ -304,6 +305,7 @@ class OrderController extends BaseController
                         $is_restricted = 0;
                         $bid_vendor_discount = 0;
                         $deliveryfeeOnCoupon = 0;
+                        $vendor_service_fee_percentage_amount = 0;
 
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
@@ -376,7 +378,7 @@ class OrderController extends BaseController
                                     $productAddon_price = $productAddon_price + $opt_quantity_price;
                                     $payable_amount = $payable_amount + $opt_quantity_price;
                                     $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
-
+                                    $vendor_products_total_amount = $vendor_products_total_amount + $opt_quantity_price;
                                 }
                             }
 
@@ -643,6 +645,11 @@ class OrderController extends BaseController
 
                             $coupon_name = $vendor_cart_product->coupon->promo->name;
 
+                            /* if ($vendor_cart_product->coupon->promo->allow_free_delivery) {
+                                $total_discount += $delivery_fee;
+                                $vendor_payable_amount -= $delivery_fee;
+                                $vendor_discount_amount += $delivery_fee;
+                            } */
                             //-------------Coupon Related discount calculations start here----------------------
                                 //----fixed amount----------
                             if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
@@ -669,16 +676,17 @@ class OrderController extends BaseController
                             //-------------Coupon Related discount calculations Ends here----------------------
                         }
                         //Start applying service fee on vendor products total
-                        $vendor_service_fee_percentage_amount = 0;
+                        $service_fee_percentage_amount = 0;
                         if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                            $vendor_service_fee_percentage_amount = ((($vendor_products_total_amount+$opt_quantity_price)-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
-
-                            $vendor_payable_amount += $vendor_service_fee_percentage_amount;
-                            $payable_amount += $vendor_service_fee_percentage_amount;
+                            $service_fee_percentage_amount = (($vendor_products_total_amount-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                            $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
+                            $vendor_payable_amount += $service_fee_percentage_amount;
+                            $payable_amount += $service_fee_percentage_amount;
+                            Log::info("service_fee_percentage_amount ".$service_fee_percentage_amount);
                         }
                         //End applying service fee on vendor products total
-                        $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
-                        $order_vendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
+                        $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
+                        $order_vendor->service_fee_percentage_amount = $service_fee_percentage_amount;
 
                         $total_delivery_fee += $delivery_fee;
                         $vendor_payable_amount += $delivery_fee;
@@ -698,8 +706,8 @@ class OrderController extends BaseController
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
 
                         $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
-                        $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
-                        $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_ifnot_discounted, ($vendor_payable_amount - $delivery_fee), $vendor_subs_disc_percent);
+                        $deliveryfee_ifnot_discounted   = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
+                        $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_ifnot_discounted, ($vendor_payable_amount - $deliveryfee_ifnot_discounted), $vendor_subs_disc_percent);
                         $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                         $subs_discount_vendor           = $subs_discount_arr['vendor'];
 
@@ -735,7 +743,7 @@ class OrderController extends BaseController
                     }
 
                     $payable_amount = $payable_amount + $total_taxes + $additional_price;
-// dump("point - ".$payable_amount);
+
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 
                     // calculate subscription discount
@@ -2039,6 +2047,7 @@ class OrderController extends BaseController
 
     public function postOrderDetail(Request $request)
     {
+
         try {
             $user = Auth::user();
             $order_item_count = 0;
@@ -2363,6 +2372,9 @@ class OrderController extends BaseController
             // })->get();
 
            // $order['user_document_value'] =  $user_docs;
+
+
+           Log::info('order'.json_encode($order));
             if(auth()->user()->is_admin){
                 $order['total_amount'] = $order->total_amount  - $total_markup_Price;
                 $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
@@ -3399,6 +3411,7 @@ class OrderController extends BaseController
      */
     public function tipAfterOrder(Request $request)
     {
+
         $user = Auth::user();
         if ($user) {
             $order_number = $request->order_number;

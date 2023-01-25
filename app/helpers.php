@@ -18,11 +18,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
 
-function setUserCode(){
-    $userCode = session()->has('userCode');
-    if(!$userCode){
-        $user = ClientData::first();
-        session()->put('userCode', $user->code);
+if (!function_exists('setUserCode')) {
+    function setUserCode(){
+        $userCode = session()->has('userCode');
+        if(!$userCode){
+            $user = ClientData::first();
+            session()->put('userCode', $user->code);
+        }
     }
 }
 
@@ -1139,13 +1141,13 @@ if (!function_exists('getServiceTypesCategory')) {
         try {
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
-            if(isset($set_template)  && $set_template->template_id == 9){
+            // if(isset($set_template)  && $set_template->template_id == 9){
 
-                if(@$client_preference->p2p_check){
-                    $vendorType = 'p2p';
-                    // session()->put('vendorType', 'p2p');
-                }
-            }
+            //     if(@$client_preference->p2p_check){
+            //         $vendorType = 'p2p';
+            //         // session()->put('vendorType', 'p2p');
+            //     }
+            // }
 
             $types =   Type::query();
             $service_types = [];
@@ -1166,7 +1168,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             elseif ($vendorType == "p2p") {
-                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
+                $service_types = ['p2p'];
             }
 
             if ($client_preference->business_type == 'taxi') {
@@ -1183,7 +1185,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             if ($client_preference->business_type == 'p2p') {
-                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
+                $service_types = ['p2p'];
             }
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
@@ -1257,7 +1259,7 @@ if (!function_exists('getCategoryTypesServices')) {
                 $typeArray = ['rental_service'];
                 break;
             case "p2p":
-                $typeArray = ['products_service', 'on_demand_service', 'appointment_service', 'p2p' ];
+                $typeArray = ['p2p' ];
                 break;
             case "super_app":
                 $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p'];
@@ -1333,6 +1335,36 @@ if (!function_exists('sendSmsTemplate')) {
     }
 }
 
+
+
+if (!function_exists('inventorySyncOnOff')) {
+    function inventorySyncOnOff($vendor_id)
+    {
+        if (!empty($vendor_id)) {
+            $client_preferences = ClientPreference::first();
+
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'shortcode' => $client_preferences->inventory_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+            $url = $client_preferences->inventory_service_key_url;
+
+            $request = $client->get($url . '/api/v1/sync-status', [
+                'json' => ['royo_vendor_id' => $vendor_id]
+            ]);
+
+            $response = json_decode($request->getBody());
+
+            if ($response->status) {
+                return $response->msg;
+            }
+        } else {
+            return false;
+        }
+    }
+}
 // Returns the values of the additional preferences.
 if (!function_exists('checkTableExists')) {
     /** check if column exits in table
@@ -1482,6 +1514,17 @@ if( !function_exists('is_category_p2p') ) {
 //     }
 // }
 
+if( !function_exists('productDiscountPercentage()') ) {
+    function productDiscountPercentage($product_price, $product_compare_price)
+    {
+        if($product_compare_price > 0) {
+            $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;
+            return round($discount);
+        }
+        return 0;
+    }
+}
+
 if( !function_exists('generateSlug') ) {
     function generateSlug($name)
     {
@@ -1554,4 +1597,5 @@ if( !function_exists('makeCartEmpty') ) {
         return true;
     }
 }
+
 

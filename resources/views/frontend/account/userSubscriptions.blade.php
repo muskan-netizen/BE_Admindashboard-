@@ -340,6 +340,25 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                 <% if(payment_option.slug == 'payphone') { %>
                     <div id="pp-button"></div>
                 <% } %>
+
+                <% if(payment_option.slug == 'plugnpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number"  />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY"  />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV"  />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="plugnpay_card_error"></span>
+                    </div>
+                <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -413,6 +432,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
+    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

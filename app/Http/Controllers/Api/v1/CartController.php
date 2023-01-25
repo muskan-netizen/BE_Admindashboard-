@@ -1752,6 +1752,60 @@ class CartController extends BaseController
         }
     }
 
+    public function checkSlotOrders(Request $request)
+    {
+        // Get Logged in user
+       $user = Auth::user();
+
+       $client_timezone = DB::table('clients')->first('timezone');
+       $timezone = (!empty($user->timezone))?$user->timezone:$client_timezone->timezone;
+
+       $schedule_datetime = $request->schedule_datetime;
+       $schedule_slot     = $request->schedule_slot;
+       $vendor_id         = $request->vendor_id;
+
+        // Get current vendor
+        $vendor = Vendor::find($vendor_id);
+        $orders_per_slot = $vendor->orders_per_slot;
+        $orderCount = 0;
+        // Get Vendor orders
+        $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
+        // dd($orderVendors);
+        foreach($orderVendors as $orderVendor){
+            // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
+            $order = Order::where('id', $orderVendor->order_id)->where('scheduled_slot', $schedule_slot)->first();
+            // dd($order);
+            $if_order_scheduled = 0;
+            if($order){
+                $schedule_pickup = Carbon::parse($order->scheduled_date_time);
+                $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
+                // dump($schedule_pickup_final);
+                // dd($schedule_datetime);
+                if($schedule_pickup_final == $schedule_datetime){
+                    // Increment orderCount and return this count to front end for validation
+                    $orderCount++;
+                    $if_order_scheduled = 1;
+                }
+            }
+
+            if($orderVendor->schedule_slot == $schedule_slot && $if_order_scheduled == 0){
+                $schedule_pickup = Carbon::parse($orderVendor->scheduled_date_time);
+                $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
+                
+                if($schedule_pickup_final == $schedule_datetime){
+                    // Increment orderCount and return this count to front end for validation
+                    $orderCount++;
+                }
+            }
+        }
+
+        // Return JSON Response
+        return response()->json(['status' => 'Success',
+            'orderCount' => $orderCount,
+            'orders_per_slot' => $orders_per_slot,
+        ], 200);
+    }
+
     public function checkIsolateSingleVendor(Request $request, $domain = '')
     {
         try {

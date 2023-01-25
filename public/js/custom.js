@@ -969,7 +969,7 @@ $(document).ready(function () {
             return false;
         }
         var address = $("input[name='address_id']").val();
-        if ((vendor_type == 'delivery') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
+        if ((vendor_type == 'delivery' || vendor_type == 'on_demand') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
             return false;
         }
@@ -1802,6 +1802,18 @@ $(document).ready(function () {
             return false;
         }
 
+        if(payment_option_id == 49){
+            cno = $('#plugnpay-card-element').val();
+            dt = $('#plugnpay-date-element').val();
+            cv = $('#plugnpay-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill Details', "#plugnpay_card_error");
+                return false;
+            }
+        }
+
+
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
          $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1943,6 +1955,18 @@ $(document).ready(function () {
         } else {
             $('#wallet_amount_error').html('');
         }
+
+        if(payment_option_id == 49){
+            cno = $('#plugnpay-card-element').val();
+            dt = $('#plugnpay-date-element').val();
+            cv = $('#plugnpay-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill Details', ".payment_response");
+                return false;
+            }
+        }
+
         if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
             $('#wallet_payment_methods_error').html(payment_method_required_error_msg);
             return false;
@@ -2321,6 +2345,11 @@ $(document).ready(function () {
                         }
 
                     }
+                    $.each($('.vendor_schedule_slot'), function() { 
+                        if($(this).val()!=''){
+                            $responst = checkSlotAvailability(this);
+                        }
+                    });
                 }
             },
             complete: function (data) {
@@ -3859,7 +3888,6 @@ $(document).ready(function () {
     // Check Slot Availability
     async function checkSlotAvailability(obj)
     {
-
         var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         var schedule_slot = $(obj).val();
         var vendor_id = $(obj).data('vendor_id');
@@ -3884,6 +3912,7 @@ $(document).ready(function () {
                     $('#order_placed_btn').attr("disabled", true);
                      res =0;
                 }else{
+                    $( ".cart_response " ).find( ".alert" ).css( "display", "none" );
                     // Enable the place order button
                     $('#order_placed_btn').attr("disabled", false);
                     res = 1;
@@ -4642,6 +4671,13 @@ $(document).ready(function () {
             case 47:
                 paymentViaKhalti('', '');
             break;
+            case 48:
+                paymentViaMtnMomo('', payment_option_id, '');
+            break;
+             case 49:
+                paymentViaplugnpay('', payment_option_id, '');
+            break;
+
         }
 
     }
@@ -5097,6 +5133,29 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '48':
+
+                //console.log('address_id',address_id,'payment_option_id',payment_option_id,'tip',tip);
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    console.log('order',order);
+                    paymentViaMtnMomo(address_id, order, payment_from='cart');
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '49':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaplugnpay(address_id, payment_option_id,order);
+                }
+                else{
+                    return false;
+                }
+            break;
         }
 
     }
@@ -5313,6 +5372,14 @@ $(document).ready(function () {
             case 47:
                 paymentViaKhalti('', '');
                 break;
+            case 48:
+               paymentViaMtnMomo('', payment_option_id, '');
+
+            break;
+            case 49:
+                console.log('49');
+                paymentViaplugnpay('',payment_option_id,'');
+            break;
         }
     }
 

@@ -73,6 +73,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('order-detail', 'Api\v1\OrderController@postOrderDetail');
         Route::post('order-update', 'Api\v1\OrderController@orderUpdate');
 
+        Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
+        Route::post('accept-ride-bid', 'Api\v1\PickupDeliveryController@acceptBidsRelatedToOrderRide');
+        Route::post('decline-ride-bid', 'Api\v1\PickupDeliveryController@declineBidsRelatedToOrderRide');
+
         Route::post('create-payment-intent', 'Api\v1\PaymentResourceController@createPaymentIntent');
         Route::post('confirm-payment-intent', 'Api\v1\PaymentResourceController@confirmPaymentIntent');
 
@@ -128,6 +132,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         //Route::post('get-vendor-transactions', 'Api\v1\VendorController@getOrdersList');
 
         Route::match(['get','post'],'payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
+        //Route::match(['get','post'],'payment/plugnpay','Api\v1\PlugnpayGatewayController@beforePayment');
         //Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
         Route::post('payment/razorpay/pay/{amount}/{order}', 'Api\v1\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
         Route::post('payment/complete/paytab','Api\v1\PaytabController@completePayment');
@@ -142,7 +147,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/schedule/update','Api\v1\CartController@updateSchedule');
         Route::post('repeatOrder', 'Api\v1\CartController@repeatOrder');
         Route::get('order/orderDetails_for_notification/{order_id}', 'Api\v1\OrderController@orderDetails_for_notification');
-
+        Route::post('cart/checkSlotOrders', 'Api\v1\CartController@checkSlotOrders'); //Added by Surendra
         Route::post('user/editorder', 'Api\v1\OrderController@editOrderByUser');
 	    Route::post('user/discardeditorder', 'Api\v1\OrderController@discardEditOrderByUser');
 

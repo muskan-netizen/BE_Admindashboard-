@@ -315,7 +315,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                             </div>
                                                             <div class="media-body align-self-center card-text">
                                                                 <div class="inner_spacing w-100">
-                                                                <span class="flag-discount">30% Off</span>
+                                                                @if($dicountPercentage = productDiscountPercentage($data->variant_price, $data->variant_compare_at_price))
+                                                                        <span class="flag-discount">{{$dicountPercentage}}% Off</span>
+                                                                    @endif
                                                                     <h3 class="d-flex align-items-center justify-content-between text-left">
                                                                         <label class="mb-0 mt-0"><b>{{ $data->translation_title }}</b></label>
                                                                         @if($client_preference_detail)
