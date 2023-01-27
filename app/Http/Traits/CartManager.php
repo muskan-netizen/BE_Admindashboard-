@@ -629,6 +629,7 @@ trait cartManager{
                         }
 
                    // } ///// Notable
+                    //  GET PRICE from driver
                    if(($action == 'on_demand') && checkColumnExists('cart_products', 'dispatch_agent_price') && ($additionalPreference['is_service_product_price_from_dispatch'] ==1 )){
                         $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
                     }

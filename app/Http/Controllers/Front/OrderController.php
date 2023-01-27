@@ -826,7 +826,7 @@ class OrderController extends FrontController
             $order_edit_before_hours = 0;
             $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
             $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
+            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch']);
 
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
@@ -872,7 +872,7 @@ class OrderController extends FrontController
             $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
 
             // check gift card
-            if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
+            if(($additionalPreferences->is_gift_card ==1) && checkColumnExists('carts', 'gift_card_id') ){
 
                 if(isset($cart->giftCard) && !empty($cart->giftCard)){
 
@@ -1090,6 +1090,10 @@ class OrderController extends FrontController
                     $quantity_price = 0;
                     $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                     $price_in_currency = $variant->price / $divider;
+                    // change product price when is_service_product_price_from_dispatch on 
+                    if(($action == 'on_demand') && checkColumnExists('cart_products', 'dispatch_agent_price') && ($additionalPreferences->is_service_product_price_from_dispatch ==1 )){
+                        $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
+                    }
                     //Find item price here  ==  + $variant->price;
                     $container_charges_in_currency = $variant->container_charges / $divider;
                     $price_container_charges = $variant->container_charges;
@@ -1159,10 +1163,16 @@ class OrderController extends FrontController
 
                     $taxable_amount = $product_taxable_amount;
                     $vendor_taxable_amount = $taxable_amount;
-                    $total_amount += $vendor_cart_product->quantity * $variant->price;
+                    $variant_price = $variant->price;
+                    // change variant_price price when is_service_product_price_from_dispatch on 
+                    if(($action == 'on_demand') && checkColumnExists('cart_products', 'dispatch_agent_price') && 
+                    ($additionalPreferences->is_service_product_price_from_dispatch ==1 )){
+                        $variant_price =$vendor_cart_product->dispatch_agent_price ;
+                    }
+                    $total_amount += $vendor_cart_product->quantity * $variant_price;
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
-                    $order_product->price = $variant->price;
+                    $order_product->price = $variant_price;
                     $order_product->bid_number = @$vendor_cart_product->bid_number ?? null;
                     $order_product->bid_discount = @$vendor_cart_product->bid_discount ?? null;
                     $order_product->markup_price = $variant->markup_price;
