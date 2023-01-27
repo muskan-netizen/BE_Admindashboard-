@@ -551,6 +551,7 @@ trait cartManager{
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
+                $if_previousdeliveryfee_added = 0;
                 $deliveryfeeOnCoupon = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
 
@@ -805,25 +806,29 @@ trait cartManager{
                            // if ((!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1))  ) {
                             if($checkLastMile ==1){
                                 $deliveriesNew = new CartController();
-
                                 $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del, $lastMileDate['tags'],$NumberOfroutes);
                                 if (isset($deliveries[0])) {
                                     $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                     if (count($deliveries)>1) {
                                         foreach ($deliveries as $k=> $opt) {
                                             if($prod->product->individual_delivery_fee == 1) {
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate'])):($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate'])).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
                                             }else{
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate'])):($vendorTotalDeliveryFee + $opt['rate'])).'</option>';
+                                                if($if_previousdeliveryfee_added == 0 && $opt['rate'] > 0){
+                                                    $delivery_to_add = $opt['rate'];
+                                                }else{$delivery_to_add = 0;}
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $delivery_to_add)):($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
                                             }
                                         }
                                     } else {
                                         foreach ($deliveries as $k=> $opt) {
                                             if($prod->product->individual_delivery_fee == 1) {
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate'])):($vendorTotalDeliveryFee + $previousdeliveryfee + $opt['rate'])).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
                                             }else{
-                                                // dd($opt['code'],$code);
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate'])):($vendorTotalDeliveryFee + $opt['rate'])).'</option>';
+                                                if($if_previousdeliveryfee_added == 0 && $opt['rate'] > 0){
+                                                    $delivery_to_add = $opt['rate'];
+                                                }else{$delivery_to_add = 0;}
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $delivery_to_add)):($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
                                             }
                                         }
                                     }
@@ -850,16 +855,16 @@ trait cartManager{
 
                             if($prod->product->individual_delivery_fee == 1) {
                                 $quantity_deliveryCharges = $deliveryCharges*$prod->quantity;
-                                $deliveryCharges_real = ($vendorTotalDeliveryFee + $previousdeliveryfee + $quantity_deliveryCharges);
                                 $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $quantity_deliveryCharges;
-                                $previousdeliveryfee = 0;
-                                CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$quantity_deliveryCharges]);
-                                $prod->product->product_delivery_fee = $quantity_deliveryCharges;
+                                CartProduct::where('id', $prod->id)->update(['product_delivery_fee'=>$quantity_deliveryCharges]);
+                                $prod->product_delivery_fee = $quantity_deliveryCharges;
                             }else{
-                                $deliveryCharges_real = ($vendorTotalDeliveryFee + $deliveryCharges);
-                                $previousdeliveryfee = $deliveryCharges;
+                                if($if_previousdeliveryfee_added == 0 && $deliveryCharges > 0){
+                                    $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $deliveryCharges;
+                                    $if_previousdeliveryfee_added = 1;
+                                }
                             }
-
+                            $deliveryCharges_real = $vendorTotalDeliveryFee;
 
                             if (isset($deliveryCharges_real) && !empty($deliveryCharges_real)) {
                                 $dtype = explode('_', $code);

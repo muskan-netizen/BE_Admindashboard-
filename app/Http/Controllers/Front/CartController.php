@@ -1939,17 +1939,17 @@ class CartController extends FrontController
         CartCoupon::where('vendor_id', $request->vendor_id)->delete();
         CartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
 
-        if(!empty($CartProductdata)){
-            $cartpro_count = CartProduct::where('cart_id', $CartProductdata->cart_id)->count();
+        if(!empty($cartProd)){
+            $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
             if($cartpro_count == 0){
                 if(checkColumnExists('carts','order_id'))
                 {
-                    Cart::where('id', $CartProductdata->cart_id)->update([
+                    Cart::where('id', $cartProd->cart_id)->update([
                         'schedule_type' => null, 'scheduled_date_time' => null,
                         'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null, 'order_id' => NULL
                     ]);
                 }else{
-                    Cart::where('id', $CartProductdata->cart_id)->update([
+                    Cart::where('id', $cartProd->cart_id)->update([
                         'schedule_type' => null, 'scheduled_date_time' => null,
                         'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
                     ]);
