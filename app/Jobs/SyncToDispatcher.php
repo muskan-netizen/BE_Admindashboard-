@@ -4,13 +4,14 @@ namespace App\Jobs;
 
 
 use Illuminate\Bus\Queueable;
-// use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Config;
+use Log;
 class SyncToDispatcher implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -24,14 +25,19 @@ class SyncToDispatcher implements ShouldQueue
     protected $order_panel_id;
     protected $client_preferences;
     protected $categories;
-    protected $databaseName;
-    public function __construct($order_panel_id, $client_preferences, $categories,$databaseName)
+    protected $DatabaseName;
+    protected $dispatcher_service_key_url;
+    protected $dispatcher_service_code;
+    public function __construct($order_panel_id,$DatabaseName, $client_preferences, $categories,$dispatcher_service_key_url,$dispatcher_service_code)
     {
-        $this->categories = $categories;
-        $this->client_preferences = $client_preferences;
+     
         $this->order_panel_id = $order_panel_id;
-        $this->databaseName = $databaseName;
-        \Log::info('SyncToDispatcher job run');
+        $this->DatabaseName = $DatabaseName;
+        $this->client_preferences = $client_preferences;
+        $this->categories = $categories;
+        $this->dispatcher_service_key_url = $dispatcher_service_key_url;
+        $this->dispatcher_service_code    = $dispatcher_service_code;
+       
     }
 
     /**
@@ -41,22 +47,20 @@ class SyncToDispatcher implements ShouldQueue
      */
     public function handle()
     {
-        // sleep(5);
-      
-        $url = $this->client_preferences['delivery_service_key_url'].'/api/sync-category-product';
-        $postData = ['databaseName'=> $this->databaseName,'data' => $this->categories, 'order_panel_id' => $this->order_panel_id]; 
+        $url = $this->dispatcher_service_key_url.'/api/sync-category-product';// $url = $this->client_preferences['delivery_service_key_url'].'/api/sync-category-product';
+        $postData = ['databaseName'=> $this->DatabaseName,'data' => $this->categories, 'order_panel_id' => $this->order_panel_id,'dispatcher_service_key_url'=>$this->dispatcher_service_key_url,'dispatcher_service_code'=>$this->dispatcher_service_code,'client_preferences'=>$this->client_preferences]; 
     
         $headers = [
-            'shortcode' => $this->client_preferences['delivery_service_key_code']
+            'shortcode' => $this->dispatcher_service_code // $this->client_preferences['delivery_service_key_code']
         ];
 
         $response = Http::withHeaders($headers)->post($url, $postData);
         $statusCode = $response->getStatusCode();
-        \Log::info(json_encode($response));
+        //  Log::info(json_encode($statusCode));
         if($statusCode == 200) {
             return true;
         }
-        return true;
+        return false;
         
     }
    
