@@ -3393,7 +3393,9 @@ body.al_body_template_four .login_continue_btn {
     background-color: #fff;
     border-color: var(--theme-deafult);
 }
-
+.product-right .border-product .product-icon ul li a span:before {
+    font-family: 'FontAwesome';
+}
 .BGcenter .nav-tabs .nav-link {
     border-width: 0 0 2px 0;
     border-color: transparent;
