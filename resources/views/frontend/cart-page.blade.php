@@ -686,7 +686,7 @@
                                 <div class="col-lg-6">
                                     @if ($product->delOptions)
                                         <div
-                                            class="row mb-1 d-flex align-items-center   @if ($product->promo_free_deliver == 1) {{ $product->promo_free_deliver }} org_price @endif ">
+                                            class="row mb-1 d-flex align-items-center  dfsdf  @if ($product->promo_free_deliver == 1) {{ $product->promo_free_deliver }} org_price @endif ">
                                             <div class="col-5 text-lg-right">
                                                 <label class="m-0 radio">
                                                     {{ __('Delivery Fee') }} :</label>

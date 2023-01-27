@@ -61,9 +61,9 @@ li.userDetailsJobDone.d-block span.text-right {
   $minDate = \Carbon\Carbon::now()->setTimezone($timezone)->format('Y-m-d H:m');
 @endphp
 
-<div class="modal fade" id="productPriceModel">
-    <div class="modal-dialog">
-      <div class="modal-content">
+<div class="modal  fade" id="productPriceModel">
+    <div class="modal-dialog  modal-dialog-centered "  >
+      <div class="modal-content ">
   
         <!-- Modal Header -->
         <div class="modal-header">
