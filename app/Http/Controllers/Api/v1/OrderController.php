@@ -684,6 +684,8 @@ class OrderController extends BaseController
                             $payable_amount += $service_fee_percentage_amount;
                             Log::info("service_fee_percentage_amount ".$service_fee_percentage_amount);
                         }
+                        \Log::info('1-'.$payable_amount);
+
                         //End applying service fee on vendor products total
                         $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
                         $order_vendor->service_fee_percentage_amount = $service_fee_percentage_amount;
@@ -832,7 +834,7 @@ class OrderController extends BaseController
                     }else{
                         $order->payable_amount = $payable_amount - $order->taxable_amount;
                     }
-
+                    \Log::info('1-'.$order->payable_amount);
                     // Advance Book Token Amount by mohit added by shiekh sohail farm meat
                     $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
                     if(!empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
