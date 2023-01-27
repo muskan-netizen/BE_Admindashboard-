@@ -179,34 +179,6 @@ class CartController extends BaseController
                 return $this->errorResponse(__('Invalid product variant.'), 404);
             }
 
-            //Recurring Booking
-            $recurring_days = '';
-
-            if(checkColumnExists('products','is_recurring_booking') && $product->is_recurring_booking == 1){
-
-                if (empty($request->recurringformPost)) {
-                    return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
-                }
-
-                \Log::info(json_encode($request));
-                \Log::info('json_encode($request)');
-                \Log::info(json_encode($request->recurringformPost));
-                $cartRecurringCall = new FrontCartController();
-                $recurringformPost = $cartRecurringCall->recurringCalculationFunction($request);
-                \Log::info(json_encode($recurringformPost));
-                
-                //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
-               if(checkColumnExists('cart_products','recurring_booking_type')){
-                   $start_date             = $recurringformPost->startDate;
-                   $end_date               = $recurringformPost->endDate;
-                   $recurring_days  = @$recurringformPost->selectedCustomdates??null;
-                   $weekTypes  = @$recurringformPost->weekTypes??null;
-                   $action = $recurringformPost->action??null;
-                   $schedule_time = $recurringformPost->schedule_time??null;
-               }
-            }
-
-
 
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $cart_detail = [
@@ -355,6 +327,30 @@ class CartController extends BaseController
                     'service_start_date'  => @$service_start_date
                 ];
 
+                
+                 //Recurring Booking
+            $recurring_days = '';
+
+            if(checkColumnExists('products','is_recurring_booking') && $product->is_recurring_booking == 1){
+
+                if (empty($request->recurringformPost)) {
+                    return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
+                }
+
+               
+                $cartRecurringCall = new FrontCartController();
+                $recurringformPost = $cartRecurringCall->recurringCalculationFunction($request);
+                $action = '5';
+                //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
+               if(checkColumnExists('cart_products','recurring_booking_type')){
+                   $start_date             = $recurringformPost->startDate;
+                   $end_date               = $recurringformPost->endDate;
+                   $recurring_days  = @$recurringformPost->selectedCustomdates??null;
+                   $weekTypes  = @$recurringformPost->weekTypes??null;
+                   $action = $recurringformPost->action??5;
+                   $schedule_time = $recurringformPost->schedule_time??null;
+               }
+
                 //In case of on recurringformPost
                 if (!empty($request->recurringformPost)) {
                     $cart_product_detail['recurring_booking_type'] = $action;
@@ -363,6 +359,9 @@ class CartController extends BaseController
                     $cart_product_detail['recurring_day_data'] = $recurring_days;
                     $cart_product_detail['recurring_booking_time'] = $schedule_time;
                 }
+
+            }
+           
 
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
@@ -1515,24 +1514,7 @@ class CartController extends BaseController
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
 
-        if(checkColumnExists('cart_products','recurring_booking_type')){
-            if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
-                $date       = explode(",",$prod->recurring_day_data);
-                $start_date = $end_date = '';
-                if(isset($date[0])){
-                    $start_date = $date[0];
-                }
-                if(isset($date[1])){
-                    $end_date   = $date[1];
-                }
-                if(!empty($start_date) && !empty($end_date)){
-                    $days_count                 = Carbon::parse( $start_date )->diffInDays( $end_date );
-                    $days_count                 = $days_count + 1;
-                    $order_sub_total            = $order_sub_total * $days_count;
-                    $cart->gross_paybale_amount = $order_sub_total;
-                }
-            }
-        }
+        
         $cart->total_addon_price = $total_addon_price;
         $cart->total_discount_amount = $total_disc_amount * $clientCurrency->doller_compare;
         $cart->products = $cartData;
@@ -1554,6 +1536,30 @@ class CartController extends BaseController
         } else {
             $cart->total_payable_amount = ($total_paying  + $cart->total_tax) - ($total_disc_amount + $loyalty_amount_saved);
         }
+
+
+        if(checkColumnExists('cart_products','recurring_booking_type')){
+            if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                $date       = explode(",",$prod->recurring_day_data);
+                $start_date = $end_date = '';
+                if(isset($date[0])){
+                    $start_date = $date[0];
+                }
+                if(isset($date[1])){
+                    $end_date   = $date[1];
+                }
+                if(!empty($start_date) && !empty($end_date)){
+                    $days_count                 = Carbon::parse( $start_date )->diffInDays( $end_date );
+                    $days_count                 = $days_count + 1;
+                    $order_sub_total            = $order_sub_total * $days_count;
+                    $cart->gross_paybale_amount = $order_sub_total;
+                    $cart->total_payable_amount = $order_sub_total;
+                }
+            }
+        }
+
+
+        
         if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
         }

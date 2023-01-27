@@ -3000,6 +3000,7 @@ class CartController extends FrontController
     public function recurringCalculationFunction($request)
     {
         $recurringformPost = (object)$request->recurringformPost;
+        \Log::info(json_encode($recurringformPost));
         $weekTypes ='';
         if(!empty($recurringformPost->weekDay)){
             $weekTypes = implode(',',$recurringformPost->weekDay);
