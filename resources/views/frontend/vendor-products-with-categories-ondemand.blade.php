@@ -259,7 +259,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                             {{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %>
 
                                         </span>
-                                        <a class="action-icon remove_product_via_cart text-danger" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
+                                        <a class="action-icon remove_product_via_cart text-danger" data-product_id="<%= vendor_product.product_id %>" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
                                             </a>
                                     </h6>

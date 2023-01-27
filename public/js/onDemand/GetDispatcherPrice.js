@@ -19,6 +19,7 @@ $(function(){
 $(document).on('click','.view_on_demand_price',function(){
     var variant_id = $(this).data('variant_id');
     //  alert(variant_id);
+    console.log($(this));
     OrderSessionStorage.setStorageSingle('variant_id',variant_id);
     OrderSessionStorage.setStorageSingle('add_to_cart_url',$(this).data('add_to_cart_url'));
     OrderSessionStorage.setStorageSingle('vendor_id',$(this).data('vendor_id'));
@@ -27,7 +28,7 @@ $(document).on('click','.view_on_demand_price',function(){
     document.getElementById('driver_product_variant_id').value = variant_id;
     $('#productPriceModel').modal('show');
     $(`#listofdrivers`).html('');
-   
+   console.log( JSON.parse(OrderSessionStorage.getStorage('this')));
 })
 
 $(document).on('click','#search_Driver_fee',function(e){
@@ -74,11 +75,9 @@ async function renderAgent(){
     var html = '';
     var AgentData= JSON.parse(OrderSessionStorage.getStorage('dispatcherAgent'));
     var product_variant_id = OrderSessionStorage.getStorage('variant_id');
-    console.log('renderAgent');
+   
     if(AgentData.length > 0){
-        console.log('length > 0');
         AgentData.forEach(function(data,index) {
-            console.log(data.rating);
             var dirvePrice = data?.product_prices[0]?.price || 0;
             let price = NumberFormatHelper.formatPrice(dirvePrice);
                 html +=`<div class="card dispatcherAgent" data-agent_id="${data?.id}" data-agent_price="${dirvePrice}" data-product_variant_id=${product_variant_id}>
@@ -129,7 +128,7 @@ $(document).on('click','.dispatcherAgent',function(e){
     var add_to_cart_url = OrderSessionStorage.getStorage('add_to_cart_url');
     var vendor_id       = OrderSessionStorage.getStorage('vendor_id');
     var product_id      = OrderSessionStorage.getStorage('product_id');
-    let that            = JSON.parse(OrderSessionStorage.getStorage('this',$(this)));
+    let that            = JSON.parse(OrderSessionStorage.getStorage('this'));
     var dispatcherAgentData ={
         "agent_price"         : agent_price,
         "agent_id"            : agent_id,
@@ -143,7 +142,7 @@ $(document).on('click','.dispatcherAgent',function(e){
       }).then(({value}) => {
         console.log(value);
             if (value === true) {
-                console.log('ues');
+                console.log(that);
                 $(`#listofdrivers`).html('');
                 $('#productPriceModel').modal('hide');
                 addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that,dispatcherAgentData);

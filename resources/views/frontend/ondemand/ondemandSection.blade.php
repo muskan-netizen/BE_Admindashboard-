@@ -231,8 +231,19 @@ $additionalPreference = getAdditionalPreference(['is_service_product_price_from_
                                                                     $cartcount = 1;
                                                                 @endphp
                                                             @endif
-                                                                @if($additionalPreference['is_service_product_price_from_dispatch'] != 1)
+                                                                @if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand'))
+                                                                @if($cartcount > 0)
+                                                                        <h5 class="my-sm-0 my-3 "></h5>
+                                                                        <a class="btn btn-solid float-right"  id="added_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                    <a class="btn btn-solid view_on_demand_price"  style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
+                                                                    @else
+                                                                    <h5 class="my-sm-0 my-3 "></h5>
+                                                                    <a class="btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
+                                                                    <a class="btn btn-solid float-right"  style="display:none;" id="added_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                    @endif
                                                                 
+                                                                @else {{-- else is_service_product_price_from_dispatch --}}
+                                                                  
                                                                     <h5 class="my-sm-0 my-3 ">
                                                                         {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
                                                                     
@@ -240,7 +251,7 @@ $additionalPreference = getAdditionalPreference(['is_service_product_price_from_
                                                                     </h5>
 
                                                                     @if($cartcount > 0)
-                                                                       
+                                                                    
                                                                         @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
                                                                             <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
                                                                             <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
@@ -272,17 +283,8 @@ $additionalPreference = getAdditionalPreference(['is_service_product_price_from_
                                                                                 <a class="btn btn-solid " style="display:none;"   id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
                                                                         @endif
                                                                     @endif
-                                                                @else
-                                                                    @if($cartcount > 0)
-                                                                    <h5 class="my-sm-0 my-3 "></h5>
-                                                                    <a class="btn btn-solid float-right"  id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
-                                                                    @else
-                                                                    <h5 class="my-sm-0 my-3 "></h5>
-                                                                    <a class="btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
-                                                                    @endif
-                                                              
-                                                                @endif
                                                                 
+                                                                @endif {{-- end is_service_product_price_from_dispatch --}}
                                                             @endif
 
                                                             </div>

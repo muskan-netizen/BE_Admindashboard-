@@ -784,7 +784,7 @@ trait cartManager{
                         }
 
                         //if ($action == 'delivery' || $action == 'appointment') {
-                        if ( in_array($action,['delivery','appointment','on_demand'])) {
+                        if ( (in_array($action,['delivery','appointment','on_demand']) ) && ( ( $action == 'on_demand')  && $additionalPreference['is_service_product_price_from_dispatch'] !=1 ) ) {
                             $delivery_fee_charges = 0;
                             $deliver_charges_lalmove =0;
                             $deliveryCharges = 0;
@@ -1078,6 +1078,7 @@ trait cartManager{
                 // $slotsDate = findSlot('',$vendorData->vendor->id,'');
                 // $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                 $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
+
                 $vendorData->delOptions = $select;
 
                 //mohit sir branch code added by sohail
