@@ -1539,7 +1539,7 @@ class OrderController extends BaseController
                 'allocation_type' => 'a',
                 'task_type' => $task_type,
                 'schedule_time' => $schedule_time ?? null,
-                'cash_to_be_collected' => $payable_amount ?? 0.00,
+                'cash_to_be_collected' => $orderVendorDetails->payable_amount ?? 0.00,
                 'order_number' => $order->order_number,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
