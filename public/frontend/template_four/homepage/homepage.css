@@ -915,7 +915,7 @@ a.brand-box.black-box h6 {
     top: 15px
 }
 
-.progress-order {
+#orders_wrapper .progress-order {
     width: calc(100% + 48px);
     margin: -24px 0 20px;
     background: #00000012;
@@ -923,12 +923,11 @@ a.brand-box.black-box h6 {
     position: relative;
     left: -24px;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 16px !important;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     padding: 5px 0
 }
-
 .pulse {
     display: block;
     width: 8px;
@@ -3592,6 +3591,9 @@ body[dir=rtl] .alFourThLogo {
         margin: 0;
         padding-left: 0 !important
     }
+    .product-buttons {
+        margin-bottom: 20px;
+    }
     .vendors .slick-arrow {
         display: none !important
     }
@@ -4009,6 +4011,7 @@ body[dir=rtl] .alFourThLogo {
     body.al_body_template_four.p2p-module .tab-product {
         margin-top: 30px !important;
     }
+    
 }
 
 @media(max-width:576px) {
@@ -4097,11 +4100,11 @@ img.LoginLogo {
     padding: 0
 }
 
-.col-md-3.alOrderStatus {
+/* .col-md-3.alOrderStatus {
     display: flex;
     justify-content: space-between;
     align-items: center
-}
+} */
 
 .col-md-3.alOrderStatus h4 {
     margin: 0;
@@ -4273,7 +4276,9 @@ body[dir=rtl] .al_searchType button i {
     margin-left: 10px;
     margin-right: auto;
 }
-
+.inner_spacing .border-product .product-icon #social-links ul li a {
+    font-size: 20px;
+}
 
 /*----arabic user profile design css start here----*/
 
