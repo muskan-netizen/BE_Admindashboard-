@@ -25,10 +25,13 @@
                     <p class="border-bottom pb-1">
                         <span>{{__('In') . $product["category"]}} </span>
                     </p>
+                    @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                     <div class="d-flex align-items-center justify-content-between al_clock"> 
+                        
                         <b>{!!$product["price"] ?? ''!!}</b>
                         <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

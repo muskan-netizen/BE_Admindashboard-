@@ -399,8 +399,9 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                 @endif
                                                                             @else
                                                                             
-                                                                        
-                                                                                @if ( ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1))
+                                                                                {{-- not need to check quantity in case of on demand and appointment --}}
+                                                                                {{-- @if ( ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)) --}} 
+
                                                                                     @if(   $is_service_product_price_from_dispatch_forOnDemand ==1)
                                                                                     
                                                                                         <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
@@ -466,9 +467,9 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                         <a class="btn btn-solid "  style="display:none;" id="added_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
                                                                                     @endif
 
-                                                                                @else
+                                                                                {{-- @else
                                                                                     <span class="text-danger asd">{{ __('Out of stock') }}</span>
-                                                                                @endif
+                                                                                @endif --}}
                                                                         
                                                                             @endif
 

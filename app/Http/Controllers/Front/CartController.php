@@ -2044,7 +2044,8 @@ class CartController extends FrontController
      */
     public function getCartData($domain = '', Request $request)
     {
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable','is_service_product_price_from_dispatch','token_currency','advance_booking_amount', 'advance_booking_amount_percentage']);
+                
 
         $cart_details = null;
         $user = Auth::user();
@@ -2151,8 +2152,7 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
 
-            //mohit sir brach code added by sohail
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage', 'is_token_currency_enable', 'token_currency']);
+    
 
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }

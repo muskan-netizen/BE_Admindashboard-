@@ -25,9 +25,11 @@
                         {{$product["category"] ?? ''}}</span>
                         </p>
                     </div>
+                    @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                     <div class="d-flex align-items-center justify-content-between al_clock pt-2">
                         <b>{!!$product["price"] ?? ''!!} </b>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

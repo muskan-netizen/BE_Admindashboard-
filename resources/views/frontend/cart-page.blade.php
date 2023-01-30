@@ -66,10 +66,13 @@
 @php
     $serviceType = Session::get('vendorType');
     $additionalPreference = $getAdditionalPreference;
-   
+    $is_service_product_price_from_dispatch_forOnDemand = 0;
     $hidden_token = '';
     if ($additionalPreference['is_token_currency_enable'] == 1) {
         $hidden_token = 'd-none';
+    }
+    if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+        $is_service_product_price_from_dispatch_forOnDemand =1;
     }
 
 @endphp
@@ -194,23 +197,24 @@
                                         id="min_order_validation_error_{{ $product->vendor->id }}"
                                         style="display:none;">Your cart will be expired in </div>
                                 </div>
-                                @if ($product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 0)
-                                    {{-- {{ $closed_store = 1; }} --}}
-                                    <div class="col-12">
-                                        <div class="text-danger">
-                                            <i
-                                                class="fa fa-exclamation-circle"></i>{{ getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.') }}
+                                @if($is_service_product_price_from_dispatch_forOnDemand  !=1)
+                                    @if ($product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 0)
+                                        {{-- {{ $closed_store = 1; }} --}}
+                                        <div class="col-12">
+                                            <div class="text-danger">
+                                                <i
+                                                    class="fa fa-exclamation-circle"></i>{{ getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.') }}
+                                            </div>
                                         </div>
-                                    </div>
-                                @elseif($product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 1)
-                                    <div class="col-12">
-                                        <div class="text-danger">
-                                            <i class="fa fa-exclamation-circle"></i>
-                                            {{ __('We are not accepting orders right now. You can schedule this for ') }}{{ @$product->delaySlot }}
+                                    @elseif($product->is_vendor_closed == 1 && $product->closed_store_order_scheduled == 1)
+                                        <div class="col-12">
+                                            <div class="text-danger">
+                                                <i class="fa fa-exclamation-circle"></i>
+                                                {{ __('We are not accepting orders right now. You can schedule this for ') }}{{ @$product->delaySlot }}
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 @endif
-
 
                                 @if ($product->vendor->order_min_amount > 0 &&
                                     $product->product_total_amount + $product->vendor->fixed_fee_amount < $product->vendor->order_min_amount)
@@ -248,9 +252,7 @@
                         <div id="tbody_{{ $product->vendor->id }}">
 
                             @foreach ($product->vendor_products as $vendor_product)
-                                {{-- @php
-            pr($vendor_product);
-            @endphp --}}
+                              
                                 <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
                                     <div class="product-img col-3 col-md-2">
@@ -354,7 +356,7 @@
 
                                                     </div>
                                                 </div>
-                                            @elseif($serviceType == 'appointment')
+                                            @elseif(($serviceType == 'appointment') || ($is_service_product_price_from_dispatch_forOnDemand ==1))
                                                 <div class="col-10 col-md-4 text-md-center order-md-3">
                                                     1
                                                 </div>
@@ -519,12 +521,12 @@
 
 
                                         {{-- Home Service Schedual code Start at down --}}
-                                        {{-- @php
-                       pr($cart_details->closed_store_order_scheduled);
-                        @endphp --}} 
-                                        @if (($cart_details->closed_store_order_scheduled == 1 ||
-                                            $client_preference_detail->off_scheduling_at_cart != 1) &&
-                                            ((in_array($serviceType, ['appointment', 'on_demand'])  ) &&( $vendor_product->product->mode_of_service == 'schedule')))
+                                       
+                                        @if (
+                                            ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) 
+                                            && ((in_array($serviceType, ['appointment', 'on_demand'])  )
+                                            &&( $vendor_product->product->mode_of_service == 'schedule')
+                                         ))
                                             <hr class="my-1">
                                             @if ($client_preference_detail->business_type != 'laundry')
                                                 @if (@$vendor_product->product->is_slot_from_dispatch != 1 || $vendor_product->product->Requires_last_mile != 1)
@@ -534,59 +536,73 @@
                                                             <label class="m-0 radio">
                                                                 {{ __('Scheduled Slot') }} :</label>
                                                         </div>
-                                                        <div class="col-4 vendor_slot_cart">
-                                                            <input type="hidden" class="custom-control-input check"
-                                                                id="tasknow" name="task_type" value='schedule'>
-                                                            @if ($product->slotsCnt != 0)
-                                                                <input type="date"
-                                                                    class="form-control vendor_schedule_datetime"
-                                                                    placeholder="Inline calendar"
-                                                                    data-schedule_type="date"
-                                                                    data-vendor_id="{{ $product->vendor_id }}"
-                                                                    data-cart_product_id="{{ $product->cart_product_id }}"
-                                                                    value="{{ $vendor_product->scheduled_date_time != '' ? $vendor_product->scheduled_date_time : $product->delay_date }}"
-                                                                    min="{{ $product->delay_date != '0' ? $product->delay_date : '' }}">
-                                                                <select
-                                                                    class="form-control vendor_product_schedule_slot vendor_schedule_slot "
-                                                                    id="vendor_schedule_slot_{{ $product->vendor_id }}"
-                                                                    data-schedule_type="time"
-                                                                    data-vendor_id="{{ $product->vendor_id }}"
-                                                                    data-cart_product_id="{{ $product->cart_product_id }}">
-                                                                    <option value="">{{ __('Select Slot') }}
-                                                                    </option>
-                                                                    @foreach ($product->slots as $slot)
-                                                                        <option value="{{ $slot->value }}"
-                                                                            {{ $slot->value == $product->schedule_slot ? 'selected' : '' }}>
-                                                                            {{ $slot->name }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            @else
-                                                                @if ($cart_details->delay_date != 0)
+                                                       
+                                                            <div class="col-4 vendor_slot_cart">
+                                                                <input type="hidden" class="custom-control-input check"
+                                                                    id="tasknow" name="task_type" value='schedule'>
+                                                                    @if($is_service_product_price_from_dispatch_forOnDemand ==1)
                                                                     <input type="datetime-local"
                                                                         id="vendor_schedule_slot_{{ $product->vendor_id }}"
                                                                         data-schedule_type="ProductDateTime"
                                                                         data-vendor_id="{{ $product->vendor_id }}"
                                                                         data-cart_product_id="{{ $product->cart_product_id }}"
-                                                                        class="form-control vendor_schedule_datetime"
-                                                                        placeholder="Inline calendar"
-                                                                        value="{{ $vendor_product->manual_scheduled_date_time != '' ? $vendor_product->manual_scheduled_date_time : $product->delay_date }}"
-                                                                        min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}"
-                                                                        data-cart_product_id="{{ $vendor_product->id }}">
-                                                                @else
-                                                                    <input type="datetime-local"
-                                                                        id="vendor_schedule_slot_{{ $product->vendor_id }}"
-                                                                        data-schedule_type="ProductDateTime"
-                                                                        data-vendor_id="{{ $product->vendor_id }}"
-                                                                        data-cart_product_id="{{ $product->cart_product_id }}"
-                                                                        class="form-control vendor_schedule_datetime"
+                                                                        class="form-control scheduled_freelancer_dispatcher vendor_schedule_datetime"
                                                                         placeholder="Inline calendar"
                                                                         value="{{ $vendor_product->manual_scheduled_date_time != '' ? $vendor_product->manual_scheduled_date_time : $product->delay_date }} "
-                                                                        min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}"
+                                                                        min="{{ date('Y-m-d') }}"
                                                                         data-cart_product_id="{{ $vendor_product->id }}">
-                                                                @endif
-                                                            @endif
-
-                                                        </div>
+                                                                    @else
+                                                                        @if ($product->slotsCnt != 0)
+                                                                            <input type="date"
+                                                                                class="form-control vendor_schedule_datetime"
+                                                                                placeholder="Inline calendar"
+                                                                                data-schedule_type="date"
+                                                                                data-vendor_id="{{ $product->vendor_id }}"
+                                                                                data-cart_product_id="{{ $product->cart_product_id }}"
+                                                                                value="{{ $vendor_product->scheduled_date_time != '' ? $vendor_product->scheduled_date_time : $product->delay_date }}"
+                                                                                min="{{ $product->delay_date != '0' ? $product->delay_date : '' }}">
+                                                                            <select
+                                                                                class="form-control vendor_product_schedule_slot vendor_schedule_slot "
+                                                                                id="vendor_schedule_slot_{{ $product->vendor_id }}"
+                                                                                data-schedule_type="time"
+                                                                                data-vendor_id="{{ $product->vendor_id }}"
+                                                                                data-cart_product_id="{{ $product->cart_product_id }}">
+                                                                                <option value="">{{ __('Select Slot') }}
+                                                                                </option>
+                                                                                @foreach ($product->slots as $slot)
+                                                                                    <option value="{{ $slot->value }}"
+                                                                                        {{ $slot->value == $product->schedule_slot ? 'selected' : '' }}>
+                                                                                        {{ $slot->name }}</option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        @else
+                                                                            @if ($cart_details->delay_date != 0)
+                                                                                <input type="datetime-local"
+                                                                                    id="vendor_schedule_slot_{{ $product->vendor_id }}"
+                                                                                    data-schedule_type="ProductDateTime"
+                                                                                    data-vendor_id="{{ $product->vendor_id }}"
+                                                                                    data-cart_product_id="{{ $product->cart_product_id }}"
+                                                                                    class="form-control vendor_schedule_datetime"
+                                                                                    placeholder="Inline calendar"
+                                                                                    value="{{ $vendor_product->manual_scheduled_date_time != '' ? $vendor_product->manual_scheduled_date_time : $product->delay_date }}"
+                                                                                    min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}"
+                                                                                    data-cart_product_id="{{ $vendor_product->id }}">
+                                                                            @else
+                                                                                <input type="datetime-local"
+                                                                                    id="vendor_schedule_slot_{{ $product->vendor_id }}"
+                                                                                    data-schedule_type="ProductDateTime"
+                                                                                    data-vendor_id="{{ $product->vendor_id }}"
+                                                                                    data-cart_product_id="{{ $product->cart_product_id }}"
+                                                                                    class="form-control vendor_schedule_datetime"
+                                                                                    placeholder="Inline calendar"
+                                                                                    value="{{ $vendor_product->manual_scheduled_date_time != '' ? $vendor_product->manual_scheduled_date_time : $product->delay_date }} "
+                                                                                    min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}"
+                                                                                    data-cart_product_id="{{ $vendor_product->id }}">
+                                                                            @endif
+                                                                        @endif
+                                                                    @endif    
+                                                            </div>
+                                                       
                                                     </div>
                                                 @else
                                                     {{-- Dispatch sloat shoty --}}

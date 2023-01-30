@@ -70,8 +70,8 @@ async function getDiverPrice(variant_id , onDemandBookingdate){
         })  
 
 }
-
-async function renderAgent(){
+//filter 0 =  rendom ,1= by price , 2
+async function renderAgent(filter=0){
     var html = '';
     var AgentData= JSON.parse(OrderSessionStorage.getStorage('dispatcherAgent'));
     var product_variant_id = OrderSessionStorage.getStorage('variant_id');

@@ -335,11 +335,18 @@ trait cartManager{
         $couponGetAmount=0;
         $loyalty_amount_saved = 0;
         $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency','is_price_by_role','is_service_product_price_from_dispatch']);
-        $user_timezone = 'Asia/Kolkata';
+        $client_timezone = DB::table('clients')->first('timezone');
+        $user_timezone = $client_timezone->timezone ?? 'Asia/Kolkata';
+        
         $giftCardUsed = 0;
         $giftCardAmount = 0;
+        $action = (session()->has('vendorType')) ? session()->get('vendorType') : 'delivery';
+        $is_service_product_price_from_dispatch = 0;
+        if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( $action == 'on_demand')){
+            $is_service_product_price_from_dispatch =1;
+        }
         if($user){
-            $user_timezone =  $user->timezone;
+            $user_timezone =  $user->timezone ?? $user_timezone  ;
             //Get User Address Details
             $address = $this->getUserAddress($user->id,$address_id);
         }
@@ -415,7 +422,7 @@ trait cartManager{
         if ($cartData) {
             $addon_price=0;
             $cart_dinein_table_id = NULL;
-            $action = (session()->has('vendorType')) ? session()->get('vendorType') : 'delivery';
+          
             $vendor_details = [];
             $delivery_status = 1;
             $is_vendor_closed = 0;
@@ -447,11 +454,11 @@ trait cartManager{
             $container_charges_tax = 0;
             $processorProduct     = array();
 
-            if(!empty($user)){
-                $client_timezone = DB::table('clients')->first('timezone');
-                $user->timezone = $user->timezone ?? $client_timezone->timezone;
-                $user_timezone = $user->timezone;
-            }
+            // if(!empty($user)){
+            //     $client_timezone = DB::table('clients')->first('timezone');
+            //     $user->timezone = $user->timezone ?? $client_timezone->timezone;
+            //     $user_timezone = $user->timezone;
+            // }
           // $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */
             foreach ($cartData as $ven_key => $vendorData) {
@@ -469,12 +476,12 @@ trait cartManager{
                 $subscription_discount_admin     = 0;
                 $subscription_discount_delivery  = 0;
                 $subscription_discount_vendor    = 0;
-                if(!empty($user)){
-                    $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
+               // if(!empty($user)){
+                    $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
                     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
-                }else{
-                    $vendorData->scheduled_date_time = date('Y-m-d',strtotime($vendorData->scheduled_date_time)) ;
-                }
+                // }else{
+                //     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($vendorData->scheduled_date_time)) ;
+                // }
                 $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
 
                 $slots = (object)$slotsRes['slots'];
@@ -489,7 +496,8 @@ trait cartManager{
                 if($cartData->count() > 1 || in_array($action,['appointment','on_demand']) ){
                     $vendorData->selected_slot = $vendorData->schedule_slot;
                 }
-
+              
+             
                 $vendorData->slotsdate = $slotsdate;
                 $vendorData->slots = $slots;
                 $vendorData->slotsCnt =  $slotcount ;
@@ -630,7 +638,7 @@ trait cartManager{
 
                    // } ///// Notable
                     //  GET PRICE from driver
-                   if(($action == 'on_demand') && checkColumnExists('cart_products', 'dispatch_agent_price') && ($additionalPreference['is_service_product_price_from_dispatch'] ==1 )){
+                   if( checkColumnExists('cart_products', 'dispatch_agent_price') && ( $is_service_product_price_from_dispatch ==1 )){
                         $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
                     }
                     $totalMarkup += $prod->pvariant->markup_price * $prod->quantity??0;
@@ -775,16 +783,17 @@ trait cartManager{
 
                         if(!empty($user)){
                             $scheduledDateTime = dateTimeInUserTimeZone($scheduled_date_time, $user->timezone);
+                            //pr($scheduledDateTime);
                             $prod->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
                             $prod->manual_scheduled_date_time = convertDateTimeInTimeZone($prod->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
-
+                           // pr(  $prod->manual_scheduled_date_time );
                         }else{
                             $prod->scheduled_date_time = date('Y-m-d',strtotime($scheduled_date_time)) ;
                             $prod->manual_scheduled_date_time =  date('Y-m-d\TH:i',strtotime($scheduled_date_time)) ;
                         }
 
                         //if ($action == 'delivery' || $action == 'appointment') {
-                        if ( (in_array($action,['delivery','appointment','on_demand']) ) && ( ( $action == 'on_demand')  && $additionalPreference['is_service_product_price_from_dispatch'] !=1 ) ) {
+                        if ( (in_array($action,['delivery','appointment','on_demand']) ) && ( $is_service_product_price_from_dispatch !=1 ) ) {
                             $delivery_fee_charges = 0;
                             $deliver_charges_lalmove =0;
                             $deliveryCharges = 0;
@@ -880,6 +889,9 @@ trait cartManager{
                 $getSlotingDate = $prod->scheduled_date_time ;
                 if( ($prod->scheduled_date_time =='') || ( strtotime($prod->scheduled_date_time) < strtotime($vendorStartDate) ) ){
                     $prod->scheduled_date_time = $getSlotingDate = $vendorStartDate ;
+                }
+                if(  $is_service_product_price_from_dispatch == 1){
+                    $prod['schedule_slot'] = Carbon::parse($prod->scheduled_date_time, 'UTC')->setTimezone( $user_timezone)->format(' H:i:s');
                 }
                 $prod->dispatchAgents = [];
                 if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){
@@ -1101,7 +1113,8 @@ trait cartManager{
                         $delivery_status = 0;
                     }
                 }
-                if($vendorData->vendor->show_slot == 0){
+
+                if(($vendorData->vendor->show_slot == 0) && ($is_service_product_price_from_dispatch !=1)){
                     if( ($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty()) ){
                         $vendorData->is_vendor_closed = 1;
                         if($delivery_status != 0){

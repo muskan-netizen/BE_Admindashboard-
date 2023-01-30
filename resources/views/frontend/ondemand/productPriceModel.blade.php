@@ -76,7 +76,7 @@ li.userDetailsJobDone.d-block span.text-right {
             <div class="search border-bottom mb-3 pb-3">
               <form class="form-inline my-2 my-lg-0 d-flex">
                 <input class="form-control mr-sm-2" type="hidden" id="driver_product_variant_id">
-                <input class="form-control mr-sm-2" type="datetime-local" min="{{ $minDate }}" value="{{ $minDate }}" id="onDemandBookingdate" placeholder="Search" aria-label="Search">
+                <input class="form-control mr-sm-2" type="datetime-local" time-zone="{{  $timezone  }}" min="{{ $minDate }}" value="{{ $minDate }}" id="onDemandBookingdate" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" id="search_Driver_fee">Search</button>
               </form>
           </div>
