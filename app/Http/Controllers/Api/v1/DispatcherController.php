@@ -31,9 +31,8 @@ class DispatcherController extends Controller
                 $categories = $categories->toArray();
             }
         $DatabaseName = DB::connection()->getDatabaseName();
-        // Log::info(json_encode($DatabaseName));
-        //  $this->connectDb();
-        SyncToDispatcher::dispatch($request->order_panel_id,$DatabaseName,  $client_preferences, $categories, $dispatcher_service_key_url,$dispatcher_service_code)->onQueue('sync_dispatcher');
+        $this->connectDb();
+        SyncToDispatcher::dispatch($request->order_panel_id,$DatabaseName, $categories, $dispatcher_service_key_url,$dispatcher_service_code)->onQueue('sync_dispatcher');
            
         return response()->json([
             'status' => 200,
