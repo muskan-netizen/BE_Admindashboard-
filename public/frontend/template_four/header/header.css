@@ -102,8 +102,37 @@ body[dir="rtl"]  form#register .iti.iti--allow-dropdown.iti--separate-dial-code 
 
 
 /*---- arabic language single product page css start here----*/
-body[dir="rtl"] .product-right.inner_spacing.pl-sm-3.p-0{text-align: right;}
-body[dir="rtl"] #product_variant_quantity_wrapper{float: right;}
-body[dir="rtl"] .product-buttons {text-align: right;}
-body[dir="rtl"] #product_variant_quantity_wrapper h6.product-title {text-align: right;}
-body[dir="rtl"] div#top-tabContent p {text-align: right;}
+
+/*---- arabic language single product page css start here----*/
+body[dir="rtl"] .product-right.inner_spacing.pl-sm-3.p-0{text-align: right;} 
+body[dir="rtl"] #product_variant_quantity_wrapper{float: right;} 
+body[dir="rtl"] .product-buttons {text-align: right;} 
+body[dir="rtl"] #product_variant_quantity_wrapper h6.product-title {text-align: right;} 
+body[dir="rtl"] div#top-tabContent p {text-align: right;} 
+body[dir="rtl"]  .onhover-dropdown:hover .onhover-show-div{text-align: right;} 
+body[dir="rtl"] .pixelstrap ul.alInnerMenu li a{text-align: right;} 
+body[dir="rtl"] li.has-children:hover ul.alInnerMenu{width: auto !important;} 
+body[dir="rtl"] .al_boxSeeAll span i.fa.fa-arrow-right{transform: rotate(180deg);} 
+body[dir="rtl"]  .single_cart_heading h3{text-align: right;} 
+body[dir="rtl"] .alFourTemplateCartButtons a.shoping i{transform: rotate(177deg);}
+body[dir="rtl"] .shoping_cart .cart-heading h5{text-align: right;} 
+body[dir="rtl"] div#left_address label {text-align: right;} 
+body[dir="rtl"] .text-danger{text-align: right;} 
+body[dir="rtl"] .vendor_tables {text-align: right;} 
+body[dir="rtl"] .cart-summary h5.order_text{text-align: right;} 
+body[dir="rtl"] .cart-summary .alFourSpecificInstructions span{text-align: right;} 
+body[dir="rtl"] .cart-price .col-6 {text-align: right !important;} 
+body[dir="rtl"] .cart-summary .cart-price .mb-2{text-align: right;} 
+body[dir="rtl"] .tip_radio_controls {text-align: right;} 
+body[dir="rtl"] .custom-control-label {text-align: right;} 
+body[dir="rtl"] .custom-control-label::after {left: auto;right: -1.5rem;} 
+body[dir="rtl"] .custom-control-label::before {left: 0px;right: -1.5rem;}   
+body[dir="rtl"] .custom-checkbox { padding-left: 0px; padding-right: 1.5rem;} 
+body[dir="rtl"] #editProfileBox label{text-align: right;} 
+body[dir="rtl"] .iti input, .iti input[type=text], .iti input[type=tel] {padding-left: 0px !important;padding-right: 96px !important;} 
+body[dir="rtl"] .default_address.border-bottom {text-align: right;} 
+body[dir="rtl"] .outer-box .px-2 {text-align: right;justify-content: flex-start !important;} 
+body[dir="rtl"] div#add_new_address_form label {text-align: right;}  
+body[dir="rtl"] .theme-card .col-md-12.mt-2 {text-align: right;} 
+body[dir="rtl"] .theme-card .form-row.no-gutters label.radio.m-0 {padding-left: 0px;padding-right: 30px;} 
+body[dir="rtl"] .radio span.checkround:after, .al_body_template_four .checkround{right:0px;} 
