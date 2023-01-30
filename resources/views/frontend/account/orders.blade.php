@@ -691,7 +691,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                
+
                                                                                 @if ($order->total_container_charges > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -748,8 +748,8 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                
-                                                                                
+
+
                                                                                 @if ($order->total_delivery_fee > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -2388,6 +2388,8 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
         var payment_method_required_error_msg = "{{ __('Please select payment method.') }}";
         var check_pickup_schedule_slots = "{{route('cart.check_pickup_schedule_slots')}}";
         var check_dropoff_schedule_slots = "{{route('cart.check_dropoff_schedule_slots')}}";
+        var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+        var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
         var edit_order_by_user_url = "{{route('user.editorder')}}";
         var confirm_edit_order_title = "{{__('Are you sure?')}}";
         var confirm_edit_order_desc = "{{__('You want to edit this Order.')}}";
