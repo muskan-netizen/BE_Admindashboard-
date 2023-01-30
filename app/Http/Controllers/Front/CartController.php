@@ -1930,7 +1930,7 @@ class CartController extends FrontController
      */
     public function deleteCartProduct($domain = '', Request $request)
     {
-        $cartProd =  CartProduct::where('id', $request->cartproduct_id)->select('vendor_id','bid_number')->first();
+        $cartProd =  CartProduct::where('id', $request->cartproduct_id)->select('cart_id', 'vendor_id','bid_number')->first();
         if($cartProd->bid_number)
         {
             CartProduct::where('vendor_id',$cartProd->vendor_id)->update(['bid_number'=>null,'bid_discount'=>null]);
