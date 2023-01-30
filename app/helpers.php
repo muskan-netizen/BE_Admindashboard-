@@ -637,6 +637,7 @@ if (!function_exists('SplitTime')) {
 if (!function_exists('showSlot')) {
     function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
     {
+        $type = empty($type)? "delivery": $type;
         $slotDuration = Vendor::select('slot_minutes')->where('id', $vid)->first();
         $duration = ($slotDuration->slot_minutes) ?? $duration;
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
