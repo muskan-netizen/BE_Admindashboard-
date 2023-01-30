@@ -572,7 +572,6 @@ span.alPriceValue, span.alPriceValue i {
                             if(vendor_product.product.translation_one != ''){
                                 title = vendor_product.product.translation_one.title;
                                 translationOneTitle = title.slice(0, count) + (title.length > count ? "..." : "");
-
                             }
                         %>
 
@@ -1074,13 +1073,12 @@ span.alPriceValue, span.alPriceValue i {
 
                     var firstContent = content.substr(0, showChar);
                     var lastContent = content.substr(showChar, content.length - showChar);
-
+                    firstContent = firstContent.trim();
                     var html = firstContent + '<span class="moreellipses">' + ellipsestext +
-                        '&nbsp;</span><span class="morecontent"><span style="display:none;">' + lastContent +
+                        '</span><span class="morecontent"><span style="display:none;">' + lastContent +
                         '</span><a href="" class="morelink">' + moretext + '</a></span>';
-
-                    $(this).html(html);
-                }
+                        $(this).html(firstContent+lastContent);
+                    }
 
             });
         }
@@ -1093,7 +1091,6 @@ span.alPriceValue, span.alPriceValue i {
             } else {
                 $(this).addClass("less");
                 $(this).html(lesstext);
-                
             }
             $(this).parent().prev().toggle();
             $(this).prev().toggle();
