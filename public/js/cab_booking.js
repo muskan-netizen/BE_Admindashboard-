@@ -849,8 +849,8 @@ jQuery(function () {
                     if(response.data.length != 0){
                         var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
 
-                        var is_booking_bid_ride = $('input[name="is_booking_bid_ride"]:checked').val();
-                        if(is_booking_bid_ride == 0 || is_booking_bid_ride == 1){
+                        var is_cab_pooling_bid_ride = $('input[name="is_cab_pooling_bid_ride"]:checked').val();
+                        if(is_cab_pooling_bid_ride == 0 || is_cab_pooling_bid_ride == 1){
                             var templateid = 'products_template';
                             $('input[name="no_seats_for_pooling"]').val(1);
                         }else{
@@ -862,7 +862,7 @@ jQuery(function () {
                         $("#search_product_main_div").append(products_template(productData));
                         $("#search_product_rider_main_div").append(products_rider_template(productData));
 
-                        if(is_booking_bid_ride == 2){
+                        if(is_cab_pooling_bid_ride == 2){
                             $('.slick-items').slick({
                                 infinite: false,
                                 slidesToShow: 3,
