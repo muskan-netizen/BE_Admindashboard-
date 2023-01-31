@@ -378,8 +378,15 @@ class OrderController extends FrontController
         foreach (explode(":", $order->total_other_taxes) as $row) {
             $total_other_taxes += (float)$row;
         }
-        $order->total_other_taxes_amount = $total_other_taxes;
-        //pr($order->toArray());
+        $order->total_other_taxes_amount=$total_other_taxes;
+
+        $slot_delivery_fees = 0;
+        foreach($order->products as $product){
+            $slot_delivery_fees += $product->slot_price;
+        }
+
+        $order->slot_delivery_fees = $slot_delivery_fees;
+
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency', 'fixedFeeNomenclatures'));
     }
@@ -981,7 +988,8 @@ class OrderController extends FrontController
             }
 
             /* Get all products blongs to cart */
-            $cart_products = CartProduct::select('*')->with(['vendor', 'vendor.slot.geos.serviceArea', 'vendor.slotDate.geos.serviceArea',  'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
+
+            $cart_products = CartProduct::select('*')->with(['vendor', 'vendor.slot.geos.serviceArea', 'vendor.slotDate.geos.serviceArea',  'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'vendorProducts.productVariantByRoles', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
             }, 'coupon.promo', 'product.addon','LongTermProducts.addons'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
 
@@ -1018,7 +1026,6 @@ class OrderController extends FrontController
                 }
             }
 
-
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
@@ -1038,6 +1045,7 @@ class OrderController extends FrontController
                 $additionalPrice=0.00;
                 $quantity_container_charges = 0;
                 $deliveryfeeOnCoupon = 0;
+                $slot_based_price = 0;
                 $passbase_check = VerificationOption::where(['code' => 'passbase', 'status' => 1])->first();
 
                 /* Update details related to order vendor */
@@ -1062,7 +1070,12 @@ class OrderController extends FrontController
                 $vendor_service_fee_percentage_amount = 0;
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
-                    //pr($vendor_cart_product->toArray());
+
+                    if( !empty($vendor_cart_product->slot_price) ) {
+
+                        $slot_based_price += $vendor_cart_product->slot_price;
+
+                    }
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (!empty($latitude) && !empty($longitude)) {
                             if (($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)) {
@@ -1099,7 +1112,19 @@ class OrderController extends FrontController
                     $price_container_charges = $variant->container_charges;
                     $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
                     $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
-                    $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
+
+                    if ( (Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) ) {
+                        $quantity_role_price = $this->calculatePrice($vendor_cart_product->productVariantByRoles, $vendor_cart_product->quantity);
+                        
+                    }
+                    if( @$quantity_role_price['quantity_price'] != 0 && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1)) {
+
+                        $quantity_price = $quantity_role_price['quantity_price'];
+                    } else {
+
+                        $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;    
+                    }
+
                     $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
 
@@ -1170,6 +1195,13 @@ class OrderController extends FrontController
                         $variant_price =$vendor_cart_product->dispatch_agent_price ;
                     }
                     $total_amount += $vendor_cart_product->quantity * $variant_price;
+                    
+                    if( @$quantity_role_price['quantity_price'] != 0 && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1)) {
+                        
+                        $quantity_price = $quantity_role_price['quantity_price'];
+                        $total_amount += $vendor_cart_product->quantity * $quantity_role_price['amount'];
+                        $variant_price = $quantity_role_price['amount'];
+                    } 
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
                     $order_product->price = $variant_price;
@@ -1258,6 +1290,22 @@ class OrderController extends FrontController
                     if (checkColumnExists('order_vendor_products', 'dispatch_agent_id')) {
                         $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
                     }
+
+                    if(checkColumnExists('order_vendor_products', 'slot_id')){
+
+                        $order_product->slot_id = !empty($vendor_cart_product->slot_id) ? $vendor_cart_product->slot_id : null;
+                    }
+
+                    if(checkColumnExists('order_vendor_products', 'delivery_date')){
+
+                        $order_product->delivery_date = !empty($vendor_cart_product->delivery_date) ? $vendor_cart_product->delivery_date : null;
+                    }
+
+                    if(checkColumnExists('order_vendor_products', 'slot_price')){
+                        
+                        $order_product->slot_price = !empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
+                    }
+
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
@@ -1677,7 +1725,7 @@ class OrderController extends FrontController
             $payable_amount = $payable_amount - $Order_bid_discount??0;
             if(!$additionalPreferences->is_tax_price_inclusive) {
 
-                $orderTotalPay = decimal_format($payable_amount);
+                $orderTotalPay = decimal_format($payable_amount + $slot_based_price);
                 // gift card calculation
                 if($giftCardTotalAmount >0 && $orderTotalPay >0){
                     $calCulateGiftCard      = $this->calCulateGiftCard($orderTotalPay,$giftCardTotalAmount);
@@ -1686,6 +1734,8 @@ class OrderController extends FrontController
                 }
                 $order->payable_amount = $orderTotalPay;
             }else{
+            // Slot based price added to payable amount column   
+            $order->payable_amount = decimal_format($payable_amount + $slot_based_price);
 
                 $orderTotalPay = decimal_format($payable_amount - $total_other_taxes);
                 // gift card calculation
@@ -3446,5 +3496,28 @@ class OrderController extends FrontController
             \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
+    }
+    
+    function calculatePrice($productVariantByRoles, $prodQuantity) {
+        $quantity_price = 0;
+        $current_price = 0;
+        if( ( Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) && !empty($productVariantByRoles))  {
+            $amount = 0;
+            $quantity = 0;
+            foreach($productVariantByRoles->reverse() as $inn_key => $inn_val) {
+                if($inn_val->role_id == Auth::user()->role_id ) {
+                    if($quantity < $inn_val->quantity && $inn_val->quantity <= $prodQuantity) {
+                        $quantity = $inn_val->quantity;
+                        $amount = $inn_val->amount;
+                    }
+                }
+                // break;
+            }
+            $quantity_price = $amount * $prodQuantity;
+        }
+        return [
+            'quantity_price' => $quantity_price,
+            'amount' => $amount
+        ]; 
     }
 }

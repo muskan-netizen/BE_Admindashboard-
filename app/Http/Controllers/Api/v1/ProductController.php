@@ -8,7 +8,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot};
 use Validation;
 use DB;
 use App\Http\Traits\{ApiResponser,ProductTrait};
@@ -551,5 +551,64 @@ class ProductController extends BaseController
         return response()->json([
             'data' => $product_faqs,
         ]);
+    }
+    public function getShippingProductDeliverySlots(Request $request){
+        try {
+            $request->validate(
+                [
+                    'delivery_date' => 'required',
+                    'product_id' => 'required'
+                ], 
+                [
+                    'vendor_id.required' => 'Delivery date is required',
+                    'pincode.required' => 'Product id is required'
+                ]
+            );
+            $product_id = $request->product_id;
+            $delivery_date = $request->delivery_date;
+            $mytime = Carbon::now();
+            $current_date = $mytime->format('Y-m-d');
+            $current_time = $mytime->format('H:i');
+            // $vendor_cut_off_time = Carbon::parse($request->vendor_cutoff_time)->format('H:i');
+            $product_delivery_slots = DeliverySlotProduct::with('deliverySlot')->where('product_id', $product_id);
+            if($current_date == $delivery_date){
+                $product_delivery_slots = $product_delivery_slots->whereHas('deliverySlot' ,function ($q) use ($current_time) {
+                    $q->whereTime('cutOff_time', '>=', $current_time);
+                    // $q->whereTime('start_time', '>', $current_time)->whereTime('end_time', '<', $vendor_cut_off_time);
+                })->get();
+            }else{
+                $product_delivery_slots = $product_delivery_slots->get();
+            }  
+            return response()->json([
+                'status' => 200,
+                'message' => 'success',
+                'data' => $product_delivery_slots
+            ]);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    public function getProductDeliverySlotsInterval(Request $request){
+        try {
+            $request->validate(
+                [
+                    'slot_id' => 'required'
+                ], 
+                [
+                    'slot_id.required' => 'Slot Id is required'
+                ]
+            );
+            $product_delivery_slots_interval = [];
+            if (checkTableExists('product_attributes')) {
+                $product_delivery_slots_interval = DeliverySlot::where('parent_id', $request->slot_id)->get();
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'success',
+                'data' => $product_delivery_slots_interval
+            ]);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 }

@@ -447,6 +447,9 @@ class CartController extends FrontController
                 'service_date'        => $request->has('service_date') ? $request->service_date : null,
                 'service_period'      => $request->has('service_period') ? $request->service_period : null,
                 'service_start_date'  => @$service_start_date,
+                'slot_id'  => $request->has('sele_slot_id') ? $request->sele_slot_id : null,
+                'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
+                'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
             ];
              //Check if 
             if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
@@ -1945,7 +1948,7 @@ class CartController extends FrontController
      */
     public function deleteCartProduct($domain = '', Request $request)
     {
-        $cartProd =  CartProduct::where('id', $request->cartproduct_id)->select('vendor_id','bid_number')->first();
+        $cartProd =  CartProduct::where('id', $request->cartproduct_id)->select('cart_id', 'vendor_id','bid_number')->first();
         if($cartProd->bid_number)
         {
             CartProduct::where('vendor_id',$cartProd->vendor_id)->update(['bid_number'=>null,'bid_discount'=>null]);
@@ -1954,17 +1957,17 @@ class CartController extends FrontController
         CartCoupon::where('vendor_id', $request->vendor_id)->delete();
         CartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
 
-        if(!empty($CartProductdata)){
-            $cartpro_count = CartProduct::where('cart_id', $CartProductdata->cart_id)->count();
+        if(!empty($cartProd)){
+            $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
             if($cartpro_count == 0){
                 if(checkColumnExists('carts','order_id'))
                 {
-                    Cart::where('id', $CartProductdata->cart_id)->update([
+                    Cart::where('id', $cartProd->cart_id)->update([
                         'schedule_type' => null, 'scheduled_date_time' => null,
                         'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null, 'order_id' => NULL
                     ]);
                 }else{
-                    Cart::where('id', $CartProductdata->cart_id)->update([
+                    Cart::where('id', $cartProd->cart_id)->update([
                         'schedule_type' => null, 'scheduled_date_time' => null,
                         'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
                     ]);

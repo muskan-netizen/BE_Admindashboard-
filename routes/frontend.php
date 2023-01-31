@@ -164,6 +164,8 @@ Route::group(['middleware' => ['domain']], function () {
     //plugnpay
     Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
 
+	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
+	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
 
 	//Simplify
 	Route::match(['get', 'post'], 'payment/simplify/page', 'Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
@@ -470,8 +472,9 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::post('/updateCartBookingSlot', 'Front\CartController@updateCartBookingSlot')->name('updateCartBookingSlot');
 
+	Route::get('getShippingProductDeliverySlots', 'Front\ProductController@getShippingProductDeliverySlots')->name('product.getShippingProductDeliverySlots');
 
-
+	Route::get('getShippingSlotsInterval', 'Front\ProductController@getShippingSlotsInterval')->name('product.getShippingSlotsInterval');
 
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');

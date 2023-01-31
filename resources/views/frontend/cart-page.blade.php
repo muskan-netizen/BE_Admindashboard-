@@ -414,9 +414,9 @@
                                                         @endif
                                                     @endif
 
-                                                    @if (isset($vendor_product->product->product_delivery_fee) && $vendor_product->product->product_delivery_fee > 0)
+                                                    @if (isset($vendor_product->product_delivery_fee) && $vendor_product->product_delivery_fee > 0)
                                                         <div class="float-left mt-2">Delivery Fee : <span
-                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product->product_delivery_fee }}</span>
+                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee }}</span>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -618,6 +618,9 @@
                                         @endif
                                         @if ($vendor_product->product->is_long_term_service == 1)
                                             @include('frontend.cart.longTermTimeSelection')
+                                        @endif
+                                        @if( $vendor_product->product->same_day_delivery ==  1 && $vendor_product->product->next_day_delivery ==  1)
+                                            @include('frontend.cart.deliverySlotSelection')
                                         @endif
 
                                     </div>
@@ -1065,6 +1068,14 @@
                                             @endif
                                         </b>
                                     </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+                            @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
+                                <div class="row">
+                                    
+                                    <div class="col-6">{{__('Delivery Slot Fees')}}</div>
+                                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
                                 </div>
                                 <hr class="my-2">
                             @endif
