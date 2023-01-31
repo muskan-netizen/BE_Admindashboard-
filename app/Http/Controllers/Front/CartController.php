@@ -723,10 +723,6 @@ class CartController extends FrontController
      */
     public function getCartProducts(Request $request,$domain = '')
     {
-
-        Session()->forget('vendorType');
-        Session()->put('vendorType', $request->type);
-
         $cart_details = [];
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
