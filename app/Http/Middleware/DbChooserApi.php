@@ -19,16 +19,19 @@ class DbChooserApi
      * @param  \Closure  $next
      * @return mixed
      */
-    
+
 
     public function handle($request, Closure $next){
+       
         config(['auth.guards.api.provider' => 'users']);
         $header = $request->header();
+
         $database_name = 'royoorders';
         $clientCode = '';
         if (!array_key_exists("code", $header)){
             return response()->json(['error' => 'Invalid Code', 'message' => 'Invalid Code'], 401);
         }
+        
         $clientCode = $header['code'][0];
         $existRedis = Redis::get($clientCode);
         if(!$existRedis){
@@ -67,10 +70,11 @@ class DbChooserApi
                 Config::set("client_connected", true);
                 DB::setDefaultConnection($database_name);
                 DB::purge($database_name);
+                
                 return $next($request);
             }
             abort(404);
-   
+
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
         }

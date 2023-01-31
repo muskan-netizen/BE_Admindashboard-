@@ -1,4 +1,4 @@
-<div class="col-md-3">
+<div class="col">
     <div class="deals-product product-card-box position-relative text-center al_custom_vendors_sec"  >
         <a class="suppliers-box d-block" href="{{ $product["vendor"]->slug }}/product/{{ $product["url_slug"] }}">
             <div class="suppliers-img-outer position-relative ">
@@ -8,7 +8,7 @@
                 <h4>{{  $product['title'] }}</h4>
                 
                 <h5>{{ $product['discount_percentage'] ?? 0}}% OFF</h5>
-                <a href="{{ $product["vendor"]->slug }}/product/{{ $product["url_slug"] }}">SHOP NOW</a>
+                <a href="{{ $product["vendor"]->slug }}/product/{{ $product["url_slug"] }}" class="spotlight-deal-btn">SHOP NOW</a>
             </div>
         </a>
     </div>

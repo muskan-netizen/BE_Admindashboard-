@@ -28,8 +28,8 @@ class Product extends Model implements Auditable{
     }
 
     public function vendor(){
-      if(checkColumnExists('vendors', 'need_sync_with_order') && checkColumnExists('vendors', 'is_seller')){
-        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time');
+      if(checkColumnExists('vendors', 'need_sync_with_order') && checkColumnExists('vendors', 'is_seller') && checkColumnExists('vendors', 'is_vendor_instant_booking')){
+        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'is_vendor_instant_booking', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time');
       }
       
       return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude',  'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code');

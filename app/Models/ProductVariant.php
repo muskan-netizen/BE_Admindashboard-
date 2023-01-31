@@ -12,8 +12,7 @@ class ProductVariant extends Model
 {
 	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min','role_id'];
 
-  protected $appends = ['actual_price', 'new_price'];
-
+    protected $appends = ['actual_price', 'new_price'];
 
 	public function getImageAttribute($value)
     {
@@ -163,11 +162,11 @@ class ProductVariant extends Model
            if(auth()->user() !=null && auth()->user()->is_admin == 1){
             $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor->vendor_id)->first();
             if($userVendor){
-                return $value;
+                return decimal_format($value);
             }
         }
         if($checkMarkup){
-            return $value + $this->markup_price??0;
+            return decimal_format($value + $this->markup_price??0);
         }
 
         
@@ -175,10 +174,10 @@ class ProductVariant extends Model
         if(auth()->user() !=null){
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
             if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
-                return $this->productVariantByRole->amount;
+                return decimal_format($this->productVariantByRole->amount);
             }
         }
-        return $value;
+        return decimal_format($value);
 
     }
 
@@ -189,7 +188,7 @@ class ProductVariant extends Model
         $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
         //if vendor price add with markup price
            if($checkMarkup){
-                return $value;
+                return decimal_format($value);
             }
 
             return 0;

@@ -50,6 +50,7 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Kyc</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -57,6 +58,7 @@
                                 @foreach($influencer_list as $value)
                                 <tr>
                                     <td> {{ $value->name ?? '' }} </td>
+                                    <td> {{ (@$value->kyc)?'Yes':'No' }} </td>
                                     <td> 
                                         {{-- <a class="btn btn-sm btn-danger" onclick="return confirm('Are you sure? You want to delete the map provider.')" href="#"><i class="fa fa-trash"></i></a> --}}
                                         <a href="{{ route('influencer-refer-earn.edit', ['id' => $value->id]) }}"><i class="fas fa-edit"></i></a>

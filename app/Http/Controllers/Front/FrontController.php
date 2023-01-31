@@ -28,6 +28,7 @@ class FrontController extends Controller
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
+         
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
             {
@@ -60,7 +61,13 @@ class FrontController extends Controller
                 if( isset($send->code) && $send->code != 'ok'){
                     return '2';
                 }
-            }else{
+            }
+            elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -115,7 +122,13 @@ class FrontController extends Controller
                 if( isset($send->code) && $send->code != 'ok'){
                     return '2';
                 }
-            }else{
+            }
+            elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);

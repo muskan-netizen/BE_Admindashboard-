@@ -165,7 +165,7 @@
 
                     <div class="col-md-12 mb-2">
                         <div class="form-group" id="orders_per_slotInput">
-                            {!! Form::label('title', 'Maximum Orders Per Slot',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Maximum Orders Per Slot'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="orders_per_slot" type="text" value="{{$vendor->orders_per_slot}}">
                         </div>
                     </div>
@@ -181,7 +181,7 @@
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="fixed_fee_amount" type="text" value="{{$vendor->fixed_fee_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between inline-toltip">
-                        <label class="position-relative control-label" >Hide Price Bifurcation
+                        <label class="position-relative control-label" >{{ __('Hide Price Bifurcation') }}
                             <div class="alInfoIocn">
                                 <i class="fa fa-info-circle"></i>
                                 <span class="tooltiptext">Hide Fixed Price, Service Fee, Container Charges, Taxes, Subtotal</span>
@@ -341,7 +341,14 @@
                             </textarea>
                         </div>
                     </div> --}}
-
+                    @if(checkColumnExists('vendors', 'is_vendor_instant_booking'))
+                        @if(Auth::user()->is_superadmin == 1 && $client_preferences->is_one_push_book_enable == 1 && $vendor->pick_drop == 1)
+                            <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                                {!! Form::label('title', __('Instant Booking'),['class' => 'control-label']) !!}
+                                <input type="checkbox" data-plugin="switchery" name="is_vendor_instant_booking" class="form-control" data-color="#43bee1" @if($vendor->is_vendor_instant_booking == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                            </div>
+                        @endif
+                    @endif
 
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
@@ -681,7 +688,7 @@
         <div class="col-md-12 mb-3">
             <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' : 'disabled'}}>
                 @foreach($templetes as $templete)
-                    <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{$templete->title}}</option>
+                    <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{ __($templete->title)}}</option>
                 @endforeach
             </select>
         </div>
@@ -731,7 +738,7 @@
     }
 </style>
 
-@if( !p2p_module_status() )
+
  <div class="card-box">
     <h4 class="header-title mb-0 mt-2 d-inline-block align-middle">{{ __('Users') }}</h4>
     <h4 class="header-title mb-0 float-right"><a class="btn addUsersBtn" dataid="0" href="javascript:void(0);"><i class="mdi mdi-plus-circle mr-1" ></i> {{ __("Add Users") }}
@@ -762,7 +769,7 @@
         @endforeach
     </div>
 </div>
-@endif
+
 <div id="manageSocialMedia" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg social_manage">
         <div class="modal-content">

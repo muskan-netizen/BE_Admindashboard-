@@ -206,7 +206,7 @@ $client_preferences = \App\Models\ClientPreference::first();
     <div id="mycart"></div>
     <div class="container">
         @if($cartData)
-      
+
         <input type="hidden" id='cart_id' value="{{ isset($cartData['0']) ?  $cartData['0']->cart_id : '' }}">
 
         <form method="post" action="" id="placeorder_form">
@@ -542,6 +542,24 @@ $client_preferences = \App\Models\ClientPreference::first();
                         <% if(payment_option.slug == 'payphone') { %>
                             <div class="col-md-12 mt-3 mb-3">
                                 <div id="pp-button"></div>
+                            </div>
+                        <% } %>
+
+                        <% if(payment_option.slug == 'plugnpay') { %>
+                            <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
+                                <div class="row no-gutters">
+                                    <div class="col-6">
+                                        <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" />
+                                    </div>
+                                    <div class="col-3">
+                                        <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY" />
+                                    </div>
+                                    <div class="col-3">
+                                        <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" />
+                                    </div>
+                                </div>
+
+                                <span class="error text-danger" id="plugnpay_card_error"></span>
                             </div>
                         <% } %>
                     </div>
@@ -923,7 +941,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 
        $('.time').removeClass("d-none");
     }
-  
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
@@ -1069,12 +1087,14 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Slot_is_required = "{{__('Slot is required')}}";
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
+    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
     var error_unchanged_schedule_date = "{{__('Schedule date can not be changed')}}";
     var discard_order_editing_url = "{{route('user.discardeditorder')}}";
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".cart_response";
-    
+
     @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
     @else
@@ -1763,6 +1783,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     $(document).delegate('#view_all_address', 'click', function() {
 
         $("#view_all_address").addClass("d-none");
+        $("#view_all_address").removeClass("d-block");
         $("#view_all_address_div").removeClass("d-none");
 
     });

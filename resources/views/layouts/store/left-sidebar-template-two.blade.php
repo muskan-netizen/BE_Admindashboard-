@@ -304,7 +304,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </div>
                    </div>
                   </div>
-   @if(count($navCategories))
+   @if(@$navCategories && count($navCategories))
       <div class="container-fluid"> 
          <div class="row"> 
             <div class="col-12">

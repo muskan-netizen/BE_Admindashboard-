@@ -250,7 +250,7 @@ if (Session::has('toaster')) {
     }
 
     initFirebaseMessagingRegistration();
-    messaging.onMessage(function(payload) {
+    messaging.onMessage( async function(payload) {
         console.log("payload");
         console.log(payload);
         if (!("Notification" in window)) {
@@ -270,35 +270,37 @@ if (Session::has('toaster')) {
                         body: payload.notification.body,
                         icon: payload.notification.icon
                     };
-                    var push_notification = new Notification(
-                        notificationTitle,
-                        notificationOptions
-                    );
+                    await fireNotification(notificationOptions,notificationTitle);
                     push_notification.onclick = function(event) {
                         event.preventDefault();
                         window.open(payload.notification.click_action, "_blank");
                         push_notification.close();
                     };
                 } else {
-                   // alert();
-                    var notificationTitle = payload.notification.title;
-                    var notificationOptions = {
-                        body: payload.notification.body,
-                        icon: payload.notification.icon
-                    };
-                    var push_notification = new Notification(
-                        notificationTitle,
-                        notificationOptions
-                    );
-                    push_notification.onclick = function(event) {
-                        event.preventDefault();
-                        // window.open(payload.notification.click_action, "_blank");
-                        // push_notification.close();
-                    };
+                    //alert();
+                    //setTimeout(()=>{
+                        var notificationTitle = payload.notification.title;
+                        var notificationOptions = {
+                            body: payload.notification.body,
+                            icon: payload.notification.icon
+                        };
+                        //console.log(notificationOptions);
+                        await fireNotification(notificationOptions,notificationTitle);
+                
+                  
+                     
+                    //},2000);
+                   
                 }
-            }
+            } 
         }
     });
+    async function fireNotification(notificationOptions,notificationTitle){
+        await new Notification(
+            notificationTitle,
+            notificationOptions
+        );
+    }
 </script>
 @endif
 @endif

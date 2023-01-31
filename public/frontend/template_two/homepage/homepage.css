@@ -438,7 +438,14 @@ body[dir=rtl] .slick-prev {
         border-radius: 10px;
     }
 }
-
+.al_body_template_two .margin-res .product-image img {
+    padding: 20px;
+    height: auto !important;
+}
+.al_body_template_two .margin-res{margin-top: 10px;}
+.al_body_template_two .margin-res .media-body .inner_spacing {
+    margin-bottom: 10px;
+}
 .royo_whatsapp_img {
     position: fixed;
     z-index: 99999;

@@ -336,7 +336,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                                     @endif
                                                                 </h3>
                                                                 <div class="product-description_list border-bottom">
-                                                                    <span class="flag-discount">30% Off</span>
+                                                                    @if($dicountPercentage = productDiscountPercentage($data->variant_price, $data->variant_compare_at_price))
+                                                                        <span class="flag-discount">{{$dicountPercentage}}% Off</span>
+                                                                    @endif
                                                                     <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
                                                                     @if(@$data->vendor->is_seller == 1)
                                                                         <h6 class="sold-by d-flex">
@@ -350,7 +352,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                                     @endif
                                                                     </div>
                                                                     @if($data->inquiry_only == 0)
-                                                                        <h4 class="mt-1">{{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        @if ($additionalPreference ['is_token_currency_enable'] )
+                                                                        <i class='fa fa-money' aria-hidden='true'></i> {{ getInToken($data->variant_price * $data->variant_multiplier)}}
+                                                                        @else
+                                                                            <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        @endif
                                                                     @endif
                                                                 
                                                             </div>

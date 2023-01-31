@@ -43,7 +43,7 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role']); //,'seller_sold_title','saller_platform_logo'
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role','advance_booking_amount', 'advance_booking_amount_percentage',]); //,'seller_sold_title','saller_platform_logo'
 @endphp
    <!--Localization start -->
     <div class="row">
@@ -248,10 +248,10 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
-             
+
                     <div class="row align-items-start">
                         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                        
+
                             @php
                                 $VendorTypesName = $vendor_typ_key.'_check';
                             @endphp
@@ -2009,7 +2009,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 </span>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
             </form>
@@ -2166,7 +2166,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                  </form>
              </div>
 
-            <div class="col-lg-4 col-xl-3 mb-3">
+            <div class="col-lg-4 col-xl-3 mb-3 d-none">
                 <div class="col-12">
                     <div class="page-title-box">
                         <h4 class="page-title text-uppercase">{{ __("Token") }}</h4>
@@ -2217,6 +2217,47 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                     </div>
                 </form>
             </div>
+
+            {{-- mohit sir branch code added by sohail --}}
+            <div class="col-lg-4 col-xl-3 mb-3">
+                <div class="col-12">
+                    <div class="page-title-box">
+                    <h4 class="page-title text-uppercase">{{ __("Advance Booking For Takeaway") }}</h4>
+                    </div>
+                </div>
+                <form method="POST" action="{{route('additional.update')}}">
+                    @csrf
+                    <input type="hidden" name="send_to" id="send_to" value="customize">
+                    <div class="card-box h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h4 class="header-title mb-0">{{ getDynamicTypeName('Advance Booking')  }}</h4>
+                            <button class="btn btn-info d-block" type="submit" name="appointment_submit_btn" value ="1"> {{ __("Save") }} </button>
+                        </div>
+                        <!-- <p class="sub-header">{{ __("Get token amount before user place order.") }}</p> -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <div class="form-group mb-0 switchery-demo">
+                                        <label for="need_appointment_service" class="mr-3">{{ __("Enable") }}</label>
+                                        <input type="checkbox" data-plugin="switchery" id="advance_booking_amount" class="form-control checkbox_change" data-className="advance_booking_amount_hidden" data-color="#43bee1" @if(@$getAdditionalPreference['advance_booking_amount'] == '1') checked='checked' value="1"  @endif>
+                                        <input type="hidden"  @if(isset($getAdditionalPreference['advance_booking_amount']) == 1) value="1" @else value="0" @endif  name="advance_booking_amount"  id="advance_booking_amount_hidden"/>
+                                    </div>
+                                </div>
+                                <div class="form-group mt-3 advance_booking_amount_row" style="{{((isset($getAdditionalPreference['advance_booking_amount']) && $getAdditionalPreference['advance_booking_amount'] == 1)) ? '' : 'display:none;'}}">
+                                    <label for="fb_client_id">{{ __("Advance Booking Amount %") }}</label>
+                                    <input type="number" min="1" max="100" required name="advance_booking_amount_percentage" id="advance_booking_amount_percentage" placeholder="" class="form-control" value="{{ old('advance_booking_amount_percentage',  $getAdditionalPreference['advance_booking_amount_percentage'] ?? '')}}">
+                                    @if($errors->has('advance_booking_amount_percentage'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('advance_booking_amount_percentage') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {{-- till here --}}
 
             {{-- Roles Enable setting for price, that is, is_enable_pricing (START) --}}
             @if (isset($getAdditionalPreference['is_price_by_role']))
@@ -2825,6 +2866,17 @@ $(document).ready(function(){
          }
     }
 });
+
+    var advance_booking_amount = $('#advance_booking_amount');
+    if(advance_booking_amount.length > 0){
+        advance_booking_amount[0].onchange = function() {
+        if ($('#advance_booking_amount:checked').length != 1) {
+            $('.advance_booking_amount_row').hide();
+        } else {
+            $('.advance_booking_amount_row').show();
+        }
+        }
+    }
 
     $('#social_icons').on('change', function() {
         $(".input-group-text").html('<i class="fab fa-'+this.value+'"></i>');

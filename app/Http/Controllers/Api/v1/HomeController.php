@@ -61,12 +61,35 @@ class HomeController extends BaseController
                     }
             }
             //pr($vendorMode);
+            //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
+
             $homeData['profile']->preferences->is_cab_pooling = (int) getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
             $homeData['profile']->preferences->chat_button = (int) getAdditionalPreference(['chat_button'])['chat_button'];
             $homeData['profile']->preferences->call_button = (int) getAdditionalPreference(['call_button'])['call_button'];
             $homeData['profile']->preferences->is_user_kyc_for_registration = (int) getAdditionalPreference(['is_user_kyc_for_registration'])['is_user_kyc_for_registration'];
             //dd($homeData['profile']);
+
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable']);
+            $homeData['profile']->preferences->advance_booking_amount = 0;
+            $homeData['profile']->preferences->advance_booking_amount_percentage = 0;
+            if(!empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+                $homeData['profile']->preferences->advance_booking_amount = ($getAdditionalPreference['advance_booking_amount'] == 1)? true : false;
+                $homeData['profile']->preferences->advance_booking_amount_percentage = $getAdditionalPreference['advance_booking_amount_percentage'];
+            }
+            //till here
+
+            $homeData['profile']->preferences->update_order_product_price = (!empty($getAdditionalPreference['update_order_product_price']) && $getAdditionalPreference['update_order_product_price'] == 1)? true : false;
+            $homeData['profile']->preferences->is_one_push_book_enable    = (int) $getAdditionalPreference['is_one_push_book_enable'];
+            $homeData['profile']->preferences->is_bid_ride_enable         = (int) $getAdditionalPreference['is_bid_ride_enable'];
+
+            if($homeData['profile']->preferences->is_one_push_book_enable == 1){
+                $homeData['profile']->preferences->pick_drop_instant_booking_vendor = Vendor::select('id', 'slug', 'name', 'is_vendor_instant_booking', 'status')
+                                                                                      ->with(['products' => function ($v) {
+                                                                                        $v->where('is_product_instant_booking', 1)->first();
+                                                                                    }])->where('status', 1)->where('is_vendor_instant_booking', 1)->first();
+            }
+            
             $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
             $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
             $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
@@ -162,7 +185,7 @@ class HomeController extends BaseController
                     unset($value->redirect_vendor_id);
                 }
             }
-            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
                 ->where('status', 1)->where('validity_on', 1)
                 ->with(['category:id,type_id', 'category.type', 'vendor'])
                 ->where(function ($q) {
@@ -259,6 +282,7 @@ class HomeController extends BaseController
             $homeData['domain_link'] = $domain_link;
             $homeData['profile']->preferences->is_postpay_enable = (int) @getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
             $homeData['profile']->preferences->is_order_edit_enable = (int) @getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
+            $homeData['profile']->preferences->is_bid_enable = (int) @getAdditionalPreference(['is_bid_enable'])['is_bid_enable'];
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -479,7 +503,7 @@ class HomeController extends BaseController
             $isVendorArea = 0;
 
             // Start Mobile Banners
-            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
             ->where('status', 1)->where('validity_on', 1)
             ->with(['category:id,type_id', 'category.type', 'vendor'])
             ->where(function ($q) {
@@ -553,7 +577,7 @@ class HomeController extends BaseController
             $homeData['brands'] = $brands;
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
-            // long term service 
+            // long term service
             $long_term_service_products =[];
             if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
                 $requestFrom='app';

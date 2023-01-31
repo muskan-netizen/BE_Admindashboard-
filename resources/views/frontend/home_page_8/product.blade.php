@@ -1,5 +1,5 @@
 
-<div class="col-md-2">
+<div class="col">
 <div class="product-card-box position-relative al_box_third_template al"  >
     {{-- {{ dd($product)}} --}}
     {{--<div class="add-to-fav 12">
@@ -18,7 +18,9 @@
                         @if($product["averageRating"] >0)<span class="rating-number">{{ $product["averageRating"] }}</span>
                         @endif @endif @endif </div>
                     <div class="product-description_list border-bottom">
-                        <span class="flag-discount">30% Off</span>
+                        @if($dicountPercentage = productDiscountPercentage($product["price_numeric"], $product["compare_price"]))
+                            <span class="flag-discount">{{$dicountPercentage}}% Off</span>
+                        @endif
                         <p>
                             {{ $product["vendor_name"] }}
                         </p>
@@ -31,6 +33,7 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between al_clock pt-2">
                         <b>{!!$product["price"] ?? ''!!} </b>
+                        <del>{!!$product["compare_at_price"] ?? ''!!} </del>
                     </div>
                 </div>
             </div>

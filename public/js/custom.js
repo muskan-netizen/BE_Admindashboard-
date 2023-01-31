@@ -1,7 +1,7 @@
 
 $(function () {
     var slotValidater = 2;
-   
+
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
@@ -598,7 +598,7 @@ $(document).ready(function () {
         var payment_option_id = selected_option.data("payment_option_id");
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
-           
+
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -969,7 +969,7 @@ $(document).ready(function () {
             return false;
         }
         var address = $("input[name='address_id']").val();
-        if ((vendor_type == 'delivery') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
+        if ((vendor_type == 'delivery' || vendor_type == 'on_demand') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
             return false;
         }
@@ -1120,7 +1120,16 @@ $(document).ready(function () {
                                     let payment_method_tab_pane_template = _.template($('#payment_method_tab_pane_template').html());
                                     $("#v_pills_tabContent").append(payment_method_tab_pane_template({ payment_options: response.data }));
                                     $('#proceed_to_pay_modal').modal('show');
-                                    $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
+
+                                    //mohit sir branch code added by sohail
+                                    var advanceCartTotalPayableAmount = $('#advance_cart_total_payable_amount').length;
+                                    if(advanceCartTotalPayableAmount == 1){
+                                        var amtHTML = 'Advanced Token Amount: <span id="total_amt">'+$('#advance_cart_total_payable_amount').html()+'</span>';
+                                        $('#proceed_to_pay_modal #pay-billLabel').html(amtHTML);
+                                    }else{
+                                        $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
+                                    }
+                                    //till here
                                     if(stripe_publishable_key != ''){
                                         stripeInitialize();
                                     }
@@ -1249,7 +1258,7 @@ $(document).ready(function () {
         });
     });
 
-    
+
 
     var paymentAjaxData = {};
 
@@ -1294,7 +1303,7 @@ $(document).ready(function () {
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
-        
+
         if (result.error) {
             swal.fire({
                 icon: 'error',
@@ -1681,7 +1690,7 @@ $(document).ready(function () {
         });
     }
 
-    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0, delivery_type = 'D',other_taxes_string='') {
+    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0, delivery_type = 'D',other_taxes_string='',total_amount='') {
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
@@ -1702,7 +1711,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot, is_postpay:post_pay_edit_order },
+            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot, is_postpay:post_pay_edit_order,total_amount:total_amount },
 
             success: function (response) {
                 if (response.status == "Success") {
@@ -1793,6 +1802,18 @@ $(document).ready(function () {
             return false;
         }
 
+        if(payment_option_id == 49){
+            cno = $('#plugnpay-card-element').val();
+            dt = $('#plugnpay-date-element').val();
+            cv = $('#plugnpay-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill Details', "#plugnpay_card_error");
+                return false;
+            }
+        }
+
+
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
          $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1815,7 +1836,7 @@ $(document).ready(function () {
         // alert(total_amount);
         // return false;
         if (payment_option_id == 1 || payment_option_id == 38 || post_pay_edit_order == 1) {
-            placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string);
+            placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string,total_amount);
         } else{
             cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
         }
@@ -1934,6 +1955,18 @@ $(document).ready(function () {
         } else {
             $('#wallet_amount_error').html('');
         }
+
+        if(payment_option_id == 49){
+            cno = $('#plugnpay-card-element').val();
+            dt = $('#plugnpay-date-element').val();
+            cv = $('#plugnpay-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill Details', ".payment_response");
+                return false;
+            }
+        }
+
         if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
             $('#wallet_payment_methods_error').html(payment_method_required_error_msg);
             return false;
@@ -2162,7 +2195,7 @@ $(document).ready(function () {
         OrderStorage.setStorageSingle('cartData',[]);
         OrderStorage.setStorageSingle('cartProductCount',0);
         OrderStorage.setStorageSingle('LongTermServiceAdded','');
-        OrderStorage.setStorageSingle('cartFirstProductId',''); 
+        OrderStorage.setStorageSingle('cartFirstProductId','');
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2177,15 +2210,20 @@ $(document).ready(function () {
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
+                    var is_token_enable = response.is_token_enable;
+                    var token_val = response.token_val;
                     // console.log(cart_details);
                     if (cart_details!= undefined) {
+                        // if((response.is_token_enable == 1) && (response.token_val > 0) ){
+                        //     response.token_val;
+                        // }
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
                             OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);
                             OrderStorage.setStorageSingle('LongTermServiceAdded',cart_details.products[0].is_long_term_service);
                             //map array  cart_details.products.map(checkIfInCart);
-                            var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
+                            var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
 
                              let header_cart_template = _.template($('#header_cart_template').html());
 
@@ -2307,6 +2345,11 @@ $(document).ready(function () {
                         }
 
                     }
+                    $.each($('.vendor_schedule_slot'), function() { 
+                        if($(this).val()!=''){
+                            $responst = checkSlotAvailability(this);
+                        }
+                    });
                 }
             },
             complete: function (data) {
@@ -2913,7 +2956,7 @@ $(document).ready(function () {
                 });
                 return false;
             }
-         
+
 
             var service_start_time  =  $('#service_start_time').val();
             if(service_start_time == '' || service_start_time== undefined){
@@ -2926,7 +2969,7 @@ $(document).ready(function () {
             }
         }
 
-       
+
         $(".productAddonSetOptions").each(function (index) {
             var min_select = $(this).attr("data-min");
             var max_select = $(this).attr("data-max");
@@ -3058,7 +3101,7 @@ $(document).ready(function () {
         var service_day =  $(this).attr('data-service_day');
         var service_start_time =  $(this).attr('data-service_start_time');
         var service_date =  $(this).attr('data-service_date');
-        
+
         if ($(this).attr('data-page') == 'productDetail') {
             submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date);
         } else if ($(this).attr('data-page') == 'vendorProducts') {
@@ -3901,7 +3944,6 @@ $(document).ready(function () {
     // Check Slot Availability
     async function checkSlotAvailability(obj)
     {
-
         var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         var schedule_slot = $(obj).val();
         var vendor_id = $(obj).data('vendor_id');
@@ -3926,6 +3968,7 @@ $(document).ready(function () {
                     $('#order_placed_btn').attr("disabled", true);
                      res =0;
                 }else{
+                    $( ".cart_response " ).find( ".alert" ).css( "display", "none" );
                     // Enable the place order button
                     $('#order_placed_btn').attr("disabled", false);
                     res = 1;
@@ -4290,6 +4333,117 @@ $(document).ready(function () {
 
     });
 
+    //prescription upload for bidding
+
+    // $(document).on('click', '.prescription-doc-remove', function (e) {
+    //     var prescriptionId = $(this).data("prescription_id");
+    //     $.ajaxSetup({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('input[name="_token"]').val()
+    //         }
+    //     });
+    //     $.ajax({
+    //         type: "post",
+    //         headers: {
+    //             Accept: "application/json"
+    //         },
+    //         url: get_product_prescription,
+    //         dataType: 'json',
+    //         data: {prescriptionId:prescriptionId,requestType:'delete_prescription'},
+    //         beforeSend: function () {
+    //             $(".loader_box").show();
+    //         },
+    //         success: function (response) {
+    //             if (response.status == 'success') {
+    //                 $(".modal .close").click();
+    //                 location.reload();
+    //             }
+    //         },
+    //         complete: function () {
+    //             $('.loader_box').hide();
+    //         }
+    //     });
+    // });
+
+    // $(document).on('click', '.bid_prescription_btn', function (e) {
+    //     e.preventDefault();
+    //     $(".uploaded-bidding-prescription").html("");
+    //     $(".uploaded-bidding-prescription-img").val(null);
+    //     var ID = $(this).data("id");
+    //     $.ajaxSetup({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('input[name="_token"]').val()
+    //         }
+    //     });
+    //     $.ajax({
+    //         type: "post",
+    //         headers: {
+    //             Accept: "application/json"
+    //         },
+    //         url: get_bid_prescription,
+    //         dataType: 'json',
+    //         data: {id:ID},
+    //         beforeSend: function () {
+    //             $(".loader_box").show();
+    //         },
+    //         success: function (response) {
+
+    //             // show-prescription-doc
+    //             var showPrescriptionDoc = '';
+    //             $.each(response, function (key, res) {
+    //                 showPrescriptionDoc += '<div class="show-prescription-close"><i class="fa fa-times prescription-doc-remove" data-prescription_id="'+res.id+'" aria-hidden="true"></i><img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60"></div>'
+    //             });
+
+    //             $(".show-bid_prescription-doc").html(showPrescriptionDoc);
+    //             $('#bid_prescription_form').modal('show');
+    //         },
+    //         complete: function () {
+    //             $('.loader_box').hide();
+    //         }
+    //     });
+    // });
+
+    // $(document).on('click', '.submitBidPrescriptionForm', function (e) {
+    //     e.preventDefault();
+    //     var form = document.getElementById('savebidprescriptionform');
+    //     var formData = new FormData(form);
+    //     var route_uri = "add/bid/prescription";
+
+    //     $.ajaxSetup({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('input[name="_token"]').val()
+    //         }
+    //     });
+    //     $.ajax({
+    //         type: "post",
+    //         headers: {
+    //             Accept: "application/json"
+    //         },
+    //         url: route_uri,
+    //         data: formData,
+    //         contentType: false,
+    //         processData: false,
+    //         beforeSend: function () {
+    //             $(".loader_box").show();
+    //         },
+    //         success: function (response) {
+
+    //             if (response.status == 'success') {
+    //                 $(".modal .close").click();
+    //                 location.reload();
+    //             } else {
+    //                 $(".show_all_error.invalid-feedback").show();
+    //                 $(".show_all_error.invalid-feedback").text(response.message);
+    //             }
+    //             return response;
+    //         },
+    //         complete: function () {
+    //             $('.loader_box').hide();
+    //         }
+    //     });
+
+    // });
+
     $(document).on('click', '#tasknow', function () {
         //$('#schedule_div').attr("style", "display: none !important");
     });
@@ -4573,6 +4727,13 @@ $(document).ready(function () {
             case 47:
                 paymentViaKhalti('', '');
             break;
+            case 48:
+                paymentViaMtnMomo('', payment_option_id, '');
+            break;
+             case 49:
+                paymentViaplugnpay('', payment_option_id, '');
+            break;
+
         }
 
     }
@@ -5028,6 +5189,29 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '48':
+
+                //console.log('address_id',address_id,'payment_option_id',payment_option_id,'tip',tip);
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    console.log('order',order);
+                    paymentViaMtnMomo(address_id, order, payment_from='cart');
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '49':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaplugnpay(address_id, payment_option_id,order);
+                }
+                else{
+                    return false;
+                }
+            break;
         }
 
     }
@@ -5244,6 +5428,14 @@ $(document).ready(function () {
             case 47:
                 paymentViaKhalti('', '');
                 break;
+            case 48:
+               paymentViaMtnMomo('', payment_option_id, '');
+
+            break;
+            case 49:
+                console.log('49');
+                paymentViaplugnpay('',payment_option_id,'');
+            break;
         }
     }
 

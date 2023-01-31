@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
+use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -18,11 +18,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
 
-function setUserCode(){
-    $userCode = session()->has('userCode');
-    if(!$userCode){
-        $user = ClientData::first();
-        session()->put('userCode', $user->code);
+if (!function_exists('setUserCode')) {
+    function setUserCode(){
+        $userCode = session()->has('userCode');
+        if(!$userCode){
+            $user = ClientData::first();
+            session()->put('userCode', $user->code);
+        }
     }
 }
 
@@ -101,17 +103,29 @@ if (!function_exists('getInToken')) {
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             session()->put('compareCurrency', $clientCurrency->doller_compare);
         }
-        
+
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
         if($tokenCurrency == null){
             $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
             $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
         }
-        // $currency_id = session()->get('customerCurrency');
-        // $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
 
         return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * ($tokenCurrency ?? 1));
+    }
+}
+
+if (!function_exists('getJsToken')) {
+    function getJsToken(){
+        setUserCode();
+        $redis = Redis::connection();
+        $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
+        $tokenCurrency = json_decode($tokenCurrency);
+        if($tokenCurrency == null){
+            $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
+            $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
+        }
+        return decimal_format($tokenCurrency ?? 1);
     }
 }
 
@@ -591,8 +605,8 @@ if (!function_exists('SplitTime')) {
         $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
         if ($nowT > $nowE) {
             return [];
-        } elseif ($nowT>$nowS) {
-            $StartTime = date('H:i', strtotime($now));
+        /* } elseif ($nowT>$nowS) {
+            $StartTime = date('H:i', strtotime($now)); */
         } else {
             $StartTime = date('H:i', strtotime($nowA));
         }
@@ -608,7 +622,13 @@ if (!function_exists('SplitTime')) {
             if ($endtm>$EndTime) {
                 $endtm = $EndTime;
             }
-            $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            if ($nowT>$nowS && $StartTime > $nowT){//Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
+            if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
+
             $StartTime += $AddMins;
             $endtm = 0;
         }
@@ -799,8 +819,8 @@ if (!function_exists('SplitTimeTemp')) {
         $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
         if ($nowT > $nowE) {
             return [];
-        } elseif ($nowT>$nowS) {
-            $StartTime = date('H:i', strtotime($now));
+        /* } elseif ($nowT>$nowS) {
+            $StartTime = date('H:i', strtotime($now)); */
         } else {
             $StartTime = date('H:i', strtotime($nowA));
         }
@@ -816,7 +836,13 @@ if (!function_exists('SplitTimeTemp')) {
             if ($endtm>$EndTime) {
                 $endtm = $EndTime;
             }
-            $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+
+            if ($nowT>$nowS && $StartTime > $nowT){//Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
+            if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
+                $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            }
             $StartTime += $AddMins+60;
             $endtm = 0;
         }
@@ -1115,14 +1141,14 @@ if (!function_exists('getServiceTypesCategory')) {
         try {
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
-            if(isset($set_template)  && $set_template->template_id == 9){
-               
-                if(@$client_preference->p2p_check){
-                    $vendorType = 'p2p';
-                    // session()->put('vendorType', 'p2p');
-                }
-            }
-           
+            // if(isset($set_template)  && $set_template->template_id == 9){
+
+            //     if(@$client_preference->p2p_check){
+            //         $vendorType = 'p2p';
+            //         // session()->put('vendorType', 'p2p');
+            //     }
+            // }
+
             $types =   Type::query();
             $service_types = [];
             if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
@@ -1137,12 +1163,12 @@ if (!function_exists('getServiceTypesCategory')) {
                 $service_types = ['laundry_service'];
             } elseif ($vendorType == "appointment") {
                 $service_types = ['appointment_service'];
-            } 
+            }
             // elseif ($vendorType == "p2p") {
             //     $service_types = ['products_service'];
             // }
             elseif ($vendorType == "p2p") {
-                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
+                $service_types = ['p2p'];
             }
 
             if ($client_preference->business_type == 'taxi') {
@@ -1159,7 +1185,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             if ($client_preference->business_type == 'p2p') {
-                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
+                $service_types = ['p2p'];
             }
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
@@ -1213,7 +1239,9 @@ if (!function_exists('getCategoryTypesServices')) {
      * config('constants.ServiceTypes')
      */
     function getCategoryTypesServices() {
+
         $client_preference = ClientPreference::select('business_type')->first();
+
         switch($client_preference->business_type){
             case "taxi":
                 $typeArray =['pick_drop_service'];
@@ -1231,11 +1259,11 @@ if (!function_exists('getCategoryTypesServices')) {
                 $typeArray = ['rental_service'];
                 break;
             case "p2p":
-                $typeArray = ['products_service', 'on_demand_service', 'appointment_service', 'p2p' ];
+                $typeArray = ['p2p' ];
                 break;
             case "super_app":
                 $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p'];
-               
+
                 break;
             default:
             $typeArray =['products_service','pick_drop_service','on_demand_service','appointment_service'];
@@ -1307,6 +1335,36 @@ if (!function_exists('sendSmsTemplate')) {
     }
 }
 
+
+
+if (!function_exists('inventorySyncOnOff')) {
+    function inventorySyncOnOff($vendor_id)
+    {
+        if (!empty($vendor_id)) {
+            $client_preferences = ClientPreference::first();
+
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'shortcode' => $client_preferences->inventory_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+            $url = $client_preferences->inventory_service_key_url;
+
+            $request = $client->get($url . '/api/v1/sync-status', [
+                'json' => ['royo_vendor_id' => $vendor_id]
+            ]);
+
+            $response = json_decode($request->getBody());
+
+            if ($response->status) {
+                return $response->msg;
+            }
+        } else {
+            return false;
+        }
+    }
+}
 // Returns the values of the additional preferences.
 if (!function_exists('checkTableExists')) {
     /** check if column exits in table
@@ -1325,7 +1383,7 @@ if (!function_exists('inventorySyncOnOff')) {
     function inventorySyncOnOff($vendor_id)
     {
         if (!empty($vendor_id) && checkColumnExists('client_preferences', 'inventory_service_key_url')) {
-            
+
             $client_preferences = ClientPreference::first();
             if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
 
@@ -1359,7 +1417,7 @@ if( !function_exists('clientPrefrenceModuleStatus') ) {
         if( checkColumnExists('client_preferences', $module_name) ) {
             return ClientPreference::first()->value($module_name);
         }
-        
+
     }
 }
 
@@ -1370,7 +1428,7 @@ if( !function_exists('p2p_module_status') ) {
             return true;
         }
         return false;
-    }   
+    }
 }
 
 if( !function_exists('check_influencer_enable') ) {
@@ -1380,7 +1438,7 @@ if( !function_exists('check_influencer_enable') ) {
             return true;
         }
         return false;
-    }   
+    }
 }
 
 if( !function_exists('is_p2p_vendor') ) {
@@ -1394,9 +1452,9 @@ if( !function_exists('is_p2p_vendor') ) {
                 return false;
             }
         }
-        
+
         $vendor = Vendor::where('id', $vendor_id)->first();
-       
+
         if(@$vendor->p2p && $vendor->p2p == 1) {
             return true;
         }
@@ -1416,21 +1474,21 @@ if( !function_exists('is_category_p2p') ) {
 
 // if( !function_exists('is_p2p_vendor') ) {
 //     function is_p2p_vendor() {
-        
+
 //         if( p2p_module_status() ) {
-            
+
 //             if(auth()->user() && (auth()->user()->is_superadmin != 1)) {
 
 //                 $auth_user = auth()->user();
 //                 $user_vendor = UserVendor::where('user_id', $auth_user->id)->first();
-                
-                
-                
+
+
+
 //                 if( !empty($user_vendor->vendor_id) ) {
 
 //                     $vendor = Vendor::where('id', $user_vendor->vendor_id)->first();
 //                     $client_preference = (object)session()->get('preferences');
-                    
+
 //                     foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
 //                         $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
 //                         $clientVendorTypes = $vendor_typ_key.'_check';
@@ -1439,7 +1497,7 @@ if( !function_exists('is_category_p2p') ) {
 //                             $offers[]=  $vendor->$VendorTypesName == 1 ? getNomenclatureName($NomenclitureName) : $NomenclitureName;
 //                         }
 //                     }
-                    
+
 //                     if( count($offers) > 1 ) {
 //                         return false;
 //                     }
@@ -1456,24 +1514,36 @@ if( !function_exists('is_category_p2p') ) {
 //     }
 // }
 
-
-function generateSlug($name)
-{
-    if (Product::whereSku($slug = $name)->exists()) {
-        $max = Product::whereSku($name)->latest('id')->value('sku');
-        if (isset($max[-1]) && is_numeric($max[-1])) {
-            return preg_replace_callback('/(\d+)$/', function($mathces) {
-                return $mathces[1] + 1;
-            }, $max);
+if( !function_exists('productDiscountPercentage()') ) {
+    function productDiscountPercentage($product_price, $product_compare_price)
+    {
+        if($product_compare_price > 0) {
+            $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;
+            return round($discount);
         }
-        return $slug.'-'.rand();
+        return 0;
     }
-    return $slug;
+}
+
+if( !function_exists('generateSlug') ) {
+    function generateSlug($name)
+    {
+        if (Product::whereSku($slug = $name)->exists()) {
+            $max = Product::whereSku($name)->latest('id')->value('sku');
+            if (isset($max[-1]) && is_numeric($max[-1])) {
+                return preg_replace_callback('/(\d+)$/', function($mathces) {
+                    return $mathces[1] + 1;
+                }, $max);
+            }
+            return $slug.'-'.rand();
+        }
+        return $slug;
+    }
 }
 
 if( !function_exists('printOldOrDbValue') ) {
     function printOldOrDbValue($key, $data=null) {
-        
+
         $value = '';
 
         if( !empty($key) ) {
@@ -1496,15 +1566,36 @@ if( !function_exists('printOldOrDbValue') ) {
     }
 }
 if( !function_exists('get_tiny_url') ) {
-    function get_tiny_url($url)  {  
-        $ch = curl_init();  
-        $timeout = 5;  
-        curl_setopt($ch,CURLOPT_URL,'https://tinyurl.com/api-create.php?url='.$url);  
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);  
-        curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);  
-        $data = curl_exec($ch);  
-        curl_close($ch);  
-        return $data;  
+    function get_tiny_url($url)  {
+        $ch = curl_init();
+        $timeout = 5;
+        curl_setopt($ch,CURLOPT_URL,'https://tinyurl.com/api-create.php?url='.$url);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
     }
 }
+
+
+if( !function_exists('makeCartEmpty') ) {
+    function makeCartEmpty()
+    {
+        $cart = Cart::where('user_id',auth()->id())->select('id')->first();
+        $cartid = $cart->id;
+        Cart::where('id', $cartid)->update([
+        'schedule_type' => null, 'scheduled_date_time' => null,
+        'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
+        ]);
+        CaregoryKycDoc::where('cart_id',$cartid)->delete();
+        CartAddon::where('cart_id', $cartid)->delete();
+        CartCoupon::where('cart_id', $cartid)->delete();
+        CartProduct::where('cart_id', $cartid)->delete();
+        CartProductPrescription::where('cart_id', $cartid)->delete();
+
+        return true;
+    }
+}
+
 

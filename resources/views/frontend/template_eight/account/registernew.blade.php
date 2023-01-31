@@ -339,6 +339,7 @@
 @endsection
 @section('script')
     <script src="{{ asset('assets/js/intlTelInput.js') }}"></script>
+    <script src="{{asset('js/phone_number_validation.js')}}"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
     <script>
         $(document).ready(function() {
@@ -384,6 +385,13 @@
                     password: "{{ __('Please enter your password')}}",
                 }
             });
+
+            $("#register").submit(function() {
+                if($("#phone").hasClass("is-invalid")){
+                    $("#phone").focus();
+                    return false;
+                }
+            });
         });
         jQuery(window.document).ready(function () {
             jQuery("body").addClass("register_body");
@@ -399,12 +407,14 @@
             }, 2500);
         });
         var input = document.querySelector("#phone");
-        window.intlTelInput(input, {
+        var iti = window.intlTelInput(input, {
             separateDialCode: true,
             hiddenInput: "full_number",
             utilsScript: "{{ asset('assets/js/utils.js') }}",
             initialCountry: "{{ Session::get('default_country_code', 'US') }}",
         });
+
+        phoneNumbervalidation(iti, input);
 
         $(document).ready(function() {
             $("#phone").keypress(function(e) {

@@ -69,7 +69,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 @endif
 @php
   $img = '';
-  $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+  $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
 @endphp
 <!-- <div class="toast">
     <div class="toast-header">
@@ -113,12 +113,12 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                         </div>--}}
                         <section class="buy_details">
                             <div class="row">
-                                @if((!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id = '9')))
+                                @if((!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9')))
                                 <div class="col-md-1 pl-0">
                                     <div class="exzoom_nav side_nav_img">
-                                       
+
                                         @if(!empty($product->media) && count($product->media) > 0)
-                                        
+
                                         @foreach($product->media as $k => $image)
                                         @php
                                                         if(isset($image->pimage)){
@@ -147,7 +147,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                     </div>
                                 </div>
                                 @endif
-                                <div class="{{(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id != '8') ? 'col-lg-5' : 'col-lg-4'}}  p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                                <div class="{{(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id != '8') ? 'col-lg-5' : 'col-lg-4'}}  p-0 @php if(count($product->media) == 0){  echo 'd-block'; } @endphp ">
                                     {{-- <div class="product__carousel">
                                         <div class="gallery-parent">
                                             @php
@@ -171,9 +171,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
                                             <div class="swiper-container gallery-top">
                                                 <div class="swiper-wrapper">
-                                               
+
                                                 @if(!empty($product->media) && count($product->media) > 0)
-                                                
+
                                                     @foreach($product->media as $k => $image)
                                                         @php
                                                             if(isset($image->pimage)){
@@ -189,7 +189,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                         </div>
                                                     @endforeach
                                                 @else
-                                                
+
                                                     <div class="swiper-slide easyzoom easyzoom--overlay">
                                                             <a href="{{loadDefaultImage()}}">
                                                             <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
@@ -213,7 +213,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                                 $img = $image->image;
                                                             }
                                                         @endphp
-                                                        
+
                                                         @endforeach
                                                     @else
                                                         <div class="swiper-slide">
@@ -229,7 +229,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         <div class="exzoom_img_box mb-2">
                                             <ul class='exzoom_img_ul img-sidebar'>
                                             @if(!empty($product->media) && count($product->media) > 0)
-                                            
+
                                                 @foreach($product->media as $k => $image)
                                                         @php
                                                             if(isset($image->pimage)){
@@ -243,9 +243,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
                                                 @endif
                                                 @else
-                                                        
+
                                                     <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-                                                        
+
                                             @endif
                                             </ul>
                                         </div>
@@ -309,7 +309,10 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
                                                     @if($additionalPreference ['is_token_currency_enable'])
-                                                        <b class="mr-1"><span class="product_fixed_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
+                                                        <b class="mr-1">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}<span class="product_fixed_price">{{getInToken($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
+                                                        @if($product->variant[0]->compare_at_price > 0 )
+                                                        <span class="org_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}<span class="product_original_price">{{getInToken($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                        @endif
                                                     @else
                                                         <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier,2)}}</span></b>
                                                         @if($product->variant[0]->compare_at_price > 0 )
@@ -328,7 +331,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
 
                                         @if( is_category_p2p($product->category) )
-                                        
+
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
                                                     <div class="container-badge">
@@ -345,7 +348,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                                 @endforeach
                                                             </div>
                                                         @endif
-                                                        
+
                                                     </div>
                                                 @endforeach
                                             @endif
@@ -354,8 +357,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <hr>
                                                 <h6 class="sold-by">
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
-                                            
-                                               
+
+
                                                     <?php /*<span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
                                                     <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
@@ -372,7 +375,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <div class="discriptions">
                                                 <h3>Return Policy</h3>
                                                 <p>  <span>{{ $product->return_days }} days return policy is applicable on this product </span> </p>
-                                            
+
                                             </div>
                                             @endif
                                         <div id="product_variant_options_wrapper">
@@ -414,8 +417,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         @if($product->category->categoryDetail->type_id == 10)
                                             @include('frontend.product-part.booking-slot')
                                         @endif
-                                        
-                                        
+
+
 
                                         @if(!empty($product->addOn) && $product->addOn->count() > 0)
                                         <div class="border-product">
@@ -450,8 +453,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                             @foreach($addon->setoptions as $k => $option)
                                                             <div class="checkbox checkbox-success form-check-inline mb-1">
                                                                 <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
+                                                                @if($additionalPreference ['is_token_currency_enable'])
                                                                 <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
-                                                                    {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
+                                                                {{$option->title ." ("}}<i class='fa fa-money' aria-hidden='true'></i> {{getInToken($option->price * $option->multiplier).')' }}</label>
+                                                                @else
+                                                                <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
+                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
+                                                                @endif
                                                             </div>
                                                             @endforeach
                                                         </div>
@@ -611,7 +619,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             else
                                                 $checkSlot = 0;
                                         @endphp
-                                        
+
                                         @if( !is_category_p2p($product->category) )
                                         <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
@@ -652,10 +660,10 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 @endif
 
                                             </div>
-                                           
+
                                             <div class="product-buttons">
 
-                                                
+
                                                 @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                                 @if($is_inwishlist_btn && $is_available)
                                                 <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
@@ -687,7 +695,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 @endif
                                                 @endif
                                             </div>
-                                            
+
                                         </div>
                                         @endif
                                         {{-- @dump($product) --}}
@@ -710,7 +718,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             </div>
                                         </div>
 
-                                        
+
                                     </div>
 
                                 </div>
@@ -789,9 +797,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                 </section>
                                 @endif
                             </div>
-                            
 
-                       
+
+
                             </div>
                     </div>
 
@@ -807,7 +815,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                     @endif
                     {{-- End of Related Products --}}
 
-                    
+
                 </div>
             </div>
         </div>
@@ -872,9 +880,16 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     <input type="hidden" name="variant_id" id="prod_variant_id" value="<%= variant.id %>">
     <% if(variant.product.inquiry_only == 0) { %>
         <h3 id="productPriceValue" class="mb-md-3">
-            <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price"><%= Helper.formatPrice(variant.productPrice) %></span></b>
-            <% if(variant.compare_at_price > 0 ) { %>
-                <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price"><%= Helper.formatPrice(variant.compare_at_price) %></span></span>
+            <% if(is_token_enable == 1) { %>
+                    <b class="mr-1"><i class='fa fa-money' aria-hidden='true'></i><span class="product_fixed_price"> <%= Helper.formatPrice(variant.productPrice * tokenAmount) %></span></b>
+                    <% if(variant.compare_at_price > 0 ) { %>
+                        <span class="org_price"><i class='fa fa-money' aria-hidden='true'></i><span class="product_original_price"> <%= Helper.formatPrice(variant.compare_at_price * tokenAmount) %></span></span>
+                    <% } %>
+                <% }else{%>
+                    <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price"><%= Helper.formatPrice(variant.productPrice) %></span></b>
+                    <% if(variant.compare_at_price > 0 ) { %>
+                        <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price"><%= Helper.formatPrice(variant.compare_at_price) %></span></span>
+                    <% } %>
             <% } %>
         </h3>
     <% } %>
@@ -1319,17 +1334,17 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
 
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
-    var additionalPreference = "{{$additionalPreference['is_token_currency_enable']}}";
-    var token_currency = "{{getAdditionalPreference(['token_currency'])['token_currency']}}";
-    var vendor_id = "{{ $product->vendor_id }}";
-    var product_id = "{{ $product->id }}";
+    var is_token_currency_enable = "{{$additionalPreference['is_token_currency_enable']}}";
+    var token_currency = "{{$additionalPreference['token_currency']}}";
+    let vendor_id = "{{ $product->vendor_id }}";
+    let product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
     $('.changeVariant').click(function() {
         updatePrice();
     });
     function updatePrice()
     {
-        
+
         var variants = [];
         var options = [];
         $('.changeVariant').each(function() {
@@ -1367,14 +1382,14 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                             $('.incremental-left-minus').click();
                             //$('#blocktime, #blocktime2').change();
                         }
-                        if(additionalPreference != 0){
-                            response.variant.productPrice = token_currency * response.variant.productPrice;
-                        }
+                        // if(additionalPreference != 0){
+                        //     response.variant.productPrice = token_currency * response.variant.productPrice;
+                        // }
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
                         response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
-                        $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant}));
+                        $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant, tokenAmount: response.tokenAmount, is_token_enable: response.is_token_enable}));
                         $('#product_variant_quantity_wrapper').html('');
                         let variant_quantity_template = _.template($('#variant_quantity_template').html());
                         $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
@@ -1444,6 +1459,10 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                     addOnPrice = parseFloat(checkAddOnPrice());
                     org_price = parseFloat($(this).data('original_price')) + addOnPrice;
                     fixed_price = parseFloat($(this).data('fixed_price')) + addOnPrice;
+                    if(is_token_currency_enable > 0){
+                        org_price = token_currency * org_price;
+                        fixed_price = token_currency * fixed_price;
+                    }
                     $('.product_fixed_price').html(fixed_price.toFixed(digit_count));
                     $('.product_original_price').html(org_price.toFixed(digit_count));
                 }
@@ -1549,7 +1568,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
             $('.img-zoom-result').hide();
             $('.img-zoom-lens').remove();
         });
-        
+
         $(".suggested-product").slick({
             infinite: true,
             slidesToShow: 4,
@@ -1563,16 +1582,16 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         });
 
 
-      
+
 
         $(document).ready(function() {
             $(".img_active").click(function(){
-               
+
                 $(".img_active").find('img').removeClass("active");
                 $(this).find('img').addClass("active");
             });
         });
-            
+
         </script>
 
 @endsection

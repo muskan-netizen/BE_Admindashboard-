@@ -331,7 +331,7 @@ $pages = \App\Models\Page::with([
 
                                     <ul class="header-dropdown ml-auto d-lg-block d-none">
                                         @if($client_preference_detail->header_quick_link == 1)
-                                        
+
                                         <li class="onhover-dropdown quick-links quick-links pr-2 mr-2">
 
                                             <span class="quick-links mr-1 align-middle">{{ __('Quick Links') }}</span>
@@ -411,14 +411,14 @@ $pages = \App\Models\Page::with([
                                         @if(count($languageList) > 1)
                                         <li class="onhover-dropdown mobile-account pr-2">
                                             <span class="al_BGcolor"><i class="fa fa-globe" aria-hidden="true"></i></span>
-                                            {{__('Language')}}    
-                                           
+                                            {{__('Language')}}
+
                                             <ul class="onhover-show-div"> @foreach ($languageList as $key => $list)
                                                 <li class="{{ session()->get('locale') == $list->language->sort_code ? 'active' : '' }}">
                                                     <a href="javascript:void(0)" class="customerLang" langId="{{ $list->language_id }}">{{ $list->language->name }}</a>
                                                 </li> @endforeach
                                             </ul>
-                                           
+
                                         </li>
                                         @endif
 

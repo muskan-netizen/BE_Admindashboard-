@@ -850,6 +850,7 @@ class CustomerAuthController extends FrontController
                     $rules_array = [
                         'address' => 'required',
                         'full_name' => 'required',
+                        'title' => 'required',
                         'email' => 'required|email|unique:users',
                         // 'vendor_registration_document.*.did_visit' => 'required',
                         'password' => 'required|string|min:6|max:50',
@@ -887,6 +888,7 @@ class CustomerAuthController extends FrontController
                     $request->validate(
                         [
                             'address' => 'required',
+                            'title' => 'required',
                             'full_name' => 'required',
                             'email' => 'required|email|unique:users',
                             'password' => 'required|string|min:6|max:50',
@@ -895,9 +897,9 @@ class CustomerAuthController extends FrontController
                             'phone_number' => 'required|string|min:6|max:15|unique:users',
                             'check_conditions' => 'required',
                             'city' => 'required',
-                        'pincode' => 'required',
-                        'state' => 'required',
-                        'country' => 'required',
+                            'pincode' => 'required',
+                            'state' => 'required',
+                            'country' => 'required',
                         ],
                         ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
                     );
@@ -1010,7 +1012,7 @@ class CustomerAuthController extends FrontController
             $vendor->longitude = $request->longitude;
             $vendor->desc = $request->vendor_description;
             $vendor->slug = Str::slug($request->name, "-");
-            $vendor->is_seller = $request->vendor_type;
+            $vendor->is_seller = $request->vendor_type ?? 0;
             $vendor->save();
             if($request->vendor_type == 0){
                 $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21]);    

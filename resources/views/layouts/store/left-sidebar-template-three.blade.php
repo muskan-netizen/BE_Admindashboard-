@@ -24,7 +24,7 @@ $pages = \App\Models\Page::with([
     })
     ->orderBy('order_by', 'ASC')
     ->get();
-   
+
 @endphp
 @section('css')
 
@@ -383,8 +383,8 @@ $pages = \App\Models\Page::with([
                                                             id="main_search_box" autocomplete="off"> </div>
                                                     <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
                                                 </div>
-                                                
-                                                    
+
+
                                                  @if (auth()->user())
                                                 @if ($client_preference_detail->show_wishlist == 1)
                                                     <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button"
@@ -487,8 +487,8 @@ $pages = \App\Models\Page::with([
                 </div>
             </div>
         </div>
-       
-       
+
+
    @endif
    @if(!empty($navCategories) && count($navCategories))
    <div class="menu-navigation alThreeMenu">

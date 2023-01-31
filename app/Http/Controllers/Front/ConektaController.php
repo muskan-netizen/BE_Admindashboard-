@@ -88,13 +88,15 @@ class ConektaController extends FrontController
             return Redirect::to($redirect_url);
         }
     }
-    public function afterPayment(Request $request, $domain='',$status,$payment_from,$come_from,$amount,$order_number)
+    public function afterPayment(Request $request)
     { 
-        // Auth::loginUsingId(1);
-        $request['payment_from'] = $payment_from;
-        $request['come_from'] = $come_from;
-        $request['amount'] = $amount;
-        $request['order_number'] = $order_number;
+        $status         = $request->get('q');
+       
+        $request['payment_from']        = $request->get('payment_from');
+        $request['come_from']           = $request->get('come_from');
+        $request['amount']              = $request->get('amount');
+        $request['order_number']        = $request->get('order_number');
+
         if($status == 'success')
         {
             $returnUrl = $this->sucessPayment($request,$request->checkout_id);
@@ -202,8 +204,14 @@ class ConektaController extends FrontController
         }
         return route('order.return.success');
     }
-    public function failedPayment($request, $pamyent)
+    public function failedPayment($request)
     {
+        $status         = $request->get('q');
+       
+        $request->payment_from          = $request->get('payment_from');
+        $request->come_from             = $request->get('come_from');
+        $request->amount                = $request->get('amount');
+        $request->order_number          = $request->get('order_number');
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();

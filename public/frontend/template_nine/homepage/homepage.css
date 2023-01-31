@@ -557,8 +557,8 @@ body.dark .al_footer_template_three {
 
 .grid-row.grid-4-4 {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-gap: 50px
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 20px
 }
 
 .shimmer_effect .card_image {
@@ -619,7 +619,8 @@ body.dark .al_footer_template_three {
 
 .shimmer_effect h2.h2-heading {
     width: 260px;
-    height: 20px
+    height: 40px;
+    margin: 0 auto !important;
 }
 
 .shimmer_effect .card_icon {
@@ -642,8 +643,8 @@ body.dark .al_footer_template_three {
 }
 
 .cardbanner {
-    height: 300px;
-    border-radius: 50px;
+    height: 510px;
+    border-radius: 0;
 }
 
 

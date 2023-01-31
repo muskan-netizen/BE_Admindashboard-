@@ -248,10 +248,9 @@
                                                 </div>
                                             </div>
                                             <!---------------------------------------------------END-->
-                                            @foreach($order->vendors as $key => $vendor)
-                                @foreach($vendor->products as $key => $product)
-                                            <input id="item_one{{$key}}" type="hidden" name="return_ids" value="{{ $product->id }}" required>
-                                            <!-- <label class="order-items d-flex" for="item_one{{$key}}">
+                                            
+                                            <input id="item_one" type="hidden" name="return_ids" value="{{ $product->id }}" required>
+                                            {{-- <label class="order-items d-flex" for="item_one{{$key}}">
                                                 <div class="item-img mx-1">
                                                     <img src="{{ $product->image_url }}" alt="">
                                                 </div>
@@ -259,10 +258,9 @@
                                                     <h4 class="mt-0 mb-1"><b>{{ $product->product_name }}</b></h4>
                                                     <label><b>{{_("Quantity")}}</b>: {{ $product->quantity }}</label>
                                                 </div>
-                                            </label> -->
+                                            </label> --}}
                                         </div>
-                                        @endforeach
-                                @endforeach
+                                       
                                     </td>
 
 
@@ -270,7 +268,7 @@
                                
 
 
-                                <input type="hidden" name="order_vendor_product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="order_vendor_product_id" value="{{ $order->products[0]->id }}">
                                 <input type="hidden" name="file_set" id="files_set" value="0">
                                     <div id="remove_files">
                                     </div>

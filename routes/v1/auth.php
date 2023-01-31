@@ -11,7 +11,7 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
 
 
 
-        
+
 
 
     });
@@ -23,21 +23,21 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
         Route::post('resetPassword', 'Api\v1\AuthController@resetPassword');
         Route::post('forgotPassword', 'Api\v1\AuthController@forgotPassword');
         Route::post('vendor-login', 'Api\v1\AuthController@vendorlogin');
-      
+
     });
 });
 
 
 
 Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
-   
+
     Route::group(['middleware' => ['dbCheck']], function() {
-      
+
         Route::post('social/info', 'Api\v1\SocialController@getKeys');
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
     });
-    Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {       
-        
+    Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {
+
          /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
         Route::get('chat/all/{room_id?}', 'Api\v1\ChatController@index');
@@ -52,17 +52,17 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('chat/vendorUserChatRoom', 'Api\v1\ChatController@vendorUserChatRoom');
         Route::post('chat/userAgentChatRoom', 'Api\v1\ChatController@userAgentChatRoom');
         Route::post('chat/sendNotificationToUser', 'Api\v1\ChatController@sendNotificationToUser');
-        
+
         Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
         Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
 
-          
+
         Route::get('profile', 'Api\v1\ProfileController@profile');
         Route::get('getProfile', 'Api\v1\ProfileController@getProfile');
         Route::post('get/agents', 'Api\v1\PickupDeliveryController@getAgents');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
-        Route::post('orders/tip-after-order', 'Api\v1\OrderController@tipAfterOrder'); 
+        Route::post('orders/tip-after-order', 'Api\v1\OrderController@tipAfterOrder');
         Route::get('wishlists', 'Api\v1\ProfileController@wishlists');
         Route::get('newsLetter', 'Api\v1\ProfileController@newsLetter');
         Route::get('mystore', 'Api\v1\StoreController@getMyStoreDetails');
@@ -71,10 +71,15 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('update/image', 'Api\v1\ProfileController@updateAvatar');
         Route::post('user/getAddress', 'Api\v1\ProfileController@getAddress');
         Route::post('order-detail', 'Api\v1\OrderController@postOrderDetail');
-        
+        Route::post('order-update', 'Api\v1\OrderController@orderUpdate');
+
+        Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
+        Route::post('accept-ride-bid', 'Api\v1\PickupDeliveryController@acceptBidsRelatedToOrderRide');
+        Route::post('decline-ride-bid', 'Api\v1\PickupDeliveryController@declineBidsRelatedToOrderRide');
+
         Route::post('create-payment-intent', 'Api\v1\PaymentResourceController@createPaymentIntent');
         Route::post('confirm-payment-intent', 'Api\v1\PaymentResourceController@confirmPaymentIntent');
-       
+
         Route::post('update/profile', 'Api\v1\ProfileController@updateProfile');
         Route::get('myWallet', 'Api\v1\WalletController@getFindMyWalletDetails');
         Route::post('myWallet/credit', 'Api\v1\WalletController@creditMyWallet');
@@ -97,11 +102,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('mystore/vendor/orders/{id}', 'Api\v1\StoreController@getMyStoreVendorOrders');
         Route::get('mystore/vendor/bagOrders/{qrcode?}', 'Api\v1\StoreController@getMyStoreVendorBagOrders');
         Route::get('mystore/vendor/clearBagOrders/{qrcode?}/{order_number?}', 'Api\v1\StoreController@clearBagOrders');
-	    Route::post('mystore/vendor/rescheduleOrder', 'Api\v1\StoreController@rescheduleOrder'); 
+	    Route::post('mystore/vendor/rescheduleOrder', 'Api\v1\StoreController@rescheduleOrder');
         Route::post('mystore/vendor/category', 'Api\v1\StoreController@VendorCategory');
         Route::post('mystore/product/add', 'Api\v1\StoreController@addProduct');
-        Route::post('mystore/product/detail', 'Api\v1\StoreController@productDetail'); 
-        Route::post('mystore/product/createvariant','Api\v1\StoreController@makeVariantRows');       
+        Route::post('mystore/product/detail', 'Api\v1\StoreController@productDetail');
+        Route::post('mystore/product/createvariant','Api\v1\StoreController@makeVariantRows');
         Route::post('mystore/product/update', 'Api\v1\StoreController@updateProduct');
         Route::post('mystore/product/delete', 'Api\v1\StoreController@deleteProduct');
         Route::post('mystore/product/deletevariant', 'Api\v1\StoreController@deleteProductVariant');
@@ -111,7 +116,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('mystore/product/getProductAttribute', 'Api\v1\StoreController@getProductAttribute');
         Route::get('mystore/product/availableListOfAttribute', 'Api\v1\StoreController@availableListOfAttribute');
         Route::post('mystore/product/addProductWithAttribute', 'Api\v1\StoreController@addProductWithAttribute');
-        
+
         Route::post('mystore/product/getProductImages', 'Api\v1\StoreController@getProductImages');
         Route::post('mystore/product/deleteimage', 'Api\v1\StoreController@deleteProductImage');
         Route::post('mystore/vendor/product/list', 'Api\v1\StoreController@getVendorProductList');
@@ -121,12 +126,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('vendor-dasboard-data', 'Api\v1\RevenueController@getDashboardDetails');
         Route::post('get-vendor-profile', 'Api\v1\VendorController@getVendorDetails');
-        
+
         Route::post('update-vendor-profile', 'Api\v1\VendorController@updateVendorDetails');
         Route::post('get-vendor-transactions', 'Api\v1\VendorController@getVendorTransactions');
         //Route::post('get-vendor-transactions', 'Api\v1\VendorController@getOrdersList');
-        
+
         Route::match(['get','post'],'payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
+        //Route::match(['get','post'],'payment/plugnpay','Api\v1\PlugnpayGatewayController@beforePayment');
         //Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
         Route::post('payment/razorpay/pay/{amount}/{order}', 'Api\v1\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
         Route::post('payment/complete/paytab','Api\v1\PaytabController@completePayment');
@@ -134,18 +140,18 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('payment/sdk_complete/{gateway?}','Api\v1\PaymentOptionController@sdkResponsePayment');
         Route::post('payment/sdk_failed/{gateway?}','Api\v1\PaymentOptionController@sdkFailedPayment');
-    
+
         Route::post('payment/place/order', 'Api\v1\PaymentOptionController@postPlaceOrder');
         Route::get('user/loyalty/info', 'Api\v1\LoyaltyController@index');
         Route::post('add/vendorTable/cart','Api\v1\CartController@addVendorTableToCart');
         Route::post('cart/schedule/update','Api\v1\CartController@updateSchedule');
         Route::post('repeatOrder', 'Api\v1\CartController@repeatOrder');
         Route::get('order/orderDetails_for_notification/{order_id}', 'Api\v1\OrderController@orderDetails_for_notification');
-
+        Route::post('cart/checkSlotOrders', 'Api\v1\CartController@checkSlotOrders'); //Added by Surendra
         Route::post('user/editorder', 'Api\v1\OrderController@editOrderByUser');
 	    Route::post('user/discardeditorder', 'Api\v1\OrderController@discardEditOrderByUser');
-        
-        // Rating & review 
+
+        // Rating & review
         Route::group(['prefix' => 'rating'], function () {
             Route::post('update-product-rating', 'Api\v1\RatingController@updateProductRating');
             Route::get('get-product-rating', 'Api\v1\RatingController@getProductRating');
@@ -174,7 +180,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-cancel-order-reason', 'Api\v1\CancelOrderController@getCancelOrderReason');
         });
 
-        // pickup & delivery 
+        // pickup & delivery
         Route::group(['prefix' => 'pickup-delivery'], function () {
             Route::post('get-list-of-vehicles-old/{id}', 'Api\v1\PickupDeliveryController@getListOfVehicles');
             Route::post('get-list-of-vehicles/{vid}/{cid?}', 'Api\v1\PickupDeliveryController@productsByVendorInPickupDelivery');
@@ -184,12 +190,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('promo-code/verify', 'Api\v1\PickupDeliveryController@postVerifyPromoCode');
             Route::post('promo-code/remove', 'Api\v1\PickupDeliveryController@postRemovePromoCode');
             Route::post('order-tracking-details', 'Api\v1\PickupDeliveryController@getOrderTrackingDetails');
-            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');   
-            
+            Route::match(['get','post'],'add-rider','Api\v1\PickupDeliveryController@getAllRiders');
+
             Route::post('edit-order', 'Api\v1\PickupDeliveryController@updatePickupDeliveryOrderByCustomer');
         });
 
-        // user subscription 
+        // user subscription
         Route::group(['prefix' => 'subscription'], function () {
             Route::get('plans/user', 'Api\v1\SubscriptionPlansUserController@getSubscriptionPlans');
             Route::post('plan/save/user/{slug?}', 'Api\v1\SubscriptionPlansUserController@saveSubscriptionPlan');
@@ -205,7 +211,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('checkActivePlan/{slug}', 'Api\v1\UserSubscriptionController@checkActiveSubscriptionPlan');
         });
 
-        // vendor subscription 
+        // vendor subscription
         Route::group(['prefix' => 'vendor/subscription'], function () {
             Route::get('plans/{id}', 'Api\v1\VendorSubscriptionController@getSubscriptionPlans');
             Route::get('select/{slug}', 'Api\v1\VendorSubscriptionController@selectSubscriptionPlan');
@@ -214,7 +220,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('checkActive/{id}/{slug}', 'Api\v1\VendorSubscriptionController@checkActiveSubscriptionPlan');
             Route::any('filterData', 'Api\v1\VendorSubscriptionController@getSubscriptionsFilterData');
             Route::post('status/update/{slug}', 'Api\v1\VendorSubscriptionController@updateSubscriptionStatus');
-        }); 
+        });
         Route::group(['prefix' => 'subscription'], function () {
             Route::get('plans/vendor', 'Api\v1\SubscriptionPlansVendorController@getSubscriptionPlans');
             Route::post('plan/save/vendor/{slug?}', 'Api\v1\SubscriptionPlansVendorController@saveSubscriptionPlan');
@@ -227,17 +233,33 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         // Edit Order
         Route::group(['prefix' => 'edit-order'], function () {
             Route::post('approve/reject', 'Api\v1\OrderController@submitEditedOrder');
-        }); 
+        });
 
         Route::post('/create-contact', 'Hubspot\HubspotApiController@create');
 
+        //Bidding Controller
+        Route::post('upload/bid/prescriptions',    'Api\v1\BiddingController@uploadBiddingPrescription');
+        Route::get('get/vendor/bid/prescriptions/{vid?}', 'Api\v1\BiddingController@getVendorPrescription');
+        Route::get('get/user/bid/prescriptions',   'Api\v1\BiddingController@getUserPrescription');
+        Route::post('delete/bid/prescriptions',     'Api\v1\BiddingController@deleteProductPrescription');
+        Route::get('get/vendor/product/search/{vid}/{key}',   'Api\v1\BiddingController@search');
+        Route::get('get/user/bid/listing/{bid_id}',   'Api\v1\BiddingController@getbidList');
+        Route::post('bid/add_bid_product_to_cart',   'Api\v1\BiddingController@addBidProductToCart');
+        Route::post('bid/reject',   'Api\v1\BiddingController@bidReject');
+        Route::post('bid/accept',   'Api\v1\BiddingController@bidAccept');
+        Route::post('bid/placeBid',   'Api\v1\BiddingController@placeBid');
 
         // gift Card Order
         Route::group(['prefix' => 'giftCard'], function () {
             Route::get('list', 'Api\v1\GiftcardController@getGiftCard');
             Route::post('apply', 'Api\v1\GiftcardController@postVerifyGiftCardCode');
             Route::post('remove', 'Api\v1\GiftcardController@RemoveGiftCardCode');
-        }); 
+        });
+        Route::group(['prefix' => 'influencer'], function () {
+            Route::get('refer-earn', 'Api\v1\InfluencerController@index');
+            Route::get('get-influencer-form/{id}', 'Api\v1\InfluencerController@getInfluencerForm');
+            Route::post('save-influencer-form', 'Api\v1\InfluencerController@save');
+        });
 
     });
 });

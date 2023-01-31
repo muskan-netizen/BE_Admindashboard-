@@ -25,6 +25,7 @@ trait InfluencerTrait
             $path = Storage::disk('s3')->put($s3filePath, $file, 'public');
             $adhar_front = $path;
         }
+
         $adhar_back = '';
         if ($request->hasFile('adhar_back')) {
             $file = $request->file('adhar_back');
@@ -34,7 +35,6 @@ trait InfluencerTrait
             $adhar_back = $path;
         }
         $influencer_kyc = new InfluencerKyc;
-
         $influencer_kyc->user_id = $user_id;
         $influencer_kyc->account_name = $request->account_name;
         $influencer_kyc->bank_name = $request->bank_name;

@@ -24,12 +24,14 @@ class SyncToDispatcher implements ShouldQueue
     protected $order_panel_id;
     protected $client_preferences;
     protected $categories;
-    public function __construct($order_panel_id, $client_preferences, $categories)
+    protected $databaseName;
+    public function __construct($order_panel_id, $client_preferences, $categories,$databaseName)
     {
         $this->categories = $categories;
         $this->client_preferences = $client_preferences;
         $this->order_panel_id = $order_panel_id;
-        \Log::info($this->order_panel_id);
+        $this->databaseName = $databaseName;
+        \Log::info('SyncToDispatcher job run');
     }
 
     /**
@@ -40,9 +42,10 @@ class SyncToDispatcher implements ShouldQueue
     public function handle()
     {
         // sleep(5);
-        \Log::info("asdfasdf");
+      
         $url = $this->client_preferences['delivery_service_key_url'].'/api/sync-category-product';
-        $postData = ['data' => $this->categories, 'order_panel_id' => $this->order_panel_id ];
+        $postData = ['databaseName'=> $this->databaseName,'data' => $this->categories, 'order_panel_id' => $this->order_panel_id]; 
+    
         $headers = [
             'shortcode' => $this->client_preferences['delivery_service_key_code']
         ];

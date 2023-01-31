@@ -237,7 +237,7 @@ $timezone = Auth::user()->timezone;
                                             ($order->luxury_option_id == 2 || $order->luxury_option_id == 3))
                                             <h5 class="mt-0 mb-1">{{ __('Order Prepared') }}</h5>
                                             @else
-                                            <h5 class="mt-0 mb-1">{{ $order_status }}</h5>
+                                                <h5 class="mt-0 mb-1">{{__($order_status)}}</h5>
                                             @endif
                                             <p class="text-muted" id="text_muted_{{ $vendor_order_status->order_status_option_id }}">
                                                 @if ($date)
@@ -481,7 +481,17 @@ $timezone = Auth::user()->timezone;
                                             @endif
                                         </td>
 
-                                        <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($product->total_amount) }}
+                                        <td>
+                                            {{ $clientCurrency->currency->symbol }}{{ decimal_format($product->total_amount) }}
+
+                                            {{-- mohit sir branch code added by sohail --}}
+                                            @php
+                                                $getAdditionalPreference = getAdditionalPreference(['update_order_product_price']);
+                                            @endphp
+                                            @if( @getAdditionalPreference(['update_order_product_price'])['update_order_product_price'] == '1')
+                                                <a href="javascript:void(0);" data-toggle="modal" data-target="#addModal" class="badge badge-info ml-3 update_product_price" data-or_prod_old_price="{{decimal_format($product->total_amount)}}" data-or_vend_prod_id="{{$product->id}}">Update Price <img src=""> </a>
+                                            @endif
+                                            {{-- till here --}}
                                         </td>
                                     </tr>
                                     @if (count($product->routes) > 0)
@@ -583,10 +593,21 @@ $timezone = Auth::user()->timezone;
                         @endif
                         @endif
                         @endforeach
+
+                        @php
+                                    $sub_total = $sub_total - $vendor->orderDetail->bid_discount;
+                        @endphp
+
                         @if($container_charges > 0)
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Container Charges") }} :</th>
                             <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
+                        </tr>
+                        @endif
+                        @if($vendor->orderDetail->bid_discount > 0)
+                        <tr>
+                            <th scope="row" colspan="4" class="text-end">{{ __("Bid Discount") }} :</th>
+                            <td>{{$clientCurrency->currency->symbol}}@money($vendor->orderDetail->bid_discount)</td>
                         </tr>
                         @endif
                         <tr>
@@ -622,14 +643,21 @@ $timezone = Auth::user()->timezone;
                             <td style="width:200px;">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->additional_price)}}</td>
                         </tr>
                         @endif
+
+                        @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
+                        <tr>
+                            <th scope="row" colspan="4" class="text-end">{{ __("Redeemed Loyality Points") }} :</th>
+                            <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
+                        </tr>
+                        @endif
+
                         <tr>
                             <?php
-                            //    $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
                             $vendorDiscount = 0;
                             $adminDiscount = 0;
                             // dd($vendor);
                             if ($vendor->coupon_code) {
-                                if ($vendor->coupon_id == 1) {
+                                if ($vendor->coupon_paid_by == 1) { 
                                     $couponFrom = 'From Admin';
                                     $adminDiscount = $vendor->discount_amount;
                                 } else {
@@ -645,16 +673,12 @@ $timezone = Auth::user()->timezone;
                             <th scope="row" colspan="4" class="text-end">{{__('Total Discount')}} {{$couponFrom}}:</th>
                             <td>-{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->discount_amount)}}</td>
                         </tr>
-                        @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
-                        <tr>
-                            <th scope="row" colspan="4" class="text-end">{{ __("Redeemed Loyality Points") }} :</th>
-                            <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
-                        </tr>
-                        @endif
+
+
                         @if($client_preference_detail->is_tax_price_inclusive)
 
                         @php //taxable_amount
-                        $adminRevenue = ($revenue + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+                        $adminRevenue = ($revenue + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount - number_format($vendor->orderDetail->loyalty_amount_saved);
 
                         //taxable_amount
                         $storeRevenue = ($sub_total + $order->fixed_fee_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
@@ -665,7 +689,7 @@ $timezone = Auth::user()->timezone;
 
                         @php
 
-                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount - number_format($vendor->orderDetail->loyalty_amount_saved);
 
                         $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
 
@@ -703,14 +727,43 @@ $timezone = Auth::user()->timezone;
                         @endif
                         @if($vendor->additional_price>0)
                         @endif
+
+                    @if($order->wallet_amount_used>0)
+                    <tr>
+                            <th scope="row" colspan="4" class="text-end">{{ __("Wallet Amount Used") }} :</th>
+                            <td>
+                                <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->wallet_amount_used * $clientCurrency->doller_compare)}}</div>
+                            </td>
+                    </tr>
+                    @endif
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                             <td>
-                                {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}
-                    </div> --}}
-                    <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount,2)}}</div>
-                    </td>
+                                
+                              <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
+                            </td>
                     </tr>
+                    
+                    <tr>
+                        <th scope="row" colspan="4" class="text-end">{{ __("Payable Amount") }} :</th>
+                        <td>
+                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
+                        </td>
+                    </tr>
+                    @if(@$order->advance_amount > 0)
+                    <tr>
+                        <th scope="row" colspan="4" class="text-end">{{ __("Advance Paid") }} :</th>
+                        <td>
+                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format(@$order->advance_amount)}}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" colspan="4" class="text-end">{{ __("Pending Amount") }} :</th>
+                        <td>
+                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount)}}</div>
+                        </td>
+                    </tr>
+                    @endif
                     </tbody>
                     @endforeach
                     </table>
@@ -752,7 +805,6 @@ $timezone = Auth::user()->timezone;
                 <p class="mb-2"><span class="fw-semibold me-2">{{ __('Address') }}:</span>
                     {{ $order->address ? $order->address->house_number . ',' : '' }}
                     {{ $order->address ? $order->address->address : '' }}
-                    {{ (isset($processorProduct) && !empty($processorProduct->address )) ?  $processorProduct->address : ''}}
 
                 </p>
                 @if (isset($order->address) && !empty($order->address->street))
@@ -932,7 +984,25 @@ $timezone = Auth::user()->timezone;
 
         </div>
     </div>
+    @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
+        <div class="col-lg-6 mb-3">
+            <div class="card mb-0 h-100">
+                <div class="card-body">
+                    <h4 class="header-title mb-3">{{ __('Processor Information') }}</h4>
+                    <p class="mb-2"><span class="fw-semibold me-2">{{ __('Processor Name') }}:</span>
+                        {{ $processorProduct->name }}
+                    </p>
+                    <p class="mb-2"><span class="fw-semibold me-2">{{ __('Processor Address') }}:</span>
+                        {{ $processorProduct->address }}
+                    </p>
+                    <p class="mb-2"><span class="fw-semibold me-2">{{ __('Processor Date') }}:</span>
+                        {{ $processorProduct->date }}
+                    </p>
+                </div>
 
+            </div>
+        </div>
+    @endif
     @if (count($user_registration_documents) > 0)
     <div class="col-lg-6 mb-3">
         <div class="card mb-0">
@@ -1110,6 +1180,50 @@ $timezone = Auth::user()->timezone;
             });
         });
 
+        //mohit sir branch code added by sohail
+        $(".update_product_price").click(function() {
+            $('#or-vend-prod-id').val($(this).data('or_vend_prod_id'));
+            $('#or-prod-old-price').val($(this).data('or_prod_old_price'));
+            $('#vendor_order_product_price_modal').modal({
+                keyboard: false
+            });
+        });
+        if ($("#update-order-product-price-form").length > 0) {
+            $(document).on('click', '.submitOrderUpdatedPriceByVendor', function(e) {
+                e.preventDefault();
+                var form =  document.getElementById('update-order-product-price-form');
+                var formData = new FormData(form);
+
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "post",
+                    headers: {
+                        Accept: "application/json"
+                    },
+                    url: "{{route('update.product.price')}}",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function(){
+                        $(".loader_box").show();
+                    },
+                    success: function(response) {
+                        location.reload();
+                    },
+                    error: function(response) {
+
+                    },
+                    complete: function(){
+                        $('.loader_box').hide();
+                    }
+                });
+            });
+        }
+        //till here
 
 
         $("#order_statuses li").click(function() {

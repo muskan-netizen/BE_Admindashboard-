@@ -108,8 +108,12 @@ class AppStylingController extends BaseController
                     $slug = 'single_category_products';
                     $single_category_products = $this->getCategories($slug); // get categories listing for single cat products  section 
                     $selected_single_category_products = $this->getSingleCategoryProducts($slug); // get categories listing for single cat products  section 
-                    $select_products=Product::where(['is_live'=>'1','is_long_term_service'=>'0'])->get();
-
+                   
+                    $select_products=Product::where(['is_live'=>'1']);
+                    if(checkColumnExists('products','is_long_term_service') ){
+                        $select_products = $select_products->where('is_long_term_service',0);
+                    }
+                    $select_products= $select_products->get();
         //end home page
 
       
@@ -333,7 +337,7 @@ class AppStylingController extends BaseController
             }
 
             if($is_img != 0){
-                $del = CabBookingLayoutBanner::where('cab_booking_layout_id',$request->pickup_labels[$key])->delete();
+                $del = CabBookingLayoutBanner::where('cab_booking_layout_id',$request->pickup_labels[$key])->where('type', 1)->delete();
                     $folderName='banner';
                     $filePath = $folderName . '/' . Str::random(40);
                     $file = $is_img;
@@ -347,6 +351,7 @@ class AppStylingController extends BaseController
                 $cate = new CabBookingLayoutBanner();
                 $cate->cab_booking_layout_id  = $request->pickup_labels[$key];
                 $cate->banner_image_url  = $url;
+                $cate->type  = 2; //2 = App styling
                 $cate->save();
 
             }

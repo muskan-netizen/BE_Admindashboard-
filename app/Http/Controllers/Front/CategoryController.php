@@ -162,7 +162,7 @@ class CategoryController extends FrontController{
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
 
-                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'], 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
+                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'], 'is_bid_ride_enable' => getAdditionalPreference(['is_bid_ride_enable'])['is_bid_ride_enable'], 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
 
@@ -201,6 +201,7 @@ class CategoryController extends FrontController{
 
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
+                // dd($listData[0]->variant);
                 if(view()->exists('frontend/cate-'.$page.'s')){
                     return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'productAttributes'=> $productAttributes]);
                 }else{
@@ -318,7 +319,7 @@ class CategoryController extends FrontController{
                           $q->groupBy('language_id','product_id');
                         },
                         'variant' => function($q) use($langId,$column,$value){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','id');
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','id', 'compare_at_price');
                             $q->groupBy('product_id');
                         },'variant.checkIfInCart'])
                         ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count')
@@ -335,6 +336,7 @@ class CategoryController extends FrontController{
                     $value->translation_description = (!empty($value->translation->first())) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : $value->sku;
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
+                    $value->variant_compare_at_price = (!empty($value->variant->first())) ? $value->variant->first()->compare_at_price : 0;
                     $value->image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                     // foreach ($value->variant as $k => $v) {
                     //     $value->variant[$k]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;

@@ -21,7 +21,7 @@
                             @endphp
                                 @if(!is_null($img))
                                 <span class="">
-                                    <img class="blur-up lazyloaded pro_imgs myimage1"
+                                    <img class="blur-up lazyloaded pro_imgs myimage1 dfasdfasdf"
                                         data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}"
                                         width="60" height="60"
                                         src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
@@ -35,13 +35,20 @@
                                     src="{{loadDefaultImage()}}">
                             </span>
                             
-                        @endif
+                            @endif
                         </div>
                         <p class="exzoom_btn">
                             <a href="javascript:void(0);" class="exzoom_prev_btn">
                                 < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
                             </a>
                         </p>
+                        @else
+                            <span class="">
+                                <img class="blur-up lazyloaded pro_imgs myimage1"
+                                    data-src="{{loadDefaultImage()}}"
+                                    width="60" height="60"
+                                    src="{{loadDefaultImage()}}">
+                            </span>
                         @endif
 
                     <div class="pref-timing"> </div>
@@ -49,7 +56,15 @@
                 <div class="media-body align-self-start">
                     <div class="inner_spacing px-0">
                         <div class="product-description">
-                        <span class="flag-discount">30% Off</span>
+                        @php
+                                $price = $scp->variant[0]->price ?? 0;
+                                $compare_at_price = $scp->variant[0]->compare_at_price ?? 0;
+                                $multiplier = $scp->variant[0]->multiplier  ?? 0;
+                                $priceVal = $price * $multiplier;
+                                @endphp
+                            @if(productDiscountPercentage($price, $compare_at_price))
+                                <span class="flag-discount">{{productDiscountPercentage($price, $compare_at_price)}}% Off</span>
+                            @endif
                         <span class="rating">4.0 <i class="fa fa-star text-white p-0"></i></span>
                             <div class="d-flex align-items-center justify-content-between">
                                 <h6 class="card_title ellips">{{ (!empty($scp->translation) && isset($scp->translation[0])) ? $scp->translation[0]->title : ''}}</h6>                             
@@ -65,11 +80,12 @@
                                 </p>
                             </div>
                             <div class="d-flex align-items-center justify-content-between al_clock pt-2">
-                                @php
-                                $price = $scp->variant[0]->price ?? 0;
-                                $multiplier = $scp->variant[0]->multiplier  ?? 0;
-                                @endphp
-                                <b>{{Session::get('currencySymbol')}} {{decimal_format($price * $multiplier)}} </b>
+                                
+                                @if($additionalPreference ['is_token_currency_enable'])
+                                    <b>{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!} {{getInToken($priceVal)}} </b>
+                                @else
+                                    <b>{{Session::get('currencySymbol')}} {{decimal_format($priceVal)}} </b>
+                                @endif
                             </div>
                         </div>
                     </div>

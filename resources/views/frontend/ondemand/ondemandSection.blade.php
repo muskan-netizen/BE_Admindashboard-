@@ -81,6 +81,8 @@
                                                                 $data->translation_description = (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku;
                                                                 $data->variant_multiplier = (!empty($clientCurrency)) ? $clientCurrency->doller_compare : 1;
                                                                 $data->variant_price = (!empty($data->variant->first())) ? $data->variant->first()->price : 0;
+                                                                $productInquiryCheck = $data->inquiry_only  ; 
+                                                                
                                                             @endphp
 
                                                             <div class="row classes_wrapper no-gutters align-items-center" href="#">
@@ -90,39 +92,40 @@
                                                                         <p class="mb-1 ">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
                                                                     </div>
                                                                     <div class="d-flex align-items-center justify-content-between productBookingBtns">
-                                                                        <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
-                                                                            {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
+                                                                        @if($productInquiryCheck == 0)
+                                                                            <h5 class="my-sm-0 my-3">
+                                                                                {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
+                                                                                <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
+                                                                            </h5>
+
+
+                                                                            @if( (isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0) )
+                                                                            @php
+                                                                                $cartcount = 1;
+                                                                            @endphp
+                                                                            <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                            <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
+                                                                                <span class="minus qty-minus-ondemand sd"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                                </span>
+                                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
+                                                                                <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                                </span>
+                                                                            </div>
+                                                                            @else
+                                                                            <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Add') }} <i class="fa fa-plus"></i></a>
+                                                                            <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
+                                                                                <span class="minus qty-minus-ondemand 132"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                                </span>
+                                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
+                                                                                <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                                </span>
+                                                                            </div>
+
                                                                             @endif
-                                                                            <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
-                                                                        </h5>
-
-
-                                                                        @if( (isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0) )
-                                                                        @php
-                                                                            $cartcount = 1;
-                                                                        @endphp
-                                                                        <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                                        <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
-                                                                            <span class="minus qty-minus-ondemand sd"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                            </span>
-                                                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
-                                                                            <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                            </span>
-                                                                        </div>
-                                                                        @else
-                                                                        <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Add') }} <i class="fa fa-plus"></i></a>
-                                                                        <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
-                                                                            <span class="minus qty-minus-ondemand 132"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                            </span>
-                                                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
-                                                                            <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                            </span>
-                                                                        </div>
-
                                                                         @endif
 
                                                                     </div>
@@ -202,7 +205,9 @@
                                                                     $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                                 }
                                                                 $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                            } ?>
+                                                            } 
+                                                            $productInquiryCheck = $data->inquiry_only  ; 
+                                                            ?>
                                                         <div class="class_img">
                                                             @if($imagePath != '')
                                                             <img src="{{$imagePath}}" alt="">
@@ -213,50 +218,50 @@
                                                     </div>
                                                     <div class="col-12 ac-royo-btn">
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                                <h5 class="my-sm-0 my-3 ">@if($data->inquiry_only == 0)
+                                                            @if($productInquiryCheck == 0)
+                                                                <h5 class="my-sm-0 my-3 ">
                                                                     {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
-                                                                    @endif
+                                                                  
                                                                     <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
                                                                 </h5>
 
                                                                 @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
-                                                                @php
+                                                                    @php
 
-                                                                    $cartcount = 1;
-                                                                @endphp
-                                                                 @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
-                                                                    <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                                    <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
-                                                                        <span class="minus qty-minus-ondemand 245"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                            <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                        </span>
-                                                                        <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
-                                                                        <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                        </span>
-                                                                    </div>
+                                                                        $cartcount = 1;
+                                                                    @endphp
+                                                                    @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
+                                                                        <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                        <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
+                                                                            <span class="minus qty-minus-ondemand 245"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                            </span>
+                                                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
+                                                                            <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                            </span>
+                                                                        </div>
                                                                     @else
                                                                         <a class="btn btn-solid " id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
 
                                                                     @endif
                                                                 @else
                                                                 <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                                @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
-                                                                <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
-                                                                    <span class="minus qty-minus-ondemand 256"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                        <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                    </span>
-                                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
-                                                                    <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                    </span>
-                                                                </div>
-                                                                @else
-                                                                        <a class="btn btn-solid " style="display:none;"   id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
-
+                                                                    @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
+                                                                    <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
+                                                                        <span class="minus qty-minus-ondemand 256"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                            <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                        </span>
+                                                                        <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
+                                                                        <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                    @else
+                                                                            <a class="btn btn-solid " style="display:none;"   id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                    @endif
                                                                 @endif
-
-                                                                @endif
+                                                            @endif
 
                                                             </div>
                                                     </div>

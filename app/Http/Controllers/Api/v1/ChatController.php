@@ -196,7 +196,16 @@ class ChatController extends BaseController
                 $order = $this->OrderVendorDetail($request);
                 if(@$order){
                     $room_id = $order->order_number;
-                    $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
+                    if(isset($data['agent_id'])) {
+                        $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id.'-agentId-'.$data['agent_id'];
+                        $agent_db = $data['agent_db'];
+                        $agent_id = $data['agent_id'];
+                    } else {
+                       
+                        $room_name = 'OrderNo-'.$order->order_number.'-orderId-'.$order->id.'-oderVendor-'.$vendor_id;
+                        $agent_db = '';
+                        $agent_id = '';
+                    }
                     $orderby_user_id = $order->user_id;
                    
                 } else {
@@ -221,7 +230,9 @@ class ChatController extends BaseController
                 'product_id'=>$product_id, 
                 'vendor_name' => $vendor_name,
                 'product_name' => $product_name,
-                'product_price' => $product_price
+                'product_price' => $product_price,
+                'agent_id'=>$agent_id,
+                'agent_db'=>$agent_db,
             ]);
             \Log::info("================================");
             \Log::info($response);
@@ -250,7 +261,7 @@ class ChatController extends BaseController
      */
     public function fetchOrderDetail(Request $request){
         try {
-            if(@$request->product_id){
+            if($request->product_id != 'undefined' && $request->product_id != ''){
                 $orderData = $this->ProductDetail($request);
             }else{
                 $orderData = $this->OrderVendorDetail($request);
