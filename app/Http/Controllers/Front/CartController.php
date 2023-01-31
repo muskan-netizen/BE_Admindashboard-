@@ -2072,7 +2072,6 @@ class CartController extends FrontController
         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
         {
             $schedule_date_delivery_edit = Carbon::parse($cart->editingOrder->scheduled_date_time)->timezone($timezone)->format('Y-m-d H:i:s');
-            Log::info("schedule_date_delivery_edit".$schedule_date_delivery_edit);
             $schedule_slots_edit = $cart->editingOrder->scheduled_slot;
             $editlimit_datetime = Carbon::now()->toDateTimeString();
             $order_edit_before_hours = $getAdditionalPreference['order_edit_before_hours'];
