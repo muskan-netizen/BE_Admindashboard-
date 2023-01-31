@@ -446,6 +446,9 @@ class CartController extends FrontController
                 'service_date'        => $request->has('service_date') ? $request->service_date : null,
                 'service_period'      => $request->has('service_period') ? $request->service_period : null,
                 'service_start_date'  => @$service_start_date,
+                'slot_id'  => $request->has('sele_slot_id') ? $request->sele_slot_id : null,
+                'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
+                'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
             ];
 
             //Check if BidId and bid dicount coulmn exists in table

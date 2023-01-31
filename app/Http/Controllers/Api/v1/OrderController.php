@@ -199,7 +199,8 @@ class OrderController extends BaseController
 
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-                    $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+
+                    $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon','vendorProducts.productVariantByRoles')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
 
@@ -291,6 +292,8 @@ class OrderController extends BaseController
                     $total_container_charges = 0;
                     $fixed_fee_amount = 0.00;
                     $vendor_total_container_charges = 0;
+
+                    $slot_based_price = 0;
                     $deliveryfeeOnCoupon = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $delivery_fee = 0;
@@ -323,7 +326,10 @@ class OrderController extends BaseController
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
-
+                            // @dd($vendor_cart_product->productVariantByRoles); 
+                            if( !empty($vendor_cart_product->slot_price) ) {
+                                $slot_based_price += $vendor_cart_product->slot_price;
+                            }
                             if ((isset($client_preference->is_hyperlocal)) && ($client_preference->is_hyperlocal == 1) && ($latitude) && ($longitude)){
                                 if (!empty($latitude) && !empty($longitude)) {
                                     if(($client_preference->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
@@ -499,6 +505,19 @@ class OrderController extends BaseController
                             if ($vendor_cart_product->product->pimage) {
                                 $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                             }
+
+                            if(checkColumnExists('order_vendor_products', 'slot_id')){
+                                $order_product->slot_id = !empty($vendor_cart_product->slot_id) ? $vendor_cart_product->slot_id : null;
+                            }
+        
+                            if(checkColumnExists('order_vendor_products', 'delivery_date')){
+                                $order_product->delivery_date = !empty($vendor_cart_product->delivery_date) ? $vendor_cart_product->delivery_date : null;
+                            }
+        
+                            if(checkColumnExists('order_vendor_products', 'slot_price')){
+                                $order_product->slot_price = !empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
+                            }
+                            
                             $order_product->save();
 
                             if( ($checkLongTermInDB ==1) && $vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
@@ -741,8 +760,8 @@ class OrderController extends BaseController
                         $order_status->order_vendor_id = $order_vendor->id;
                         $order_status->save();
                     }
-
-                    $payable_amount = $payable_amount + $total_taxes + $additional_price;
+        
+                    $payable_amount = $payable_amount + $total_taxes + $additional_price + $slot_based_price;
 
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 
@@ -2167,6 +2186,7 @@ class OrderController extends BaseController
                     ['label' => '15%', 'value' => decimal_format(0.15 * ($order->payable_amount - $order->total_discount_calculate))]
                 );
                 $total_markup_Price = 0;
+                $slot_based_Price = 0;
                 foreach ($order->vendors as $vendor) {
                     $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
                     if ($vendor_order_status) {
@@ -2182,7 +2202,6 @@ class OrderController extends BaseController
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
-
                         $product->longTermSchedule = array();
                         if($product->product->is_long_term_service ==1){
                             $product->longTermSchedule =  OrderLongTermServices::with(['schedule','product.primary','addon.set','addon.option','addon.option.translation' => function ($q) use ($language_id) {
@@ -2259,6 +2278,7 @@ class OrderController extends BaseController
                                 // $product_addons[$k]['multiplier'] = $clientCurrency->doller_compare;
                             }
                         }
+
                         $product->product_addons = $product_addons;
                         if(auth()->user()->is_admin){
                             $product->price = $product->price - $product->markup_price;
@@ -2267,6 +2287,9 @@ class OrderController extends BaseController
                         }
 
                         $total_markup_Price += $product->markup_price;
+                        if($product->slot_id != '' && $product->delivery_date != '' && $product->slot_price != ''){
+                            $slot_based_Price += $product->slot_price;
+                        }
                     }
                     if ($vendor->delivery_fee > 0) {
                         $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
@@ -2409,6 +2432,7 @@ class OrderController extends BaseController
             $order->total_other_taxes =  $total_other_taxes??0;
             $order['user_document_list'] =  $user_registration_documents;
             $order['category_KYC_document'] = $category_KYC_document??null;
+            $order->slot_based_Price =  $slot_based_Price??0;
 
             return $this->successResponse($order, null, 201);
         } catch (Exception $e) {
