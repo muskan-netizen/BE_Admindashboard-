@@ -54,6 +54,13 @@ li.userDetailsJobDone.d-block span.text-right {
     font-size: 14px;
     line-height: 18px;
 }
+.price_list select {
+    font-size: 12px;
+    padding: 4px 0px  !important;
+    border: 1px solid#dfd4d4;
+    background: transparent;
+    border-radius: 3px;
+}
     </style>
 @php
   $client_timezone = \DB::table('clients')->first('timezone');
@@ -73,13 +80,20 @@ li.userDetailsJobDone.d-block span.text-right {
   
         <!-- Modal body -->
         <div class="modal-body">
-            <div class="search border-bottom mb-3 pb-3">
+            <div class="search border-bottom mb-3 pb-2">
               <form class="form-inline my-2 my-lg-0 d-flex">
                 <input class="form-control mr-sm-2" type="hidden" id="driver_product_variant_id">
                 <input class="form-control mr-sm-2" type="datetime-local" time-zone="{{  $timezone  }}" min="{{ $minDate }}" value="{{ $minDate }}" id="onDemandBookingdate" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" id="search_Driver_fee">Search</button>
               </form>
           </div>
+          <div class="col text-right pl-0 price_list">
+            <select name="order_type" id='driver_sort_by' class="product_tag_filter p-1">
+              <option value="">{{ __('Sort') }}</option>
+                <option value="1">{{ __('Sort By Price') }}</option>
+                <option value="2">{{ __('Sort By Rating') }}</option>
+            </select>
+        </div>
           <div class="listofdrivers" id ="listofdrivers">
              
           </div>

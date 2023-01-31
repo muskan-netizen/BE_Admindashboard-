@@ -26,6 +26,7 @@ $(document).on('click','.view_on_demand_price',function(){
     OrderSessionStorage.setStorageSingle('product_id',$(this).data('product_id'));
     OrderSessionStorage.setStorageSingle('this',JSON.stringify($(this)));
     document.getElementById('driver_product_variant_id').value = variant_id;
+    $('#driver_sort_by').hide();
     $('#productPriceModel').modal('show');
     $(`#listofdrivers`).html('');
    console.log( JSON.parse(OrderSessionStorage.getStorage('this')));
@@ -51,6 +52,7 @@ async function getDiverPrice(variant_id , onDemandBookingdate){
                 console.log('success');
               var dispatch_agent = response.data.data;
                OrderSessionStorage.setStorageSingle('dispatcherAgent',JSON.stringify(dispatch_agent));
+               $('#driver_sort_by').show();
                await renderAgent();
             } else{
                 Swal.fire({
@@ -80,7 +82,7 @@ async function renderAgent(filter=0){
         AgentData.forEach(function(data,index) {
             var dirvePrice = data?.product_prices[0]?.price || 0;
             let price = NumberFormatHelper.formatPrice(dirvePrice);
-                html +=`<div class="card dispatcherAgent" data-agent_id="${data?.id}" data-agent_price="${dirvePrice}" data-product_variant_id=${product_variant_id}>
+                html +=`<div class="card dispatcherAgent" data-agent_id="${data?.id}" data-agent_price="${dirvePrice}"  data-agent_rating="${data.rating}" data-product_variant_id=${product_variant_id}>
                    <div class="card-body p-3 bg-light">
                      <div class="d-flex justify-content-between">
                          <div class="userDetails d-flex align-items-center">
@@ -117,6 +119,11 @@ async function renderAgent(filter=0){
        $(`#listofdrivers`).html(html);
 }
 
+$(document).on('change','#driver_sort_by',function(e){
+    e.preventDefault();
+    sortAgentBox();
+})
+
 $(document).on('click','.dispatcherAgent',function(e){
     e.preventDefault();
    
@@ -151,3 +158,24 @@ $(document).on('click','.dispatcherAgent',function(e){
    
     // console.log('variant_id '+ variant_id + " agent_price "+ agent_price + " agent_id " + agent_id+ " vendor_id " + vendor_id + " add_to_cart_url " + add_to_cart_url+ " product_id " + product_id+ " that " + that);
 })
+
+async function sortAgentBox(){
+    $sortBy = $('#driver_sort_by').val();
+   console.log();
+    var $wrap = $('#listofdrivers');
+    $wrap.find('.dispatcherAgent').sort(function(a, b) 
+    {
+        if($sortBy ==2){
+            console.log('agent_rating');
+            return +b.dataset.agent_rating -
+            +a.dataset.agent_rating;
+        }else{
+            console.log('agent_price');
+            return +a.dataset.agent_price - +b.dataset.agent_price;
+        }
+       
+    })
+    .appendTo($wrap);
+
+}
+

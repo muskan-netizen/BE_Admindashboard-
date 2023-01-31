@@ -428,6 +428,7 @@ trait cartManager{
             $is_vendor_closed = 0;
             $closed_store_order_scheduled = 0;
             $deliver_charge = 0;
+            $delivery_status_message = '';
             $deliveryCharges = 0;
             $totalMarkup = 0;
             $delay_date = 0;
@@ -891,8 +892,14 @@ trait cartManager{
                     $prod->scheduled_date_time = $getSlotingDate = $vendorStartDate ;
                 }
                 if(  $is_service_product_price_from_dispatch == 1){
-                    $prod['schedule_slot'] = Carbon::parse($prod->scheduled_date_time, 'UTC')->setTimezone( $user_timezone)->format(' H:i:s');
+                    $selected_dispatcher_time = Carbon::parse($prod->scheduled_date_time, 'UTC')->setTimezone( $user_timezone)->format('Y-m-d H:i:s');
+                    if( Carbon::parse($prod->scheduled_date_time)->format('Y-m-d H:i:s') <= Carbon::now()->format('Y-m-d H:i:s')){
+                        $delivery_status_message  = __('Scheduled Date Time Invalid!');
+                        $delivery_status = 0;
+                    }
+                    $prod->selected_dispatcher_time =$selected_dispatcher_time;
                 }
+                $vendorData->delivery_status_message = $delivery_status_message;
                 $prod->dispatchAgents = [];
                 if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){
                     $Dispatch =  $this->getDispatchAppointmentDomain();
