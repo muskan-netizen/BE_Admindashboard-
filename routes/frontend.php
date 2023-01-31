@@ -573,13 +573,17 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
 		Route::get('get-order-data-in-model', 'Front\ReturnOrderController@getOrderDatainModel')->name('getOrderDatainModel');
+		Route::get('get-replace-order-data-in-model', 'Front\ReturnOrderController@getReplaceOrderDatailModel')->name('getReplaceOrderDatailModel');
 		Route::get('get-return-products', 'Front\ReturnOrderController@getReturnProducts')->name('get-return-products');
+		Route::get('get-replace-products', 'Front\ReturnOrderController@getReplaceProducts')->name('get-replace-products');
 		Route::post('update-product-return', 'Front\ReturnOrderController@updateProductReturn')->name('update.order.return');
+		Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
 
 		Route::get('get-vendor-order-for-cancel', 'Front\ReturnOrderController@getVendorOrderForCancel')->name('get-vendor-order-for-cancel');
 		Route::post('vendor-order-for-cancel', 'Front\ReturnOrderController@vendorOrderForCancelSingleProduct')->name('order.cancel.customer');
 
 		Route::post('vendor-order-for-cancel-req', 'Front\ReturnOrderController@vendorOrderForCancelReq')->name('order.cancel.req.customer');
+
 
 	});
 	// Return product
