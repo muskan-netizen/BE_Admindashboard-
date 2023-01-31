@@ -230,7 +230,7 @@ span.alPriceValue, span.alPriceValue i {
                                             <section class="scrolling_section " id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))
                                                     <h2 class="category-head mt-0 mb-3">
-                                                        {{ $data->category->translation_one->name??'' }}
+                                                        {{ $data->category->translation[0]->name??'' }}
                                                         ({{ $data->products_count }})
                                                     </h2>
                                                     @forelse($data->products as $prod)
