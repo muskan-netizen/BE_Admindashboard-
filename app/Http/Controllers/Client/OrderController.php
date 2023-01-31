@@ -15,7 +15,7 @@ use App\Http\Controllers\DunzoController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, OrderProductDispatchReturnRoute, ProcessorProduct, OrderVendorProduct, VendorOrderProductStatus};
+use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, OrderProductDispatchReturnRoute, ProcessorProduct, OrderVendorProduct, VendorOrderProductStatus,Product};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -2290,8 +2290,9 @@ class OrderController extends BaseController
         DB::beginTransaction();
         try {
             $return = OrderReturnRequest::find($request->id);
+            // dd($return->created_at);
             $returns = OrderReturnRequest::where('id', $request->id)->update(['status' => $request->status ?? null, 'reason_by_vendor' => $request->reason_by_vendor ?? null]);
-            if (isset($returns)) {
+            if (isset($returns) && $return->type == 1) {
                 if ($request->status == 'Accepted' && $return->status != 'Accepted') {
                     $user = User::find($return->return_by);
                     $wallet = $user->wallet;
@@ -2304,6 +2305,22 @@ class OrderController extends BaseController
                 }
                 DB::commit();
                 return $this->successResponse($returns, 'Updated.');
+            }elseif(isset($returns) && $return->type == 3){
+                if ($request->status == 'Accepted' && $return->status != 'Accepted') {
+                    $user = User::find($return->return_by);
+                    $wallet = $user->wallet;
+                    $order_product = OrderProduct::find($return->order_vendor_product_id);
+                    $product_detail = Product::with('variant')->find($order_product->product_id);
+                    $to = Carbon::createFromFormat('Y-m-d H:s:i', $return->created_at);
+                    $from = Carbon::createFromFormat('Y-m-d H:s:i', $order_product->end_date_time);
+                    $minimum_hours = $product_detail->minimum_duration;
+                    $diff_in_hours = $to->diffInHours($from);
+                    dd($minimum_hours);
+                    $remaining_hours = floor($diff_in_hours -  / $product_detail->additional_increments);
+                    dd($remaining_hours);
+                    $returnable_amount = ($remaining_hours * $product_detail->variant[0]['incremental_price']);
+                    dd($returnable_amount);
+                }
             }
             return $this->errorResponse('Invalid order', 200);
         } catch (Exception $e) {
