@@ -394,7 +394,7 @@ class ProfileController extends BaseController{
         $data['user_document'] = $user_registration;
         $data['name'] = $user->name;
         $data['email'] = $user->email;
-        $data['cca2'] = $request->country_code;
+        $data['cca2'] = $user->country->code;
         $data['phone_number'] = $user->phone_number;
         $data['is_phone_verified'] = $user->is_phone_verified;
         $data['is_email_verified'] = $user->is_email_verified;
