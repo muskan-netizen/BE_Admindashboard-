@@ -311,7 +311,11 @@ class OrderController extends BaseController
                         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
                         {
                             $order_vendor = OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $vendor_id)->first();
-                            $order_vendor->web_hook_code = $order_vendor->web_hook_code;
+                            if(!empty($order_vendor)){
+                                $order_vendor->web_hook_code = $order_vendor->web_hook_code;
+                            }else{
+                                $order_vendor = new OrderVendor();
+                            }
                         }else{
                             $order_vendor = new OrderVendor();
                         }
