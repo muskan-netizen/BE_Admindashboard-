@@ -168,7 +168,7 @@ body .category-head {
 .dark #our_vendor_main_div button.slick-arrow {
     background-color: var(--theme-deafult) !important;
 }
-@media(max-width:1400px) {
+@media(max-width:1440px) {
    .product-right .product-buttons button{margin-bottom: 10px;}
    .product-right .product-buttons a{margin-bottom: 10px;}
 }

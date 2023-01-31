@@ -4320,3 +4320,9 @@ body[dir=rtl] .al_searchType button i {
  body[dir=rtl] .al_details_vendor button.btn.btn-solid {float: right;}
  body[dir=rtl]  span.invalid-feedback {display: block;text-align: right;}
  body[dir=rtl] .modal-dialog.modal-dialog-centered .modal-body h6 {text-align: right;}
+ body[dir=rtl] .border-product {text-align: right;}
+ body[dir=rtl] .border-product .addon-product .productAddonSetOptions .checkbox.checkbox-success label.checkboxAl {
+    padding-left: 0px;
+    padding-right: 35px;
+}
+body[dir=rtl] .checkmark{left: auto; right:0px;}

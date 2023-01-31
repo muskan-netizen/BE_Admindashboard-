@@ -9811,9 +9811,9 @@ body.al_body_template_two #page-container .small-slider .home-slider .home {
     .top-header .header-dropdown li span:last-child {
         display: none
     }
-    .top-header .header-dropdown li span:first-child {
+    /* .top-header .header-dropdown li span:first-child {
         font-size: 24px
-    }
+    } */
     .top-header .header-dropdown li {
         padding: 5px 10px 5px 0
     }
