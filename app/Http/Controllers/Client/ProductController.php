@@ -527,9 +527,19 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
-
+            if(checkColumnExists('products', 'same_day_delivery')){
+                $product->same_day_delivery = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
+            }
+            if (checkColumnExists('products', 'next_day_delivery')) {
+                $product->next_day_delivery = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
+            }
+            if (checkColumnExists('products', 'hyper_local_delivery')) {
+                $product->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
+            }
             $product->save();
-
+            if($request->has('slot_ids') && $request->slot_ids != ''){
+                $product->syncProductDeliverySlot()->sync($request->slot_ids);
+            }
             if ($product->id > 0) {
                 $trans = ProductTranslation::where('product_id', $product->id)->where('language_id', $request->language_id)->first();
                 if (!$trans) {
