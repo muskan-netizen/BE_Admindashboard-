@@ -1026,7 +1026,6 @@ class OrderController extends FrontController
                 }
             }
 
-            $slot_based_price = 0;
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
@@ -1046,6 +1045,7 @@ class OrderController extends FrontController
                 $additionalPrice=0.00;
                 $quantity_container_charges = 0;
                 $deliveryfeeOnCoupon = 0;
+                $slot_based_price = 0;
                 $passbase_check = VerificationOption::where(['code' => 'passbase', 'status' => 1])->first();
 
                 /* Update details related to order vendor */
@@ -1720,7 +1720,7 @@ class OrderController extends FrontController
             $payable_amount = $payable_amount - $Order_bid_discount??0;
             if(!$additionalPreferences->is_tax_price_inclusive) {
 
-                $orderTotalPay = decimal_format($payable_amount);
+                $orderTotalPay = decimal_format($payable_amount + $slot_based_price);
                 // gift card calculation
                 if($giftCardTotalAmount >0 && $orderTotalPay >0){
                     $calCulateGiftCard      = $this->calCulateGiftCard($orderTotalPay,$giftCardTotalAmount);
@@ -1729,7 +1729,7 @@ class OrderController extends FrontController
                 }
                 $order->payable_amount = $orderTotalPay;
             }else{
-            // Slot based price added to payable amount column            
+            // Slot based price added to payable amount column   
             $order->payable_amount = decimal_format($payable_amount + $slot_based_price);
 
                 $orderTotalPay = decimal_format($payable_amount - $total_other_taxes);
