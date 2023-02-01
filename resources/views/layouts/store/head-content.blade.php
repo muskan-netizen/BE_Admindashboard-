@@ -98,6 +98,7 @@ if(Auth::check()){
 		customer_chat : customer_chat,
 		socket:'',
 	}
+	 var service_period='';
 </script>
 
 @elseif(isset($set_template)  && $set_template->template_id == 6)
