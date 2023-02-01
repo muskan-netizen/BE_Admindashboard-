@@ -628,6 +628,23 @@ td.items-details h4 {
     text-align: center
 }
 
+/* Resgiter Password  icon  31-01-2023 Gagandeep*/
+
+.al_body_template_one .vendor-signup .row .al_vendor_signup .form-row .resgiter_password {
+    position: relative;
+}
+.al_body_template_one .vendor-signup .row .al_vendor_signup .form-row .resgiter_password .toggle-password {
+    position: absolute;
+    top: 70%;
+    right: 20px!important;
+    -webkit-transform: translateY(-70%);
+    -moz-transform: translateY(-70%);
+    transform: translateY(-70%);
+    cursor: pointer;
+}
+
+
+
 @media (-webkit-min-device-pixel-ratio: 2),
 (min-resolution: 192dpi) {
     .iti__flag {
