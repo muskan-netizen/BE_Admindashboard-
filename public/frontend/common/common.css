@@ -3644,3 +3644,27 @@ body.al_body_template_three.homeHeader .page-main-content .product-wrapper-grid.
     border-radius: 4px;
 }
 
+/*--------------dark theme css-----------*/
+.al_body_template_six .displayProducts .product-box .product-image {
+    padding-bottom: 0 !important;
+}
+.al_body_template_six .collection-product-wrapper .col-grid-box .media-body h3 {
+    text-align: left !important;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body h6 b {
+    color: #fff !important;
+}
+
+.size-box ul.productVariants li.row.otherSize label span.color_var {
+    position: absolute;
+    left: 0px;
+    top: 6px;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+}
+.product-right .size-box ul li label {
+    padding: 10px 0px;
+}
+ul.productVariants li.row.otherSize .checkround{opacity: 0;}
+.size-box ul.productVariants li.row.otherSize label .var-active{border: 2px solid#4c4a4a !important;}
