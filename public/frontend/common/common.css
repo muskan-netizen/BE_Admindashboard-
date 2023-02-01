@@ -1298,3 +1298,17 @@ body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image img 
 body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body h6 b {
     color: #fff !important;
 }
+
+.size-box ul.productVariants li.row.otherSize label span.color_var {
+    position: absolute;
+    left: 0px;
+    top: 6px;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+}
+.product-right .size-box ul li label {
+    padding: 10px 0px;
+}
+ul.productVariants li.row.otherSize .checkround{opacity: 0;}
+.size-box ul.productVariants li.row.otherSize label .var-active{border: 2px solid#4c4a4a !important;}
