@@ -6,7 +6,7 @@
     <nav class="scrollspy-menu">
         <ul>
             @forelse($listData as $key => $data)
-            <li class="side-scroll-menu-li"><a href="#{{ str_replace(' ', '-', $data->category->slug) }}">{{ $data->category->translation[0]->name??'' }}({{ $data->products_count }})</a></li>
+            <li class="side-scroll-menu-li"><a href="#{{ str_replace(' ', '-', $data->category->slug) }}">{{ @$data->category->translation[0]->name??'' }}({{ $data->products_count }})</a></li>
             @empty
             @endforelse
         </ul>

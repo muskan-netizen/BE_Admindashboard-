@@ -2259,6 +2259,7 @@ body[dir=rtl] .modal-header .close{padding:1rem;margin:-1rem!important}
 .dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before{color: #acbfd2;}
 .order_data_box .error-msg {font-size: 20px;position: relative;width: 100%;top: 0;-webkit-transform: translate(0px, 0);transform: translate(0px, 0%);}
 .alDeliveryOptionsPage .switchery-demo label{margin: 0 !important;}
+.dark .table thead th {background: #32383e;border: none;}
 /* dark dashboard css end */
 
 /*============================================= dashboard page responsive css start here ======================================= */
