@@ -877,7 +877,12 @@ class VendorController extends BaseController
 
         $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
 
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_one_push_book_enable']);
+
+        if(!empty($client_preferences))
+        {
+            $client_preferences->is_one_push_book_enable = $getAdditionalPreference['is_one_push_book_enable'];
+        }
 
         $roles = Role::get();
         if($getAdditionalPreference['is_price_by_role'] == 1){
@@ -1373,6 +1378,22 @@ class VendorController extends BaseController
 
 
         // Set order limit - By Ovi
+        if(checkColumnExists('vendors', 'same_day_delivery')){
+            $vendor->same_day_delivery   = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
+        }
+
+        if(checkColumnExists('vendors', 'next_day_delivery')){
+            $vendor->next_day_delivery   = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
+        }
+
+        if (checkColumnExists('vendors', 'hyper_local_delivery')) {
+            $vendor->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
+        }
+
+        if (checkColumnExists('vendors', 'cutOff_time') && $request->has('cutoff_time') && $request->cutoff_time != '') {
+            $vendor->cutoff_time = $request->cutoff_time;
+        }
+
         if($request->has('orders_per_slot')){
             $vendor->orders_per_slot   = $request->orders_per_slot;
         }
@@ -1418,7 +1439,11 @@ class VendorController extends BaseController
             $vendor->subscription_discount_percent = $request->has('subscription_discount_percent') ? $request->subscription_discount_percent : NULL;
         }
 
-       // $vendor->dynamic_html =  $request->has('dynamic_html') ? $request->dynamic_html : NULL;
+        if ($request->has('is_vendor_instant_booking')) {
+            $vendor->is_vendor_instant_booking = ($request->is_vendor_instant_booking == 'on') ? 1 : 0;
+        }
+
+
         $vendor->save();
 
         if ($request->has('facilty_ids')) {

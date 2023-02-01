@@ -42,8 +42,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         font-size: 15px;
     }
 
-    label.rating-star.cancel_order,
-    .rating-star.request_cancel_order,.extend-order {
+    label.rating-star.cancel_order, .rating-star.request_cancel_order, .extend-order {
         position: relative;
         left: 0px;
         top: 4px;
@@ -54,12 +53,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         padding: 5px 10px 4px 10px;
         text-transform: uppercase;
     }
-
-
     .single-cancel-order {
         left: 0px !important;
         top: 0px !important;
     }
+
     .rental_return, .rental_stop {
         position: relative;
         left: 0px;
@@ -542,6 +540,7 @@ $timezone = Auth::user()->timezone;
                                                                             @endif
                                                                             @endif
                                                                         @endif
+
                                                                         @php
                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
                                                                         $product_total_count += $product->quantity * $product_total_price;
@@ -552,8 +551,6 @@ $timezone = Auth::user()->timezone;
                                                                         @endif
                                                                         @endforeach
                                                                     </ul>
-
-
                                                                 </div>
                                                                 <div class="col-md-5 mt-md-0 mt-sm-2">
                                                                     <ul class="price_box_bottom m-0 p-0">
@@ -1090,9 +1087,6 @@ $timezone = Auth::user()->timezone;
                                                                                 $rental_return = 1;
                                                                             }
                                                                             @endphp
-                                                                            
-
-
 
                                                                             @if ($vendor->vendor_id == $product->vendor_id)
                                                                             @php
@@ -1119,6 +1113,7 @@ $timezone = Auth::user()->timezone;
                                                                                 @endphp
                                                                                 @endif
                                                                             </li>
+
                                                                             @if($order->luxury_option_id == 4 && $vendor->order_status_option_id == 6)
                                                                                 <li>
                                                                                     <label class="rating-star extend-order" data-order_vendor_product_id="{{$product->id}}" data-vendor_product_id="{{$product->product_id}}" data-vendor_end_date_time="{{$product->end_date_time}}">
@@ -1235,8 +1230,8 @@ $timezone = Auth::user()->timezone;
                                                                         <button class="btn btn-solid"> {{__('Return Pending')}} </button>
                                                                         @else
 
-
                                                                         @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request && $rental_return == 0)
+
                                                                         @if(@$returnable && $order->vendors[0]->exchanged_of_order == null)
                                                                         <button class="return-order-product btn btn-solid" data-id="{{ $order->id ?? 0 }}" data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
                                                                             <td class="text-center" colspan="3">
@@ -1541,7 +1536,9 @@ $timezone = Auth::user()->timezone;
                                                                                 <i class="fa fa-star{{ $pro_rating >= 4 ? '' : '-o' }}"></i>
                                                                                 <i class="fa fa-star{{ $pro_rating >= 5 ? '' : '-o' }}"></i>
                                                                             </label>
+
                                                                             {{ __('Return '. $product->productReturn->status ?? '') }}
+
                                                                         </li>
                                                                         @php
                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
@@ -2083,6 +2080,62 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 
+<div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div id="replace-order-form-modal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- start cancel order -->
+<div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <div id="review-rating-form-modal">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade driver-rating" id="driver_rating" tabindex="-1" aria-labelledby="driver_ratingLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div id="driver-review-rating-form-modal">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade return-order" id="return_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div id="return-order-form-modal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade return-rental-order" id="return_rental_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -2115,26 +2168,6 @@ $timezone = Auth::user()->timezone;
         </div>
     </div>
 </div>
-
-<div class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Modal title</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>Modal body text goes here.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary">Save changes</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
 <div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -2299,7 +2332,9 @@ $timezone = Auth::user()->timezone;
 @endif
 <script src="{{ asset('js/payment.js') }}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+
 <script type="text/javascript">
     $(document).delegate(".topup_wallet_btn_tip", "click", function() {
         $('#topup_wallet').modal('show');
@@ -2468,7 +2503,6 @@ $timezone = Auth::user()->timezone;
             $('#return-order-form-modal').html(markup);
         });
     });
-
 
     $('body').on('click', '.rental_return', function(event) {
         event.preventDefault();

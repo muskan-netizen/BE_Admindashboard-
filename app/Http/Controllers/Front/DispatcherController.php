@@ -10,7 +10,7 @@ use Auth;
 use Session;
 use DB;
 use App\Http\Traits\ApiResponser;
-use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule};
+use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid};
 
 class DispatcherController extends FrontController
 {
@@ -908,6 +908,96 @@ class DispatcherController extends FrontController
 
                     \Log::info($result);
             }
+        }
+    }
+
+    /******************    ---- pickup delivery Driver Bid/pricing update -----   ******************/
+    public function dispatchDriverBidUpdate(Request $request, $domain = '', $web_hook_code)
+    {
+        //dd($web_hook_code);
+        try {
+            DB::beginTransaction();
+            $order_bid_id = 0;
+            if($request->task_type == 'Instant_Booking'){
+                $checkiftokenExist = OrderVendor::where('web_hook_code', $web_hook_code)->first();
+                $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->order_id : 0;
+            }else{
+                $checkiftokenExist = OrderVendor::where('web_hook_code', $web_hook_code)->first();
+                $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->order_id : 0;
+            }
+
+            if($order_bid_id > 0){
+                $PickDropDriverBid = [
+                    'order_bid_id'                    => $order_bid_id,
+                    'status'                          => 0,
+                    'tasks'                           => isset($request->tasks) ? json_encode($request->tasks) : '',
+                    'driver_id'                       => $request->driver_id,
+                    'driver_name'                     => $request->driver_name,
+                    'driver_image'                    => $request->driver_image,
+                    'bid_price'                       => $request->bid_price,
+                    'task_type'                       => $request->task_type,
+                    'expired_at'                      => Carbon::now()->addSeconds(3000)->format('Y-m-d H:i:s')
+                ];
+                
+                $PickDropDriverBid = PickDropDriverBid::create($PickDropDriverBid);
+
+                DB::commit();
+                return $this->successResponse($PickDropDriverBid, __('Request Created Successfully.'), 200);
+
+            }else{
+                DB::rollback();
+                $message = "Invalid Token";
+                return $this->errorResponse($message, 400);
+               }
+
+        } catch (Exception $e) {
+            DB::rollback();
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+
+        }
+    }
+
+    /******************    ---- pickup delivery Driver Bid/pricing status -----   ******************/
+    public function dispatchDriverBidStatus(Request $request, $domain = '', $web_hook_code)
+    {
+        //dd($web_hook_code);
+        try {
+            $order_bid_id = 0;
+            if($request->task_type == 'Instant_Booking'){
+                $checkiftokenExist = OrderVendor::where('web_hook_code', $web_hook_code)->first();
+                $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->order_id : 0;
+            }else{
+                $checkiftokenExist = OrderVendor::where('web_hook_code', $web_hook_code)->first();
+                $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->order_id : 0;
+            }
+
+            if($order_bid_id > 0){
+                
+                $noofbids          = PickDropDriverBid::where('driver_id', '=', $request->driver_id)->where('order_bid_id', $order_bid_id)->orderBy('created_at', 'DESC')->count();
+                $PickDropDriverBid = PickDropDriverBid::where('driver_id', '=', $request->driver_id)->where('order_bid_id', $order_bid_id)->orderBy('created_at', 'DESC')->first();
+
+                $statusText = '';
+                if(!empty($PickDropDriverBid)){
+                    if($PickDropDriverBid->status == 0){
+                        $statusText = "Pending";
+                    }
+                    if($PickDropDriverBid->status == 1){
+                        $statusText = "Accepted";
+                    }
+                    if($PickDropDriverBid->status == 2){
+                        $statusText = "Declined";
+                    }
+                }
+                return $this->successResponse(['noofbid'=> $noofbids, 'lastBidStatus' => $statusText], 200);
+
+            }else{
+                $message = "Invalid Token";
+                return $this->errorResponse($message, 400);
+               }
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+
         }
     }
 

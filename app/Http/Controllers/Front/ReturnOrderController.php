@@ -40,6 +40,7 @@ class ReturnOrderController extends FrontController
                 'vendors' => function ($qw) use ($request) {
                     $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
                 }, 'vendors.products' => function ($qw) use ($request) {
+                    $qw->with(['pvariant.product', 'pvariant.media.pimage.image']);
                     $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
                 }, 'vendors.products.pvariant.media.pimage.image',
                 'products' => function ($qw) use ($request) {
@@ -51,6 +52,16 @@ class ReturnOrderController extends FrontController
                 ->where('orders.user_id', Auth::user()->id)->where('orders.id', $request->id)->orderBy('orders.id', 'DESC')->first();
 
             if (isset($order_details)) {
+
+                foreach($order_details->vendors as $vendor){
+                    foreach($vendor->products as $key=>$products){
+                        if((@$products->pvariant->product->returnable == 1 && @$products->pvariant->product->return_days && $this->checkOrderDaysForReturn($vendor, $products->pvariant->product->return_days)) ){
+                            continue;
+                        }else{
+                            $vendor->products->forget($key);
+                        }
+                    }
+                }
 
                 if ($request->ajax()) {
                     return \Response::json(\View::make('frontend.modals.return-product-order', array('order' => $order_details))->render());
@@ -71,8 +82,9 @@ class ReturnOrderController extends FrontController
                 'vendors' => function ($qw) use ($request) {
                     $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
                 }, 'vendors.products' => function ($qw) use ($request) {
+                    $qw->with(['pvariant.product', 'pvariant.media.pimage.image']);
                     $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
-                }, 'vendors.products.pvariant.media.pimage.image',
+                }, 
                 'products' => function ($qw) use ($request) {
                     $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
                 }
@@ -81,7 +93,19 @@ class ReturnOrderController extends FrontController
             })
                 ->where('orders.user_id', Auth::user()->id)->where('orders.id', $request->id)->orderBy('orders.id', 'DESC')->first();
 
+            // dd($order_details->vendors[0]->products);
             if (isset($order_details)) {
+                
+                    foreach($order_details->vendors as $vendor){
+                        foreach($vendor->products as $key=>$products){
+                            if((@$products->pvariant->product->replaceable == 1 && @$products->pvariant->product->return_days && $this->checkOrderDaysForReturn($vendor, $products->pvariant->product->return_days)) ){
+                                continue;
+                            }else{
+                                $vendor->products->forget($key);
+                            }
+                        }
+                    }
+                
 
                 if ($request->ajax()) {
                     return \Response::json(\View::make('frontend.modals.replace-product-order', array('order' => $order_details))->render());

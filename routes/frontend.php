@@ -37,7 +37,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::get('dispatch-order-product-status-update/{id?}', 'Front\DispatcherController@dispatchOrderSingleProductStatusUpdate')->name('dispatch-order-product-status-update'); // Order Status update Dispatch
 	Route::get('dispatch-order-service-status-update/{id?}', 'Front\DispatcherController@dispatchOrderServiceProductStatusUpdate')->name('dispatch-order-service-status-update'); // Order Status update Dispatch
-
+	Route::post('dispatch/driver/bids/update/{id?}', 'Front\DispatcherController@dispatchDriverBidUpdate')->name('dispatch-driver-bids'); // instant booking and Bid and Ride pickup delivery update from dispatch
+	Route::post('dispatch/driver/bids/status/{id?}', 'Front\DispatcherController@dispatchDriverBidStatus')->name('dispatch-driver-bids-status'); // instant booking and Bid and Ride Bid Status pickup delivery update from dispatch
 	Route::get('testsms', 'Front\FrontController@testsms');
 
 	Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
@@ -163,6 +164,8 @@ Route::group(['middleware' => ['domain']], function () {
     //plugnpay
     Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
 
+	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
+	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
 
 	//Simplify
 	Route::match(['get', 'post'], 'payment/simplify/page', 'Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
@@ -469,8 +472,9 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::post('/updateCartBookingSlot', 'Front\CartController@updateCartBookingSlot')->name('updateCartBookingSlot');
 
+	Route::get('getShippingProductDeliverySlots', 'Front\ProductController@getShippingProductDeliverySlots')->name('product.getShippingProductDeliverySlots');
 
-
+	Route::get('getShippingSlotsInterval', 'Front\ProductController@getShippingSlotsInterval')->name('product.getShippingSlotsInterval');
 
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
@@ -569,8 +573,11 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
 		Route::get('get-order-data-in-model', 'Front\ReturnOrderController@getOrderDatainModel')->name('getOrderDatainModel');
+		Route::get('get-replace-order-data-in-model', 'Front\ReturnOrderController@getReplaceOrderDatailModel')->name('getReplaceOrderDatailModel');
 		Route::get('get-return-products', 'Front\ReturnOrderController@getReturnProducts')->name('get-return-products');
+		Route::get('get-replace-products', 'Front\ReturnOrderController@getReplaceProducts')->name('get-replace-products');
 		Route::post('update-product-return', 'Front\ReturnOrderController@updateProductReturn')->name('update.order.return');
+		Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
 
 		Route::get('get-vendor-order-for-cancel', 'Front\ReturnOrderController@getVendorOrderForCancel')->name('get-vendor-order-for-cancel');
 		Route::post('vendor-order-for-cancel', 'Front\ReturnOrderController@vendorOrderForCancelSingleProduct')->name('order.cancel.customer');
