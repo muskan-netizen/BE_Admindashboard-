@@ -278,7 +278,7 @@ class PostController extends FrontController
         $slug = str_replace(' ', '-',$slug);
         $generated_slug = $sku_url.'.'.$slug;
         $user = Auth::user();	
-        $user_vendor = UserVendor::where('user_id', 45454545)->first();
+        $user_vendor = UserVendor::where('user_id', $user->id)->first();
         // dd($user_vendor);
         if(@$user_vendor->vendor_id){
             $product = new Product();
