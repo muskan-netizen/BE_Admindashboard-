@@ -903,7 +903,7 @@ class OrderController extends FrontController
                     return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing."), 400);
                 }
                 $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-                
+
                 $order_vendor_status_error = 0;
                 foreach ($cart->editingOrder->orderStatusVendor as $key => $status) {
                     if($status->order_status_option_id  > 2) {
@@ -1072,7 +1072,7 @@ class OrderController extends FrontController
                 if (isset($cart->editingOrder) && !empty($cart->editingOrder)) {
                     $OrderVendor = OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $vendor_id)->first();
                     if(!empty($OrderVendor)){
-                        $OrderVendor->web_hook_code = $order_vendor->web_hook_code;
+                        $OrderVendor->web_hook_code = $OrderVendor->web_hook_code;
                     }else{
                         $OrderVendor = new OrderVendor();
                     }
