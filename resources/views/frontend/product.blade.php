@@ -21,7 +21,9 @@
         }
     */
     .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit} 
-
+.var-active{
+    background:#000;
+}
     .img-zoom-lens {
       position: absolute;
       border: 1px solid #d4d4d4;
@@ -54,7 +56,7 @@
         z-index: 10;
         display: none;
     }
-     
+   
     </style>
 
 @endsection
@@ -273,13 +275,14 @@
                                                 <div class="size-box">
                                                     <ul class="productVariants">
                                                         <li class="firstChild">{{$variant->title}}</li>
-                                                        <li class="otherSize">
+                                                        <li class="row otherSize">
                                                             @foreach($variant->option2 as $k => $optn)
                                                             <?php $var_id = $variant->variant_type_id;
                                                             $opt_id = $optn->variant_option_id;
                                                             $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                             ?>
-                                                            <label class="radio d-inline-block txt-14 mr-2">{{$optn->title}}
+                                                            <label class="radio d-inline-block txt-14 col-3 position-relative"> {{$optn->title}}
+                                                            <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
                                                                 <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                 <span class="checkround"></span>
                                                             </label>
@@ -877,6 +880,10 @@
     $(document).ready(function() {
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
+        $(".color_var").click(function () {
+            $(".color_var").removeClass("var-active");
+            $(this).toggleClass("var-active");
+            });
     });
 </script>
 
