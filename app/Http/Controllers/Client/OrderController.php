@@ -2311,15 +2311,30 @@ class OrderController extends BaseController
                     $wallet = $user->wallet;
                     $order_product = OrderProduct::find($return->order_vendor_product_id);
                     $product_detail = Product::with('variant')->find($order_product->product_id);
-                    $to = Carbon::createFromFormat('Y-m-d H:s:i', $return->created_at);
-                    $from = Carbon::createFromFormat('Y-m-d H:s:i', $order_product->end_date_time);
-                    $minimum_hours = $product_detail->minimum_duration;
+
+                    // Get Remaining Hours
+                    $to = Carbon::createFromFormat('Y-m-d H:s:i', $return->created_at); //request created date
+                    $from = Carbon::createFromFormat('Y-m-d H:s:i', $order_product->end_date_time); //product end date
                     $diff_in_hours = $to->diffInHours($from);
-                    dd($minimum_hours);
-                    $remaining_hours = floor($diff_in_hours -  / $product_detail->additional_increments);
-                    dd($remaining_hours);
-                    $returnable_amount = ($remaining_hours * $product_detail->variant[0]['incremental_price']);
-                    dd($returnable_amount);
+
+                    // Get Total Hours
+                    $start_hour = Carbon::createFromFormat('Y-m-d H:s:i', $order_product->start_date_time);
+                    $end_hour = Carbon::createFromFormat('Y-m-d H:s:i', $order_product->end_date_time);
+                    $total_hours = $start_hour->diffInHours($end_hour);
+
+                    $hours_used = floor($total_hours - $diff_in_hours);
+                    if($hours_used <= $product_detail->minimum_duration){
+                        $credit_amount = $order_product->incremental_price;
+                    }else{
+                        $remaining_hours = floor(($total_hours - $hours_used) / $product_detail->additional_increments);
+                        $credit_amount = ($remaining_hours * $product_detail->variant[0]['incremental_price']);
+                    }
+                    $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
+                    $dispatch_domain = $this->getDispatchDomain();
+                    $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
+                    $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain, $order_details);
+                    DB::commit();
+                    return $this->successResponse($returns, 'Updated.');
                 }
             }
             return $this->errorResponse('Invalid order', 200);
