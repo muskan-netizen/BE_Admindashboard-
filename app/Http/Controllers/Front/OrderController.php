@@ -1072,7 +1072,7 @@ class OrderController extends FrontController
                 if (isset($cart->editingOrder) && !empty($cart->editingOrder)) {
                     $OrderVendor = OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $vendor_id)->first();
                     if(!empty($OrderVendor)){
-                        $OrderVendor->web_hook_code = $order_vendor->web_hook_code;
+                        $OrderVendor->web_hook_code = $OrderVendor->web_hook_code;
                     }else{
                         $OrderVendor = new OrderVendor();
                     }
