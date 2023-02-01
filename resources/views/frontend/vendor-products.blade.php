@@ -14,6 +14,11 @@
 @php
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
+<!-- get current page -->
+@php
+@$currentPage = $_GET['page'];
+@endphp
+<!-- get current page end -->
 <!-- section start -->
 <section class="section-b-space ratio_asos al_vendor_product_page">
     <div class="collection-wrapper">

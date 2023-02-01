@@ -1784,6 +1784,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     $(document).delegate('#view_all_address', 'click', function() {
 
         $("#view_all_address").addClass("d-none");
+        $("#view_all_address").removeClass("d-block");
         $("#view_all_address_div").removeClass("d-none");
 
     });
