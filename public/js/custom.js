@@ -2263,7 +2263,7 @@ $(document).ready(function () {
                                     }else{
                                         schedule_datetime = $("#edit_order_schedule_datetime").val();
                                     }
-                                    if(schedule_datetime!=''){
+                                    if(schedule_datetime!='' && typeof $("#schedule_datetime").val()!='undefined'){
                                         $("#schedule_datetime").val(schedule_datetime);
                                         $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("max", $("#schedule_datetime").val());

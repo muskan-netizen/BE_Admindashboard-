@@ -284,7 +284,7 @@
                         </div>
                     @endif
 
-                    @if ($is_cab_pooling == 1 && $is_bid_ride_enable == 1)
+                    @if ($is_cab_pooling == 1 || $is_bid_ride_enable == 1)
                         <div class="pool_radio_controls text-center">
                             <input type="radio" class="pool_radio is_cab_pooling_bid_ride" id="cab_booking" name="is_cab_pooling_bid_ride"
                                 value="0" checked>
