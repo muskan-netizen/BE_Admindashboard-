@@ -81,6 +81,8 @@ if(isset($set_template))
 	var auth = "{!! $auth_id !!}";
 	var db = "{!! $db !!}";
   var authData =  `<?php  echo $authData  ?>`;
+  var service_period='';
+
 
 	var socket = null;
 	var Auth = {

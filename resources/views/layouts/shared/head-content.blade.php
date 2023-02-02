@@ -178,6 +178,8 @@ if(Auth::check()){
 		customer_chat : customer_chat,
 		socket:'',
 	}
+	var service_period='';
+
 </script>
 <script src="{{asset('assets/libs/spinner/spinner.js')}}"></script>
 <script src="{{asset('assets/js/constants.js')}}"></script>

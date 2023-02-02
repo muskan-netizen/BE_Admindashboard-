@@ -999,7 +999,10 @@ $(document).ready(function () {
             if(slot){
                 var stime = 'T'+slot.split(" - ",1);
                 var schedule_dtck = toTimestamp(schedule_dt+' '+slot.split(" - ",1));
-                var schedule_dt = schedule_dt+stime;
+                var schedule_dt_check = schedule_dt+stime;
+            }else{
+                var schedule_dt_check = ((schedule_dt)?toTimestamp(schedule_dt):'undefined');
+                var now = toTimestamp(now);
             }
 
             if(business_type == 'laundry' && scheduling_with_slots == 1){
@@ -1017,10 +1020,10 @@ $(document).ready(function () {
 
             }
 
-            if (schedule_dt == '') {
+            if (schedule_dt == '' || schedule_dt == 'undefined') {
                 success_error_alert('error', error_Schedule_date_is_required, ".cart_response");
                 return false;
-            } else if (schedule_dt < now) {
+            } else if (schedule_dt_check < now) {
                 success_error_alert('error', error_Invalid_Schedule_date , ".cart_response");
                 return false;
             }
@@ -2255,7 +2258,7 @@ $(document).ready(function () {
                                     }else{
                                         schedule_datetime = $("#edit_order_schedule_datetime").val();
                                     }
-                                    if(schedule_datetime!=''){
+                                    if(schedule_datetime!='' && typeof $("#schedule_datetime").val()!='undefined'){
                                         $("#schedule_datetime").val(schedule_datetime);
                                         $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("max", $("#schedule_datetime").val());

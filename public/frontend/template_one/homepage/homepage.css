@@ -685,16 +685,12 @@ label {
 .classes_wrapper .class_img img {
     width: 100%
 }
-
-.al_body_template_one .btn-solid {
-    padding: 5px 10px !important;
-    font-size: 10px !important;
-    letter-spacing: 2px;
-    font-weight: 500;
-    text-shadow: none;
-    border-radius: 4px;
-    border-width: 1px
+/*page load popop model css */
+.al_body_template_one  .age-restriction .btn-solid{
+    width: inherit !important;
+    max-width: none !important;
 }
+/*------end here----*/
 
 .category-head {
     position: sticky;
@@ -1032,20 +1028,6 @@ li.close-window i {
     position: relative;
     margin-bottom: 10px !important
 }
-
-.progress-order {
-    width: calc(100% + 48px);
-    margin: -24px 0 20px;
-    background: #00000012;
-    color: var(--theme-deafult);
-    position: relative;
-    left: -24px;
-    font-weight: 600;
-    border-top-left-radius: .25rem;
-    border-top-right-radius: .25rem;
-    padding: 5px 0
-}
-
 .pulse {
     display: block;
     width: 8px;
@@ -1603,7 +1585,6 @@ li.close-window i {
     border-top-right-radius: .25rem;
     padding: 5px 0
 }
-
 .pulse {
     display: block;
     width: 8px;
@@ -5298,4 +5279,14 @@ body.al_body_template_one .product-card-box.position-relative.alInnerBox {
 
 body.al_body_template_two section#homepage_long_term_service_div .al_clock b {
     color: var(--theme-deafult);
+}
+.breadcrumb-section .breadcrumb {
+    justify-content: flex-start;
+}
+
+/*footer social links css*/
+
+.social-links.d-flex li {
+    margin-right: 0px !important;
+    padding: 0px 4px;
 }

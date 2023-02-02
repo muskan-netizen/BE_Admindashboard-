@@ -4,6 +4,12 @@
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.slick-track{margin-left:0}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}
 body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !important;line-height: 37px;border-radius: 90px;text-align: center;}
+.alPageSearchView .product-box .img-wrapper {margin:0;height:100%;}
+.alPageSearchView .product-box .img-wrapper .front {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
 .gm-style-iw.gm-style-iw-c {
     width: 300px ;
     padding: 12px ;
@@ -146,8 +152,11 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                                                             if(empty($data['image_url'])){
                                                                 $data['image_url'] = loadDefaultImage();
                                                             }
+                                                            
                                                         @endphp
-                                                        <a href="{{$data['redirect_url']}}"><img class="img-fluid blur-up lazyload" src="{{$data['image_url']}}" alt=""></a>
+                                                        <a href="{{$data['redirect_url']}}">
+                                                            <img class="img-fluid blur-up lazyload" src="{{$data['image_url']}}" alt=""/>
+                                                        </a>
                                                     </div>
                                                 </div>
                                                 <div class="product-detail">
