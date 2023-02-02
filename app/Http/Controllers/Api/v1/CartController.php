@@ -1443,7 +1443,7 @@ class CartController extends BaseController
             ['label' => 'Deliver fee tax', 'value' => decimal_format($deliver_fee_charges_tax)],
             ['label' => 'Markup fee tax', 'value' => decimal_format($total_markup_fee_tax)],
             ['label' => 'Container fee tax', 'value' => decimal_format($container_charges_tax)],
-            ['label' => "Total ".$taxData[0]['identifier']." amount", 'value' => decimal_format($total_taxable_amount)]
+            ['label' => "Total ".@$taxData[0]['identifier']." amount", 'value' => decimal_format($total_taxable_amount)]
         );
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);

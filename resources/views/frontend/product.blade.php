@@ -358,13 +358,14 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     <div class="size-box">
                                                         <ul class="productVariants">
                                                             <li class="firstChild">{{$variant->title}}</li>
-                                                            <li class="otherSize">
+                                                            <li class="row otherSize">
                                                                 @foreach($variant->option2 as $k => $optn)
                                                                 <?php $var_id = $variant->variant_type_id;
                                                                 $opt_id = $optn->variant_option_id;
                                                                 $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                                 ?>
-                                                                <label class="radio d-inline-block txt-14 mr-2">{{$optn->title}}
+                                                                    <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"> <span class="color_name ellipsis">{{$optn->title}}</span>
+                                                                    <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
                                                                     <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                     <span class="checkround"></span>
                                                                 </label>
