@@ -292,9 +292,11 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                                             {{ __("This Order is being edited") }} <a class="discard_editing_order" style="color:var(--theme-deafult);" href="javascript:void(0)" data-orderid="{{$order->id}}"><i class="fa fa-trash-o"></i> {{__('Discard')}}</a>
                                                                                                             </span>
                                                                                                         @else
-                                                                                                            <span class="badge ml-2" style="cursor:pointer;font-size:14px;">
-                                                                                                                <strong><a class="order_edit_button" data-order_id='{{$order->id}}'><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{__('Edit')}}</a></strong>
-                                                                                                            </span>
+                                                                                                            @if($vendor->order_status_option_id <= 2)
+                                                                                                                <span class="badge ml-2" style="cursor:pointer;font-size:14px;">
+                                                                                                                    <strong><a class="order_edit_button" data-order_id='{{$order->id}}'><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{__('Edit')}}</a></strong>
+                                                                                                                </span>
+                                                                                                            @endif
                                                                                                         @endif
                                                                                                     @endif
                                                                                                 @endif

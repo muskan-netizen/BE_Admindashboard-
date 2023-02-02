@@ -182,7 +182,7 @@ class OrderController extends BaseController
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 if(checkColumnExists('carts','order_id'))
                 {//get if any order is being edit
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder'])->first();
+                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder', 'cartvendor'])->first();
                 }else{
                     $cart = Cart::where('user_id', $user->id)->first();
                 }
@@ -229,6 +229,25 @@ class OrderController extends BaseController
                         OrderProductPrescription::where('order_id', $order->id)->delete();
                         OrderTax::where('order_id', $order->id)->delete();
                         VendorOrderStatus::where('order_id', $order->id)->delete();
+
+                        if(!empty($cart->cartvendor)){
+                            $array_cart_vendors = array();
+                            foreach($cart->cartvendor as $cartvendor){
+                                $array_cart_vendors[] = $cartvendor->vendor_id;
+                            }
+                            if(count($array_cart_vendors) > 0){
+                                $noincartVendors = OrderVendor::where('order_id', $cart->editingOrder->id)->whereNotIn('vendor_id', $array_cart_vendors)->get();
+                                foreach($noincartVendors as $noincartVendor){
+                                    OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $noincartVendor->vendor_id)->delete();
+                                    if($noincartVendor->dispatch_traking_url!='' && $noincartVendor->dispatch_traking_url!=NULL)
+                                    {
+                                        $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $noincartVendor->dispatch_traking_url);
+                                        $response = Http::get($dispatch_traking_url);
+                                    }
+                                }
+                            }
+                        }
+
                         $order->is_edited = 1;
                     }else{
                         $order = new Order;
@@ -311,11 +330,15 @@ class OrderController extends BaseController
                         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
                         {
                             $order_vendor = OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $vendor_id)->first();
-                            $order_vendor->web_hook_code = $order_vendor->web_hook_code;
+                            if(!empty($order_vendor)){
+                                $order_vendor->web_hook_code = $order_vendor->web_hook_code;
+                            }else{
+                                $order_vendor = new OrderVendor();
+                            }
                         }else{
                             $order_vendor = new OrderVendor();
                         }
-                        //$order_vendor = new OrderVendor;
+                        
                         $order_vendor->status = 0;
                         $order_vendor->user_id = $user->id;
                         $order_vendor->order_id = $order->id;
