@@ -23,7 +23,7 @@
                         {{ $product["vendor_name"] }}
                     </p>
                     <p class="border-bottom pb-1">
-                        <span>{{__('In') . $product["category"]}} </span>
+                        <span>{{__('In ') . $product["category"]}} </span>
                     </p>
                     @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                     <div class="d-flex align-items-center justify-content-between al_clock"> 

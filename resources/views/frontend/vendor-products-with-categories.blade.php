@@ -1107,11 +1107,12 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                     var firstContent = content.substr(0, showChar);
                     var lastContent = content.substr(showChar, content.length - showChar);
 
+                    firstContent = firstContent.trim();
                     var html = firstContent + '<span class="moreellipses">' + ellipsestext +
                         '&nbsp;</span><span class="morecontent"><span style="display:none;">' + lastContent +
                         '</span><a href="" class="morelink">' + moretext + '</a></span>';
 
-                    $(this).html(html);
+                    $(this).html(firstContent+lastContent);
                 }
 
             });
