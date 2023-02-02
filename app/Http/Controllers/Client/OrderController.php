@@ -1162,11 +1162,11 @@ class OrderController extends BaseController
                 }
 
                 if ($request->status_option_id == 2) {
-                    $this->ProductVariantStock($request->order_id);
+                    $this->ProductVariantStock($request->order_id, $request);
                 }
 
                 if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 3) {
-                    $this->ProductVariantStockIncrease($request->order_id);
+                    $this->ProductVariantStockIncreaseByOrderId($request->order_id);
                 }
 
                 $order_vendor = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
@@ -2368,6 +2368,7 @@ class OrderController extends BaseController
                 $order_product = OrderProduct::find($return->order_vendor_product_id);
                 $credit_amount = $security_amount;
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for secuirity return ' . $order_product->product_name]);
+                $this->ProductVariantStockIncreaseByOrderId($order_product->order_id, 'rental');
                 DB::commit();
                 return $this->successResponse($returns, 'Updated.');
             }

@@ -21,9 +21,8 @@ trait OrderTrait
 {
     use ValidatorTrait, ApiResponser;
 
-    public function ProductVariantStock($order_id)
+    public function ProductVariantStock($order_id, $request='')
     {
-
         $order = Order::with(['vendors.products.pvariant'])->find($order_id);
         if (isset($order->vendors)) {
             foreach ($order->vendors as $vendor) {
@@ -39,6 +38,9 @@ trait OrderTrait
                         $ProductVariant->quantity  = $update_quantity;
                         $ProductVariant->save();
                     }
+                    if(@$request && $request->order_luxury_option_id == 4){
+                        $ProductVariant->increment('rented_product_count', $product->quantity);
+                    }
                 }
             }
         }
@@ -48,6 +50,7 @@ trait OrderTrait
     public function ProductVariantStockIncrease($product)
     {
         $ProductVariant = ProductVariant::find($product->variant_id);
+        dd($ProductVariant);
         if ($ProductVariant) {
             $update_quantity  = $ProductVariant->quantity + $product->quantity;
             if ($update_quantity < 0)
@@ -56,6 +59,29 @@ trait OrderTrait
             $ProductVariant->save();
         }
        
+        return 1;
+    }
+
+    public function ProductVariantStockIncreaseByOrderId($order_id, $rental = '')
+    {
+        $order = Order::with(['vendors.products.pvariant'])->find($order_id);
+        if( isset($order->vendors )){
+            foreach ($order->vendors as $vendor) {
+                foreach ($vendor->products as $product) {
+                    $ProductVariant = ProductVariant::find($product->variant_id);
+                    if ($ProductVariant) {
+                        $update_quantity  = $ProductVariant->quantity + $product->quantity;
+                        if($update_quantity < 0)
+                        $update_quantity  = 0;
+                        $ProductVariant->quantity  = $update_quantity;
+                        $ProductVariant->save();
+                    }
+                    if(@$rental && $rental == 'rental'){
+                        $ProductVariant->decrement('rented_product_count', $product->quantity);
+                    }
+                }
+            }
+        }
         return 1;
     }
 

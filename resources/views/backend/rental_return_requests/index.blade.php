@@ -157,12 +157,12 @@
                                                 <tr  >
                                                     <td >
                                                         <a href="javascript:;" class="text-body font-weight-bold">
-                                                            {{ $return_form_request->order->order_number }}
+                                                            {{ $return_form_request->order->order_number??'' }}
                                                         </a>
                                                     </td>
                                                     <td>
                                                         <a href="javascript:;" class="text-body font-weight-bold">
-                                                            {{ $return_form_request->orderProduct->vendor->name }}
+                                                            {{ $return_form_request->orderProduct->vendor->name??'' }}
                                                         </a>
                                                     </td>
                                                     <td>
