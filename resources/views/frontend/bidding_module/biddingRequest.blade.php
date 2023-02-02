@@ -130,7 +130,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                                                     @foreach ($prescriptions as $prescription)
                                                     <tr>
                                                         <td>{{$loop->iteration}}</td>
-                                                        <td><a target ="_blank" href="{{$prescription->prescription}}">View File</a></td>
+                                                        <td><a target ="_blank" href="{{$prescription->prescription}}"><i class="fa fa-file-pdf-o" style="font-size:24px;color:red"></i></a></td>
                                                         <td><span class="text-wrap">{{$prescription->description??null}}</span></td>
                                                         <td>{{$prescription->created_at}}</td>
                                                         <td>
