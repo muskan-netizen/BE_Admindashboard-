@@ -379,9 +379,9 @@
                                                                                 @endif
 
                                                                                 </div>
-                                                                                @foreach ($vendor->dispatcher_status_icons as $key => $icons)
+                                                                                @if( isset($vendor->dispatcher_status_icons) && count($vendor->dispatcher_status_icons) > 0)
                                                                                 <div class="step-indicator step-indicator-order">
-
+                                                                                    @foreach ($vendor->dispatcher_status_icons as $key => $icons)
                                                                                     @if(isset($vendor['vendor_dispatcher_status'][$key]) && !empty($vendor['vendor_dispatcher_status'][$key]))
                                                                                     <div class="step step{{$key+1}} active">
                                                                                         <div class="step-icon-order step-icon-order-fill"><img src="{{@$vendor->vendor_dispatcher_status[$key]->status_data['icon']}}"></div>
@@ -404,9 +404,10 @@
                                                                                     <div class="indicator-line"></div>
                                                                                     @endif
                                                                                     @endif
-
+                                                                                    @endforeach
                                                                                 </div>
-                                                                                @endforeach
+                                                                                @endif
+
                                                                                 <div class="row">
                                                                                     <div class="col-12 d-flex align-items-center justifiy-content-end alListBtnGroups">
                                                                                     @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
