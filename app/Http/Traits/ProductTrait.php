@@ -79,19 +79,31 @@ trait ProductTrait{
         return $product;
     }
 
-    public function getLincerFreeFromDispatcher($date , $productVariantSku)
+    public function getProductPriceFromDispatcher($date , $productVariantSku,$lat='',$long='',$slot='')
     {
         $returnResponse['data'] = array();
         $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
         if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false ) {
             $DatabaseName = DB::connection()->getDatabaseName();
+            $end_time   =  $start_time = date('H:i',strtotime($date));
             
+            if($slot!=''){
+                $sl = explode('-', $slot);
+                $start_time =  @$sl[0] ?? $date;
+                $end_time   = @$sl[1] ?? $date;
+            }
+            $latitude = ($lat && $lat!='') ? $lat : $dispatch_domain_ondemand->Default_Default_latitude;
+            $longitude = ($long && $long!='') ? $long :  $dispatch_domain_ondemand->Default_longitude;
             $postdata =  [
                 'product_variant_sku'  =>  $DatabaseName.'_'.$productVariantSku,
-                'schedule_date' =>$date ?? 'Dummy Customer',
-                'start_time' => $date 
+                'schedule_date' => $date,
+                'start_time'    => $start_time ,
+                'end_time'      => $end_time  ,
+                'latitude'      => $latitude,
+                'longitude'     => $longitude
             ];
-           
+            \Log::info('getProductPrice api data');
+            \Log::info($postdata);
             $client = new Guzzle([
                 'headers' => [
                     'personaltoken' => $dispatch_domain_ondemand->dispacher_home_other_service_key,

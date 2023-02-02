@@ -309,6 +309,8 @@ class CartController extends FrontController
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $user_id = $user ? $user->id : '';
             $variant_id = $request->variant_id;
+            $client_timezone = DB::table('clients')->first('timezone');
+            $timezone = $user ? $user->timezone : ($client_timezone->timezone ??  'Asia/Kolkata' );
             if ($user) {
                 $cart_detail['user_id'] = $user_id;
                 $cart_detail['created_by'] = $user_id;
@@ -419,8 +421,7 @@ class CartController extends FrontController
             $isLongTermProduct =0;
             if( $request->has('service_start_time') && !empty($request->service_start_time)){
                 $isLongTermProduct  = 1;
-                $client_timezone = DB::table('clients')->first('timezone');
-                $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
+               
                 $time = '2022-10-27 '.$request->service_start_time; /**only need time */
                 $service_start_time = Carbon::parse($time, $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $start_date = $service_start_time ; /** we user start_date_time for long term order timing */
@@ -453,17 +454,15 @@ class CartController extends FrontController
             ];
              //Check if 
             if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
-                $client_timezone = DB::table('clients')->first('timezone');
-                $timezone = $user ? $user->timezone : $client_timezone->timezone;
                
                 $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                $slot = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
-                   //   pr($slot);        
+                $slot    = $request->dispatcherAgentData['slot'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
                 $cart_product_detail['schedule_type'] = 'schedule';
                 $cart_product_detail['scheduled_date_time'] = @$dataTime;
                 $cart_product_detail['schedule_slot'] = @$slot ?? null;
                 $cart_product_detail['dispatch_agent_price'] = @$request->dispatcherAgentData['agent_price']??null;
                 $cart_product_detail['dispatch_agent_id'] = @$request->dispatcherAgentData['agent_id']??null;
+                $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], ['address_id'=>@$request->dispatcherAgentData['address_id']]);
             }
 
             //Check if BidId and bid dicount coulmn exists in table
@@ -2062,10 +2061,10 @@ class CartController extends FrontController
             $cart = Cart::where('status', '0')->where('user_id', $user->id);
             if($getAdditionalPreference['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
 
-                $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id')->with('giftCard');
+                $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id','address_id')->with('giftCard');
             }else{
 
-                $cart = $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','order_id');
+                $cart = $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','order_id','address_id');
             }
 
             $cart = $cart->with(['coupon.promo','editingOrder'])->first();
@@ -2075,9 +2074,9 @@ class CartController extends FrontController
         } else {
             if(checkColumnExists('carts','order_id'))
             {
-                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             }else{
-                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type')->with(['coupon.promo'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','address_id')->with(['coupon.promo'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             }
 
         }

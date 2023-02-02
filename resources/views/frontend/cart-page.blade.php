@@ -538,26 +538,21 @@
                                                 @if (@$vendor_product->product->is_slot_from_dispatch != 1 || $vendor_product->product->Requires_last_mile != 1)
                                                     <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime"
                                                         style="{{ ((($cart_details->schedule_type == 'schedule' || $vendor_product->product->mode_of_service=='schedule')) ||  ($is_service_product_price_from_dispatch_forOnDemand ==1)) ? '' : 'display:none!important' }}">
-                                                        <div class="col-5 offset-3 text-lg-right">
-                                                            <label class="m-0 radio">
-                                                                {{ __('Scheduled Slot') }} :</label>
+                                                        <div class="col-{{( $is_service_product_price_from_dispatch_forOnDemand ==1 ? '9 d-flex ' : '5') }} offset-3 text-left">
+                                                            <p class="text-dark">{{ __('Scheduled Slot') }} :</p>
+                                                             @if($is_service_product_price_from_dispatch_forOnDemand ==1)
+                                                                <p class="m-0 mx-2">{{ $vendor_product->selected_dispatcher_time   }}  </p>
+                                                                
+                                                                <p class="m-0" {{ $vendor_product->schedule_slot_name }}</p>
+                                                               
+                                                            @endif
                                                         </div>
-                                                       
+                                                        
+                                                        @if($is_service_product_price_from_dispatch_forOnDemand !=1)
                                                             <div class="col-4 vendor_slot_cart">
                                                                 <input type="hidden" class="custom-control-input vendor_product_schedule_datetime check"
                                                                     id="tasknow" name="task_type" value='schedule'>
-                                                                    @if($is_service_product_price_from_dispatch_forOnDemand ==1)
-                                                                        <input type="text"
-                                                                            id="vendor_schedule_slot_{{ $product->vendor_id }}"
-                                                                            data-schedule_type="ProductDateTime"
-                                                                            data-vendor_id="{{ $product->vendor_id }}"
-                                                                            data-cart_product_id="{{ $product->cart_product_id }}"
-                                                                            class="form-control scheduled_freelancer_dispatcher vendor_schedule_datetime"
-                                                                            placeholder="Inline calendar"
-                                                                            value="{{ $vendor_product->selected_dispatcher_time != '' ? $vendor_product->selected_dispatcher_time : '' }} "
-                                                                            min="{{ date('Y-m-d') }}"
-                                                                            data-cart_product_id="{{ $vendor_product->id }}" disabled>
-                                                                    @else
+                                                                  
                                                                         @if ($product->slotsCnt != 0)
                                                                             <input type="date"
                                                                                 class="form-control vendor_schedule_datetime"
@@ -606,12 +601,12 @@
                                                                                     data-cart_product_id="{{ $vendor_product->id }}">
                                                                             @endif
                                                                         @endif
-                                                                    @endif    
+                                                                     
                                                             </div>
-                                                       
+                                                        @endif  
                                                     </div>
                                                 @else
-                                                    {{-- Dispatch sloat shoty --}}
+                                                    {{-- Dispatch sloat shot --}}
                                                     @include('frontend.cart.dispatchSlots')
                                                 @endif
                                             @endif
@@ -1776,3 +1771,4 @@
 @section('script-bottom-js')
     <script defer type="text/javascript" src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
 @endsection
+4

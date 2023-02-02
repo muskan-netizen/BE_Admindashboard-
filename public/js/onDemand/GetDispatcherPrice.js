@@ -4,7 +4,6 @@
  */
 
 $(function(){
-    
     OrderSessionStorage.removeStorageSingle('variant_id');
     OrderSessionStorage.removeStorageSingle('dispatcherAgent');
     OrderSessionStorage.removeStorageSingle('add_to_cart_url');
@@ -12,39 +11,67 @@ $(function(){
     OrderSessionStorage.removeStorageSingle('product_id');
     OrderSessionStorage.removeStorageSingle('this');
     OrderSessionStorage.removeStorageSingle('onDemandBookingdate');
+    OrderSessionStorage.removeStorageSingle('address_id');
+    OrderSessionStorage.removeStorageSingle('slot');
 })
 
 
 
 $(document).on('click','.view_on_demand_price',function(){
     var variant_id = $(this).data('variant_id');
-    //  alert(variant_id);
-    console.log($(this));
     OrderSessionStorage.setStorageSingle('variant_id',variant_id);
     OrderSessionStorage.setStorageSingle('add_to_cart_url',$(this).data('add_to_cart_url'));
     OrderSessionStorage.setStorageSingle('vendor_id',$(this).data('vendor_id'));
     OrderSessionStorage.setStorageSingle('product_id',$(this).data('product_id'));
     OrderSessionStorage.setStorageSingle('this',JSON.stringify($(this)));
     document.getElementById('driver_product_variant_id').value = variant_id;
+    $selectedAddress = OrderStorage.getStorage('cartAddressId');
+    if ($selectedAddress !='' &&  $selectedAddress !=undefined){
+        $("#productPrice_address_id").val($selectedAddress);
+        document.getElementById("productPrice_address_id").disabled = true;
+    }
+    var todayDate = document.getElementById('productPriceModel_todayDate').value
+    var formData ={
+        "date" : todayDate,
+    }
+    ///$('.select-2').select2();
+    getGerenalSlot(formData);
     $('#driver_sort_by').hide();
     $('#productPriceModel').modal('show');
     $(`#listofdrivers`).html('');
-   console.log( JSON.parse(OrderSessionStorage.getStorage('this')));
+  
 })
 
-$(document).on('click','#search_Driver_fee',function(e){
+$(document).on('click','#search_Driver_fee',async function(e){
     e.preventDefault();
-    var variant_id = document.getElementById('driver_product_variant_id').value
+    var variant_id   = document.getElementById('driver_product_variant_id').value
     var onDemandBookingdate = document.getElementById('onDemandBookingdate').value
+    var address_id = document.getElementById('productPrice_address_id').value
+    var slot = document.getElementById('productPrice_slot').value
+
     OrderSessionStorage.setStorageSingle('onDemandBookingdate',onDemandBookingdate);
-    getDiverPrice(variant_id , onDemandBookingdate)
-})
-async function getDiverPrice(variant_id , onDemandBookingdate){
-    var formData ={
-        "variant_id" : variant_id,
-        "onDemandBookingdate" : onDemandBookingdate
+    OrderSessionStorage.setStorageSingle('address_id',address_id);
+    OrderSessionStorage.setStorageSingle('slot',slot);
+   
+    if((variant_id =='' || variant_id == undefined )|| (onDemandBookingdate =='' || onDemandBookingdate == undefined) || (address_id =='' || address_id == undefined) || (slot  =='' || slot == undefined)){
+        Swal.fire({
+            icon: 'error',
+            title:_language.getLanString('Oops...'),
+            text: _language.getLanString('All fields Required !!'),
+        })
+        return false;
     }
-  
+    var Driver_price_formData ={
+        "variant_id" : variant_id,
+        "onDemandBookingdate" : onDemandBookingdate,
+        "address_id" : address_id,
+        "slot" : slot
+    }
+   await getDiverPrice(Driver_price_formData)
+})
+async function getDiverPrice(formData){
+    
+    
      axios.post(`/get_price_from_dispatcher`, formData)
         .then(async response => {
          console.log(response.data);
@@ -123,6 +150,40 @@ $(document).on('change','#driver_sort_by',function(e){
     e.preventDefault();
     sortAgentBox();
 })
+$(document).on('change','#onDemandBookingdate',function(e){
+    var date = document.getElementById('onDemandBookingdate').value
+    var formData ={
+        "date" : date,
+    }
+    getGerenalSlot(formData);
+})
+
+async function getGerenalSlot(formData){
+    axios.post(`/get_gerenal_slot`, formData)
+    .then(async response => {
+     console.log(response.data);
+     console.log(response.data.html);
+        if(response.data.status == "Success"){
+          var html = response.data.html;
+            $('#productPrice_slot').html(html);
+           // $('#productPrice_slot').select2();
+        } else{
+                Swal.fire({
+                    icon: 'error',
+                    title:_language.getLanString('Oops...'),
+                    text: _language.getLanString('Something went wrong, try again later!'),
+                })
+        }
+    })
+    .catch(e => {
+        console.log(e);
+        Swal.fire({
+            icon: 'error',
+            title:_language.getLanString('Oops...'),
+            text: _language.getLanString('Something went wrong, try again later!'),
+        })
+    })  
+}
 
 $(document).on('click','.dispatcherAgent',function(e){
     e.preventDefault();
@@ -135,10 +196,14 @@ $(document).on('click','.dispatcherAgent',function(e){
     var add_to_cart_url = OrderSessionStorage.getStorage('add_to_cart_url');
     var vendor_id       = OrderSessionStorage.getStorage('vendor_id');
     var product_id      = OrderSessionStorage.getStorage('product_id');
+    var address_id      = OrderSessionStorage.getStorage('address_id');
+    var slot            = OrderSessionStorage.getStorage('slot');
     let that            = JSON.parse(OrderSessionStorage.getStorage('this'));
     var dispatcherAgentData ={
-        "agent_price"         : agent_price,
-        "agent_id"            : agent_id,
+        "agent_price"     : agent_price,
+        "agent_id"        : agent_id,
+        "address_id"      : address_id,
+        "slot"            : slot,
         "onDemandBookingdate" : OrderSessionStorage.getStorage('onDemandBookingdate')
     }
     var show_plus_minus = "#show_plus_minus" + product_id;
@@ -161,7 +226,6 @@ $(document).on('click','.dispatcherAgent',function(e){
 
 async function sortAgentBox(){
     $sortBy = $('#driver_sort_by').val();
-   console.log();
     var $wrap = $('#listofdrivers');
     $wrap.find('.dispatcherAgent').sort(function(a, b) 
     {
@@ -169,9 +233,12 @@ async function sortAgentBox(){
             console.log('agent_rating');
             return +b.dataset.agent_rating -
             +a.dataset.agent_rating;
-        }else{
+        }else if($sortBy == "low_to_high"){
             console.log('agent_price');
             return +a.dataset.agent_price - +b.dataset.agent_price;
+        }
+        else if($sortBy == "high_to_low"){
+            return +b.dataset.agent_price - +a.dataset.agent_price;
         }
        
     })

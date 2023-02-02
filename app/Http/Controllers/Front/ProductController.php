@@ -9,7 +9,7 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot,UserAddress};
 
 use Carbon\Carbon;
 use App\Http\Traits\{ProductActionTrait, ProductTrait};
@@ -538,20 +538,22 @@ class ProductController extends FrontController{
 
     # get product faq
     public function getFreeLincerFromDispatcher(Request $request){
+       
        $selecterVariant = ProductVariant::where('id',$request->variant_id)->first();
        if($selecterVariant){
-           $res = $this->getLincerFreeFromDispatcher($request->onDemandBookingdate,$selecterVariant->sku);
+            $latitude = '';
+            $longitud = '';
+            $address = UserAddress::find(($request->address_id ?? ''));
+            if($address){
+                $latitude = $address->latitude ;
+                $longitud = $address->longitude ;
+            }
+           $res = $this->getProductPriceFromDispatcher($request->onDemandBookingdate,$selecterVariant->sku, $latitude, $longitud,$request->slot);
            return response()->json(array('status' => 'Success', 'data' => $res['data']));
        }
-        //    $sku = 'AC100';
-        //     $data = '2023-01-11';
-            //pr(  $res);
-            //return \Response::json(\View::make('frontend.modals.product-order-form', array('product_faqs'=>  $product_faqs))->render());
-
-            //return $this->errorResponse('Invalid product form ', 404);
-
-
+       return response()->json(array('status' => 'Success', 'data' => []));
     }
+
     public function getShippingProductDeliverySlots(Request $request){
         if($request->ajax()){
             $product_id = $request->product_id;
@@ -583,6 +585,15 @@ class ProductController extends FrontController{
             $product_delivery_slots_interval = DeliverySlot::where('parent_id', $request->slot_id)->get();            
             return view('frontend.shipping-method-slots-interval-ajax')->with(['product_delivery_slots_interval' => $product_delivery_slots_interval]);
         }
+    }
+    public function getGerenalSlot(Request $request){
+        $html  = '';
+        $period = GerenalSlot($request->date, '00:00:00', '24:00:00', $Duration="60");
+        foreach ($period as $Slot){
+            $html .= '<option value="'.$Slot['value'].'">'.$Slot['name'].'</option>';
+        }
+        return response()->json(array('status' => 'Success', 'html' => $html));
+       
     }
 
 }

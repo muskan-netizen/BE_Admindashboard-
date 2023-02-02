@@ -35,10 +35,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('social/info', 'Api\v1\SocialController@getKeys');
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
+        Route::post('get_product_price_from_dispatcher',   'Api\v1\ProductController@getFreeLincerFromDispatcher');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {
 
-         /**Chat resourses */
+        /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
         Route::get('chat/all/{room_id?}', 'Api\v1\ChatController@index');
         Route::get('chat/user/{room_id?}', 'Api\v1\ChatController@VendorUserChat');
@@ -260,6 +261,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-influencer-form/{id}', 'Api\v1\InfluencerController@getInfluencerForm');
             Route::post('save-influencer-form', 'Api\v1\InfluencerController@save');
         });
-
-    });
+     //   Route::post('get_product_price_from_dispatcher',   'Api\v1\ProductController@getFreeLincerFromDispatcher');
+    });  
 });

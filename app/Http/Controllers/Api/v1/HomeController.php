@@ -311,8 +311,8 @@ class HomeController extends BaseController
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
             $type = $request->has('type') ? $request->type : 'delivery';
-            \Log::info($request->all());
-            \Log::info($type);
+            // \Log::info($request->all());
+            // \Log::info($type);
             if (empty($type))
             $type = 'delivery';
 

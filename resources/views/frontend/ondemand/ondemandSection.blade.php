@@ -5,6 +5,13 @@
 @php
 $add_to_cart =  route('addToCart') ;
 $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+$is_service_product_price_from_dispatch_forOnDemand = 0;
+$category_type_idForNotShowshPlusMinus = ['12'];
+if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+    $is_service_product_price_from_dispatch_forOnDemand =1;
+    array_push($category_type_idForNotShowshPlusMinus,8);
+}
+
 @endphp
 <section class="home-serivces" id="alSixHomeServices">
     <div class="container">
@@ -97,37 +104,73 @@ $additionalPreference = getAdditionalPreference(['is_service_product_price_from_
                                                                     </div>
                                                                     <div class="d-flex align-items-center justify-content-between productBookingBtns">
                                                                         @if($productInquiryCheck == 0)
+                                                                    
                                                                             <h5 class="my-sm-0 my-3">
-                                                                                {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
-                                                                                <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
+                                                                                @if($is_service_product_price_from_dispatch_forOnDemand !=1)
+                                                                                    {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
+                                                                                    <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
+                                                                                @endif
                                                                             </h5>
-
+                                                                       
 
                                                                             @if( (isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0) )
                                                                             @php
                                                                                 $cartcount = 1;
                                                                             @endphp
-                                                                            <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                                            <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
-                                                                                <span class="minus qty-minus-ondemand sd"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                                </span>
-                                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
-                                                                                <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                                </span>
-                                                                            </div>
+                                                                            @if(   $is_service_product_price_from_dispatch_forOnDemand ==1)
+
+
+                                                                                                                                                            
+                                                                            <a class="btn btn-solid btn btn-solid view_on_demand_price"  style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                                                             @else
-                                                                            <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Add') }} <i class="fa fa-plus"></i></a>
-                                                                            <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
-                                                                                <span class="minus qty-minus-ondemand 132"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                                </span>
-                                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
-                                                                                <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                                </span>
-                                                                            </div>
+                                                                                <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                            @endif
+                                                                            @if(
+                                                                                isset($data->category_type_id) && 
+                                                                                ( 
+                                                                                    (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus)) 
+                                                                                )  
+                                                                            )
+                                                                                <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
+                                                                                    <span class="minus qty-minus-ondemand sd"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                                    </span>
+                                                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
+                                                                                    <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                                    </span>
+                                                                                </div>
+                                                                                @else
+                                                                                    <a class="btn btn-solid " id="added_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                                @endif
+
+                                                                            @else
+                                                                            
+
+                                                                            @if(   $is_service_product_price_from_dispatch_forOnDemand ==1)
+                                                                                    
+                                                                                <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
+                                                                            @else
+                                                                              <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Add') }} <i class="fa fa-plus"></i></a>
+                                                                            @endif 
+                                                                            @if(
+                                                                                isset($data->category_type_id) && 
+                                                                                ( 
+                                                                                    (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus)) 
+                                                                                )  
+                                                                            )
+                                                                                <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
+                                                                                    <span class="minus qty-minus-ondemand 132"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                                    </span>
+                                                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
+                                                                                    <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                                    </span>
+                                                                                </div>
+                                                                            @else
+                                                                                <a class="btn btn-solid "  style="display:none;" id="added_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                            @endif 
 
                                                                             @endif
                                                                         @endif
