@@ -56,11 +56,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         z-index: 10;
         display: none;
     }
-<<<<<<< HEAD
-
-=======
    
->>>>>>> pre_production
     </style>
 
 @endsection
@@ -171,60 +167,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     $product->media[] = $coll;
                                                 }
                                             @endphp
-<<<<<<< HEAD
-
-                                            <div class="swiper-container gallery-top">
-                                                <div class="swiper-wrapper">
-
-                                                @if(!empty($product->media) && count($product->media) > 0)
-
-                                                    @foreach($product->media as $k => $image)
-                                                        @php
-                                                            if(isset($image->pimage)){
-                                                                $img = $image->pimage->image;
-                                                            }else{
-                                                                $img = $image->image;
-                                                            }
-                                                        @endphp
-                                                        <div class="swiper-slide easyzoom easyzoom--overlay">
-                                                            <a href="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}">
-                                                            <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
-                                                            </a>
-                                                        </div>
-                                                    @endforeach
-                                                @else
-
-                                                    <div class="swiper-slide easyzoom easyzoom--overlay">
-                                                            <a href="{{loadDefaultImage()}}">
-                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-                                                            </a>
-                                                        </div>
-
-                                                @endif
-                                                </div>
-
-                                                <div class="swiper-button-next swiper-button-white"></div>
-                                                <div class="swiper-button-prev swiper-button-white"></div>
-                                            </div>
-                                            <div class="swiper-container gallery-thumbs">
-                                                <div class="swiper-wrapper">
-                                                    @if(!empty($product->media) && count($product->media) > 0)
-                                                        @foreach($product->media as $k => $image)
-                                                        @php
-                                                            if(isset($image->pimage)){
-                                                                $img = $image->pimage->image;
-                                                            }else{
-                                                                $img = $image->image;
-                                                            }
-                                                        @endphp
-
-                                                        @endforeach
-                                                    @else
-                                                        <div class="swiper-slide">
-                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-                                                        </div>
-                                                    @endif
-=======
                                             @foreach($product->variantSet as $key => $variant)
                                                 @if($variant->type == 1 || $variant->type == 2)
                                                 <div class="size-box">
@@ -244,7 +186,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                             @endforeach
                                                         </li>
                                                     </ul>
->>>>>>> pre_production
                                                 </div>
                                             </div>
                                         </div>
