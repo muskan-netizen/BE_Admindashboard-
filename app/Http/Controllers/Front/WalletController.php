@@ -44,6 +44,7 @@ class WalletController extends FrontController
      */
     public function creditWallet(Request $request, $domain = '')
     {
+
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){

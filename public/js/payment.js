@@ -2779,6 +2779,163 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
         $.redirect(userede_before_payment, data);
     }
 
+    ///////////////////////////Plugnpay payment Gateway //////////////////////////////
+    window.paymentViaplugnpay = function paymentViaplugnpay(address_id='', payment_option_id='',order='') {
+
+
+        cno = $('#plugnpay-card-element').val();
+        dt  = $('#plugnpay-date-element').val();
+        cv  = $('#plugnpay-cvv-element').val();
+        let total_amount    = 0;
+        let cartElement     = $("input[name='cart_total_payable_amount']");
+        let walletElement   = $("input[name='wallet_amount']");
+        let tipElement      = $("#cart_tip_amount");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let data            = [];
+        let payment_from    = '';
+
+        let cabElement = $("#pickup_now");
+        if (path.indexOf("cart") !== -1) {
+
+            // if (path.indexOf("cart") !== -1) {
+                payment_form = 'cart';
+                total_amount = cartElement.val();
+                data.push(
+                    { name: 'order_number', value: order.order_number },
+                    { name: 'cno', value: cno },
+                    { name: 'dt', value: dt },
+                    { name: 'cv', value: cv }
+                );
+        
+            // }
+            data.push(
+                { name: 'from', value: payment_form },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+        else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            
+             data.push(
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+        else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            payment_from = 'subscription';
+            data.push(
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name: 'subsid', value: subscription_id.val() },
+            );
+           
+        } 
+        else if (cabElement.length > 0) {
+             total_amount = cabElement.data('amount');
+             payment_from = 'pickup_delivery';
+              data.push(
+                { name: 'order_number', value: order.order_number },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name: 'reload_route', value: address_id },
+            );
+        }
+        else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+
+             data.push(
+                { name: 'order_number', value: $("#order_number").val() },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+
+       
+
+
+
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async: false,
+            url: payment_plugnpay_url,
+            data: data,
+            success: function(response) {
+                
+                if (response.status == "Fail") {
+                     if(response.payment_from == 'wallet'){
+                         $("#wallet_payment_methods_error").html(response.msg);
+                         $("#wallet_payment_methods_error").css("color",'red');
+                         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'pickup_delivery'){
+                         $("#plugnpay_card_error").html(response.msg);
+                         $("#plugnpay_card_error").css("color",'red');
+                         $("#proceed_to_pay_loader").hide();
+                         $('#paywithplugpay').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'subscription'){
+                         $("#plugnpay_card_error").html(response.msg);
+                         $("#plugnpay_card_error").css("color",'red');
+                         $(document).find('.subscription_confirm_btn').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'cart'){
+                         $("#plugnpay_card_error").html(response.msg);
+                         $("#plugnpay_card_error").css("color",'red');
+                         $("#proceed_to_pay_loader").hide();
+                         $(document).find('.proceed_to_pay').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'tip'){
+                         $("#wallet_payment_methods_error").html(response.msg);
+                         $("#wallet_payment_methods_error").css("color",'red');
+                         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                         return false;
+                     }
+                    
+                }
+                else if(response.status == "Success") {
+                    window.location.replace(response.route);
+                } else {
+                    window.location.replace(response.route);
+                }
+            },
+            error: function(response) {
+               
+                window.location.replace(response.route);  
+                // var error = response.responseJSON;
+                // console.log(error, 'Error');
+            }
+        });
+    }
+
     ///////////////////////////PayU payment Gateway //////////////////////////////
     window.payWithOpenPay = function payWithOpenPay(address_id='', payment_option_id='', order='') {
         console.log(default_country_code);
@@ -2979,4 +3136,58 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
         // var khaltipay = new KhaltiCheckout(khaltipay_options);
         // khaltipay.show({amount: 1000});
     } // Ends
+
+
+    /***
+     * Mtn Momo payment gateway
+     */
+    window.paymentViaMtnMomo = function paymentViaMtnMomo(address_id, order, payment_form)
+    {
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let total_amount = 0;
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscriptionId = $("input[name='subscription_id']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_from = '';
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            payment_from = 'cart';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            var rowData = 'amt='+total_amount+'&from='+payment_from;
+        }else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            subsId = subscriptionId.val();
+            payment_from = 'subscription';
+            var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
+        }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
+        }
+        
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: create_mtn_momo_token,
+            data: rowData,
+            success: function(resp) {
+                if(resp != ''){
+                    window.location.href = resp;
+                }else{
+                    alert('Tray Again');
+                }
+          },
+          error: function(resp) {
+              window.location.href = resp.responseText;
+          }
+        
+        });
+    }
+    
+
+
 });

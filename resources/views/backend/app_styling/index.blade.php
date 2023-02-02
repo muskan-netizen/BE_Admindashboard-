@@ -187,7 +187,7 @@
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">
 <div class="row" >
     <div class="col-md-9" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <div class="card-box home-options-list">
+        <div class="card-box home-options-list h-100">
             <div class="row mb-2">
                 <div class="col-sm-8">
                     <h4 class="page-title mt-0">{{ __('Home Page')}}</h4>

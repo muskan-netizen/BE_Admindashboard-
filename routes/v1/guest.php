@@ -9,6 +9,24 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
     Route::post('vendor-sync-inventory', 'Api\v1\VendorController@vendorSyncInventory')->middleware('ConnectDbFromInventory');
 
+    Route::group(['middleware' => ['ConnectDbFromInventory']], function () { //inventory
+        Route::group(['prefix' => 'inventory'], function () {
+            Route::post('getUnAssignedOrderCategory', 'Api\v1\InventoryController@getUnAssignedOrderCategory');
+            Route::post('getOrderVendorById', 'Api\v1\InventoryController@getOrderVendorById');
+            Route::post('getOrderVendors', 'Api\v1\InventoryController@getOrderVendors');
+            Route::post('getOrderCategories', 'Api\v1\InventoryController@getOrderCategories');
+            Route::post('getOrderVendorCategories', 'Api\v1\InventoryController@getOrderVendorCategories');
+            Route::post('syncVendorCategoryProducts', 'Api\v1\InventoryController@syncVendorCategoryProducts');
+            Route::post('updateRoyoProductQuantity', 'Api\v1\InventoryController@updateRoyoProductQuantity');
+            Route::post('getOrderProductBySku', 'Api\v1\InventoryController@getOrderProductBySku');
+            Route::post('deleteOrderProductBySku', 'Api\v1\InventoryController@deleteOrderProductBySku');
+            Route::post('needSyncWithOrder', 'Api\v1\InventoryController@needSyncWithOrder');
+            Route::post('getOrderCategoryById', 'Api\v1\InventoryController@getOrderCategoryById');
+        });
+    });
+
+    
+
 
 
     Route::group(['middleware' => ['dbCheck', 'checkAuth']], function () { //apilogger
@@ -47,6 +65,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('get/subcategory/vendor', 'Api\v1\HomeController@getSubcategoryVendor');
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
+        Route::post('getShippingProductDeliverySlots', 'Api\v1\ProductController@getShippingProductDeliverySlots');
+        Route::post('getProductDeliverySlotsInterval', 'Api\v1\ProductController@getProductDeliverySlotsInterval');
         Route::POST('checkProductAvailibility', 'Api\v1\ProductController@checkProductAvailibility');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');

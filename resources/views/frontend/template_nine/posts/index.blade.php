@@ -4,6 +4,8 @@
 <link href="{{asset('assets/libs/multiselect/multiselect.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
 
+<link href="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.css')}}" rel="stylesheet" type="text/css" />
+
 <style type="text/css">
         
         
@@ -128,7 +130,6 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
 
 @section('content')
 
-    
     <div class="wrapper">
         <div class="alPostHead text-center bg-light position-relative py-3">
             <!-- <a href="#" class="backArroww position-absolute"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg></a> -->
@@ -290,6 +291,8 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
     <script src="{{ asset('assets/libs/dropzone/dropzone.min.js') }}"></script>
 <script src="{{ asset('assets/libs/dropify/dropify.min.js') }}"></script>
     <script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
+    <script src="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.js')}}"></script>
+<script src="{{asset('assets/js/pages/toastr.init.js')}}"></script>
 <script>
 
 $(document).on('click', '#view-all_cats', function() {
@@ -337,4 +340,17 @@ $(document).on('click', '.select-category', function() {
 
 </script>
 
+
+<?php
+// dd(Session::get('toaster'));
+if (Session::has('toaster')) {
+    $toast = Session::get('toaster');
+    echo '<script>
+            $(document).ready(function(){
+                $.NotificationApp.send("' . $toast["title"] . '", "' . $toast["body"] . '", "top-right", "' . $toast["color"] . '", "' . $toast["type"] . '");
+            });
+        </script>';
+}
+
+?>
 @endsection

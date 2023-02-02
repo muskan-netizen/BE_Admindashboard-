@@ -643,14 +643,21 @@ $timezone = Auth::user()->timezone;
                             <td style="width:200px;">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->additional_price)}}</td>
                         </tr>
                         @endif
+
+                        @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
+                        <tr>
+                            <th scope="row" colspan="4" class="text-end">{{ __("Redeemed Loyality Points") }} :</th>
+                            <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
+                        </tr>
+                        @endif
+
                         <tr>
                             <?php
-                            //    $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
                             $vendorDiscount = 0;
                             $adminDiscount = 0;
                             // dd($vendor);
                             if ($vendor->coupon_code) {
-                                if ($vendor->coupon_id == 1) {
+                                if ($vendor->coupon_paid_by == 1) { 
                                     $couponFrom = 'From Admin';
                                     $adminDiscount = $vendor->discount_amount;
                                 } else {
@@ -666,18 +673,12 @@ $timezone = Auth::user()->timezone;
                             <th scope="row" colspan="4" class="text-end">{{__('Total Discount')}} {{$couponFrom}}:</th>
                             <td>-{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->discount_amount)}}</td>
                         </tr>
-                        @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
-                        <tr>
-                            <th scope="row" colspan="4" class="text-end">{{ __("Redeemed Loyality Points") }} :</th>
-                            <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
-                        </tr>
-                        @endif
 
 
                         @if($client_preference_detail->is_tax_price_inclusive)
 
                         @php //taxable_amount
-                        $adminRevenue = ($revenue + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+                        $adminRevenue = ($revenue + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount - number_format($vendor->orderDetail->loyalty_amount_saved);
 
                         //taxable_amount
                         $storeRevenue = ($sub_total + $order->fixed_fee_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
@@ -688,7 +689,7 @@ $timezone = Auth::user()->timezone;
 
                         @php
 
-                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
+                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount - number_format($vendor->orderDetail->loyalty_amount_saved);
 
                         $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
 
@@ -726,14 +727,23 @@ $timezone = Auth::user()->timezone;
                         @endif
                         @if($vendor->additional_price>0)
                         @endif
+
+                    @if($order->wallet_amount_used>0)
+                    <tr>
+                            <th scope="row" colspan="4" class="text-end">{{ __("Wallet Amount Used") }} :</th>
+                            <td>
+                                <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->wallet_amount_used * $clientCurrency->doller_compare)}}</div>
+                            </td>
+                    </tr>
+                    @endif
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                             <td>
-                                {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}
-                    </div> --}}
-                    <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
-                    </td>
+                                
+                              <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
+                            </td>
                     </tr>
+                    
                     <tr>
                         <th scope="row" colspan="4" class="text-end">{{ __("Payable Amount") }} :</th>
                         <td>

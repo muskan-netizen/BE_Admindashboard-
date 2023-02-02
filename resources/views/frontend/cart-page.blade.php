@@ -405,9 +405,9 @@
                                                         @endif
                                                     @endif
 
-                                                    @if (isset($vendor_product->product->product_delivery_fee) && $vendor_product->product->product_delivery_fee > 0)
+                                                    @if (isset($vendor_product->product_delivery_fee) && $vendor_product->product_delivery_fee > 0)
                                                         <div class="float-left mt-2">Delivery Fee : <span
-                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product->product_delivery_fee }}</span>
+                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee }}</span>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -520,7 +520,7 @@
                                         {{-- Home Service Schedual code Start at down --}}
                                         {{-- @php
                        pr($cart_details->closed_store_order_scheduled);
-                        @endphp --}}
+                        @endphp --}} 
                                         @if (($cart_details->closed_store_order_scheduled == 1 ||
                                             $client_preference_detail->off_scheduling_at_cart != 1) &&
                                             (in_array($serviceType, ['appointment', 'on_demand']) && $vendor_product->product->mode_of_service == 'schedule'))
@@ -528,7 +528,7 @@
                                             @if ($client_preference_detail->business_type != 'laundry')
                                                 @if (@$vendor_product->product->is_slot_from_dispatch != 1 || $vendor_product->product->Requires_last_mile != 1)
                                                     <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime"
-                                                        style="{{ $cart_details->schedule_type == 'schedule' ? '' : 'display:none!important' }}">
+                                                        style="{{ ($cart_details->schedule_type == 'schedule' || $vendor_product->product->mode_of_service=='schedule') ? '' : 'display:none!important' }}">
                                                         <div class="col-5 offset-3 text-lg-right">
                                                             <label class="m-0 radio">
                                                                 {{ __('Scheduled Slot') }} :</label>
@@ -595,6 +595,9 @@
                                         @endif
                                         @if ($vendor_product->product->is_long_term_service == 1)
                                             @include('frontend.cart.longTermTimeSelection')
+                                        @endif
+                                        @if( $vendor_product->product->same_day_delivery ==  1 && $vendor_product->product->next_day_delivery ==  1)
+                                            @include('frontend.cart.deliverySlotSelection')
                                         @endif
 
                                     </div>
@@ -1042,6 +1045,14 @@
                                             @endif
                                         </b>
                                     </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+                            @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
+                                <div class="row">
+                                    
+                                    <div class="col-6">{{__('Delivery Slot Fees')}}</div>
+                                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
                                 </div>
                                 <hr class="my-2">
                             @endif

@@ -302,6 +302,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('seller', 'Client\SellerController');
         Route::get('seller/catalogs/{id}', 'Client\SellerController@sellerCatalog')->name('seller.catalogs');
 
+        Route::resource('pincode', 'Client\PincodeController');
+        
+        Route::get('pincodeData', 'Client\PincodeController@pincodeData')->name('pincode.pincodeData');
+
+        Route::resource('delivery-slot', 'Client\DeliverySlotController');
+
         Route::get('calender/pickup/data/{id}', 'Client\Laundry\PickupSlotController@returnJson')->name('vendor.calender.pickup'); // Added by Ovi
         Route::post('calender/pickup/slot/{id}', 'Client\Laundry\PickupSlotController@store')->name('vendor.pickup.saveSlot'); // Added by Ovi
         Route::post('calender/pickup/updateSlot/{id}', 'Client\Laundry\PickupSlotController@update')->name('vendor.pickup.updateSlot'); // Added by Ovi
@@ -569,6 +575,14 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('long_term_service/index/{vendor_id}',  'Client\LongTermServiceController@index')->name("long_term_service.index");
         Route::get('long_term_service/edit/{id}',          'Client\LongTermServiceController@edit')->name('long_term_service.edit');
         Route::get('long_term_service/delete/{id}',        'Client\LongTermServiceController@destroy')->name("long_term_service.destroy");
+
+
+        /***
+         *  Mtn momo payment gateway configation
+         */
+
+        Route::post('mtn-mom-api-key', 'Client\PaymentOptionController@MtnmomoApiKey')->name('payoption.mtn_momo_api_key');
+
         Route::post('long_term_service/updateBooking',     'Client\LongTermServiceController@updateBooking')->name("long_term_service.updateBooking");
 
         /**

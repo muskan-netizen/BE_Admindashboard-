@@ -389,7 +389,7 @@ body.al_body_template_nine .product-wrapper-grid .product-image {
 } */
 
 
-/* 
+/*
 body.al_body_template_nine.p2p-module article#page-container {
     min-height: auto !important;
 } */
@@ -768,7 +768,7 @@ body.al_body_template_nine.p2p-module .ui-effects-wrapper {
     top: 0;
 }
 
-body.al_body_template_nine.p2p-module .ui-effects-wrapper li {
+/* body.al_body_template_nine.p2p-module .ui-effects-wrapper li {
     all: unset !important;
 }
 
@@ -785,7 +785,7 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a.btn.btn
     position: absolute;
     right: -67px;
     top: 15px;
-}
+} */
 
 body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center span#cart_qty_span {
     margin: 0 !important;
@@ -839,7 +839,7 @@ body.al_body_template_nine.p2p-module div#category_products_filter .product-imag
 }
 
 
-/* 
+/*
 body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect h4.mt-1 {
     border-top: 0.1px solid#ccc !important;
     margin-top: 15px !important;
@@ -1260,3 +1260,20 @@ body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.s
         right: 0;
     }
 }
+
+
+/*======================= new css add for p2p template on 1/12/2023===================== */
+/* for nine template */
+a.sell-btn {margin-right: 0 !important;}
+body.al_body_template_nine .alPostItemsData textarea.form-control {
+padding-top: 10px;
+padding-bottom: 10px;
+}
+body.al_body_template_nine.p2p-module .home-slider-wrapper .banner-img-outer img {
+max-height: 510px !important;
+height: 510px;
+}
+body .alPostBoxOuter .breadcrumb-item:empty::before{display: none;}
+/* for nine template */
+
+/*======================= new css add for p2p template on 1/12/2023===================== */

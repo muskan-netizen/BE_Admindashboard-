@@ -63,7 +63,14 @@ class HomeController extends BaseController
             //pr($vendorMode);
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price']);
+
+            $homeData['profile']->preferences->is_cab_pooling = (int) getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+            $homeData['profile']->preferences->chat_button = (int) getAdditionalPreference(['chat_button'])['chat_button'];
+            $homeData['profile']->preferences->call_button = (int) getAdditionalPreference(['call_button'])['call_button'];
+            $homeData['profile']->preferences->is_user_kyc_for_registration = (int) getAdditionalPreference(['is_user_kyc_for_registration'])['is_user_kyc_for_registration'];
+            //dd($homeData['profile']);
+
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable']);
             $homeData['profile']->preferences->advance_booking_amount = 0;
             $homeData['profile']->preferences->advance_booking_amount_percentage = 0;
             if(!empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
@@ -73,16 +80,32 @@ class HomeController extends BaseController
             //till here
 
             $homeData['profile']->preferences->update_order_product_price = (!empty($getAdditionalPreference['update_order_product_price']) && $getAdditionalPreference['update_order_product_price'] == 1)? true : false;
-            $homeData['profile']->preferences->is_cab_pooling = (int) getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
-            $homeData['profile']->preferences->chat_button = (int) getAdditionalPreference(['chat_button'])['chat_button'];
-            $homeData['profile']->preferences->call_button = (int) getAdditionalPreference(['call_button'])['call_button'];
-            //dd($homeData['profile']);
+            $homeData['profile']->preferences->is_one_push_book_enable    = (int) $getAdditionalPreference['is_one_push_book_enable'];
+            $homeData['profile']->preferences->is_bid_ride_enable         = (int) $getAdditionalPreference['is_bid_ride_enable'];
+
+            if($homeData['profile']->preferences->is_one_push_book_enable == 1){
+                $homeData['profile']->preferences->pick_drop_instant_booking_vendor = Vendor::select('id', 'slug', 'name', 'is_vendor_instant_booking', 'status')
+                                                                                      ->with(['products' => function ($v) {
+                                                                                        $v->where('is_product_instant_booking', 1)->first();
+                                                                                    }])->where('status', 1)->where('is_vendor_instant_booking', 1)->first();
+            }
+            
             $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
             $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
             $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
             $sellers_nomenclature = $this->getNomenclatureName('sellers', $langId, false);
+
+            $account_name = $this->getNomenclatureName('Account Name', $langId, false);
+            $bank_name = $this->getNomenclatureName('Bank Name', $langId, false);
+            $account_number = $this->getNomenclatureName('Account Number', $langId, false);
+            $ifsc_code = $this->getNomenclatureName('IFSC Code', $langId, false);
+            $aadhaar_front = $this->getNomenclatureName('Aadhaar Front', $langId, false);
+            $aadhaar_back = $this->getNomenclatureName('Aadhaar Back', $langId, false);
+            $aadhaar_number = $this->getNomenclatureName('Aadhaar Number', $langId, false);
+            $upi_id = $this->getNomenclatureName('UPI Id', $langId, false);
+
             $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
             $referral_code = $this->getNomenclatureName('Referral Code', $langId, false);
             $want_to_tip = $this->getNomenclatureName('want_to_tip', $langId, false);
@@ -99,6 +122,18 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
             $homeData['profile']->preferences->want_to_tip_nomenclature = $want_to_tip;
             $homeData['profile']->preferences->referral_code = $referral_code;
+
+            $homeData['profile']->preferences->seller_sold_title = (int) getAdditionalPreference(['seller_sold_title'])['seller_sold_title'];
+            $homeData['profile']->preferences->seller_platform_logo = (int) getAdditionalPreference(['seller_platform_logo'])['seller_platform_logo'];
+            $homeData['profile']->preferences->account_name = $account_name;
+            $homeData['profile']->preferences->bank_name = $bank_name;
+            $homeData['profile']->preferences->account_number = $account_number;
+            $homeData['profile']->preferences->ifsc_code = $ifsc_code;
+            $homeData['profile']->preferences->aadhaar_front = $aadhaar_front;
+            $homeData['profile']->preferences->aadhaar_back = $aadhaar_back;
+            $homeData['profile']->preferences->aadhaar_number = $aadhaar_number;
+            $homeData['profile']->preferences->upi_id = $upi_id;
+
             if(!is_null($passbase))
             {
                 $homeData['profile']->preferences->passbase_check = 1;
@@ -150,7 +185,7 @@ class HomeController extends BaseController
                     unset($value->redirect_vendor_id);
                 }
             }
-            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
                 ->where('status', 1)->where('validity_on', 1)
                 ->with(['category:id,type_id', 'category.type', 'vendor'])
                 ->where(function ($q) {
@@ -247,6 +282,7 @@ class HomeController extends BaseController
             $homeData['domain_link'] = $domain_link;
             $homeData['profile']->preferences->is_postpay_enable = (int) @getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
             $homeData['profile']->preferences->is_order_edit_enable = (int) @getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
+            $homeData['profile']->preferences->is_bid_enable = (int) @getAdditionalPreference(['is_bid_enable'])['is_bid_enable'];
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -467,7 +503,7 @@ class HomeController extends BaseController
             $isVendorArea = 0;
 
             // Start Mobile Banners
-            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
             ->where('status', 1)->where('validity_on', 1)
             ->with(['category:id,type_id', 'category.type', 'vendor'])
             ->where(function ($q) {
