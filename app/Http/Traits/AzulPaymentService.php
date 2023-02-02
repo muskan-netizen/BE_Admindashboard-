@@ -23,7 +23,7 @@ trait AzulPaymentService
         $this->PAYMENT_CHANNEL = 'EC';
         $this->OK_RESPONSE_CODE = '00';
         $this->AZUL_OK_RESPONSE_CODE = 'ISO8583';
-        $this->MERCHANT_ID = '39921720001';
+        $this->MERCHANT_ID = 39921720001;
         $this->POST_INPUT_MODE = 'E-Commerce';
         $this->AUTH_1_HEADER = 'SPEEDY';
         $this->AUTH_2_HEADER = '#vnCnKF5#DyK';
@@ -63,29 +63,30 @@ trait AzulPaymentService
         // }
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
-            'Store' => $this->MERCHANT_ID,
+            'Store' => "$this->MERCHANT_ID",
             'CardNumber' => "4242424242424242",
             'Expiration' => "202512",
-            'CVC' => "123",
+            'CVC' => "1234",
             'PosInputMode' => $this->POST_INPUT_MODE,
             'TrxType' => 'Sale',
-            'Amount' => "100000",
-            'Itbis' => '910',
+            'Amount' => "650730",
+            'Itbis' => '99264',
             'CurrencyPosCode' => '$',
             'Payments' => '1',
             'Plan' => '0',
             'AcquirerRefData' => '1',
+            "RRN" => '',
             'CustomerServicePhone' => '809-222-3344',
-            'OrderNumber' => "1234567890",
-            'ECommerceUrl' => 'speedy.do',
-            'CustomOrderId' => "1234abf",
-            'SaveToDataVault' => $this->SAVE_TO_DATAVAULT,
-            'AltMerchantName' => "1234567890",
-            'DataVaultToken' => '',
+            'OrderNumber' => "",
+            'ECommerceUrl' => 'https://speedy.do',
+            'CustomOrderId' => "ABC123",
             'SaveToDataVault' => '0',
-            "ForceNo3DS" => '1'
+            'DataVaultToken' => '',
+            'ForceNo3DS' => '1'
         ];
         $response = $this->sendRequest($request);
+        // $response = $this->confirmTransaction('39492790', '650730', '99264');
+
         // Checks if azul_payWithCard response is OK.
         dd($response);
         // if($response['code'] != 200){
@@ -277,7 +278,6 @@ trait AzulPaymentService
         ];
 
         $response = $this->sendRequest($request);
-
         if ($response['code'] != 200) {
             Log::info('error http refundTransaction', json_encode($response));
             return [
@@ -317,8 +317,8 @@ trait AzulPaymentService
         Log::info('on confirmTransaction', 'params: ' . $azul_order_id . ', ' . $amount . ' ,' . $itbis);
         $itbis = (int) $amount * 0.18;
         $request = [
-            'Channel' => self::PAYMENT_CHANNEL,
-            'Store' => self::MERCHANT_ID,
+            'Channel' => $this->PAYMENT_CHANNEL,
+            'Store' => $this->MERCHANT_ID,
             'Amount' => $this->parseAmount($amount),
             'Itbis' => $this->parseAmount($itbis),
             'AzulOrderId' => $azul_order_id
@@ -334,7 +334,7 @@ trait AzulPaymentService
             ];
         }
 
-        if ($response['data']->IsoCode !== self::OK_RESPONSE_CODE) {
+        if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
             Log::info('error on confirmTransaction', json_encode($response['data']));
             return [
                 'message' => $response['data']->ResponseMessage,
@@ -380,9 +380,8 @@ trait AzulPaymentService
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 
-                CURLOPT_SSLCERT => public_path('certs/from_azul_speedy_pro.crt'),
+                CURLOPT_SSLCERT => public_path('certs/from_azul_speedy_pro.pem'),
                 CURLOPT_SSLKEY => public_path('certs/speedy-prod-v2.pem'),
-
                 CURLOPT_CUSTOMREQUEST => "POST",
                 CURLOPT_POSTFIELDS => json_encode($req),
                 CURLOPT_HTTPHEADER => array(
