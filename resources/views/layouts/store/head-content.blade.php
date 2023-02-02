@@ -61,45 +61,8 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
 
-@php
-$socket_url = '';
-$admin_chat = '';
-$driver_chat = '';
-$customer_chat = '';
-$db ='';
-$auth_id='';
-if(Auth::check()){
-	$cl_data = \App\Models\Client::first();
-	$socket_url = @$cl_data->socket_url;
-	$admin_chat = @$cl_data->admin_chat;
-	$driver_chat = @$cl_data->driver_chat;
-	$customer_chat = @$cl_data->customer_chat;
-	$db = @$cl_data->database_name;
-	$auth_id = Auth::user()->id;
-}
-
-@endphp
-<script>
-	var sUrl = "{!! $socket_url !!}";
-	var admin_chat = "{!! $admin_chat !!}";
-	var driver_chat = "{!! $driver_chat !!}";
-	var customer_chat = "{!! $customer_chat !!}";
-	var auth = "{!! $auth_id !!}";
-	var db = "{!! $db !!}";
-	var socket = null;
-	var Auth = {
-		auth_id:auth,
-		database_name:db
-	}
-	var SocketConstants = {
-    	Socket_url : sUrl,
-		admin_chat : admin_chat,
-		driver_chat : driver_chat,
-		customer_chat : customer_chat,
-		socket:'',
-	}
-</script>
-
+{{-- variables-constant-js --}}
+@include('layouts.shared.variables-constant-js')
 @elseif(isset($set_template)  && $set_template->template_id == 6)
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick-theme.min.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick.min.css')}}">

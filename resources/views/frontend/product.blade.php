@@ -56,7 +56,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         z-index: 10;
         display: none;
     }
-
+   
     </style>
 
 @endsection
@@ -167,58 +167,25 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     $product->media[] = $coll;
                                                 }
                                             @endphp
-
-                                            <div class="swiper-container gallery-top">
-                                                <div class="swiper-wrapper">
-
-                                                @if(!empty($product->media) && count($product->media) > 0)
-
-                                                    @foreach($product->media as $k => $image)
-                                                        @php
-                                                            if(isset($image->pimage)){
-                                                                $img = $image->pimage->image;
-                                                            }else{
-                                                                $img = $image->image;
-                                                            }
-                                                        @endphp
-                                                        <div class="swiper-slide easyzoom easyzoom--overlay">
-                                                            <a href="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}">
-                                                            <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
-                                                            </a>
-                                                        </div>
-                                                    @endforeach
-                                                @else
-
-                                                    <div class="swiper-slide easyzoom easyzoom--overlay">
-                                                            <a href="{{loadDefaultImage()}}">
-                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-                                                            </a>
-                                                        </div>
-
-                                                @endif
-                                                </div>
-
-                                                <div class="swiper-button-next swiper-button-white"></div>
-                                                <div class="swiper-button-prev swiper-button-white"></div>
-                                            </div>
-                                            <div class="swiper-container gallery-thumbs">
-                                                <div class="swiper-wrapper">
-                                                    @if(!empty($product->media) && count($product->media) > 0)
-                                                        @foreach($product->media as $k => $image)
-                                                        @php
-                                                            if(isset($image->pimage)){
-                                                                $img = $image->pimage->image;
-                                                            }else{
-                                                                $img = $image->image;
-                                                            }
-                                                        @endphp
-
-                                                        @endforeach
-                                                    @else
-                                                        <div class="swiper-slide">
-                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-                                                        </div>
-                                                    @endif
+                                            @foreach($product->variantSet as $key => $variant)
+                                                @if($variant->type == 1 || $variant->type == 2)
+                                                <div class="size-box">
+                                                    <ul class="productVariants">
+                                                        <li class="firstChild">{{$variant->title}}</li>
+                                                        <li class="row otherSize">
+                                                            @foreach($variant->option2 as $k => $optn)
+                                                            <?php $var_id = $variant->variant_type_id;
+                                                            $opt_id = $optn->variant_option_id;
+                                                            $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
+                                                            ?>
+                                                            <label class="radio d-inline-block txt-14 col-3 position-relative"> {{$optn->title}}
+                                                            <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
+                                                                <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
+                                                                <span class="checkround"></span>
+                                                            </label>
+                                                            @endforeach
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -313,7 +280,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                         <span class="org_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}<span class="product_original_price">{{getInToken($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
                                                         @endif
                                                     @else
-                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier,2)}}</span></b>
+                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
                                                         @if($product->variant[0]->compare_at_price > 0 )
                                                             <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
                                                         @endif
@@ -1071,6 +1038,10 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     $(document).ready(function() {
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
+        $(".color_var").click(function () {
+            $(".color_var").removeClass("var-active");
+            $(this).toggleClass("var-active");
+            });
     });
 </script>
 
