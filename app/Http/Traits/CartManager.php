@@ -430,6 +430,7 @@ trait cartManager{
             $closed_store_order_scheduled = 0;
             $deliver_charge = 0;
             $deliveryCharges = 0;
+            $is_recurring_cart = 0;
             $totalMarkup = 0;
             $delay_date = 0;
             $pickup_delay_date = 0;
@@ -571,9 +572,14 @@ trait cartManager{
                     $prod->is_long_term_service = 0;
                     $prod->is_recurring_booking = 0;
 
+                    //if we required any additional price * multiply (Right now its for reccuring)
+                    $prod->recurring_date_count = 1;
+
                     if($isRecurringBooking ==1 && $prod->product->is_recurring_booking ==1){
                         $prod->is_recurring_booking   = 1;
                         $prod->recurring_booking_time = convertDateTimeInTimeZone($prod->recurring_booking_time, $user_timezone, 'H:i');
+                        $cnt = @count(explode(",",$prod->recurring_day_data));
+                        $prod->recurring_date_count = $cnt != 0 ? $cnt : 1;
                         $is_recurring_booking         = 1;
                     }
                     if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
@@ -734,6 +740,7 @@ trait cartManager{
                     } else {
                         $quantity_price = $price_in_doller_compare * $prod->quantity;    
                     }
+                    $quantity_price =  (($quantity_price)*($prod->recurring_date_count));
                    
                     $total_container_charges = $container_charges_in_currency * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
@@ -989,7 +996,8 @@ trait cartManager{
                             $checkLastMile = 0;
                             $lastMileDate['tags'] = '';
                             $NumberOfroutes= 1;
-
+                            //if recurring product
+                            $NumberOfroutes = ($prod->recurring_date_count);
                             /** check product last mile  */
                             if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1) ) {
                                 $checkLastMile = 1;
@@ -1001,6 +1009,7 @@ trait cartManager{
                                 $lastMileDate['tags'] = $prod->product->LongTermProduct->first()->tags;
                                 $NumberOfroutes = $prod->LongTermProducts ? $prod->LongTermProducts->quantity : 1;
                             }
+                            
                             //pr($NumberOfroutes);
                            // if ((!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1))  ) {
                             if($checkLastMile ==1){
@@ -1459,6 +1468,7 @@ trait cartManager{
             $cart->deliver_status = $delivery_status;
             $cart->vendorCnt = $cartData->count();
             $cart->scheduled = $scheduled;
+            $cart->is_recurring_booking = $is_recurring_booking;
             $cart->schedule_type =  $cart->schedule_type;
             $cart->closed_store_order_scheduled =  0;
             $myDate = date('Y-m-d');

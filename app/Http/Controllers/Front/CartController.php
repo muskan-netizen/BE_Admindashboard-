@@ -468,6 +468,7 @@ class CartController extends FrontController
                     $cart_product_detail['recurring_week_type']     =@$recurringformPost->weekTypes??null;
                     $cart_product_detail['recurring_day_data']      =@$recurringformPost->selectedCustomdates??null;
                     $cart_product_detail['recurring_booking_time']  =@$recurringformPost->schedule_time??null;
+                    
                     // dd($request->bid_number);
                 }
 
@@ -2995,14 +2996,22 @@ class CartController extends FrontController
         $endDate = $recurringformPost->endDate;
 
         $selectedCustomdates = [];
-        if($recurringformPost->action==1){
-            $selectedCustomdates[] = $startDate;
-            $selectedCustomdates[] = $endDate;
-            $selectedCustomdates = implode(',',$selectedCustomdates);
-        }elseif($recurringformPost->action=='2'){
+        // if($recurringformPost->action==1){
+        //     $selectedCustomdates[] = $startDate;
+        //     $selectedCustomdates[] = $endDate;
+        //     $selectedCustomdates = implode(',',$selectedCustomdates);
+        // }else
+        
+        if($recurringformPost->action=='2' || $recurringformPost->action=='1'){
             $startDate = $recurringformPost->startDate;
             $endDate = $recurringformPost->endDate;
-            $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay);
+            
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay);
+            }
+            
             $daysCnt =count($selectedCustomdates);
             $selectedCustomdates = implode(',',$selectedCustomdates);
         }elseif($recurringformPost->action=='3'){
