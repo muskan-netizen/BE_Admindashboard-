@@ -6,15 +6,21 @@ use Paytabscom\Laravel_paytabs\Facades\paypage;
 use Auth, Log, Config;
 use Http;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 
 trait AzulPaymentService
 {
 
     public function __construct()
     {
-        $this->MAIN_URL = 'https://pagos.azul.com.do/webservices/JSON/Default.aspx';
-        $this->ALTERNATE_URL = 'https://contpagos.azul.com.do/Webservices/JSON/default.aspx';
-        $this->TEST_URL = 'https://pruebas.azul.com.do/webservices/JSON/Default.aspx';
+        $this->creds = PaymentOption::select('credentials')->where('code', 'azul')
+            ->where('status', 1)
+            ->first();
+        $this->creds_arr = json_decode($this->creds->credentials);
+        $this->MAIN_URL = $this->creds_arr->azul_main_url;
+        $this->ALTERNATE_URL = $this->creds_arr->azul_alternate_url;
+        $this->TEST_URL = $this->creds_arr->azul_test_url;
+        $this->ECOMMERCE_URL = $this->creds_arr->azul_ecommerce_url;
 
         $this->SAVE_TO_DATAVAULT = 1;
         $this->DONT_SAVE_TO_DATAVAULT = 2;
@@ -23,10 +29,10 @@ trait AzulPaymentService
         $this->PAYMENT_CHANNEL = 'EC';
         $this->OK_RESPONSE_CODE = '00';
         $this->AZUL_OK_RESPONSE_CODE = 'ISO8583';
-        $this->MERCHANT_ID = 39921720001;
+        $this->MERCHANT_ID = $this->creds_arr->azul_merchant_id;
         $this->POST_INPUT_MODE = 'E-Commerce';
-        $this->AUTH_1_HEADER = 'SPEEDY';
-        $this->AUTH_2_HEADER = '#vnCnKF5#DyK';
+        $this->AUTH_1_HEADER = $this->creds_arr->azul_auth_header_one;
+        $this->AUTH_2_HEADER = $this->creds_arr->azul_auth_header_two;
 
         $this->errors = [
             'INSUF FONDOS' => 'Tu tarjeta no tiene fondos suficientes para completar la transacción'
@@ -66,56 +72,61 @@ trait AzulPaymentService
             'Store' => "$this->MERCHANT_ID",
             'CardNumber' => "4242424242424242",
             'Expiration' => "202512",
-            'CVC' => "1234",
+            'CVC' => "123",
             'PosInputMode' => $this->POST_INPUT_MODE,
             'TrxType' => 'Sale',
-            'Amount' => "650730",
-            'Itbis' => '99264',
+            'Amount' => "100",
+            'Itbis' => '000',
             'CurrencyPosCode' => '$',
             'Payments' => '1',
             'Plan' => '0',
             'AcquirerRefData' => '1',
             "RRN" => '',
             'CustomerServicePhone' => '809-222-3344',
-            'OrderNumber' => "",
-            'ECommerceUrl' => 'https://speedy.do',
+            'OrderNumber' => "5356325465754",
+            'ECommerceUrl' => $this->ECOMMERCE_URL,
             'CustomOrderId' => "ABC123",
             'SaveToDataVault' => '0',
             'DataVaultToken' => '',
             'ForceNo3DS' => '1'
         ];
         $response = $this->sendRequest($request);
-        // $response = $this->confirmTransaction('39492790', '650730', '99264');
+        // Checks if azul_payWithCard response is OK . dd($response);
+        if ($response['code'] != 200) {
+            Log::info([
+                'error http payWithCard',
+                'order_id: ' . json_encode($response['message'])
+            ]);
+            return [
+                'message' => $response['message'],
+                'ok' => false
+            ];
+        }
 
-        // Checks if azul_payWithCard response is OK.
-        dd($response);
-        // if($response['code'] != 200){
-        // Log::info('error http payWithCard', 'order_id: '.json_encode($response['message']));
-        // return [
-        // 'message' => $response['message'],
-        // 'ok' => false
-        // ];
-        // }
-
-        // if($response['data']->ResponseCode !== self::AZUL_OK_RESPONSE_CODE){
-        // Log::info('error on payWithCard', 'order_id: '.json_encode($response['data']));
-        // return [
-        // 'message' => $response['data']->ErrorDescription,
-        // 'ok' => false
-        // ];
-        // }
+        if ($response['data']->ResponseCode !== $this->AZUL_OK_RESPONSE_CODE) {
+            Log::info([
+                'error on payWithCard',
+                'order_id: ' . json_encode($response['data'])
+            ]);
+            return [
+                'message' => $response['data']->ErrorDescription,
+                'ok' => false
+            ];
+        }
 
         // $order->update([
         // 'azul_order_id' => $response['data']->AzulOrderId
         // ]);
 
-        // Log::info('payWithCard OK', json_encode($response['data']));
-
-        // return [
-        // 'message' => 'ok',
-        // 'ok' => true,
-        // 'data' => $response['data']
-        // ];
+        Log::info([
+            'payWithCard OK',
+            json_encode($response['data'])
+        ]);
+        return [
+            'message' => 'ok',
+            'ok' => true,
+            'data' => $response['data']
+        ];
     }
 
     /**
@@ -141,12 +152,12 @@ trait AzulPaymentService
         }
 
         $request = [
-            'Channel' => self::PAYMENT_CHANNEL,
-            'Store' => self::MERCHANT_ID,
+            'Channel' => $this->PAYMENT_CHANNEL,
+            'Store' => $this->MERCHANT_ID,
             'CardNumber' => '',
             'Expiration' => '',
-            'PosInputMode' => self::POST_INPUT_MODE,
-            'TrxType' => self::HOLD_TRANSACTION,
+            'PosInputMode' => $this->POST_INPUT_MODE,
+            'TrxType' => $this->HOLD_TRANSACTION,
             'Amount' => $this->parseAmount($amount),
             'Itbis' => '',
             'CurrencyPosCode' => '',
@@ -171,7 +182,7 @@ trait AzulPaymentService
             ];
         }
 
-        if ($response['data']->ResponseCode !== self::AZUL_OK_RESPONSE_CODE) {
+        if ($response['data']->ResponseCode !== $this->AZUL_OK_RESPONSE_CODE) {
             // Log::info('error on azul AzulPaymentService.payWithDatavault', 'order_id: '.$order_id.' '.json_encode($response['data']));
             return [
                 'message' => $response['data']->ErrorDescription,
@@ -206,8 +217,8 @@ trait AzulPaymentService
     {
         // Log::info('on voidTransaction', 'params: '.$azul_order_id);
         $request = [
-            'Channel' => self::PAYMENT_CHANNEL,
-            'Store' => self::MERCHANT_ID,
+            'Channel' => $this->PAYMENT_CHANNEL,
+            'Store' => $this->MERCHANT_ID,
             'AzulOrderId' => $azul_order_id
         ];
 
@@ -221,7 +232,7 @@ trait AzulPaymentService
             ];
         }
 
-        if ($response['data']->IsoCode !== self::OK_RESPONSE_CODE) {
+        if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
             Log::info('error on voidTransaction', json_encode($response['data']));
             return [
                 'message' => $response['data']->ResponseMessage . ' ' . $response['data']->ErrorDescription,
@@ -249,13 +260,13 @@ trait AzulPaymentService
         Log::info('on refundTransaction', "$azul_order_id, $amount, $order_id, $order_date");
 
         $request = [
-            'Channel' => self::PAYMENT_CHANNEL,
-            'Store' => self::MERCHANT_ID,
+            'Channel' => $this->PAYMENT_CHANNEL,
+            'Store' => $this->MERCHANT_ID,
             'CardNumber' => '',
             'Expiration' => '',
             'CVC' => '',
-            'PosInputMode' => self::POST_INPUT_MODE,
-            'TrxType' => self::REFUND_TRANSACTION,
+            'PosInputMode' => $this->POST_INPUT_MODE,
+            'TrxType' => $this->REFUND_TRANSACTION,
             'Amount' => $this->parseAmount($amount),
             'Itbis' => '',
             'CurrencyPosCode' => '',
@@ -286,7 +297,7 @@ trait AzulPaymentService
             ];
         }
 
-        if ($response['data']->IsoCode !== self::OK_RESPONSE_CODE) {
+        if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
             Log::info('error on refundTransaction', json_encode($response['data']));
             return [
                 'message' => $response['data']->ResponseMessage,
@@ -365,62 +376,75 @@ trait AzulPaymentService
         ];
 
         try {
-            // $http = new Client();
-            // $response = $http->post($URI, $headers, ['json' => $body]);
-
-            $curl = curl_init();
-
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => ! is_null($url_params) ? $this->MAIN_URL . $url_params : $this->MAIN_URL,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-
-                CURLOPT_SSLCERT => public_path('certs/from_azul_speedy_pro.pem'),
-                CURLOPT_SSLKEY => public_path('certs/speedy-prod-v2.pem'),
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => json_encode($req),
-                CURLOPT_HTTPHEADER => array(
-                    "Auth1: " . $this->AUTH_1_HEADER,
-                    "Auth2: " . $this->AUTH_2_HEADER,
-                    "Content-Type: application/json"
-                )
-            ));
-
-            Log::info('AzulPaymentService.sendRequest' . json_encode($req));
-
-            $result = curl_exec($curl);
-
-            if (curl_errno($curl)) {
-                $response['message'] = curl_error($curl);
-            }
-
-            $response['code'] = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-            // If server err, use alternate URL
-            if ($response['code'] == 500) {
-                curl_setopt_array($curl, [
-                    CURLOPT_URL => ! is_null($url_params) ? $this->ALTERNATE_URL . $url_params : $this->ALTERNATE_URL
-                ]);
-
-                $result = curl_exec($curl);
-                if (curl_errno($curl)) {
-                    $response['message'] = curl_error($curl);
-                }
-                $response['code'] = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                $response['data'] = json_decode($result);
-            } else {
-                $response['data'] = json_decode($result);
-            }
-
-            curl_close($curl);
-        } catch (\Exception $e) {
-            $response['message'] = $e->getMessage();
+            $client = new Client(); // GuzzleHttp\Client
+            $result = $client->post(! is_null($url_params) ? $this->MAIN_URL . $url_params : $this->MAIN_URL, [
+                'headers' => [
+                    "Content-type" => "application/json",
+                    "Auth1" => $this->AUTH_1_HEADER,
+                    "Auth2" => $this->AUTH_2_HEADER
+                ],
+                'json' => $req,
+                'cert' => public_path('certs/from_azul_speedy_pro.pem'),
+                'ssl_key' => public_path('certs/speedy-prod-v2.pem')
+            ]);
+            $response['message'] = $result->getReasonPhrase();
+            $response['code'] = $result->getStatusCode();
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            $response['data'] = $response->getBody();
+            // Life is too short to handle exceptions.
         }
+        $response['data'] = json_decode($result->getBody());
+
+        // $curl = curl_init();
+
+        // curl_setopt_array($curl, array(
+        // CURLOPT_URL => ! is_null($url_params) ? $this->MAIN_URL . $url_params : $this->MAIN_URL,
+        // CURLOPT_RETURNTRANSFER => true,
+        // CURLOPT_SSL_VERIFYPEER => false,
+        // CURLOPT_ENCODING => "",
+        // CURLOPT_MAXREDIRS => 10,
+        // CURLOPT_TIMEOUT => 0,
+        // CURLOPT_FOLLOWLOCATION => true,
+        // CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+
+        // CURLOPT_SSLCERT => public_path('certs/from_azul_speedy_pro.pem'),
+        // CURLOPT_SSLKEY => public_path('certs/speedy-prod-v2.pem'),
+        // CURLOPT_CUSTOMREQUEST => "POST",
+        // CURLOPT_POSTFIELDS => json_encode($req),
+        // CURLOPT_HTTPHEADER => array(
+        // "Auth1: " . $this->AUTH_1_HEADER,
+        // "Auth2: " . $this->AUTH_2_HEADER,
+        // "Content-Type: application/json"
+        // )
+        // ));
+
+        // Log::info('AzulPaymentService.sendRequest' . json_encode($req));
+
+        // $result = curl_exec($curl);
+
+        // if (curl_errno($curl)) {
+        // $response['message'] = curl_error($curl);
+        // }
+
+        // $response['code'] = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        // // If server err, use alternate URL
+        // if ($response['code'] == 500) {
+        // curl_setopt_array($curl, [
+        // CURLOPT_URL => ! is_null($url_params) ? $this->ALTERNATE_URL . $url_params : $this->ALTERNATE_URL
+        // ]);
+
+        // $result = curl_exec($curl);
+        // if (curl_errno($curl)) {
+        // $response['message'] = curl_error($curl);
+        // }
+        // $response['code'] = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        // curl_close($curl);
+        // } catch (\Exception $e) {
+        // $response['message'] = $e->getMessage();
+        // }
 
         return $response;
     }
@@ -439,8 +463,8 @@ trait AzulPaymentService
     {
         // Log::info('on saveCardToDatavault', 'try to save card');
         $request = [
-            'Channel' => self::PAYMENT_CHANNEL,
-            'Store' => self::MERCHANT_ID,
+            'Channel' => $this->PAYMENT_CHANNEL,
+            'Store' => $this->MERCHANT_ID,
             'CardNumber' => $card_number,
             'Expiration' => $expiration_date,
             'CVC' => $cvc,
@@ -457,7 +481,7 @@ trait AzulPaymentService
             ];
         }
 
-        if ($response['data']->IsoCode !== self::OK_RESPONSE_CODE) {
+        if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
             // Log::info('error on azul saveCardToDatavault', json_encode($response['data']));
             return [
                 'message' => $response['data']->ErrorDescription,
@@ -501,8 +525,8 @@ trait AzulPaymentService
         Log::info('on deleteDatavault', 'datavault_id: ' . $datavault->id);
 
         $request = [
-            'Channel' => self::PAYMENT_CHANNEL,
-            'Store' => self::MERCHANT_ID,
+            'Channel' => $this->PAYMENT_CHANNEL,
+            'Store' => $this->MERCHANT_ID,
             'TrxType' => 'DELETE',
             'DataVaultToken' => $datavault->token
         ];
@@ -517,7 +541,7 @@ trait AzulPaymentService
             ];
         }
 
-        if ($response['data']->IsoCode !== self::OK_RESPONSE_CODE) {
+        if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
             Log::info('error on azul deleteDatavault', json_encode($response['data']));
             return [
                 'message' => $response['data']->ErrorDescription,
@@ -561,8 +585,8 @@ trait AzulPaymentService
         Log::info('on verifyTransaction', 'order_id: ' . $order_id);
 
         $request = [
-            'Channel' => self::PAYMENT_CHANNEL,
-            'Store' => self::MERCHANT_ID,
+            'Channel' => $this->PAYMENT_CHANNEL,
+            'Store' => $this->MERCHANT_ID,
             'CustomOrderId' => $order_id
         ];
 
@@ -576,7 +600,7 @@ trait AzulPaymentService
             ];
         }
 
-        if ($response['data']->IsoCode !== self::OK_RESPONSE_CODE) {
+        if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
             Log::info('error on verifyTransaction', json_encode($response['data']));
             return [
                 'message' => $response['data']->ResponseMessage,
