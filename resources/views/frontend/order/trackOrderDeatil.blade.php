@@ -130,8 +130,8 @@ ul.timeline-3 li.last-active::before{top: -18px;}
 <section class="section-b-space light-layout">
     <div class="container">
         <div class="row {{ $showPage }}" id="track-section">
-            <div class="col-md-12 mt-2 mb-3 track-ordr">
-                <div class="order-heading text-center">
+            <div class="col-md-12  mb-3 track-ordr">
+                <div class="order-heading text-center pt-3">
                     <h4>Order Status</h4>
                 </div>
                 @if($order)
@@ -196,7 +196,7 @@ ul.timeline-3 li.last-active::before{top: -18px;}
         </div>
 
         <div class="row justify-content-center {{ $verifyPage }}" id="verify-phone-section">
-            <div class="verify-login-code">
+            <div class="verify-login-code pt-3">
                 <form id="verify-otp-form" class="px-lg-4" method="post" >
                 <h3 class="mb-2 text-center">{{ __('Verify OTP') }}</h3>
                 <div class="digit-group otp_inputs d-flex justify-content-between" data-group-name="digits" data-autosubmit="false" autocomplete="off">
