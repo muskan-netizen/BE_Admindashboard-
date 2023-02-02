@@ -104,8 +104,8 @@
                                         <label for="validationCustom02">{{__('Phone No.')}}</label>
                                         <input type="tel" class="form-control" name="phone_number" value="{{$user ? '+'.$user->dial_code.''.$user->phone_number : ''}}" id="phone" {{$user ? 'disabled' : ''}}>
                                         <span class="invalid-feedback" id="phone_number_error"><strong></strong></span>
-                                        <input type="hidden" id="countryData" name="countryData" value="us">
-                                        <input type="hidden" id="dialCode" name="dialCode" value="{{$user ? $user->dial_code : ''}}">
+                                        <input type="hidden" id="countryData" name="countryData" value="in">
+                                        <input type="hidden" id="dialCode" name="dialCode" value="{{$user ? $user->dial_code : '91'}}">
                                         
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">

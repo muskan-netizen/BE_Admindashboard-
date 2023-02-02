@@ -79,7 +79,7 @@ class CartController extends BaseController
 
             if ($cart) {
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
-                if(isset($cart->editingOrder) && !empty($cart->editingOrder))
+                if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
                 {
                     $editlimit_datetime = Carbon::now()->toDateTimeString();
                     $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
@@ -92,8 +92,6 @@ class CartController extends BaseController
                     if($VendorOrderStatus > 0){
                         $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                     }
-                }else{
-                    $cartData->cart_error_message = '';
                 }
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
@@ -1444,7 +1442,7 @@ class CartController extends BaseController
             ['label' => 'Deliver fee tax', 'value' => decimal_format($deliver_fee_charges_tax)],
             ['label' => 'Markup fee tax', 'value' => decimal_format($total_markup_fee_tax)],
             ['label' => 'Container fee tax', 'value' => decimal_format($container_charges_tax)],
-            ['label' => 'Total taxable amount', 'value' => decimal_format($total_taxable_amount)]
+            ['label' => "Total ".@$taxData[0]['identifier']." amount", 'value' => decimal_format($total_taxable_amount)]
         );
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);

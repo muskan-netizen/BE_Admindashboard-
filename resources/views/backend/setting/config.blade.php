@@ -1691,7 +1691,7 @@
                                 @if ($client_preference_detail->business_type != 'laundry')
                                     <div class="col-md-4">
                                         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                            <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Influencer Mod') }}
+                                            <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Refere and Earn by Influncer') }}
                                                 <small
                                                     class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
                                             <span> <input type="checkbox" data-plugin="switchery"
