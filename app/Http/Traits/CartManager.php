@@ -575,7 +575,6 @@ trait cartManager{
                         $prod->is_recurring_booking   = 1;
                         $prod->recurring_booking_time = convertDateTimeInTimeZone($prod->recurring_booking_time, $user_timezone, 'H:i');
                         $is_recurring_booking         = 1;
-
                     }
                     if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
                         $vendorData->is_long_term_service = 1;
@@ -697,32 +696,32 @@ trait cartManager{
                     $quantity_price = $price_in_doller_compare * $prod->quantity;
 
                     // Recurring Booking Enabled
-                    if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
-                        if(checkColumnExists('cart_products','recurring_booking_type')){
-                            $date       = explode(",",$prod->recurring_day_data);
+                    // if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
+                    //     if(checkColumnExists('cart_products','recurring_booking_type')){
+                    //         $date       = explode(",",$prod->recurring_day_data);
 
-                            if($prod->recurring_booking_type == 1){
-                                $start_date = $end_date = '';
-                                if(isset($date[0])){
-                                    $start_date = $date[0];
-                                }
-                                if(isset($date[1])){
-                                    $end_date   = $date[1];
-                                }
-                                if(!empty($start_date) && !empty($end_date)){
-                                    $days_count             = Carbon::parse( $start_date )->diffInDays( $end_date );
-                                    $days_count             = $days_count + 1;
-                                    $pvariant_new_price     = $quantity_price * $days_count;
-                                    $quantity_price         = decimal_format($pvariant_new_price);
-                                }
-                            }else if($prod->recurring_booking_type == 2 || $prod->recurring_booking_type == 3 || $prod->recurring_booking_type == 4){
-                                $days_count             = count($date);
-                                $pvariant_new_price     = $quantity_price * $days_count;
-                                $quantity_price         = decimal_format($pvariant_new_price);
-                            }
+                    //         if($prod->recurring_booking_type == 1){
+                    //             $start_date = $end_date = '';
+                    //             if(isset($date[0])){
+                    //                 $start_date = $date[0];
+                    //             }
+                    //             if(isset($date[1])){
+                    //                 $end_date   = $date[1];
+                    //             }
+                    //             if(!empty($start_date) && !empty($end_date)){
+                    //                 $days_count             = Carbon::parse( $start_date )->diffInDays( $end_date );
+                    //                 $days_count             = $days_count + 1;
+                    //                 $pvariant_new_price     = $quantity_price * $days_count;
+                    //                 $quantity_price         = decimal_format($pvariant_new_price);
+                    //             }
+                    //         }else if($prod->recurring_booking_type == 2 || $prod->recurring_booking_type == 3 || $prod->recurring_booking_type == 4){
+                    //             $days_count             = count($date);
+                    //             $pvariant_new_price     = $quantity_price * $days_count;
+                    //             $quantity_price         = decimal_format($pvariant_new_price);
+                    //         }
 
-                        }
-                    }
+                    //     }
+                    // }
 
                     // $total_container_charges = $container_charges_in_currency * $prod->quantity;
 
@@ -786,29 +785,29 @@ trait cartManager{
                                 }
 
                                 if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
-                                    if(checkColumnExists('cart_products','recurring_booking_type')){
-                                        $date       = explode(",",$prod->recurring_day_data);
-                                        if($prod->recurring_booking_type == 1){
-                                            $start_date = $end_date = '';
-                                            if(isset($date[0])){
-                                                $start_date = $date[0];
-                                            }
-                                            if(isset($date[1])){
-                                                $end_date   = $date[1];
-                                            }
-                                            if(!empty($start_date) && !empty($end_date)){
-                                                $days_count                     =  Carbon::parse( $start_date )->diffInDays( $end_date );
-                                                $days_count                     =  $days_count + 1;
-                                                $opt_price_in_currency          =  $opt_price_in_currency * $days_count;
-                                                $sub_total+=($opt_price_in_currency * $prod->quantity);
-                                            }
-                                        }
-                                        else if($prod->recurring_booking_type == 2 || $prod->recurring_booking_type == 3 || $prod->recurring_booking_type == 4){
-                                            $days_count                     =  count($date);
-                                            $opt_price_in_currency          =  $opt_price_in_currency * $days_count;
-                                            $sub_total+=($opt_price_in_currency * $prod->quantity);
-                                        }
-                                    }
+                                    // if(checkColumnExists('cart_products','recurring_booking_type')){
+                                    //     $date       = explode(",",$prod->recurring_day_data);
+                                    //     if($prod->recurring_booking_type == 1){
+                                    //         $start_date = $end_date = '';
+                                    //         if(isset($date[0])){
+                                    //             $start_date = $date[0];
+                                    //         }
+                                    //         if(isset($date[1])){
+                                    //             $end_date   = $date[1];
+                                    //         }
+                                    //         if(!empty($start_date) && !empty($end_date)){
+                                    //             $days_count                     =  Carbon::parse( $start_date )->diffInDays( $end_date );
+                                    //             $days_count                     =  $days_count + 1;
+                                    //             $opt_price_in_currency          =  $opt_price_in_currency * $days_count;
+                                    //             $sub_total+=($opt_price_in_currency * $prod->quantity);
+                                    //         }
+                                    //     }
+                                    //     else if($prod->recurring_booking_type == 2 || $prod->recurring_booking_type == 3 || $prod->recurring_booking_type == 4){
+                                    //         $days_count                     =  count($date);
+                                    //         $opt_price_in_currency          =  $opt_price_in_currency * $days_count;
+                                    //         $sub_total+=($opt_price_in_currency * $prod->quantity);
+                                    //     }
+                                    // }
 
                                 }else{
                                     $sub_total+=($opt_price_in_currency * $prod->quantity);
@@ -845,31 +844,31 @@ trait cartManager{
                                 // Recurring Booking Enabled
                                 if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
 
-                                    if(checkColumnExists('cart_products','recurring_booking_type')){
-                                        $date       = explode(",",$prod->recurring_day_data);
-                                        if($prod->recurring_booking_type == 1){
-                                            $start_date = $end_date = '';
-                                            if(isset($date[0])){
-                                                $start_date = $date[0];
-                                            }
-                                            if(isset($date[1])){
-                                                $end_date   = $date[1];
-                                            }
-                                            if(!empty($start_date) && !empty($end_date)){
-                                                $days_count                         =  Carbon::parse( $start_date )->diffInDays( $end_date );
-                                                $days_count             = $days_count + 1;
-                                                $pvariant_new_price                 =  $opt_quantity_price * $days_count;
-                                                $addons->option->quantity_price     =  decimal_format($pvariant_new_price);
-                                            }
-                                        }
-                                        else if($prod->recurring_booking_type == 2 || $prod->recurring_booking_type == 3 || $prod->recurring_booking_type == 4){
-                                            $days_count                         =  count($date);
-                                            $pvariant_new_price                 =  $opt_quantity_price * $days_count;
-                                            $addons->option->quantity_price     =  decimal_format($pvariant_new_price);
-                                        }
+                                    // if(checkColumnExists('cart_products','recurring_booking_type')){
+                                    //     $date       = explode(",",$prod->recurring_day_data);
+                                    //     if($prod->recurring_booking_type == 1){
+                                    //         $start_date = $end_date = '';
+                                    //         if(isset($date[0])){
+                                    //             $start_date = $date[0];
+                                    //         }
+                                    //         if(isset($date[1])){
+                                    //             $end_date   = $date[1];
+                                    //         }
+                                    //         if(!empty($start_date) && !empty($end_date)){
+                                    //             $days_count                         =  Carbon::parse( $start_date )->diffInDays( $end_date );
+                                    //             $days_count             = $days_count + 1;
+                                    //             $pvariant_new_price                 =  $opt_quantity_price * $days_count;
+                                    //             $addons->option->quantity_price     =  decimal_format($pvariant_new_price);
+                                    //         }
+                                    //     }
+                                    //     else if($prod->recurring_booking_type == 2 || $prod->recurring_booking_type == 3 || $prod->recurring_booking_type == 4){
+                                    //         $days_count                         =  count($date);
+                                    //         $pvariant_new_price                 =  $opt_quantity_price * $days_count;
+                                    //         $addons->option->quantity_price     =  decimal_format($pvariant_new_price);
+                                    //     }
 
 
-                                    }
+                                    // }
                                 }else{
                                     $addons->option->quantity_price = $opt_quantity_price;
                                 }
@@ -880,31 +879,31 @@ trait cartManager{
                                 // Recurring Booking Enabled
                                 if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
 
-                                    if(checkColumnExists('cart_products','recurring_booking_type')){
-                                        $date       = explode(",",$prod->recurring_day_data);
+                                    // if(checkColumnExists('cart_products','recurring_booking_type')){
+                                    //     $date       = explode(",",$prod->recurring_day_data);
 
-                                        if($prod->recurring_booking_type == 1){
-                                            $start_date = $end_date = '';
-                                            if(isset($date[0])){
-                                                $start_date = $date[0];
-                                            }
-                                            if(isset($date[1])){
-                                                $end_date   = $date[1];
-                                            }
-                                            if(!empty($start_date) && !empty($end_date)){
-                                                $days_count             = Carbon::parse( $start_date )->diffInDays( $end_date );
-                                                $days_count             = $days_count + 1;
-                                                $opt_quantity_price     = $opt_quantity_price * $days_count;
-                                                $payable_amount         = $payable_amount + $opt_quantity_price;
-                                            }
-                                        }else if($prod->recurring_booking_type == 2 || $prod->recurring_booking_type == 3 || $prod->recurring_booking_type == 4){
-                                            $days_count             = count($date);
-                                            $opt_quantity_price     = $opt_quantity_price * $days_count;
-                                            $payable_amount         = $payable_amount + $opt_quantity_price;
-                                        }
+                                    //     if($prod->recurring_booking_type == 1){
+                                    //         $start_date = $end_date = '';
+                                    //         if(isset($date[0])){
+                                    //             $start_date = $date[0];
+                                    //         }
+                                    //         if(isset($date[1])){
+                                    //             $end_date   = $date[1];
+                                    //         }
+                                    //         if(!empty($start_date) && !empty($end_date)){
+                                    //             $days_count             = Carbon::parse( $start_date )->diffInDays( $end_date );
+                                    //             $days_count             = $days_count + 1;
+                                    //             $opt_quantity_price     = $opt_quantity_price * $days_count;
+                                    //             $payable_amount         = $payable_amount + $opt_quantity_price;
+                                    //         }
+                                    //     }else if($prod->recurring_booking_type == 2 || $prod->recurring_booking_type == 3 || $prod->recurring_booking_type == 4){
+                                    //         $days_count             = count($date);
+                                    //         $opt_quantity_price     = $opt_quantity_price * $days_count;
+                                    //         $payable_amount         = $payable_amount + $opt_quantity_price;
+                                    //     }
 
 
-                                    }
+                                    // }
                                 }else{
                                     $payable_amount = $payable_amount + $opt_quantity_price;
 

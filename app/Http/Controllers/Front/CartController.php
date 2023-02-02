@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Front;
 
-use Adyen\Service\Recurring;
 use DB;
 use Log;
 use Auth;
@@ -253,7 +252,7 @@ class CartController extends FrontController
 
         // Get current vendor
         $vendor = Vendor::find($vendor_id);
-        $orders_per_slot = $vendor->orders_per_slot;
+        $orders_per_slot = $vendor->orders_per_slot??0;
         $orderCount = 0;
         // Get Vendor orders
         $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
@@ -297,8 +296,6 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-                //$recurringformPost = (object)$request->recurringformPost;
-                
 
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
@@ -430,8 +427,6 @@ class CartController extends FrontController
                 $service_start_date = carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
             }
 
-
-
             $cart_product_detail = [
                 'status'            => '0',
                 'is_tax_applied'    => '1',
@@ -451,9 +446,6 @@ class CartController extends FrontController
                 'service_date'        => $request->has('service_date') ? $request->service_date : null,
                 'service_period'      => $request->has('service_period') ? $request->service_period : null,
                 'service_start_date'  => @$service_start_date,
-                'slot_id'  => $request->has('sele_slot_id') ? $request->sele_slot_id : null,
-                'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
-                'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
             ];
 
             //Check if BidId and bid dicount coulmn exists in table
@@ -480,6 +472,7 @@ class CartController extends FrontController
                 }
 
             }
+
 
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
@@ -537,9 +530,10 @@ class CartController extends FrontController
             }
 
             if($isnew == 1){
-
-
+                // dd($cart_product_detail);
                 $cartProduct = CartProduct::create($cart_product_detail);
+                // \Log::info(json_encode($cart_product_detail));11
+
                 if(!empty($addon_ids) && !empty($addon_options)){
                     $saveAddons = array();
                     foreach ($addon_options as $key => $opts) {
@@ -563,13 +557,6 @@ class CartController extends FrontController
                 if(checkColumnExists('cart_products','bid_number')){
                     $cartProduct->bid_number = @$request->bid_number??null;
                     $cartProduct->bid_discount = @$request->bid_discount??null;
-                }
-                if(checkColumnExists('cart_products','recurring_booking_type')){
-                    $cartProduct->recurring_booking_type    =   @$request->recurring_booking_type??null;
-                    $cartProduct->recurring_week_day        =   @json_encode($request->recurring_week_day)??null;
-                    $cartProduct->recurring_week_type       =   @$request->recurring_week_type??null;
-                    $cartProduct->recurring_day_data        =   @$request->recurring_day_data??null;
-                    $cartProduct->recurring_booking_time    =   @$request->recurring_booking_time??null;
                 }
 
                 $cartProduct->save();
@@ -758,10 +745,6 @@ class CartController extends FrontController
      */
     public function getCartProducts(Request $request,$domain = '')
     {
-
-        Session()->forget('vendorType');
-        Session()->put('vendorType', $request->type);
-
         $cart_details = [];
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
@@ -2224,7 +2207,6 @@ class CartController extends FrontController
 
     public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='',$totalRoute = '1')
     {
-
         $option = array();
         $delivery_count = 0;
         try {
@@ -2235,6 +2217,7 @@ class CartController extends FrontController
 
                 $getAdditionalPreference = getAdditionalPreference(['is_free_delivery_by_roles']);
                 $skip_delivery_fees = false;
+
                 if($getAdditionalPreference['is_free_delivery_by_roles'] == 1 ){
                     $product_id = $vendorData->vendorProducts[0]['product_id'];
                     $result = ProductDeliveryFeeByRole::where('product_id', $product_id)->where('role_id', Auth::user()->role_id)
@@ -2242,8 +2225,6 @@ class CartController extends FrontController
                     if($result != null){
                         $skip_delivery_fees = true;
                     }
-                    Log::info('is_free_delivery_by_roles');
-
                 }
                 if( $skip_delivery_fees == true ){
                     // skip
@@ -2390,7 +2371,6 @@ class CartController extends FrontController
                     }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
                         $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_minimum);
                     }
-
 
                     $option[] = array(
                         'type'=>'D',
@@ -2952,6 +2932,7 @@ class CartController extends FrontController
         }
         return json_encode($today);
     }
+    
 
     public function VendorTimeSlot(Request $request){
         $user       = Auth::user();
@@ -3003,8 +2984,9 @@ class CartController extends FrontController
     public function recurringCalculationFunction($request)
     {
         $recurringformPost = (object)$request->recurringformPost;
-        \Log::info(json_encode($recurringformPost));
+
         $weekTypes ='';
+        $daysCnt ='';
         if(!empty($recurringformPost->weekDay)){
             $weekTypes = implode(',',$recurringformPost->weekDay);
         }
@@ -3012,37 +2994,48 @@ class CartController extends FrontController
         $startDate = $recurringformPost->startDate;
         $endDate = $recurringformPost->endDate;
 
-        $selectedCustomdates =[];
-        if($recurringformPost->action!='4' && $recurringformPost->action!='3'){
+        $selectedCustomdates = [];
+        if($recurringformPost->action==1){
             $selectedCustomdates[] = $startDate;
             $selectedCustomdates[] = $endDate;
             $selectedCustomdates = implode(',',$selectedCustomdates);
-            
         }elseif($recurringformPost->action=='2'){
-            $selectedCustomdates = getDaysArrayBetweenTwoDates($recurringformPost->startDate,$recurringformPost->endDate,$recurringformPost->weekDay);
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay);
+            $daysCnt =count($selectedCustomdates);
             $selectedCustomdates = implode(',',$selectedCustomdates);
         }elseif($recurringformPost->action=='3'){
             $startDate = Carbon::now()->addDays(1);
             $endDate = Carbon::now()->addDays(1);
             $endDate = $endDate->addMonths($recurringformPost->month_number);
             $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($selectedCustomdates);
             $selectedCustomdates = implode(',',$selectedCustomdates);
-        }else{
+        }elseif($recurringformPost->action=='4'){
             if(!empty($recurringformPost->selectedCustomdates)){
+                $daysCnt =count($recurringformPost->selectedCustomdates);
                 $selectedCustomdates = implode(',',$recurringformPost->selectedCustomdates);
             }
         }
 
 
+        if(empty($daysCnt)){
+            $days = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($days);
+        }
+
             return (object)[
-                'weekTypes' => $weekTypes,
-                'selectedCustomdates' => $selectedCustomdates,
-                'startDate' => $startDate,
-                'endDate' => $endDate,
+                'weekTypes' => @$weekTypes,
+                'selectedCustomdates' => @$selectedCustomdates,
+                'startDate' => @$startDate,
+                'endDate' => @$endDate,
                 'action'  => @$recurringformPost->action,
-                'schedule_time'=>@$recurringformPost->schedule_time??'10:00'
+                'schedule_time'=>@$recurringformPost->schedule_time??'10:00',
+                'daysCnt'=>@$daysCnt??'1'
             ];
 
     }
+
 
 }
