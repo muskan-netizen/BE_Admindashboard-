@@ -95,9 +95,9 @@ class CartController extends BaseController
                     if($VendorOrderStatus > 0){
                         $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                     }
-                }else{
+                }/* else{
                     $cartData->cart_error_message = '';
-                }
+                } */
                 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
                                 $q->where('age_restriction',1);
