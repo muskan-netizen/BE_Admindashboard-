@@ -78,22 +78,21 @@ class CartController extends BaseController
             $cart = $cart->first();
 
             if ($cart) {
-                $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder))
                 {
                     $editlimit_datetime = Carbon::now()->toDateTimeString();
                     $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
                     $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-                    $cartData->cart_error_message = '';
+                    $cart->cart_error_message = '';
                     if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
-                        $cartData->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
+                        $cart->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
                     }
                     $VendorOrderStatus = VendorOrderStatus::where('order_id', $cart->editingOrder->id)->whereNotIn('order_status_option_id', [1, 2])->count();
                     if($VendorOrderStatus > 0){
-                        $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
+                        $cart->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                     }
                 }else{
-                    $cartData->cart_error_message = '';
+                    $cart->cart_error_message = '';
                 }
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
@@ -111,11 +110,11 @@ class CartController extends BaseController
                         $passbase['status'] = $user->passbase_verification->status;
                     }
 
-                    $cartData->passbase_check = $passbase['check']??0;
-                    $cartData->passbase_status= $passbase['status']??'';
+                    $cart->passbase_check = $passbase['check']??0;
+                    $cart->passbase_status= $passbase['status']??'';
                 }
 
-                return $this->successResponse($cartData);
+                return $this->successResponse($cart);
             }
 
             return $this->successResponse($cart);
