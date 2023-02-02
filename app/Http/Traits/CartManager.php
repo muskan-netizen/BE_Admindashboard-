@@ -354,8 +354,7 @@ trait cartManager{
         $cartData = CartProduct::with([
             'vendor','vendor.slots','vendor.slot.day', 'vendor.slotsForPickup', 'vendor.slotsForDropoff', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
                 $qry->where('cart_id', $cart_id);
-            }, 'vendorProducts.pvariant.media.pimage.image', 'vendorProducts.product.media.image',
-            'vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
+            }, 'vendorProducts.pvariant.media.pimage.image', 'vendorProducts.product.media.image','vendorProducts.productDeliverySlot', 'vendorProducts.productVariantByRoles','vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
             'vendorProducts.pvariant.vset.optionData.trans' => function ($qry) use ($langId) {
@@ -385,11 +384,11 @@ trait cartManager{
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
         ]);
+        
+        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id', 'delivery_date', 'slot_price', 'slot_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        // dd($cartData);
+       //Get All Taxes    
 
-
-        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-
-       //Get All Taxes
        $taxRates = $this->getTaxes();
 
         $taxCharges = array();
@@ -437,6 +436,8 @@ trait cartManager{
             $total_quantity = 0;
             $deliveryCharges_real = $bid_total_discount = 0;
             $deliveryCharges_real = 0;
+
+            $delivery_slot_amount = 0;
             $is_long_term_service = 0;
             $container_charges_tax = 0;
 
@@ -454,6 +455,7 @@ trait cartManager{
             }
           // $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */
+            $quantity_role_price = [];
             foreach ($cartData as $ven_key => $vendorData) {
                 $opt_quantity_price_new = 0.00;
                 $addon_price=0;
@@ -655,8 +657,18 @@ trait cartManager{
                         $container_charges_in_currency = $prod->pvariant->container_charges / $divider;
                         $container_charges_in_doller_compare = $container_charges_in_currency * $customerCurrency->doller_compare;
                     }
-                    $quantity_price = $price_in_doller_compare * $prod->quantity;
-                    // $total_container_charges = $container_charges_in_currency * $prod->quantity;
+
+                    if ((@Auth::user()->role_id == 3)) {
+                        $quantity_role_price = $this->calculatePrice($prod->productVariantByRoles, $prod->quantity);
+                    }
+
+                    if(@$quantity_role_price['quantity_price'] != 0 ) {
+                            $quantity_price = $quantity_role_price['quantity_price'];
+                    } else {
+                        $quantity_price = $price_in_doller_compare * $prod->quantity;    
+                    }
+                   
+                    $total_container_charges = $container_charges_in_currency * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     $sub_total+=$quantity_price+$quantity_container_charges;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
@@ -676,6 +688,7 @@ trait cartManager{
 
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
+                    $prod->quantity_role_price = $quantity_role_price;
 
                     $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
@@ -935,6 +948,16 @@ trait cartManager{
                         $crossSell_products->push($cross_prods);
                     }
 
+                    // Add Delivery Slot Price In total amount
+                    if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
+                        $payable_amount = $payable_amount + decimal_format($prod->slot_price);
+                    }
+                    
+                    // Add Delivery Slot Price In total amount
+
+                    if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
+                        $delivery_slot_amount += decimal_format($prod->slot_price);                        
+                    }
                 }
 
                 // $couponGetAmount = $payable_amount ;
@@ -1401,6 +1424,8 @@ trait cartManager{
                 $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
             }
 
+            $cart->delivery_slot_amount = $delivery_slot_amount;
+
             // $cart->total_payable_amount = decimal_format($total_payable_amount);
             //$cart->delivery_charges = decimal_format($deliveryCharges);
             //$cart->total_payable_amount = decimal_format($total_payable_amount);
@@ -1498,5 +1523,29 @@ trait cartManager{
         $TotalPaybel =$cartTotalAfterGiftCardPay;
         return ['totalPaybel'=>$TotalPaybel,'used_GiftCardAmount'=>$used_GiftCardAmount];
 
+    }
+
+    function calculatePrice($productVariantByRoles, $prodQuantity) {
+        $quantity_price = 0;
+        $current_price = 0;
+        
+        if( ( Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) && !empty($productVariantByRoles))  {
+            $amount = 0;
+            $quantity = 0;
+            foreach($productVariantByRoles->reverse() as $inn_key => $inn_val) {
+                if($inn_val->role_id == Auth::user()->role_id ) {
+                    if($quantity < $inn_val->quantity && $inn_val->quantity <= $prodQuantity) {
+                        $quantity = $inn_val->quantity;
+                        $amount = $inn_val->amount;
+                    }
+                }
+                // break;
+            }
+            $quantity_price = $amount * $prodQuantity;
+        }
+        return [
+            'quantity_price' => $quantity_price,
+            'amount' => $amount
+        ]; 
     }
 }

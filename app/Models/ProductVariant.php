@@ -71,7 +71,7 @@ class ProductVariant extends Model
     }
     public function product()
     {
-        return $this->belongsTo('App\Models\Product', 'product_id', 'id')->select('id', 'sku', 'title', 'averageRating', 'inquiry_only', 'vendor_id', 'has_inventory', 'sell_when_out_of_stock', 'batch_count', 'minimum_order_count','markup_price','minimum_duration_min','minimum_duration','additional_increments','buffer_time_duration','is_fix_check_in_time','check_in_time','additional_increments_min','buffer_time_duration_min');
+        return $this->belongsTo('App\Models\Product', 'product_id', 'id')->select('id', 'sku', 'title', 'averageRating', 'inquiry_only', 'vendor_id', 'has_inventory', 'sell_when_out_of_stock', 'batch_count', 'minimum_order_count','markup_price','minimum_duration_min','minimum_duration','additional_increments','buffer_time_duration','is_fix_check_in_time','check_in_time','additional_increments_min','buffer_time_duration_min', 'replaceable', 'return_days', 'returnable');
     }
     public function wishlist(){
        return $this->hasOne('App\Models\UserWishlist', 'product_id', 'product_id')->select('product_id', 'user_id');
@@ -79,6 +79,7 @@ class ProductVariant extends Model
 
     public function productVariantByRole(){
         if(auth()->user() !=null){
+
             return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', Auth::user()->role_id);
         }else{
             return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', 1);
@@ -128,6 +129,7 @@ class ProductVariant extends Model
 
         //  price based on role
         if(auth()->user() !=null){
+
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
             if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
                 return $this->productVariantByRole->amount;
@@ -167,6 +169,7 @@ class ProductVariant extends Model
             return decimal_format($value + $this->markup_price??0);
         }
 
+        
         //  price based on role
         if(auth()->user() !=null){
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
