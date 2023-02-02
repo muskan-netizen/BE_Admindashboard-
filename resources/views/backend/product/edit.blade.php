@@ -518,6 +518,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 {!! Form::text('security_amount', decimal_format($product->security_amount), ['class'=>'form-control', 'id' => 'security_amount', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
 
+                            <div class="col-sm-4">
+                                {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
+                                {!! Form::number('variant_quantity[]', $product->variant[0]->quantity, ['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+
                         </div>
                         {{-- <div class="row mb-2">
 
