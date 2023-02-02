@@ -313,7 +313,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                         <span class="org_price">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}<span class="product_original_price">{{getInToken($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
                                                         @endif
                                                     @else
-                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier,2)}}</span></b>
+                                                        <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
                                                         @if($product->variant[0]->compare_at_price > 0 )
                                                             <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
                                                         @endif

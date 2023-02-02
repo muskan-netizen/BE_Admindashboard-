@@ -168,7 +168,10 @@ body .category-head {
 .dark #our_vendor_main_div button.slick-arrow {
     background-color: var(--theme-deafult) !important;
 }
-
+@media(max-width:1440px) {
+   .product-right .product-buttons button{margin-bottom: 10px;}
+   .product-right .product-buttons a{margin-bottom: 10px;}
+}
 @media (max-width: 767px) {
     .footer-contant .footer-social ul {
         margin: unset;
@@ -463,4 +466,8 @@ body.al_body_template_two .slick-track {
 
 body.al_body_template_two ul.status_box a {
     color: var(--theme-deafult);
+}
+
+.breadcrumb-section .breadcrumb {
+    justify-content: flex-start;
 }
