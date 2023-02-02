@@ -1486,7 +1486,7 @@ if( !function_exists('is_category_p2p') ) {
 // }
 
 if( !function_exists('productDiscountPercentage()') ) {
-    function productDiscountPercentage($product_price, $product_compare_price)
+    function productDiscountPercentage($product_price = 0, $product_compare_price)
     {
         if($product_compare_price > 0) {
             $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;
