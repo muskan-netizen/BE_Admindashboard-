@@ -661,6 +661,7 @@ class PaymentOptionController extends BaseController
                             break;
 
                         case 'azul':
+                            $creds = ! empty($json_creds) ? json_decode($json_creds) : '';
                             $validatedData = $request->validate([
                                 'azul_main_url' => 'required',
                                 'azul_alternate_url' => 'required',
@@ -669,7 +670,27 @@ class PaymentOptionController extends BaseController
                                 'azul_auth_header_one' => 'required',
                                 'azul_auth_header_two' => 'required',
                                 'azul_test_url' => 'required'
+                                // 'azul_ssl_certificate' => 'required',
+                                // 'azul_ssl_key' => 'required'
                             ]);
+                            if ($request->hasFile('azul_ssl_certificate')) {
+                                $file = $request->file('azul_ssl_certificate');
+                                $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
+                                $path = Storage::disk('s3')->put($file_name, file_get_contents($file), 'public');
+                                $azul_ssl_certificate = $file_name;
+                            } else {
+                                $azul_ssl_certificate = ! empty($creds) ? $creds->azul_ssl_certificate : '';
+                            }
+
+                            if ($request->hasFile('azul_ssl_key')) {
+                                $file = $request->file('azul_ssl_key');
+                                $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
+                                $path = Storage::disk('s3')->put($file_name, file_get_contents($file), 'public');
+                                $azul_ssl_key = $file_name;
+                            } else {
+                                $azul_ssl_key = ! empty($creds) ? $creds->azul_ssl_key : '';
+                            }
+
                             $json_creds = json_encode(array(
                                 'azul_main_url' => $request->azul_main_url,
                                 'azul_alternate_url' => $request->azul_alternate_url,
@@ -677,7 +698,9 @@ class PaymentOptionController extends BaseController
                                 'azul_test_url' => $request->azul_test_url,
                                 'azul_merchant_id' => $request->azul_merchant_id,
                                 'azul_auth_header_one' => $request->azul_auth_header_one,
-                                'azul_auth_header_two' => $request->azul_auth_header_two
+                                'azul_auth_header_two' => $request->azul_auth_header_two,
+                                'azul_ssl_certificate' => $azul_ssl_certificate,
+                                'azul_ssl_key' => $azul_ssl_key
                             ));
                             break;
                         case 'dpo':

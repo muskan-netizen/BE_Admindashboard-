@@ -33,7 +33,8 @@ trait AzulPaymentService
         $this->POST_INPUT_MODE = 'E-Commerce';
         $this->AUTH_1_HEADER = $this->creds_arr->azul_auth_header_one;
         $this->AUTH_2_HEADER = $this->creds_arr->azul_auth_header_two;
-
+        $this->SSL_CERTIFICATE = $this->creds->getPath($this->creds_arr->azul_ssl_certificate);
+        $this->SSL_KEY = $this->creds->getPath($this->creds_arr->azul_ssl_key);
         $this->errors = [
             'INSUF FONDOS' => 'Tu tarjeta no tiene fondos suficientes para completar la transacción'
         ];
@@ -281,7 +282,7 @@ trait AzulPaymentService
             'AzulOrderId' => $azul_order_id,
             'CustomerServicePhone' => '8092223344',
             'OrderNumber' => $order_id,
-            'ECommerceUrl' => 'https://speedy.do/',
+            'ECommerceUrl' => $this->ECOMMERCE_URL,
             'CustomOrderId' => $order_id,
             'DataVaultToken' => '',
             'SaveToDataVault' => '0',
@@ -384,8 +385,8 @@ trait AzulPaymentService
                     "Auth2" => $this->AUTH_2_HEADER
                 ],
                 'json' => $req,
-                'cert' => public_path('certs/from_azul_speedy_pro.pem'),
-                'ssl_key' => public_path('certs/speedy-prod-v2.pem')
+                'cert' => $this->SSL_CERTIFICATE,
+                'ssl_key' => $this->SSL_KEY
             ]);
             $response['message'] = $result->getReasonPhrase();
             $response['code'] = $result->getStatusCode();
