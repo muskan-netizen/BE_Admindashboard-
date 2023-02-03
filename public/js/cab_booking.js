@@ -344,6 +344,10 @@ jQuery(function () {
                         
                         paymentViaplugnpay(reload_route,'',response.data);
                     }
+                    else if(payment_option_id == 50){
+                        
+                        paymentViazulpay(reload_route,'',response.data);
+                    }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
                     $('#show_error_of_booking').html(response.message);

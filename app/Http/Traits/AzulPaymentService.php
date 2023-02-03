@@ -7,6 +7,7 @@ use Auth, Log, Config;
 use Http;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use App\Models\Order;
 
 trait AzulPaymentService
 {
@@ -55,38 +56,43 @@ trait AzulPaymentService
      *
      * @return array
      */
-    public function payWithCard($card = []): array
+    public function payWithCard($card)
     {
         // Log::info('on payWithCard'.'order_id '.'8778787');
-
         // $order = Order::find($card->getOrderNumber());
 
-        // if(is_null($order)){
+        // if (is_null($order)) {
         // return [
         // 'message' => 'Order not found',
         // 'ok' => true,
         // 'data' => null
         // ];
         // }
+        if (isset($card['come_from'])) {
+            $phone_number = $card['user']['name'];
+        } else {
+            $phone_number = auth()->user()->phone_number;
+        }
+
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
             'Store' => $this->MERCHANT_ID,
-            'CardNumber' => "4242424242424242",
-            'Expiration' => "202512",
-            'CVC' => "123",
+            'CardNumber' => $card['cno'],
+            'Expiration' => $card['dt'],
+            'CVC' => $card['cv'],
             'PosInputMode' => $this->POST_INPUT_MODE,
             'TrxType' => 'Sale',
-            'Amount' => "100",
+            'Amount' => $this->parseAmount($card['amount']),
             'Itbis' => '000',
             'CurrencyPosCode' => '$',
             'Payments' => '1',
             'Plan' => '0',
             'AcquirerRefData' => '1',
             "RRN" => '',
-            'CustomerServicePhone' => '809-222-3344',
-            'OrderNumber' => "5356325465754",
+            'CustomerServicePhone' => $phone_number,
+            'OrderNumber' => $card['order_number'],
             'ECommerceUrl' => $this->ECOMMERCE_URL,
-            'CustomOrderId' => "ABC123",
+            'CustomOrderId' => $card['order_number'],
             'SaveToDataVault' => '0',
             'DataVaultToken' => '',
             'ForceNo3DS' => '1'

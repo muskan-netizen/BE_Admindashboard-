@@ -163,6 +163,9 @@ Route::group(['middleware' => ['domain']], function () {
 
     //plugnpay
     Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
+    
+    //azulpay
+    Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
 
 	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
 	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');

@@ -414,6 +414,25 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                         <span class="error text-danger" id="plugnpay_card_error"></span>
                     </div>
                 <% } %>
+
+                 <% if(payment_option.slug == 'azulpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" value="42424242424242" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="azul-date-element" placeholder="YYYYMM" value="202502" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" value="123" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="azul_card_error"></span>
+                    </div>
+                <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -493,6 +512,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
+    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 
 
 
@@ -540,7 +560,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         $('#wallet_payment_methods_error').html('');
         var method = $(this).val();
         var code = method.replace('radio-', '');
-
         if (code != '') {
             $("#wallet_payment_methods .option-wrapper").addClass('d-none');
             $("#wallet_payment_methods ."+code+"_element_wrapper").removeClass('d-none');
