@@ -8,6 +8,7 @@ use Http;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use App\Models\Order;
+use App\Models\Payment;
 
 trait AzulPaymentService
 {
@@ -281,7 +282,6 @@ trait AzulPaymentService
     public function refundTransaction($azul_order_id, $amount, $order_id, $order_date)
     {
         Log::info('on refundTransaction', "$azul_order_id, $amount, $order_id, $order_date");
-
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
             'Store' => $this->MERCHANT_ID,
@@ -295,7 +295,7 @@ trait AzulPaymentService
             'CurrencyPosCode' => '',
             'Payments' => '1',
             'Plan' => '0',
-            'OriginalDate' => $order_date,
+            'OriginalDate' => date('Ymd', strtotime($order_date)),
             'OriginalTrxTicketNr' => '',
             'AuthorizationCode' => '',
             'ResponseCode' => '',
@@ -303,7 +303,7 @@ trait AzulPaymentService
             'RRN' => null,
             'AzulOrderId' => $azul_order_id,
             'CustomerServicePhone' => '8092223344',
-            'OrderNumber' => $order_id,
+            'OrderNumber' => '',
             'ECommerceUrl' => $this->ECOMMERCE_URL,
             'CustomOrderId' => $order_id,
             'DataVaultToken' => '',

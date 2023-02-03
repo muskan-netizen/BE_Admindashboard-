@@ -132,15 +132,15 @@ class AzulPaymentController extends FrontController
         // \Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
         \Log::info(json_encode($dataResponse));
-            // $dataResponse = json_decode($responsePay);
-            // dd($responsePay);
-        if ($dataResponse['ok'] === false) {
-            $response['status'] = 'Fail';
-            $response['msg'] = 'Invalid Card Details.';
-            $response['payment_from'] = $request->from;
-            $response['route'] = '';
-            return $response;
-        }
+        // $dataResponse = json_decode($responsePay);
+        // dd($responsePay);
+        // if ($dataResponse['ok'] === false) {
+        // $response['status'] = 'Fail';
+        // $response['msg'] = 'Invalid Card Details.';
+        // $response['payment_from'] = $request->from;
+        // $response['route'] = '';
+        // return $response;
+        // }
         // \Log::info($dataResponse->FinalStatus);
 
         if (isset($dataResponse['ok'])) {
@@ -155,6 +155,10 @@ class AzulPaymentController extends FrontController
             }
 
             // \Log::info(json_encode($request->all()));
+            if ($payment) {
+                $payment->viva_order_id = $dataResponse['data']->AzulOrderId;
+                $payment->save();
+            }
 
             if ($payment->type == 'cart') {
                 return $this->completeOrderCart($dataResponse, $payment);
@@ -346,9 +350,9 @@ class AzulPaymentController extends FrontController
 
     public function completePickupDelivery($request, $payment, $requestdata)
     {
-        if (isset($request->FinalStatus) && $request->FinalStatus == 'success') {
+        if (isset($request['ok']) && $request['ok'] == true) {
 
-            $data['payment_option_id'] = 49;
+            $data['payment_option_id'] = 50;
             $data['transaction_id'] = $payment->transaction_id;
             $data['amount'] = $requestdata['amt'];
             $data['order_number'] = $requestdata['order_number'];
