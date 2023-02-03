@@ -196,7 +196,7 @@ ul.timeline-3 li.last-active::before{top: -18px;}
         </div>
 
         <div class="row justify-content-center {{ $verifyPage }}" id="verify-phone-section">
-            <div class="verify-login-code pt-3">
+            <div class="verify-login-code p-3">
                 <form id="verify-otp-form" class="px-lg-4" method="post" >
                 <h3 class="mb-2 text-center">{{ __('Verify OTP') }}</h3>
                 <div class="digit-group otp_inputs d-flex justify-content-between" data-group-name="digits" data-autosubmit="false" autocomplete="off">
