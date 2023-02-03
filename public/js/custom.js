@@ -4732,8 +4732,10 @@ $(document).ready(function () {
             break;
              case 49:
                 paymentViaplugnpay('', payment_option_id, '');
+                 break;
                  case 50:
                 paymentViazulpay('', payment_option_id, '');
+                 break;
             break;
 
         }

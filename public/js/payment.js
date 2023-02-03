@@ -3074,21 +3074,10 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                     
                 }
                 else if(response.status == "Success") {
-					
-					//console.log('hello');
-					//console.log(response);
                     window.location.replace(response.route);
                 } else {
-						//console.log('hello2');
-					//console.log(response);
                     window.location.replace(response.route);
                 }
-            },
-            error: function(response) {
-               	console.log('hello3');
-                window.location.replace(response.route);  
-                // var error = response.responseJSON;
-                // console.log(response);
             }
         });
     }

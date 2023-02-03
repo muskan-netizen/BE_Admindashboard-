@@ -116,10 +116,9 @@ class AzulPaymentController extends FrontController
 
         // \Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
-        // \Log::info(json_encode($responsePay));
+        \Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         // dd($responsePay);
-
         if ($dataResponse['ok'] === false) {
             $response['status'] = 'Fail';
             $response['msg'] = 'Invalid Card Details.';
@@ -285,9 +284,9 @@ class AzulPaymentController extends FrontController
 
     public function completeOrderTip($request, $payment, $amount)
     {
-        if (isset($request->FinalStatus) && $request->FinalStatus == 'success') {
+        if (isset($request['ok']) && $request['ok'] == true) {
             $data['tip_amount'] = $amount;
-            $data['order_number'] = $request->address2;
+            $data['order_number'] = $payment->transaction_id;
             $data['transaction_id'] = $payment->transaction_id;
 
             $request = new \Illuminate\Http\Request($data);
@@ -295,7 +294,7 @@ class AzulPaymentController extends FrontController
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
             if ($request['from'] == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=plugnpay' . '&status=200&transaction_id=' . $payment->transaction_id;
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=azulpay' . '&status=200&transaction_id=' . $payment->transaction_id;
                 $response['route'] = $returnUrl;
             } else {
                 $returnUrl = route('user.orders');
@@ -307,10 +306,10 @@ class AzulPaymentController extends FrontController
 
     public function completeOrderSubs($request, $payment, $requestdata)
     {
-        if (isset($request->FinalStatus) && $request->FinalStatus == 'success') {
+        if (isset($request['ok']) && $request['ok'] == true) {
 
             $data['transaction_id'] = $payment->transaction_id;
-            $data['payment_option_id'] = 49;
+            $data['payment_option_id'] = 50;
             $data['subsid'] = $requestdata['subsid'];
             $data['subscription_id'] = $requestdata['subsid'];
             $data['amount'] = $requestdata['amt'];
@@ -320,7 +319,7 @@ class AzulPaymentController extends FrontController
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $requestdata->subsid);
             if ($request['from'] == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=plugnpay' . '&status=200&transaction_id=' . $payment->transaction_id;
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=azulpay' . '&status=200&transaction_id=' . $payment->transaction_id;
                 $response['route'] = $returnUrl;
             } else {
                 $returnUrl = route('user.subscription.plans');
@@ -345,7 +344,7 @@ class AzulPaymentController extends FrontController
             $returnUrl = $request->reload_route;
             $response['route'] = $returnUrl;
             if ($request->come_from == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=plugnpay' . '&status=200&transaction_id=' . $payment->transaction_id;
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=azulpay' . '&status=200&transaction_id=' . $payment->transaction_id;
                 $response['route'] = $returnUrl;
             }
 
