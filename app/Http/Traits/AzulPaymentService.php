@@ -51,12 +51,7 @@ trait AzulPaymentService
      */
     public function payWithCard($card)
     {
-        if (isset($card['come_from'])) {
-            $phone_number = $card['user']['name'];
-        } else {
-            $phone_number = auth()->user()->phone_number;
-        }
-
+        $phone_number = auth()->user()->phone_number;
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
             'Store' => $this->MERCHANT_ID,
@@ -260,6 +255,7 @@ trait AzulPaymentService
      */
     public function refundTransaction($azul_order_id, $amount, $order_id, $order_date)
     {
+        $phone_number = auth()->user()->phone_number;
         Log::info('on refundTransaction', "$azul_order_id, $amount, $order_id, $order_date");
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
@@ -281,7 +277,7 @@ trait AzulPaymentService
             'AcquirerRefData' => '',
             'RRN' => null,
             'AzulOrderId' => $azul_order_id,
-            'CustomerServicePhone' => '8092223344',
+            'CustomerServicePhone' => $phone_number,
             'OrderNumber' => '',
             'ECommerceUrl' => $this->ECOMMERCE_URL,
             'CustomOrderId' => $order_id,
