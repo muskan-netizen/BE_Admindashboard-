@@ -70,7 +70,7 @@ trait AzulPaymentService
         // }
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
-            'Store' => "$this->MERCHANT_ID",
+            'Store' => $this->MERCHANT_ID,
             'CardNumber' => "4242424242424242",
             'Expiration' => "202512",
             'CVC' => "123",
