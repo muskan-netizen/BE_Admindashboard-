@@ -136,3 +136,23 @@ body[dir="rtl"] div#add_new_address_form label {text-align: right;}
 body[dir="rtl"] .theme-card .col-md-12.mt-2 {text-align: right;} 
 body[dir="rtl"] .theme-card .form-row.no-gutters label.radio.m-0 {padding-left: 0px;padding-right: 30px;} 
 body[dir="rtl"] .radio span.checkround:after, .al_body_template_four .checkround{right:0px;} 
+body #login-section .iti.iti--allow-dropdown.iti--separate-dial-code #username {
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+}
+body[dir="rtl"] #login-section .iti.iti--allow-dropdown.iti--separate-dial-code #username {
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+}
+body #login-section .iti__flag-container {
+    position: relative;
+    width: auto;
+    display: inline-block;
+    padding: 0;    border: 1px solid #ced4da; border-width: 1px 0px 1px 1px;
+}
+body #login-section .iti.iti--allow-dropdown.iti--separate-dial-code {
+    display: flex;
+}
+.al_body_template_four .login-with-username .alErrorSuccessMsg{
+    text-align: left;
+}

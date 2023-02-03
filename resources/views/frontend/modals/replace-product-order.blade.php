@@ -1,6 +1,6 @@
-<h5 class="modal-title">
+<!-- <h5 class="modal-title">
     Do you want to exchange your product.
-</h5>
+</h5> -->
 <form class="return-order-form" action="{{route('get-replace-products')}}" method="get">
     <div class="table-responsive">
         <table class="w-100">
@@ -10,18 +10,18 @@
                         Select item(s) for exchange
                     </th>
                     <th>order Information</th>
-                    
+
                 </tr>
             </thead>
             <tbody>
                 @php $continue = 0; @endphp
-                
-            @foreach($order->vendors as $key => $vendor)    
+
+            @foreach($order->vendors as $key => $vendor)
                 @foreach($vendor->products as  $key => $product)
-               
+
                 <tr>
                     <td>
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center pr-3">
                             @if(isset($product->productReturn->status))
                              {{ __($product->productReturn->status) }}
                             @else
@@ -30,14 +30,14 @@
                             <input id="item_two{{$key}}" type="hidden" name="replace_id" value="{{ $product->id }}" required>
                             <input id="item_{{$key}}" type="hidden" name="order_id" value="{{ $order->id }}">
                             @endif
-                            <label class="order-items d-flex" for="item_one{{$key}}">  
+                            <label class="order-items d-flex" for="item_one{{$key}}">
                                 <div class="item-img mx-1">
                                     @if($product->pvariant->media->isNotEmpty())
                                         <img src="{{ $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'] }}" alt="">
                                     @else
                                         <img src="{{ $product->image['image_fit'].'74/100'.$product->image['image_path'] }}" alt="">
                                     @endif
-                                </div>    
+                                </div>
                                 <div class="items-name ml-2">
                                     <h4 class="mt-0 mb-1"><b>{{ $product->product_name }}</b></h4>
                                     <label><b>Quantity</b>: {{ $product->quantity }}</label>
@@ -52,10 +52,10 @@
                         {{__('NA')}}
                         @endif
                     </td>
-                    
+
                 </tr>
-                @endforeach  
-            @endforeach  
+                @endforeach
+            @endforeach
             </tbody>
             <tfoot>
                 <tr>
