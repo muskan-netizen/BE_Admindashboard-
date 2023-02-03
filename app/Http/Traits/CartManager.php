@@ -339,6 +339,7 @@ trait cartManager{
         $user_timezone = 'Asia/Kolkata';
         $giftCardUsed = 0;
         $giftCardAmount = 0;
+        $is_recurring_booking = 0;
         if($user){
             $user_timezone =  $user->timezone;
             //Get User Address Details

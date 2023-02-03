@@ -635,6 +635,27 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 .add-cart-btn.add_vendor_product:hover {
     background-color: var(--top-header-color);
 }
+.add-cart-btn.add_vendor_product_btn {
+    background-color: #caae73;
+    color: #fff;
+    font-size: 14px;
+    max-width: 100px;
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+    border-radius: 40px;
+    height: 40px;
+    line-height: 40px;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    position: relative;
+    margin-top: 0px;
+    opacity: 1;
+}
+
+.add-cart-btn.add_vendor_product_btn:hover {
+    background-color: var(--top-header-color);
+}
 
 .product_variant_quantity_wrapper {
     text-align: right;

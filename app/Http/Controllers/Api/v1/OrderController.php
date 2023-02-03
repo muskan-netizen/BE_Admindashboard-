@@ -127,6 +127,7 @@ class OrderController extends BaseController
             $latitude = '';
             $longitude = '';
             $Order_bid_discount = 0;
+            $daysCnt ='';
 
             if ($user) {
                 DB::beginTransaction();
@@ -867,7 +868,7 @@ class OrderController extends BaseController
                             $payable_amount = ($request->total_amount + $tip_amount) - $wallet_amount_used ;
                         }
                     }
-\Log::info('7-'.$payable_amount);
+                    \Log::info('7-'.$payable_amount);
 
                     $order->total_service_fee = $total_service_fee;
                     $order->total_delivery_fee = $total_delivery_fee;
@@ -948,6 +949,7 @@ class OrderController extends BaseController
                             $period     = CarbonPeriod::create($start_recurring_date, $end_recurring_date);
 		                    $entery     = 1;
                             $period     = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($period));
+                            $daysCnt =count($period);
                             $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
                             for ($x = 0; $x < count($period); $x++) {
                                 $date           = $period[$x];
@@ -981,6 +983,7 @@ class OrderController extends BaseController
 		                    $entery     = 1;
                             $period     = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($period));
                             $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                            $daysCnt =count($period);
                             for ($x = 0; $x < count($period); $x++) {
                                 $date           = $period[$x];
                                 $newDate        = $date.' '. $recurring_booking_time;
@@ -1012,6 +1015,7 @@ class OrderController extends BaseController
                             $period     = CarbonPeriod::create($start_recurring_date, $end_recurring_date);
 		                    $entery     = 1;
                             $period     = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($period));
+                            $daysCnt =count($period);
                             $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
                             for ($x = 0; $x < count($period); $x++) {
                                 $date           = $period[$x];
@@ -1041,6 +1045,7 @@ class OrderController extends BaseController
                             $period     = CarbonPeriod::create($start_recurring_date, $end_recurring_date);
 		                    $entery     = 1;
                             $period     = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($period));
+                            $daysCnt =count($period);
                             $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
                             for ($x = 0; $x < count($period); $x++) {
                                 $date           = $period[$x];
