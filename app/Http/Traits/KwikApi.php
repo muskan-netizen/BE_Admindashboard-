@@ -171,6 +171,8 @@ public function getPriceEstimation($dataRec)
       if (curl_errno($ch)) {
           $httpCode =  curl_error($ch);
       }
+      \Log::info('Kwick Response--');
+      \Log::info($result);
       curl_close($ch);
       $result = json_decode($result);
       return $result;
@@ -236,7 +238,8 @@ public function createKwikOrder($dataRec)
     }
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    // \Log::info($result);
+    \Log::info('Kwick create order Response--');
+    \Log::info($result);
     return json_decode($result);
 }
 
