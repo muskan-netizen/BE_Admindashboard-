@@ -657,7 +657,7 @@ $timezone = Auth::user()->timezone;
                             $adminDiscount = 0;
                             // dd($vendor);
                             if ($vendor->coupon_code) {
-                                if ($vendor->coupon_paid_by == 1) { 
+                                if ($vendor->coupon_paid_by == 1) {
                                     $couponFrom = 'From Admin';
                                     $adminDiscount = $vendor->discount_amount;
                                 } else {
@@ -739,11 +739,11 @@ $timezone = Auth::user()->timezone;
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                             <td>
-                                
+
                               <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
                             </td>
                     </tr>
-                    
+
                     <tr>
                         <th scope="row" colspan="4" class="text-end">{{ __("Payable Amount") }} :</th>
                         <td>
@@ -1091,7 +1091,7 @@ $timezone = Auth::user()->timezone;
 
 <!-- product return modal -->
 <div class="modal fade return-order" id="return_order" tabindex="-1" aria-labelledby="return_orderLabel">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

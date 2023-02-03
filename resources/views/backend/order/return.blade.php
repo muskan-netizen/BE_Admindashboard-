@@ -245,7 +245,7 @@ $timezone = Auth::user()->timezone;
     </div>
 <!-- product return modal -->
 <div class="modal fade return-order" id="return_order" tabindex="-1" aria-labelledby="return_orderLabel">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

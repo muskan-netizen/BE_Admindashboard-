@@ -80,7 +80,7 @@
                                             @foreach ( $prescriptions as $prescription )
                                             <tr>
                                                 <td>{{$loop->iteration}}</td>
-                                                <td> <a href="{{$prescription->prescription}}" target="_blank">View File</a></td>
+                                                <td> <a href="{{$prescription->prescription}}" target="_blank"><i class="fa fa-file-pdf" style="font-size:24px;"></i></a></td>
                                                 <td><span class="text-wrap">{{$prescription->description}}</span></td>
                                                 <td>{{$prescription->created_at}}</td>
                                                 <td>
