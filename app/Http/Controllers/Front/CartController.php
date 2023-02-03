@@ -296,7 +296,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-
+        
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -2706,7 +2706,6 @@ class CartController extends FrontController
 
     public function postAddToCartAddons(Request $request, $domain = '')
     {
-
         try {
 
             $user = Auth::user();

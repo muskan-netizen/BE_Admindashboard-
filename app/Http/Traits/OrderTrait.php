@@ -494,7 +494,7 @@ trait OrderTrait
     }
 
 
-    public function bookingSlot($request, $order_product_id=null)
+    public function bookingSlot($request, $order_product_id=null, $order_id=null)
     {
         $request = (object) $request;
 
@@ -517,7 +517,8 @@ trait OrderTrait
                 'end_date_time' => $end_time,
                 'order_user_id' => $request->order_user_id,
                 'booking_start_end' => $start_end_block_time,
-                'order_vendor_product_id' => $order_product_id
+                'order_vendor_product_id' => $order_product_id,
+                'order_id' => $order_id
             ]);
             DB::commit(); //Commit transaction after all the operations
             return 1;

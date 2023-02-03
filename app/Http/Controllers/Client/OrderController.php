@@ -1169,6 +1169,10 @@ class OrderController extends BaseController
                     $this->ProductVariantStockIncreaseByOrderId($request->order_id);
                 }
 
+                if ($request->status_option_id == 3 && $request->order_luxury_option_id == 4) {
+                    ProductBooking::where('order_id', $request->order_id)->update(['on_rent' => 0]);
+                }
+
                 $order_vendor = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 $order_vendor->order_status_option_id = $request->status_option_id;
                 $order_vendor->reject_reason = $request->reject_reason;

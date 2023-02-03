@@ -390,7 +390,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% if(order.vendors[0].exchanged_of_order) { %>
                                                         <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Exchange Reject') }}</button>
                                                         <% } else { %>
-                                                    <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>
+                                                    <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-order_luxury_option="<%= order.luxury_option_id %>">{{ __('Reject') }}</button>
                                                     <% } %>
                                                     <% } %>
 
@@ -1003,7 +1003,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         })
 
 
-        function openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id) {
+        function openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id, order_luxury_option_id) {
             var cancelled_by = "{{Auth::user()->id}}";
             // var that = document.getElementById('reject');
             //     var count = that.data("count");
@@ -1041,6 +1041,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         status_option_id: status_option_id,
                         order_vendor_id: order_vendor_id,
                         cancelled_by: cancelled_by,
+                        order_luxury_option_id: order_luxury_option_id,
                     },
 
                     success: function(response) {
@@ -1119,7 +1120,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 alertMessage = that.data('alert_message');
             }
             if (status_option_id == 3) {
-                return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id);
+                return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id, order_luxury_option_id);
             } else {
                 Swal.fire({
                   title: "{{__('Are you Sure?')}}",

@@ -1483,7 +1483,7 @@ class OrderController extends FrontController
                             'end_date' => $order_product->end_date_time
                         ];
                         //pr($data);
-                        $res =   $this->bookingSlot($data, $order_product->id);
+                        $res =   $this->bookingSlot($data, $order_product->id, $order->id);
                         //pr($res);
                     }
                     // pr($order_product);
