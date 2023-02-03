@@ -134,13 +134,13 @@ class AzulPaymentController extends FrontController
         \Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         // dd($responsePay);
-        if ($dataResponse['ok'] === false) {
-            $response['status'] = 'Fail';
-            $response['msg'] = 'Invalid Card Details.';
-            $response['payment_from'] = $request->from;
-            $response['route'] = '';
-            return $response;
-        }
+//         if ($dataResponse['ok'] === false) {
+//             $response['status'] = 'Fail';
+//             $response['msg'] = 'Invalid Card Details.';
+//             $response['payment_from'] = $request->from;
+//             $response['route'] = '';
+//             return $response;
+//         }
         // \Log::info($dataResponse->FinalStatus);
 
         if (isset($dataResponse['ok'])) {
