@@ -2411,6 +2411,7 @@ class OrderController extends BaseController
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
                         $product->longTermSchedule = array();
+                        $product->recurring_date_count = 1;
                         if($product->product->is_long_term_service ==1){
                             $product->longTermSchedule =  OrderLongTermServices::with(['schedule','product.primary','addon.set','addon.option','addon.option.translation' => function ($q) use ($language_id) {
                                             $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
