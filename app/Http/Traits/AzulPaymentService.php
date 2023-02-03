@@ -92,7 +92,7 @@ trait AzulPaymentService
             'ForceNo3DS' => '1'
         ];
         $response = $this->sendRequest($request);
-        // Checks if azul_payWithCard response is OK . dd($response);
+
         if ($response['code'] != 200) {
             Log::info([
                 'error http payWithCard',
@@ -115,6 +115,17 @@ trait AzulPaymentService
             ];
         }
 
+        if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
+            Log::info([
+                'error on payWithCard',
+                'order_id: ' . json_encode($response['data'])
+            ]);
+            return [
+                'message' => $response['data']->ResponseMessage,
+                'ok' => false,
+                'data' => $response['data']
+            ];
+        }
         // $order->update([
         // 'azul_order_id' => $response['data']->AzulOrderId
         // ]);
@@ -128,6 +139,9 @@ trait AzulPaymentService
             'ok' => true,
             'data' => $response['data']
         ];
+
+        // Checks if azul_payWithCard response is OK . dd($response);
+        return $response;
     }
 
     /**
@@ -167,7 +181,7 @@ trait AzulPaymentService
             'AcquirerRefData' => '1',
             'CustomerServicePhone' => '809-222-3344',
             'OrderNumber' => $order_id,
-            'ECommerceUrl' => 'https://speedy.do/',
+            'ECommerceUrl' => $this->ECOMMERCE_URL,
             'CustomOrderId' => $order_id,
             'DataVaultToken' => $datavault->token,
             "ForceNo3DS" => '1'
@@ -191,14 +205,16 @@ trait AzulPaymentService
             ];
         }
 
-        if ($response['data']->IsoCode == 51) {
-            // Log::info('error on azul AzulPaymentService.payWithDatavault', 'order_id: '.$order_id.' '.json_encode($response['data']));
+        if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
+            Log::info([
+                'error on azul AzulPaymentService.payWithDatavault',
+                'order_id: ' . json_encode($response['data'])
+            ]);
             return [
-                'message' => $this->formattErrorMessage($response['data']->ResponseMessage),
+                'message' => $response['data']->ResponseMessage,
                 'ok' => false
             ];
         }
-
         // Log::info('AzulPaymentService.payWithDatavault ok', 'request: '.json_encode($request).' response: '.json_encode($response['data']));
 
         return [
@@ -299,7 +315,10 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-            Log::info('error on refundTransaction', json_encode($response['data']));
+            Log::info([
+                'error on refundTransaction',
+                'order_id: ' . json_encode($response['data'])
+            ]);
             return [
                 'message' => $response['data']->ResponseMessage,
                 'ok' => false

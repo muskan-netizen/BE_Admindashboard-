@@ -676,19 +676,19 @@ class PaymentOptionController extends BaseController
                             if ($request->hasFile('azul_ssl_certificate')) {
                                 $file = $request->file('azul_ssl_certificate');
                                 $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
-                                $path = Storage::disk('s3')->put($file_name, file_get_contents($file), 'public');
+                                $path = Storage::disk('public')->put($file_name, file_get_contents($file), 'public');
                                 $azul_ssl_certificate = $file_name;
                             } else {
-                                $azul_ssl_certificate = ! empty($creds) ? $creds->azul_ssl_certificate : '';
+                                $azul_ssl_certificate = (! empty($creds) && isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
                             }
 
                             if ($request->hasFile('azul_ssl_key')) {
                                 $file = $request->file('azul_ssl_key');
                                 $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
-                                $path = Storage::disk('s3')->put($file_name, file_get_contents($file), 'public');
+                                $path = Storage::disk('public')->put($file_name, file_get_contents($file), 'public');
                                 $azul_ssl_key = $file_name;
                             } else {
-                                $azul_ssl_key = ! empty($creds) ? $creds->azul_ssl_key : '';
+                                $azul_ssl_key = (! empty($creds) && isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
                             }
 
                             $json_creds = json_encode(array(

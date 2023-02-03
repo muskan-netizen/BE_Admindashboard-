@@ -119,8 +119,8 @@ Options']) @section('css')
                 $azul_merchant_id = (isset($creds->azul_merchant_id)) ? $creds->azul_merchant_id : '';
                 $azul_auth_header_one = (isset($creds->azul_auth_header_one)) ? $creds->azul_auth_header_one : '';
                 $azul_auth_header_two = (isset($creds->azul_auth_header_two)) ? $creds->azul_auth_header_two : '';
-                $azul_ssl_certificate = (isset($creds->azul_ssl_certificate)) ? $opt->getPath($creds->azul_ssl_certificate) : '';
-                $azul_ssl_key = (isset($creds->azul_ssl_key)) ? $opt->getPath($creds->azul_ssl_key) : '';
+                $azul_ssl_certificate = (isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
+                $azul_ssl_key = (isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
 
                 $company_token = (isset($creds->company_token)) ? $creds->company_token : '';
                 $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
@@ -1529,8 +1529,9 @@ Options']) @section('css')
 									<label for="azul_ssl_certificate" class="mr-3">{{ __("SSL
 										Certificate") }}</label> <input type="file"
 										name="azul_ssl_certificate" id="azul_ssl_certificate"
-										class="form-control" @if($azul_ssl_certificate == '') required @endif>
-									<p>{{@$azul_ssl_certificate}}</p>
+										class="form-control" @if($azul_ssl_certificate==
+										'') required @endif>
+									<p class="font-weight-bold">{{@$azul_ssl_certificate}}</p>
 								</div>
 							</div>
 
@@ -1538,8 +1539,8 @@ Options']) @section('css')
 								<div class="form-group mb-2">
 									<label for="azul_ssl_key" class="mr-3">{{ __("SSL Key") }}</label>
 									<input type="file" name="azul_ssl_key" id="azul_ssl_key"
-										class="form-control" @if($azul_ssl_key == '') required @endif>
-									<p>{{@$azul_ssl_key}}</p>
+										class="form-control" @if($azul_ssl_key== '') required @endif>
+									<p class="font-weight-bold">{{@$azul_ssl_key}}</p>
 								</div>
 							</div>
 

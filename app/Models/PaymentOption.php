@@ -35,6 +35,6 @@ class PaymentOption extends Model
 
     public function getPath($file)
     {
-        return  \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($file);
+        return  public_path(\Storage::disk('local')->url($file));
     }
 }
