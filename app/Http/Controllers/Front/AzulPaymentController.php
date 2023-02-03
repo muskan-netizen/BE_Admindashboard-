@@ -91,14 +91,6 @@ class AzulPaymentController extends FrontController
     {
         $response = [];
 
-        // $number = $this->orderNumber($request);
-        // $request->request->add(['order_number' => $number,'amount'=>$request->amount]);
-        // //\Log::info(json_encode($request->all()));
-        // $responsePay = $this->payWithCard($request->all());
-        // //\Log::info(json_encode($responsePay));
-        // //$dataResponse = json_decode($responsePay);
-        // dd($responsePay);
-
         if ($request->from == 'wallet') {
             $number = $this->orderNumber($request);
             $request->request->add([
@@ -129,18 +121,26 @@ class AzulPaymentController extends FrontController
             ]);
         }
 
+        if ($request->from == 'pickup_delivery') {
+            $number = $this->orderNumber($request);
+            $request->request->add([
+                'order_number' => $number,
+                'amount' => $request->amount
+            ]);
+        }
+
         // \Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
         \Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         // dd($responsePay);
-        // if ($dataResponse['ok'] === false) {
-        // $response['status'] = 'Fail';
-        // $response['msg'] = 'Invalid Card Details.';
-        // $response['payment_from'] = $request->from;
-        // $response['route'] = '';
-        // return $response;
-        // }
+        if ($dataResponse['ok'] === false) {
+            $response['status'] = 'Fail';
+            $response['msg'] = 'Invalid Card Details.';
+            $response['payment_from'] = $request->from;
+            $response['route'] = '';
+            return $response;
+        }
         // \Log::info($dataResponse->FinalStatus);
 
         if (isset($dataResponse['ok'])) {
@@ -178,9 +178,7 @@ class AzulPaymentController extends FrontController
             $response['msg'] = 'Failed.';
             $response['payment_from'] = 'cart';
             $response['route'] = $returnUrl;
-
             return $response;
-            // return Redirect::to(route('showCart'))->with('error',$request->FinalStatus. ', Somthing went wrong.');
         }
     }
 

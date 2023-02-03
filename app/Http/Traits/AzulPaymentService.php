@@ -40,14 +40,6 @@ trait AzulPaymentService
         $this->errors = [
             'INSUF FONDOS' => 'Tu tarjeta no tiene fondos suficientes para completar la transacción'
         ];
-
-        // $this->paytab_creds = PaymentOption::select('credentials')->where('code', 'paytab')->where('status', 1)->first();
-        // $this->creds_arr = json_decode($this->paytab_creds->credentials);
-        // $this->profile_id = $this->creds_arr->profile_id ?? '';
-        // $this->client_key = $this->creds_arr->client_key ?? '';
-        // $this->server_key = $this->creds_arr->server_key ?? '';
-        // Config::set('Paytabs.profile_id', $this->profile_id);
-        // Config::set('Paytabs.server_key', $this->server_key);
     }
 
     /**
@@ -59,16 +51,6 @@ trait AzulPaymentService
      */
     public function payWithCard($card)
     {
-        // Log::info('on payWithCard'.'order_id '.'8778787');
-        // $order = Order::find($card->getOrderNumber());
-
-        // if (is_null($order)) {
-        // return [
-        // 'message' => 'Order not found',
-        // 'ok' => true,
-        // 'data' => null
-        // ];
-        // }
         if (isset($card['come_from'])) {
             $phone_number = $card['user']['name'];
         } else {
@@ -133,9 +115,6 @@ trait AzulPaymentService
                 'data' => $response['data']
             ];
         }
-        // $order->update([
-        // 'azul_order_id' => $response['data']->AzulOrderId
-        // ]);
 
         Log::info([
             'payWithCard OK',
