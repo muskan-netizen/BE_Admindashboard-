@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference,Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
+use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference,Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
 use DateTime;
 use Illuminate\Support\Str;
 use DateTimeZone;
@@ -254,7 +254,7 @@ class HomeController extends BaseController{
 
     public function homepage(Request $request, $domain='')
     {
-
+          
         try {
             $home = array();
             $vendor_ids = array();
@@ -391,6 +391,9 @@ class HomeController extends BaseController{
                     // dd($da->slug);
                     $da['data'] = $navCategories;
                    // dd($da[$da->slug]);
+                }
+                if($da->slug=='single_category_products'){
+                    $da['data']= $this->getSingleCategoryWithProducts($da->slug);
                 }
 
                 return $da;

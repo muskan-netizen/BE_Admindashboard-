@@ -271,7 +271,6 @@ class AppStylingController extends BaseController
      */
     public function updateAppStylesNew(Request $request){
       
-       
         foreach ($request->home_labels as $key => $value) {
            
             $home_translation = CabBookingLayoutTranslation::where('language_id', $request->languages[$key])->where('cab_booking_layout_id', $request->home_labels[$key])->first();

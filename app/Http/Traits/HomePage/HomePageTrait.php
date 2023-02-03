@@ -140,11 +140,21 @@ trait HomePageTrait
         if (checkTableExists('home_products')) {
             $single_category_products = HomeProduct::whereSlug('single_category_products')->first();
             if (@$single_category_products) {
-                $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
+                $product_ids = ProductCategory::with('categoryDetail','product')->where('category_id', $single_category_products->category_id)->first();
             }
         }
         
         return $product_ids;
+    }
+
+    public function getSingleCategoryWithProducts()
+    {
+        $product_ids = [];
+        if (checkTableExists('home_products')) {
+            $single_category_products = HomeProduct::with('categoryDetail.products')->whereSlug('single_category_products')->first();
+        }
+        
+        return $single_category_products;
     }
 
     public function getProducts($preferences, $vendor_ids, $language_id, $currency_id = 'USD', $p_dim, $product_ids)

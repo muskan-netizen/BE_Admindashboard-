@@ -10,4 +10,8 @@ class HomeProduct extends Model
     use HasFactory;
 
     protected $fillable = ['slug','title','category_id','products'];
+
+    public function categoryDetail(){
+	    return $this->belongsTo('App\Models\Category', 'category_id', 'id')->whereNull('deleted_at'); 
+	}
 }
