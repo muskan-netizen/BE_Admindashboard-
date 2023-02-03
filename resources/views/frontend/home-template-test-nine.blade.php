@@ -131,7 +131,7 @@
 @if(count($banners))
 <section class="home-slider-wrapper pt-md-0 pb-0">
 
-	<div class="container">
+	<div class="container-alFulid">
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<!-- Indicators -->
 			<ol class="carousel-indicators">
@@ -144,8 +144,8 @@
 				@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 				<div class="carousel-item @if($key == 0) active @endif">
 					<a class="banner-img-outer" href="{{$url??'#'}}">
-						<link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1170/500' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1170/400' . $banner->image['image_path']}}">
+						<link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1920/550' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/550' . $banner->image['image_path']}}">
 					</a>
 				</div>
 				@endforeach

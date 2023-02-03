@@ -147,23 +147,23 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                     <div class="col-md-3 alOrderStatus">
                                                                         
                                                                         @if(@$order->status == 0)
-                                                                            <span>
-                                                                                <a href="{{route('bid.accept',[$order->bid_req_id,$order->id])}}" class="btn btn-primary btn-sm m-2" onclick="return confirm('Are you sure?')" >{{ __('Accept Request')}}</a>
-                                                                            </span>
-                                                                            <span>
-                                                                                <a href="{{route('bid.reject',[$order->bid_req_id,$order->id])}}" class="btn btn-danger btn-sm m-2" onclick="return confirm('Are you sure?')" >{{ __('Bid Reject')}}</a>
-                                                                            </span>
+                                                                            <div class="float-left">
+                                                                                <a href="{{route('bid.accept',[$order->bid_req_id,$order->id])}}" class="btn btn-primary btn-sm m-2" onclick="return confirm('Are you sure?')" >{{ __('Accept')}}</a>
+                                                                            </div>
+                                                                            <div class="float-left">
+                                                                                <a href="{{route('bid.reject',[$order->bid_req_id,$order->id])}}" class="btn btn-danger btn-sm m-2" onclick="return confirm('Are you sure?')" >{{ __('Reject')}}</a>
+                                                                            </div>
                                                                         @elseif(@$order->status == 1)
-                                                                            <span>
+                                                                            <div>
                                                                                 <a href="#" class="btn btn-success btn-sm m-2" >{{ __('Accepted')  }}</a>
-                                                                            </span>
+                                                                            </div>
                                                                         @else
-                                                                            <span>
+                                                                            <div>
                                                                                 <a href="#" class="btn btn-danger btn-sm m-2" >{{ __('Rejected')  }}</a>
-                                                                            </span>
+                                                                            </div>
                                                                         @endif
                                                                         
-                                                                    </div>
+                                                                        </div>
 
                                                                 </div>
                                                                
