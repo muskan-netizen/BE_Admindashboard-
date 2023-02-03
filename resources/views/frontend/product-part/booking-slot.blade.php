@@ -301,6 +301,7 @@
                   var end_time = data.end_time;
                   var start_time = data.start_time;
                   if(available_product_variant) {
+                    $("a#add_to_cart_btn").addClass("addToCart");
                     //console.log( data);
                     $('#available_product_variant').val(available_product_variant);
                     $('#start_time').val(start_time);
@@ -318,6 +319,7 @@
                       }
                     }
                   } else {
+                    $("a#add_to_cart_btn").removeClass("addToCart");
                     Swal.fire({
                       icon: 'error',
                       title: 'Oops...',

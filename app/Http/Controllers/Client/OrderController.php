@@ -15,7 +15,7 @@ use App\Http\Controllers\DunzoController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, OrderProductDispatchReturnRoute, ProcessorProduct, OrderVendorProduct, VendorOrderProductStatus,Product};
+use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, OrderProductDispatchReturnRoute, ProcessorProduct, OrderVendorProduct, VendorOrderProductStatus,Product, ProductBooking};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -2269,7 +2269,6 @@ class OrderController extends BaseController
         // dd($request->all());
         try {
             $return_details = OrderProductDispatchReturnRoute::with(['order', 'orderProduct', 'orderProduct.pvariant', 'orderProduct.product'])->where('id', $request->id)->first();
-            // dd($return_details->orderProduct->product);
             if (isset($return_details)) {
 
                 if ($request->ajax()) {
@@ -2349,7 +2348,6 @@ class OrderController extends BaseController
      */
     public function updateProductRentalReturn(Request $request)
     {
-        
         DB::beginTransaction();
         try {
             $return = OrderProductDispatchReturnRoute::with(['order', 'orderProduct', 'orderProduct.pvariant', 'orderProduct.product'])->where('id', $request->id)->first();
@@ -2369,6 +2367,7 @@ class OrderController extends BaseController
                 $credit_amount = $security_amount;
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for secuirity return ' . $order_product->product_name]);
                 $this->ProductVariantStockIncreaseByOrderId($order_product->order_id, 'rental');
+                $product_bookings = ProductBooking::where('order_vendor_product_id', $request->order_vendor_product_id)->update(['on_rent' => 0]);
                 DB::commit();
                 return $this->successResponse($returns, 'Updated.');
             }

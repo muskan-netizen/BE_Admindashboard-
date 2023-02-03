@@ -15,12 +15,8 @@
             enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="id" value="{{$return_details->id}}">
-           
+            <input type="hidden" name="order_vendor_product_id" value="{{$return_details->order_vendor_product_id}}">   
 
-
-            
-            
-            
             <div class="row form-group">
                 <div class="col-md-12">
                     <label>{{__('Update Status')}}</label>
