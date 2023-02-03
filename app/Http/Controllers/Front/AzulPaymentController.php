@@ -114,11 +114,26 @@ class AzulPaymentController extends FrontController
             ]);
         }
 
+        if ($request->from == 'cart') {
+            $number = $this->orderNumber($request);
+            $request->request->add([
+                'order_number' => $number,
+                'amount' => $request->amount
+            ]);
+        }
+        if ($request->from == 'tip') {
+            $number = $this->orderNumber($request);
+            $request->request->add([
+                'order_number' => $number,
+                'amount' => $request->amount
+            ]);
+        }
+
         // \Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
         \Log::info(json_encode($dataResponse));
-        // $dataResponse = json_decode($responsePay);
-        // dd($responsePay);
+            // $dataResponse = json_decode($responsePay);
+            // dd($responsePay);
         if ($dataResponse['ok'] === false) {
             $response['status'] = 'Fail';
             $response['msg'] = 'Invalid Card Details.';
@@ -168,7 +183,7 @@ class AzulPaymentController extends FrontController
     public function completeOrderCart($request, $payment)
     {
         $order = Order::where('order_number', $payment->transaction_id)->first();
-        if (isset($request->FinalStatus) && $request->FinalStatus == 'success') {
+        if (isset($request['ok']) && $request['ok'] == true) {
             $order->payment_status = '1';
             $order->save();
 
