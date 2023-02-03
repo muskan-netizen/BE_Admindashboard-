@@ -845,6 +845,20 @@ class CartController extends BaseController
                     }
                     //till here
 
+
+                    $prod->is_recurring_booking = 0;
+                    //if we required any additional price * multiply (Right now its for reccuring)
+                    $prod->recurring_date_count = 1;
+
+                    if($prod->product->is_recurring_booking ==1){
+                        $prod->is_recurring_booking   = 1;
+                       // $prod->recurring_booking_time = convertDateTimeInTimeZone($prod->recurring_booking_time, $user_timezone, 'H:i');
+                        $cnt = @count(explode(",",$prod->recurring_day_data));
+                        $prod->recurring_date_count = $cnt != 0 ? $cnt : 1;
+                        $is_recurring_booking        = 1;
+                    }
+
+
                     if(isset($prod->product) && !empty($prod->product)){
                       //  pr($prod->product);
                         if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
@@ -895,6 +909,8 @@ class CartController extends BaseController
                         $container_charges_in_currency = $prod->pvariant->container_charges??0.00;
                         $container_charges_in_doller_compare = $prod->pvariant->container_charges??0.00;
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
+
+                        $quantity_price =  (($quantity_price)*($prod->recurring_date_count));
 
 
                         $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
@@ -1015,6 +1031,9 @@ class CartController extends BaseController
                                 $checkLastMile = 0;
                                 $product_tags = '';
                                 $NumberOfroutes= 1;
+                                //if recurring product
+                                $NumberOfroutes = ($prod->recurring_date_count);
+
                                 if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1) ) {
                                     $checkLastMile = 1;
                                     $product_tags = $prod->product->tags;
