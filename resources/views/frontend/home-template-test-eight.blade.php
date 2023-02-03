@@ -562,9 +562,9 @@
 				<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
 			</div>
 			<div class="row align-items-center">
-				<div class="col-2 brand text-center">
+				<div class="col-md-2 brand text-center">
 					<div class=" top-heading">
-					<h2 class="h2-heading">top-Brands</h2>
+						<h2 class="h2-heading">top-Brands</h2>
 					<!-- <a class="" href="javscript:void(0);">See All <i class="fa fa-angle-right" aria-hidden="true"></i></a> -->
 					</div>
 				</div>
@@ -607,7 +607,7 @@
 				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
 			</div> -->
 			<div class="row eccomerce-temp">
-				<div class="col-2 text-center">
+				<div class="col-md-2 text-center">
 					<div class=" top-heading mt-5 pt-5">
 					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Vendor', true)}}</h2>
 				<a class="" href="{{route('vendor.all')}}">{{__("See All")}} <i class="fa fa-angle-right" aria-hidden="true"></i></a>
@@ -616,7 +616,8 @@
 				<div class="col-md-10">
 					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
-						@include('frontend.home_page_8.vendor')
+						@include('fro.
+						ntend.home_page_8.vendor')
 						@endforeach
 					</div>
 				</div>
