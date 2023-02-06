@@ -25,7 +25,7 @@ class PickupDeliveryController extends FrontController{
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti','flutterwave','plugnpay');
+        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti','flutterwave','plugnpay','azul');
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
