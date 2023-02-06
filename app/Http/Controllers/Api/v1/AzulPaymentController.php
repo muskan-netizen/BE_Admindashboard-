@@ -196,11 +196,9 @@ class AzulPaymentController extends BaseController
             }
         } else {
             // \Log::info('fail--'.$dataResponse->FinalStatus.'--');
-            $returnUrl = route('order.return.success');
             $response['status'] = 'Fail';
             $response['msg'] = 'Failed.';
             $response['payment_from'] = 'cart';
-            $response['route'] = $returnUrl;
             return response()->json($response, 200);
         }
     }
@@ -256,13 +254,11 @@ class AzulPaymentController extends BaseController
             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
             if (isset($request->auth_token) && ! empty($request->auth_token)) {
-                $returnUrl = route('order.return.success');
                 $response['status'] = 'Success';
                 $response['msg'] = 'Success Order.';
                 $response['payment_from'] = 'cart';
                 return response()->json($response, 200);
             } else {
-                $returnUrl = route('order.return.success');
                 $response['status'] = 'Success';
                 $response['msg'] = 'Success Order.';
                 $response['payment_from'] = 'cart';
@@ -277,14 +273,11 @@ class AzulPaymentController extends BaseController
                 ]);
             }
             if (isset($request->auth_token) && ! empty($request->auth_token)) {
-                $returnUrl = route('order.return.success');
                 $response['status'] = 'Fail';
                 $response['msg'] = 'Failed Order.';
                 $response['payment_from'] = 'cart';
                 return response()->json($response, 200);
             } else {
-
-                $returnUrl = route('order.return.success');
                 $response['status'] = 'Fail';
                 $response['msg'] = 'Failed Order.';
                 $response['payment_from'] = 'cart';
