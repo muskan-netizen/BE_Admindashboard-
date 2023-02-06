@@ -354,9 +354,11 @@ $timezone = Auth::user()->timezone;
                                                                         {{ __("This Order is being edited") }} <a class="discard_editing_order" style="color:var(--theme-deafult);" href="javascript:void(0)" data-orderid="{{$order->id}}"><i class="fa fa-trash-o"></i> {{__('Discard')}}</a>
                                                                     </span>
                                                                     @else
-                                                                    <span class="badge ml-2" style="cursor:pointer;font-size:14px;">
-                                                                        <strong><a class="order_edit_button" data-order_id='{{$order->id}}'><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{__('Edit')}}</a></strong>
-                                                                    </span>
+                                                                        @if($vendor->order_status=='placed' || $vendor->order_status=='accepted')
+                                                                        <span class="badge ml-2" style="cursor:pointer;font-size:14px;">
+                                                                            <strong><a class="order_edit_button" data-order_id='{{$order->id}}'><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{__('Edit')}}</a></strong>
+                                                                        </span>
+                                                                        @endif
                                                                     @endif
                                                                     @endif
                                                                     @endif
