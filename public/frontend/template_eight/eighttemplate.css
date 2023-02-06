@@ -3306,4 +3306,18 @@ body.al_body_template_eight .p2p-full-width {
         height: 100px !important;
         width: 100px !important;
     }
+    .row.eccomerce-temp .top-heading.mt-5.pt-5 h2.h2-heading{margin-bottom: 0 !important; width: 100% !important; text-align: left !important;}
+    section.suppliers-section.container.vender_slider .top-heading.mt-5.pt-5 a{
+        position: absolute;
+        right: 0;
+        font-size: 14px !important;
+    }
 }
+
+.alSpaCityBox{position: relative;padding-bottom: 100%;overflow: hidden;border-radius: 15px 15px 0 0;margin-bottom: 10px;}
+.alSpaCityBox a.cities.updateLocationByCity img{position: absolute;height: 100%;width: 100%;}
+.alSpaListBox p{padding-left: 15px;}
+body.dark .alSpaListBox{background-color: #000; }
+.alSpaListBox{background-color: #fff;overflow: hidden;border: 1px solid #e8e8e8;box-shadow: rgb(28 28 28 / 3%) 0 .4rem 0.8rem!important;border-radius: 15px;}
+.login-with-username div#password-wrapper{position: relative;}
+body.al_body_template_eight .main-login-page .toggle-password{top: 24px;}
