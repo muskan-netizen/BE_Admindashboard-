@@ -633,9 +633,6 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('product-search', [BidController::class, 'search'])->name('searchProduct'); //vendor product search
 	Route::get('bid/add/to/cart/{id}', [CartController::class, 'initCart'])->name('bidding-cart');
 
-
-
-
 	/**
 	 * booking routes
 	 */
