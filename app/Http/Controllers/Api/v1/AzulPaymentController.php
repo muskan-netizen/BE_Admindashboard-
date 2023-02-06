@@ -1,29 +1,54 @@
 <?php
 namespace App\Http\Controllers\Api\v1;
 
+use DB;
+use Log;
+use Auth;
+use Session;
+use Redirect;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Front\ {
-    FrontController,
-    OrderController,
-    PickupDeliveryController
-};
 use App\Http\Traits\ApiResponser;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Api\v1\ {
+    BaseController,
+    OrderController,
+    WalletController
+};
+use App\Models\Client as CP;
+use App\Models\ {
+    PaymentOption,
+    Client,
+    ClientPreference,
+    Order,
+    OrderProduct,
+    EmailTemplate,
+    Cart,
+    CartAddon,
+    OrderProductPrescription,
+    CartProduct,
+    User,
+    Product,
+    OrderProductAddon,
+    Payment,
+    ClientCurrency,
+    OrderVendor,
+    UserAddress,
+    Vendor,
+    CartCoupon,
+    CartProductPrescription,
+    LoyaltyCard,
+    NotificationTemplate,
+    VendorOrderStatus,
+    OrderTax,
+    SubscriptionInvoicesUser,
+    UserDevice,
+    UserVendor,
+    CaregoryKycDoc
+};
 use App\Http\Traits\AzulPaymentService;
-use App\Http\Traits\PlugnpaypaymentManager;
-use App\Models\CaregoryKycDoc;
-use App\Models\Cart;
-use App\Models\Payment;
-use App\Models\CartAddon;
-use App\Models\CartCoupon;
-use App\Models\CartProduct;
-use App\Models\CartProductPrescription;
-use App\Models\Order;
-use App\Models\User;
-use App\Models\UserVendor;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
 
-class AzulPaymentController extends FrontController
+class AzulPaymentController extends BaseController
 {
     use AzulPaymentService;
 
@@ -33,7 +58,7 @@ class AzulPaymentController extends FrontController
 
         $user_id = auth()->user()->id;
 
-        if ($request->from == 'cart') {
+        if ($request->action == 'cart') {
             $time = $request->order_number;
             Payment::create([
                 'amount' => 0,
@@ -43,7 +68,7 @@ class AzulPaymentController extends FrontController
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id
             ]);
-        } elseif ($request->from == 'wallet') {
+        } elseif ($request->action == 'wallet') {
             $time = $request->transaction_id ?? time();
             Payment::create([
                 'amount' => 0,
@@ -53,7 +78,7 @@ class AzulPaymentController extends FrontController
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id
             ]);
-        } elseif ($request->from == 'tip') {
+        } elseif ($request->action == 'tip') {
             $time = time();
             Payment::create([
                 'amount' => 0,
@@ -63,7 +88,7 @@ class AzulPaymentController extends FrontController
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id
             ]);
-        } elseif ($request->from == 'subscription') {
+        } elseif ($request->action == 'subscription') {
             $time = time();
             Payment::create([
                 'amount' => 0,
@@ -73,7 +98,7 @@ class AzulPaymentController extends FrontController
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id
             ]);
-        } else if ($request->from == 'pickup_delivery') {
+        } else if ($request->action == 'pickup_delivery') {
             $time = $request->order_number;
             Payment::create([
                 'amount' => 0,
@@ -91,29 +116,14 @@ class AzulPaymentController extends FrontController
     {
         $response = [];
 
-        if ($request->from == 'wallet') {
+        if ($request->action == 'wallet') {
             $number = $this->orderNumber($request);
             $request->request->add([
                 'order_number' => $number,
                 'amount' => $request->amount
             ]);
         }
-        if ($request->from == 'subscription') {
-            $number = $this->orderNumber($request);
-            $request->request->add([
-                'order_number' => $number,
-                'amount' => $request->amount
-            ]);
-        }
-
-        if ($request->from == 'cart') {
-            $number = $this->orderNumber($request);
-            $request->request->add([
-                'order_number' => $number,
-                'amount' => $request->amount
-            ]);
-        }
-        if ($request->from == 'tip') {
+        if ($request->action == 'subscription') {
             $number = $this->orderNumber($request);
             $request->request->add([
                 'order_number' => $number,
@@ -121,7 +131,22 @@ class AzulPaymentController extends FrontController
             ]);
         }
 
-        if ($request->from == 'pickup_delivery') {
+        if ($request->action == 'cart') {
+            $number = $this->orderNumber($request);
+            $request->request->add([
+                'order_number' => $number,
+                'amount' => $request->amount
+            ]);
+        }
+        if ($request->action == 'tip') {
+            $number = $this->orderNumber($request);
+            $request->request->add([
+                'order_number' => $number,
+                'amount' => $request->amount
+            ]);
+        }
+
+        if ($request->action == 'pickup_delivery') {
             $number = $this->orderNumber($request);
             $request->request->add([
                 'order_number' => $number,
@@ -137,9 +162,9 @@ class AzulPaymentController extends FrontController
         if ($dataResponse['ok'] === false) {
             $response['status'] = 'Fail';
             $response['msg'] = 'Invalid Card Details.';
-            $response['payment_from'] = $request->from;
+            $response['payment_from'] = $request->action;
             $response['route'] = '';
-            return $response;
+            return response()->json($response, 400);
         }
         if (isset($dataResponse['ok']) && $dataResponse['ok'] === true) {
             // \Log::info('Done');
@@ -161,13 +186,13 @@ class AzulPaymentController extends FrontController
             if ($payment->type == 'cart') {
                 return $this->completeOrderCart($dataResponse, $payment);
             } elseif ($payment->type == 'wallet') {
-                return $this->completeOrderWallet($dataResponse, $payment, $request->amount);
+                return $this->completeOrderWallet($dataResponse, $payment, $request->amount, $request->come_from);
             } elseif ($payment->type == 'tip') {
-                return $this->completeOrderTip($dataResponse, $payment, $request->amount);
+                return $this->completeOrderTip($dataResponse, $payment, $request->amount, $request->come_from);
             } elseif ($payment->type == 'subscription') {
-                return $this->completeOrderSubs($dataResponse, $payment, $request);
+                return $this->completeOrderSubs($dataResponse, $payment, $request, $request->come_from);
             } elseif ($payment->type == 'pickup_delivery') {
-                return $this->completePickupDelivery($dataResponse, $payment, $request);
+                return $this->completePickupDelivery($dataResponse, $payment, $request, $request->come_from);
             }
         } else {
             // \Log::info('fail--'.$dataResponse->FinalStatus.'--');
@@ -176,7 +201,7 @@ class AzulPaymentController extends FrontController
             $response['msg'] = 'Failed.';
             $response['payment_from'] = 'cart';
             $response['route'] = $returnUrl;
-            return $response;
+            return response()->json($response, 200);
         }
     }
 
@@ -235,17 +260,13 @@ class AzulPaymentController extends FrontController
                 $response['status'] = 'Success';
                 $response['msg'] = 'Success Order.';
                 $response['payment_from'] = 'cart';
-                $response['route'] = $returnUrl;
-
-                return $response;
+                return response()->json($response, 200);
             } else {
                 $returnUrl = route('order.return.success');
                 $response['status'] = 'Success';
                 $response['msg'] = 'Success Order.';
                 $response['payment_from'] = 'cart';
-                $response['route'] = $returnUrl;
-
-                return $response;
+                return response()->json($response, 200);
             }
         } else {
             $user = auth()->user();
@@ -260,23 +281,19 @@ class AzulPaymentController extends FrontController
                 $response['status'] = 'Fail';
                 $response['msg'] = 'Failed Order.';
                 $response['payment_from'] = 'cart';
-                $response['route'] = $returnUrl;
-
-                return $response;
+                return response()->json($response, 200);
             } else {
 
                 $returnUrl = route('order.return.success');
                 $response['status'] = 'Fail';
                 $response['msg'] = 'Failed Order.';
                 $response['payment_from'] = 'cart';
-                $response['route'] = $returnUrl;
-
-                return $response;
+                return response()->json($response, 200);
             }
         }
     }
 
-    public function completeOrderWallet($request, $payment, $amount)
+    public function completeOrderWallet($request, $payment, $amount, $come_from)
     {
         if (isset($request['ok']) && $request['ok'] === true) {
 
@@ -286,18 +303,16 @@ class AzulPaymentController extends FrontController
             $walletController = new WalletController();
             $walletController->creditWallet($request);
 
-            if ($request->come_from == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=azulpay' . '&status=200&transaction_id=' . $payment->transaction_id;
-                $response['route'] = $returnUrl;
-            } else {
-                $returnUrl = route('user.wallet');
-                $response['route'] = $returnUrl;
+            if ($come_from == 'app') {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Added wallet.';
+                $response['payment_from'] = 'wallet';
             }
-            return $response;
+            return response()->json($response, 200);
         }
     }
 
-    public function completeOrderTip($request, $payment, $amount)
+    public function completeOrderTip($request, $payment, $amount, $come_from)
     {
         if (isset($request['ok']) && $request['ok'] == true) {
             $data['tip_amount'] = $amount;
@@ -308,18 +323,16 @@ class AzulPaymentController extends FrontController
 
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
-            if ($request['from'] == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=azulpay' . '&status=200&transaction_id=' . $payment->transaction_id;
-                $response['route'] = $returnUrl;
-            } else {
-                $returnUrl = route('user.orders');
-                $response['route'] = $returnUrl;
+            if ($come_from == 'app') {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Added Tip.';
+                $response['payment_from'] = 'tip';
             }
-            return $response;
+            return response()->json($response, 200);
         }
     }
 
-    public function completeOrderSubs($request, $payment, $requestdata)
+    public function completeOrderSubs($request, $payment, $requestdata, $come_from)
     {
         if (isset($request['ok']) && $request['ok'] == true) {
 
@@ -333,18 +346,16 @@ class AzulPaymentController extends FrontController
 
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $requestdata->subsid);
-            if ($request['from'] == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=azulpay' . '&status=200&transaction_id=' . $payment->transaction_id;
-                $response['route'] = $returnUrl;
-            } else {
-                $returnUrl = route('user.subscription.plans');
-                $response['route'] = $returnUrl;
+            if ($come_from == 'app') {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Added Subscription.';
+                $response['payment_from'] = 'subscription';
             }
-            return $response;
+            return response()->json($response, 200);
         }
     }
 
-    public function completePickupDelivery($request, $payment, $requestdata)
+    public function completePickupDelivery($request, $payment, $requestdata, $come_from)
     {
         if (isset($request['ok']) && $request['ok'] == true) {
 
@@ -356,14 +367,14 @@ class AzulPaymentController extends FrontController
             $request = new \Illuminate\Http\Request($data);
             $plaseOrderForPickup = new PickupDeliveryController();
             $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
-            $returnUrl = $request->reload_route;
-            $response['route'] = $returnUrl;
-            if ($request->come_from == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=azulpay' . '&status=200&transaction_id=' . $payment->transaction_id;
-                $response['route'] = $returnUrl;
+            if ($come_from == 'app') {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Added Pickup Delivery.';
+                $response['payment_from'] = 'pickup_delivery';
+                $response['data'] = $res;
             }
 
-            return $response;
+            return response()->json($response, 200);
         }
     }
 }
