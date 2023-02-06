@@ -616,8 +616,7 @@
 				<div class="col-md-10">
 					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
-						@include('fro.
-						ntend.home_page_8.vendor')
+						@include('frontend.home_page_8.vendor')
 						@endforeach
 					</div>
 				</div>
