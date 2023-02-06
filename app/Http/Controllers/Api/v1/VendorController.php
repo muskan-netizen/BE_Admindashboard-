@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption};
+use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption, VendorAdditionalInfo};
 use Log;
 class VendorController extends BaseController{
     use ApiResponser;
@@ -70,8 +70,10 @@ class VendorController extends BaseController{
                         'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled')
                         ->withAvg('product', 'averageRating');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                // $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                // $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                $latitude = (($latitude != '') && ($latitude != "undefined")) ? $latitude : $preferences->Default_latitude;
+                $longitude = (($longitude != '') &&( $longitude != "undefined")) ? $longitude : $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
@@ -659,8 +661,10 @@ class VendorController extends BaseController{
             $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'show_slot', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id','closed_store_order_scheduled')
                         ->withAvg('product', 'averageRating')->where('id', $vendor_id)->where('status', 1);
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                // $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                // $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                $latitude = (($latitude != '') && ($latitude != "undefined")) ? $latitude : $preferences->Default_latitude;
+                $longitude = (($longitude != '') &&( $longitude != "undefined")) ? $longitude : $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
@@ -1417,6 +1421,7 @@ class VendorController extends BaseController{
             $vendor->longitude = $request->longitude;
             $vendor->desc = $request->vendor_description;
             $vendor->slug = Str::slug($request->name, "-");
+            $vendor->is_seller = $request->vendor_type??0;
             $vendor->save();
             $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
             if ($vendor_registration_documents->count() > 0) {
@@ -1447,6 +1452,30 @@ class VendorController extends BaseController{
             foreach ($permission_details as $permission_detail) {
                 UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
             }
+
+            $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration']);
+
+            // Add vendor additional data
+            $additionalData = [];
+            if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1){
+                $additionalData = [
+                    'company_name' => $request->company_name,
+                    'gst_number' => $request->gst_number,
+                ];
+            }
+
+            if(@$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
+                $additionalData['account_name'] = $request->account_name;
+                $additionalData['bank_name'] = $request->bank_name;
+                $additionalData['account_number'] = $request->account_number;
+                $additionalData['ifsc_code'] = $request->ifsc_code;
+            }
+            
+            if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1 || @$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
+                $additionalData['vendor_id'] = $vendor->id;
+                VendorAdditionalInfo::insert([$additionalData]);
+            }
+
             $content = '';
             $email_template = EmailTemplate::where('id', 1)->first();
             if($email_template){
@@ -1502,7 +1531,9 @@ class VendorController extends BaseController{
 
             }
             DB::commit();
-            return $this->successResponse('', 'Vendor Registration Created Successfully!', 200);
+            $is_seller = $request->vendor_type;
+            $msg_text = isset($is_seller) && $is_seller == 0 ? 'Vendor' : 'Seller';
+            return $this->successResponse('', $msg_text.' Registration Created Successfully!', 200);
             // return response()->json([
             //     'status' => 'success',
             //     'message' => 'Vendor Registration Created Successfully!',
@@ -1996,8 +2027,10 @@ class VendorController extends BaseController{
         });
 
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-            $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-            $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+            // $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+            // $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+            $latitude = (($latitude != '') && ($latitude != "undefined")) ? $latitude : $preferences->Default_latitude;
+            $longitude = (($longitude != '') &&( $longitude != "undefined")) ? $longitude : $preferences->Default_longitude;
             $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
             //3961 for miles and 6371 for kilometers
             $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
@@ -2118,8 +2151,8 @@ class VendorController extends BaseController{
                         'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled')
                         ->withAvg('product', 'averageRating');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                $latitude = (($latitude != '') && ($latitude != "undefined")) ? $latitude : $preferences->Default_latitude;
+                $longitude = (($longitude != '') &&( $longitude != "undefined")) ? $longitude : $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
@@ -2384,8 +2417,10 @@ class VendorController extends BaseController{
             $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'show_slot', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id','closed_store_order_scheduled')
                         ->withAvg('product', 'averageRating')->where('id', $vendor_id)->where('status', 1);
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                // $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                // $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                $latitude = (($latitude != '') && ($latitude != "undefined")) ? $latitude : $preferences->Default_latitude;
+                $longitude = (($longitude != '') &&( $longitude != "undefined")) ? $longitude : $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
@@ -2723,6 +2758,9 @@ class VendorController extends BaseController{
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }
     }
+
+   
+    
 
 
 

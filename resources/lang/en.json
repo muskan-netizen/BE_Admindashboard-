@@ -307,6 +307,8 @@
     "Save": "Save",
     "Enable location based visibility of Vendors and set the Default Location.": "Enable location based visibility of Vendors and set the Default Location.",
     "Default Location": "Default Location",
+    "Price By Role": "Price By Role",
+    "Enable to show price by role on edit's vendor screen.": "Enable to show price by role on edit's vendor screen.",
     "Latitude": "Latitude",
     "Longitude": "Longitude",
     "Last Mile Delivery": "Last Mile Delivery",
@@ -363,7 +365,6 @@
     "From": "From",
     "Reply To": "Reply To",
     "Your message note here..": "Your message note here..",
-    "Ok": "Ok",
     "Add Vendor Registration Document": "Add Vendor Registration Document",
     "Tax Categories": "Tax Categories",
     "Postal Code(s)": "Postal Code(s)",
@@ -1042,7 +1043,6 @@
     "The email should be in the format:" : "The email should be in the format:",
     "Please enter your password" : "Please enter your password",
     "Please enter your phone" : "Please enter your phone",
-    "Total" : "Total",
     "Specific instructions" : "Specific instructions",
     "Do you want to add any instructions?" : "Do you want to add any instructions?",
     "Order scheduled for" : "Order scheduled for",
@@ -1055,10 +1055,7 @@
     "In Stock" : "In Stock",
     "This product no longer exists" : "This product no longer exists",
     "Subscriber can get up to 15 Free delivery for orders higher than 3000" : "Subscriber can get up to 15 Free delivery for orders higher than 3000",
-    "This change will remove all your cart products. Do you really want to continue ?" : "This change will remove all your cart products. Do you really want to continue ?",
     "Monthly - Plan" : "Monthly - Plan",
-    "Free Delivery" : "Free Delivery",
-    "Quick Links" : "Quick Links",
     "Keep In Touch" : "Keep In Touch",
     "Details Not Available" : "Details Not Available",
     "Ratings & Reviews" : "Ratings & Reviews",
@@ -1078,5 +1075,8 @@
     "Your order will arrive by" : "Your order will arrive by",
     "We are not accepting orders less then" :"We are not accepting orders less then",
     "Banner Size":"Banner Size",
-    "Content Area":"Content Area"
+    "Content Area":"Content Area",
+    "Tracking Url":"Tracking Url",
+    "Enable to allow guest customers to send otp.":"Enable to allow guest customers to send otp."
+    
  }

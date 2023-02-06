@@ -1,5 +1,13 @@
 <form id="addRejectForm" method="post" class="text-center" enctype="multipart/form-data">
     @csrf
+        <div class="form-group">
+            <label for="reason">Select Reason</label>
+            <select class="form-control" id="return_reason_id" name="return_reason_id">
+                @foreach ($cancellation_reason as $reason)
+                    <option value="{{$reason->id}}">{{$reason->title}}</option>
+                @endforeach
+            </select>
+        </div>
          <p id="error-case" style="color:red;"></p>
         <label style="font-size:medium;">Enter reason for cancel the order. <small>(Optional)</small> </label>
         <textarea class="reject_reason w-100" data-name="reject_reason" name="reject_reason" id="reject_reason" cols="50" rows="5"></textarea>
@@ -13,6 +21,7 @@
 <script>
      $('.addrejectSubmit').on('click', function(e) {
                 e.preventDefault();
+                var return_reason_id = $('#return_reason_id').val();
                 var reject_reason = $('#reject_reason').val();
                 var pickup_cancelling_charges = "{{@$pickup_cancelling_charges}}";
                 var pickup_order_date = "{{@$pickup_order_date}}";
@@ -25,6 +34,7 @@
                     type: "POST",
                     data: {
                         vendor_id: vendor_id,
+                        return_reason_id: return_reason_id,
                         order_id: order_id,
                         reject_reason: reject_reason,
                         "_token": "{{ csrf_token() }}",

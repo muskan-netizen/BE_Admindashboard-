@@ -61,45 +61,8 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
 
-@php
-$socket_url = '';
-$admin_chat = '';
-$driver_chat = '';
-$customer_chat = '';
-$db ='';
-$auth_id='';
-if(Auth::check()){
-	$cl_data = \App\Models\Client::first();
-	$socket_url = @$cl_data->socket_url;
-	$admin_chat = @$cl_data->admin_chat;
-	$driver_chat = @$cl_data->driver_chat;
-	$customer_chat = @$cl_data->customer_chat;
-	$db = @$cl_data->database_name;
-	$auth_id = Auth::user()->id;
-}
-
-@endphp
-<script>
-	var sUrl = "{!! $socket_url !!}";
-	var admin_chat = "{!! $admin_chat !!}";
-	var driver_chat = "{!! $driver_chat !!}";
-	var customer_chat = "{!! $customer_chat !!}";
-	var auth = "{!! $auth_id !!}";
-	var db = "{!! $db !!}";
-	var socket = null;
-	var Auth = {
-		auth_id:auth,
-		database_name:db
-	}
-	var SocketConstants = {
-    	Socket_url : sUrl,
-		admin_chat : admin_chat,
-		driver_chat : driver_chat,
-		customer_chat : customer_chat,
-		socket:'',
-	}
-</script>
-
+{{-- variables-constant-js --}}
+@include('layouts.shared.variables-constant-js')
 @elseif(isset($set_template)  && $set_template->template_id == 6)
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick-theme.min.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick.min.css')}}">
@@ -111,7 +74,38 @@ if(Auth::check()){
 	@endif
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/style-rtl.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/footer/footer.css')}}">
+
+@elseif(isset($set_template)  && $set_template->template_id == 8)
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/header/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/footer/footer.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/eighttemplate.css')}}">
+	@if(Route::currentRouteName() == "userHome")
+	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/homepage/homepage.css')}}">
+	@else
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/homepage/inner_page.css')}}">
+	@endif
+	@if(Route::currentRouteName() == "homeTest")
+	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_eight/homepage/homepage.css')}}">
+	@else
+
+	<link defer type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}">
+	@endif
+@elseif(isset($set_template)  && $set_template->template_id == 9)
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
+<link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/header/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/footer/footer.css')}}">
+<!-- p2p css -->
+<link rel="stylesheet" href="{{asset('frontend/common/p2p.css')}}">
+
+	@if(Route::currentRouteName() == "userHome" || Route::currentRouteName() == "homeTest")
+	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/homepage/homepage.css')}}">
+	@else
+	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/homepage/inner_page.css')}}">
+	@endif
 @endif
+
+
 
 @yield('css-links')
 <style type="text/css">
@@ -120,7 +114,9 @@ if(Auth::check()){
     .top-header .header-dropdown li.onhover-dropdown{padding:0 15px}.onhover-dropdown .onhover-show-div{display:none}.shimmer_effect{overflow:hidden}.menu-slider.items-center .slick-track{justify-content:space-between}body .menu-slider .slick-track{max-width:100vw!important;width:100%!important;display:flex;justify-content:center;margin:auto!important}.pixelstrap li a,.product-card-box{position:relative;-webkit-transform:scale(.95);transform:scale(.95);-webkit-transition:.3s ease-in-out;transition:.3s ease-in-out}.pixelstrap a,.pixelstrap a:active,.pixelstrap a:hover,.pixelstrap li>a{padding:0 7px 10px;text-align:center;width:100px;white-space:normal}
     :root {--theme-deafult: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;--top-header-color: <?= ($client_preference_detail) ? $client_preference_detail->site_top_header_color : '#4c4c4c' ?>;}
     a {color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;}
-
+	body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn{
+		background: linear-gradient(to right, <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>, #ffce32, <?= ($client_preference_detail) ? $client_preference_detail->site_top_header_color : '#3a77ff' ?>);
+	}
     @if($set_common_business_type == 'taxi')
       .cabbooking-loader {width: 30px;height: 30px;animation: loading 1s infinite ease-out;margin: auto;border-radius: 50%;background-color: red;}
       @keyframes loading {0% {transform: scale(1);}100% {transform: scale(8);opacity: 0;}}

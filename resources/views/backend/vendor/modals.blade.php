@@ -147,6 +147,19 @@
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="col-md-4">
+                                    @if(@$getAdditionalPreference['is_seller_module'] == '1')
+                                        <div class="form-group">
+                                            <label for="vendortype">{{__('Vendor Type')}}</label>
+                                            <select name="vendor_type" id="vendor_type" class="form-control">
+                                                <option value="1">Seller</option>
+                                                <option value="0">Vendor</option>
+                                            </select>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group" id="descInput">
                                         {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
@@ -259,6 +272,60 @@
 
                         </div>
                     </div><!-- al_add_user end -->
+                    
+                    @if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == '1')
+                    <h5 class="mb-2">{{__('GST DETAILS')}}</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="companyname">{{__('Company Name')}}</label>
+                                    <input type="text" class="form-control" name="company_name" placeholder="Company Name" value="">
+                                    <span class="invalid-feedback" id="company_name_error"><strong></strong></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="gstNoInput">{{__('GST Number')}}</label>
+                                    <input type="text" class="form-control" name="gst_num_Input" placeholder="GST Number" value="">
+                                    <span class="invalid-feedback" id="title_error"><strong></strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if(@$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == '1')
+                    <h5 class="mb-2">{{__('Banking DETAILS')}}</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="accountname">{{__('Account Name')}}</label>
+                                    <input type="text" class="form-control" name="account_name" placeholder="Account Name" value="">
+                                    <span class="invalid-feedback" id="account_name_error"><strong></strong></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="bankname">{{__('Bank Name')}}</label>
+                                    <input type="text" class="form-control" name="bank_name" placeholder="Bank Name" value="" placeholder="">
+                                    <span class="invalid-feedback" id="title_error"><strong></strong></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="accountnumber">{{__('Account Number')}}</label>
+                                    <input type="text" class="form-control" name="account_number" placeholder="Account Number" value="" placeholder="">
+                                    <span class="invalid-feedback" id="account_number_error"><strong></strong></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="ifsccode">{{__('IFSC Code')}}</label>
+                                    <input type="text" class="form-control" name="ifsc_code" placeholder="IFSC Code" value="" placeholder="">
+                                    <span class="invalid-feedback" id="ifsc_code_error"><strong></strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
                     <div class="row">
                         <!-- al_custom_modal start ADVANCED DETAILS -->

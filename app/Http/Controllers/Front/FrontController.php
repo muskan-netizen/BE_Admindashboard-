@@ -28,6 +28,7 @@ class FrontController extends Controller
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
+         
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
             {
@@ -60,7 +61,13 @@ class FrontController extends Controller
                 if( isset($send->code) && $send->code != 'ok'){
                     return '2';
                 }
-            }else{
+            }
+            elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -79,6 +86,67 @@ class FrontController extends Controller
         }
         return '1';
 	}
+    protected function sendSmsNew($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
+        try{
+            $body = $body['body']??'';
+            $template_id = $body['template_id']??'';
+            $client_preference =  getClientPreferenceDetail();
+            if($client_preference->sms_provider == 1)
+            {
+                if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
+                    $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
+                    $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
+                }else{
+                    return 2;
+                }
+
+            }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mTalkz_sms($to,$body,$crendentials,$template_id);
+            }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mazinhost($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->unifonic($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 5) //for arkesel_sms gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->arkesel_sms($to,$body,$crendentials);
+                if( isset($send->code) && $send->code != 'ok'){
+                    return '2';
+                }
+            }
+            elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            else{
+                if(!empty($sms_secret) && !empty($sms_from)){
+                    $client = new TwilioClient($sms_key, $sms_secret);
+                    $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
+                }else{
+                    return 2;
+                }
+            }
+            //return $send;
+        }
+        catch(\Exception $e){
+            return '2';
+        }
+        return '1';
+	}
+	
+    
     public function testsms(Request $request)
     {
         $prefer = ClientPreference::select('sms_credentials', 
@@ -1148,5 +1216,57 @@ class FrontController extends Controller
              return false;
          }
      }
+
+    public function test_notification(Request $request){
+        $new[] = $request->token ;
+        $fcm_server_key = $request->fcm_server_key ;
+        // if(  $request->token  ){
+    
+        //     echo 'fcm_server_key or tokon inveled';
+        //     exit();
+        // }
+        $order = Order::with(['vendors.vendor:id,name,auto_accept_order,logo'])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount', 'created_at')->first();
+     
+      // pr($order);
+        $item['title']     = 'notification test by harbans';
+        $item['body']      = 'this is test by h:) ';
+        $data = [
+            "registration_ids" => $new,
+            "notification" => [
+                'title' => 'notification test by harbans',
+                'body'  => 'notification test by harbans',
+                'sound' => "notification.wav",
+                'click_action' => route('order.index'),
+                "android_channel_id" => "sound-channel-id"
+            ],
+            "data" => [
+                'title' => 'notification test by harbans',
+                'body'  => 'notification test by harbans',
+                'data' => $order,
+                'type' => "order_created"
+            ],
+            "priority" => "high"
+        ];
+    
+        $headers = [
+            'Authorization: key=AAAAJo1U6_Q:APA91bGawE2fcj6IKUMlUbBgyQIFZ0_-SRJtkghEqKvuyBXq83HZQOLfLTenfWT-eEXSnvU06Hk4LYeWqxkpH1xQn_MQhqIuEDfPZb-e52GJ-aXZzs5LHg2XPotX2oMDDO3iacYT75ho',
+            'Content-Type: application/json',
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        $result = curl_exec($ch);
+        // if ($result === FALSE) {
+        //     die('Oops! FCM Send Error: ' . curl_error($ch));
+        // }
+        echo  $new[0];
+        curl_close($ch);
+        return $result;
+    
+    }
  
 }

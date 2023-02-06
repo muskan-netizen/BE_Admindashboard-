@@ -250,9 +250,9 @@
                                                 <div class="form-group">
                                                     <label for="">Auto reject time (In minutes, 0 for no rejection)</label>
                                                     <select class= "form-control" id="assignTo">
-                                                        <option value="1" selected="&quot;selected&quot;">Only Product</option>
-                                                        <option value="2">Only Category</option>
-                                                        <option value="5">Product with Category</option>
+                                                        <option value="1" selected="&quot;selected&quot;">{{ __('Only Product') }}</option>
+                                                        <option value="2">{{ __('Only Category') }}</option>
+                                                        <option value="5">{{ __('Product with Category') }}</option>
                                                     </select>
                                                 </div>
                                             </form>

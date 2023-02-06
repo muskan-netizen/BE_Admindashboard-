@@ -856,6 +856,140 @@
 
          <!-- End Ship Rocket -->
 
+          <!--- kwikOption Code -->
+
+          @if($kwikOption)
+          <div class="col-md-6 mb-3">
+              <form method="POST" id="payment_option_form" action="{{route('kwikapi.updateAll')}}" class="h-100">
+                  @csrf
+                  @method('POST')
+                  <div class="card-box h-100">
+                      <input type="hidden" name="method_id" id="{{$kwikOption->id}}" value="{{$kwikOption->id}}">
+                      <input type="hidden" name="method_name" id="{{$kwikOption->code}}" value="{{$kwikOption->code}}">
+                      <?php
+                      $creds = json_decode($kwikOption->credentials);
+                      $email = (isset($creds->api_email)) ? $creds->api_email : '';
+                      $pass = (isset($creds->api_pass)) ? $creds->api_pass : '';
+                      $domain = (isset($creds->domain_name)) ? $creds->domain_name : '';
+                    
+ 
+                      $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
+                      $distance = (isset($creds->distance)) ? $creds->distance : '0';
+                      $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
+ 
+                      $height = (isset($creds->height)) ? $creds->height : '0';
+                      $width = (isset($creds->width)) ? $creds->width : '0';
+                      $weight = (isset($creds->weight)) ? $creds->weight : '0';
+                      ?>
+                      <div class="row">
+                         <div class="col-md-12 d-flex justify-content-between align-items-center">
+                             <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$kwikOption->code.'.png')}}" alt=""></span>  {{$kwikOption->title}}</h3>
+                             <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                         </div>
+                      </div>
+ 
+                      <div class="row">
+                          <div class="col-6">
+                              <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
+                                  <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                  <input type="checkbox" data-id="{{$kwikOption->id}}" data-title="{{$kwikOption->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($kwikOption->status == 1) checked @endif>
+                              </div>
+                          </div>
+                          @if ( (strtolower($kwikOption->code) == 'kwikapi'))
+                          <div class="col-6">
+                              <div class="form-group mb-0 switchery-demo d-flex justify-content-between align-items-center">
+                                  <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                  <input type="checkbox" data-id="{{$kwikOption->id}}" data-title="{{$kwikOption->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($kwikOption->test_mode == 1) checked @endif>
+                              </div>
+                          </div>
+                          @endif
+                      </div>
+ 
+                      @if ( (strtolower($kwikOption->code) == 'kwikapi') )
+                      <div id="kwikapi_fields_wrapper" @if($kwikOption->status != 1) style="display:none" @endif>
+                          <hr>
+ 
+                          <div class="row">
+                              <div class="col-sm-6">
+                                  <div class="form-group mb-0">
+                                      <label for="kwikapi_email" class="mr-3">{{ __("Vendor Email") }}</label>
+                                      <input type="text" name="kwikapi_email" id="kwikapi_email" class="form-control" value="{{$email}}" @if($kwikOption->status == 1) required @endif autofill="off">
+                                  </div>
+                              </div>
+                      
+                            <div class="col-sm-6">
+                                <div class="form-group mb-0">
+                                    <label for="kwikapi_pass" class="mr-3">{{ __("Vendor Password") }}</label>
+                                    <input type="text" name="kwikapi_pass" id="kwikapi_pass" class="form-control" value="{{$pass}}" @if($kwikOption->status == 1) required @endif autofill="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group mb-0">
+                                <label for="domain_name" class="mr-3">{{ __("Domain") }}</label>
+                                <input type="text" name="domain_name" id="domain_name" class="form-control" value="{{$domain}}" @if($kwikOption->status == 1) required @endif autofill="off">
+                            </div>
+                        </div>
+                    </div>
+ 
+ 
+ 
+                          <div class="col-md-12 mt-3 p-0">
+ 
+                             <h5 class="d-inline-block ">
+                                 <span>{{ __('Webhook Url') }} : </span>
+                                 <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('quick-api')}}</span></a>
+                             </h5>
+                             <sup class="position-relative">
+                                 <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('quick-api')}}" style="cursor:pointer;">
+                                     <i class="fa fa-copy"></i>
+                                 </a>
+                                 <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                             </sup>
+ 
+                              <div class="form-group mt-2 switchery-demo">
+                                  <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
+                                  <input type="checkbox"  data-title="{{$kwikOption->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
+                              </div>
+                          <hr/>
+                          </div>
+ 
+ 
+                      <div class="row mt-3" id="kwikapi_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
+ 
+                          <div class="col-md-4">
+                              <div class="form-group mb-0">
+                                  <label for="kwikapi_base_price" class="mr-3">{{ __("Base Price") }}</label>
+                                  <input type="text" name="base_price" id="kwikapi_base_price" class="form-control" value="{{$base_price??0}}" >
+                              </div>
+                          </div>
+ 
+                          <div class="col-md-4">
+                              <div class="form-group mb-0">
+                                  <label for="kwikapi_distance" class="mr-3">{{ __("Distance") }}</label>
+                                  <input type="text" name="distance" id="kwikapi_distance" class="form-control" value="{{@$distance??0}}" >
+                              </div>
+                          </div>
+ 
+                          <div class="col-md-4">
+                              <div class="form-group mb-0">
+                                  <label for="kwikapi_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
+                                  <input type="text" name="amount_per_km" id="kwikapi_amount_per_km" class="form-control" value="{{@$amount_per_km??0}}" >
+                              </div>
+                          </div>
+                      </div>
+ 
+ 
+                      
+                      </div>
+                      @endif
+                  </div>
+              </form>
+          </div>
+          @endif
+ 
+          <!-- End Kwik Api -->
 
     </div>
 </div>

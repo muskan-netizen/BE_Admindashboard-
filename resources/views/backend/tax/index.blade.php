@@ -7,8 +7,15 @@
 <div class="container-fluid alTaxPage">
     <div class="row">
         <div class="col-12">
-            <div class="page-title-box">
+            <div class="col-md-4 page-title-box float-left">
                 <h4 class="page-title">{{ __("Tax") }}</h4>
+            </div>
+            <div class="col-md-4 mt-5 float-right">
+                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                    <label for="is_tax_price_inclusive" class="mr-2 mb-0">{{__('Price Inclusive of Tax')}}</label>
+                <span> <input type="checkbox" data-plugin="switchery" name="is_tax_price_inclusive" id="is_tax_price_inclusive" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_tax_price_inclusive == '1')) checked='checked' @endif>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -194,6 +201,25 @@
                 return false;
             }
         });
+    });
+
+    $('#is_tax_price_inclusive').on('change',function(){
+        val= $('input[name="is_tax_price_inclusive"]:checked').val();
+        value = 0;
+        if(val == 'on'){
+            value = 1;
+        }
+
+
+        $.ajax({
+            data: {is_tax_price_inclusive:value},
+                type: "POST",
+                url: "{{route('configure.taxinclusive')}}",
+                success: function (response) {
+                    $.NotificationApp.send("Success", 'Changes done successfully.', "top-right", "#5ba035", "success");
+                }
+            });
+
     });
 </script>
 @include('backend.tax.pagescript')

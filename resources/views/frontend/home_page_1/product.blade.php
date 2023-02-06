@@ -26,7 +26,7 @@
                         <span>{{__('In') . $product["category"]}} </span>
                     </p>
                     <div class="d-flex align-items-center justify-content-between al_clock"> 
-                        <b>{{ $product["price"] }}</b>
+                        <b>{!!$product["price"] ?? ''!!}</b>
                         <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
                     </div>
                 </div>

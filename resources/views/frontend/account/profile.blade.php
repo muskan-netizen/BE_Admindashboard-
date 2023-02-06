@@ -77,7 +77,7 @@
                 </div>
             </div>
         </div>
-        <div class="row my-md-3">
+        <div class="row my-md-3 mt-5 pt-4">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
                 @include('layouts.store/profile-sidebar')
@@ -135,17 +135,17 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="info-text mb-2">
-                                                <label class="m-0">{{ __('Name') }}</label>
+                                                <label class="m-0">{{ __('Name :') }}</label>
                                                 <p>{{$user->name}}</p>
                                             </div>
 
                                             <div class="info-text mb-2">
-                                                <label class="m-0">{{ __('Email') }}</label>
+                                                <label class="m-0">{{ __('Email :') }}</label>
                                                 <p>{{$user->email}}</p>
                                             </div>
 
                                             <div class="info-text mb-2">
-                                                <label class="m-0">{{ __('Phone Number') }}</label>
+                                                <label class="m-0">{{ __('Phone Number :') }}</label>
                                                 <p>{{ '+'.$user->dial_code.$user->phone_number}}</p>
                                             </div>
 
@@ -189,6 +189,7 @@
 </div>
 @endsection
 @section('script')
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="{{asset('assets/libs/dropzone/dropzone.min.js')}}"></script>
 <script src="{{asset('assets/libs/dropify/dropify.min.js')}}"></script>
 <script src="{{asset('assets/js/pages/form-fileuploads.init.js')}}"></script>

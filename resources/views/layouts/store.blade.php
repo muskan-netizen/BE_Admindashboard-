@@ -13,26 +13,6 @@ $set_common_business_type = $client_preference_detail->business_type??'';
 
 @yield('cssnew')
 @php
-$socket_url = ''; 
-$admin_chat = '';
-$driver_chat = '';
-$customer_chat = '';
-$db ='';
-$auth_id ='';
-$authData ='';
-if(Auth::check()){
-	$cl_data = \App\Models\Client::first();
-	$socket_url = @$cl_data->socket_url;
-	$admin_chat = @$cl_data->admin_chat;
-	$driver_chat = @$cl_data->driver_chat;
-	$customer_chat = @$cl_data->customer_chat;
-	$db = @$cl_data->database_name;
-	$auth_id = Auth::user()->id;
-  $authData = json_encode(@Auth::user()->toArray());
-
-}
-
-
 
 $dark_mode = '';
 if($client_preference_detail->show_dark_mode == 1){
@@ -61,43 +41,20 @@ if(isset($set_template))
     if(Route::currentRouteName() == "customer.login" || Route::currentRouteName() == "customer.register"){
       $body_class =  $body_class. " login";
     }
-  }
     
+  }
+  elseif($set_template->template_id == 8)
+    $body_class = "al_body_template_eight p2p-module"; //p2p-module class is required because in template 8 css fixed using this class
+  elseif($set_template->template_id == 9)
+    $body_class = "al_body_template_nine p2p-module";
 }
 
 
 @endphp
-
-
-<script>
-	var sUrl = "{!! $socket_url !!}";
-	var admin_chat = "{!! $admin_chat !!}";
-	var driver_chat = "{!! $driver_chat !!}";
-	var customer_chat = "{!! $customer_chat !!}";
-	var auth = "{!! $auth_id !!}";
-	var db = "{!! $db !!}";
-  var authData =  `<?php  echo $authData  ?>`;
-
-	var socket = null;
-	var Auth = {
-		auth_id:auth,
-		database_name:db,
-    authData:authData
-	}
-  var Chat = {
-		orderData:{
-			
-		}
-	}
-	var SocketConstants = {
-    	Socket_url : sUrl,
-		admin_chat : admin_chat,
-		driver_chat : driver_chat,
-		customer_chat : customer_chat,
-		socket:'',
-	} 
-</script>
-<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
+@include('layouts.shared.variables-constant-js')
+@include('layouts.language')
+@yield('headerJs')
+<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}} " dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
 <article id="page-container">
   <article id="content-wrap">
   @if(isset($set_template)  && ($set_template->template_id == 3 || $set_template->template_id == 6 || $set_template->template_id == 1 ))
@@ -118,6 +75,10 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-five')
       @elseif(isset($set_template)  && $set_template->template_id == 6)
       @include('layouts.store/left-sidebar-template-six')
+      @elseif(isset($set_template)  && $set_template->template_id == 8)
+      @include('layouts.store/left-sidebar-template-eight')
+      @elseif(isset($set_template)  && $set_template->template_id == 9)
+      @include('layouts.store/left-sidebar-template-nine')
       @else
       @include('layouts.store/left-sidebar-template-one')
       @endif
@@ -140,6 +101,10 @@ if(isset($set_template))
     @include('layouts.store/footer-content-template-five')
     @elseif(isset($set_template)  && $set_template->template_id == 6)
     @include('layouts.store/footer-content-template-six')
+    @elseif(isset($set_template)  && $set_template->template_id == 8)
+    @include('layouts.store/footer-content-template-eight')
+    @elseif(isset($set_template)  && $set_template->template_id == 9)
+    @include('layouts.store/footer-content-template-nine')
     @else
     @include('layouts.store/footer-content-template-one')
     @endif

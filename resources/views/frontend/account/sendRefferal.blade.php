@@ -56,7 +56,7 @@
 
 <section class="login-page section-b-space">
     <div class="container">
-        <div class="row my-md-3">
+        <div class="row my-md-3 mt-5 pt-4">
             <div class="offset-lg-3 col-lg-6">
                 <div class="dashboard-right">
                     <h3>Send Refferal</h3>

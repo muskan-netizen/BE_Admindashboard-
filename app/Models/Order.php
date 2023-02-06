@@ -18,6 +18,10 @@ class Order extends Model implements Auditable
     {
         return $this->hasMany('App\Models\OrderProduct', 'order_id', 'id');
     }
+    public function ordervendor()
+    {
+        return $this->hasOne('App\Models\OrderVendor', 'order_id', 'id')->select('*', 'dispatcher_status_option_id as dispatcher_status');
+    }
     public function vendors()
     {
         return $this->hasMany('App\Models\OrderVendor', 'order_id', 'id')->select('*', 'dispatcher_status_option_id as dispatcher_status');
@@ -37,6 +41,11 @@ class Order extends Model implements Auditable
     public function paymentOption()
     {
         return $this->hasOne('App\Models\PaymentOption', 'id', 'payment_option_id');
+    }
+
+    public function reqCancelOrder()
+    {
+        return $this->hasOne('App\Models\OrderCancelRequest'); //, 'order_id', 'id'
     }
     public function orderStatusVendor()
     {
@@ -80,7 +89,11 @@ class Order extends Model implements Auditable
 
     public function getTotalDiscountCalculateAttribute()
     {
-        return $this->vendors()->sum('discount_amount');
+        if(checkColumnExists('order_vendors', 'subscription_discount_admin')){
+            return $this->vendors()->sum('discount_amount') + $this->vendors()->sum('subscription_discount_admin') + $this->vendors()->sum('subscription_discount_vendor');
+        }else{
+            return $this->vendors()->sum('discount_amount');
+        }
     }
 
     public function luxury_option()
@@ -108,9 +121,24 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\OrderVendorReport', 'order_id', 'id');
     }
+
+    public function order_exchange_request()
+    {
+        return $this->hasOne('App\Models\OrderReturnRequest', 'order_id', 'id');
+    }
     
     public function getByNumber($order_number)
     {
         return self::where('order_number',$order_number)->with('user','products','products.addon','products.addon.option','products.pvariant')->first();
+    }
+    public function giftCard(){
+        return $this->hasOne('App\Models\GiftCard','id','gift_card_id');
+    }
+    public function userGiftCard(){
+        return $this->hasOne('App\Models\UserGiftCard','gift_card_code','gift_card_code');
+    }
+    public function editingInCart()
+    {
+        return $this->hasOne('App\Models\Cart', 'order_id', 'id');
     }
 }

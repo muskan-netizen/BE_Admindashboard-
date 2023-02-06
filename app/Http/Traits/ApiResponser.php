@@ -21,9 +21,11 @@ use App\Models\Cart;
 use App\Models\EmailTemplate;
 use App\Models\UserAddress;
 use App\Models\{Product, OrderProductRating, ClientPreference,UserDevice, NotificationTemplate};
-
+use Twilio\Rest\Client as TwilioClient;
+use App\Http\Traits\smsManager;
 trait ApiResponser
 {
+	use  smsManager;
 
 	protected function successResponse($data, $message = null, $code = 200)
 	{
@@ -485,4 +487,56 @@ trait ApiResponser
             }
         }
     }
+
+
+	protected function sendSmsNew($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
+        try{
+            $body = $body['body']??'';
+            $template_id = $body['template_id']??''; //sms Template_id
+            $client_preference =  getClientPreferenceDetail();
+            if($client_preference->sms_provider == 1)
+            {
+                $client = new TwilioClient($sms_key, $sms_secret);
+                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+            }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mTalkz_sms($to,$body,$crendentials,$template_id);
+            }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->unifonic($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 5) //for arkesel_sms gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->arkesel_sms($to,$body,$crendentials);
+                if( isset($send->code) && $send->code != 'ok'){
+                    return '2';
+                }
+            }
+			elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+			else{
+                $client = new TwilioClient($sms_key, $sms_secret);
+                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+            }
+        }
+        catch(\Exception $e){
+            return '2';
+        }
+        return '1';
+	}
+
+	
+	
+
+
 }

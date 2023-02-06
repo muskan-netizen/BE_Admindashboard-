@@ -109,7 +109,7 @@
                         <div class="col-4 p-2 mt-0" style="margin:auto; padding: 8px !important;">
                             <select class="selectize-select form-control" id="language_id" name="language_id">
                                 @foreach($languages as $lang)
-                                <option value="{{$lang->langId}}">{{$lang->langName}}</option>
+                                <option value="{{$lang->langId}}">{{__($lang->langName)}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -184,7 +184,7 @@
 
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto;">
-                            <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
+                            <h5 class="text-uppercase mt-0 bg-light p-2">{{ __(getNomenclatureName('Variant') ." Information") }}</h5>
                         </div>
                         <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
                             <button type="button" class="btn btn-info makeVariantRow"> {{ __("Create Variants") }}</button>

@@ -67,8 +67,8 @@
                     <div class="card">
                         <div class="card-body position-relative p-0">
                             <div class="chat-body row overflow-hidden shadow bg-light rounded">
-                                @include('frontend.chat.useragentpart.left')
-                                @include('frontend.chat.useragentpart.right')
+                                @include('frontend.chat.uservendorpart.left')
+                                @include('frontend.chat.uservendorpart.right')
                             </div>
                         </div>
                     </div>

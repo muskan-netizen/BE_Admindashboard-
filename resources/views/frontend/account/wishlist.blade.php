@@ -47,11 +47,17 @@
     .box-info table tr:first-child td {
         padding-top: .85rem;
     }
+    .wishlist_product {
+    height: 550px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 </style>
 @endsection
 @section('content')
 @php
 $timezone = Auth::user()->timezone;
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
 @endphp
 <section class="section-b-space">
     <div class="container">
@@ -64,7 +70,7 @@ $timezone = Auth::user()->timezone;
                 </ul>
             </div>
         @endif
-        <div class="row my-md-3">
+        <div class="row my-md-3 mt-5 pt-4">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{__('My Account')}}</a></div>
                 <div class="dashboard-left mb-3">
@@ -78,7 +84,7 @@ $timezone = Auth::user()->timezone;
                         <div class="page-title">
                             <h2>{{__(getNomenclatureName('Wishlist', true)) }}</h2>
                         </div>
-                        <div class="box-account box-info mt-md-3 mt-2">
+                        <div class="box-account wishlist_product box-info mt-md-3 mt-2">
                             <div class="row">
                                 <div class="col-sm-12 table-responsive table-responsive-xs">
                                     <table class="table wishlist-table border">
@@ -130,7 +136,11 @@ $timezone = Auth::user()->timezone;
                                                         <h4 class="m-0">{{ $wish['product']['translation_title'] }}</h4>
                                                     </div>
                                                 </td>
-                                                <td>{{ Session::get('currencySymbol') }}{{decimal_format($wish['product']['variant_price'])}}</td>
+                                                <td>@if( $additionalPreference["is_token_currency_enable"]) 
+                                                {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($wish['product']['variant_price'])) }}
+                                                @else
+                                                {{ Session::get('currencySymbol').decimal_format($wish['product']['variant_price'])}}
+                                                @endif</td>
                                                 <td>{{ dateTimeInUserTimeZone($wish['added_on'], $timezone, true, false) }}</td>
                                                 <td>
                                                     @if(empty($wish['product']['deleted_at']))

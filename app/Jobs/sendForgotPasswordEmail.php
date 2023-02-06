@@ -56,10 +56,11 @@ class sendForgotPasswordEmail implements ShouldQueue
             'port' => $mail_port,
             'driver' => $mail_driver,
             'username' => $mail_username,
-            'password' => $mail_password,
+            'password' =>$mail_password,
             'encryption' => $mail_encryption,
             'sendmail' => '/usr/sbin/sendmail -bs',
         );
+        //pr($config );
         Config::set('mail', $config);
         $app = App::getInstance();
         $app->register('Illuminate\Mail\MailServiceProvider');

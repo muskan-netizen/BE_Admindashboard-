@@ -24,7 +24,7 @@ $pages = \App\Models\Page::with([
     })
     ->orderBy('order_by', 'ASC')
     ->get();
-   
+
 @endphp
 @section('css')
 
@@ -272,18 +272,8 @@ $pages = \App\Models\Page::with([
                                     </div>
                                     @endif
                                     @endif
-                                    <script type="text/template" id="search_box_main_div_template">
-                                    <a class="text-right al_search_viewall d-block mr-2 mb-1" id="search_viewall" href="#">{{__("View All")}}</a>
-                                    <div class="row mx-0">
-                                        <% _.each(results, function(result, k){%>
-                                        <a class="col-12 text-center al_search_results list-items pt-2" href="<%=result.redirect_url %>">
-                                            <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt="">
-                                            <div class="result-item-name">
-                                                <b><%=result.name %></b>
-                                            </div>
-                                        </a> <%}); %>
-                                    </div>
-                                    </script> @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
+                                    @include('layouts.store.search_template')
+                                    @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
                                     <div class="icon-nav mr-2 d-none d-lg-block"> <a class="fav-button" href="{{route('user.wishlists')}}">
                                         <i class="fa fa-heart" aria-hidden="true"></i>
                                     </a> </div>
@@ -302,7 +292,17 @@ $pages = \App\Models\Page::with([
                                                     <!-- <span>{{__('Cart')}}•</span> -->
                                                     <span id="cart_qty_span"></span>
                                                 </a> @endif @endif
-                                                <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script>
+                                                <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> 
+                                                    <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4>
+                                                        <% if(cart_details.is_token){%>  <h4><span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) * cart_details.token_value%></span></h4> <%}else{%>
+                                                    <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></span> </h4> <%}%>
+                                                </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: 
+                                                    <% if(cart_details.is_token){%>
+                                                    <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount * cart_details.token_value) %></span>
+                                                    <%}else{%>
+                                                    <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span>
+                                                    <%}%>
+                                                </h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script>
                                                 <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul>
                                             </li>
                                             <li class="mobile-menu-btn d-none">
@@ -383,9 +383,9 @@ $pages = \App\Models\Page::with([
                                                             id="main_search_box" autocomplete="off"> </div>
                                                     <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
                                                 </div>
-                                                <script type="text/template" id="search_box_main_div_template">
-                                                    <a class="text-right d-block mr-2 mb-1" id="search_viewall" href="#">{{ __('View All') }}</a> <div class="row mx-0"> <% _.each(results, function(result, k){%> <a class="col-12 text-center list-items pt-2" href="<%=result.redirect_url %>"> <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt=""> <div class="result-item-name"><b><%=result.name %></b> </div></a> <%}); %> </div>
-                                                </script> @if (auth()->user())
+
+
+                                                 @if (auth()->user())
                                                 @if ($client_preference_detail->show_wishlist == 1)
                                                     <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button"
                                                             href="{{ route('user.wishlists') }}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
@@ -487,10 +487,10 @@ $pages = \App\Models\Page::with([
                 </div>
             </div>
         </div>
-       
-       
+
+
    @endif
-   @if(count($navCategories))
+   @if(!empty($navCategories) && count($navCategories))
    <div class="menu-navigation alThreeMenu">
        <div class="container-fluid">
            <div class="row">

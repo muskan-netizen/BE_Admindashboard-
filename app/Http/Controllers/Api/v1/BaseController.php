@@ -16,7 +16,9 @@ use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product,UserSavedPaymentMethods, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, Vendor, VendorCategory};
+use App\Models\{Client, Category, Product,UserSavedPaymentMethods, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, ProductVariant, Vendor, VendorCategory};
+use Illuminate\Support\Facades\Crypt;
+use JWT\Token;
 
 class BaseController extends Controller{
 
@@ -52,7 +54,13 @@ class BaseController extends Controller{
                 if( isset($send->code) && $send->code != 'ok'){
                     return '2';
                 }
-            }else{
+            }
+            elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
             }
@@ -62,6 +70,53 @@ class BaseController extends Controller{
         }
         return '1';
 	}
+
+    protected function sendSmsNew($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
+        try{
+            $body = $body['body']??'';
+            $template_id = $body['template_id']??''; //sms Template_id
+            $client_preference =  getClientPreferenceDetail();
+            if($client_preference->sms_provider == 1)
+            {
+                $client = new TwilioClient($sms_key, $sms_secret);
+                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+            }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mTalkz_sms($to,$body,$crendentials,$template_id);
+            }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->unifonic($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 5) //for arkesel_sms gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->arkesel_sms($to,$body,$crendentials);
+                if( isset($send->code) && $send->code != 'ok'){
+                    return '2';
+                }
+            }
+            elseif($client_preference->sms_provider == 6) //for AfricasTalking gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            else{
+                $client = new TwilioClient($sms_key, $sms_secret);
+                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+            }
+        }
+        catch(\Exception $e){
+            return '2';
+        }
+        return '1';
+	}
+    
 
     public function getParentCategories($child, $langId, $parentCategories=[]){
         $category = Category::with(['translation' => function($q) use($langId){
@@ -847,9 +902,84 @@ class BaseController extends Controller{
 
     /******************    ---- check Keys from order Panel keys -----   ******************/
     public function checkOrderPanelKeys(Request $request){
+
+        if(checkColumnExists('users', 'is_panel_auth_user')){
+            $user =  User::where('is_panel_auth_user', 1)->first();
+            if(!$user){
+                $user =  User::first();
+            }
+            
+            $token1 = new Token;
+            $token = $token1->make([
+                'key' => 'royoorders-jwt',
+                'issuer' => 'royoorders.com',
+                'expiry' => strtotime('+2 hour'),
+                'issuedAt' => time(),
+                'algorithm' => 'HS256',
+            ])->get();
+            $token1->setClaim('user_id', $user->id);
+
+            $device = UserDevice::updateOrCreate(
+                ['device_token' => 'dispather-login'],
+                [
+                    'user_id' => $user->id,
+                    'device_type' => 'web',
+                    'access_token' => $token,
+                    'is_vendor_app' => 0
+                ]
+            );
+            return response()->json([
+            'status' => 200,
+            'token' => $token,
+            'message' => 'Valid Order Panel API keys']);
+        }
         return response()->json([
-        'status' => 200,
-        'message' => 'Valid Order Panel API keys']);
+            'status' => 401,
+            'message' => 'Authentication failed']);
     }
+    public function generateBarcodeNumber()
+    {
+        $random_string = substr(md5(microtime()), 0, 14);
+        while (ProductVariant::where('barcode', $random_string)->exists()) {
+            $random_string = substr(md5(microtime()), 0, 14);
+        }
+        return $random_string;
+    }
+
+    public function getPanelDetail(Request $request)
+    {
+        try{
+            if($request->inventory_code){
+                $inventory_url = $request->inventory_url;
+                $inventory_code = $request->inventory_code;
+
+
+                $client = Client::select('database_name')->where('id', '>', 0)->first();
+                if($client){
+                    $client_prefrence = ClientPreference::where('id', '>', 0)->first();
+                    $client_prefrence->inventory_service_key_url =  $inventory_url;
+                    $client_prefrence->inventory_service_key_code =  $inventory_code;
+                    $client_prefrence->update();
+
+                    $data = ['key' => $client->database_name];
+                    return response()->json([
+                        'status' => 200,
+                        'data' => $data,
+                        'message' => 'success']);
+                }
+        
+                return response()->json([
+                        'status' => 400,
+                        'message' => 'Order Panel Not found']);
+            }
+            return response()->json([
+                'status' => 400,
+                'message' => 'Invalid Code']);
+        }catch(\Exception $e){
+            return response()->json(['data' => $e->getMessage()]);
+        }
+        
+    }
+
 
 }

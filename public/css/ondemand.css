@@ -75,6 +75,9 @@ border-color: var(--theme-deafult);
 border-width: 3px;
 }
 .alCustomHomeServiceRadio::-webkit-scrollbar {height: 4px;}
+.alCustomHomeServiceRadio::-webkit-scrollbar-thumb {
+    background: var(--theme-deafult);
+  }
 .alCustomHomeServiceRadio{flex-wrap: nowrap;white-space: nowrap;overflow: auto;}
 .alCustomHomeServiceRadio .item{display: inline-block;margin-bottom: 6px;}
 a.agentInfo.d-block.selected_agent h6 {
@@ -83,3 +86,11 @@ color: var(--theme-deafult);
 .agentInfo .brand-ing{transition: 0.5s}
 .alCustomHomeServiceAgentRadio{flex-wrap: nowrap;white-space: nowrap;overflow: auto;}
 .alCustomHomeServiceAgentRadio .agent_slot{display: inline-block;margin: 0px 10px;}
+.booking-time-wrapper .radio-btns input[type="radio"]+label .customCheckbox {
+    width: auto;
+    border-radius: 5px;
+    padding: 0 10px;
+    height: auto;
+    line-height: 2.5;
+    margin: 0 3px;
+}

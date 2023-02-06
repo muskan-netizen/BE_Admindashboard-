@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty};
+use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty, Role, CategoryRole, Attribute};
 use GuzzleHttp\Client as GCLIENT;
 
 class CategoryController extends BaseController
@@ -38,6 +38,17 @@ class CategoryController extends BaseController
         }])->where('status', 1)->orderBy('position', 'asc')->get();
 
         $variants = Variant::with('option', 'varcategory.cate.primary','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
+        $attributes = [];
+        if( checkTableExists('product_attributes') ) {
+            $attributes = Attribute::with('option', 'varcategory.cate.primary','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc');
+            if(Auth::user()->is_superadmin) {
+                $attributes = $attributes->get();
+            }
+            else {
+                $attributes = $attributes->where('user_id', Auth::id())->get();
+            }
+        }
+
         $categories = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
 
         if ($celebrity_check == 0)
@@ -56,7 +67,7 @@ class CategoryController extends BaseController
             ->where('client_languages.is_active', 1)
             ->orderBy('client_languages.is_primary', 'desc')->get();
 
-        return view('backend.catalog.index')->with(['categories' => $categories, 'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build, 'tags'=>$tags,'facilties'=>$facilties,'client_languages'=>$langs]);
+        return view('backend.catalog.index')->with(['categories' => $categories, 'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build, 'tags'=>$tags,'facilties'=>$facilties,'client_languages'=>$langs, 'attributes'=>$attributes]);
     }
 
     /**
@@ -205,6 +216,22 @@ class CategoryController extends BaseController
         $dispatcher_warning_page_options = DispatcherWarningPage::where('status', 1)->get();
         $dispatcher_template_type_options = DispatcherTemplateTypeOption::where('status', 1)->get();
 
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+        if($getAdditionalPreference['is_price_by_role'] == 1){
+            $roles = Role::get();
+            if($roles != null){
+                foreach($roles as $role){
+                    $category_role = CategoryRole::where('category_id', $id)->where('role_id', $role->id)->first();
+                    if($category_role != null){
+                        $role->is_added = true;
+                    }else{
+                        $role->is_added = false;
+                    }
+                }
+            }
+        }
+
 
         $returnHTML = view('backend.catalog.edit-category')->with(['typeArray' => $type, 'category' => $category,  'languages' => $langs, 'is_vendor' => $is_vendor, 'parCategory' => $parCategory, 'langIds' => $langIds, 'existlangs' => $existlangs, 'tagList' => $tagList, 'dispatcher_warning_page_options' => $dispatcher_warning_page_options, 'dispatcher_template_type_options' => $dispatcher_template_type_options, 'preference' => $preference])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
@@ -338,6 +365,10 @@ class CategoryController extends BaseController
                 $file = $request->file('icon_two');
                 $cate->icon_two = Storage::disk('s3')->put($this->folderName, $file, 'public');
             }
+            if(@$request->remove_image && $request->remove_image == 1){
+                Storage::disk('s3')->delete($cate->image);
+                $cate->image = null;
+            }
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $cate->image = Storage::disk('s3')->put('/category/image', $file, 'public');
@@ -364,6 +395,32 @@ class CategoryController extends BaseController
                 }
                 CategoryTag::insert($tagArray);
             }
+
+            // category role
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            
+            if($getAdditionalPreference['is_price_by_role'] == 1){
+                if($request->has('role')){
+                    $roles = $request->role;
+                    
+                    $role_array = [];
+                    foreach($roles as $key => $role){
+                        array_push($role_array, $key);
+
+                        $category_role = CategoryRole::where('category_id', $cate->id)->where('role_id', $key)->first();
+                        if($category_role == null){
+                            $category_role = new CategoryRole();
+                        }
+                        $category_role->category_id = $cate->id;
+                        $category_role->role_id = $key;
+                        $category_role->save();
+                    }
+                    
+                    // delete those role which are not there in array
+                    CategoryRole::where('category_id', $cate->id)->whereNotIn('role_id', $role_array)->delete();
+                }
+            }
+
             return $cate->id;
         } catch (Exception $e) {
             pr($e->getMessage());

@@ -55,7 +55,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body ">
                     <div id="productnotfound" style="display:none;">
                         <div class="error-msg mt-3">
                             <img class="mb-2" src="{{asset('images/no-order.svg')}}">

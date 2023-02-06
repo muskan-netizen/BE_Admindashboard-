@@ -277,9 +277,16 @@ $sign_image_url = $sign_image['image_fit'].'1920/1080'.$sign_image['image_path']
 @endsection
 @section('script')
     <script src="{{ asset('assets/js/intlTelInput.js') }}"></script>
+    <script src="{{asset('js/phone_number_validation.js')}}"></script>
     <script>
         jQuery(window.document).ready(function () {
             jQuery("body").addClass("register_body");
+            $("#register").submit(function() {
+                if($("#phone").hasClass("is-invalid")){
+                    $("#phone").focus();
+                    return false;
+                }
+            });
         });
         jQuery(document).ready(function($) {
             setTimeout(function(){
@@ -289,12 +296,15 @@ $sign_image_url = $sign_image['image_fit'].'1920/1080'.$sign_image['image_path']
             }, 500);
         });
         var input = document.querySelector("#phone");
-        window.intlTelInput(input, {
+        var iti = window.intlTelInput(input, {
             separateDialCode: true,
             hiddenInput: "full_number",
             utilsScript: "{{ asset('assets/js/utils.js') }}",
             initialCountry: "{{ Session::get('default_country_code', 'US') }}",
         });
+
+        phoneNumbervalidation(iti, input);
+
         $(document).ready(function() {
             $("#phone").keypress(function(e) {
                 if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {

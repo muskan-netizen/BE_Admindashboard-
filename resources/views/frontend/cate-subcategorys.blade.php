@@ -32,8 +32,54 @@
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
-                <div class="collection-filter col-lg-3 al">
-                    <div class="theme-card">
+                {{-- @dd($category->childs) --}}
+                <div class="collection-filter col-lg-3 main-fillter al">
+                    <div class="theme-card custom-inner-card">
+
+                    <div class="accordion" id="accordionExample">
+                            <div class="card">
+                                <div class="card-header p-0" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link btn-block text-left p-0" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        <h5 class="title-border d-flex align-items-center justify-content-between p-0 mb-0">
+                                            <span>{{__('Sub Category')}} <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                                            <!-- <span class="filter-back d-lg-none d-inline-block">
+                                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
+                                            </span> -->
+                                        </h5>
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                        <div class="offer-slider al">
+                                            @if(!empty($category) && count($category->childs) > 0)
+                                                <div class="listing-categories">
+                                                    <ul>
+                                                        @foreach($category->childs as $child)
+                                                            <li><a href="{{route('categoryDetail', $child->slug)}}">{{ $child->slug }}</a></li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+                    </div>
+                    @php $show_new_Products = 0; @endphp
+                    @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -41,7 +87,7 @@
                             </span>
                         </h5>
                         <div class="offer-slider al">
-                            @if(!empty($newProducts) && count($newProducts) > 0)
+                            
                                 @foreach($newProducts as $newProds)
                                     <div class="col-12 p-0">
                                     @foreach($newProds as $new)
@@ -102,11 +148,12 @@
                                     @endforeach
                                     </div>
                                 @endforeach
-                            @endif
+                           
                         </div>
                     </div>
+                    @endif
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -153,7 +200,7 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts">
-                                        <div class="product-wrapper-grid">
+                                        <div class="product-wrapper-grid card-product">
                                             <div class="row margin-res">
                                                 @if(!empty($category->childs) && count($category->childs) > 0)
                                                     @foreach($category->childs->toArray() as $cate)
@@ -161,7 +208,7 @@
                                                         <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect m-0" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
                                                             <div class="product-image"><img width="100%" alt="" class="blur-up lazyload" data-icon_two="{{isset($cate['icon_two']) && !is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'500/500'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'500/500'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}500/500{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
                                                             <div class="media-body align-self-center">
-                                                                <div class="inner_spacing w-100">
+                                                                <div class="inner_spacing w-100 text-center">
                                                                     <h3 class="d-flex align-items-center justify-content-between">
                                                                         <label class="mb-0">{{$cate['translation_name']}}</label>
                                                                     </h3>
