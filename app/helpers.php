@@ -1510,7 +1510,7 @@ if( !function_exists('is_category_p2p') ) {
 //     }
 // }
 
-if( !function_exists('productDiscountPercentage()') ) {
+if( !function_exists('productDiscountPercentage') ) {
     function productDiscountPercentage($product_price, $product_compare_price)
     {
         if($product_compare_price > 0) {
@@ -1593,5 +1593,73 @@ if( !function_exists('makeCartEmpty') ) {
         return true;
     }
 }
+if (!function_exists('GerenalSlot')) {
+    function GerenalSlot($myDate, $StartTime, $EndTime, $Duration="60",$delayMin=0)
+    {
+        $myDate  = date('Y-m-d',strtotime($myDate));
+        //pr($myDate);
+        $Duration = (($Duration==0)?'60':$Duration);
+
+        $user = Auth::user();
+        if (isset($user->timezone) && !empty($user->timezone)) {
+            $timezoneset = $user->timezone;
+        } else {
+            $client = ClientData::orderBy('id', 'desc')->select('id', 'timezone')->first();
+
+            if (isset($client->timezone) && !empty($client->timezone)) {
+                $timezoneset = $client->timezone;
+            } else {
+                $timezoneset = 'Asia/Kolkata';
+            }
+        }
+        $cr = Carbon::now()->addMinutes($delayMin);
+        $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+        $nowT = strtotime($now);
+        $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
+        $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
+        $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
+        if ($nowT > $nowE) {
+            return [];
+        } else {
+            $StartTime = date('H:i', strtotime($nowA));
+        }
+
+        $ReturnArray = array();
+        $StartTime = strtotime($StartTime); //Get Timestamp
+        $EndTime = strtotime($EndTime); //Get Timestamp
+        $AddMins = $Duration * 60;
+        $endtm = 0;
+        $key = 0;
+        while ($StartTime <= $EndTime) {
+            $endtm = $StartTime + $AddMins;
+            if ($endtm>$EndTime) {
+                $endtm = $EndTime;
+            }
+            if( $StartTime < $endtm){
+
+                if ($nowT>$nowS && $StartTime > $nowT ){
+                    $key++;
+                    //Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
+                  //  $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+                
+                    $ReturnArray[$key]['name'] = date('h:i A',$StartTime).' - '.date('h:i A', $endtm);
+                    $ReturnArray[$key]['value'] = date("G:i", $StartTime).'-'.date("G:i", $endtm);
+                }
+                if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
+                     $key++;
+                    //$ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+                    $ReturnArray[$key]['name'] = date('h:i A',$StartTime).' - '.date('h:i A', $endtm);
+                    $ReturnArray[$key]['value'] = date("G:i", $StartTime).'-'.date("G:i", $endtm);
+                }
+            }
+
+            $StartTime += $AddMins;
+            $endtm = 0;
+           
+        }
+        return $ReturnArray;
+    }
+}
+
 
 

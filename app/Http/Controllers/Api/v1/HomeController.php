@@ -311,8 +311,8 @@ class HomeController extends BaseController
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
             $type = $request->has('type') ? $request->type : 'delivery';
-            \Log::info($request->all());
-            \Log::info($type);
+            // \Log::info($request->all());
+            // \Log::info($type);
             if (empty($type))
             $type = 'delivery';
 
@@ -584,7 +584,7 @@ class HomeController extends BaseController
                 $long_term_service_products = $this->longTermServiceProducts($venderIds, $langId, $clientCurrency,'', $type,'', $requestFrom);
             }
             $homeData['long_term_service'] = $long_term_service_products;
-            \Log::info($homeData['categories']);
+          
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

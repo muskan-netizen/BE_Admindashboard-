@@ -1,10 +1,11 @@
 <?php
 namespace App\Http\Traits;
 
-use App\Models\{Product};
+use App\Models\{Product,ClientPreference};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
-use Log;
+use GuzzleHttp\Client as Guzzle;
+use Log,DB;
 trait ProductTrait{
 
     public function getProduct($product_id,$vendor_slug,$url_slug,$user='',$langId)
@@ -77,4 +78,61 @@ trait ProductTrait{
                 ->firstOrFail();
         return $product;
     }
+
+    public function getProductPriceFromDispatcher($date , $productVariantSku,$lat='',$long='',$slot='')
+    {
+        $returnResponse['data'] = array();
+        $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false ) {
+            $DatabaseName = DB::connection()->getDatabaseName();
+            $end_time   =  $start_time = date('H:i',strtotime($date));
+            
+            if($slot!=''){
+                $sl = explode('-', $slot);
+                $start_time =  @$sl[0] ?? $date;
+                $end_time   = @$sl[1] ?? $date;
+            }
+            $latitude = ($lat && $lat!='') ? $lat : $dispatch_domain_ondemand->Default_Default_latitude;
+            $longitude = ($long && $long!='') ? $long :  $dispatch_domain_ondemand->Default_longitude;
+            $postdata =  [
+                'product_variant_sku'  =>  $DatabaseName.'_'.$productVariantSku,
+                'schedule_date' => $date,
+                'start_time'    => $start_time ,
+                'end_time'      => $end_time  ,
+                'latitude'      => $latitude,
+                'longitude'     => $longitude
+            ];
+            \Log::info('getProductPrice api data');
+            \Log::info($postdata);
+            $client = new Guzzle([
+                'headers' => [
+                    'personaltoken' => $dispatch_domain_ondemand->dispacher_home_other_service_key,
+                    'shortcode'     => $dispatch_domain_ondemand->dispacher_home_other_service_key_code,
+                    'content-type'  => 'application/json'
+                ]
+            ]);
+
+            $url = $dispatch_domain_ondemand->dispacher_home_other_service_key_url;
+            $res = $client->post(
+                $url . '/api/getProductPrice',
+                ['form_params' => ($postdata)]
+            );
+            $response = json_decode($res->getBody(), true);
+            if(isset( $response['data']))
+            $returnResponse['data']  = $response['data'];
+        }
+        return $returnResponse;
+
+    }
+
+    
+     public function getDispatchOnDemandDomain()
+     {
+         $preference = ClientPreference::first();
+         if ($preference->need_dispacher_home_other_service == 1 && !empty($preference->dispacher_home_other_service_key) && !empty($preference->dispacher_home_other_service_key_code) && !empty($preference->dispacher_home_other_service_key_url)) {
+             return $preference;
+         } else {
+             return false;
+         }
+     }
 }

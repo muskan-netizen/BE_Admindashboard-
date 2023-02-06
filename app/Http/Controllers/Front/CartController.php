@@ -309,12 +309,14 @@ class CartController extends FrontController
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $user_id = $user ? $user->id : '';
             $variant_id = $request->variant_id;
+            $client_timezone = DB::table('clients')->first('timezone');
+            $timezone = $user ? $user->timezone : ($client_timezone->timezone ??  'Asia/Kolkata' );
             if ($user) {
                 $cart_detail['user_id'] = $user_id;
                 $cart_detail['created_by'] = $user_id;
             }
             $cart_detail = [
-                'is_gift' => 1,
+                'is_gift' => 0,
                 'status' => '0',
                 'item_count' => 0,
                 'currency_id' => $client_currency->currency_id,
@@ -419,14 +421,14 @@ class CartController extends FrontController
             $isLongTermProduct =0;
             if( $request->has('service_start_time') && !empty($request->service_start_time)){
                 $isLongTermProduct  = 1;
-                $client_timezone = DB::table('clients')->first('timezone');
-                $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
+               
                 $time = '2022-10-27 '.$request->service_start_time; /**only need time */
                 $service_start_time = Carbon::parse($time, $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $start_date = $service_start_time ; /** we user start_date_time for long term order timing */
                 $service_start_date = carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
             }
 
+           
             $cart_product_detail = [
                 'status'            => '0',
                 'is_tax_applied'    => '1',
@@ -450,6 +452,18 @@ class CartController extends FrontController
                 'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
                 'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
             ];
+             //Check if 
+            if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
+               
+                $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $slot    = $request->dispatcherAgentData['slot'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
+                $cart_product_detail['schedule_type'] = 'schedule';
+                $cart_product_detail['scheduled_date_time'] = @$dataTime;
+                $cart_product_detail['schedule_slot'] = @$slot ?? null;
+                $cart_product_detail['dispatch_agent_price'] = @$request->dispatcherAgentData['agent_price']??null;
+                $cart_product_detail['dispatch_agent_id'] = @$request->dispatcherAgentData['agent_id']??null;
+                $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], ['address_id'=>@$request->dispatcherAgentData['address_id']]);
+            }
 
             //Check if BidId and bid dicount coulmn exists in table
             if(checkColumnExists('cart_products','bid_number')){
@@ -544,7 +558,7 @@ class CartController extends FrontController
             }
             $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
 
-            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0]);
+            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0,'product_id' => $cartProduct->product_id]);
         } catch (Exception $e) {
             \Log::info($e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
@@ -2032,7 +2046,8 @@ class CartController extends FrontController
      */
     public function getCartData($domain = '', Request $request)
     {
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable','is_service_product_price_from_dispatch','token_currency','advance_booking_amount', 'advance_booking_amount_percentage']);
+                
 
         $cart_details = null;
         $user = Auth::user();
@@ -2046,10 +2061,10 @@ class CartController extends FrontController
             $cart = Cart::where('status', '0')->where('user_id', $user->id);
             if($getAdditionalPreference['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
 
-                $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id')->with('giftCard');
+                $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id','address_id')->with('giftCard');
             }else{
 
-                $cart = $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','order_id');
+                $cart = $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','order_id','address_id');
             }
 
             $cart = $cart->with(['coupon.promo','editingOrder'])->first();
@@ -2059,15 +2074,15 @@ class CartController extends FrontController
         } else {
             if(checkColumnExists('carts','order_id'))
             {
-                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             }else{
-                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type')->with(['coupon.promo'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','address_id')->with(['coupon.promo'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             }
 
         }
-
-        if (isset($request->address_id) && !empty($request->address_id)) {
-            $address_id = $request->address_id;
+        $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
+        if (isset( $address_id) && !empty( $address_id)) {
+           // $address_id $address_id = $request->address_id;
             $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
             $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
         }
@@ -2108,7 +2123,7 @@ class CartController extends FrontController
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 
         $expected_vendors = [];
-    //    $expected_vendors = $this->searchProductExpection($cart_details);
+         //    $expected_vendors = $this->searchProductExpection($cart_details);
         $expected_vendor_html = '';
         // if(count($expected_vendors))
         // {
@@ -2139,8 +2154,7 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
 
-            //mohit sir brach code added by sohail
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage', 'is_token_currency_enable', 'token_currency']);
+    
 
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }

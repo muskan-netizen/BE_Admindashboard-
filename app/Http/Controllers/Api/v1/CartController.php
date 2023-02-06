@@ -79,6 +79,7 @@ class CartController extends BaseController
 
             if ($cart) {
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+                // pr( $cartData);
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder))
                 {
                     $editlimit_datetime = Carbon::now()->toDateTimeString();
@@ -92,8 +93,6 @@ class CartController extends BaseController
                     if($VendorOrderStatus > 0){
                         $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                     }
-                }else{
-                    $cartData->cart_error_message = '';
                 }
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
@@ -153,12 +152,15 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
+     
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
             $user = Auth::user();
             $langId = $user->language;
             $user_id = $user->id;
+            $client_timezone = DB::table('clients')->first('timezone');
+            $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
             $unique_identifier = '';
             if (!$user_id) {
                 if (empty($user->system_user)) {
@@ -208,8 +210,7 @@ class CartController extends BaseController
             $isLongTermService =0;
             if( $request->has('service_start_time')){
                 $isLongTermService  =1;
-                $client_timezone = DB::table('clients')->first('timezone');
-                $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
+               
                 $time = '1998-01-14 '.$request->service_start_time; /**only need time */
                 $service_start_time = Carbon::parse($time, $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $start_date_time = $service_start_time ; /** we user start_date_time for long term order timing */
@@ -319,6 +320,16 @@ class CartController extends BaseController
                     'service_period'      => $request->has('service_period') ? $request->service_period : null,
                     'service_start_date'  => @$service_start_date,
                 ];
+                if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
+                  
+                    $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                    $slot = $request->dispatcherAgentData['onDemandBookingdate'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
+                    $cart_product_detail['schedule_type'] = 'schedule';
+                    $cart_product_detail['scheduled_date_time'] = @$dataTime;
+                    $cart_product_detail['schedule_slot'] = @$slot ?? null;
+                    $cart_product_detail['dispatch_agent_price'] = @$request->dispatcherAgentData['agent_price']??null;
+                    $cart_product_detail['dispatch_agent_id'] = @$request->dispatcherAgentData['agent_id']??null;
+                }
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
                     ->where('variant_id', $productVariant->id)->first();
@@ -587,7 +598,7 @@ class CartController extends BaseController
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
 
-        try{
+       try{
         $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
@@ -598,14 +609,17 @@ class CartController extends BaseController
         $total_markup_fee_tax = 0;
         $total_taxable_amount = 0;
         $preferences = ClientPreference::first();
-        $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
+        $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_service_product_price_from_dispatch']);
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
             return false;
         }
         $nowdate = Carbon::now()->toDateTimeString();
         $nowdate = convertDateTimeInClientTimeZone($nowdate);
-
+        $is_service_product_price_from_dispatch = 0;
+        if(($additionalPreferences->is_service_product_price_from_dispatch == 1) && ( $type == 'on_demand')){
+            $is_service_product_price_from_dispatch =1;
+        }
         $vondorCnt = 0;
         $address = [];
         $category_array = [];
@@ -839,9 +853,14 @@ class CartController extends BaseController
                         $prod->product_out_of_stock =  $product_out_of_stock;
 
                         $price_in_currency = $price_in_doller_compare = $pro_disc = $quantity_price = 0;
+
                         $variantsData = $taxData = $vendorAddons = array();
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
+                         //  GET PRICE from driver
+                        if( checkColumnExists('cart_products', 'dispatch_agent_price') && ( $is_service_product_price_from_dispatch ==1 )){
+                            $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
+                        }
                         $total_markup_charges += $prod->pvariant->markup_price??0;
                         $price_in_doller_compare = $price_in_currency * $clientCurrency->doller_compare;
                         $container_charges_in_currency = $prod->pvariant->container_charges??0.00;
@@ -956,7 +975,7 @@ class CartController extends BaseController
                             }
                             //dd($prod->product->toArray());
                             $prod->taxdata = $taxData;
-                            if ($action == 'delivery' || $action == 'on_demand') {
+                            if ( (in_array($action,['delivery','on_demand']) )  && ( $is_service_product_price_from_dispatch !=1 )) {
                                 $checkLastMile = 0;
                                 $product_tags = '';
                                 $NumberOfroutes= 1;
@@ -1211,7 +1230,7 @@ class CartController extends BaseController
                         $delivery_status = 0;
                     }
                 }
-                if ($vendorData->vendor->show_slot == 0) {
+                if (($vendorData->vendor->show_slot == 0) && ($is_service_product_price_from_dispatch !=1) ) {
                     if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
                         $vendorData->vendor->is_vendor_closed = 1;
                         if ($delivery_status != 0) {
@@ -1572,7 +1591,7 @@ class CartController extends BaseController
 
         }catch(\Exception $ex)
         {
-
+            \Log::info('get Cart in api error');
             \Log::info($ex->getMessage());
             return [];
         }

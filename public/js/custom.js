@@ -370,7 +370,7 @@ $(document).ready(function () {
                 // alert('Address field required.');
                 Swal.fire({
                     // title: "Warning!",
-                    text: "{{__('Address field required.') }}",
+                    text:_language.getLanString('Address field required.'),
                     icon: "error",
                     button: "OK",
                 });
@@ -639,7 +639,14 @@ $(document).ready(function () {
                     }
                     cartHeader();
                     cartTotalProductCount();
-
+                    if($(`#add_button_href${cartproduct_id}`).length > 0){
+                        $(`#add_button_href${cartproduct_id}`).show();
+                        $(`#added_button_href${cartproduct_id}`).hide();
+                    }
+                    if($(`#add_button_href${product_id}`).length > 0){
+                        $(`#add_button_href${product_id}`).show();
+                        $(`#added_button_href${product_id}`).hide();
+                    }
 
                     if ($('#show_plus_minus' + cartproduct_id).length != 0) {
                         if ($('.addon_variant_quantity_' + cartproduct_id).closest('.customized_product_row').length > 0) {
@@ -677,7 +684,22 @@ $(document).ready(function () {
             if ($("#cart_table").length > 0) {
                 $(".spinner-box").show();
                 $("#cart_table").hide();
+            }   
+            if(is_service_product_price_from_dispatch_forOnDemand==1){
+                id="cart_address_id_{{$address->id}}"
+                $("input:radio[name=address_id]:checked")[0].checked = false;
+                $selectedAddress = OrderStorage.getStorage('cartAddressId');
+                $(`input:radio[name=address_id][value=${selectedAddress}]`).prop('checked', true)
+                $(".spinner-box").hide();
+                $("#cart_table").show();
+                Swal.fire({
+                    icon: 'error',
+                    title:_language.getLanString('Oops...'),
+                    text: _language.getLanString('Sorry ! address can not be change!'),
+                })
+                return false;
             }
+
             cartHeader($(this).val());
         }
     });
@@ -2196,6 +2218,7 @@ $(document).ready(function () {
         OrderStorage.setStorageSingle('cartProductCount',0);
         OrderStorage.setStorageSingle('LongTermServiceAdded','');
         OrderStorage.setStorageSingle('cartFirstProductId','');
+        OrderStorage.setStorageSingle('cartAddressId','');
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2219,6 +2242,8 @@ $(document).ready(function () {
                         // }
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
+                            $(`input:radio[name=address_id][value=${cart_details.address_id}]`).prop('checked', true)
+                            OrderStorage.setStorageSingle('cartAddressId',cart_details.address_id);
                             OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);
                             OrderStorage.setStorageSingle('LongTermServiceAdded',cart_details.products[0].is_long_term_service);
@@ -3803,23 +3828,32 @@ $(document).ready(function () {
     }
 
     // on demand add to cart
-    function addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that) {
+    // dispatcherAgentData coming where we selecte price from dispatchr driver
+    function addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that,dispatcherAgentData="") {
         $.ajax({
             type: "post",
             dataType: "json",
             url: add_to_cart_url,
             data: {
-                "addonID": addonids,
-                "vendor_id": vendor_id,
+                "addonID":    addonids,
+                "vendor_id":  vendor_id,
                 "product_id": product_id,
                 "addonoptID": addonoptids,
                 "quantity": 1,
                 "variant_id": variant_id,
+                "dispatcherAgentData":  dispatcherAgentData,
             },
             success: function (response) {
+                var address_id = dispatcherAgentData?.address_id;
+                console.log(address_id);
+                console.log(response);
                 if (response.status == 'success') {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
-                    cartHeader();
+                    cartHeader(address_id);
+                    if($(`#added_button_href${product_id}`).length > 0){
+                        $(`#add_button_href${product_id}`).hide();
+                        $(`#added_button_href${product_id}`).show();
+                    }
                     $(that).next().show();
                     $(that).next().find('.minus').attr('data-id', response.cart_product_id);
                     $(that).next().find('.plus').attr('data-id', response.cart_product_id);

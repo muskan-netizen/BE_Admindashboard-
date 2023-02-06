@@ -640,277 +640,267 @@
             </div><!-- Social Logins title end -->
         </div>
     </div>
+    
     <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
         <input type="hidden" name="social_login" id="social_login" value="1">
         @csrf
         <div class="row">
             <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
-                <!-- Social Logins title start -->
-                <div class="page-title-box">
-                    <h4 class="page-title text-uppercase">{{ __('Social Logins') }}</h4>
-                </div><!-- Social Logins title end -->
+                <!-- Facebook card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head"><i class="fab fa-facebook-f"></i>
+                                        <span>{{ __('Facebook') }}</span></h5>
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                                <label for="" class="mr-3">{{ __('Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="fb_login" id="fb_login"
+                                    class="form-control" data-color="#43bee1"
+                                    @if (isset($preference) && $preference->fb_login == '1') checked='checked' @endif>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row fb_row"
+                        style="{{ isset($preference) && $preference->fb_login == '1' ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="fb_client_id">{{ __('Facebook Client Key') }}</label>
+                                <input type="text" name="fb_client_id" id="fb_client_id" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('fb_client_id', $preference->fb_client_id ?? '') }}">
+                                @if ($errors->has('fb_client_id'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fb_client_id') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="fb_client_secret">{{ __('Facebook Client Secret') }}</label>
+                                <input type="password" name="fb_client_secret" id="fb_client_secret" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('fb_client_secret', $preference->fb_client_secret ?? '') }}">
+                                @if ($errors->has('fb_client_secret'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fb_client_secret') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-0">
+                                <label for="fb_client_url">{{ __('Facebook Redirect URL') }}</label>
+                                <input type="text" name="fb_client_url" id="fb_client_url" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('fb_client_url', $preference->fb_client_url ?? '') }}">
+                                @if ($errors->has('fb_client_url'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fb_client_url') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Facebook card end -->
+            </div>
+            <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+                <!-- Twitter card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="twitter_login" class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head"><i class="fab fa-twitter"></i>
+                                        <span>{{ __('Twitter') }}</span></h5>
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                                <label for="" class="mr-3">{{ __('Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="twitter_login"
+                                    id="twitter_login" class="form-control" data-color="#43bee1"
+                                    @if (isset($preference) && $preference->twitter_login == '1') checked='checked' @endif>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row  twitter_row"
+                        style="{{ isset($preference) && $preference->twitter_login == '1' ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="twitter_client_id"></label>{{ __('Twitter Client Key') }}</label>
+                                <label for="" class="mr-3">{{ __('Enable') }}</label>
+                                <input type="text" name="twitter_client_id" id="twitter_client_id" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('twitter_client_id', $preference->twitter_client_id ?? '') }}">
+                                @if ($errors->has('twitter_client_id'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('twitter_client_id') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="twitter_client_secret">{{ __('Twitter Client Secret') }}</label>
+                                <input type="password" name="twitter_client_secret" id="twitter_client_secret"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('twitter_client_secret', $preference->twitter_client_secret ?? '') }}">
+                                @if ($errors->has('twitter_client_secret'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('twitter_client_secret') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-0">
+                                <label for="twitter_client_url">{{ __('Twitter Redirect URL') }}</label>
+                                <input type="text" name="twitter_client_url" id="twitter_client_url"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('twitter_client_url', $preference->twitter_client_url ?? '') }}">
+                                @if ($errors->has('twitter_client_url'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('twitter_client_url') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Twitter card end -->
+            </div>
+            <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+                <!-- Google card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="google_login" class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head"><i class="fab fa-google"></i>
+                                        <span>{{ __('Google') }}</span></h5>
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                                <label for="" class="mr-3">{{ __('Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="google_login" id="google_login"
+                                    class="form-control" data-color="#43bee1"
+                                    @if (isset($preference) && $preference->google_login == '1') checked='checked' @endif>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row google_row"
+                        style="{{ isset($preference) && $preference->google_login == '1' ? '' : 'display:none;' }}">
+                        <div class="col-md-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="google_client_id">{{ __('Google') }} {{ __('Client Key') }}</label>
+                                <input type="text" name="google_client_id" id="google_client_id" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('google_client_id', $preference->google_client_id ?? '') }}">
+                                @if ($errors->has('google_client_id'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('google_client_id') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group mb-2">
+                                <label for="google_client_secret">{{ __('Google') }}
+                                    {{ __('Client Secret') }}</label>
+                                <input type="password" name="google_client_secret" id="google_client_secret"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('google_client_secret', $preference->google_client_secret ?? '') }}">
+                                @if ($errors->has('google_client_secret'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('google_client_secret') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group mb-0">
+                                <label for="google_client_url">{{ __('Google') }} {{ __('Redirect URL') }}</label>
+                                <input type="text" name="google_client_url" id="google_client_url" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('google_client_url', $preference->google_client_url ?? '') }}">
+                                @if ($errors->has('google_client_url'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('google_client_url') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Google card end -->
+            </div>
+            <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+                <!-- Apple card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="apple_login" class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head"><i class="fab fa-apple"></i>
+                                        <span>{{ __('Apple') }}</span></h5>
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                                <label for="" class="mr-3">{{ __('Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="apple_login" id="apple_login"
+                                    class="form-control" data-color="#43bee1"
+                                    @if (isset($preference) && $preference->apple_login == '1') checked='checked' @endif>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row apple_row"
+                        style="{{ isset($preference) && $preference->apple_login == '1' ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="apple_client_id">Apple {{ __('Client Key') }}</label>
+                                <input type="text" name="apple_client_id" id="apple_client_id" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('apple_client_id', $preference->apple_client_id ?? '') }}">
+                                @if ($errors->has('apple_client_id'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('apple_client_id') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="apple_client_secret">Apple {{ __('Client Secret') }}</label>
+                                <input type="password" name="apple_client_secret" id="apple_client_secret"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('apple_client_secret', $preference->apple_client_secret ?? '') }}">
+                                @if ($errors->has('apple_client_secret'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('apple_client_secret') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-0">
+                                <label for="apple_client_url"> Apple {{ __('Redirect URL') }}</label>
+                                <input type="text" name="apple_client_url" id="apple_client_url" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('apple_client_url', $preference->apple_client_url ?? '') }}">
+                                @if ($errors->has('apple_client_url'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('apple_client_url') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Apple card end -->
             </div>
         </div>
-        <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
-            <input type="hidden" name="social_login" id="social_login" value="1">
-            @csrf
-            <div class="row">
-                <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
-                    <!-- Facebook card start -->
-                    <div class="card-box h-100">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-0 switchery-demo">
-                                    <label for="fb_login" class="d-flex align-items-center justify-content-between">
-                                        <h5 class="social_head"><i class="fab fa-facebook-f"></i>
-                                            <span>{{ __('Facebook') }}</span></h5>
-                                        <button class="btn btn-info btn-block save_btn" type="submit">
-                                            {{ __('Save') }} </button>
-                                    </label>
-                                    <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                    <input type="checkbox" data-plugin="switchery" name="fb_login" id="fb_login"
-                                        class="form-control" data-color="#43bee1"
-                                        @if (isset($preference) && $preference->fb_login == '1') checked='checked' @endif>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row fb_row"
-                            style="{{ isset($preference) && $preference->fb_login == '1' ? '' : 'display:none;' }}">
-                            <div class="col-12">
-                                <div class="form-group mb-2 mt-2">
-                                    <label for="fb_client_id">{{ __('Facebook Client Key') }}</label>
-                                    <input type="text" name="fb_client_id" id="fb_client_id" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('fb_client_id', $preference->fb_client_id ?? '') }}">
-                                    @if ($errors->has('fb_client_id'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fb_client_id') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="fb_client_secret">{{ __('Facebook Client Secret') }}</label>
-                                    <input type="password" name="fb_client_secret" id="fb_client_secret" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('fb_client_secret', $preference->fb_client_secret ?? '') }}">
-                                    @if ($errors->has('fb_client_secret'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fb_client_secret') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-0">
-                                    <label for="fb_client_url">{{ __('Facebook Redirect URL') }}</label>
-                                    <input type="text" name="fb_client_url" id="fb_client_url" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('fb_client_url', $preference->fb_client_url ?? '') }}">
-                                    @if ($errors->has('fb_client_url'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fb_client_url') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- Facebook card end -->
-                </div>
-                <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
-                    <!-- Twitter card start -->
-                    <div class="card-box h-100">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-0 switchery-demo">
-                                    <label for="twitter_login" class="d-flex align-items-center justify-content-between">
-                                        <h5 class="social_head"><i class="fab fa-twitter"></i>
-                                            <span>{{ __('Twitter') }}</span></h5>
-                                        <button class="btn btn-info btn-block save_btn" type="submit">
-                                            {{ __('Save') }} </button>
-                                    </label>
-                                    <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                    <input type="checkbox" data-plugin="switchery" name="twitter_login"
-                                        id="twitter_login" class="form-control" data-color="#43bee1"
-                                        @if (isset($preference) && $preference->twitter_login == '1') checked='checked' @endif>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row  twitter_row"
-                            style="{{ isset($preference) && $preference->twitter_login == '1' ? '' : 'display:none;' }}">
-                            <div class="col-12">
-                                <div class="form-group mb-2 mt-2">
-                                    <label for="twitter_client_id"></label>{{ __('Twitter Client Key') }}</label>
-                                    <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                    <input type="text" name="twitter_client_id" id="twitter_client_id" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('twitter_client_id', $preference->twitter_client_id ?? '') }}">
-                                    @if ($errors->has('twitter_client_id'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('twitter_client_id') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="twitter_client_secret">{{ __('Twitter Client Secret') }}</label>
-                                    <input type="password" name="twitter_client_secret" id="twitter_client_secret"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('twitter_client_secret', $preference->twitter_client_secret ?? '') }}">
-                                    @if ($errors->has('twitter_client_secret'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('twitter_client_secret') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-0">
-                                    <label for="twitter_client_url">{{ __('Twitter Redirect URL') }}</label>
-                                    <input type="text" name="twitter_client_url" id="twitter_client_url"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('twitter_client_url', $preference->twitter_client_url ?? '') }}">
-                                    @if ($errors->has('twitter_client_url'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('twitter_client_url') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- Twitter card end -->
-                </div>
-                <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
-                    <!-- Google card start -->
-                    <div class="card-box h-100">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-0 switchery-demo">
-                                    <label for="google_login" class="d-flex align-items-center justify-content-between">
-                                        <h5 class="social_head"><i class="fab fa-google"></i>
-                                            <span>{{ __('Google') }}</span></h5>
-                                        <button class="btn btn-info btn-block save_btn" type="submit">
-                                            {{ __('Save') }} </button>
-                                    </label>
-                                    <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                    <input type="checkbox" data-plugin="switchery" name="google_login" id="google_login"
-                                        class="form-control" data-color="#43bee1"
-                                        @if (isset($preference) && $preference->google_login == '1') checked='checked' @endif>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row google_row"
-                            style="{{ isset($preference) && $preference->google_login == '1' ? '' : 'display:none;' }}">
-                            <div class="col-md-12">
-                                <div class="form-group mb-2 mt-2">
-                                    <label for="google_client_id">{{ __('Google') }} {{ __('Client Key') }}</label>
-                                    <input type="text" name="google_client_id" id="google_client_id" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('google_client_id', $preference->google_client_id ?? '') }}">
-                                    @if ($errors->has('google_client_id'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('google_client_id') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-group mb-2">
-                                    <label for="google_client_secret">{{ __('Google') }}
-                                        {{ __('Client Secret') }}</label>
-                                    <input type="password" name="google_client_secret" id="google_client_secret"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('google_client_secret', $preference->google_client_secret ?? '') }}">
-                                    @if ($errors->has('google_client_secret'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('google_client_secret') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-group mb-0">
-                                    <label for="google_client_url">{{ __('Google') }} {{ __('Redirect URL') }}</label>
-                                    <input type="text" name="google_client_url" id="google_client_url" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('google_client_url', $preference->google_client_url ?? '') }}">
-                                    @if ($errors->has('google_client_url'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('google_client_url') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- Google card end -->
-                </div>
-                <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
-                    <!-- Apple card start -->
-                    <div class="card-box h-100">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-0 switchery-demo">
-                                    <label for="apple_login" class="d-flex align-items-center justify-content-between">
-                                        <h5 class="social_head"><i class="fab fa-apple"></i>
-                                            <span>{{ __('Apple') }}</span></h5>
-                                        <button class="btn btn-info btn-block save_btn" type="submit">
-                                            {{ __('Save') }} </button>
-                                    </label>
-                                    <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                    <input type="checkbox" data-plugin="switchery" name="apple_login" id="apple_login"
-                                        class="form-control" data-color="#43bee1"
-                                        @if (isset($preference) && $preference->apple_login == '1') checked='checked' @endif>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row apple_row"
-                            style="{{ isset($preference) && $preference->apple_login == '1' ? '' : 'display:none;' }}">
-                            <div class="col-12">
-                                <div class="form-group mb-2 mt-2">
-                                    <label for="apple_client_id">Apple {{ __('Client Key') }}</label>
-                                    <input type="text" name="apple_client_id" id="apple_client_id" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('apple_client_id', $preference->apple_client_id ?? '') }}">
-                                    @if ($errors->has('apple_client_id'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('apple_client_id') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="apple_client_secret">Apple {{ __('Client Secret') }}</label>
-                                    <input type="password" name="apple_client_secret" id="apple_client_secret"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('apple_client_secret', $preference->apple_client_secret ?? '') }}">
-                                    @if ($errors->has('apple_client_secret'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('apple_client_secret') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-0">
-                                    <label for="apple_client_url"> Apple {{ __('Redirect URL') }}</label>
-                                    <input type="text" name="apple_client_url" id="apple_client_url" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('apple_client_url', $preference->apple_client_url ?? '') }}">
-                                    @if ($errors->has('apple_client_url'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('apple_client_url') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- Apple card end -->
-                </div>
-            </div>
-        </form>
+    </form>
 
 
         <div class="row">
@@ -2474,7 +2464,7 @@
     </div>
 
     @php
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds']);
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch']);
     @endphp
     <div class="row">
         {{-- hubspot form --}}
@@ -3408,6 +3398,15 @@
                                   <span> <input type="checkbox" data-plugin="switchery" name="is_cust_success_signup_email_switch" id="is_cust_success_signup_email_switch" class="form-control checkbox_change" data-className="is_cust_success_signup_email"  data-color="#43bee1" @if( @getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == '1') checked='checked' @endif>
                                    </span>
                                    <input type="hidden"  @if(@getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == 1) value="1" @else value="0" @endif  name="is_cust_success_signup_email"  id="is_cust_success_signup_email"/>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                   <label for="is_service_product_price_from_dispatch_switch" class="mr-2 mb-0">{{__('Freelancer Mod for Service Booking')}}<small class="d-block pr-5">{{__("To view list of agents on booking")}}</small></label>
+                                  <span> <input type="checkbox" data-plugin="switchery" name="is_service_product_price_from_dispatch_switch" id="is_service_product_price_from_dispatch_switch" class="form-control checkbox_change" data-className="is_service_product_price_from_dispatch"  data-color="#43bee1" @if(   $getAdditionalPreference ['is_service_product_price_from_dispatch'] == '1') checked='checked' @endif>
+                                   </span>
+                                   <input type="hidden"  @if(   $getAdditionalPreference['is_service_product_price_from_dispatch'] == '1')  value="1" @else value="0" @endif  name="is_service_product_price_from_dispatch"  id="is_service_product_price_from_dispatch"/>
                                 </div>
                             </div>
 
