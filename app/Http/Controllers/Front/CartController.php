@@ -2985,7 +2985,7 @@ class CartController extends FrontController
     public function recurringCalculationFunction($request)
     {
         $recurringformPost = (object)$request->recurringformPost;
-
+        \Log::info($request->recurringformPost);
         $weekTypes ='';
         $daysCnt ='';
         if(!empty($recurringformPost->weekDay)){
@@ -2996,11 +2996,6 @@ class CartController extends FrontController
         $endDate = $recurringformPost->endDate;
 
         $selectedCustomdates = [];
-        // if($recurringformPost->action==1){
-        //     $selectedCustomdates[] = $startDate;
-        //     $selectedCustomdates[] = $endDate;
-        //     $selectedCustomdates = implode(',',$selectedCustomdates);
-        // }else
         
         if($recurringformPost->action=='2' || $recurringformPost->action=='1'){
             $startDate = $recurringformPost->startDate;
@@ -3026,6 +3021,17 @@ class CartController extends FrontController
                 $daysCnt =count($recurringformPost->selectedCustomdates);
                 $selectedCustomdates = implode(',',$recurringformPost->selectedCustomdates);
             }
+        }elseif($recurringformPost->action=='6'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay,'A');
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
         }
 
 

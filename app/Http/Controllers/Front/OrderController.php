@@ -813,7 +813,7 @@ class OrderController extends FrontController
 
         try {
 
-
+pr($request->all());
 
             $latitude = '';
             $longitude = '';

@@ -1626,12 +1626,18 @@ if (!function_exists('weekDaysArray')) {
 
 if (!function_exists('getDaysArrayBetweenTwoDates')) {
 
-    function getDaysArrayBetweenTwoDates($sdate,$edate,$matchDays=[]){
+    function getDaysArrayBetweenTwoDates($sdate,$edate,$matchDays=[],$alternate = ''){
       $period = CarbonPeriod::create($sdate, $edate);
         // Iterate over the period
         $periods = [];
-            foreach ($period as $date) {
-                if(count($matchDays)>0){
+            foreach ($period as $k => $date) {
+                if($alternate){
+
+                    if($k%2==0)
+                        $periods[] =  $date->format('Y-m-d');
+
+
+                }elseif(count($matchDays)>0){
                     $dayNumber = $date->dayOfWeek; // get day number
                     if(in_array($dayNumber,$matchDays))
                     {

@@ -1170,6 +1170,7 @@
                                             @else
                                                 {{ Session::get('currencySymbol') }}
                                             @endif
+                                           
                                             <span
                                                 id="total_taxable_amount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->total_taxable_amount + $other_taxes)) : decimal_format($cart_details->total_taxable_amount + $other_taxes) }}</span>
                                         </b>
