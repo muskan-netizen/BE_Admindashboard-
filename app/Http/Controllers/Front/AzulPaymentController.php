@@ -141,7 +141,7 @@ class AzulPaymentController extends FrontController
             $response['route'] = '';
             return $response;
         }
-        if (isset($dataResponse['ok'])) {
+        if (isset($dataResponse['ok']) && $dataResponse['ok'] === true) {
             // \Log::info('Done');
 
             if ($request->from == 'tip') {
