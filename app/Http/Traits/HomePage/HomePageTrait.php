@@ -140,7 +140,7 @@ trait HomePageTrait
         if (checkTableExists('home_products')) {
             $single_category_products = HomeProduct::whereSlug('single_category_products')->first();
             if (@$single_category_products) {
-                $product_ids = ProductCategory::with('categoryDetail','product')->where('category_id', $single_category_products->category_id)->first();
+                $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
             }
         }
         
@@ -151,10 +151,26 @@ trait HomePageTrait
     {
         $product_ids = [];
         if (checkTableExists('home_products')) {
-            $single_category_products = HomeProduct::with('categoryDetail.products')->whereSlug('single_category_products')->first();
+            $single_category_products = HomeProduct::with(['categoryDetail.products.variants','categoryDetail.products.media.image'])->whereSlug('single_category_products')->first();
         }
         
         return $single_category_products;
+    }
+
+    public function getSpotlightProducts()
+    {
+        if(checkColumnExists('products','spotlight_deals')){
+            $spotlight_products = Product::with(['variants','media.image'
+            ])->select('id', 'sku','title', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','spotlight_deals')->where('spotlight_deals', 1)->take(9)->get();
+        } 
+        return $spotlight_products; 
+    }
+
+    public function getSelectedProduct($layout_id)
+    {
+       
+            $selected_products = HomeProduct::with(['products.variants','products.media.image'])->where('layout_id',$layout_id)->get();
+        return $selected_products; 
     }
 
     public function getProducts($preferences, $vendor_ids, $language_id, $currency_id = 'USD', $p_dim, $product_ids)

@@ -395,7 +395,12 @@ class HomeController extends BaseController{
                 if($da->slug=='single_category_products'){
                     $da['data']= $this->getSingleCategoryWithProducts($da->slug);
                 }
-
+                if($da->slug=='spotlight_deals'){
+                    $da['data']=$this->getSpotlightProducts($da->id);
+                }
+                 if($da->slug=='selected_products'){
+                    $da['data'] = $this->getSelectedProduct($da->id);
+                 }
                 return $da;
 
             });

@@ -73,6 +73,11 @@ class Category extends Model
     {
         return $this->hasMany(Product::class, 'category_id', 'id');
     }
+
+    public function productswithLimit()
+    {
+        return $this->hasMany(Product::class, 'category_id', 'id')->take(9);
+    }
     public function type(){
       return $this->belongsTo('App\Models\Type')->select('id', 'title','service_type');
     }
