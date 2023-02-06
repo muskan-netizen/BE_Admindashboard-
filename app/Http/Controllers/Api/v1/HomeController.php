@@ -584,7 +584,7 @@ class HomeController extends BaseController
                 $long_term_service_products = $this->longTermServiceProducts($venderIds, $langId, $clientCurrency,'', $type,'', $requestFrom);
             }
             $homeData['long_term_service'] = $long_term_service_products;
-            \Log::info($homeData['categories']);
+          
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

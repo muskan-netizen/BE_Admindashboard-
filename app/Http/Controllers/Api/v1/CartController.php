@@ -152,8 +152,7 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
-        \Log::info('request data in add to cart');
-        \Log::info($request->all());
+     
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
@@ -322,7 +321,7 @@ class CartController extends BaseController
                     'service_start_date'  => @$service_start_date,
                 ];
                 if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
-                    \Log::info('in array chechk');
+                  
                     $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                     $slot = $request->dispatcherAgentData['onDemandBookingdate'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
                     $cart_product_detail['schedule_type'] = 'schedule';
@@ -599,7 +598,7 @@ class CartController extends BaseController
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
 
-       // try{
+       try{
         $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
@@ -1590,12 +1589,12 @@ class CartController extends BaseController
         return $cart;
 
 
-        // }catch(\Exception $ex)
-        // {
-
-        //     \Log::info($ex->getMessage());
-        //     return [];
-        // }
+        }catch(\Exception $ex)
+        {
+            \Log::info('get Cart in api error');
+            \Log::info($ex->getMessage());
+            return [];
+        }
     }
 
     public function uploadPrescriptions(Request $request){
