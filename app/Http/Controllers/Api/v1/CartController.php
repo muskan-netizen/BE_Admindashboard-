@@ -93,8 +93,6 @@ class CartController extends BaseController
                     if($VendorOrderStatus > 0){
                         $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                     }
-                }else{
-                    $cartData->cart_error_message = '';
                 }
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
@@ -1567,25 +1565,13 @@ class CartController extends BaseController
         }
 
 
-        if(checkColumnExists('cart_products','recurring_booking_type')){
-            if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
-                $date       = explode(",",$prod->recurring_day_data);
-                $start_date = $end_date = '';
-                if(isset($date[0])){
-                    $start_date = $date[0];
-                }
-                if(isset($date[1])){
-                    $end_date   = $date[1];
-                }
-                if(!empty($start_date) && !empty($end_date)){
-                    $days_count                 = Carbon::parse( $start_date )->diffInDays( $end_date );
-                    $days_count                 = $days_count + 1;
-                    $order_sub_total            = $order_sub_total * $days_count;
-                    $cart->gross_paybale_amount = $order_sub_total;
-                    $cart->total_payable_amount = $order_sub_total;
-                }
-            }
-        }
+        // if($is_recurring_booking ==1){
+        //     \Log::info('order_sub_total--'.$order_sub_total);
+        //    //Subtotal price multiply by no of days
+        //    $order_sub_total            = $order_sub_total * $prod->recurring_date_count;
+        //    $cart->gross_paybale_amount = $order_sub_total;
+        //    $cart->total_payable_amount = $order_sub_total;
+        // }
 
 
         
@@ -1639,6 +1625,7 @@ class CartController extends BaseController
         else{
             $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         }
+        $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
 
         //mohit sir branch code updated by sohail farm meat
         $pendingAmount = 0;

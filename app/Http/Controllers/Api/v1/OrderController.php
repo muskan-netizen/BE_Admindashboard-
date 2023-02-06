@@ -727,7 +727,6 @@ class OrderController extends BaseController
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
                         }
-                        \Log::info('1-'.$payable_amount);
 
                         //End applying service fee on vendor products total
                         $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
@@ -749,7 +748,6 @@ class OrderController extends BaseController
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
-                        \Log::info('2-'.$payable_amount);
 
                         $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
                         $deliveryfee_ifnot_discounted   = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
@@ -787,10 +785,8 @@ class OrderController extends BaseController
                         $order_status->order_vendor_id = $order_vendor->id;
                         $order_status->save();
                     }
-                    \Log::info('3-'.$payable_amount);
 
                     $payable_amount = $payable_amount + $total_taxes + $additional_price + $slot_based_price;
-                    \Log::info('4-'.$payable_amount);
                   
 
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
@@ -808,6 +804,16 @@ class OrderController extends BaseController
                         }
                     }
 
+                    if(checkColumnExists('cart_products','recurring_booking_type')){
+                        if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                            $date       = explode(",",$vendor_cart_product->recurring_day_data);
+                            if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
+                                $days_count                         =  count($date);
+                                $order->total_amount                =  decimal_format($order->total_amount * $days_count);
+                            }
+                        }
+                    }
+
                     // if (in_array(1, $subscription_features)) {
                     //     $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
                     // }
@@ -817,8 +823,7 @@ class OrderController extends BaseController
                     $order->total_discount = $total_discount;
                     //$order->taxable_amount = $taxable_amount;
                     $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
-// dump($payable_amount);
-\Log::info('5-'.$payable_amount);
+
 
                     if ($loyalty_amount_saved > 0) {
                         if ($loyalty_amount_saved > $payable_amount) {
@@ -827,8 +832,6 @@ class OrderController extends BaseController
                         }
                     }
                     $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved;
-// dump($payable_amount);
-\Log::info('6-'.$payable_amount);
 
                     $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
                     $wallet_amount_used = 0;
@@ -858,17 +861,10 @@ class OrderController extends BaseController
                     }else{
                         $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
                     }
-                    \Log::info('7-1-'.$wallet_amount_used);
 
-// dd( "last- ".$total_service_fee, $payable_amount);
                     $payable_amount = $payable_amount + $tip_amount ;
                     $payable_amount = $payable_amount - $wallet_amount_used;
-                    if(checkColumnExists('cart_products','recurring_booking_type')){
-                        if(!empty($vendor_cart_product->recurring_booking_time)){
-                            $payable_amount = ($request->total_amount + $tip_amount) - $wallet_amount_used ;
-                        }
-                    }
-                    \Log::info('7-'.$payable_amount);
+                   
 
                     $order->total_service_fee = $total_service_fee;
                     $order->total_delivery_fee = $total_delivery_fee;
@@ -888,7 +884,7 @@ class OrderController extends BaseController
                     }else{
                         $order->payable_amount = $payable_amount - $order->taxable_amount;
                     }
-                    \Log::info('8-'.$order->payable_amount);
+
                     // Advance Book Token Amount by mohit added by shiekh sohail farm meat
                     $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
                     if(!empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
@@ -923,8 +919,6 @@ class OrderController extends BaseController
 
                     $order->save();
 
-                    \Log::info('9-'.$payable_amount);
-
                      // Recurring Booking Functionity
 
             if(checkColumnExists('cart_products','recurring_booking_type')){
@@ -935,24 +929,81 @@ class OrderController extends BaseController
 
                         $RecurringServiceSchedule = array();
                         // Daily Recurring Booking
-                        if($vendor_cart_product->recurring_booking_type == 1){
+                        // if($vendor_cart_product->recurring_booking_type == 1){
+                        //     $recurring_day_data     = $vendor_cart_product->recurring_day_data;
+                        //     $recurring_day_data     = explode(",",$recurring_day_data);
+                        //     $start_recurring_date = $end_recurring_date = '';
+                        //     if(isset($recurring_day_data[0]) && !empty($recurring_day_data[0])){
+                        //         $start_recurring_date   = Carbon::parse($recurring_day_data[0])->format('Y-m-d');
+                        //     }
+                        //     if(isset($recurring_day_data[1]) && !empty($recurring_day_data[1])){
+                        //         $end_recurring_date     = Carbon::parse($recurring_day_data[1])->format('Y-m-d');
+                        //     }
+
+                        //     $period     = CarbonPeriod::create($start_recurring_date, $end_recurring_date);
+		                //     $entery     = 1;
+                        //     $period     = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($period));
+                        //     $daysCnt =count($period);
+                        //     $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                        //     for ($x = 0; $x < count($period); $x++) {
+                        //         $date           = $period[$x];
+                        //         $newDate        = $date.' '. $recurring_booking_time;
+                        //         $RecurringServiceSchedule [] = [
+                        //             'order_vendor_product_id' => $vendor_cart_product->product_id,
+                        //             'schedule_date'           => $newDate,
+                        //             'type'                    => 2,
+                        //             'order_number'            => $order->order_number
+                        //         ];
+
+                        //     }
+
+
+
+                        // }
+
+                        // // Weekly Recurring Booking
+                        // if($vendor_cart_product->recurring_booking_type == 2){
+                        //     $recurring_day_data     = $vendor_cart_product->recurring_day_data;
+                        //     $recurring_day_data     = explode(",",$recurring_day_data);
+                        //     $start_recurring_date = $end_recurring_date = '';
+                        //     if(isset($recurring_day_data[0]) && !empty($recurring_day_data[0])){
+                        //         $start_recurring_date   = Carbon::parse($recurring_day_data[0])->format('Y-m-d');
+                        //     }
+                        //     if(isset($recurring_day_data[1]) && !empty($recurring_day_data[1])){
+                        //         $end_recurring_date     = Carbon::parse($recurring_day_data[1])->format('Y-m-d');
+                        //     }
+
+                        //     $period     = CarbonPeriod::create($start_recurring_date, $end_recurring_date);
+		                //     $entery     = 1;
+                        //     $period     = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($period));
+                        //     $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                        //     $daysCnt =count($period);
+                        //     for ($x = 0; $x < count($period); $x++) {
+                        //         $date           = $period[$x];
+                        //         $newDate        = $date.' '. $recurring_booking_time;
+                        //         $RecurringServiceSchedule [] = [
+                        //             'order_vendor_product_id' => $vendor_cart_product->product_id,
+                        //             'schedule_date'           => $newDate,
+                        //             'type'                    => 2,
+                        //             'order_number'            => $order->order_number
+                        //         ];
+
+                        //     }
+
+
+
+                        // }
+
+                        // Daily and Weekly Recurring Booking
+                        if($vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 1){
+                            $Recurring_quantity     = $vendor_cart_product->quantity;
                             $recurring_day_data     = $vendor_cart_product->recurring_day_data;
                             $recurring_day_data     = explode(",",$recurring_day_data);
-                            $start_recurring_date = $end_recurring_date = '';
-                            if(isset($recurring_day_data[0]) && !empty($recurring_day_data[0])){
-                                $start_recurring_date   = Carbon::parse($recurring_day_data[0])->format('Y-m-d');
-                            }
-                            if(isset($recurring_day_data[1]) && !empty($recurring_day_data[1])){
-                                $end_recurring_date     = Carbon::parse($recurring_day_data[1])->format('Y-m-d');
-                            }
 
-                            $period     = CarbonPeriod::create($start_recurring_date, $end_recurring_date);
-		                    $entery     = 1;
-                            $period     = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($period));
-                            $daysCnt =count($period);
+                            $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
                             $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
-                            for ($x = 0; $x < count($period); $x++) {
-                                $date           = $period[$x];
+                            for ($x = 0; $x < count($recurring_day_data); $x++) {
+                                $date           = $recurring_day_data[$x];
                                 $newDate        = $date.' '. $recurring_booking_time;
                                 $RecurringServiceSchedule [] = [
                                     'order_vendor_product_id' => $vendor_cart_product->product_id,
@@ -960,65 +1011,16 @@ class OrderController extends BaseController
                                     'type'                    => 2,
                                     'order_number'            => $order->order_number
                                 ];
-
                             }
-
-
-
-                        }
-
-                        // Weekly Recurring Booking
-                        if($vendor_cart_product->recurring_booking_type == 2){
-                            $recurring_day_data     = $vendor_cart_product->recurring_day_data;
-                            $recurring_day_data     = explode(",",$recurring_day_data);
-                            $start_recurring_date = $end_recurring_date = '';
-                            if(isset($recurring_day_data[0]) && !empty($recurring_day_data[0])){
-                                $start_recurring_date   = Carbon::parse($recurring_day_data[0])->format('Y-m-d');
-                            }
-                            if(isset($recurring_day_data[1]) && !empty($recurring_day_data[1])){
-                                $end_recurring_date     = Carbon::parse($recurring_day_data[1])->format('Y-m-d');
-                            }
-
-                            $period     = CarbonPeriod::create($start_recurring_date, $end_recurring_date);
-		                    $entery     = 1;
-                            $period     = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($period));
-                            $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
-                            $daysCnt =count($period);
-                            for ($x = 0; $x < count($period); $x++) {
-                                $date           = $period[$x];
-                                $newDate        = $date.' '. $recurring_booking_time;
-                                $RecurringServiceSchedule [] = [
-                                    'order_vendor_product_id' => $vendor_cart_product->product_id,
-                                    'schedule_date'           => $newDate,
-                                    'type'                    => 2,
-                                    'order_number'            => $order->order_number
-                                ];
-
-                            }
-
-
-
-                        }
-
+                        }elseif($vendor_cart_product->recurring_booking_type == 3){
                          // Monthly Recurring Booking
-                        if($vendor_cart_product->recurring_booking_type == 3){
+                         $Recurring_quantity     = $vendor_cart_product->quantity;
                             $recurring_day_data     = $vendor_cart_product->recurring_day_data;
                             $recurring_day_data     = explode(",",$recurring_day_data);
-                            $start_recurring_date = $end_recurring_date = '';
-                            if(isset($recurring_day_data[0]) && !empty($recurring_day_data[0])){
-                                $start_recurring_date   = Carbon::parse($recurring_day_data[0])->format('Y-m-d');
-                            }
-                            if(isset($recurring_day_data[1]) && !empty($recurring_day_data[1])){
-                                $end_recurring_date     = Carbon::parse($recurring_day_data[1])->format('Y-m-d');
-                            }
-
-                            $period     = CarbonPeriod::create($start_recurring_date, $end_recurring_date);
-		                    $entery     = 1;
-                            $period     = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($period));
-                            $daysCnt =count($period);
+                            $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
                             $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
-                            for ($x = 0; $x < count($period); $x++) {
-                                $date           = $period[$x];
+                            for ($x = 0; $x < count($recurring_day_data); $x++) {
+                                $date           = $recurring_day_data[$x];
                                 $newDate        = $date.' '. $recurring_booking_time;
                                 $RecurringServiceSchedule [] = [
                                     'order_vendor_product_id' => $vendor_cart_product->product_id,
@@ -1026,29 +1028,16 @@ class OrderController extends BaseController
                                     'type'                    => 2,
                                     'order_number'            => $order->order_number
                                 ];
-
                             }
-                        }
-
+                        }elseif($vendor_cart_product->recurring_booking_type == 4){
                         // Custom Recurring Booking
-                        if($vendor_cart_product->recurring_booking_type == 3){
+                            $Recurring_quantity     = $vendor_cart_product->quantity;
                             $recurring_day_data     = $vendor_cart_product->recurring_day_data;
                             $recurring_day_data     = explode(",",$recurring_day_data);
-                            $start_recurring_date = $end_recurring_date = '';
-                            if(isset($recurring_day_data[0]) && !empty($recurring_day_data[0])){
-                                $start_recurring_date   = Carbon::parse($recurring_day_data[0])->format('Y-m-d');
-                            }
-                            if(isset($recurring_day_data[1]) && !empty($recurring_day_data[1])){
-                                $end_recurring_date     = Carbon::parse($recurring_day_data[1])->format('Y-m-d');
-                            }
-
-                            $period     = CarbonPeriod::create($start_recurring_date, $end_recurring_date);
-		                    $entery     = 1;
-                            $period     = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($period));
-                            $daysCnt =count($period);
+                            $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
                             $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
-                            for ($x = 0; $x < count($period); $x++) {
-                                $date           = $period[$x];
+                            for ($x = 0; $x < count($recurring_day_data); $x++) {
+                                $date           = $recurring_day_data[$x];
                                 $newDate        = $date.' '. $recurring_booking_time;
                                 $RecurringServiceSchedule [] = [
                                     'order_vendor_product_id' => $vendor_cart_product->product_id,
@@ -1243,7 +1232,7 @@ class OrderController extends BaseController
         $checkOrder = Order::findOrFail($request->order_id);
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
                 $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
-                \Log::info($order_ship);
+                // \Log::info($order_ship);
             }
             if ($order_ship->object_id){
                     $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])->update([
@@ -2606,7 +2595,7 @@ class OrderController extends BaseController
            // $order['user_document_value'] =  $user_docs;
 
 
-           Log::info('order'.json_encode($order));
+        //    Log::info('order'.json_encode($order));
             if(auth()->user()->is_admin){
                 $order['total_amount'] = $order->total_amount  - $total_markup_Price;
                 $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;

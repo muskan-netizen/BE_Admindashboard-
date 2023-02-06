@@ -1682,21 +1682,7 @@ class OrderController extends FrontController
             if(checkColumnExists('cart_products','recurring_booking_type')){
                 if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
                     $date       = explode(",",$vendor_cart_product->recurring_day_data);
-                    if($vendor_cart_product->recurring_booking_type == 1){
-                        $start_date = $end_date = '';
-                        if(isset($date[0])){
-                            $start_date = $date[0];
-                        }
-                        if(isset($date[1])){
-                            $end_date   = $date[1];
-                        }
-                        if(!empty($start_date) && !empty($end_date)){
-                            $days_count                         =  Carbon::parse( $start_date )->diffInDays( $end_date );
-                            $pvariant_new_price                 =   $order->total_amount * $days_count;
-                            $order->total_amount                =  decimal_format($pvariant_new_price);
-                        }
-                    }
-                    else if($vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
+                    if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
                         $days_count                         =  count($date);
                         $pvariant_new_price                 =   $order->total_amount * $days_count;
                         $order->total_amount                =  decimal_format($pvariant_new_price);
@@ -1929,9 +1915,6 @@ class OrderController extends FrontController
                                     'order_number'            => $order->order_number
                                 ];
                             }
-
-
-
                         }
 
                          // Monthly Recurring Booking
