@@ -504,7 +504,7 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 #social-links li {
-    margin-right: 20px;
+    margin-right: 20px;font-size: 20px;
 }
 
 .homepageSix {
@@ -2486,12 +2486,12 @@ section.home-serivces .card-box {
     padding: 3px 10px;
 }
 
-.al_body_template_six .btn-solid {
+/* .al_body_template_six .btn-solid {
     font-size: 12px !important;
     padding: 7px 12px !important;
     border-radius: 50px;
     font-weight: 300;
-}
+} */
 
 .show-div.shopping-cart h4 {
     padding-bottom: 0 !important;
@@ -2928,9 +2928,10 @@ section.home-serivces .card-box {
 }
 
 .al_body_template_six .progress-order {
-    font-weight: 400
+    font-weight: 400;   
+     width: calc(100% + 48px);
 }
-
+.al_body_template_six .progress-order span.badge{font-size: 10px;}
 .al_body_template_six #active-orders .order_detail_data .product_list {
     vertical-align: bottom;
     display: flex;
@@ -3414,7 +3415,9 @@ body.al_body_template_four .login_continue_btn {
     background-color: #fff;
     border-color: var(--theme-deafult);
 }
-
+.product-right .border-product .product-icon ul li a span:before {
+    font-family: 'FontAwesome';
+}
 .BGcenter .nav-tabs .nav-link {
     border-width: 0 0 2px 0;
     border-color: transparent;
@@ -3720,6 +3723,8 @@ span.registerLink {
     .pricingtable-header.position-absolute .price-value {
         font-size: 14px;
     }
+    .al_body_template_six .product-right .product-buttons button{margin-bottom: 10px;}
+    .al_body_template_six .product-right .product-buttons a{margin-bottom: 10px;}
 }
 
 @media (min-width: 1024px) {

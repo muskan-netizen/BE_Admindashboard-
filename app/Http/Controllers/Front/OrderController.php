@@ -61,7 +61,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
-
+use Illuminate\Support\Facades\Http;
 
 
 class OrderController extends FrontController
@@ -812,9 +812,6 @@ class OrderController extends FrontController
 
 
         try {
-
-pr($request->all());
-
             $latitude = '';
             $longitude = '';
             $Order_bid_discount = 0;
@@ -838,7 +835,7 @@ pr($request->all());
             $order_edit_before_hours = 0;
             $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
             $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
+            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch']);
 
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
@@ -870,7 +867,7 @@ pr($request->all());
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
             if (checkColumnExists('carts', 'order_id')) { //get if any order is being edit
-                $cart = Cart::where('user_id', $user->id)->with(['editingOrder', 'cartvendor'])->first();
+                $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
             } else {
                 $cart = Cart::where('user_id', $user->id)->first();
             }
@@ -884,7 +881,7 @@ pr($request->all());
             $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
 
             // check gift card
-            if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
+            if(($additionalPreferences->is_gift_card ==1) && checkColumnExists('carts', 'gift_card_id') ){
 
                 if(isset($cart->giftCard) && !empty($cart->giftCard)){
 
@@ -914,7 +911,14 @@ pr($request->all());
                     return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing."), 400);
                 }
                 $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-                if($VendorOrderStatus > 0){
+                $order_vendor_status_error = 0;
+                foreach ($cart->editingOrder->orderStatusVendor as $key => $status) {
+                    if($status->order_status_option_id  > 2) {
+                        $order_vendor_status_error = 1;
+                    }
+                }
+                
+                if($VendorOrderStatus > 0 || $order_vendor_status_error == 1){
                     return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing. Please discard order editing."), 400);
                 }
 
@@ -940,7 +944,6 @@ pr($request->all());
                         }
                     }
                 }
-                
                 $order->is_edited = 1;
             } else {
                 $order = new Order;
@@ -1143,6 +1146,10 @@ pr($request->all());
                     $quantity_price = 0;
                     $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                     $price_in_currency = $variant->price / $divider;
+                    // change product price when is_service_product_price_from_dispatch on 
+                    if(( checkColumnExists('cart_products', 'dispatch_agent_price') && ($action == 'on_demand') && $additionalPreferences->is_service_product_price_from_dispatch ==1 )){
+                        $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
+                    }
                     //Find item price here  ==  + $variant->price;
                     $container_charges_in_currency = $variant->container_charges / $divider;
                     $price_container_charges = $variant->container_charges;
@@ -1225,19 +1232,20 @@ pr($request->all());
 
                     $taxable_amount = $product_taxable_amount;
                     $vendor_taxable_amount = $taxable_amount;
-
+                    $variant_price = $variant->price;
+                    // change variant_price price when is_service_product_price_from_dispatch on 
+                    if(($action == 'on_demand') && checkColumnExists('cart_products', 'dispatch_agent_price') && 
+                    ($additionalPreferences->is_service_product_price_from_dispatch ==1 )){
+                        $variant_price =$vendor_cart_product->dispatch_agent_price ;
+                    }
+                    $total_amount += $vendor_cart_product->quantity * $variant_price;
+                    
                     if( @$quantity_role_price['quantity_price'] != 0 && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1)) {
                         
                         $quantity_price = $quantity_role_price['quantity_price'];
                         $total_amount += $vendor_cart_product->quantity * $quantity_role_price['amount'];
                         $variant_price = $quantity_role_price['amount'];
-                    } else {
-                        $total_amount += $vendor_cart_product->quantity * $variant->price;
-                        $variant_price = $variant->price;
-                    }
-               
-       
-                    $total_amount += $vendor_cart_product->quantity * $variant->price;
+                    } 
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
                     $order_product->price = $variant_price;

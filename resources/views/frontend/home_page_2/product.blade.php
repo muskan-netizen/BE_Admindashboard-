@@ -17,11 +17,13 @@
                     @endif
                 </div>
                 <p>{{ $product["vendor_name"] }}</p>
+                @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                 <h4>
                     @if($product["inquiry_only"] == 0)
                     {!!$product["price"] ?? ''!!}
                     @endif
                 </h4>
+                @endif
             </div>
         </div>
     </a>

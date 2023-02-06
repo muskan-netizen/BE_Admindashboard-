@@ -8,7 +8,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
 use Validation;
 use DB;
 use App\Http\Traits\{ApiResponser,ProductTrait};
@@ -610,6 +610,40 @@ class ProductController extends BaseController
             ]);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    /**
+     * getFreeLincerFromDispatcher
+     * @Author  Mr Harbans singh
+     * @param  mixed $request 
+     * @return void
+     */
+    public function getFreeLincerFromDispatcher(Request $request){
+        try {
+            $selecterVariant = ProductVariant::where('id',$request->variant_id)->first();
+            if($selecterVariant){
+                $latitude = '';
+                $longitud = '';
+                $address = UserAddress::find($request->address_id);
+                if($address){
+                    $latitude = $address->latitude ;
+                    $longitud = $address->longitude ;
+                }
+            
+                $res = $this->getProductPriceFromDispatcher($request->bookingdateTime,$selecterVariant->sku, $latitude, $longitud,$request->slot);
+                return response()->json(array('status' => 'Success', 'data' => $res['data']));
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'Variant not Found!'
+            ]); 
+        } catch (Exception $e) {
+            \Log::info('getFreeLincerFromDispatcher error');
+            \Log::info($e->getMessage());
+            return response()->json([
+                'status' => 400,
+                'message' => 'Somthing Went wrong!'
+            ]); 
         }
     }
 }

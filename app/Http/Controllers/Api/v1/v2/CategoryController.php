@@ -17,6 +17,7 @@ class CategoryController extends BaseController
     private $field_status = 2;
     use ApiResponser;
     /**     * Get Company ShortCode     *     */
+    
     public function categoryData(Request $request, $cid = 0)
     {
         try {

@@ -915,7 +915,7 @@ a.brand-box.black-box h6 {
     top: 15px
 }
 
-.progress-order {
+#orders_wrapper .progress-order {
     width: calc(100% + 48px);
     margin: -24px 0 20px;
     background: #00000012;
@@ -923,12 +923,11 @@ a.brand-box.black-box h6 {
     position: relative;
     left: -24px;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 16px !important;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     padding: 5px 0
 }
-
 .pulse {
     display: block;
     width: 8px;
@@ -3605,6 +3604,9 @@ body[dir=rtl] .alFourThLogo {
         margin: 0;
         padding-left: 0 !important
     }
+    .product-buttons {
+        margin-bottom: 20px;
+    }
     .vendors .slick-arrow {
         display: none !important
     }
@@ -4022,6 +4024,7 @@ body[dir=rtl] .alFourThLogo {
     body.al_body_template_four.p2p-module .tab-product {
         margin-top: 30px !important;
     }
+    
 }
 
 @media(max-width:576px) {
@@ -4110,11 +4113,11 @@ img.LoginLogo {
     padding: 0
 }
 
-.col-md-3.alOrderStatus {
+/* .col-md-3.alOrderStatus {
     display: flex;
     justify-content: space-between;
     align-items: center
-}
+} */
 
 .col-md-3.alOrderStatus h4 {
     margin: 0;
@@ -4286,141 +4289,53 @@ body[dir=rtl] .al_searchType button i {
     margin-left: 10px;
     margin-right: auto;
 }
-
+.inner_spacing .border-product .product-icon #social-links ul li a {
+    font-size: 20px;
+}
 
 /*----arabic user profile design css start here----*/
 
-body[dir=rtl] .dashboard-right .dashboard .page-title h2 {
-    text-align: right;
+  /*----arabic user profile design css start here----*/
+  body[dir=rtl] .dashboard-right .dashboard .page-title h2{text-align: right;}
+  body[dir=rtl] .dashboard-right .col-sm-6.text-right.mt-0.mt-md-0 {text-align: left !important;}
+  body[dir=rtl]  .progress-order{left: 0px; right: -24px;}
+  body[dir=rtl] .order_detail_data h5.m-0{text-align: right;}
+  body[dir=rtl] .status_box{text-align: right;}
+  body[dir=rtl] .order_detail:before{left: auto; right: -1px;}
+  body[dir=rtl] .order_detail_data .pulse{left:auto;right:-4px;}
+  body[dir=rtl]  button.reschedule_order.btn.btn-solid{float: left !important;}
+  body[dir=rtl] .price_box_bottom .rating-star{left: 10px !important;}
+  body[dir=rtl] .order-page .order_head .ellipsis {text-align: right;padding-right: 10px;}
+  body[dir=rtl] .wishlist-table .addWishlistToCart{float:right;}
+  body[dir=rtl] .al_inner_card .offset-md-3.col-md-6{margin-left: 0px;margin-right: 25%;}
+  body[dir=rtl] .box-account.box-info h5.text-17 {text-align: right;}
+  body[dir=rtl] .box-account.box-info .text-36 {text-align: right;}
+  body[dir=rtl] .box-account.box-info .col-md-6.text-md-right {text-align: left !important;}
+  body[dir=rtl] .wallet-transactions tr.table-head th {text-align: right;}
+  body[dir=rtl] .wallet-transactions tr.table-head th.text-right {text-align: left !important;}
+  body[dir=rtl] .scrolling_section h2.category-head{text-align: right;}
+  body[dir=rtl] .dashboard-left .block-content ul li:before{left: 10px;position: absolute;transform: rotate(180deg);transform-origin: 20px 10px;}
+  body[dir=rtl] .footer-theme .sub-title li {text-align: right;}
+  body[dir=rtl] #wallet_topup_form .form-group {text-align: right;}
+  body[dir=rtl]  #wallet_topup_form h5 { text-align: right;}
+  body[dir=rtl] form#wallet_transfer_form {text-align: right;}  
+
+
+ /*---vendor form page arabic language  css start here----*/
+ body[dir=rtl] .main-top-heading h2 {text-align: right;}
+ body[dir=rtl] .main-top-heading p {text-align: right;}
+ body[dir=rtl] .vendor-signup h2 {text-align: right;}
+ body[dir=rtl] .vendor-signup label {text-align: right;}
+ body[dir=rtl] .needs-validation div#phone_numberInput input#phone {padding-left: 0px !important;padding-right: 90px;}
+ body[dir=rtl] .checkbox-input label {padding-left: 0px !important;padding-right: 25px;}
+ body[dir=rtl] .checkbox-input input {right: 0px;left: auto;}
+ body[dir=rtl]  .al_details_vendor .mt-md-1{text-align: right;}
+ body[dir=rtl] .al_details_vendor button.btn.btn-solid {float: right;}
+ body[dir=rtl]  span.invalid-feedback {display: block;text-align: right;}
+ body[dir=rtl] .modal-dialog.modal-dialog-centered .modal-body h6 {text-align: right;}
+ body[dir=rtl] .border-product {text-align: right;}
+ body[dir=rtl] .border-product .addon-product .productAddonSetOptions .checkbox.checkbox-success label.checkboxAl {
+    padding-left: 0px;
+    padding-right: 35px;
 }
-
-body[dir=rtl] .dashboard-right .col-sm-6.text-right.mt-0.mt-md-0 {
-    text-align: left !important;
-}
-
-body[dir=rtl] .progress-order {
-    left: 0px;
-    right: -24px;
-}
-
-body[dir=rtl] .order_detail_data h5.m-0 {
-    text-align: right;
-}
-
-body[dir=rtl] .status_box {
-    text-align: right;
-}
-
-body[dir=rtl] .order_detail:before {
-    left: auto;
-    right: -1px;
-}
-
-body[dir=rtl] .order_detail_data .pulse {
-    left: auto;
-    right: -4px;
-}
-
-body[dir=rtl] button.reschedule_order.btn.btn-solid {
-    float: left !important;
-}
-
-body[dir=rtl] .price_box_bottom .rating-star {
-    left: 10px !important;
-}
-
-body[dir=rtl] .order-page .order_head .ellipsis {
-    text-align: right;
-    padding-right: 10px;
-}
-
-body[dir=rtl] .wishlist-table .addWishlistToCart {
-    float: right;
-}
-
-body[dir=rtl] .al_inner_card .offset-md-3.col-md-6 {
-    margin-left: 0px;
-    margin-right: 25%;
-}
-
-body[dir=rtl] .box-account.box-info h5.text-17 {
-    text-align: right;
-}
-
-body[dir=rtl] .box-account.box-info .text-36 {
-    text-align: right;
-}
-
-body[dir=rtl] .box-account.box-info .col-md-6.text-md-right {
-    text-align: left !important;
-}
-
-body[dir=rtl] .wallet-transactions tr.table-head th {
-    text-align: right;
-}
-
-body[dir=rtl] .wallet-transactions tr.table-head th.text-right {
-    text-align: left !important;
-}
-
-body[dir=rtl] .scrolling_section h2.category-head {
-    text-align: right;
-}
-
-body[dir=rtl] .dashboard-left .block-content ul li:before {
-    left: 10px;
-    position: absolute;
-    transform: rotate(180deg);
-    transform-origin: 20px 10px;
-}
-
-body[dir=rtl] .footer-theme .sub-title li {
-    text-align: right;
-}
-
-
-/*---vendor form page arabic language  css start here----*/
-
-body[dir=rtl] .main-top-heading h2 {
-    text-align: right;
-}
-
-body[dir=rtl] .main-top-heading p {
-    text-align: right;
-}
-
-body[dir=rtl] .vendor-signup h2 {
-    text-align: right;
-}
-
-body[dir=rtl] .vendor-signup label {
-    text-align: right;
-}
-
-body[dir=rtl] .needs-validation div#phone_numberInput input#phone {
-    padding-left: 0px !important;
-    padding-right: 90px;
-}
-
-body[dir=rtl] .checkbox-input label {
-    padding-left: 0px !important;
-    padding-right: 25px;
-}
-
-body[dir=rtl] .checkbox-input input {
-    right: 0px;
-    left: auto;
-}
-
-body[dir=rtl] .al_details_vendor .mt-md-1 {
-    text-align: right;
-}
-
-body[dir=rtl] .al_details_vendor button.btn.btn-solid {
-    float: right;
-}
-
-body[dir=rtl] span.invalid-feedback {
-    display: block;
-    text-align: right;
-}
+body[dir=rtl] .checkmark{left: auto; right:0px;}

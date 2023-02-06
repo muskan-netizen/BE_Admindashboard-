@@ -159,9 +159,9 @@ class OrderController extends BaseController
                 $client_preference = ClientPreference::first();
 
                 $editlimit_datetime = Carbon::now()->toDateTimeString();
-                $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','order_edit_before_hours','is_service_product_price_from_dispatch']);
+                $order_edit_before_hours =  @$additionalPreferences->order_edit_before_hours;
                 $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
                 // if ($client_preference->verify_email == 1) {
                 //     if ($user->is_email_verified == 0) {
                 //         return response()->json(['error' => 'Your account is not verified.'], 404);
@@ -184,7 +184,7 @@ class OrderController extends BaseController
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 if(checkColumnExists('carts','order_id'))
                 {//get if any order is being edit
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder', 'cartvendor'])->first();
+                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
                 }else{
                     $cart = Cart::where('user_id', $user->id)->first();
                 }
@@ -226,10 +226,16 @@ class OrderController extends BaseController
                             return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
                         }
                         $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-                        if($VendorOrderStatus > 0){
-                            return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
+                        $order_vendor_status_error = 0;
+                        foreach ($cart->editingOrder->orderStatusVendor as $key => $status) {
+                            if($status->order_status_option_id  > 2) {
+                                $order_vendor_status_error = 1;
+                            }
                         }
-
+                        
+                        if($VendorOrderStatus > 0 || $order_vendor_status_error == 1){
+                            return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing. Please discard order editing."), 400);
+                        }
                         OrderProduct::where('order_id', $order->id)->delete();
                         OrderProductPrescription::where('order_id', $order->id)->delete();
                         OrderTax::where('order_id', $order->id)->delete();
@@ -384,6 +390,10 @@ class OrderController extends BaseController
                             $quantity_price = 0;
                             $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                             $price_in_currency = $variant->price / $divider;
+                             // change product price when is_service_product_price_from_dispatch on 
+                            if(( checkColumnExists('cart_products', 'dispatch_agent_price') && ($action == 'on_demand') && $additionalPreferences->is_service_product_price_from_dispatch ==1 )){
+                                $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
+                            }
                             $container_charges_in_currency = $variant->container_charges / $divider;
                             $price_container_charges = $variant->container_charges;
                             $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
@@ -482,10 +492,18 @@ class OrderController extends BaseController
                             //$taxable_amount += $product_taxable_amount;
                             $vendor_taxable_amount += $taxable_amount;
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
-                            $total_amount += ($vendor_cart_product->quantity * $variant->price);
+                            $variant_price = $variant->price;
+
+                            if( checkColumnExists('cart_products', 'dispatch_agent_price') && 
+                            (($action == 'on_demand') && ($additionalPreferences->is_service_product_price_from_dispatch ==1) )){
+                                $variant_price =$vendor_cart_product->dispatch_agent_price ;
+                            }
+                            $total_amount += ($vendor_cart_product->quantity * $variant_price);
                             $order_product = new OrderProduct;
                             $order_product->order_vendor_id = $order_vendor->id;
                             $order_product->order_id = $order->id;
+
+                            //Multiply by Recurring product item days
                             $order_product->price = $variant->price * $daysCountRecurring;
                             $order_product->bid_number = @$vendor_cart_product->bid_number ?? null;
                             $order_product->bid_discount = @$vendor_cart_product->bid_discount ?? null;
@@ -2134,7 +2152,7 @@ class OrderController extends BaseController
             $replaceable = 0;
 
             foreach ($order->products as $product) {
-                if($this->checkOrderDaysForReturn($order, $product->product->return_days) && $order->is_exchanged_or_returned==0){
+                if($this->checkOrderDaysForReturn($order, @$product->product->return_days) && $order->is_exchanged_or_returned==0){
 
 
                     if(@$product->product->replaceable && $product->product->replaceable == 1){

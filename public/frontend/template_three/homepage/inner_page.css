@@ -1878,7 +1878,9 @@ article#page-container {
     border-top-right-radius: 5px;
     padding: 5px 0
 }
-
+.progress-order span.badge {
+    font-size: 12px;
+}
 .pulse {
     display: block;
     width: 8px;
@@ -3779,4 +3781,7 @@ a.morelink.less {
 
 .booking-experience .address-form .where-to-go .title.title-36 {
     font-size: 24px;
+}
+.inner_spacing .border-product .product-icon #social-links ul li a {
+    font-size: 20px;
 }

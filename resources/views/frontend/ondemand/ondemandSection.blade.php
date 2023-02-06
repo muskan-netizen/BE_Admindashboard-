@@ -2,6 +2,17 @@
 @section('customcss')
 <link defer type="text/css" href="{{asset('css/ondemand.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 @endsection
+@php
+$add_to_cart =  route('addToCart') ;
+$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+$is_service_product_price_from_dispatch_forOnDemand = 0;
+$category_type_idForNotShowshPlusMinus = ['12'];
+if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+    $is_service_product_price_from_dispatch_forOnDemand =1;
+    array_push($category_type_idForNotShowshPlusMinus,8);
+}
+
+@endphp
 <section class="home-serivces" id="alSixHomeServices">
     <div class="container">
         <div class="row mb-lg-5 mb-md-4 mb-3">
@@ -93,37 +104,73 @@
                                                                     </div>
                                                                     <div class="d-flex align-items-center justify-content-between productBookingBtns">
                                                                         @if($productInquiryCheck == 0)
+                                                                    
                                                                             <h5 class="my-sm-0 my-3">
-                                                                                {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
-                                                                                <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
+                                                                                @if($is_service_product_price_from_dispatch_forOnDemand !=1)
+                                                                                    {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
+                                                                                    <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
+                                                                                @endif
                                                                             </h5>
-
+                                                                       
 
                                                                             @if( (isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0) )
                                                                             @php
                                                                                 $cartcount = 1;
                                                                             @endphp
-                                                                            <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                                            <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
-                                                                                <span class="minus qty-minus-ondemand sd"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                                </span>
-                                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
-                                                                                <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                                </span>
-                                                                            </div>
+                                                                            @if(   $is_service_product_price_from_dispatch_forOnDemand ==1)
+
+
+                                                                                                                                                            
+                                                                            <a class="btn btn-solid btn btn-solid view_on_demand_price"  style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                                                             @else
-                                                                            <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Add') }} <i class="fa fa-plus"></i></a>
-                                                                            <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
-                                                                                <span class="minus qty-minus-ondemand 132"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                                </span>
-                                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
-                                                                                <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                                </span>
-                                                                            </div>
+                                                                                <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                            @endif
+                                                                            @if(
+                                                                                isset($data->category_type_id) && 
+                                                                                ( 
+                                                                                    (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus)) 
+                                                                                )  
+                                                                            )
+                                                                                <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
+                                                                                    <span class="minus qty-minus-ondemand sd"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                                    </span>
+                                                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
+                                                                                    <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                                    </span>
+                                                                                </div>
+                                                                                @else
+                                                                                    <a class="btn btn-solid " id="added_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                                @endif
+
+                                                                            @else
+                                                                            
+
+                                                                            @if(   $is_service_product_price_from_dispatch_forOnDemand ==1)
+                                                                                    
+                                                                                <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
+                                                                            @else
+                                                                              <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Add') }} <i class="fa fa-plus"></i></a>
+                                                                            @endif 
+                                                                            @if(
+                                                                                isset($data->category_type_id) && 
+                                                                                ( 
+                                                                                    (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus)) 
+                                                                                )  
+                                                                            )
+                                                                                <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
+                                                                                    <span class="minus qty-minus-ondemand 132"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                                    </span>
+                                                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
+                                                                                    <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                                    </span>
+                                                                                </div>
+                                                                            @else
+                                                                                <a class="btn btn-solid "  style="display:none;" id="added_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                            @endif 
 
                                                                             @endif
                                                                         @endif
@@ -219,48 +266,68 @@
                                                     <div class="col-12 ac-royo-btn">
                                                         <div class="d-flex align-items-center justify-content-between">
                                                             @if($productInquiryCheck == 0)
-                                                                <h5 class="my-sm-0 my-3 ">
-                                                                    {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
+                                                            @php
+                                                                $cartcount = 0;
+                                                            @endphp
+                                                            @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
+                                                                @php
+                                                                    $cartcount = 1;
+                                                                @endphp
+                                                            @endif
+                                                                @if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand'))
+                                                                @if($cartcount > 0)
+                                                                        <h5 class="my-sm-0 my-3 "></h5>
+                                                                        <a class="btn btn-solid float-right"  id="added_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                    <a class="btn btn-solid view_on_demand_price"  style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
+                                                                    @else
+                                                                    <h5 class="my-sm-0 my-3 "></h5>
+                                                                    <a class="btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
+                                                                    <a class="btn btn-solid float-right"  style="display:none;" id="added_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                    @endif
+                                                                
+                                                                @else {{-- else is_service_product_price_from_dispatch --}}
                                                                   
-                                                                    <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
-                                                                </h5>
+                                                                    <h5 class="my-sm-0 my-3 ">
+                                                                        {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
+                                                                    
+                                                                        <span class="alProductViewPriceMin"> {{ $data->minimum_duration_min > 0 ? $data->minimum_duration_min . __(' min') : '' }}</span>
+                                                                    </h5>
 
-                                                                @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
-                                                                    @php
+                                                                    @if($cartcount > 0)
+                                                                    
+                                                                        @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
+                                                                            <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                            <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
+                                                                                <span class="minus qty-minus-ondemand 245"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                                </span>
+                                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
+                                                                                <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                                </span>
+                                                                            </div>
+                                                                        @else
+                                                                            <a class="btn btn-solid " id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
 
-                                                                        $cartcount = 1;
-                                                                    @endphp
-                                                                    @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
-                                                                        <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                                        <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
-                                                                            <span class="minus qty-minus-ondemand 245"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                        @endif
+                                                                    @else
+                                                                    <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                        @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
+                                                                        <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
+                                                                            <span class="minus qty-minus-ondemand 256"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
                                                                                 <i class="fa fa-minus" aria-hidden="true"></i>
                                                                             </span>
-                                                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
-                                                                            <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
+                                                                            <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
                                                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                                                             </span>
                                                                         </div>
-                                                                    @else
-                                                                        <a class="btn btn-solid " id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
-
+                                                                        @else
+                                                                                <a class="btn btn-solid " style="display:none;"   id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                        @endif
                                                                     @endif
-                                                                @else
-                                                                <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                                    @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
-                                                                    <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
-                                                                        <span class="minus qty-minus-ondemand 256"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                            <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                        </span>
-                                                                        <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
-                                                                        <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                        </span>
-                                                                    </div>
-                                                                    @else
-                                                                            <a class="btn btn-solid " style="display:none;"   id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
-                                                                    @endif
-                                                                @endif
+                                                                
+                                                                @endif {{-- end is_service_product_price_from_dispatch --}}
                                                             @endif
 
                                                             </div>
@@ -363,119 +430,118 @@
                                 <div id="step-2-ondemand">
                                    @php
                                    $lastKey = count($cartData) - 1;
-
                                    @endphp
                                    {{ Arr::last($cartData)}}
                                     @foreach ($cartData as $cd => $cart_data)
-                                      @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
-
-                                      @php
-
-                                        $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
-                                      @endphp
-
-
-                                        <div  id="date_time_set_div{{$cart_data->id}}" class="booking_date_section">
-
-                                            <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
-                                            @if(count($cart_data->period)>0)
-                                            <div class="date-items radio-btns hide">
-
-                                                @foreach ($cart_data->period as $key => $date)
-                                                    <div>
-                                                        @php
-                                                        $checked = '';
-                                                        $singleDate =  trim(date('Y-m-d', strtotime($date)));
-                                                        if($productDate == $singleDate && !empty($productDate)){
-                                                            $checked = "checked";
-                                                        }
-                                                        $dateRandNo = rand(10,100);
-                                                        @endphp
-                                                        <div class="radios">
-                                                            <p>{{date('D', strtotime($date))}}</p>
-                                                            <div class="alCustomHomeServiceRadio ">
-                                                                <input type="radio"  class="check-time-slots booking_date ondemand-time-slots ondemand_{{ $checked }}" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" data-product_id ="{{$cart_data->product->id}}" data-product_tag ="{{$cart_data->product->tags}}" data-product_category_type ="{{$cart_data->product->productcategory->type_id}}"  value='{{date('Y-m-d', strtotime($date))}}' name='booking_date_{{$cart_data->id}}' id='radio{{$cd}}{{$key}}{{ $dateRandNo }}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
-                                                                <label for='radio{{$cd}}{{$key}}{{$dateRandNo  }}'>
-                                                                <span class="customCheckbox" aria-hidden="true" >{{date('d', strtotime($date))}}</span>
-                                                                </label>
-                                                                <input type="hidden" name="productid" id="productid" value="{{$cart_data->id}}" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-
-                                            </div>
-                                            @else
-                                             <h5 class="text-center">{{ __("Vendor has not created slots for this Date yet.") }}</h5>
-                                            @endif
-                                            @if($cart_data->is_dispatch_slot == 1)
+                                        @if(($cart_data->cateTypeId ==8) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
+                                            @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
                                             @php
-
-                                            $dispatch_agents = $cart_data->dispatchAgents ?? [];
-                                            $cart_product_id = $cart_data->id;
-                                            $dispatch_agent_id = @$cart_data->dispatch_agent_id;
-                                            $show_dispatcher_agent = @$cart_data->product->is_show_dispatcher_agent;
-                                            $selected_agent_id = @$cart_data->dispatch_agent_id;
-                                            $schedule_slot = $cart_data->schedule_slot;
-
+                                                $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
                                             @endphp
-                                            <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" >
-                                                {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif " --}}
-                                             @include('frontend.ondemand.dispatcher_agent_slots')
-                                            </div>
-                                            @else
-                                                @php
-                                                $time_slots = [];
-                                                $cart_product_id = $cart_data->id;
-                                                $schedule_slot = $cart_data->schedule_slot;
-                                                if(!empty($cart_data->timeSlots)){
-                                                    $time_slots = $cart_data->timeSlots;
-                                                }
-                                                @endphp
-                                                <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" ">
-                                                    {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif   --}}
-                                                    @include('frontend.ondemand.time-slots-for-date')
-                                                </div>
-                                                {{-- <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
-                                                    <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
 
-                                                    <div class="booking-time radio-btns long-radio mb-0">
-                                                        @php
-                                                        if(!empty($cart_data->timeSlots)){
-                                                            $time_slots = $cart_data->timeSlots;
-                                                        }
-                                                        @endphp
-                                                        @foreach ($time_slots as $key => $date)
-                                                        @if($key+1 < count($time_slots))
-                                                        @php
-                                                        $checked='';
-                                                            $slotTime = $date.' - '.@$time_slots[$key+1];
-                                                            if(isset($cart_data->schedule_slot) && $cart_data->schedule_slot == $slotTime){
-                                                                echo $checked="checked";
-                                                            }
-                                                        @endphp
+
+                                            <div  id="date_time_set_div{{$cart_data->id}}" class="booking_date_section">
+
+                                                <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
+                                                @if(count($cart_data->period)>0)
+                                                <div class="date-items radio-btns hide">
+
+                                                    @foreach ($cart_data->period as $key => $date)
                                                         <div>
+                                                            @php
+                                                            $checked = '';
+                                                            $singleDate =  trim(date('Y-m-d', strtotime($date)));
+                                                            if($productDate == $singleDate && !empty($productDate)){
+                                                                $checked = "checked";
+                                                            }
+                                                            $dateRandNo = rand(10,100);
+                                                            @endphp
                                                             <div class="radios">
-                                                                <div class="alCustomHomeServiceRadio">
-                                                                    <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif class="ondemand_{{$checked }}" />
-                                                                    <label for='time{{$cart_data->id}}{{$key+1}}'>
-                                                                        <span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$date}} - {{@$time_slots[$key+1]}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
+                                                                <p>{{date('D', strtotime($date))}}</p>
+                                                                <div class="alCustomHomeServiceRadio ">
+                                                                    <input type="radio"  class="check-time-slots booking_date ondemand-time-slots ondemand_{{ $checked }}" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" data-product_id ="{{$cart_data->product->id}}" data-product_tag ="{{$cart_data->product->tags}}" data-product_category_type ="{{$cart_data->product->productcategory->type_id}}"  value='{{date('Y-m-d', strtotime($date))}}' name='booking_date_{{$cart_data->id}}' id='radio{{$cd}}{{$key}}{{ $dateRandNo }}' {{$checked }} @if(($key == 0 && $checked == "")) checked @endif />
+                                                                    <label for='radio{{$cd}}{{$key}}{{$dateRandNo  }}'>
+                                                                    <span class="customCheckbox" aria-hidden="true" >{{date('d', strtotime($date))}}</span>
                                                                     </label>
+                                                                    <input type="hidden" name="productid" id="productid" value="{{$cart_data->id}}" />
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        @endif
-                                                        @endforeach
+                                                    @endforeach
+
+                                                </div>
+                                                @else
+                                                <h5 class="text-center">{{ __("Vendor has not created slots for this Date yet.") }}</h5>
+                                                @endif
+                                                @if($cart_data->is_dispatch_slot == 1)
+                                                @php
+
+                                                $dispatch_agents = $cart_data->dispatchAgents ?? [];
+                                                $cart_product_id = $cart_data->id;
+                                                $dispatch_agent_id = @$cart_data->dispatch_agent_id;
+                                                $show_dispatcher_agent = @$cart_data->product->is_show_dispatcher_agent;
+                                                $selected_agent_id = @$cart_data->dispatch_agent_id;
+                                                $schedule_slot = $cart_data->schedule_slot;
+
+                                                @endphp
+                                                <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" >
+                                                    {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif " --}}
+                                                @include('frontend.ondemand.dispatcher_agent_slots')
+                                                </div>
+                                                @else
+                                                    @php
+                                                    $time_slots = [];
+                                                    $cart_product_id = $cart_data->id;
+                                                    $schedule_slot = $cart_data->schedule_slot;
+                                                    if(!empty($cart_data->timeSlots)){
+                                                        $time_slots = $cart_data->timeSlots;
+                                                    }
+                                                    @endphp
+                                                    <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" ">
+                                                        {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif   --}}
+                                                        @include('frontend.ondemand.time-slots-for-date')
                                                     </div>
-                                                    <P id="message_of_time{{$cart_data->id}}"></P>
-                                                </div> --}}
+                                                    {{-- <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
+                                                        <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
+
+                                                        <div class="booking-time radio-btns long-radio mb-0">
+                                                            @php
+                                                            if(!empty($cart_data->timeSlots)){
+                                                                $time_slots = $cart_data->timeSlots;
+                                                            }
+                                                            @endphp
+                                                            @foreach ($time_slots as $key => $date)
+                                                            @if($key+1 < count($time_slots))
+                                                            @php
+                                                            $checked='';
+                                                                $slotTime = $date.' - '.@$time_slots[$key+1];
+                                                                if(isset($cart_data->schedule_slot) && $cart_data->schedule_slot == $slotTime){
+                                                                    echo $checked="checked";
+                                                                }
+                                                            @endphp
+                                                            <div>
+                                                                <div class="radios">
+                                                                    <div class="alCustomHomeServiceRadio">
+                                                                        <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif class="ondemand_{{$checked }}" />
+                                                                        <label for='time{{$cart_data->id}}{{$key+1}}'>
+                                                                            <span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$date}} - {{@$time_slots[$key+1]}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            @endif
+                                                            @endforeach
+                                                        </div>
+                                                        <P id="message_of_time{{$cart_data->id}}"></P>
+                                                    </div> --}}
+                                                @endif
+
+
+                                                <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
+                                            </div>
+                                            <hr>
                                             @endif
-
-
-                                            <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
-                                        </div>
-                                        <hr>
-                                        @endif
+                                        @endif   
                                     @endforeach
 
                                         <div class="booking-time-wrapper">
@@ -702,6 +768,9 @@
         </div>
     </div>
 </section>
+@include('frontend.ondemand.productPriceModel');
 @section('custom-js')
+
+<script src="{{ asset('js/onDemand/GetDispatcherPrice.js') }}"></script>
 <script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
 @endsection

@@ -12,12 +12,19 @@
 @endsection
 @section('content')
 @php
-$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch']);
+$is_service_product_price_from_dispatch_forOnDemand = 0;
+
+if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+    $is_service_product_price_from_dispatch_forOnDemand =1;
+}
+
 @endphp
 <!-- get current page -->
 @php
 @$currentPage = $_GET['page'];
 @endphp
+
 <!-- get current page end -->
 <!-- section start -->
 <section class="section-b-space ratio_asos al_vendor_product_page">
@@ -217,9 +224,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                             <p class="pb-1">In {{$new['category_name']}}</p>
                                                             <div class="d-flex align-items-center justify-content-between">
                                                                 <b>
-                                                                    @if($new['inquiry_only'] == 0)
-                                                                        <?php $multiply = $new['variant_multiplier']; ?>
-                                                                        {{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                    @if($is_service_product_price_from_dispatch_forOnDemand !=1)
+                                                                        @if($new['inquiry_only'] == 0)
+                                                                            <?php $multiply = $new['variant_multiplier']; ?>
+                                                                            {{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                        @endif
                                                                     @endif
                                                                 </b>
 
@@ -357,8 +366,10 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 
 
                                                                     <div class="d-flex align-items-center justify-content-between">
-                                                                        @if($data['inquiry_only'] == 0)
-                                                                            <h4 class="mt-0">{{$additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        @if($is_service_product_price_from_dispatch_forOnDemand !=1)
+                                                                            @if($data['inquiry_only'] == 0)
+                                                                                <h4 class="mt-0">{{$additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                            @endif
                                                                         @endif
                                                                       <!--   @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)
@@ -544,5 +555,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
         filterProducts();
         });
 </script>
+
+
 
 @endsection

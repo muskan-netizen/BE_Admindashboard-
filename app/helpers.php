@@ -641,6 +641,7 @@ if (!function_exists('SplitTime')) {
 if (!function_exists('showSlot')) {
     function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
     {
+        $type = empty($type)? "delivery": $type;
         $slotDuration = Vendor::select('slot_minutes')->where('id', $vid)->first();
         $duration = ($slotDuration->slot_minutes) ?? $duration;
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
@@ -856,22 +857,24 @@ if (!function_exists('SplitTimeTemp')) {
 if (!function_exists('findSlot')) {
     function findSlot($myDate = null, $vid, $type = 'delivery', $api = null)
     {
+        $type = empty($type) ? 'delivery' :$type;
         $myDate  = date('Y-m-d');
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-        $slots = showSlot($myDate, $vid, 'delivery');
+        $slots = showSlot($myDate, $vid,  $type);
+
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+1 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+2 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+3 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
         if (isset($slots) && count((array)$slots)>0) {
             $time = explode(' - ', $slots[0]['value']);
@@ -893,22 +896,22 @@ if (!function_exists('findSlot')) {
     }
 }
 if (!function_exists('findSlotNew')) {
-    function findSlotNew($myDate,$vid,$type=0)
+    function findSlotNew($myDate,$vid,$type = 'delivery', $duration = 0)
     {
-            $slots = showSlot($myDate,$vid,'delivery', $type);
+            $slots = showSlot($myDate,$vid,$type, $duration);
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+1 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
 
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+2 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
 
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+3 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
                 if(isset($slots)){
                     $slots = $slots;
@@ -1382,30 +1385,26 @@ if (!function_exists('checkTableExists')) {
     }
 }
 if (!function_exists('inventorySyncOnOff')) {
-    function inventorySyncOnOff($vendor_id)
+    function inventorySyncOnOff($vendor_id, $client_preferences)
     {
-        if (!empty($vendor_id) && checkColumnExists('client_preferences', 'inventory_service_key_url')) {
+        if (!empty($vendor_id)) 
+        {
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'shortcode' => $client_preferences->inventory_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+            $url = $client_preferences->inventory_service_key_url;
 
-            $client_preferences = ClientPreference::first();
-            if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
+            $request = $client->get($url . '/api/v1/sync-status', [
+                'json' => ['royo_vendor_id' => $vendor_id]
+            ]);
 
-                $client = new \GuzzleHttp\Client([
-                    'headers' => [
-                        'shortcode' => $client_preferences->inventory_service_key_code,
-                        'content-type' => 'application/json'
-                    ]
-                ]);
-                $url = $client_preferences->inventory_service_key_url;
+            $response = json_decode($request->getBody());
 
-                $request = $client->get($url . '/api/v1/sync-status', [
-                    'json' => ['royo_vendor_id' => $vendor_id]
-                ]);
-
-                $response = json_decode($request->getBody());
-
-                if ($response->status) {
-                    return $response->msg;
-                }
+            if ($response->status) {
+                return $response->msg;
             }
             return false;
         } else {
@@ -1516,8 +1515,8 @@ if( !function_exists('is_category_p2p') ) {
 //     }
 // }
 
-if( !function_exists('productDiscountPercentage') ) {
-    function productDiscountPercentage($product_price, $product_compare_price)
+if( !function_exists('productDiscountPercentage()') ) {
+    function productDiscountPercentage($product_price = 0, $product_compare_price)
     {
         if($product_compare_price > 0) {
             $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;
@@ -1599,6 +1598,74 @@ if( !function_exists('makeCartEmpty') ) {
         return true;
     }
 }
+if (!function_exists('GerenalSlot')) {
+    function GerenalSlot($myDate, $StartTime, $EndTime, $Duration="60",$delayMin=0)
+    {
+        $myDate  = date('Y-m-d',strtotime($myDate));
+        //pr($myDate);
+        $Duration = (($Duration==0)?'60':$Duration);
+
+        $user = Auth::user();
+        if (isset($user->timezone) && !empty($user->timezone)) {
+            $timezoneset = $user->timezone;
+        } else {
+            $client = ClientData::orderBy('id', 'desc')->select('id', 'timezone')->first();
+
+            if (isset($client->timezone) && !empty($client->timezone)) {
+                $timezoneset = $client->timezone;
+            } else {
+                $timezoneset = 'Asia/Kolkata';
+            }
+        }
+        $cr = Carbon::now()->addMinutes($delayMin);
+        $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+        $nowT = strtotime($now);
+        $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
+        $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
+        $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
+        if ($nowT > $nowE) {
+            return [];
+        } else {
+            $StartTime = date('H:i', strtotime($nowA));
+        }
+
+        $ReturnArray = array();
+        $StartTime = strtotime($StartTime); //Get Timestamp
+        $EndTime = strtotime($EndTime); //Get Timestamp
+        $AddMins = $Duration * 60;
+        $endtm = 0;
+        $key = 0;
+        while ($StartTime <= $EndTime) {
+            $endtm = $StartTime + $AddMins;
+            if ($endtm>$EndTime) {
+                $endtm = $EndTime;
+            }
+            if( $StartTime < $endtm){
+
+                if ($nowT>$nowS && $StartTime > $nowT ){
+                    $key++;
+                    //Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
+                  //  $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+                
+                    $ReturnArray[$key]['name'] = date('h:i A',$StartTime).' - '.date('h:i A', $endtm);
+                    $ReturnArray[$key]['value'] = date("G:i", $StartTime).'-'.date("G:i", $endtm);
+                }
+                if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
+                     $key++;
+                    //$ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+                    $ReturnArray[$key]['name'] = date('h:i A',$StartTime).' - '.date('h:i A', $endtm);
+                    $ReturnArray[$key]['value'] = date("G:i", $StartTime).'-'.date("G:i", $endtm);
+                }
+            }
+
+            $StartTime += $AddMins;
+            $endtm = 0;
+           
+        }
+        return $ReturnArray;
+    }
+}
+
 
 
 if (!function_exists('GetDayFromDate')) {

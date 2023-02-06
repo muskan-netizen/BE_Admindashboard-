@@ -74,7 +74,7 @@ body.al_body_template_eight .exzoom_nav.side_nav_img span img {
 }
 
 body.al_body_template_eight .exzoom_nav.side_nav_img span .active {
-    border: 1px solid #E9248D !important;
+    border: 1px solid var(--theme-deafult) !important;
 }
 
 body.al_body_template_eight section.buy_details p.exzoom_btn {
@@ -101,7 +101,7 @@ body.al_body_template_eight .aside_bar .discriptions {
 }
 
 body.al_body_template_eight .category-related-product .product-card-box .media-body.align-self-start .al_clock b {
-    color: #e9248d;
+    color: var(--theme-deafult);
 }
 
 body.al_body_template_eight .collection-wrapper.al h2 {
@@ -355,7 +355,7 @@ body.al_body_template_eight .main-prod {
 }
 
 
-/* 
+/*
 body.al_body_template_eight .product-wrapper-grid .product-image {
     top: -24px;
 } */
@@ -463,12 +463,12 @@ body.al_body_template_eight .outter-fillter-data .custom_filtter ul li a {
 }
 
 body.al_body_template_eight .outter-fillter-data .custom_filtter ul li a.active {
-    color: #E9248D;
+    color: var(--theme-deafult);
 }
 
 body.al_body_template_eight .outter-fillter-data .custom_filtter ul li a.active:after {
     content: '';
-    background: #E9248D;
+    background: var(--theme-deafult);
     width: 70px;
     height: 2px;
     position: absolute;
@@ -529,7 +529,7 @@ body.al_body_template_eight .aside_bar span {
 
 body.al_body_template_eight .aside_bar span small {
     font-size: 14px;
-    color: #e9248d;
+    color: var(--theme-deafult);
     margin: 10px;
 }
 
@@ -539,7 +539,7 @@ body.al_body_template_eight .aside_bar form .form-group {
 
 body.al_body_template_eight .aside_bar form .form-group button.btn.btn-primary {
     font-size: 14px;
-    background: #e9248d;
+    background: var(--theme-deafult);
     border: none;
     height: 37px;
     margin-top: 20px;
@@ -924,7 +924,7 @@ body.al_body_template_eight .exzoom_nav.side_nav_img span img {
 }
 
 body.al_body_template_eight .exzoom_nav.side_nav_img span .active {
-    border: 1px solid #E9248D !important;
+    border: 1px solid var(--theme-deafult) !important;
 }
 
 body.al_body_template_eight section.buy_details p.exzoom_btn {
@@ -1059,7 +1059,7 @@ body.al_body_template_eight div#category_products_filter .media-body.align-self-
     color: #000;
 }
 
-body.al_body_template_eight.homeHeader .col-grid-box .media-body.align-self-center .inner_spacing.w-100 h3 {
+body.al_body_template_eight .col-grid-box .media-body.align-self-center .inner_spacing.w-100 h3 {
     text-align: center;
     display: block !important;
     margin: 0px 0 0!important;
@@ -1080,11 +1080,11 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
     padding: 20px;
 }
 
-body.al_body_template_eight.homeHeader .collection-filter-block {
+body.al_body_template_eight .collection-filter-block {
     border: none !important;
 }
 
-body.al_body_template_eight.homeHeader .collection-filter .theme-card .offer-slider img {
+body.al_body_template_eight .collection-filter .theme-card .offer-slider img {
     padding: 0;
     height: auto;
     border-radius: 5px;
@@ -1269,7 +1269,7 @@ body.al_body_template_eight section.section-b-space.new-pages .custom-container 
     max-width: 20%;
 }
 
-body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span {
+body.al_body_template_eight section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span {
     padding: 10px;
 }
 
@@ -1499,7 +1499,7 @@ body.al_body_template_eight div#product_addon_modal .modal-header .close {
     width: 40px;
     height: 40px;
     line-height: 40px;
-    background: #e9248d;
+    background: var(--theme-deafult);
     opacity: 9;
     display: block;
     border-radius: 50%;
@@ -1594,7 +1594,7 @@ body.al_body_template_eight div#cancel_order button.close {
     padding: 0;
     width: 40px;
     height: 40px;
-    background: #e9248d;
+    background: var(--theme-deafult);
     opacity: 1;
     text-align: center;
     color: #fff;
@@ -1606,7 +1606,7 @@ body.al_body_template_eight div#cancel_order button.close {
 }
 
 body.al_body_template_eight div#cancel_order div#cancel-order-form-modal form button {
-    background-color: #e9248d;
+    background-color: var(--theme-deafult);
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -1632,7 +1632,7 @@ body.al_body_template_eight div#repeat_cart_modal .modal-content h6 {
 body.al_body_template_eight div#topup_wallet button.close {
     padding: 0;
     margin: 0;
-    background: #e9248d;
+    background: var(--theme-deafult);
     opacity: 1;
     color: #fff;
     width: 40px;
@@ -1647,7 +1647,7 @@ body.al_body_template_eight div#topup_wallet button.close {
 body.al_body_template_eight div#transfer_wallet button.close {
     padding: 0;
     margin: 0;
-    background: #e9248d;
+    background: var(--theme-deafult);
     opacity: 9;
     color: #fff;
     width: 40px;
@@ -1662,7 +1662,7 @@ body.al_body_template_eight div#transfer_wallet button.close {
 body.al_body_template_eight div#proceed_to_pay_modal button.close {
     padding: 0;
     margin: 0;
-    background: #e9248d;
+    background: var(--theme-deafult);
     opacity: 9;
     color: #fff;
     width: 40px;
@@ -1899,12 +1899,12 @@ body.al_body_template_eight .outter-fillter-data .custom_filtter ul li a {
 }
 
 body.al_body_template_eight .outter-fillter-data .custom_filtter ul li a.active {
-    color: #E9248D;
+    color: var(--theme-deafult);
 }
 
 body.al_body_template_eight .outter-fillter-data .custom_filtter ul li a.active:after {
     content: '';
-    background: #E9248D;
+    background: var(--theme-deafult);
     width: 70px;
     height: 2px;
     position: absolute;
@@ -1976,7 +1976,7 @@ body.al_body_template_eight .aside_bar span {
 
 body.al_body_template_eight .aside_bar span small {
     font-size: 14px;
-    color: #e9248d;
+    color: var(--theme-deafult);
     margin: 10px;
 }
 
@@ -1992,7 +1992,7 @@ body.al_body_template_eight .aside_bar form .form-group {
 
 body.al_body_template_eight .aside_bar form .form-group button.btn.btn-primary {
     font-size: 14px;
-    background: #e9248d;
+    background: var(--theme-deafult);
     border: none;
     height: 37px;
     margin-top: 20px;
@@ -2125,32 +2125,32 @@ body.al_body_template_eight .listing-categories ul {
     margin: 10px 0 30px;
 }
 
-body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .collection-filter.col-lg-3 .card-body {
+body.al_body_template_eight section.section-b-space.ratio_asos .collection-filter.col-lg-3 .card-body {
     padding: 0;
 }
 
-body.al_body_template_eight.homeHeader div#collapseOne {
+body.al_body_template_eight div#collapseOne {
     background-color: #f1f1f1;
 }
 
-body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span {
+body.al_body_template_eight section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span {
     display: block;
     width: 100%;
 }
 
-body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span i {
+body.al_body_template_eight section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span i {
     float: right;
     font-size: 25px;
 }
 
-body.al_body_template_eight.homeHeader .collection-product-wrapper a.product-box {
+body.al_body_template_eight .collection-product-wrapper a.product-box {
     position: relative;
     background: #f2f2f2;
     display: block;
     padding: 20px;
 }
 
-body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image img {
+body.al_body_template_eight .product-wrapper-grid .product-image img {
     position: relative;
     height: 150px;
     width: 150px;
@@ -2158,7 +2158,7 @@ body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image img 
     margin: 20px auto 0;
 }
 
-body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image {
+body.al_body_template_eight .product-wrapper-grid .product-image {
     top: -24px;
     text-align: center;
     left: 0;
@@ -2166,7 +2166,7 @@ body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image {
     padding: 0;
 }
 
-body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .collection-filter.col-lg-3 button.btn.btn-link.btn-block.text-left.p-0.collapsed h5 span i {
+body.al_body_template_eight section.section-b-space.ratio_asos .collection-filter.col-lg-3 button.btn.btn-link.btn-block.text-left.p-0.collapsed h5 span i {
     transform: rotate(180deg);
 }
 
@@ -2500,7 +2500,7 @@ body.al_body_template_eight .categories-product-list .col-sm-6.offset-sm-3 {
     line-height: 30px !important;text-align: center !important;}
 .p2p_single_slider .col .deals-product .supplier-rating a {
         font-size: 16px !important;
-        color: #E9248D !important;
+        color: var(--theme-deafult) !important;
         font-weight: 600;
     }
     .al_body_template_eight .best-seller-full h2.h2-heading {
@@ -2542,7 +2542,7 @@ body.al_body_template_eight .p2p-full-width {
     height: 20px;
     line-height: 20px;
     color: #fff;
-    border-radius: 50%;  
+    border-radius: 50%;
     margin-left: 10px;
     text-align: center;
 }
@@ -3306,4 +3306,18 @@ body.al_body_template_eight .p2p-full-width {
         height: 100px !important;
         width: 100px !important;
     }
+    .row.eccomerce-temp .top-heading.mt-5.pt-5 h2.h2-heading{margin-bottom: 0 !important; width: 100% !important; text-align: left !important;}
+    section.suppliers-section.container.vender_slider .top-heading.mt-5.pt-5 a{
+        position: absolute;
+        right: 0;
+        font-size: 14px !important;
+    }
 }
+
+.alSpaCityBox{position: relative;padding-bottom: 100%;overflow: hidden;border-radius: 15px 15px 0 0;margin-bottom: 10px;}
+.alSpaCityBox a.cities.updateLocationByCity img{position: absolute;height: 100%;width: 100%;}
+.alSpaListBox p{padding-left: 15px;}
+body.dark .alSpaListBox{background-color: #000; }
+.alSpaListBox{background-color: #fff;overflow: hidden;border: 1px solid #e8e8e8;box-shadow: rgb(28 28 28 / 3%) 0 .4rem 0.8rem!important;border-radius: 15px;}
+.login-with-username div#password-wrapper{position: relative;}
+body.al_body_template_eight .main-login-page .toggle-password{top: 24px;}

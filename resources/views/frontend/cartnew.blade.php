@@ -561,6 +561,9 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <span class="error text-danger" id="plugnpay_card_error"></span>
                             </div>
                         <% } %>
+
+
+
                     </div>
                 <% }); %>
                 {{-- <div class="" id="" role="tabpanel">
@@ -1090,7 +1093,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
-    var error_unchanged_schedule_date = "{{__('Schedule date can not be changed')}}";
+    var error_unchanged_schedule_date = "{{__('Schedule date can not be changed, Because order being edited is scheduled order. In case of multi vendor, order can not be edited.')}}";
     var discard_order_editing_url = "{{route('user.discardeditorder')}}";
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
