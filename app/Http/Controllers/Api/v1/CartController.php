@@ -79,6 +79,7 @@ class CartController extends BaseController
 
             if ($cart) {
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+                // pr( $cartData);
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder))
                 {
                     $editlimit_datetime = Carbon::now()->toDateTimeString();
@@ -92,8 +93,6 @@ class CartController extends BaseController
                     if($VendorOrderStatus > 0){
                         $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                     }
-                }else{
-                    $cartData->cart_error_message = '';
                 }
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
@@ -153,6 +152,8 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
+        \Log::info('request data in add to cart');
+        \Log::info($request->all());
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
@@ -321,6 +322,7 @@ class CartController extends BaseController
                     'service_start_date'  => @$service_start_date,
                 ];
                 if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
+                    \Log::info('in array chechk');
                     $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                     $slot = $request->dispatcherAgentData['onDemandBookingdate'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
                     $cart_product_detail['schedule_type'] = 'schedule';
@@ -597,7 +599,7 @@ class CartController extends BaseController
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
 
-        try{
+       // try{
         $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
@@ -608,14 +610,17 @@ class CartController extends BaseController
         $total_markup_fee_tax = 0;
         $total_taxable_amount = 0;
         $preferences = ClientPreference::first();
-        $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
+        $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_service_product_price_from_dispatch']);
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
             return false;
         }
         $nowdate = Carbon::now()->toDateTimeString();
         $nowdate = convertDateTimeInClientTimeZone($nowdate);
-
+        $is_service_product_price_from_dispatch = 0;
+        if(($additionalPreferences->is_service_product_price_from_dispatch == 1) && ( $type == 'on_demand')){
+            $is_service_product_price_from_dispatch =1;
+        }
         $vondorCnt = 0;
         $address = [];
         $category_array = [];
@@ -849,9 +854,14 @@ class CartController extends BaseController
                         $prod->product_out_of_stock =  $product_out_of_stock;
 
                         $price_in_currency = $price_in_doller_compare = $pro_disc = $quantity_price = 0;
+
                         $variantsData = $taxData = $vendorAddons = array();
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
+                         //  GET PRICE from driver
+                        if( checkColumnExists('cart_products', 'dispatch_agent_price') && ( $is_service_product_price_from_dispatch ==1 )){
+                            $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
+                        }
                         $total_markup_charges += $prod->pvariant->markup_price??0;
                         $price_in_doller_compare = $price_in_currency * $clientCurrency->doller_compare;
                         $container_charges_in_currency = $prod->pvariant->container_charges??0.00;
@@ -966,7 +976,7 @@ class CartController extends BaseController
                             }
                             //dd($prod->product->toArray());
                             $prod->taxdata = $taxData;
-                            if ($action == 'delivery' || $action == 'on_demand') {
+                            if ( (in_array($action,['delivery','on_demand']) )  && ( $is_service_product_price_from_dispatch !=1 )) {
                                 $checkLastMile = 0;
                                 $product_tags = '';
                                 $NumberOfroutes= 1;
@@ -1221,7 +1231,7 @@ class CartController extends BaseController
                         $delivery_status = 0;
                     }
                 }
-                if ($vendorData->vendor->show_slot == 0) {
+                if (($vendorData->vendor->show_slot == 0) && ($is_service_product_price_from_dispatch !=1) ) {
                     if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
                         $vendorData->vendor->is_vendor_closed = 1;
                         if ($delivery_status != 0) {
@@ -1580,12 +1590,12 @@ class CartController extends BaseController
         return $cart;
 
 
-        }catch(\Exception $ex)
-        {
+        // }catch(\Exception $ex)
+        // {
 
-            \Log::info($ex->getMessage());
-            return [];
-        }
+        //     \Log::info($ex->getMessage());
+        //     return [];
+        // }
     }
 
     public function uploadPrescriptions(Request $request){

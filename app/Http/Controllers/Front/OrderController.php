@@ -1128,7 +1128,7 @@ class OrderController extends FrontController
                     $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                     $price_in_currency = $variant->price / $divider;
                     // change product price when is_service_product_price_from_dispatch on 
-                    if(($action == 'on_demand') && checkColumnExists('cart_products', 'dispatch_agent_price') && ($additionalPreferences->is_service_product_price_from_dispatch ==1 )){
+                    if(( checkColumnExists('cart_products', 'dispatch_agent_price') && ($action == 'on_demand') && $additionalPreferences->is_service_product_price_from_dispatch ==1 )){
                         $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
                     }
                     //Find item price here  ==  + $variant->price;

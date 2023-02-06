@@ -910,7 +910,9 @@ trait cartManager{
                 if( ($prod->scheduled_date_time =='') || ( strtotime($prod->scheduled_date_time) < strtotime($vendorStartDate) ) ){
                     $prod->scheduled_date_time = $getSlotingDate = $vendorStartDate ;
                 }
+                $prod->schedule_slot_name = $prod->schedule_slot;
                 if(  $is_service_product_price_from_dispatch == 1){
+                  
                     $selected_dispatcher_time = Carbon::parse($prod->scheduled_date_time, 'UTC')->setTimezone( $user_timezone)->format('Y-m-d');
                     $scheduled_date_time = Carbon::parse($prod->scheduled_date_time)->format('Y-m-d');
                     $nowDate             = Carbon::now()->format('Y-m-d');
@@ -918,7 +920,7 @@ trait cartManager{
                         $delivery_status_message  = __('Scheduled Date Time Invalid!');
                         $delivery_status = 0;
                     }
-                    $prod->schedule_slot_name = $prod->schedule_slot;
+                    
                     if($prod->schedule_slot!=''){
                         $D_slot =    explode('-', $prod->schedule_slot);
                         $start_time =  $nowDate.' ' .( @$D_slot[0] ?? '00:00');
@@ -926,7 +928,7 @@ trait cartManager{
                        
                         $prod->schedule_slot_name =  date('h:i A',strtotime($start_time)).' - '.date('h:i A', strtotime($end_time));
                     }
-                        
+                      
                    
                     $prod->selected_dispatcher_time =$selected_dispatcher_time;
                 }
