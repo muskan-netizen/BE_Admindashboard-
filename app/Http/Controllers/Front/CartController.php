@@ -252,7 +252,7 @@ class CartController extends FrontController
 
         // Get current vendor
         $vendor = Vendor::find($vendor_id);
-        $orders_per_slot = $vendor->orders_per_slot;
+        $orders_per_slot = $vendor->orders_per_slot??0;
         $orderCount = 0;
         // Get Vendor orders
         $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
@@ -740,10 +740,6 @@ class CartController extends FrontController
      */
     public function getCartProducts(Request $request,$domain = '')
     {
-
-        Session()->forget('vendorType');
-        Session()->put('vendorType', $request->type);
-
         $cart_details = [];
         $user = Auth::user();
         $curId = Session::get('customerCurrency');

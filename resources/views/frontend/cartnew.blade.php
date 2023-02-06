@@ -562,6 +562,9 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <span class="error text-danger" id="plugnpay_card_error"></span>
                             </div>
                         <% } %>
+
+
+
                     </div>
                 <% }); %>
                 {{-- <div class="" id="" role="tabpanel">

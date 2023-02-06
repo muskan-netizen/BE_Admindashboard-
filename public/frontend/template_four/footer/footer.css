@@ -80,3 +80,9 @@ ul.social-links.d-flex a:hover i{color: #fff;}
 .tap-top.top-cls {
     display: none;
 }
+.payment-card .payment-card-bottom {
+    margin-bottom:20px !important;
+}
+.payment-card ul.social-links {
+    margin-top: 10px;
+}

@@ -64,7 +64,6 @@ use App\Http\Controllers\Front\LalaMovesController;
 use Illuminate\Support\Facades\Http;
 
 
-
 class OrderController extends FrontController
 {
     use ApiResponser, CartManager;
@@ -910,13 +909,13 @@ class OrderController extends FrontController
                     return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing."), 400);
                 }
                 $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-
                 $order_vendor_status_error = 0;
                 foreach ($cart->editingOrder->orderStatusVendor as $key => $status) {
                     if($status->order_status_option_id  > 2) {
                         $order_vendor_status_error = 1;
                     }
                 }
+                
                 if($VendorOrderStatus > 0 || $order_vendor_status_error == 1){
                     return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing. Please discard order editing."), 400);
                 }
@@ -943,7 +942,6 @@ class OrderController extends FrontController
                         }
                     }
                 }
-                
                 $order->is_edited = 1;
             } else {
                 $order = new Order;

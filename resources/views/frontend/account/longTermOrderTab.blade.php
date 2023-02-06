@@ -5,7 +5,7 @@ table.wp-table.w-100 tr:nth-child(even){
 table.wp-table.w-100 tr td, table.wp-table.w-100 tr th {
 padding: 7px 15px;
 }
-.alOrderImg img {    
+.alOrderImg img {
     width: 100%;
     border-radius: 15px;
     margin-bottom: 10px;
@@ -19,12 +19,12 @@ padding: 7px 15px;
         @if ($longTermOrder->isNotEmpty())
             @foreach ($longTermOrder as $key => $order)
                 @php
-                    
+
                     $total_other_taxes = 0.0;
                     foreach (explode(':', $order->total_other_taxes) as $row) {
                         $total_other_taxes += (float) $row;
                     }
-                    
+
                 @endphp
                 <div class="col-12">
                     <div class="row no-gutters order_head">
@@ -43,28 +43,9 @@ padding: 7px 15px;
                         @if ($client_preference_detail->business_type != 'taxi')
                             <div class="col-md-3 ellipsis">
                                 <h4>{{ __('Address') }}</h4>
-                                @if ($order->luxury_option_id == 3)
-                                    <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                        @if (count($order->vendors) > 0)
-                                            {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? $order->vendors->first()->vendor->address : __('NA')) : __('NA') }}
-                                        @else
-                                            NA
-                                        @endif
-                                    </span>
-                                @else
-                                    <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                        @if ($order->address)
-                                            {{ $order->address->address }},
-                                            {{ $order->address->street }},
-                                            {{ $order->address->city }},
-                                            {{ $order->address->state }},
-                                            {{ $order->address->country }}
-                                            {{ $order->address->pincode }}
-                                        @else
-                                            NA
-                                        @endif
-                                    </span>
-                                @endif
+                                <div class="alOrderAddressBox">
+                                    @include('frontend.account.orders.order_address')
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -79,29 +60,11 @@ padding: 7px 15px;
                             <a class="text-capitalize">{{ $order->user->name }}</a>
                         </div>
                         @if ($client_preference_detail->business_type != 'taxi')
-                            <div class="col-md-3">
-                                @if ($order->luxury_option_id == 3)
-                                    <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                        @if (count($order->vendors) > 0)
-                                            {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? $order->vendors->first()->vendor->address : __('NA')) : __('NA') }}
-                                        @else
-                                            NA
-                                        @endif
-                                    </span>
-                                @else
-                                    <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                        @if ($order->address)
-                                            {{ $order->address->address }},
-                                            {{ $order->address->street }},
-                                            {{ $order->address->city }},
-                                            {{ $order->address->state }},
-                                            {{ $order->address->country }}
-                                            {{ $order->address->pincode }}
-                                        @else
-                                            NA
-                                        @endif
-                                    </span>
-                                @endif
+                            <div class="col-md-3 ellipsis  asdas">
+                                <h4>{{ __('Address') }}</h4>
+                                <div class="alOrderAddressBox">
+                                    @include('frontend.account.orders.order_address')
+                                </div>
 
                             </div>
                         @endif
@@ -135,7 +98,7 @@ padding: 7px 15px;
                                                 <span
                                                     class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }}</span>
                                             @endif
-                                            
+
                                             @if ($order->is_gift == '1')
                                                 <div class="gifted-icon">
                                                     <img class="p-1 align-middle"
@@ -248,7 +211,7 @@ padding: 7px 15px;
                                                 @endif
 
                                             </ul>
-                                        </div>                                        
+                                        </div>
                                         <div class="col-md-5">
                                             <ul class="price_box_bottom m-0 p-0">
                                                 <li class="d-flex align-items-center justify-content-between mb-2">
@@ -369,38 +332,36 @@ padding: 7px 15px;
                                                     @php
                                                         $Service_product_url = isset($product->longTermSchedule->product) ? route('product.edit', @$product->longTermSchedule->product->id) : '#';
                                                     @endphp
-                                                    <h6 class="m-0 d-flex justify-content-between">
-                                                        {{ __('Product Name') }}: 
-                                                        <a href="{{ $Service_product_url }}" target="_blank">
-                                                            {{ $product->longTermSchedule->product->primary->title }}
-                                                        </a>
-                                                    </h6>
-
-                                                    <h6 class="m-0 d-flex justify-content-between">{{ __('No. of Bookings') }}:
+                                                    <div class="d-flex justify-content-start">
+                                                        <h6 class="m-0 pr-2 text-left">{{ __('Product Name') }}:</h6>
+                                                        <a href="{{ $Service_product_url }}" target="_blank"> {{ $product->longTermSchedule->product->primary->title }}</a>
+                                                    </div>
+                                                    <div class="d-flex justify-content-start">
+                                                        <h6 class="m-0 pr-2 text-left">{{ __('No. of Bookings') }}:</h6>
                                                         <span>{{ $product->longTermSchedule->service_quentity }}</span>
-                                                    </h6>
-
-                                                    <h6 class="m-0 d-flex justify-content-between">{{ __('Service Time') }}:
+                                                    </div>
+                                                    <div class="d-flex justify-content-start">
+                                                        <h6 class="m-0 pr-2 text-left">{{ __('Service Time') }}:</h6>
                                                         <span>{{ __(config('constants.Period.' . $product->longTermSchedule->service_period)) }}</span>
-                                                    </h6>
+                                                    </div>
 
                                                     @if ($product->longTermSchedule->addon && count($product->longTermSchedule->addon))
                                                         <hr class="my-2">
                                                         <h6 class="m-0 pl-0"><b>{{ __('Add Ons') }}</b></h6>
                                                         @foreach ($product->longTermSchedule->addon as $addon)
-                                                            <div class="longTermAddon d-flex justify-content-between">
-                                                                <p class="p-0 mr-2 mb-0">
-                                                                    {{ $addon->set->title }} :</p>
-                                                                <b class="p-0 m-0">{{ $addon->option->translation_title }}</b>
+                                                            <div class="longTermAddon d-flex justify-content-start">
+                                                                <h6 class="p-0 m-0">
+                                                                    {{ $addon->set->title }} :</h6>
+                                                                <span class="p-0 m-0">{{ $addon->option->translation_title }}</span>
                                                             </div>
                                                         @endforeach
                                                     @endif
                                                 </div>
                                             </div>
-                                            <div class="outer_div  w-100">
+                                            <div class="outer_divLongTermBox w-100">
                                                 <h6>{{ __('Long Term Service Schedule') }}</h6>
                                                 <div class="col-12">
-                                                
+
                                                     <table class="wp-table w-100">
                                                         <tr>
                                                             <th>#</th>

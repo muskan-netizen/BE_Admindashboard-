@@ -223,7 +223,6 @@ class OrderController extends BaseController
                             return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
                         }
                         $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-
                         $order_vendor_status_error = 0;
                         foreach ($cart->editingOrder->orderStatusVendor as $key => $status) {
                             if($status->order_status_option_id  > 2) {
@@ -2023,7 +2022,7 @@ class OrderController extends BaseController
             $replaceable = 0;
 
             foreach ($order->products as $product) {
-                if($this->checkOrderDaysForReturn($order, $product->product->return_days) && $order->is_exchanged_or_returned==0){
+                if($this->checkOrderDaysForReturn($order, @$product->product->return_days) && $order->is_exchanged_or_returned==0){
 
 
                     if(@$product->product->replaceable && $product->product->replaceable == 1){

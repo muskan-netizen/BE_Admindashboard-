@@ -16,7 +16,6 @@ Route::get('/debug-sentry', function () {
 	//throw new Exception('My first Sentry error!');
 });
 
-
 Route::group(['middleware' => ['domain']], function () {
 	//easypay test
 	Route::get('testpayment', 'Front\EasypaisaControllertest@testpayment')->name('testpayment');
@@ -350,6 +349,9 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
+    // Mtn Momo payment gateway
+
+	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createTocken')->name('mtn.momo.createTocken');
 
 	// Mtn Momo payment gateway
 

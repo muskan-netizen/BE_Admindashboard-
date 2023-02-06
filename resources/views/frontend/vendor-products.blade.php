@@ -24,6 +24,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 @php
 @$currentPage = $_GET['page'];
 @endphp
+
 <!-- get current page end -->
 <!-- section start -->
 <section class="section-b-space ratio_asos al_vendor_product_page">
@@ -554,5 +555,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
         filterProducts();
         });
 </script>
+
+
 
 @endsection

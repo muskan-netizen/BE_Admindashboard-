@@ -639,6 +639,7 @@ if (!function_exists('SplitTime')) {
 if (!function_exists('showSlot')) {
     function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
     {
+        $type = empty($type)? "delivery": $type;
         $slotDuration = Vendor::select('slot_minutes')->where('id', $vid)->first();
         $duration = ($slotDuration->slot_minutes) ?? $duration;
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
@@ -854,22 +855,24 @@ if (!function_exists('SplitTimeTemp')) {
 if (!function_exists('findSlot')) {
     function findSlot($myDate = null, $vid, $type = 'delivery', $api = null)
     {
+        $type = empty($type) ? 'delivery' :$type;
         $myDate  = date('Y-m-d');
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-        $slots = showSlot($myDate, $vid, 'delivery');
+        $slots = showSlot($myDate, $vid,  $type);
+
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+1 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+2 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+3 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
         if (isset($slots) && count((array)$slots)>0) {
             $time = explode(' - ', $slots[0]['value']);
@@ -891,22 +894,22 @@ if (!function_exists('findSlot')) {
     }
 }
 if (!function_exists('findSlotNew')) {
-    function findSlotNew($myDate,$vid,$type=0)
+    function findSlotNew($myDate,$vid,$type = 'delivery', $duration = 0)
     {
-            $slots = showSlot($myDate,$vid,'delivery', $type);
+            $slots = showSlot($myDate,$vid,$type, $duration);
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+1 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
 
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+2 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
 
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+3 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
                 if(isset($slots)){
                     $slots = $slots;
@@ -1510,8 +1513,8 @@ if( !function_exists('is_category_p2p') ) {
 //     }
 // }
 
-if( !function_exists('productDiscountPercentage') ) {
-    function productDiscountPercentage($product_price, $product_compare_price)
+if( !function_exists('productDiscountPercentage()') ) {
+    function productDiscountPercentage($product_price = 0, $product_compare_price)
     {
         if($product_compare_price > 0) {
             $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;

@@ -2854,9 +2854,48 @@
                     </div>
                     <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
 
-                    <div class="row align-items-start">
-                        @if ($client_preference_detail->business_type != 'taxi')
-                            @if ($client_preference_detail->business_type != 'laundry')
+                        <div class="row align-items-start">
+                            @if ($client_preference_detail->business_type != 'taxi')
+                                @if ($client_preference_detail->business_type != 'laundry')
+                                    <div class="col-md-4">
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Refere and Earn by Influncer') }}
+                                                <small
+                                                    class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
+                                            <span> <input type="checkbox" data-plugin="switchery"
+                                                    name="celebrity_check" id="celebrity_check" class="form-control"
+                                                    data-color="#43bee1"
+                                                    @if (isset($preference) && $preference->celebrity_check == '1') checked='checked' @endif></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="pharmacy_check" class="mr-2 mb-0">{{ __('Pharmacy Mod') }}
+                                                <small class="d-block pr-5">Offer restricted products like medicines which
+                                                    require prescription. Customer will have the option to add prescription
+                                                    on the cart page.</small></label>
+                                            <span><input type="checkbox" data-plugin="switchery" name="pharmacy_check"
+                                                    id="pharmacy_check" class="form-control" data-color="#43bee1"
+                                                    @if (isset($preference) && $preference->pharmacy_check == '1') checked='checked' @endif></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="enquire_mode" class="mr-2 mb-0">{{ __('Inquiry Mod') }}<small
+                                                    class="d-block pr-5">{{ __('Set products to be only available for Inquiry and hide the price.') }}</small></label>
+                                            <span><input type="checkbox" data-plugin="switchery" name="enquire_mode"
+                                                    id="	enquire_mode" class="form-control" data-color="#43bee1"
+                                                    @if (isset($preference) && $preference->enquire_mode == '1') checked='checked' @endif></span>
+                                        </div>
+                                    </div>
+                                @endif
+                                {{-- <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
+            <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->off_scheduling_at_cart == '1') checked='checked' @endif>
+            </span>
+         </div>
+      </div> --}}
                                 <div class="col-md-4">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Influencer Mod') }}

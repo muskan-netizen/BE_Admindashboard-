@@ -241,7 +241,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                             <section class="scrolling_section " id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))
                                                     <h2 class="category-head mt-0 mb-3">
-                                                        {{ $data->category->translation_one->name??'' }}
+                                                        {{ @$data->category->translation[0]->name??'' }}
                                                         ({{ $data->products_count }})
                                                     </h2>
                                                     @forelse($data->products as $prod)
@@ -596,7 +596,6 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                             if(vendor_product.product.translation_one != ''){
                                 title = vendor_product.product.translation_one.title;
                                 translationOneTitle = title.slice(0, count) + (title.length > count ? "..." : "");
-
                             }
                         %>
 
@@ -1106,10 +1105,9 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 
                     var firstContent = content.substr(0, showChar);
                     var lastContent = content.substr(showChar, content.length - showChar);
-
                     firstContent = firstContent.trim();
                     var html = firstContent + '<span class="moreellipses">' + ellipsestext +
-                        '&nbsp;</span><span class="morecontent"><span style="display:none;">' + lastContent +
+                        '</span><span class="morecontent"><span style="display:none;">' + lastContent +
                         '</span><a href="" class="morelink">' + moretext + '</a></span>';
 
                     $(this).html(firstContent+lastContent);
@@ -1126,7 +1124,6 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
             } else {
                 $(this).addClass("less");
                 $(this).html(lesstext);
-                
             }
             $(this).parent().prev().toggle();
             $(this).prev().toggle();

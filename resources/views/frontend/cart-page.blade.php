@@ -258,8 +258,10 @@
                         <div id="tbody_{{ $product->vendor->id }}">
 
                             @foreach ($product->vendor_products as $vendor_product)
-                              
-                                <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage"
+                                {{-- @php
+            pr($vendor_product);
+            @endphp --}}
+                                <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
                                     <div class="product-img col-3 col-md-2">
                                         @if (!empty($vendor_product->pvariant->media_one))
