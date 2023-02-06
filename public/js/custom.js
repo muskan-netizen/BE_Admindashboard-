@@ -1,4 +1,5 @@
 jQuery(document).ready(function () {
+    var slotValidater = 2;
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
@@ -9,7 +10,6 @@ jQuery(document).ready(function () {
     jQuery("#content-wrap").css('padding-bottom', footer_height);
 
     jQuery("h2.category-head, .scrollspy-menu, .cart-main-box").css('top', header_height);
-
 
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();
@@ -25,8 +25,6 @@ jQuery(document).ready(function () {
         jQuery("html, body").animate({ scrollTop:  jQuery('#'+jQuery(this).data('slug')).offset().top - (header_height+30) });
     })
 });
-
-
 
 $(".mobile-account .fa").click(function(){
     $(".onhover-show-div").toggleClass("open");
@@ -196,8 +194,8 @@ window.initializeSlider = function initializeSlider() {
     $(".al_t2_suppliers-slider").slick({infinite:!0,speed:300,slidesToShow:6,slidesToScroll:1,centerMode:!1,centerPadding:"0",arrows:!0,dots:!1,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:2,infinite:!0}},{breakpoint:991,settings:{slidesToShow:3,slidesToScroll:1}},{breakpoint:767,settings:{slidesToShow:2,slidesToScroll:1}},{breakpoint:360,settings:{slidesToShow:1,slidesToScroll:1}}]});
     $(".product-5").slick({arrows:!0,dots:!1,infinite:!0,dots:!1,speed:300,slidesToShow:6,slidesToScroll:3,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}},{breakpoint:420,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
     $(".vendor-product").slick({infinite:!0,speed:300,arrows:!0,dots:!1,slidesToShow:4,slidesToScroll:2,autoplay:!0,autoplaySpeed:5e3,rtl:!1,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:767,settings:{slidesToShow:1,slidesToScroll:1,arrows:!0}}]});
-    $(".booking-time").slick({dots:!1,arrows:!0,infinite:!0,speed:300,slidesToShow:3,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:1024,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:767,settings:{slidesToShow:3,arrows:!0,slidesToScroll:3,infinite:!0}},{breakpoint:480,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
-
+    $(".booking-time, .agentSlotSlider").slick({dots:!1,arrows:!0,infinite:!0,speed:300,slidesToShow:3,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:1024,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:767,settings:{slidesToShow:3,arrows:!0,slidesToScroll:3,infinite:!0}},{breakpoint:480,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    //$('.').slick({dots:!1,arrows:!0,infinite:!0,speed:300,slidesToShow:3,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:1024,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:767,settings:{slidesToShow:3,arrows:!0,slidesToScroll:3,infinite:!0}},{breakpoint:480,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
     if ($('body').attr('dir') == 'rtl') {
         $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .al_t2_suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
     }
@@ -945,7 +943,7 @@ $(document).ready(function () {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: 'kindly select the scheduled slot!',
+                text: 'kindly select a slot!',
                 //footer: '<a href="">Why do I have this issue?</a>'
             })
             return false;
@@ -2045,6 +2043,8 @@ $(document).ready(function () {
         $('#remove_item_modal').modal('show');
         let vendor_id = $(this).data('vendor_id');
         let cartproduct_id = $(this).data('product');
+        let product_id = $(this).data('product_id');
+        $('#remove_item_modal #product_id').val(product_id);
         $('#remove_item_modal #vendor_id').val(vendor_id);
         $('#remove_item_modal #cartproduct_id').val(cartproduct_id);
     });
@@ -2172,7 +2172,8 @@ $(document).ready(function () {
     function cartHeader(address_id=null) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
-
+        OrderStorage.setStorageSingle('cartData',[]);
+        OrderStorage.setStorageSingle('cartProductCount',0);
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2189,7 +2190,9 @@ $(document).ready(function () {
                     var client_preference_detail = response.client_preference_detail;
 
                     if (cart_details!= undefined) {
+                        OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
+                            OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail });
 
@@ -3442,7 +3445,15 @@ $(document).ready(function () {
 
     $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
-       //window.location.href = showCart;
+
+       var valid =  checkSlotTimeSelecedValidation();
+
+       if(slotValidater == 1  ){ // some date or time not selected
+         sweetAlert.error('Oops...','Schedule date time is required');
+         return false;
+       }
+
+
 
         var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
@@ -3462,7 +3473,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: update_cart_schedule,
-            data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions,productid:productid,schedule_time:schedule_time},
+            data: { task_type: task_type ,specific_instructions:specific_instructions,productid:productid}, //, schedule_dt: schedule_dt,schedule_time:schedule_time
             success: function (response) {
                 if (response.status == "Success") {
                     window.location.href = showCart;
@@ -3689,7 +3700,11 @@ $(document).ready(function () {
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
         let product_vendor_id = $(this).data("product_vendor_id");
-        getTimeSlots(cur_date, cart_product_id , product_vendor_id);
+        let product_id = $(this).data("product_id");
+        let product_tag = $(this).data("product_tag");
+        let product_category_type = $(this).data("product_category_type");
+
+        getTimeSlots(cur_date, cart_product_id , product_vendor_id,product_id,product_tag,product_category_type);
 
     });
 
@@ -3796,26 +3811,40 @@ $(document).ready(function () {
         return res;
     }
 
+
     $(document).on('click', '.selected-time', function () {
 
-        let selected_time   = $(this).html();
+        let selected_time   =  $(this).data("value");
         let cart_product_id = $(this).data("cart_product_id");
+        let dispatch_agent_id = '';
+        let agent_ids = $(this).data("agent_ids");
+        let show_agent = $(this).data("show_agent");
+
+        //&& (show_agent != undefined && show_agent !='' )
+        if((agent_ids != undefined && agent_ids !='' )  ){
+
+            dispatch_agent_id = agent_ids[0] ;
+        }
+        if((show_agent != undefined && show_agent ==1  ) && (agent_ids != undefined && agent_ids !='' )  ){
+           console.log('show driver');
+           showDispatchDriver(agent_ids,cart_product_id,'');
+        }
         $("#show_time" + cart_product_id).html(selected_time);
         $("#message_of_time" + cart_product_id).html("Your service will start between " + selected_time);
         $("#next-button-ondemand-3").show();
-
+        selected_time = (dispatch_agent_id !='' && dispatch_agent_id != undefined ) ? $(this).data("value") : selected_time;
         var task_type = 'schedule';
         //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date" + cart_product_id + "']:checked").val();
 
         //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date']:checked").val();
-        var schedule_date = $("input[name='booking_date']:checked").val();
+        var schedule_date = $(`input[name='booking_date_${cart_product_id}']:checked`).val();// $("input[name='booking_date']:checked").val();
        // var schedule_time = $(this).data("value");
         //var specific_instructions = $("#specific_instructions").val();
        // alert(specific_instructions);
 
         //var schedule_dt = schedule_date + ' ' + schedule_time;
         var schedule_dt = schedule_date;
-        if ((task_type == 'schedule') && (schedule_dt == '')) {
+        if ((task_type == 'schedule') && (schedule_dt == '' || schedule_dt== undefined) ) {
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
             return false;
         }
@@ -3824,7 +3853,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: update_cart_product_schedule,
-            data: { task_type: task_type, schedule_dt: schedule_dt,schedule_time:selected_time,cart_product_id: cart_product_id },
+            data: { task_type: task_type, schedule_dt: schedule_dt,schedule_time:selected_time,cart_product_id: cart_product_id,dispatch_agent_id:dispatch_agent_id },
             success: function (response) {
                 if (response.status == "Success") {
                 }
@@ -3859,7 +3888,7 @@ $(document).ready(function () {
     });
 
     // on demand add to cart
-    function getTimeSlots(cur_date, cart_product_id,product_vendor_id) {
+    function getTimeSlots(cur_date, cart_product_id,product_vendor_id,product_id,product_tag,product_category_type) {
         $("#show_date" + cart_product_id).html(cur_date);
         $.ajax({
             type: "post",
@@ -3868,7 +3897,11 @@ $(document).ready(function () {
             data: {
                 "cur_date": cur_date,
                 "cart_product_id": cart_product_id,
-                "product_vendor_id": product_vendor_id
+                "vendor_type": vendor_type,
+                "product_vendor_id": product_vendor_id,
+                "product_category_type": product_category_type,
+                "product_id": product_id,
+                "product_tag": product_tag
             },
             success: function (response) {
                 var booking_time_slick = $("#show-all-time-slots" + cart_product_id).find('.booking-time');
@@ -4173,6 +4206,7 @@ $(document).ready(function () {
         });
     }
 
+    // *****************************  End tip after order place ****************************///
 
     $(document).on('click', '.validate_promo_code_btn', function () {
         let amount = $(this).attr('data-amount');

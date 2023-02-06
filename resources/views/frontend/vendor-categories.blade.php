@@ -2,17 +2,20 @@
 @section('css')
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.slick-track{margin-left:0}
+.social-icon-list {width: 100%;max-width: 90%;}.social-icon-list .modal-body {text-align: center;}
+.social-icon-list .modal-body .text-center a img {width: 40px;}
+.social-icon-list .modal-body .text-center {display: inline-block;margin: 0px 6px;}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @section('content')
 
-<section class="section-b-space ratio_asos">
+<section class="section-b-space ratio_asos main_venders">
     <div class="collection-wrapper">
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <div class="top-banner-wrapper mb-sm-4 mb-2">
+                    <div class="top-banner-wrapper">
                         @if(!empty($vendor->banner))
                             <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1920/1080' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
@@ -20,7 +23,7 @@
                             <div class="col-12">
                                 <form action="">
                                     <div class="row">
-                                        <div class="col-sm-12 text-center">
+                                        <div class="col-sm-12 text-left w-10 pl-5">
                                             <div class="file file--upload">
                                                 <label>
                                                     <span class="update_pic border-0">
@@ -42,7 +45,8 @@
                                                 @endif
                                                 @endif
                                                 @if($vendor->instagram_url)
-                                                    <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>
+                                                <a class="open-social-medialinks" href="javascript:void(0)" data-toggle="tooltip" title="Social Media Links"><i class="fa fa-globe"></i></a>
+                                                    <!-- <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a> -->
                                                 @endif
                                             </div>
                                             @if ($vendor->is_show_vendor_details == 1 && $vendor->order_min_amount > 0)
@@ -50,7 +54,7 @@
                                             @endif
                                         </div>
                                         @if($vendor->desc)
-                                            <div class="col-md-12 text-center">
+                                            <div class="col-md-12 text-center vender-peragraph mt-3">
                                                 <p>{{$vendor->desc}}</p>
                                                 <p>{!! $vendor->short_desc !!}</p>
                                             </div>
@@ -76,7 +80,7 @@
             </div>
         </div>
         <div class="container homepageSix">
-            <div class="row mb-sm-5 mb-2">
+            <div class="row mb-sm-5 mb-2 mt-5">
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -235,6 +239,54 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="social-media-links-modal" data-backdrop="static" data-keyboard="false"
+        tabindex="-1" aria-labelledby="repeat_itemLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content social-icon-list">
+                <div class="modal-header pb-0">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                   @if(!empty($socialMediaUrls))
+                   @foreach($socialMediaUrls as $url)
+                   <div class="text-center">
+                        @php
+                            if($url->icon == 'facebook'){
+                                $iconUrl = asset('assets/images/social-media/facebook.png');
+                            }else if($url->icon == 'github'){
+                                $iconUrl = asset('assets/images/social-media/github.png');
+                            }else if($url->icon == 'reddit'){
+                                $iconUrl = asset('assets/images/social-media/reddit.png');
+                            }else if($url->icon == 'whatsapp'){
+                                $iconUrl = asset('assets/images/social-media/whatsapp-img.png');
+                            }else if($url->icon == 'instagram'){
+                                $iconUrl = asset('assets/images/social-media/instagram.png');
+                            }else if($url->icon == 'tumblr'){
+                                $iconUrl = asset('assets/images/social-media/tumblr.png');
+                            }else if($url->icon == 'twitch'){
+                                $iconUrl = asset('assets/images/social-media/twitch.png');
+                            }else if($url->icon == 'twitter'){
+                                $iconUrl = asset('assets/images/social-media/twitter.png');
+                            }else if($url->icon == 'pinterest'){
+                                $iconUrl = asset('assets/images/social-media/pinterest.png');
+                            }else if($url->icon == 'youtube'){
+                                $iconUrl = asset('assets/images/social-media/youtube.png');
+                            }else if($url->icon == 'snapchat'){
+                                $iconUrl = asset('assets/images/social-media/snapchat.png');
+                            }else if($url->icon == 'linkedin'){
+                                $iconUrl = asset('assets/images/social-media/linkedin.png');
+                            }
+                        @endphp
+                        <a target="_blank" href="{{$url->url}}"><img src="{{$iconUrl}}" alt=""></a>
+                    </div>
+                   @endforeach
+                   @endif
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 @endsection
 
@@ -243,6 +295,18 @@
 <script>
     $(document).ready(function() {
         $("body").addClass("homeHeader");
+    });
+    $(document).on('click', '.open-social-medialinks', function(e) {
+        $('#social-media-links-modal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+    $(document).on('click', '.show_subet_addeon', function(e) {
+        e.preventDefault();
+        var show_class = $(this).data("div_id_show");
+        $(this).addClass("d-none");
+        $("#" + show_class).removeClass("d-none");
     });
 </script>
 @endif

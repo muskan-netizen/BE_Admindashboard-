@@ -185,8 +185,6 @@ $(document).ready(function(){
     }
     $(document).on('click', '.showMap', function() {
         var no = $(this).attr('num');
-        console.log(no);
-
         var lats = document.getElementById('static_latitude').value;
         var lngs = document.getElementById('static_longitude').value;
         var address = document.getElementById('static-address').value;

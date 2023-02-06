@@ -337,7 +337,7 @@
             </div>
             <div class="card-box">
                 <div class="row mb-2">
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <div class="d-flex justify-content-between align-items-center">
                             <h4 class="page-title">{{ __('Tags') }}</h4>
                             <button class="btn btn-info waves-effect waves-light text-sm-right addTagbtn" dataid="0" id="add_product_tag_modal_btn">
@@ -622,7 +622,6 @@
                   $("#add_facilty_modal input[name='facilty_image']").attr('data-default-file',imagePath);
                   $('#add_facilty_modal #standard-modalLabel').html('Update facilty');
                   $('#add_facilty_modal').modal('show');
-
                   $('.dropify').dropify();
 
                   $.each(response.data.translations, function( index, value ) {

@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{Currency, User, TempCartProduct, Vendor};
+use App\Models\{Currency, SmsTemplate, User, TempCartProduct, Vendor};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -12,11 +12,52 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order,Type};
+use App\Models\{VendorSlot, ClientCurrency, Order,Type, ClientPreferenceAdditional};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 
+// Returns the values of the additional preferences.
+if (!function_exists('checkColumnExists')) {
+  /** check if column exits in table
+     * @param string $tableName
+     * @param string @columnName
+     * @return boolean true or false
+     */
+    function checkColumnExists($tableName, $columnName){
+        if (Schema::hasColumn($tableName, $columnName)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
+
+if (!function_exists('getAdditionalPreference')) {
+    /**
+     * getAdditionalPreference
+     *
+     * @param  mixed $key
+     * @return void
+     */
+    function getAdditionalPreference($key=array()){
+        $user = ClientData::first();
+        $return = [];
+        $dbreturn= [];
+        if(sizeof($key)){
+            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => $user->code])->get() : [];
+            $return = array_column($result->toArray(), 'key_value', 'key_name');
+                if(sizeof($result)){
+                    $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
+                }
+            $emp = array_diff($key,array_keys($dbreturn));
+            $emptyArr = array_fill_keys($emp, '');
+            $return = array_merge($emptyArr, $dbreturn);
+        }
+        return $return;
+    }
+}
 
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
@@ -36,22 +77,31 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
     }
 }
 
-if (!function_exists('curlJsonRequest')) {
-    function curlJsonRequest($from, $data){
-        $headers = [
-            'Authorization: key=' . $from,
-            'Content-Type: application/json',
-        ];
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
+if (!function_exists('sendFcmCurlRequest')) {
+    function sendFcmCurlRequest($data)
+    {
+        $client_preferences = ClientPreference::first();
+        if (!empty($client_preferences->fcm_server_key)) {
+            $headers = [
+                'Authorization: key=' . $client_preferences->fcm_server_key,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            $result = curl_exec($ch);
+            // if ($result === FALSE) {
+            //     die('Oops! FCM Send Error: ' . curl_error($ch));
+            // }
+            curl_close($ch);
+            return $result;
+        } else {
+            return false;
+        }
     }
 }
 
@@ -210,6 +260,17 @@ if (!function_exists('convertDateTimeInClientTimeZone')) {
     }
 }
 
+if (!function_exists('limit_text')) {
+    function limit_text($text, $limit) {
+        if (str_word_count($text, 0) > $limit) {
+            $words = str_word_count($text, 2);
+            $pos   = array_keys($words);
+            $text  = substr($text, 0, $pos[$limit]) . '...';
+        }
+        return $text;
+    }
+}
+
 
 if (!function_exists('getClientPreferenceDetail')) {
     function getClientPreferenceDetail()
@@ -248,7 +309,7 @@ if (!function_exists('getRazorPayApiKey')) {
 if (!function_exists('getKhaltiPayApiKey')) {
     function getKhaltiPayApiKey()
     {
-        $khaltipay_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'khalti')->where('status', 1)->first(); 
+        $khaltipay_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'khalti')->where('status', 1)->first();
         $api_key_khaltipay = "";
         if($khaltipay_creds)
         {
@@ -436,7 +497,7 @@ if (!function_exists('getBaseprice')) {
         if ($distance < 1 || $base_price < 1) {
             return 0;
         }
-    
+
         $base_price = $base_price;
         $amount_per_km = $amount_per_km;
         $total = $base_price + ($distance * $amount_per_km);
@@ -475,13 +536,13 @@ if (!function_exists('SplitTime')) {
         } else {
             $StartTime = date('H:i', strtotime($nowA));
         }
-    
+
         $ReturnArray = array();
         $StartTime = strtotime($StartTime); //Get Timestamp
     $EndTime = strtotime($EndTime); //Get Timestamp
     $AddMins = $Duration * 60;
         $endtm = 0;
-    
+
         while ($StartTime <= $EndTime) {
             $endtm = $StartTime + $AddMins;
             if ($endtm>$EndTime) {
@@ -494,7 +555,7 @@ if (!function_exists('SplitTime')) {
         return $ReturnArray;
     }
 }
-    
+
 if (!function_exists('showSlot')) {
     function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
     {
@@ -511,18 +572,20 @@ if (!function_exists('showSlot')) {
             $myDate = date('Y-m-d');
             $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
         }
+        $slots = [];
         $mytime =$mytime->dayOfWeek+1;
         if ($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry') {
-            $slots = VendorSlot::where('vendor_id', $vid)->where('slot_type', $slot_type)->whereHas('days', function ($q) use ($mytime, $type) {
-                return $q->where('day', $mytime)->where($type, '1');
+            $slots = VendorSlot::where('vendor_id', $vid)->where('slot_type', $slot_type)->whereHas('days', function ($q) use ($mytime) {
+                return $q->where('day', $mytime)->where('laundry', '1');
             })->get();
         } else {
             $slots = VendorSlot::where('vendor_id', $vid)
-        ->whereHas('days', function ($q) use ($mytime, $type) {
-            return $q->where('day', $mytime)->where($type, '1');
-        })
-        ->get();
+                    ->whereHas('days', function ($q) use ($mytime, $type) {
+                        return $q->where('day', $mytime)->where($type, '1');
+                    })
+                    ->get();
         }
+
 
         // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
@@ -535,7 +598,7 @@ if (!function_exists('showSlot')) {
                     $min[] = (($delayHr * 60) + $delayMin);
                 }
             }
-    
+
             if (isset($slots) && count($slots)>0) {
                 $slotss = [];
                 foreach ($slots as $slott) {
@@ -548,13 +611,13 @@ if (!function_exists('showSlot')) {
                         $slotss[] = [];
                     }
                 }
-    
+
                 $arr = array();
                 $count = count($slotss);
                 for ($i=0;$i<$count;$i++) {
                     $arr = array_merge($arr, $slotss[$i]);
                 }
-    
+
                 if (isset($arr)) {
                     foreach ($arr as $k=> $slt) {
                         $sl = explode(' - ', $slt);
@@ -564,7 +627,7 @@ if (!function_exists('showSlot')) {
                 }
             }
         }
-    
+
         return $viewSlot;
     }
 }
@@ -595,7 +658,7 @@ if (!function_exists('showSlotTemp')) {
     {
         $slotDuration = Vendor::select('slot_minutes')->where('id', $vid)->first();
         $duration = ($slotDuration->slot_minutes) ?? $duration;
-    
+
         //type must be a : delivery , takeaway,dine_in
         $client = ClientData::select('timezone')->first();
         $viewSlot = array();
@@ -668,8 +731,8 @@ if (!function_exists('SplitTimeTemp')) {
             }
         }
 
-        $cr = Carbon::now()->addMinutes($delayMin);
-        $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+        $cr   = Carbon::now()->addMinutes($delayMin);
+        $now  = dateTimeInUserTimeZone24($cr, $timezoneset);
         $nowT = strtotime($now);
         $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
         $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
@@ -681,13 +744,13 @@ if (!function_exists('SplitTimeTemp')) {
         } else {
             $StartTime = date('H:i', strtotime($nowA));
         }
-    
+
         $ReturnArray = array();
         $StartTime = strtotime($StartTime); //Get Timestamp
     $EndTime = strtotime($EndTime); //Get Timestamp
     $AddMins = $Duration * 60;
         $endtm = 0;
-    
+
         while ($StartTime <= $EndTime) {
             $endtm = $StartTime + $AddMins;
             if ($endtm>$EndTime) {
@@ -712,7 +775,7 @@ if (!function_exists('findSlot')) {
             $myDate  = date('Y-m-d', strtotime('+1 day'));
             $slots = showSlot($myDate, $vid, 'delivery');
         }
-           
+
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+2 day'));
             $slots = showSlot($myDate, $vid, 'delivery');
@@ -726,6 +789,12 @@ if (!function_exists('findSlot')) {
             $time = explode(' - ', $slots[0]['value']);
 
             if ($api != 'api') {
+                if($api == 'webFormet'){ // webFormet for geting date and time
+                    return ['date'=>$myDate,
+                            'time'=>$time[0],
+                            'datetime'=>date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]))
+                        ];
+                }
                 return date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]));
             } else {
                 return date('Y-m-d', strtotime($myDate.'T'.$time[0]));
@@ -740,17 +809,17 @@ if (!function_exists('findSlotNew')) {
     {
             $slots = showSlot($myDate,$vid,'delivery', $type);
                 if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+1 day')); 
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
-                }
-            
-                if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+2 day')); 
+                    $myDate  = date('Y-m-d',strtotime('+1 day'));
                     $slots = showSlot($myDate,$vid,'delivery', $type);
                 }
 
                 if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+3 day')); 
+                    $myDate  = date('Y-m-d',strtotime('+2 day'));
+                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                }
+
+                if(count((array)$slots) == 0){
+                    $myDate  = date('Y-m-d',strtotime('+3 day'));
                     $slots = showSlot($myDate,$vid,'delivery', $type);
                 }
                 if(isset($slots)){
@@ -768,7 +837,7 @@ if (!function_exists('GoogleDistanceMatrix')) {
         $client = ClientPreference::where('id', 1)->first();
         $lengths = count($latitude) - 1;
         $value = [];
-        
+
         for ($i = 1; $i<=$lengths; $i++) {
             $count  = 0;
             $count1 = 1;
@@ -789,7 +858,7 @@ if (!function_exists('GoogleDistanceMatrix')) {
             $count++;
             $count1++;
         }
-    
+
         if (isset($value)) {
             $totalDistance = 0;
             $totalDuration = 0;
@@ -798,8 +867,8 @@ if (!function_exists('GoogleDistanceMatrix')) {
                 $totalDistance = $totalDistance + $item[0]->distance->value;
                 $totalDuration = $totalDuration + $item[0]->duration->value;
             }
-        
-        
+
+
             if ($client->distance_unit == 'metric') {
                 $send['distance'] = round($totalDistance/1000, 2);      //km
             } else {
@@ -845,7 +914,7 @@ if (!function_exists('getDynamicTypeName')) {
         $new_name = ($new_name === $name) ? __($name) : $new_name;
         return $new_name;
     }
-} 
+}
 
 if (!function_exists('stripePaymentCredentials')) {
     function stripePaymentCredentials(){
@@ -999,14 +1068,14 @@ if (!function_exists('getServiceTypesCategory')) {
             if($client_preference->business_type == 'laundry'){
                 $service_types= ['laundry_service'];
             }
-           
+
             $types =  $types->whereIn('service_type',$service_types);
             $types_id = $types->pluck('id')->toArray();
             return $types_id ;
         } catch (\Throwable $th) {
            return [];
         }
-       
+
     }
 }
 
@@ -1032,7 +1101,7 @@ if (!function_exists('getCategoryTypes')) {
             case "rental":
                 $typeArray =['rental'];
             break;
-        
+
             case "super_app":
                 $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','appointment'];
             break;
@@ -1064,7 +1133,7 @@ if (!function_exists('getCategoryTypesServices')) {
             case "rental":
                 $typeArray =['rental_service'];
             break;
-        
+
             case "super_app":
                 $typeArray =['pick_drop_service','on_demand_service','appointment_service','rental_service','products_service'];
             break;
@@ -1100,6 +1169,29 @@ if (!function_exists('getMinutes')) {
 
     }
 }
+
+if (!function_exists('sendSmsTemplate')) {
+    /**
+     * sendSmsTemplate dynamic selection and replace tags
+     */
+    function sendSmsTemplate($slug,$data)
+    {
+        $smsTemp = SmsTemplate::where('slug',$slug)->select('content','tags','template_id')->first();
+        $smsBody = $smsTemp->content;
+        if(isset($smsTemp->tags) && !empty($smsTemp->tags))
+        {
+            $tages = explode(',',$smsTemp->tags);
+            foreach($tages as $tag)
+            {
+                $value = $data[$tag]??'';
+                $smsBody = str_replace($tag,$value,$smsBody);
+            }
+        }
+        $sms = array('body'=>$smsBody,'template_id'=>$smsTemp->template_id??'');
+        return $sms;
+    }
+}
+
 
 
 

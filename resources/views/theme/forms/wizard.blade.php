@@ -128,10 +128,10 @@
 
                                     <ul class="list-inline wizard mb-0">
                                         <li class="previous list-inline-item">
-                                            <a href="javascript: void(0);" class="btn btn-secondary">Previous</a>
+                                            <a href="javascript: void(0);" class="btn btn-secondary">{{__('Previous')}}</a>
                                         </li>
                                         <li class="next list-inline-item float-right">
-                                            <a href="javascript: void(0);" class="btn btn-secondary">Next</a>
+                                            <a href="javascript: void(0);" class="btn btn-secondary">{{__('Next')}}</a>
                                         </li>
                                     </ul>
 
@@ -379,10 +379,10 @@
 
                                     <ul class="list-inline mb-0 wizard">
                                         <li class="previous list-inline-item">
-                                            <a href="javascript: void(0);" class="btn btn-secondary">Previous</a>
+                                            <a href="javascript: void(0);" class="btn btn-secondary">{{__('Previous')}}</a>
                                         </li>
                                         <li class="next list-inline-item float-right">
-                                            <a href="javascript: void(0);" class="btn btn-secondary">Next</a>
+                                            <a href="javascript: void(0);" class="btn btn-secondary">{{__('Next')}}</a>
                                         </li>
                                     </ul>
 
@@ -510,9 +510,9 @@
                                 </div>
 
                                 <ul class="list-inline wizard mb-0">
-                                    <li class="previous list-inline-item"><a href="javascript: void(0);" class="btn btn-secondary">Previous</a>
+                                    <li class="previous list-inline-item"><a href="javascript: void(0);" class="btn btn-secondary">{{__('Previous')}}</a>
                                     </li>
-                                    <li class="next list-inline-item float-right"><a href="javascript: void(0);" class="btn btn-secondary">Next</a></li>
+                                    <li class="next list-inline-item float-right"><a href="javascript: void(0);" class="btn btn-secondary">{{__('Next')}}</a></li>
                                 </ul>
 
                             </div> <!-- tab-content -->

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        @include('layouts.shared.title-meta', ['title' => "Forgot Password"])
+        @include('layouts.shared.title-meta', ['title' => "{{__('Forgot Password')}}"])
 
         @include('layouts.shared.head-css')
     </head>

@@ -9,57 +9,16 @@
 /* table css add here */
 .product_tab_inner tr ,td {border: 1px solid#eee;padding: 10px 10px;}.product_tab_inner tr th {padding: 10px 10px;border: 1px solid#eee;font-weight: 600;}.outer_div {border-radius: 10px;border: 1px solid#bab8b8;background: #f4efefc2;}.outer_div h6 {font-size: 14px;font-weight: 600 !important;
 }
-
-
-.product_appointment_spa h4.header-title {
-    display: inline-block;
-}
-.product_appointment_spa p {
-    display: inline-block;
-    float: right;
-}
-
-
-
-
-
-#cancel-request-card{
-    background: #ddd;
-}
-.royo-thumnail_img {
-    width: 100px;
-    height: auto;
-}
-.royo-ques h3 {
-    font-size: 15px;
-    font-weight: 600 !important;
-}
-.royo-ques h6 {
-    font-size: 14px;
-    padding: 5px 0px;
-}
-
-.custom-accordin1 .card-header {
-    padding: 0px 0px !important;
-    background-color: rgba(0,0,0,.03);
-    border: 1px solid#d5cece;
-    border-radius: 10px;
-}
-.custom-accordin1 .card-body {
-    padding: 10px 10px;
-    border-bottom: 1px solid#eee;
-    border-radius: 10px;
-}
-.custom-accordin1 .card:nth-child(1){
-    margin: 29px 0px;
-}
-.custom-accordin1 .card {
-    padding-bottom: 0px !important;
-    border-radius: 0px !important;
-    box-shadow: none !important;
-    border:1px solid#eee;
-    border-radius: 10px !important;
-}
+.product_appointment_spa h4.header-title {display: inline-block;}
+.product_appointment_spa p {display: inline-block;float: right;}
+#cancel-request-card{background: #ddd;}
+.royo-thumnail_img {width: 100px;height: auto;}
+.royo-ques h3 {font-size: 15px;font-weight: 600 !important;}
+.royo-ques h6 {font-size: 14px;padding: 5px 0px;}
+.custom-accordin1 .card-header {padding: 0px 0px !important;background-color: rgba(0,0,0,.03);border: 1px solid#d5cece;border-radius: 10px;}
+.custom-accordin1 .card-body {padding: 10px 10px;border-bottom: 1px solid#eee;border-radius: 10px;}
+.custom-accordin1 .card:nth-child(1){margin: 29px 0px;}
+.custom-accordin1 .card {padding-bottom: 0px !important;border-radius: 0px !important;box-shadow: none !important;border:1px solid#eee;border-radius: 10px !important;}
 
 </style>
 @endsection
@@ -74,8 +33,8 @@ $timezone = Auth::user()->timezone;
                 <div class="page-title-box d-flex justify-content-between ">
                     <h4 class="page-title">{{ __("Order Detail") }}</h4>
                     <div class="al_back_btn">
-                        <a class="al_print_btn_back mr-2" href="{{ url()->previous() }}">Back</a>
-                        <button class="al_print_btn badge badge-info" onclick='printDiv();'>Print <img src=""> </button>
+                        <a class="al_print_btn_back mr-2" href="{{ url()->previous() }}">{{ __("Back") }}</a>
+                        <button class="al_print_btn badge badge-info" onclick='printDiv();'>{{ __("Print") }} <img src=""> </button>
                     </div>
                 </div>
 
@@ -105,10 +64,10 @@ $timezone = Auth::user()->timezone;
                         <div class="card-body">
                             <h4 class="header-title mb-3">{{__('Cancel Order Request')}}</h4>
                             <button type="button" class="complete_request_btn btn btn-sm btn-info" title='Approve' data-status="1" data-id="{{$order->vendors->first()->cancel_request->id}}">
-                                <i class='fa fa-check mr-1'></i> Approve
+                                <i class='fa fa-check mr-1'></i> {{__('Approve')}}
                             </button>
                             <button type="button" class="complete_request_btn btn btn-sm btn-danger" title='Reject' data-status="2" data-id="{{$order->vendors->first()->cancel_request->id}}">
-                                <i class='fa fa-times mr-1'></i> Reject
+                                <i class='fa fa-times mr-1'></i> {{__('Reject')}}
                             </button>
                         </div>
                     </div>
@@ -310,19 +269,19 @@ $timezone = Auth::user()->timezone;
                         </h4>
                         @if($order->luxury_option_id == 2)
                             @foreach($order->vendors as $vendor)
-                                <p>{{ $vendor->dineInTableName }} | Category : {{ $vendor->dineInTableCategory }} | Capacity : {{ $vendor->dineInTableCapacity }}</p>
+                                <p>{{ $vendor->dineInTableName }} | {{ __("Category") }} : {{ $vendor->dineInTableCategory }} | {{ __("Capacity") }} : {{ $vendor->dineInTableCapacity }}</p>
                             @endforeach
                         @endif
                         @if($order->product_schedule_type == 'schedule')
                             <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('*Instant/Scheduled Product Wise') }}</span> </p>
                         @endif
 
-                      
+
                         <div class="table-responsive">
                             <table class="table table-bordered table-centered mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>{{ __("Product Name") }}</th>
+                                        <th>{{ __(getNomenclatureName("Product Name",true)) }}</th>
                                         <th>{{ __("Product") }}</th>
                                         <th>{{ __("Quantity") }}</th>
                                         <th>{{ __("Price") }}</th>
@@ -424,7 +383,7 @@ $timezone = Auth::user()->timezone;
                                                     @endforeach
                                                 </table>
                                             </div>
-                                        </th> 
+                                        </th>
                                         <td></td>
                                     </tr>
                                     @endif
@@ -487,20 +446,20 @@ $timezone = Auth::user()->timezone;
                                         </tr>
                                     @endif
                                     @php
-                            
+
                                         $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount;
 
                                         $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
-                                
+
                                     @endphp
 
                                     {{-- @if(Auth::user()->is_superadmin) --}}
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
-                                       
+
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue)}}</td>
                                     </tr>
-                                   
+
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
                                         {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendorDiscount)}}</td> --}}
@@ -529,7 +488,7 @@ $timezone = Auth::user()->timezone;
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
                                             {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div> --}}
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue+$storeRevenue + @$vendor->additional_price)}}</div> 
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount,2)}}</div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -560,7 +519,7 @@ $timezone = Auth::user()->timezone;
                         @if(!is_null($order->user) && isset($order->user->phone_number))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __('Phone')}}:</span> {{'+'.$order->user->dial_code.$order->user->phone_number}}</p>
                         @endif
-                       
+
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Address") }}:</span> {{ $order->address ? $order->address->house_number."," : ''}} {{ $order->address ? $order->address->address : ''}}</p>
                         @if(isset($order->address) && !empty($order->address->street))
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('Street')}}:</span> {{ $order->address ? $order->address->street : ''}}</p>
@@ -582,10 +541,10 @@ $timezone = Auth::user()->timezone;
                     @if(in_array(6,$vendor_order_status_option_ids))
                     <div class="col-lg-6 card-body">
                         <h4 class="header-title mb-3">{{ __("Upload Report") }}</h4>
-                                               
-                        @if($order->reports!=null) 
-                        <div class="upload-report py-1">                       
-                            <a target="_blank" class="d-inline-block" href="{{$order->reports->report['original']}}" download><i class="fa fa-download" aria-hidden="true"></i> &nbsp;Download Report</a> 
+
+                        @if($order->reports!=null)
+                        <div class="upload-report py-1">
+                            <a target="_blank" class="d-inline-block" href="{{$order->reports->report['original']}}" download><i class="fa fa-download" aria-hidden="true"></i> &nbsp;Download Report</a>
                             <a href="{{route('order.report.delete',$order->reports->id)}}"> <span><i class="fa fa-times floar-right" aria-hidden="true"></i></span></a>
                         </div>
                             {{-- <form class="" action="{{route('order.upload.report')}}" method="post">
@@ -599,7 +558,7 @@ $timezone = Auth::user()->timezone;
                             <div class="card px-2">
                                 <div class="dropify-wrapper report-upload-subt w-50">
                                     {{-- <div class="dropify-message">
-                                        <span class="file-icon"></span> 
+                                        <span class="file-icon"></span>
                                         <p>Drag and drop a file here or click</p>
                                         <p class="dropify-error">Ooops, something wrong appended.</p>
                                     </div> --}}
@@ -614,14 +573,14 @@ $timezone = Auth::user()->timezone;
                                         <div class="dropify-infos">
                                             <div class="dropify-infos-inner">
                                                 <p class="dropify-filename">
-                                                    <span class="file-icon"></span> 
+                                                    <span class="file-icon"></span>
                                                     <span class="dropify-filename-inner"></span>
                                                 </p>
                                                 <p class="dropify-infos-message">Drag and drop or click to replace</p>
                                             </div>
                                         </div>
                                     </div>
-                                </div>                                
+                                </div>
                                 <button type="submit" class="w-50 mt-3 btn btn-info waves-effect waves-light mt-2">Submit</button>
                             </div>
                         </form>
@@ -665,7 +624,7 @@ $timezone = Auth::user()->timezone;
 
                     <div class="card-body">
                         <h4 class="header-title mb-3 ">{{ __('Comment/Schedule Information') }}</h4>
-                       
+
                         @if($order->comment_for_pickup_driver)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Comment for Pickup Driver') }} :</span> {{ $order->comment_for_pickup_driver ?? ''}}</p>
                         @endif
@@ -677,7 +636,7 @@ $timezone = Auth::user()->timezone;
                         @if($order->comment_for_vendor)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Comment for Vendor') }} :</span> {{ $order->comment_for_vendor ?? ''}}</p>
                         @endif
-                        
+
                         @if($order->schedule_pickup)
                           <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{dateTimeInUserTimeZone($order->schedule_pickup, $timezone) .' '.(($order->scheduled_slot)?', Slot : '.$order->scheduled_slot:'')}} </p>
                         @endif
@@ -750,7 +709,7 @@ $timezone = Auth::user()->timezone;
                         <h4 class="header-title mb-3">{{ __('User Place Order Documents') }}</h4>
                         @foreach($category_KYC_document as $document)
                             @php
-                           
+
                             $field_value = $document->image_file['storage_url'];
                             @endphp
                             <div class="mb-2">
@@ -823,7 +782,7 @@ $timezone = Auth::user()->timezone;
             <span aria-hidden="true">&times;</span>
             </button>
             <div id="caregory_kyc_form-modal">
-           
+
             </div>
         </div>
         </div>
@@ -841,7 +800,7 @@ $timezone = Auth::user()->timezone;
 <script>
     $("#order_statuses li").click(function() {
         var reload_page = `{{in_array($order->luxury_option_id,[6,8]) ? 1 : 0}}`;
-        
+
         Swal.fire({
             title: "{{__('Are you sure?')}}",
            // text:"{{__('You want to delete the banner.')}}",
@@ -869,7 +828,7 @@ $timezone = Auth::user()->timezone;
                         that.addClass("completed");
                         if (status_option_id == 2) {
                             if(reload_page ==1 || reload_page == '1'){
-                                setTimeout(function(){location.reload();}, 2500);
+                                // setTimeout(function(){location.reload();}, 2500);
                             }
                             that.next('li').remove();
                         }
@@ -880,7 +839,7 @@ $timezone = Auth::user()->timezone;
                         $('#text_muted_' + status_option_id).html('<small class="text-muted">' + response.created_date + '</small>');
                         if (status_option_id == 2 || status_option_id == 4)
                             $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                        //location.reload();
+                        location.reload();
                     },
                 });
             }else{

@@ -1,6 +1,6 @@
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
-$urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
+$urlImg = $clientData->logo['image_fit'].'300/100'.$clientData->logo['image_path'];
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
@@ -133,8 +133,8 @@ $applocale = session()->get('applocale');
                <div class="leftHead d-flex align-items-center">
                   <!-- logo start -->
                   <div class="logo">
-                     <a class="navbar-brand position-relative" style="height:50px;" href="{{ route('userHome') }}">
-                     <img class="alspalogo lightLogo" alt="" src="{{$urlImg}}"></a>
+                     <a class="navbar-brand position-relative" href="{{ route('userHome') }}">
+                     <img class="logo-image alspalogo lightLogo" style="height:50px;" alt="" src="{{$urlImg}}"></a>
                      </a>
                   </div>
                   <!-- logo end -->

@@ -18,6 +18,7 @@ use Redirect;
 use Log;
 class CategoryController extends FrontController{
     private $field_status = 2;
+    use \App\Http\Traits\DispatcherSlot;
 
     /**
      * Display product and vendor list By Category id
@@ -200,9 +201,6 @@ class CategoryController extends FrontController{
                     abort(404);
                 }
         }
-    }
-    public function getTimeSlotsForOndemand_step2(Request $request){
-        pr($request->all());
     }
 
     public function listData($langId, $category_id, $type = ''){
@@ -604,9 +602,52 @@ class CategoryController extends FrontController{
     // ***********   getTimeSlotsForOndemand ************** /////////////////
     public function getTimeSlotsForOndemand(Request $request){
 
-        
-       // pr($request->all());
-      
+        // get slot from dispatcher by harbans :)
+        if($request->has('product_category_type') &&  $request->has('product_id')){
+            $product = $this->productDetail($request->product_id);
+          
+            $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
+            $is_slot_from_dispatch = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_slot_from_dispatch  : '') : '';
+            $show_dispatcher_agent = checkColumnExists('products', 'is_show_dispatcher_agent') ? ($product ? $product->is_show_dispatcher_agent  : '') :' ';
+          
+            $last_mile_check       = $product ? $product->Requires_last_mile  : '';
+            $vendorStartDate       = $vendorStartTime  = '';
+            $slotsDate = findSlot('',$product->vendor_id,'','webFormet');
+            if($slotsDate){
+                $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
+                $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
+            }
+            // ch
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
+                $Dispatch =  $this->getDispatchAppointmentDomain();
+                $dispatchAgents = [];
+                $cart_product_id = $request->cart_product_id??0;
+                if($Dispatch){
+                   $vendor_latitude =  $product->vendor ? $product->vendor->latitude : 30.71728880;
+                   $vendor_longitude =  $product->vendor ? $product->vendor->longitude : 76.80350870;
+                    $location[] = array(
+                        'latitude' =>   $vendor_longitude,
+                        'longitude' =>  $vendor_longitude
+                    );
+                    $dispatchData=[
+                        'service_key'      => $Dispatch->appointment_service_key,
+                        'service_key_code' => $Dispatch->appointment_service_key_code,
+                        'service_key_url'  => $Dispatch->appointment_service_key_url,
+                        'service_type'     => 'appointment',
+                        'tags'             => $product->tags,
+                        'latitude'         => $vendor_latitude,
+                        'longitude'        => $vendor_longitude,
+                        'service_time'     => $product->minimum_duration_min,
+                        'schedule_date'    => $request->cur_date,
+                        'slot_start_time'  => $vendorStartTime
+                    ];
+                    $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                }
+                if ($request->ajax()) {
+                    return \Response::json(\View::make('frontend.ondemand.dispatcher_agent_slots', array('dispatch_agents' => $dispatchAgents,'cart_product_id'=> $cart_product_id,'show_dispatcher_agent'=>$show_dispatcher_agent))->render());
+                }
+            }
+        }
         $user = Auth::user();
         $timezone = $user->timezone ?? 'Asia/Kolkata';
 
@@ -614,7 +655,7 @@ class CategoryController extends FrontController{
         $today = $dates->format('Y-m-d');
 
         if($today < $request->cur_date){
-            $curr_time = "00:00";
+            $curr_time = date('Y-m-d 00:00');
         }else{
             $daten = new DateTime("now", new DateTimeZone($timezone) );
             $curr_time = $daten->format('h:i');
@@ -625,24 +666,33 @@ class CategoryController extends FrontController{
         }else{
             $date = $today;
         }
-
+        
         $slots = showSlot($date,$request->product_vendor_id,'delivery');
 
-        $start_time = new DateTime("now", new  DateTimeZone($timezone) );
-        $start_time = $start_time->format('Y-m-d H:m');
-        $end_time = date('Y-m-d 23:59');
+      
 
         $time_slots = [];
         if(!empty($slots)){
-            $i = 0;
-            foreach($slots as $slot){
-                $newSlot = explode('-', $slot['value']);
-                $time_slots[$i++] = trim($newSlot[0]);
-            }
+            $time_slots = $slots;
+            // $i = 0;
+            // foreach($slots as $slot){
+            //     $newSlot = explode('-', $slot['value']);
+            //     $time_slots[$i++] = trim($newSlot[0]);
+            // }
         }else{
-        $time_slots = $this->SplitTime($start_time, $end_time, "60"); // this is for static slots 
+            $end_time = date('Y-m-d 23:59');
+            $timing   = $this->SplitTime($curr_time, $end_time, "60");
+            foreach ($timing as $k=> $slt) {
+                if($k+1 < count($timing)){
+                    $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
+                    $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                    $time_slots[] =  $viewSlot;
+                }
+            }
+          //$time_slots  // this is for static slots 
         }
 
+        //pr($time_slots);
         $cart_product_id = $request->cart_product_id??0;
         if ($request->ajax()) {
            return \Response::json(\View::make('frontend.ondemand.time-slots-for-date', array('time_slots' => $time_slots,'cart_product_id'=> $cart_product_id))->render());

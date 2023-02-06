@@ -157,8 +157,15 @@
                         </div>
                     </div>
                 </div>
+                @php
+                    $hub_key = @getAdditionalPreference(['is_hubspot_enable'])['is_hubspot_enable'];
+                @endphp
                 <div class="al_new_export_table royo_customber_btn table_customber_add">
                     <div class="position-absolute mb-2">
+                        @if($hub_key==1)
+                            <button class="btn btn-info waves-effect waves-light text-sm-right sync_hubspot" userId="0"><i class="mdi mdi-sync mr-1"></i>{{ __('Sync with hubspot') }}
+                            </button>
+                        @endif
                         <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                         </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
@@ -325,6 +332,7 @@
             try {
                 $('#'+table).DataTable({
                     "dom": '<"toolbar">Bfrtip',
+                    "responsive": true,
                     "searching": true,
                     "destroy": true,
                     "scrollX": true,
@@ -670,6 +678,33 @@
 @endsection
 @section('script')
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+{{-- hubspot integration--}}
+@if(@$hub_key==1)
+<script src="{{asset('assets/libs/hubspot/hubspot.js')}}"></script>
+<script>
+     $(document).on('click','.sync_hubspot',function(e){
+        //var submit_url = $(this).attr('href');
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want sync data with hubspot.')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                syncHubspotData();
+
+            }else{
+               return false;
+            }
+        });
+        return false;
+    })
+</script>
+@endif
+{{-- end --}}
+
 <script type="text/javascript">
     var mobile_number = '';
     // $('#add-agent-modal .xyz').val(mobile_number.getSelectedCountryData().dialCode);

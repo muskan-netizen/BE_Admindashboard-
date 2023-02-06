@@ -11,11 +11,11 @@
 @endphp
 <div class="row mb-sm-2 mb-1">
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
-        <h4 class="page-title m-0">{{ __($label)  }} {{ ($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h4>
+        <h4 class="page-title m-0">{{ __($label)  }} {{ __('Address') }}</h4>
         @if(!in_array($action , ['dine_in','takeaway','on_demand','appointment']))
             <a class="add-address ml-auto" href="#add_new_address_form" data-toggle="modal" data-target="#add_new_address_form_modal">
                 <i class="fa fa-plus mr-1" aria-hidden="true"></i>
-                <!-- {{__('Add New') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address')}} -->
+                <!-- {{__('Add New Address')}} -->
             </a>
         @endif
     </div>
@@ -42,7 +42,7 @@
                 <select name="vendor_table" id="vendor_table" data-id="{{ $vendor_details['vendor_address']->id }}" class="form-control">
                     <!-- <option value="">{{__('Select...')}}</option> -->
                     @foreach($vendor_details['vendor_tables'] as $k => $table)
-                        <option value="{{$table->id}}" {{ ($cart_dinein_table_id == $table->id) ? 'selected' : '' }}>Category : {{ $table->category->title }} | Table : {{ $table->table_number }} | Seat Capacity : {{ $table->seating_number }}</option>
+                        <option value="{{$table->id}}" {{ ($cart_dinein_table_id == $table->id) ? 'selected' : '' }}>Category : {{ @$table->category->title }} | Table : {{ $table->table_number }} | Seat Capacity : {{ $table->seating_number }}</option>
                     @endforeach
                 </select>
             @else
@@ -107,7 +107,7 @@
 
                      @if(!empty(Auth::user()))
                         <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                        <!-- <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> -->
+                        <!-- <span>{{ __('Edit') }} {{( __('Address') }}</span> -->
                         @endif
                     <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
                         @if($address->is_primary)
@@ -127,7 +127,7 @@
         {{-- @endif --}}
         @empty
         <div class="col-12 address-no-found">
-            <p>{{($client_preference_detail->address_is_car == 1) ? __('Car not available.') : __('Address not available.')}}</p>
+            <p>{{ __('Address not available.') }}</p>
         </div>
         @endforelse
         <!-- <div class="col-12 mt-4 text-center" id="add_new_address_btn">
@@ -258,7 +258,7 @@
                                         <span class="text-danger" id="extra_instruction_error"></span>
                                     </div>
                                     <div class="col-md-12 mt-3 add_address_btn">
-                                        <button type="button" class="btn btn-solid" id="save_address">{{__('Save')}} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</button>
+                                        <button type="button" class="btn btn-solid" id="save_address">{{__('Save Address')}}</button>
                                         <button type="button" class="btn btn-solid black-btn close" data-dismiss="modal">{{__('Cancel')}}</button>
                                     </div>
                                 </div>

@@ -60,6 +60,12 @@
                                     <label for="dropoff_delivery"> {{ __("Delivery") }} </label>
                                 </div>
                             @endif
+                            @if($vendor->laundry == 1)
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1"  @if($client_preferences->laundry_check == 0) style="display: none;" @endif>
+                                <input name="dropoff_slot_type[]" type="checkbox" id="dropoff_laundry" checked value="laundry">
+                                <label for="dropoff_laundry"> {{ __("Laundry") }} </label>
+                            </div>
+                        @endif
                         </div>
                     </div>
                     <div class="row mb-2 dropoff_weekDays">
@@ -195,6 +201,12 @@
                                 <label for="dropoff_edit_delivery"> {{ __("Delivery") }} </label>
                             </div>
                             @endif
+                            @if($vendor->laundry == 1)
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
+                                <input name="dropoff_slot_type[]" type="checkbox" id="dropoff_edit_laundry" checked value="laundry">
+                                <label for="dropoff_edit_laundry"> {{ __("Laundry") }} </label>
+                            </div>
+                        @endif
                         </div>
                     </div>
                     <!--<div class="row mb-2 dropoff_weekDaysEdit">

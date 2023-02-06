@@ -1,6 +1,8 @@
 <!-- bundle -->
 <!-- Vendor js -->
 <?php
+    $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
+    $analytics = getAdditionalPreference(['gtag_id', 'fpixel_id']);
 if (Session::has('toaster')) {
     $toast = Session::get('toaster');
     echo '<script>
@@ -40,6 +42,7 @@ if (Session::has('toaster')) {
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" ></script> --}}
 <script src="{{asset('assets/libs/datetimepicker/daterangepicker.min.js')}}" ></script>
+<script src="{{ asset('assets/js/alert/alert.js') }}"></script>
 
 {{-- <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" ></script> --}}
 
@@ -426,7 +429,9 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
-
+@if(isset($analytics['gtag_id']))
+    gtag('config', "{{$analytics['gtag_id'] ?? ''}}");
+@endif   
 
 $("#change_password").on("hidden.bs.modal", function(){
     $('.pwd-msg').html("");
@@ -461,3 +466,21 @@ $("#change_password_form").submit(function(e){
     });
 });
 </script> 
+@if(isset($analytics['fpixel_id']))
+    <!-- Meta Pixel Code -->
+        <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', "{{$analytics['fpixel_id']}}");
+        fbq('track', 'PageView');
+        </script>
+        <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{$analytics['fpixel_id']}}&ev=PageView&noscript=1"/></noscript>
+    <!-- End Meta Pixel Code -->
+@endif
+

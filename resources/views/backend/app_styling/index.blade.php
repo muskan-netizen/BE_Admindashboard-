@@ -119,7 +119,7 @@
                                         </div> -->
                                         <input type="file" accept="image/*" data-plugins="dropify" name="file_name" class="dropify" data-default-file="" />
                                         {{-- <label class="logo-size text-right w-100">{{ __("Logo Size") }} 170x96</label> --}}
-                                        <button type="submit" class="btn btn-info waves-effect waves-light mt-2">Submit</button>
+                                        <button type="submit" class="btn btn-info waves-effect waves-light mt-2">{{ __('Submit') }}</button>
                                     </div>
                                 </form>
                             </div>

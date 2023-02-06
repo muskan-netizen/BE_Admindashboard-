@@ -75,11 +75,7 @@ class SendCampaignNotification extends Command
                 Config::set("database.connections.$database_name", $default);
                 DB::setDefaultConnection($database_name);
                 $client_preferences = ClientPreference::first();   
-                $from = $client_preferences->fcm_server_key ?? "";
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];  
+                 
                 // CampaignRoster::where('id',6287)->delete();
                 $notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status',0)->with('campaign','user')->get();
                 if($notifications)
@@ -196,17 +192,7 @@ class SendCampaignNotification extends Command
                                     ],
                                     "priority" => "high"
                                 ];
-                                $dataString = $data;
-                                $ch = curl_init();
-                                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                                curl_setopt($ch, CURLOPT_POST, true);
-                                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                                $result = curl_exec($ch);
-                                // Log::info($result);
-                                curl_close($ch);
+                                $result=sendFcmCurlRequest($data);
                                 if($result)
                                 {
                                     //remove notification if success

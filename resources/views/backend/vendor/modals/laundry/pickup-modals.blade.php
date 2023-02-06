@@ -60,6 +60,12 @@
                                     <label for="pickup_delivery"> {{ __("Delivery") }} </label>
                                 </div>
                             @endif
+                            @if($vendor->laundry == 1)
+                                <div class="checkbox checkbox-success form-check pl-0 mb-1"  @if($client_preferences->laundry_check == 0) style="display: none;" @endif>
+                                    <input name="pickup_slot_type[]" type="checkbox" id="pickup_laundry" checked value="laundry">
+                                    <label for="pickup_laundry"> {{ __("Laundry") }} </label>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     <div class="row mb-2 pickup_weekDays">
@@ -195,6 +201,12 @@
                                 <label for="pickup_edit_delivery"> {{ __("Delivery") }} </label>
                             </div>
                             @endif
+                            @if($vendor->laundry == 1)
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1" >
+                                <input name="pickup_slot_type[]" type="checkbox" id="pickup_edit_laundry" checked value="laundry">
+                                <label for="pickup_edit_laundry"> {{ __("Laundry") }} </label>
+                            </div>
+                        @endif
                         </div>
                     </div>
                     <!--<div class="row mb-2 pickup_weekDaysEdit">

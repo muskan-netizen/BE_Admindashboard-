@@ -2,7 +2,7 @@
 <html lang="en">
    <head>
       <meta charset="utf-8">
-      <title>Verify Mail</title>
+      <title>{{__('Verify Mail')}}</title>
       <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
       <style type="text/css">
          body{

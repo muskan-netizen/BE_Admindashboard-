@@ -1,29 +1,28 @@
 <?php
 Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
 
-        Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
+    Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 
-        Route::post('vendor-sync-inventory', 'Api\v1\VendorController@vendorSyncInventory')->middleware('ConnectDbFromInventory');
+    Route::post('vendor-sync-inventory', 'Api\v1\VendorController@vendorSyncInventory')->middleware('ConnectDbFromInventory');
 
 
-  
-   Route::group(['middleware' => ['dbCheck', 'checkAuth']], function() { //apilogger
+    Route::group(['middleware' => ['dbCheck', 'checkAuth']], function () { //apilogger
 
+        Route::get('static-dropoff-locations', 'Api\v1\AddressController@staticDropoffLocations');
 
         Route::group(['prefix' => 'estimation'], function () {
-    
+
             Route::get('get-product-estimation-with-addons', 'Api\v1\ProductEstimationController@getProductEstimationWithAddons');
-            
+
             Route::post('add-estimated-products-in-cart', 'Api\v1\ProductEstimationController@addEstimatedProductInCart');
-            
+
             Route::post('remove-products-from-estimated-cart', 'Api\v1\ProductEstimationController@removeProductFromEstimatedCart');
             Route::post('remove-addons-from-estimated-cart', 'Api\v1\ProductEstimationController@removeAddonsFromEstimatedCart');
-            
+
             Route::post('get-estimation', 'Api\v1\ProductEstimationController@getEstimation');
             Route::post('assign-order-qrcode', 'Api\v1\ProductEstimationController@assingQrcode');
-            
+
             Route::post('transfer-estimated-cart-products-to-real-cart', 'Api\v1\ProductEstimationController@transferEstimatedCartProductsToRealCart');
-        
         });
 
 
@@ -43,6 +42,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
         Route::post('header', 'Api\v1\HomeController@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
+        Route::POST('checkProductAvailibility', 'Api\v1\ProductController@checkProductAvailibility');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');
         Route::get('products_faq/{id}', 'Api\v1\ProductController@getProductFaq');
@@ -62,8 +62,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('celebrity/filters/{id?}', 'Api\v1\CelebrityController@celebrityFilters');
         Route::get('vendor/all', 'Api\v1\VendorController@viewAll');
         Route::get('vendor/{id?}', 'Api\v1\VendorController@productsByVendor');
-        Route::get('vendor-optimize/{id?}', 'Api\v1\VendorController@productsByVendorOptimize');   
-        Route::get('vendor-optimize-filters/{id?}', 'Api\v1\VendorController@productsByVendorOptimizeFilterList');   
+        Route::get('vendor-optimize/{id?}', 'Api\v1\VendorController@productsByVendorOptimize');
+        Route::get('vendor-optimize-filters/{id?}', 'Api\v1\VendorController@productsByVendorOptimizeFilterList');
         Route::post('vendor/filters/{id?}', 'Api\v1\VendorController@vendorFilters');
         Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         Route::post('vendor/vendorProductsFilter', 'Api\v1\VendorController@vendorProductsFilter');
@@ -74,23 +74,21 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('vendor/register', 'Api\v1\VendorController@postVendorRegister');
         Route::post('driver/register', 'Api\v1\AuthController@driverSignup');
         Route::post('checkIsolateSingleVendor', 'Api\v1\CartController@checkIsolateSingleVendor');
-        Route::post('productByVariant/{id}','Api\v1\ProductController@getVariantData')->name('productVariant');
+        Route::post('productByVariant/{id}', 'Api\v1\ProductController@getVariantData')->name('productVariant');
         Route::post('contact-us', 'Api\v1\HomeController@contactUs');
 
         Route::post('upload-image-pickup', 'Api\v1\PickupDeliveryController@uploadImagePickup');  ////// upload image while pickup delivery
 
         Route::post('cart/product/lastAdded', 'Api\v1\CartController@getLastAddedProductVariant');
-	    Route::post('cart/product/variant/different-addons', 'Api\v1\CartController@getProductVariantWithDifferentAddons');
+        Route::post('cart/product/variant/different-addons', 'Api\v1\CartController@getProductVariantWithDifferentAddons');
 
         Route::post('promo-code-open/list', 'Api\v1\PickupDeliveryController@postPromoCodeListOpen');
         Route::post('order/after/payment', 'Front\PaytabController@after_app_payment');
         //Passbase Store 
-        Route::post('passbase/store','Api\v1\PassbaseController@storeAuthkey'); 
-
-
+        Route::post('passbase/store', 'Api\v1\PassbaseController@storeAuthkey');
     });
 
-    Route::group(['middleware' => ['dbCheck','systemAuth']], function() { //apilogger
+    Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger
         Route::get('cart/empty', 'Api\v1\CartController@emptyCart');
         Route::get('coupons/{id?}', 'Api\v1\CouponController@list');
         Route::post('cart/remove', 'Api\v1\CartController@removeItem');

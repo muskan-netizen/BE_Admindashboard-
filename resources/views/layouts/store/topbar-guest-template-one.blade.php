@@ -11,7 +11,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         <div class="row align-items-center justify-content-center">
             <div class="col-sm-4">
                 <div class="d-flex align-items-center justify-content-start">
-                    <a class="navbar-brand mr-sm-3 d-block d-sm-none" style="height:60px" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}"></a>
+                    <a class="navbar-brand mr-sm-3 d-block d-sm-none"  href="{{ route('userHome') }}"><img alt="" style="height:60px"class="logo-image" src="{{$urlImg}}"></a>
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
                             <div class="location-bar d-none d-sm-flex align-items-center justify-content-start my-2 my-lg-0" href="#edit-address" data-toggle="modal">
@@ -87,7 +87,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <ul class="onhover-show-div">
                             @foreach($languageList as $key => $listl)
                                 <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)
                                         ({{$listl->language->nativeName}})
                                         @endif </a>
                                 </li>
@@ -214,7 +214,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             <ul>
                 @foreach($languageList as $key => $listl)
                     <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)
                             ({{$listl->language->nativeName}})
                             @endif </a>
                     </li>

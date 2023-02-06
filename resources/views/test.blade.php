@@ -421,7 +421,7 @@
                                 <div class="card-footer bg-transparent px-0">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <a href="#"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
-                                        <button class="btn btn-solid">Next</button>
+                                        <button class="btn btn-solid">{{__('Next')}}</button>
                                     </div>
                                 </div>
                             </div>
@@ -2074,7 +2074,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row" colspan="4" class="text-end">Total Discount :</th>
+                                                    <th scope="row" colspan="4" class="text-end">{{ __('Total Discount') }} :</th>
                                                     <td>$0.00</td>
                                                 </tr>
                                                 <tr>
@@ -2148,7 +2148,7 @@
                         <button type="button" class="btn btn-solid w-100" data-dismiss="modal">Yes</button>
                     </div>
                     <div class="col-6 pl-1">
-                        <button type="button" class="btn btn-solid w-100" data-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-solid w-100" data-dismiss="modal">{{ __('No') }}</button>
                     </div>
                 </div>
             </div>

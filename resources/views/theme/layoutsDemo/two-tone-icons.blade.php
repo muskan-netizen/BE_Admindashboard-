@@ -52,7 +52,7 @@
                         <div class="col-6">
                             <div class="text-right">
                                 <h3 class="mt-1">$<span data-plugin="counterup">58,947</span></h3>
-                                <p class="text-muted mb-1 text-truncate">Total Revenue</p>
+                                <p class="text-muted mb-1 text-truncate">{{ __('Total Revenue') }}</p>
                             </div>
                         </div>
                     </div> <!-- end row-->
@@ -134,7 +134,7 @@
                         </div>
                     </div>
 
-                    <h4 class="header-title mb-0">Total Revenue</h4>
+                    <h4 class="header-title mb-0">{{ __('Total Revenue') }}</h4>
 
                     <div class="widget-chart text-center" dir="ltr">
                         

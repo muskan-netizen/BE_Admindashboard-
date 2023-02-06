@@ -19,7 +19,7 @@ $preference = $client_preference_detail;
                 <div class="row w-100 d-flex align-items-center justify-content-between">
                     <div class="col-sm-2">
                         <div class="logo_area">
-                            <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" class="w-100" src="{{$urlImg}}"></a>
+                            <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" class="w-100 logo-image" src="{{$urlImg}}"></a>
                         </div>
                     </div>
                     <div class="col-sm-10">
@@ -419,7 +419,7 @@ $preference = $client_preference_detail;
                 <div class="row w-100 d-flex align-items-center justify-content-between">
                     <div class="col-sm-2">
                         <div class="logo_area">
-                            <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" style="height:80px" src="{{$urlImg}}"></a>
+                            <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" class="logo-image" style="height:80px" src="{{$urlImg}}"></a>
                         </div>
                     </div>
                     <div class="col-sm-10">

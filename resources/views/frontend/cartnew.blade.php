@@ -8,102 +8,24 @@
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 
 <style type="text/css">
-.swal2-title {
-    margin: 0px;
-    font-size: 26px;
-    font-weight: 400;
-    margin-bottom: 28px;
-}
-
-.discard_price {
-    text-decoration: line-through;
-    color: #6c757d;
-}
-
-#category_kyc_form_in_cart .file--upload>label {
-    width: 100%;
-    height: 200px;
-    border: 1px solid #eee;
-    border-radius: 15px;
-}
-
-#category_kyc_form_in_cart .file .update_pic {
-    width: 100%;
-    height: auto;
-    margin: auto;
-    text-align: center;
-    border: 0;
-    border-radius: 0;
-}
-
-#category_kyc_form_in_cart .file .update_pic img {
-    height: 130px;
-    width: auto;
-}
-
-.time {
-    display: inline-block;
-    font-size: 26px;
-    padding: 5px;
-    text-align: center;
-    width: 94px;
-    margin-top: 5px;
-}
-#applepay-btn {
-    width: 100%;
-    height: 50px;
-    display: none;
-    border-radius: 5px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
-    background-image: -webkit-named-image(apple-pay-logo-white);
-    background-position: 50% 50%;
-    background-color: black;
-    background-size: 60%;
-    background-repeat: no-repeat;
-    color: #FFF !important;
-}
-
-#save_prescription_form .modal-footer {
-display: block;
-}
-.al_body_template_two .show-prescription-doc {
-overflow: auto;
-white-space: nowrap;
-overflow-y: hidden;
-width: 100%;
-}
-.show-prescription-close {
-    position: relative;
-    display: inline-block;
-}
-.show-prescription-close i {
-    position: absolute;
-    right: -2px;
-    top: 0px;
-    font-size: 11px;
-    background: #eee;
-    padding: 1px 2px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.al_body_template_two .show-prescription-doc img{
-    margin:2px;
-}
+.swal2-title {margin: 0px;font-size: 26px;font-weight: 400;margin-bottom: 28px;}
+.discard_price {text-decoration: line-through;color: #6c757d;}
+#category_kyc_form_in_cart .file--upload>label {width: 100%;height: 200px;border: 1px solid #eee;border-radius: 15px;}
+#category_kyc_form_in_cart .file .update_pic {width: 100%;height: auto;margin: auto;text-align: center;border: 0;border-radius: 0;}
+#category_kyc_form_in_cart .file .update_pic img {height: 130px;width: auto;}
+.time {display: inline-block;font-size: 26px;padding: 5px;text-align: center;width: 94px;margin-top: 5px;}
+#applepay-btn {width: 100%;height: 50px;display: none;border-radius: 5px;margin-left: auto;margin-right: auto;margin-top: 20px;background-image: -webkit-named-image(apple-pay-logo-white);background-position: 50% 50%;background-color: black;background-size: 60%;background-repeat: no-repeat;color: #FFF !important;}
+#save_prescription_form .modal-footer {display: block;}
+.al_body_template_two .show-prescription-doc {overflow: auto;white-space: nowrap;overflow-y: hidden;width: 100%;}
+.show-prescription-close {position: relative;display: inline-block;}
+.show-prescription-close i {position: absolute;right: -2px;top: 0px;font-size: 11px;background: #eee;padding: 1px 2px;border-radius: 10px;cursor: pointer;}
+.al_body_template_two .show-prescription-doc img{margin:2px;}
 .al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
-
-
 .grn_popop-total_amt label{  font-size: 12px !important;text-align:left;}
-
 .vendor_cart-check label {display: inline-block;}
-
-
-
-
 /*-------cart page design css  start here---------*/
+.items-details p{font-size: 12px;}
 .dark .new_cart,
 .dark .cart-summary,
 .dark .new_cart .add-address i,
@@ -120,9 +42,30 @@ width: 100%;
 .single_cart_heading h3 {font-weight: 600;color: #000;}
 .cart-summary h5.order_text{font-size: 22px;font-weight: 600;color:#000;}
 .item-show-cart h4 {font-size: 20px !important;font-weight: 600;color: #000;}
-.shoping_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid#eeeeee8c;}
+.shoping_cart {background: #fff;box-shadow: 10px 16px 14px 10px #eee9;border: 1px solid #eeeeee8c;}
+.dark #specific_instructions::-webkit-input-placeholder,
+.dark #specific_instructions::-moz-input-placeholder { color:#fff; }
+.alFourSpecificInstructions input#specific_instructions{background-color: #eee;}
+.dark .new_cart .add-address i ,
+.dark .cart_delivery,
+.dark .alert-danger {background: #242424;border: 1px solid #242424;box-shadow: 5px 6px 4px #0000001a;}
+.dark .cart-summary,
+.dark .new_cart,
+.dark .shoping_cart{background-color: #0c0c0c;box-shadow: none;border: 0px;}
+.dark .item-show-cart h4,
+.dark .new_cart .page-title,
+.dark .cart-summary .cart-price .mb-2,
+.dark .cart-summary h5.order_text,
+.dark .cart-summary .alFourSpecificInstructions span,
+.dark .cart-summary .cart-price .text-right b,
+.dark .shoping_cart .order-md-4 .items-price,
+.dark .single_cart_heading h3 {color: #fff;}
+.dark .list-box{background-color: #242424;}
+.dark .tip_label{background: transparent;}
+.dark .tip_radio:checked+.tip_label p{color: #fff !important;}
+.dark .tip_radio:checked+.tip_label{box-shadow:none;}
 .cart-design .card-box {padding: 0px;}
-.cart-summary{background-color: #f5f5f6;border: 1px solid#efefef;box-shadow: 6px 13px 30px #1615152b;border-radius: 4px;width: 100%;}
+.cart-summary{background-color: #f5f5f6;border: 1px solid #efefef;box-shadow: 6px 13px 30px #1615152b;border-radius: 4px;width: 100%;}
 .cart-summary .alFourSpecificInstructions span {font-size: 18px;color: #000;display: block;}
 .cart-summary .alFourSpecificInstructions input::placeholder {color: #000;font-size: 14px;}
 .cart-summary .cart-price .text-right b {color: #000;font-size: 14px;}
@@ -145,14 +88,15 @@ display: flex;align-items: center;justify-content: center;border: 1px solid#eee;
 .cart_delivery:hover a.deleteAddress{right: 10px;}
 .new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
 justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
-.cart-checkout_btn button{width:100%;}.cart-checkout_btn #order_placed_btn {
-padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
+.cart-checkout_btn button{width:100%;}
+.cart-checkout_btn #order_placed_btn {padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .cart_delivery a i {font-weight: 600;font-size: 16px;}
 .schedule_btn ul li label.taskschedulebtn {padding: 6px 10px !important;font-size: 10px !important;}
 .cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;}
 .cart-page-layout .alFourTemplateCartPage .items-details p{font-size: 14px;}
 .cart-page-layout .alFourTemplateCartPage .extra-items-price {color: #000;font-size: 14px;}
 .product_title_add span {text-transform: uppercase;font-size: 14px;}
+
 /* .al_body_template_two .cart-summary {background: #fff;} */
 .shoping_cart .number{width: fit-content;}
 .al_body_template_three .cart-summary .tip_radio_controls label{width:auto;margin:0px;}
@@ -166,43 +110,25 @@ padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 /* 2 template cart checkbox css */
 .tip_radio:checked+.tip_label {background: var(--theme-deafult);box-shadow: 0 0 5px var(--theme-deafult);}
 .tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {color: #fff;}
-
 .al_body_template_four .text-danger {font-size: 16px;}
 .al_body_template_four .clproduct_cart_order_form.btn.btn-solid {padding: 8px 0px;font-size: 12px;}
 .al_body_template_two .shoping_cart .alFourTemplateCartPage #product_faq_dev_42 .btn-product-order-form-div button {
 font-size: 12px;padding: 6.7px 10px;}
 .add_address_btn .btn-solid{font-size: 12px;padding: 6.7px 10px;}
-#add_new_address_form_modal button.close{
-position: absolute;
-right: 20px;
-}
-
-
-
-
-
-
-.login-form #schedule_div input{display:block;}
-
+#add_new_address_form_modal button.close{position: absolute;right: 20px;}
+.cart-design .product-img img{border-radius: 15px;overflow: hidden;}
+.dark .coupon_box img.blur-up.lazyloaded{background-color: #fff;opacity: 1;padding: 0 4px;border-radius: 25px;}
+.login-form #schedule_div input{display:block;width: 100% !important;}
+.login-form #schedule_div input::-webkit-calendar-picker-indicator{color: rgba(0, 0, 0, 0);opacity: 1}
 /*------cart page css end here------ */
 
-
-
-
 @media (max-width:576px){
-    .al_body_template_two .show-prescription-doc {
-   width:100%;
-}
+.al_body_template_two .show-prescription-doc {width:100%;}
 .item-show-cart h4 {font-size:14px !important;}
-.product_title_add span {
-    font-size: 12px;
-}
-
+.product_title_add span {font-size: 12px;}
 }
 
 /*cart page responsive css */
-
-
 @media only screen and (min-width:1367px) and (max-width:1429px){
 .cart-design .alFourTemplateCartButtons a.shoping{font-size:13px;height:auto;}
 }
@@ -271,6 +197,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 </script>
 
 <div class="cart-design">
+    {{-- {{dump($client_preference_detail)}} --}}
     <div id="mycart"></div>
     <div class="container">
         @if($cartData)
@@ -293,7 +220,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                         @if(!empty(Auth::user()))
-                        <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> </a>
+                        <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit Address') }}</span> </a>
                         @endif
                     </div>
 
@@ -477,10 +404,10 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body text-center">
+            <div class="modal-body">
                 <input type="hidden" id="vendor_id" value="">
                 <input type="hidden" id="cartproduct_id" value="">
-                <h6 class="m-0 px-3">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
+                <h6 class="m-0">{{__('Are You Sure You Want To Remove This Item?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
@@ -917,6 +844,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 @section('script')
 
 <script type="text/javascript" src="{{asset('assets/libs/jquery-clock-timepicker/jquery-clock-timepicker.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/cart_custom.js')}}"></script>
 <script type="text/javascript">
     function handler(e) {
         $('.standard').clockTimePicker();
@@ -1153,6 +1081,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var post_category_kyc_document = "{{ route('updateCartCategoryKyc') }}";
 
     var passbase_page = "{{route('passbase.page')}}";
+    var get_dispatch_slot = "{{ route('getSlotFromDispatchDemand') }}";
     var product_order_form_element_data = [];
     var error_Slot_is_required = "{{__('Slot is required')}}";
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
@@ -1293,22 +1222,23 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         var out = {};
         var s_data = $(dom_query).serializeArray();
 
+        document.querySelectorAll('.form-control').forEach(function(inp) {
+        });
             //transform into simple data/value object
             for(var i = 0; i < s_data.length; i++){
                 var record = s_data[i];
-                // console.log(record);
                 out[record.name] = record.value;
-                var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
-                var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
-                console.log(is_required);
+                var select_faq_id = $(dom_query+' select[name="'+record.name+'"]').attr('data-product_faq_id');
+                var is_required = $(dom_query+' select[name="'+record.name+'"]').attr('data-required');
+
+                if(!select_faq_id){
+                    var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
+                     var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
+                }
 
                 if((is_required)==1 && (record.value =='' )){
                     var errorMsg ="The "+ record.name +" field is required.";
                     $('.product_order_form_error').html(errorMsg);
-                    // errorMsg = document.querySelector(".product_order_form_error");
-                    // errorMsg.html = "error msg";
-                    // errorMsg.style.display = 'none';
-                    // alert("hello");
                     return 0;
                 } else {
                     $('.product_order_form_error').html('');
@@ -1735,14 +1665,16 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         var schedule_datetime = $('#schedule_datetime').val();
         var schedule_pickup_datetime = $('#pickup_schedule_datetime').val();
         var schedule_pickup_slot = $('#schedule_pickup_slot').val();
+        var schedule_slot = $('#slot').val();
         var vendor_id = $('#vendor_id').val();
 
         $.ajax({
             type: "GET",
             data: {
                 "schedule_pickup_datetime": schedule_pickup_datetime,
-                "schedule_datetime": schedule_datetime,
+                "schedule_datetime":        schedule_datetime,
                 "schedule_pickup_slot":     schedule_pickup_slot,
+                "schedule_slot":            schedule_slot,
                 "vendor_id":                vendor_id,
             },
             url: url,
@@ -1816,6 +1748,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
+                console.log("checkSlotAvai");
                 // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
                 if(output.orderCount >= output.orders_per_slot  ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");

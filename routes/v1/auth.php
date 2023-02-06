@@ -202,7 +202,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('approve/reject', 'Api\v1\OrderController@submitEditedOrder');
         }); 
 
-       
+        Route::post('/create-contact', 'Hubspot\HubspotApiController@create');
 
     });
 });

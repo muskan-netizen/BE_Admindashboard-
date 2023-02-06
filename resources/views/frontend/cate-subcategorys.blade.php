@@ -32,8 +32,8 @@
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
-                <div class="collection-filter col-lg-3 al">
-                    <div class="theme-card">
+                <div class="collection-filter col-lg-3 main-fillter al">
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -106,7 +106,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -161,7 +161,7 @@
                                                         <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect m-0" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
                                                             <div class="product-image"><img width="100%" alt="" class="blur-up lazyload" data-icon_two="{{isset($cate['icon_two']) && !is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'500/500'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'500/500'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}500/500{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
                                                             <div class="media-body align-self-center">
-                                                                <div class="inner_spacing w-100">
+                                                                <div class="inner_spacing w-100 text-center">
                                                                     <h3 class="d-flex align-items-center justify-content-between">
                                                                         <label class="mb-0">{{$cate['translation_name']}}</label>
                                                                     </h3>

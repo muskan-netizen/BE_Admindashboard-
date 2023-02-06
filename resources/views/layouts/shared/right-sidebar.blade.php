@@ -59,13 +59,13 @@
               <h6 class="font-weight-medium px-3 mt-3 text-uppercase">Favourites <a href="javascript: void(0);" class="font-18 text-danger"><i class="float-right mdi mdi-plus-circle"></i></a></h6>
 
               <div class="p-2">
-                
+
               </div>
 
               <h6 class="font-weight-medium px-3 mt-3 text-uppercase">Other Chats <a href="javascript: void(0);" class="font-18 text-danger"><i class="float-right mdi mdi-plus-circle"></i></a></h6>
 
               <div class="p-2 pb-4">
-                 
+
 
                   <div class="text-center mt-3">
                       <a href="javascript:void(0);" class="btn btn-sm btn-white">
@@ -283,8 +283,8 @@
     </div>
 </div>
 
-<script type="text/template" id="latest_order_template">    
-    
+<script type="text/template" id="latest_order_template">
+
     <div class="row">
         <% _.each(orders, function(order, k){%>
             <% if(order.vendors.length !== 0) { %>
@@ -321,7 +321,7 @@
                                         </ul>
                                     </div>
                                     <div class="col-7 col-sm-6">
-                                        <div class="row no-gutters product_list align-items-center flex-wrap">
+                                        <div class="row no-gutters product_list align-items-top flex-wrap">
                                             <% _.each(vendor.products, function(product, pr){%>
                                                 <div class="col-4 text-center mb-2">
                                                     <div class="list-img">
@@ -354,7 +354,7 @@
                                             </li>
                                             <li class="grand_total d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Amount</label>
-                                                <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(vendor.payable_amount) %></span> 
+                                                <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(vendor.payable_amount) %></span>
                                             </li>
                                         </ul>
                                     </div>

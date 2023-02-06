@@ -33,8 +33,13 @@ class ProductBookingController extends FrontController
           $start_time = date("Y-m-d H:i:s",strtotime($request->selectedStartDate));
           $end_time = date("Y-m-d H:i:s",strtotime($request->selectedEndDate));
           $product_variant_data = array();
-          $product_variant_id =  ProductVariantSet::where(['variant_option_id'=>$request->variant_option_id,'product_id'=>$request->product_id])->pluck('product_variant_id');
-          $product_variant_id = $product_variant_id->toArray();
+          if($request->has('variant_option_id') && ($request->variant_option_id !='')){
+            $product_variant_id =  ProductVariantSet::where(['variant_option_id'=>$request->variant_option_id,'product_id'=>$request->product_id])->pluck('product_variant_id');
+            $product_variant_id = $product_variant_id->toArray();
+          }else{
+            $product_variant_id[]=$request->variant_id;
+          }
+        
           $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
                               ->where(function ($query) use ($start_time , $end_time ){
                                   $query->where('start_date_time', '<=', $end_time)

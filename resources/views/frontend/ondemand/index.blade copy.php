@@ -56,7 +56,7 @@ use Illuminate\Support\Arr;
 
                         @endif
 
-                        <div class="card-box">
+                        <div class="card-box side-card">
                                      <!-- static html -->
 
                                 @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
@@ -71,7 +71,7 @@ use Illuminate\Support\Arr;
                                                     <div class='' id='section_set{{$key}}'>
                                                         @if(!empty($childs))
                                                         <div class="service-img mb-3">
-                                                            <img class="img-fluid" src="{{$childs->image['proxy_url'] . '1000/200' . $childs->image['image_path']}}" alt="">
+                                                            <img class="img-fluid" src="{{$childs->image['proxy_url'] . '1000/300' . $childs->image['image_path']}}" alt="">
                                                         </div>
                                                         @endif
 
@@ -177,7 +177,7 @@ use Illuminate\Support\Arr;
 
                                                 @if(!empty($category->image))
                                                 <div class="service-img mb-3">
-                                                    <img class="img-fluid" src="{{$category->image['proxy_url'] . '1000/200' . $category->image['image_path']}}" alt="">
+                                                    <img class="img-fluid" src="{{$category->image['proxy_url'] . '1000/300' . $category->image['image_path']}}" alt="">
                                                 </div>
                                                 @endif
                                                 @if($listData->isNotEmpty())
@@ -609,10 +609,10 @@ use Illuminate\Support\Arr;
                         </div>
                         <div class="footer-card">
                             @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && empty(app('request')->input('addons')))
-                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">Next</span></a>
+                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">{{__('Next')}}</span></a>
                                 @elseif(app('request')->input('step') == '1' && app('request')->input('addons') == '1')
                                     <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
-                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">Next</span></a>
+                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">{{__('Next')}}</span></a>
                                 @elseif(app('request')->input('step') == '2' && empty(app('request')->input('addons')))
                                     <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
                                     @if(Auth::guest())

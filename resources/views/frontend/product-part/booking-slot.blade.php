@@ -69,7 +69,7 @@
                 <input  type="hidden" min="0" name="total_hrs" id="total_hrs" value="{{getMinutes($product->minimum_duration,$product->minimum_duration_min)}}" >
 
                 <input style="width: 135px" readonly type="text"  id="incremental_hrs_hidden" class="form-control input-qty-number"  value="{{$product->minimum_duration.' hour '.$product->minimum_duration_min. ' min'}}">
-
+                <input  type="hidden"  name="first_variant" id="first_variant" value="{{@$product->variant[0]->id}}" >
                 <span class="input-group-prepend quant-plus">
                     <button type="button" class="btn incremental-right-plus" data-type="plus" data-field="">
                         <i class="ti-angle-right"></i>
@@ -117,8 +117,8 @@
     return num.toString().padStart(2, '0');
   }
     function timeConvertCal(hr,min){
-     // console.log(hr);
-     // console.log(min);
+     // //console.log(hr);
+     // //console.log(min);
       return (parseInt(hr)*parseInt(60)+parseInt(min)); 
     }
     function timeToHrMinConvertCal(totalMinutes){
@@ -147,19 +147,16 @@
         var currentDate = moment().format("M/DD/YY hh:mm A");
         $checkinInput = $('#blocktime');
         $checkoutInput = $('#blocktime2');
-       
-        //$checkinInput.val( moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes').format("M/DD/YY hh:mm A"));
         $checkinInput.val( moment().format("M/DD/YY hh:mm A"));
-        $checkoutInput.val(moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes').format("M/DD/YY hh:mm A"));
-       
-        
+        $checkoutInput.val(moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes').format("M/DD/YY hh:mm A")); 
         $(".incremental-left-minus").on("click", function() {
             document.getElementById('incremental_hrs').stepDown();
             var incremental_hrs = document.getElementById('incremental_hrs').value;
             var start_current_time = $($checkinInput).val();
             var end_current_time = $($checkoutInput).val();
+            total_min = document.getElementById('total_hrs').value;
+      
             if(incremental_hrs > 0) {
-            
               $checkoutInput.val(moment(end_current_time).add(incremental_hrs,'minutes').format("M/DD/YY hh:mm A"));
               var checkOutPicker = $checkoutInput.data('daterangepicker');
               checkOutPicker.setEndDate(moment(end_current_time).add(incremental_hrs,'minutes').format("M/DD/YY hh:mm A"));
@@ -173,17 +170,8 @@
                 product_id:$("input[name='product_id']").val(),
                 selectedStartDate:start_current_time,
                 selectedEndDate:end_current_time
-              }
-
-              console.log('total',total_min);
-              console.log('incremental_hrs',default_step);             
+              }    
               total_min = ((parseInt(total_min))-(parseInt(default_step)));
-              // console.log('def_min',default_minutes);
-              // console.log('incre',incremental_hrs);
-             
-              console.log(total_min);
-              $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(total_min));
-              check_product_availibility(formData);
             } else {
 
               $checkoutInput.val(moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes').format("M/DD/YY hh:mm A"));
@@ -201,38 +189,32 @@
                 selectedEndDate:end_current_time
               }
               total_min = parseInt(default_minutes);
-              console.log(total_min);
-              console.log('total',total_min);
-              console.log('incremental_hrs',incremental_hrs);         
-              $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(total_min));
-              check_product_availibility(formData);
-              $('#total_hrs').val(total_min);
             }
-            
-            // console.log($($checkoutInput).val());
-            // console.log(document.getElementById('incremental_hrs').value);
+            $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(total_min));
+            $('#total_hrs').val(total_min);
+            check_product_availibility(formData);
            
-            
-
         });
 
         $(".incremental-right-plus").on("click", function() {
           document.getElementById('incremental_hrs').stepUp();
           //setTimeout(() => {
             var incremental_hrs = document.getElementById('incremental_hrs').value;
+          
+           
             var end_current_time = $($checkoutInput).val();
 
             var start_current_time = $($checkinInput).val();
             var end_current_time = $($checkoutInput).val();
-           
-            $checkoutInput.val(moment(end_current_time).add(incremental_hrs,'minutes').format("M/DD/YY hh:mm A"));
+          
+            $checkoutInput.val(moment(end_current_time).add(default_step,'minutes').format("M/DD/YY hh:mm A"));
             var checkOutPicker = $checkoutInput.data('daterangepicker');
            
-            checkOutPicker.setEndDate(moment(end_current_time).add(incremental_hrs,'minutes').format("M/DD/YY hh:mm A"));
+            checkOutPicker.setEndDate(moment(end_current_time).add(default_step,'minutes').format("M/DD/YY hh:mm A"));
 
               var checkInPicker = $checkinInput.data('daterangepicker');
               
-              checkInPicker.setEndDate(moment(end_current_time).add(incremental_hrs,'minutes').format("M/DD/YY hh:mm A"));
+              checkInPicker.setEndDate(moment(end_current_time).add(default_step,'minutes').format("M/DD/YY hh:mm A"));
 
               var formData = {
                 variant_option_id:$('.changeVariant:checked').val(),
@@ -240,21 +222,12 @@
                 selectedStartDate:start_current_time,
                 selectedEndDate:end_current_time
               }
-          
-            // console.log($($checkoutInput).val());
-            // console.log(document.getElementById('incremental_hrs').value);
-              console.log('total',total_min);
-              console.log('incremental_hrs',default_step);       
-              total_min = parseInt(total_min)+parseInt(default_step);
+              var total1=   $('#total_hrs').val();
+              total_min = parseInt(total1)+parseInt(default_step);
+              
               $('#total_hrs').val(total_min);
-              //console.log(timeToHrMinConvertCal(total_min));
+             
               $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(total_min));
-              check_product_availibility(formData);
-            // if(product_variant_data) {
-            //   calculation(incremental_hrs,product_variant_data.incremental_price,product_variant_data.incremental_price_per_min);
-            // }
-          //}, 700);
-          
         });
 
 
@@ -288,7 +261,7 @@
           var checkInPicker = $checkinInput.data('daterangepicker');
           checkInPicker.setStartDate(selectedStartDate);
           checkInPicker.setEndDate(selectedEndDate);
-          //console.log(selectedEndDate);
+          ////console.log(selectedEndDate);
           $('.incremental_hrs').val(0);
           $('#incremental_hrs_hidden').val(base_hours_min);
           var formData = {
@@ -299,16 +272,19 @@
           }
           await calculateExtraTimeforproduct(selectedStartDate,selectedEndDate);
          
-          check_product_availibility(formData);
+           check_product_availibility(formData);
           
 
         });
 
         async function check_product_availibility(formData){
-            //console.log(formData);
+          if(formData.variant_option_id == undefined){
+            formData.variant_option_id = '';
+          }
+          formData.variant_id = $('#first_variant').val()
             axios.post(`/booking/checkProductAvailibility`, formData)
             .then(async response => {
-            console.log(response);
+            //console.log(response);
                 var data = response.data.variant_data;
                
                 if(response.data.success){
@@ -317,7 +293,7 @@
                   var end_time = data.end_time;
                   var start_time = data.start_time;
                   if(available_product_variant) {
-                    console.log( data);
+                    //console.log( data);
                     $('#available_product_variant').val(available_product_variant);
                     $('#start_time').val(start_time);
                     $('#end_time').val(end_time);
@@ -350,7 +326,7 @@
                 }
             })
             .catch(e => {
-              console.log(e);
+              //console.log(e);
                 Swal.fire({
                       icon: 'error',
                       title: 'Oops...',
@@ -361,7 +337,7 @@
 
         function calculation(incremental_min,incremental_price,incremental_price_per_min){
             var total_additional_price = NumberFormatHelper.formatPrice((incremental_min/incremental_price_per_min));
-           // console.log(total_additional_price);
+           // //console.log(total_additional_price);
             var total_minutes =  (parseInt(default_minutes)+parseInt(incremental_min));
             var total_calculated_price =  (parseInt(actual_price)+parseInt(total_additional_price));
             //$('.total_duration').html(total_minutes);
@@ -403,8 +379,8 @@
         function diff_minutes(dt2, dt1) {
           var start_date = new Date(dt2);
           var end_date = new Date(dt2);
-          console.log(dt2);
-          console.log(dt1);
+          //console.log(dt2);
+          //console.log(dt1);
           return Math.abs(new Date(dt2) - new Date(dt1))/60000;
           // var diff =(end_date.getTime() - start_date.getTime()) / 1000;
           // diff /= 60;
@@ -413,8 +389,8 @@
         }
         function calculateExtraTimeforproduct(selectedStartDate,selectedEndDate){
           var total_sel_min = diff_minutes(selectedStartDate,selectedEndDate);
-          console.log(parseInt(total_sel_min));
-          console.log(parseFloat(total_sel_min) - Number(default_minutes)); 
+          //console.log(parseInt(total_sel_min));
+          //console.log(parseFloat(total_sel_min) - Number(default_minutes)); 
           var remaining = parseFloat(total_sel_min) - Number(default_minutes);
           //default_step
           var divide = parseInt(remaining)/default_step;
@@ -429,8 +405,8 @@
           var t_min_hr_min = parseInt(extra_t_min)+parseInt(default_minutes);
          
           $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(t_min_hr_min));
-          $('#total_hrs').val(parseInt(t_min_hr_min)+parseInt(default_minutes));
-           console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
+          $('#total_hrs').val(parseInt(t_min_hr_min));
+           //console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
         }
 
 

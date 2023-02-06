@@ -211,9 +211,9 @@ $(document).ready( async function () {
 
     //$(".navigation-tab-item").click(function() {
     $(document).on('click','.navigation-tab-item > a',function() {
-        if($.hasAjaxRunning()){
-            return false;
-        }
+        // if($.hasAjaxRunning()){
+        //     return false;
+        // }
         
       
         //$(".navigation-tab-item").removeClass("active");
@@ -240,17 +240,12 @@ $(document).ready( async function () {
         if($("#address-longitude").length > 0){
             longitude = $("#address-longitude").val();
         }
-        // if(id == "dinein_tab"){
-        //     type = "dine_in";
-        // }else if(id == "takeaway_tab"){
-        //     type = "takeaway";
-        // }else{
-        //     type = "delivery";
-        // }
+       
         nav_click_vendor_mode = 1;
-        if(!$.hasAjaxRunning()){
-            vendorType(latitude, longitude, type);
-        }
+        // if(!$.hasAjaxRunning()){
+        //     vendorType(latitude, longitude, type);
+        // }
+        setSession(type);
     });
 
     $('#remove_cart_modal').on("hide.bs.modal", function() {
@@ -259,24 +254,27 @@ $(document).ready( async function () {
         $('.vendor_mods').find('.nav-link').removeClass('active');
         $('#'+session_vendor_type+'_tab').addClass('active');
         // location.reload();.
-        // if(session_vendor_type=="delivery")
-        // {
-        //     $('#delivery_tab').addClass('active');
-        // }
-        // if(session_vendor_type=="dine_in")
-        // {
-        //     $('#dinein_tab').addClass('active');
-        // }
-        // if(session_vendor_type=="takeaway")
-        // {
-        //     $('#takeaway_tab').addClass('active');
-        // }
+     
     })
-
+    async function setSession(type = "delivery"){
+        var cartData = (OrderStorage.getStorage('cartData') != '') ? JSON.parse(OrderStorage.getStorage('cartData')) : [];
+        var cartProductCount = OrderStorage.getStorage('cartProductCount');
+        if(cartProductCount > 0){
+            $("#remove_cart_modal").modal('show');
+            $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
+            $(".nav-tabs.vendor_mods").attr("data-mod", type);
+            return false;
+        }
+        $.ajax({
+            type: "get",
+            dataType: 'json',
+            url: `/setSessionIndex?type=${type}`,
+            success: function (response) {
+               location.reload();
+            }
+        });
+    }
     async function vendorType(latitude, longitude, type = "delivery"){
-
-        // await  getHomePageCategoryMenu(latitude, longitude, type);
-        // await  getHomePage(latitude, longitude, type);
         $.ajax({
             type: "get",
             dataType: 'json',
@@ -924,8 +922,10 @@ $(document).ready( async function () {
                     if($(".nav-tabs.vendor_mods .nav-link").length > 0){
                         vendor_mod = $(".nav-tabs.vendor_mods").attr("data-mod");
                     }
-                    getHomePageCategoryMenu(latitude, longitude, vendor_mod);
-                    getHomePage(latitude, longitude, vendor_mod);
+                    OrderStorage.setStorageSingle('cartProductCount',0);
+                    setSession(vendor_mod);
+                    //getHomePageCategoryMenu(latitude, longitude, vendor_mod);
+                    //getHomePage(latitude, longitude, vendor_mod);
                 }
             }
         });

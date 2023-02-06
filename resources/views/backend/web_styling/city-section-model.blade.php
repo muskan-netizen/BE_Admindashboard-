@@ -84,6 +84,7 @@
                             @endif
                         </div>
                     </div>
+                    <input type="hidden" name="place_id" id="place_id"   value="">
                 </div>
                 <div class="modal-footer p-0">
                     <button type="button" class="btn btn-primary submitSaveVendorCity">{{ __("Save") }}</button>

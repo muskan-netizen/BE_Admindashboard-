@@ -39,7 +39,7 @@
                                             <option value="1">Paid</option>
                                             <option value="2">Awaiting Authorization</option>
                                             <option value="3">Payment failed</option>
-                                            <option value="4">Cash On Delivery</option>
+                                            <option value="4">{{ __('Cash On Delivery') }}</option>
                                             <option value="5">Fulfilled</option>
                                             <option value="6">Unfulfilled</option>
                                         </select>
@@ -65,7 +65,7 @@
                                             </div>
                                         </th>
                                         <th>Order ID</th>
-                                        <th>Products</th>
+                                        <th>{{ __('Products') }}</th>
                                         <th>Date</th>
                                         <th>Payment Status</th>
                                         <th>Total</th>
@@ -194,7 +194,7 @@
                                             Mastercard
                                         </td>
                                         <td>
-                                            <h5><span class="badge badge-success">Delivered</span></h5>
+                                            <h5><span class="badge badge-success">{{ __('Delivered') }}</span></h5>
                                         </td>
                                         <td>
                                             <a href="javascript:void(0);" class="action-icon"> <i class="mdi mdi-eye"></i></a>
@@ -311,7 +311,7 @@
                                         </td>
                                         <td>February 01 2018 <small class="text-muted">07:22 AM</small></td>
                                         <td>
-                                            <h5><span class="badge bg-soft-info text-info"><i class="mdi mdi-cash"></i> Cash on Delivery</span></h5>
+                                            <h5><span class="badge bg-soft-info text-info"><i class="mdi mdi-cash"></i> {{ __('Cash On Delivery') }}</span></h5>
                                         </td>
                                         <td>
                                             $3,582.99
@@ -351,7 +351,7 @@
                                             Credit Card
                                         </td>
                                         <td>
-                                            <h5><span class="badge badge-success">Delivered</span></h5>
+                                            <h5><span class="badge badge-success">{{ __('Delivered') }}</span></h5>
                                         </td>
                                         <td>
                                             <a href="javascript:void(0);" class="action-icon"> <i class="mdi mdi-eye"></i></a>
@@ -399,7 +399,7 @@
                             <li class="page-item">
                                 <a class="page-link" href="javascript: void(0);" aria-label="Previous">
                                     <span aria-hidden="true">«</span>
-                                    <span class="sr-only">Previous</span>
+                                    <span class="sr-only">{{__('Previous')}}</span>
                                 </a>
                             </li>
                             <li class="page-item active"><a class="page-link" href="javascript: void(0);">1</a></li>
@@ -410,7 +410,7 @@
                             <li class="page-item">
                                 <a class="page-link" href="javascript: void(0);" aria-label="Next">
                                     <span aria-hidden="true">»</span>
-                                    <span class="sr-only">Next</span>
+                                    <span class="sr-only">{{__('Next')}}</span>
                                 </a>
                             </li>
                         </ul>

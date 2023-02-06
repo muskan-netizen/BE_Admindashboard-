@@ -88,7 +88,7 @@ class OrderController extends BaseController
             });
         }
         $pending_order_count = $pending_order_count->where(function ($q1) {
-            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]); // 1 for cod ,38 for offline manual by harbans 
+            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]); // 1 for cod ,38 for offline manual by harbans
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id',[1,38]);// 1 for cod ,38 for offline manual by harbans
             });
@@ -159,7 +159,7 @@ class OrderController extends BaseController
         $response = [];
         $user = Auth::user();
         $preferences = ClientPreference::first();
-        $client_timezone = DB::table('clients')->first('timezone'); 
+        $client_timezone = DB::table('clients')->first('timezone');
         $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
@@ -262,7 +262,7 @@ class OrderController extends BaseController
         // foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
         //     $clientVendorTypes = $vendor_typ_key.'_check';
         //     $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-            
+
         //     if($preferences->$clientVendorTypes == 1){
         //         $vendorTypeOrders = $VendorTypesName.'_orders';
         //         $$vendorTypeOrders = clone $filter_orders;
@@ -325,16 +325,16 @@ class OrderController extends BaseController
                         }
                     });
                     break;
-                
+
                 // /* luxury option orders */
                 // case 'delivery_orders':
                 //     $orders = $filter_orders->where('luxury_option_id', 1);
                 //     break;
-                
+
                 // case 'dine_in_orders':
                 //     $orders = $filter_orders->where('luxury_option_id', 2);
                 //     break;
-                
+
                 // case 'takeaway_orders':
                 //     $orders = $filter_orders->where('luxury_option_id', 3);
                 //     break;
@@ -346,11 +346,11 @@ class OrderController extends BaseController
                 // case 'pick_drop_orders':
                 //     $orders = $filter_orders->where('luxury_option_id', 5);
                 //     break;
-                
+
                 // case 'on_demand_orders':
                 //     $orders = $filter_orders->where('luxury_option_id', 6);
                 //     break;
-                
+
                 // case 'laundry_orders':
                 //     $orders = $filter_orders->where('luxury_option_id', 7);
                 //     break;
@@ -364,7 +364,7 @@ class OrderController extends BaseController
                 $q2->whereIn('payment_option_id', [1,38]);
             });
         });
-        
+
         //sort by distance
         if($request->has('sort_order') && ($request->sort_order == 'distance')){
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
@@ -389,12 +389,12 @@ class OrderController extends BaseController
         else{
             $orders = $orders->select('*', 'id as total_discount_calculate')->orderBy('id', 'DESC');
         }
-        
+
         // set order vendor type variables to get count
         foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
             $clientVendorTypes = $vendor_typ_key.'_check';
             $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-            
+
             if($preferences->$clientVendorTypes == 1){
                 $vendorTypeOrders = $VendorTypesName.'_orders';
 
@@ -409,7 +409,7 @@ class OrderController extends BaseController
             $orders = $orders->where('luxury_option_id', $lux_id);
         }
         $orders = $orders->paginate(30);
-        
+
         // Pending orders count
         $pending_orders = $pending_orders->with('vendors', function ($query) use($user) {
             $query->where('order_status_option_id', 1);
@@ -558,7 +558,7 @@ class OrderController extends BaseController
                 $orders->forget($key);
             }
             $order->scheduled_date_time = $scheduled_date_time;
-            
+
         }
         $admincurrency = ClientCurrency::getAdminCurrencySymbol();
 
@@ -572,14 +572,14 @@ class OrderController extends BaseController
     }
 
     public function uploadReport(Request $request)
-    {    
+    {
         $checkpreviousrecord = OrderVendorReport::where(['order_id'=>$request->order_id])->first();
         if($checkpreviousrecord)
         {
             $vendorreport = OrderVendorReport::where('id',$checkpreviousrecord->id)->first();
         }else{
             $vendorreport = new OrderVendorReport();
-        }        
+        }
         if ($request->hasFile('file_name')) {    /* upload logo file */
             $file = $request->file('file_name');
             $vendorreport->report = Storage::disk('s3')->put($this->folderName, $file, 'public');
@@ -593,7 +593,7 @@ class OrderController extends BaseController
 
     public function deleteReport(Request $request, $domain = '', $reportId = 0)
     {
-        $report = OrderVendorReport::findOrfail($reportId);        
+        $report = OrderVendorReport::findOrfail($reportId);
         $report->delete();
         return redirect()->back()->with('success', 'Report deleted successfully!');
     }
@@ -682,7 +682,7 @@ class OrderController extends BaseController
                     $total_amount = $total_amount + $opt_quantity_price;
                 }
                 $product->total_amount = $total_amount;
-                
+
             }
             if ($vendor->dineInTable) {
                 $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -720,11 +720,11 @@ class OrderController extends BaseController
         $user_docs = UserDocs::where('user_id', $order->user_id)->get();
         $user_registration_documents = UserRegistrationDocuments::get();
         $vendor_data = Vendor::where('id',$vendor_id)->first();
-        
+
         $driver_data = '';
         if($order->vendors[0]->shipping_delivery_type == 'L'){
             $lala = new LalaMovesController();
-            $driver_data = $lala->getDeriverDetails($order->vendors[0]); 
+            $driver_data = $lala->getDeriverDetails($order->vendors[0]);
         }
         $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
@@ -736,9 +736,9 @@ class OrderController extends BaseController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-           //pr( $order->toArray());
+        //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
-            'vendor_id' => $vendor_id, 
+            'vendor_id' => $vendor_id,
             'order' => $order,
             'vendor_order_statuses' => $vendor_order_statuses,
             'vendor_order_status_option_ids' => $vendor_order_status_option_ids,
@@ -761,7 +761,7 @@ class OrderController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function changeStatus(Request $request, $domain = '') 
+    public function changeStatus(Request $request, $domain = '')
     {
         $orderPlaced = true;
         $orderPlacedNo = '';
@@ -791,6 +791,7 @@ class OrderController extends BaseController
                         //Create Shipping request for dispatcher
                        // \Log::info('11');
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
+                    //  pr($order_dispatch);
                         if ($order_dispatch && $order_dispatch == 1){
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
                             $orderPlaced = true;
@@ -815,7 +816,7 @@ class OrderController extends BaseController
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
                 }
-                
+
                 if($request->status_option_id == 4  && $orderData->shipping_delivery_type=='L'){
                     //Create Shipping place order request for Lalamove when order in processing state
                     $orderPlaced = $this->placeOrderRequestlalamove($request);
@@ -824,27 +825,31 @@ class OrderController extends BaseController
 
                 if($orderPlaced){
 
+                    $vendorOrderStatus = VendorOrderStatus::where('vendor_id',$request->vendor_id)->where('order_id',$request->order_id)->first();
+
                     $vendor_order_status = new VendorOrderStatus();
                     $vendor_order_status->order_id = $request->order_id;
                     $vendor_order_status->vendor_id = $request->vendor_id;
-                    $vendor_order_status->order_vendor_id = $request->order_vendor_id;
+                    // This below line is commented because the data in $request->order_vendor_id incorrect.
+                    // $vendor_order_status->order_vendor_id = $request->order_vendor_id;
+                    $vendor_order_status->order_vendor_id = $vendorOrderStatus->order_vendor_id;
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
 
-                  
-                    
-                  
 
-                    // //Refund to wallet 
+
+
+
+                    // //Refund to wallet
                     // if( (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) && $request->status_option_id == 3){
-                        
+
                     //     $orderRefund=new OrderRefund();
                     //     $orderRefund->user_id=$order->user_id;
                     //     $orderRefund->order_id=$order->id;
                     //     $payment_id=Order::select('payments.id')
                     //         ->leftJoin('payments','payments.order_id','=','orders.id')
                     //         ->where('orders.id',$order->id)->first()->id;
-                            
+
                     //     if(!empty($payment_id)){
                     //         $orderRefund->payment_id=$payment_id;
                     //     }else{
@@ -867,7 +872,7 @@ class OrderController extends BaseController
                     //             }
                     //         }
                     //     }
-                        
+
                     //     $wallet = User::find($order->user_id)->wallet;
                     //     if(!empty($refund_amount) && $refund_amount>0){
                     //         $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $refund_amount]);
@@ -875,12 +880,12 @@ class OrderController extends BaseController
 
                     //     $order->payment_status=2;
                     //     $order->save();
-                        
+
                     // }
 
 
-                   
-                   
+
+
 
                     if ($request->status_option_id == 3) {
                         if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
@@ -911,18 +916,18 @@ class OrderController extends BaseController
                                     $query->where('vendor_id', $vendor_id);
                                 }
                             ))->find($request->order_id);
-                            
+
                             // get vendor return amount from order
                             $return_response =  $this->GetVendorReturnAmount($request,$order);
-                            // return amount to user wallet 
+                            // return amount to user wallet
                             if($return_response['vendor_return_amount'] > 0){
                                 $user = User::find($currentOrderStatus->user_id);
                                 $wallet = $user->wallet;
                                 $credit_amount = $return_response['vendor_return_amount'] ; //$currentOrderStatus->payable_amount;
                                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
                             }
-                            
-                            // diarise loyalty in order table 
+
+                            // diarise loyalty in order table
                             $order->loyalty_points_used    =  $order->loyalty_points_used - $return_response['vendor_loyalty_points'];
                             $order->loyalty_amount_saved   =  $order->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
                             $order->loyalty_points_earned  =  $order->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
@@ -941,9 +946,9 @@ class OrderController extends BaseController
                         // end amount to user wallet worked by harbans
                     }
 
-                   
+
                 }
-                
+
                 if($request->status_option_id == 2){
                     $this->ProductVariantStock($request->order_id);
                 }
@@ -996,16 +1001,10 @@ class OrderController extends BaseController
             $token[] = $device;
         }
         //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
-        // dd($token);
-
-        $from = env('FIREBASE_SERVER_KEY');
 
         $notification_content = NotificationTemplate::where('id', 2)->first();
-        if ($notification_content) {
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+
+        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -1013,18 +1012,7 @@ class OrderController extends BaseController
                     'body'  => $notification_content->content,
                 ]
             ];
-            $dataString = $data;
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            // dd($result);
-            curl_close($ch);
+            sendFcmCurlRequest($data);
         }
     }
     /// ******************  check If any Product Last Mile on   ************************ ///////////////
@@ -1049,7 +1037,7 @@ class OrderController extends BaseController
 
         return 2;
     }
-    
+
     public function placeOrderRequestShiprocket($request)
     {
         $ship = new ShiprocketController();
@@ -1139,27 +1127,27 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
-       
+
         $order_dispatchs = 2;
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
        // pr( $checkdeliveryFeeAdded);
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
-      
+
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
-        if ($luxury_option_id == 8) { // only for appointment type 
+        if ($luxury_option_id == 8) { // only for appointment type
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
             if($dispatch_domain_Appointment && $dispatch_domain_Appointment != false){
                 $Appointment = 0;
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-                
-                
+
+
                     if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
                         $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
                         //echo $Appointment . 'app';
                         //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
-                       
+
                         if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
-                          
+
                             $dispatch_domain=[
                                 'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
                                 'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
@@ -1178,30 +1166,30 @@ class OrderController extends BaseController
                 }
             }
         }
-        if ($luxury_option_id == 6) { // only for on_demand type 
+        if ($luxury_option_id == 6) { // only for on_demand type
             $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
-        
+
             if($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false){
                 $OnDemand = 0;
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-                
-              
+
+
                     if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-                       
+
                       //  $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
                         //echo $Appointment . 'app';
-                       
+
                         if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
-                          
-                           
-                    
+
+
+
                             $dispatch_domain=[
                                 'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
                                 'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
                                 'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
                                 'service_type'     => 'on_demand'
                             ];
-                         
+
 
                             $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain ,$request);
                             if ($order_dispatchs && $order_dispatchs == 1) {
@@ -1309,17 +1297,16 @@ class OrderController extends BaseController
             $tasks = array();
             $meta_data = '';
 
-            $team_tag = null;
-            if (!empty($dispatch_domain->last_mile_team))
-                $team_tag = $dispatch_domain->last_mile_team;
+            $unique = Auth::user()->code;
+            $team_tag = $unique . "_" . $vendor;
 
-                if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
-                    $task_type = 'schedule';
-                    $schedule_time = $order->scheduled_date_time ?? null;
-                } else {
-                    $task_type = 'now';
-                }
-               
+            if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
+                $task_type = 'schedule';
+                $schedule_time = $order->scheduled_date_time ?? null;
+            } else {
+                $task_type = 'now';
+            }
+
             $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
             if(!empty($orderVendorDetails->scheduled_date_time) && $orderVendorDetails->scheduled_date_time > 0){
                 $task_type = 'schedule';
@@ -1362,7 +1349,7 @@ class OrderController extends BaseController
             if ($customer->dial_code == "971") {
                 // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                 $customerno = "0" . $customer->phone_number;
-            } else {                
+            } else {
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
@@ -1491,7 +1478,7 @@ class OrderController extends BaseController
             if ($customer->dial_code == "971") {
                 // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                 $customerno = "0" . $customer->phone_number;
-            } else {                
+            } else {
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
@@ -1658,7 +1645,7 @@ class OrderController extends BaseController
             if ($customer->dial_code == "971") {
                 // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                 $customerno = "0" . $customer->phone_number;
-            } else {                
+            } else {
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
@@ -1696,7 +1683,7 @@ class OrderController extends BaseController
             //     $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
             // }
 
-            
+
             $client = new Client([
                 'headers' => [
                     'personaltoken' => $dispatch_domain->laundry_service_key,
@@ -1808,7 +1795,9 @@ class OrderController extends BaseController
     public function returnOrderFilter(Request $request)
     {
         try {
+            $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             $user = Auth::user();
+            $timezone = $user->timezone;
             $orders_list = OrderReturnRequest::with('product')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
@@ -1842,6 +1831,9 @@ class OrderController extends BaseController
 
                 $orders_list->whereBetween('created_at',[$from_date . " 00:00:00", $to_date . " 23:59:59"]);
             }
+            $Accepted = [];
+            $Pending = [];
+            $Rejected = [];
             $pending_orders = clone $orders_list;
             $accepted_orders = clone $orders_list;
             $rejected_orders = clone $orders_list;
@@ -1849,9 +1841,14 @@ class OrderController extends BaseController
             $pending_orders = $pending_orders->where('status','Pending')->paginate(20);
             $accepted_orders = $accepted_orders->where('status','Accepted')->paginate(20);
             $rejected_orders = $rejected_orders->where('status','Rejected')->paginate(20);
-            $pending_html = view('backend.order.return-data')->with(['orders'=>$pending_orders,'status'=>'Pending'])->render();
-            $accepted_html = view('backend.order.return-data')->with(['orders'=>$accepted_orders,'status'=>'Accepted'])->render();
-            $rejected_html = view('backend.order.return-data')->with(['orders'=>$rejected_orders,'status'=>'Rejected'])->render();
+
+            $Pending['Pending'] = $pending_orders;
+            $Accepted['Accepted'] = $accepted_orders;
+            $Rejected['Rejected'] = $rejected_orders;
+            $pending_html = view('backend.order.return-data')->with(['orders'=>$Pending,'status'=>'Pending','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
+            $accepted_html = view('backend.order.return-data')->with(['orders'=>$Accepted,'status'=>'Accepted','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
+            $rejected_html = view('backend.order.return-data')->with(['orders'=>$Rejected,'status'=>'Rejected','clientCurrency'=>$clientCurrency,'timezone'=>$timezone])->render();
+
             return $this->successResponse(['pending_html' => $pending_html, 'accepted_html' => $accepted_html, 'rejected_html' => $rejected_html], '', 201);
 
         } catch (\Throwable $th) {
@@ -1927,8 +1924,7 @@ class OrderController extends BaseController
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
-            if ($order_status_id == 2) {
+           if ($order_status_id == 2) {
                 $notification_content = NotificationTemplate::where('id', 5)->first();
             } elseif ($order_status_id == 3) {
                 $notification_content = NotificationTemplate::where('id', 6)->first();
@@ -1940,10 +1936,6 @@ class OrderController extends BaseController
                 $notification_content = NotificationTemplate::where('id', 9)->first();
             }
             if ($notification_content) {
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
                     "registration_ids" => $devices,
@@ -1962,17 +1954,7 @@ class OrderController extends BaseController
                     ],
                     "priority" => "high"
                 ];
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-
-                curl_close($ch);
+                sendFcmCurlRequest($data);
             }
         }
     }
@@ -2162,9 +2144,9 @@ class OrderController extends BaseController
             'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency,'vendor_data' => $vendor_data
         ]);
     }
-     # get product faq 
+     # get product faq
     public function viewProductForm(Request $request,$domain = '',$product_id){
-       
+
         $faq_data =  OrderProduct::where('id',$product_id)->select('id','user_product_order_form')->first();
         //pr($faq_data->user_product_order_form);
         if(isset($faq_data)){

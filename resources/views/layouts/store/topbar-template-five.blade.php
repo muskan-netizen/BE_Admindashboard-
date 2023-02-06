@@ -16,7 +16,7 @@ if(session()->has('applocale')){
         <div class="container">
             <div class="row w-100 d-flex align-items-center">
                 <div class="col-lg-6"   >
-                    <a class="navbar-brand mr-xl-3 mr-0" style="height:60px;" href="{{ route('userHome') }}"><img class="logo-image" alt="" src="{{$urlImg}}"></a>
+                    <a class="navbar-brand mr-xl-3 mr-0"  href="{{ route('userHome') }}"><img class="logo-image" style="height:60px;" alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
@@ -80,7 +80,7 @@ if(session()->has('applocale')){
                             <ul class="onhover-show-div">
                                 @foreach($languageList as $key => $listl)
                                     <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)
                                             ({{$listl->language->nativeName}})
                                             @endif </a>
                                     </li>
@@ -314,7 +314,7 @@ if(session()->has('applocale')){
                             <ul class="onhover-show-div">
                                 @foreach($languageList as $key => $listl)
                                     <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)
                                             ({{$listl->language->nativeName}})
                                             @endif </a>
                                     </li>

@@ -23,18 +23,20 @@ use App\Models\{Client, Category, Product,Type, SmsTemplate, ClientPreference,Em
 class FrontController extends Controller
 {
     use \App\Http\Traits\smsManager;
+    use \App\Http\Traits\DispatcherSlot;
 
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
+         
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
             {
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
                     $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
                     $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
-                    Log::info('SMS twilio respons');
-                    Log::info($send);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
                 }else{
                     return 2;
                 }
@@ -63,8 +65,8 @@ class FrontController extends Controller
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
-                    Log::info('SMS twilio respons');
-                    Log::info($send);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
                 }else{
                     return 2;
                 }
@@ -72,12 +74,68 @@ class FrontController extends Controller
             //return $send;
         }
         catch(\Exception $e){
-            Log::info('SMS logs');
-            Log::info($e->getMessage());
+            // Log::info('SMS logs');
+            // Log::info($e->getMessage());
             return '2';
         }
         return '1';
 	}
+
+    protected function sendSmsNew($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
+        try{
+            $body = $body['body']??'';
+            $template_id = $body['template_id']??'';
+            $client_preference =  getClientPreferenceDetail();
+            if($client_preference->sms_provider == 1)
+            {
+                if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
+                    $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
+                    $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
+                }else{
+                    return 2;
+                }
+
+            }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mTalkz_sms($to,$body,$crendentials,$template_id);
+            }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mazinhost($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->unifonic($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 5) //for arkesel_sms gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->arkesel_sms($to,$body,$crendentials);
+                if( isset($send->code) && $send->code != 'ok'){
+                    return '2';
+                }
+            }else{
+                if(!empty($sms_secret) && !empty($sms_from)){
+                    $client = new TwilioClient($sms_key, $sms_secret);
+                    $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+                    // Log::info('SMS twilio respons');
+                    // Log::info($send);
+                }else{
+                    return 2;
+                }
+            }
+            //return $send;
+        }
+        catch(\Exception $e){
+            return '2';
+        }
+        return '1';
+	}
+	
+    
     public function testsms(Request $request)
     {
         $prefer = ClientPreference::select('sms_credentials', 
@@ -348,6 +406,7 @@ class FrontController extends Controller
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
                 }
+              
                 $value->vendor_name = $value->vendor ? $value->vendor->name : '';
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
@@ -356,6 +415,7 @@ class FrontController extends Controller
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 $value->image_url = ($value->media->first() && !is_null($value->media->first()->image))  ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $value->category_name = ($value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
+               // $value->category_type_id = ($value->category->categoryDetail->first()) ? $value->category->categoryDetail->first()->type_id : '';
             }
         }
         return $products;
@@ -666,7 +726,13 @@ class FrontController extends Controller
         Session::put('vendorType', $type);
         return Session::get('vendorType');
     }
-
+    public function productDetail($product_id){
+        return Product::with(['vendor'=> function ($q1)  {
+            $q1->select('id', 'latitude','longitude');
+        },'productcategory'=> function ($q1)  {
+            $q1->select('id', 'type_id');
+        }])->find($product_id);
+    }
 
     // get cart data in on demand product listing page
     public function getCartOnDemand($request)
@@ -686,7 +752,7 @@ class FrontController extends Controller
             $addresses = collect();
         }
         if ($cart) {
-            $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+            $cartData = CartProduct::with('vendor')->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
         }
         
         $navCategories = $this->categoryNav($langId);
@@ -713,20 +779,102 @@ class FrontController extends Controller
             $timezone = 'Asia/Kolkata';
 
         foreach($cartData as $key => $data){
-           
+         
 
             $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
-            $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
-            $slots = (object)$slotsRes['slots'];
-            //$slots = showSlot($selectedDate,$data->vendor_id,'delivery');
-            $time_slots = [];
-            $i = 0;
-            foreach($slots as $slot){
-                $newSlot = explode('-', $slot['value']);
-                $time_slots[$i++] = trim($newSlot[0]);
+            $cartData[$key]->is_dispatch_slot = 0 ;
+            $vendorStartDate =  $vendorStartTime  ='';
+            $cartData[$key]->period = [];
+             if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
+                $time_slots = []; 
+                $start_date = new DateTime("now", new  DateTimeZone($timezone) );
+                $start_date = $start_date->format('Y-m-d');
+                $end_date   = Date('Y-m-d', strtotime('+13 days'));
+        
+               
+                $period = CarbonPeriod::create($start_date, $end_date);
+               
+                $cartData[$key]->period = $period;
+            }else{
+                $slotsDate = findSlot('',$data->vendor_id,'','webFormet');
+                if($slotsDate){
+                    $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
+                    $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
+                    $vendorEndDate = Date('Y-m-d', strtotime($vendorStartDate. '+13 days'));
+                    $cartData[$key]->period = CarbonPeriod::create($vendorStartDate, $vendorEndDate);
+                }
             }
-            $cartData[$key]->timeSlots = $time_slots;
+            
+            // check product 
+            $productDetail = $this->productDetail($data->product_id);
+            $cateTypeId = $productDetail ? ($productDetail->productcategory ? $productDetail->productcategory->type_id : '') : '';
+            $is_slot_from_dispatch = $productDetail ? $productDetail->is_slot_from_dispatch  : '';
+            $last_mile_check = $productDetail ? $productDetail->Requires_last_mile  : '';
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ($last_mile_check == 1)){ 
+                $Dispatch =  $this->getDispatchAppointmentDomain();
+                $dispatchAgents = [];
+                if($Dispatch){
+                    $vendor_latitude =  $productDetail->vendor ? $productDetail->vendor->latitude : 30.71728880;
+                    $vendor_longitude =  $productDetail->vendor ? $productDetail->vendor->longitude : 76.80350870;
+                    $location[] = array(
+                        'latitude' =>  $vendor_latitude,
+                        'longitude' => $vendor_longitude
+                    );
+                    $dispatchData=[
+                        'service_key'      => $Dispatch->appointment_service_key,
+                        'service_key_code' => $Dispatch->appointment_service_key_code,
+                        'service_key_url'  => $Dispatch->appointment_service_key_url,
+                        'service_type'     => 'appointment',
+                        'tags'             => $productDetail->tags,
+                        'latitude'         => $vendor_latitude,
+                        'longitude'        => $vendor_longitude,
+                        'service_time'     => $productDetail->minimum_duration_min,
+                        'schedule_date'    => $selectedDate,
+                        'slot_start_time'  => $vendorStartTime
+                    ];
+                      
+                    $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                }
+                $cartData[$key]->timeSlots = [];
+                $cartData[$key]->dispatchAgents = $dispatchAgents;
+                $cartData[$key]->is_dispatch_slot = 1 ;
+            }else{
+                $time_slots = [];
+                if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
+                    $start_time = new DateTime("now", new  DateTimeZone($timezone) );
+                    $today = $start_time->format('Y-m-d');
+                    if($today < $selectedDate){
+                        $curr_time = date('Y-m-d 00:00');
+                    }else{
+                        $daten = new DateTime("now", new DateTimeZone($timezone) );
+                        $curr_time = $daten->format('Y-m-d h:i');
+                    }
+                    $start_time = $start_time->format('Y-m-d H:m');
+                    $end_time = date('Y-m-d 23:59');
+                    $timing   = $this->SplitTime($curr_time, $end_time, "60");
+                    foreach ($timing as $k=> $slt) {
+                        if($k+1 < count($timing)){
+                            $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
+                            $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                            $time_slots[] =  $viewSlot;
+                        }
+                    }
+                }else{
+                    $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
+                    $slots = (object)$slotsRes['slots'];
+                    $time_slots =  $slots;
+                  
+
+                }
+
+                
+                $cartData[$key]->timeSlots = $time_slots;
+                $cartData[$key]->dispatchAgents = [];
+            }
+          
+           
+           
         }
 
         
@@ -744,6 +892,65 @@ class FrontController extends Controller
         return ['time_slots' => $time_slots,'period' => $period,'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user];
     }
 
+
+    // get slot fron dispatcher
+    public function getSlotFromDispatchDemand(Request $request)
+    {
+       
+           $product = $this->productDetail($request->product_id);
+        
+            $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
+            $is_slot_from_dispatch = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_slot_from_dispatch  : '') : '';
+            $show_dispatcher_agent = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_show_dispatcher_agent  : '') :' ';
+            $last_mile_check       = $product ? $product->Requires_last_mile  : '';
+            $vendorStartDate       = $vendorStartTime  = '';
+            $html = "";
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
+                
+                $Dispatch =  $this->getDispatchAppointmentDomain();
+                $dispatchAgents = [];
+                $cart_product_id = $request->cart_product_id??0;
+               
+                if($Dispatch){
+                  
+                   $vendor_latitude =  $product->vendor ? $product->vendor->latitude : 30.71728880;
+                   $vendor_longitude =  $product->vendor ? $product->vendor->longitude : 76.80350870;
+                    $location[] = array(
+                        'latitude' =>   $vendor_longitude,
+                        'longitude' =>  $vendor_longitude
+                    );
+                    $dispatchData=[
+                        'service_key'      => $Dispatch->appointment_service_key,
+                        'service_key_code' => $Dispatch->appointment_service_key_code,
+                        'service_key_url'  => $Dispatch->appointment_service_key_url,
+                        'service_type'     => 'appointment',
+                        'tags'             => $product->tags,
+                        'latitude'         => $vendor_latitude,
+                        'longitude'        => $vendor_longitude,
+                        'service_time'     => $product->minimum_duration_min,
+                        'schedule_date'    => $request->cur_date,
+                        'slot_start_time'  => $vendorStartTime
+                    ];
+                   
+                    $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                   
+                }
+                
+                if((isset($dispatchAgents)) && (isset($dispatchAgents['slots'])) && ( count($dispatchAgents['slots']) > 0 ) ){
+                      $html .= "<option value=''>".__('Select Slot')." </option>";
+                      foreach($dispatchAgents['slots'] as $slot){
+                      
+                          $html .= "<option value='".$slot['value']."'  data-show_agent='".json_encode($slot['agent_id'],TRUE)."' >".$slot['name'].`"</option>"`;
+                      }
+                }else{
+                    $html .= "<option value=''>".__('No Slot Available')." </option>";
+                }
+                return response()->json(['status'=>'Success','html'=>$html, 'message'=>'get slots']);
+            }
+            $html .= "<option value=''>".__('No Slot Available')." </option>";
+            return response()->json(['status'=>'Success','html'=>$html, 'message'=>"get slots"]);
+          
+    }
 
     /////////// ***************    get all time slots *******************************  /////////////////////
     function SplitTime($StartTime, $EndTime, $Duration="30"){
@@ -914,7 +1121,7 @@ class FrontController extends Controller
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
                 $client_name = $client->name;
                 $mail_from = $data->mail_from;
-                $sendto = "harbans.singh@codebrewinnovations.com";
+                $sendto = "sandeep.kumar@codebrewinnovations.com";
                 try{
                     $data = [
                         'customer_name' => "harbans",
@@ -988,4 +1195,15 @@ class FrontController extends Controller
         }
 
     }
+     # get prefereance if appointment on in config
+     public function getDispatchAppointmentDomain()
+     {
+         $preference = ClientPreference::select('need_appointment_service','appointment_service_key','appointment_service_key_url','appointment_service_key_code')->first();
+         if ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_url) && !empty($preference->appointment_service_key_code)) {
+             return $preference;
+         } else {
+             return false;
+         }
+     }
+ 
 }

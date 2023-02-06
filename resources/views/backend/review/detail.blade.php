@@ -48,7 +48,7 @@
                                 <h5><b>{{ __('Product name') }}:</b>
                                     <span>{{ $product->translation_one->title ?? $product->sku }}</span>
                                 </h5>
-                                <h5><b>{{ __('Vendor name') }}:</b> <span>{{ $product->vendor->name }}</span>
+                                <h5><b>{{ __(getNomenclatureName('Vendor name',true)) }}:</b> <span>{{ $product->vendor->name }}</span>
                                 </h5>
                             </div>
 

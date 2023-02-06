@@ -402,7 +402,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
 
                                         @endphp
                                         @if($is_available == 1 )
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory) || ($product->variant[0]->quantity < $product->minimum_order_count)) ? 'btn-disabled' : '' }}" ><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart  {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->has_inventory && $product->variant[0]->quantity <= $product_quantity_in_cart) || ($product->has_inventory && $product->variant[0]->quantity < $product->minimum_order_count)) ? 'btn-disabled' : '' }}" ><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
                                         @endif
 
                                             @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)

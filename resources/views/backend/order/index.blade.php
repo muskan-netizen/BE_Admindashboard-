@@ -460,7 +460,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         @foreach($accounting as $accounting)
         <div class="pull-right accounting_upload">
         @if($accounting->code == 'xero')
-        <a class="btn btn-info" href="{{route('xero_auth')}}">Upload to Xero ({{$del_order_count}})</a>
+        <a class="btn btn-info" href="{{route('xero_auth')}}">{{ __("Upload to Xero") }} ({{$del_order_count}})</a>
         @endif
         </div>
         @endforeach
@@ -535,7 +535,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 @endphp
                 <input type="radio" class="tabs_radio" id="all_tab" name="select" value="" checked>
                 <label class="tabs_label" for="all_tab">
-                    <h5 class="m-0">All</h5>
+                    <h5 class="m-0">{{ __('All') }}</h5>
                 </label>
                 @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                     @php

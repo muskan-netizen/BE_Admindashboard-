@@ -52,7 +52,7 @@
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
-                <div class="collection-filter col-lg-3">
+                <div class="collection-filter col-lg-3 main-fillter">
                     <!-- side-bar colleps block stat -->
                     @if( count($category->brands) > 0 || count($variantSets) > 0 )
                     <div class="collection-filter-block bg-transparent p-0 m-0">
@@ -61,6 +61,7 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
                         </div> -->
+                        <aside class="side_fillter">
                         @if(!empty($category->brands) && count($category->brands) > 0)
                         <div class="collection-collapse-block open mb-2">
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
@@ -110,9 +111,10 @@
                             </div>
                           @endforeach
                         @endif
+                        </aside>
                     </div>
                     @endif
-                    <div class="theme-card">
+                    <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
@@ -208,7 +210,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9  outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -257,7 +259,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="displayProducts" id="category_products_filter">
+                                    <div class="displayProducts main_category" id="category_products_filter">
                                         <div class="col-12 text-right mt-2">
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
@@ -284,7 +286,7 @@
                                                 }*/ ?>
                                                 <div class="col-xl-3 col-md-3 col-6 mt-3">
                                                     <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0">
-                                                        <div class="product-image p-0"  style="height:200px">
+                                                        <div class="product-image">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                         </div>
                                                         <div class="media-body align-self-center">

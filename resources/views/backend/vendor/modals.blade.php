@@ -51,7 +51,7 @@
                             </div>
                             <div class="row">
 
-                                
+
                                 <div class="col-md-4 form-group" id="phone_noInput">
                                     {!! Form::label('title', __('Phone Number'),['class' => 'control-label']) !!}
                                     <input type="tel" class="form-control phone" id="vendor_phone_number" placeholder={{ __("Phone Number") }} name="phone_no" value="{{ old('full_number')}}">
@@ -86,7 +86,7 @@
                                             <input type="text" name="address" id="add-address" onkeyup="checkAddressString(this,'add')" placeholder="" class="form-control">
                                             <div class="input-group-append">
                                                 <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="add"> <i class="mdi mdi-map-marker-radius"></i></button>
-                                            </div> 
+                                            </div>
                                         </div>
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -147,13 +147,14 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group" id="descInput">
                                         {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
-                                        {!! Form::textarea('desc', null, ['class' => 'form-control', 'rows' => '3']) !!}
+                                        {!! Form::textarea('desc', null, ['class' => 'form-control', 'rows' => '3','style' => 'height: 100px;']) !!}
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-12">
+                                <div class="row">
                                     @php
                                         $typeArray = getCategoryTypes();
                                     @endphp
@@ -162,15 +163,18 @@
                                             $clientVendorTypes = $vendor_typ_key.'_check';
                                             $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
                                         @endphp
-                                        @if(($client_preferences->$clientVendorTypes == 1) && in_array($vendor_typ_key, $typeArray) ) 
-                                        <div class="col-md-12">
-                                            <div class="form-group d-flex justify-content-between">
-                                                <label for="{{$VendorTypesName}}" class="mr-3 mb-0">{{getDynamicTypeName($vendor_typ_value)}}</label>
-                                                <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" checked='checked'>
+                                        @if(($client_preferences->$clientVendorTypes == 1) && in_array($vendor_typ_key, $typeArray) )
+
+                                            <div class="col-sm-3">
+                                                <div class="form-group d-flex justify-content-between">
+                                                    <label for="{{$VendorTypesName}}" class="mr-3 mb-0">{{getDynamicTypeName($vendor_typ_value)}}</label>
+                                                    <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" checked='checked'>
+                                                </div>
                                             </div>
-                                        </div>
+
                                         @endif
                                     @endforeach
+                                    </div>
                                     <!-- <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
@@ -375,16 +379,16 @@
                                     @endif
                                     <div class="col-md-4">
                                         @if($client_preference_detail->business_type != 'taxi')
-                                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                                        <div class="mb-2 d-flex align-items-center justify-content-between">
                                             {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
                                             <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if( (@$vendor->add_category == 1)) checked @endif >
                                         </div>
-                                        <div class="row col-md-12">
-                                            <div class="col-md-6 mb-3">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-1">
                                                 {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
                                             </div>
 
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-md-6 mb-1 pl-0">
                                                 <select class="selectize-select form-control assignToSelect" name="assignTo" id="assignTo" >
                                                     @foreach($templetes as $templete)
                                                         <option value="{{$templete->id}}" {{@$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{$templete->title}}</option>
@@ -393,7 +397,7 @@
                                             </div>
                                         </div>
                                         @endif
-                                        <div class="col-md-12">
+                                        <div class="col-md-12 p-0">
                                             {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
                                             <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
                                                 <ol class="dd-list">

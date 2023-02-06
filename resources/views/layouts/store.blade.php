@@ -104,6 +104,7 @@ if(isset($set_template))
     <article class="al_new_wrapper_design">
   @endif
     <header>
+      
       <div class="mobile-fix-option_al"></div>
       @if(isset($set_template)  && $set_template->template_id == 1)
       @include('layouts.store/left-sidebar-template-one')

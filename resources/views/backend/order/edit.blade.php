@@ -20,16 +20,16 @@ $timezone = Auth::user()->timezone;
         <div class="row">
             <div class="col-lg-4 mb-3">
                 <div class="card mb-0 h-100">
-                   
+
                 </div>
             </div>
             <div class="col-lg-8 mb-3">
                 <div class="card mb-0 h-100">
                     <div class="card-body">
                         <h4 class="header-title mb-3">
- 
+
                             <div class='form-ul'> {{ $vendor_data->name }}
-                                
+
                             </div>
 
 
@@ -42,7 +42,7 @@ $timezone = Auth::user()->timezone;
                         </h4>
                         @if($order->luxury_option_id == 2)
                             @foreach($order->vendors as $vendor)
-                                <p>{{ $vendor->dineInTableName }} | Category : {{ $vendor->dineInTableCategory }} | Capacity : {{ $vendor->dineInTableCapacity }}</p>
+                                <p>{{ $vendor->dineInTableName }} | {{__('Category')}} : {{ $vendor->dineInTableCategory }} | {{__('Capacity')}} : {{ $vendor->dineInTableCapacity }}</p>
                             @endforeach
                         @endif
                         <div class="table-responsive">
@@ -272,7 +272,7 @@ $timezone = Auth::user()->timezone;
 @endsection
 @section('script')
 <script>
-    // quantity plus minus 
+    // quantity plus minus
     $('.add').click(function () {
 		if ($(this).prev().val() < 500) {
     	$(this).prev().val(+$(this).prev().val() + 1);

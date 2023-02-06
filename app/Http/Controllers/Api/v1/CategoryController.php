@@ -44,6 +44,7 @@ class CategoryController extends BaseController
             ])
                 ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products')
                 ->where('id', $cid)->first();
+                // /pr($category->toArray());
             $mode_of_service = "";
             if (!empty($category)) {
                 if (!empty($category->products) && count($category->products) > 0) {
@@ -67,6 +68,7 @@ class CategoryController extends BaseController
             $code = $request->header('code');
             $client = Client::where('code', $code)->first();
             $category->share_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/category/" . $category->slug;
+            //return $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page);
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
             $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page);
@@ -81,14 +83,19 @@ class CategoryController extends BaseController
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
 
         if ($type == 'vendor' && $product_list == 'false') {
+         
             $user = Auth::user();
             $vendor_ids = [];
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
+       
             foreach ($vendor_categories as $vendor_category) {
                 if (!in_array($vendor_category->vendor_id, $vendor_ids)) {
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
+          
+            //return $vendor_categories;
+
             $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
 
@@ -117,13 +124,12 @@ class CategoryController extends BaseController
                         sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
             }
-            $vendorData = $vendorData->whereHas('product',function($q) use( $category_id)
-            {
-                return $q->where('category_id',$category_id);
-            })->where($mod_type, 1)->with('slot')->where('status', 1)->whereIn('id', $vendor_ids)->withAvg('product', 'averageRating')->paginate($limit, $page);
+            $vendorData = $vendorData->where($mod_type, 1)->with('slot')->where('status', 1)->whereIn('id', $vendor_ids)->withAvg('product', 'averageRating')->paginate($limit, $page);
+            
 
             //$vendorData = $vendorData->where($mod_type, 1)->where('status', 1)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit, $page);
             foreach ($vendorData as $vendor) {
+
                 unset($vendor->products);
                 $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;

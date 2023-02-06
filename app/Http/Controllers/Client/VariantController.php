@@ -59,6 +59,9 @@ class VariantController extends BaseController
      */
     public function store(Request $request)
     {
+        if($request->cate_id ==''){
+            return redirect()->back()->with('error_delete',__('Please select Category!'));
+        }
         $v_pos = Variant::select('id','position')->where('position', \DB::raw("(select max(`position`) from variants)"))->first();
         $variant = new Variant();
         $variant->title = (!empty($request->title[0])) ? $request->title[0] : '';
@@ -156,7 +159,9 @@ class VariantController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
-
+        if($request->cate_id ==''){
+            return redirect()->back()->with('error_delete',__('Please select Category!'));
+        }
         $variant = Variant::where('id', $id)->firstOrFail();
         $variant->title = $request->title[0];
         $variant->type = $request->type;

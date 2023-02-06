@@ -6,7 +6,7 @@ use App\Http\Controllers\AhoyController;
 use DB;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,OrderTrait,CartManager};
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
@@ -21,13 +21,11 @@ use Illuminate\Support\Facades\Validator;
 use Log;
 use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption};
 use App\Models\AutoRejectOrderCron;
-use App\Http\Traits\OrderTrait;
 
 use App\Models\{VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
-    use ApiResponser;
-    use OrderTrait;
+    use ApiResponser,CartManager,OrderTrait;
     /**
      * Display a listing of the resource.
      *
@@ -171,15 +169,19 @@ class OrderController extends BaseController
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
                 if ($cart) {
-                    $loyalty_points_used=0;
-                    $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-                    if ($order_loyalty_points_earned_detail) {
-                        $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                        if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                            $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                        }
-                    }
+                    // $loyalty_points_used=0;
+                    // $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+                    // if ($order_loyalty_points_earned_detail) {
+                    //     $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                    //     if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                    //         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                    //     }
+                    // }
 
+
+                    $loyaltyCheck = $this->getOrderLoyalityAmount($user,'');
+                    $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+                    $loyalty_points_used =  $loyaltyCheck->loyalty_points_used;
                             
 
                     $order = new Order;
@@ -209,6 +211,17 @@ class OrderController extends BaseController
                                 }
                     $order->taxable_amount = $total_taxes;
                     $order->save();
+
+                    /* Updating order prescription if any */
+                    $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
+                    foreach ($cart_prescriptions as $cart_prescription) {
+                        $order_prescription = new OrderProductPrescription();
+                        $order_prescription->order_id = $order->id;
+                        $order_prescription->vendor_id = $cart_prescription->vendor_id;
+                        $order_prescription->product_id = $cart_prescription->product_id;
+                        $order_prescription->prescription = $cart_prescription->getRawOriginal('prescription');
+                        $order_prescription->save();
+                    }
                   
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
@@ -1511,16 +1524,11 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
-                if(!empty($smsTemplates)){
-                    $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
-                    $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
-                    $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                }else{
-                    $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
-                }
+                $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
+                $body = sendSmsTemplate('order-place-Successfully',$keyData);
+
                 if (!empty($prefer->sms_provider)) {
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }
             }
         } catch (\Exception $ex) {
@@ -1529,14 +1537,11 @@ class OrderController extends BaseController
     public function sendOrderNotification($id)
     {
         $token = UserDevice::whereNotNull('device_token')->pluck('device_token')->where('user_id', $id)->toArray();
-        $from = env('FIREBASE_SERVER_KEY');
-
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        //$from = env('FIREBASE_SERVER_KEY');
         $notification_content = NotificationTemplate::where('id', 1)->first();
-        if ($notification_content) {
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+            
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -1544,17 +1549,7 @@ class OrderController extends BaseController
                     'body'  => $notification_content->content,
                 ]
             ];
-            $dataString = $data;
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            curl_close($ch);
+            sendFcmCurlRequest($data);
         }
     }
     public function getOrdersList(Request $request)
@@ -2710,7 +2705,7 @@ class OrderController extends BaseController
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
+            
             $notification_content = NotificationTemplate::where('id', 4)->first();
             $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
             if ($notification_content) {
@@ -2720,10 +2715,7 @@ class OrderController extends BaseController
                 $code = $header_code;
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
+               
                 $data = [
                     "registration_ids" => $devices,
                     "notification" => [
@@ -2743,16 +2735,7 @@ class OrderController extends BaseController
                     ],
                     "priority" => "high"
                 ];
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-                curl_close($ch);
+                sendFcmCurlRequest($data);
             }
         }
     }
@@ -2764,7 +2747,7 @@ class OrderController extends BaseController
         
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $from = $client_preferences->fcm_server_key;
+            
             if ($order_status_id == 2 || $order_status_id == 7) {
                 $notification_content = NotificationTemplate::where('id', 5)->first();
             } elseif ($order_status_id == 3 || $order_status_id == 8) {
@@ -2780,10 +2763,7 @@ class OrderController extends BaseController
                 $code = $header_code;
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/user/orders";
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
+                
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
                     "registration_ids" => $devices,
@@ -2802,16 +2782,7 @@ class OrderController extends BaseController
                     ],
                     "priority" => "high"
                 ];
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-                curl_close($ch);
+                sendFcmCurlRequest($data);
             }
         }
     }

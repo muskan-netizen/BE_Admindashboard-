@@ -19,14 +19,14 @@
                 <div class="tip_radio_controls_book_friend text-center mt-2">
                     <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend" value="0">
                     <label class="tip_label mb-0  my-2 active " for="for_me" id="label_for_me">
-                        <h5 class="m-0" id="tip_5">{{__('For Me')}}</h5>                        
-                    </label>       
+                        <h5 class="m-0" id="tip_5">{{__('For Me')}}</h5>
+                    </label>
                     <input type="radio" class="tip_radio is_for_friend" id="for_friend" name="is_for_friend" value="1">
                     <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
                         <h5 class="m-0" id="tip_5">{{__('For Others')}}</h5>
-                    </label>                      
-                </div> 
-                @endif 
+                    </label>
+                </div>
+                @endif
             <div class="location-box check-pick-first">
                 <div class="where-to-go">
                     <div class="title title-36">{{__('Where can we pick you up?')}}</div>
@@ -54,7 +54,7 @@
 
             <input type="hidden" name="default_cab_vendor" value="" id="default_cab_vendor">
             <input type="hidden" name="default_cab_vendor_id" value="" id="default_cab_vendor_id">
-            
+
             <input type="hidden" id="address-input" value=""/>
             <input type="hidden" id="address-latitude" value=""/>
             <input type="hidden" id="address-longitude" value=""/>
@@ -99,7 +99,7 @@
                                 <h4><b>{{__('Allow location Access')}}</b></h4>
                                 <div class="current-location ellips text-color mb-2">{{__('Your current location')}}</div>
                                 <hr class="m-0">
-                                
+
                             </div>
                         </a>
                     @forelse($user_addresses as $user_address)
@@ -153,27 +153,27 @@
                         <button class="btn rounded {{count($riders) == 0 ? 'w-100' : ''}}  add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
                     </div>
                     <div class="col-12 mt-2">
-                        <div class="row alRiderImgBox"> 
+                        <div class="row alRiderImgBox">
                             @foreach($riders as $key=>$rider)
                             <div class="col-3 text-center alHoverRiderBox">
-                                
+
                                 <input class="alCheckMark" type="radio" name="rider_id" id="option-{{$key}}" {{$key == 0 ? 'checked' : ''}} value="{{$rider->id}}">
                                 <label for="option-{{$key}}" class="option option-{{$key}}">
-                                    
+
                                     <div class="alRiderImg mb-1" style="background-color:<?php printf( "#%06X\n", mt_rand( 0, 0xFFFFFF )); ?>">{{substr($rider->first_name, 0, 1)}}</div>
                                     <div class="dalRiderInfo">
                                         <p class="alRiderName mb-0">{{$rider->first_name}}</p>
                                     </div>
-                                    
+
                                 </label>
                                 <span class="alCloseBtn deleteRider" data-id="{{$rider->id}}">X</span>
                             </div>
                             @endforeach
                         </div>
-                    </div> 
+                    </div>
                 </div>
                 <div class="col-md-12" id="product_rider_div" style="display:none;">
-                    <button class="btn btn-solid w-100" id="submit_product_rider_button">Next</button> 
+                    <button class="btn btn-solid w-100" id="submit_product_rider_button">{{__('Next')}}</button>
                 </div>
 
 
@@ -188,13 +188,13 @@
             </div>
             <div class="col-12 mt-2">
                 <div class="row alRiderImgBox">
-                    <% _.each(riders, function(rider, key){%> 
+                    <% _.each(riders, function(rider, key){%>
                         <%
                         var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
                         %>
                         <div class="col-3 text-center alHoverRiderBox">
                             <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
-                            <label for="option-<%= key %>" class="option option-<%= key %>">    
+                            <label for="option-<%= key %>" class="option option-<%= key %>">
                                 <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
                                 <div class="dalRiderInfo">
                                     <p class="alRiderName mb-0"><%=rider.first_name%></p>
@@ -203,8 +203,8 @@
                             <span class="alCloseBtn deleteRider" data-id="<%=rider.id%>">X</span>
                         </div>
                     <% }); %>
-                </div>   
-            </div> 
+                </div>
+            </div>
         </script>
         <script type="text/template" id="vendors_template">
             <% _.each(results, function(result, key){%>
@@ -235,7 +235,8 @@
                 <hr class="m-0">
             <% }); %>
             <% }else{ %>
-                <div class="col-12 vehicle-details">
+                <div class="col-12 vehicle-details  text-center">
+                    <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
                     {{ __('No result found. Please try a new search') }}
                 </div>
             <% } %>
@@ -261,7 +262,8 @@
                 <hr class="m-0">
             <% }); %>
             <% }else{ %>
-                <div class="col-12 vehicle-details">
+                <div class="col-12 vehicle-details text-center">
+                    <img class="w-100" src="{{asset('assets/images/noproductfound.png')}}" alt="noproductfound">
                     {{ __('No result found. Please try a new search') }}
                 </div>
             <% } %>
@@ -323,7 +325,7 @@
                         <img src="{{asset('assets/images/discount_icon.svg')}}">
                         <span class="code-text">{{__('Select a promo code')}}</span>
                     </label>
-                    
+
                     <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" id="promo_code_list_btn_cab_booking">Apply</a>
                     <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" style="display:none;">Remove</a>
 
@@ -341,7 +343,7 @@
                     <input type="hidden" name="friendName" value="<%= result.friend_name %>">
                     <input type="hidden" name="friendPhoneNumber" value="<%= result.friend_phone_name %>">
                 </div>
-                
+
             </div>
             <span id="show_error_of_booking" class="error"></span>
 
@@ -354,12 +356,12 @@
                 </h4>
                 <div class="row">
                     <div class="col-12">
-                    <% 
+                    <%
                     var payableAmout = '';
-                    if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ 
+                    if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){
                         payableAmout = result.subscription_discount;
                     }
-                        
+
                     %>
                         <input type="hidden" id="stripe_token" name="stripe_token" value="">
                         <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
@@ -451,7 +453,7 @@
                     <img src="<%= product_image %>" alt="">
                 </div>
                 <div class="cab-location-details" id="searching_main_div">
-                    <h4><b>{{__('Searching For Nearby Drivers')}}</b></h4>
+                    <h4><b>{{__(getNomenclatureName('Searching For Nearby Drivers',true))}}</b></h4>
                     <div class="new-loader"></div>
                 </div>
                 <div class="cab-location-details" id="driver_details_main_div" style="display:none;">

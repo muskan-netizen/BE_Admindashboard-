@@ -6,16 +6,18 @@ use Auth;
 use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Http\Traits\VendorTrait;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty,WebStylingOption,VendorSection};
+use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, VendorSocialMediaUrls, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty,WebStylingOption,VendorSection};
 use Log;
 class VendorController extends FrontController
 {
     use ApiResponser;
+    use VendorTrait;
     private $field_status = 2;
 
 
@@ -31,7 +33,7 @@ class VendorController extends FrontController
         $ses_vendors = $this->getServiceAreaVendors();
 
         $categoryTypes = getServiceTypesCategory($vendorType);
-        
+
         $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
             $q->whereIn('type_id',$categoryTypes);
         })->with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$vendorType => 1]);
@@ -71,7 +73,7 @@ class VendorController extends FrontController
             $value->categoriesList = $categoriesList;
             $value->vendorRating = $this->vendorRating($value->products);
         }
-        $page_title = _('All ').getNomenclatureName('Vendors', true);  ;  
+        $page_title = _('All ').getNomenclatureName('Vendors', true);  ;
         $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
         return view('frontend/vendor-all')->with(['navCategories' => $navCategories,'for_no_product_found_html' => $for_no_product_found_html,'vendors' => $vendors,'page_title' => $page_title]);
     }
@@ -81,7 +83,7 @@ class VendorController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function vendorProducts(Request $request, $domain = '', $slug = 0){
-       
+
         if($request->ajax())
         {
             $returnHTML = $this->vendorFilters($request,'',$slug);
@@ -90,12 +92,12 @@ class VendorController extends FrontController
         $tag_id = $request->has('tag') && $request->tag ? $request->tag : null;
         $preferences = Session::get('preferences');
         //die($slug);
-        // this array for on demand service 
+        // this array for on demand service
         $cartData    = [];
         $period      = [];
         $time_slots  = [];
         $Map_vendors = [];
-
+        $vendorMultiBanner = [];
         $vendor = Vendor::with('slot.day', 'slotDate', 'productsLive.reviews')
             ->select('id','email', 'name', 'slug', 'desc','short_desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled','instagram_url','country','state',
             'dynamic_html')->where('slug', $slug)->where('status', 1)->firstOrFail();
@@ -128,7 +130,7 @@ class VendorController extends FrontController
                 }
             }
         }
-      
+
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
@@ -136,7 +138,7 @@ class VendorController extends FrontController
                     $q->select('title', 'brand_id')->where('brand_translations.language_id', $langId);
                  }])->select('brand_id')->where('vendor_id', $vendor->id)
                 ->where('brand_id', '>', 0)->groupBy('brand_id')->get();
-       
+
         $variantSets = ProductVariantSet::with(['options' => function($zx) use($langId){
                             $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
                             $zx->select('variant_options.*', 'vt.title');
@@ -154,9 +156,9 @@ class VendorController extends FrontController
                     })->groupBy('product_variant_sets.variant_type_id')->get();
         $navCategories = $this->categoryNav($langId);
         $vendorIds[] = $vendor->id;
-        
+
         $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
-      
+
         foreach($np as $new){
             $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
             $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
@@ -183,10 +185,10 @@ class VendorController extends FrontController
         $range_products = Product::byProductCategoryServiceType($type)
         ->whereHas('vendor', function($q) use($type){
             $q->where($type, 1);
-        })->with('tags')->join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get(); 
+        })->with('tags')->join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
         // dd(DB::getQueryLog());
         // dd($range_products->toArray());
-     
+
         if($vendor->vendor_templete_id == 2){
             $page = 'categories';
         }elseif($vendor->vendor_templete_id == 5){
@@ -207,6 +209,7 @@ class VendorController extends FrontController
                                                     }])->where('vendor_id',$vendor->id)->get();
                 // pr($vendor->id);
                 //pr($Vendor_section);
+                $vendorMultiBanner = $this->getMultiBanner($vendor->id);
                 $vendor->vendor_section = $Vendor_section;
                 $vendor->facilty  = [];
                 if( (isset($preferences->is_vendor_tags)) && ($preferences->is_vendor_tags == 1) ){
@@ -214,8 +217,10 @@ class VendorController extends FrontController
                         $q->where('language_id',$langId);
                     }])->get();
                 }
-                 // if vendor type selecter on demand service by harbans i don't want to do this garvage 
+                 // if vendor type selecter on demand service by harbans i don't want to do this garvage
                 if($type == 'on_demand' || $type == 'appointment'){
+
+                   //pr($this->productDetail('73'));
                     $cartDataGet    = $this->getCartOnDemand($request);
                     $cartData       = $cartDataGet['cartData'];
                     $period         = $cartDataGet['period'];
@@ -227,13 +232,13 @@ class VendorController extends FrontController
                             if(count($cp->product->addOn) > 0)
                             $addos = 1;
                         }
-                        
+
                         if($addos == 1){
                         $name = \Request::route()->getName();
                         $new_url = $request->path()."?step=1&addons=1";
                         return redirect($new_url);
                         }else{
-                        
+
                         $name = \Request::route()->getName();
                         $new_url = $request->path()."?step=2&dataset=1";
                         return redirect($new_url);
@@ -250,12 +255,13 @@ class VendorController extends FrontController
                             $new_url = $request->path()."?step=2";
                             return redirect($new_url);
                         }
-                        
+
                     }
+
                     //pr('asdf');
-                    $page = 'products-with-categories-ondemand';   
+                    $page = 'products-with-categories-ondemand';
                 }
-                // get vendors for show on map 
+                // get vendors for show on map
                 $Map_vendors = Vendor::select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$type => 1])->where('id','!=',$vendor->id); //->where('id','!=',$vendor->id)
 
                 if (( $vendor->latitude) && ($vendor->longitude)) {
@@ -270,9 +276,9 @@ class VendorController extends FrontController
                             sin( radians(' . $latitude . ') ) *
                             sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
                 }
-        
+
                 $Map_vendors = $Map_vendors->take('10')->get();;
-              
+
 
             }else{
                 $page = 'products-with-categories';
@@ -283,36 +289,6 @@ class VendorController extends FrontController
         else{
             $page = 'products';
         }
-        //pr( $Map_vendors->toArray());
-    
-        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-            $vendors = $this->getServiceAreaVendors();
-            if(isset($vendor) && isset($vendor->id)){
-                if(!in_array($vendor->id, $vendors)){
-                    $listData =collect();
-                   //pr($vendor->toArray());
-                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'cartData'=>$cartData,'period' => $period,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors]);
-                }
-            }
-
-            // if(Session::has('vendors')){
-            //     $vendors = Session::get('vendors');
-            //     if(!is_array($vendors))
-            //     {
-            //         $vendors = $vendors->toArray();
-            //     }
-            //     if(isset($vendor) && isset($vendor->id)){
-            //         if(!in_array($vendor->id, $vendors)){
-            //             $listData =collect();
-            //             return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
-
-            //         }
-            //     }
-
-            // }else{
-            //     // abort(404);
-            // }
-        }
 
         $is_vendor_closed = 0;
         if($vendor->show_slot == 0){
@@ -322,12 +298,26 @@ class VendorController extends FrontController
                 $is_vendor_closed = 0;
             }
         }
-      // pr($Map_vendors->all());
+
+        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+            $vendors = $this->getServiceAreaVendors();
+            if(isset($vendor) && isset($vendor->id)){
+                if(!in_array($vendor->id, $vendors)){
+                    $listData =collect();
+                   //pr($vendor->toArray());
+                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'cartData'=>$cartData,'period' => $period,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors,'vendorMultiBanner'=>$vendorMultiBanner, 'is_vendor_closed'=>$is_vendor_closed,]);
+                }
+            }
+        }
+
+
+
         $product_tag_ids = Product::byProductCategoryServiceType($type)->where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
-         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';vendor-products-with-categories-extended
-        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors]);
+
+        $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
+        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'socialMediaUrls'=>$socialMediaUrls, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors,'vendorMultiBanner'=>$vendorMultiBanner]);
     }
 
     /**
@@ -385,7 +375,7 @@ class VendorController extends FrontController
         $vendorIds[] = $vendor->id;
         $np = $this->productList($vendorIds, $langId, $curId, 'is_new');
 
-        
+
         foreach($np as $new){
             $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
             $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
@@ -396,7 +386,7 @@ class VendorController extends FrontController
         if(!empty($slug2) && ($vendor->vendor_templete_id == 2)){
             $vendor->vendor_templete_id = '';
         }
-        
+
         $listData = $this->listData($langId, $vendor->id, $vendor->vendor_templete_id, $slug2,$tag_id);
         $inqury_count = 0;
 
@@ -405,7 +395,7 @@ class VendorController extends FrontController
                 $inqury_count++;
             }
         }
-        
+
         if($listData->count() == $inqury_count){
             $show_range = 0;
         }
@@ -451,7 +441,7 @@ class VendorController extends FrontController
     public function listData($langId, $vid, $type = '', $categorySlug = '',$tag_id=''){
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
         $luxury_type = Session::get('vendorType');
-        
+
         if($type == 2){
             // display categories
             $product_query = Product::byProductCategoryServiceType($luxury_type)
@@ -581,6 +571,7 @@ class VendorController extends FrontController
                         $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
                         $value->variant_id = ($value->variant->isNotEmpty()) ? $value->variant->first()->id : 0;
                         $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
+                        $value->category_type_id = (!empty($value->category->categoryDetail->first())) ? $value->category->categoryDetail->type_id : 0;
                     }
                 }
                 if($products->count() > 0){
@@ -1016,7 +1007,7 @@ class VendorController extends FrontController
         } else {
             $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData,'tagId'=>$tagId, 'input'=>$request->all()])->render();
         }
-       
+
         return response()->json(array('status'=>'Success', 'html'=>$returnHTML));
     }
 

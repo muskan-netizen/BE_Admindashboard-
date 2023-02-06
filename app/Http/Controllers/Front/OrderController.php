@@ -49,7 +49,7 @@ use App\Models\LuxuryOption;
 use App\Models\PaymentOption;
 use App\Models\CartDeliveryFee;
 use App\Models\ClientPreference;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,CartManager};
 use App\Models\AddonOption;
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
@@ -61,9 +61,10 @@ use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
 
 
+
 class OrderController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,CartManager;
     use \App\Http\Traits\OrderTrait;
     /**
      * Display a listing of the resource.
@@ -324,7 +325,13 @@ class OrderController extends FrontController
     // }
 
 
-
+    
+    /**
+     * getOrderSuccessReturnPage
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function getOrderSuccessReturnPage(Request $request)
     {
         $currency_id = Session::get('customerCurrency');
@@ -334,6 +341,16 @@ class OrderController extends FrontController
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success-return', compact('navCategories', 'clientCurrency'));
     }
+
+    
+    /**
+     * sendSuccessEmail
+     *
+     * @param  mixed $request
+     * @param  mixed $order
+     * @param  mixed $vendor_id
+     * @return void
+     */
     public function sendSuccessEmail($request, $order, $vendor_id = '')
     {
         if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -345,108 +362,115 @@ class OrderController extends FrontController
         }
         $client = CP::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
-        $message = __('An otp has been sent to your email. Please check.');
-        $otp = mt_rand(100000, 999999);
         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
-            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-            if ($vendor_id == "") {
-                $sendto =  $user->email;
-            } else {
-                $vendor = Vendor::where('id', $vendor_id)->first();
-                if ($vendor) {
-                    $sendto =  $vendor->email;
-                }
-            }
+            $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);  
             $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
             try {
                 $email_template_content = '';
+                $address ='';
                 $email_template = EmailTemplate::where('id', 5)->first();
-                $address = UserAddress::where('id', $request->address_id)->first();
-                if ($user) {
-                    $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
-                } else {
-                    $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
-                }
-                if ($cart) {
-                    $cartDetails = $this->getCart($cart);
-                }
-
-                if ($email_template) {
-                    $email_template_content = $email_template->content;
-                    if ($vendor_id == "") {
-                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
+                if(!empty($email_template)){
+                    if ($user) {
+                        $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
+                        $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
                     }
-                    //pr($returnHTML);
-
+                    if ($cart) {
+                        $cartDetails = $this->getCart($cart);
+                    }
+                    
+                    $email_template_content = $email_template->content;
+                    //     if ($vendor_id == "") {
+                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
+                    //     } else {
+                            //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
+                    // }
+                    
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-                    if(!empty($address)){
-                        $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
-                    }else{
-                        $email_template_content = str_ireplace("{address}", '', $email_template_content);
+                    
+                    if(UserAddress::where('id', $request->address_id)->exists()){
+                        $address_arr = UserAddress::where('id', $request->address_id)->first();
+                        $email_template_content = str_ireplace("{address}", $address_arr->address . ', ' . $address_arr->state . ', ' . $address_arr->country . ', ' . $address_arr->pincode, $email_template_content);
+                        $address = str_ireplace("{address}", $address_arr->address . ', ' . $address_arr->state . ', ' . $address_arr->country . ', ' . $address_arr->pincode, $email_template_content);
                     }
-                }
-                $email_data = [
-                    'code' => $otp,
-                    'link' => "link",
-                    'email' => $sendto,
-                    'mail_from' => $mail_from,
-                    'client_name' => $client_name,
-                    'logo' => $client->logo['original'],
-                    'subject' => $email_template->subject,
-                    'customer_name' => ucwords($user->name),
-                    'email_template_content' => $email_template_content,
-                    'cartData' => $cartDetails,
-                    'user_address' => $address,
-                ];
-                if (!empty($data['admin_email'])) {
-                    $email_data['admin_email'] = $data['admin_email'];
-                }
-                if ($vendor_id == "") {
-                    $email_data['send_to_cc'] = 1;
-                }else{
-                    $email_data['send_to_cc'] = 0;
-                }
-                // $res = $this->testOrderMail($email_data);
-                // dd($res);
-                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                $notified = 1;
-            } catch (\Exception $e) {
+                    
+                    /* -- Sending email to vendor -- */
+                    $email_data = [
+                        'link' => "link",
+                        'mail_from' => $mail_from,
+                        'client_name' => $client_name,
+                        'logo' => $client->logo['original'],
+                        'subject' => $email_template->subject,
+                        'customer_name' => ucwords($user->name),
+                        'email_template_content' => $email_template_content,
+                        'cartData' => $cartDetails,
+                        'user_address' => $address,
+                    ];
+                    if (!empty($data['admin_email'])) {
+                        $email_data['admin_email'] = $data['admin_email'];
+                    }
+                    $vendor_id == ""? $email_data['send_to_cc'] = 1 : $email_data['send_to_cc'] = 0;
+                    
+                    
+                    /* -- Sending email to vendor -- */
+                    $vendor = Vendor::where('id', $vendor_id)->first();
+                    if(!empty($vendor)){
+                        $email_data['email'] = $vendor->email;
+                        dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email'); 
+                    }
+                    
+                    /* -- Sending email to customer -- */
+                    $email_data['email'] = $user->email;
+                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                } 
+            }
+            catch (\Exception $e) {
+                \Log::error($e->getMessage());
             }
         }
     }
-    // public function sendSuccessSMS($request, $order, $vendor_id = '')
-    // {
-    //     try {
-    //         $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
 
-    //         $currId = Session::get('customerCurrency');
-    //         $currSymbol = Session::get('currencySymbol');
-    //         $customerCurrency = ClientCurrency::where('currency_id', $currId)->first();
-    //         $user = User::where('id', $order->user_id)->first();
-    //         if ($user) {
-    //             if ($user->dial_code == "971") {
-    //                 $to = '+' . $user->dial_code . "0" . $user->phone_number;
-    //             } else {
-    //                 $to = '+' . $user->dial_code . $user->phone_number;
-    //             }
-    //             $provider = $prefer->sms_provider;
-    //             $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
-    //             $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
-    //         //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
-    //             if (!empty($prefer->sms_provider)) {
-    //                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-    //             }
-    //         }
-    //     } catch (\Exception $ex) {
-    //     }
-    // }
+        
+    /**
+     * sendSuccessSMS
+     *
+     * @param  mixed $request
+     * @param  mixed $order
+     * @param  mixed $vendor_id
+     * @return void
+     */
+    public function sendSuccessSMS($request, $order, $vendor_id = '')
+    {
+        try {
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
+
+            $currId = Session::get('customerCurrency');
+            $currSymbol = Session::get('currencySymbol');
+            $customerCurrency = ClientCurrency::where('currency_id', $currId)->first();
+            $user = User::where('id', $order->user_id)->first();
+            if ($user) {
+                if ($user->dial_code == "971") {
+                    $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                } else {
+                    $to = '+' . $user->dial_code . $user->phone_number;
+                }
+                $provider = $prefer->sms_provider;
+                $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
+       
+                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
+            //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                if (!empty($prefer->sms_provider)) {
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                }
+            }
+        } catch (\Exception $ex) {
+        }
+    }
     /**
      * Get Cart Items
      *
@@ -506,16 +530,9 @@ class OrderController extends FrontController
         }
         $subscription_features = array();
         if ($user) {
-            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-            if ($order_loyalty_points_earned_detail) {
-                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                    if ($customerCurrency->is_primary != 1) {
-                        $loyalty_amount_saved = $loyalty_amount_saved * $customerCurrency->doller_compare;
-                    }
-                }
-            }
+            //Get earn and used loyalty amount 
+            $loyalty_amount_saved = $this->getOrderLoyalityAmount($user);
+
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
                 ->select('id', 'user_id', 'subscription_id')
@@ -691,7 +708,7 @@ class OrderController extends FrontController
                 # if vendor selected auto accept
                 $autoaccept = $this->autoAcceptOrderIfOn($response->data->id);
             }
-            return $this->successResponse($response->data, 'Order placed successfully.', 201);
+            return $this->successResponse($response->data, __('Order placed successfully.'), 201);
         } else {
             return $this->errorResponse($response->message, 400);
         }
@@ -701,8 +718,9 @@ class OrderController extends FrontController
         try {
             $latitude = '';
             $longitude = '';
+           
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
-            if($action == 'takeaway' || $action == 'dine_in'){
+            if($action == 'takeaway' || $action == 'dine_in'|| $action == 'appointment'){
                 $latitude = Session::get('latitude') ?? '';
                 $longitude = Session::get('longitude') ?? '';
             }
@@ -741,19 +759,14 @@ class OrderController extends FrontController
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
             $cart = Cart::where('user_id', $user->id)->first();
-            
-            /* Count loyalty points */
-            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-            if ($order_loyalty_points_earned_detail) {
-                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                }
-            }
 
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+             //Get earn and used loyalty amount 
+            $loyaltyCheck = $this->getOrderLoyalityAmount($user,$customerCurrency);
+            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+            $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
             
             /* Generate order object */
             $order = new Order;
@@ -771,6 +784,11 @@ class OrderController extends FrontController
                 $latitude = Session::get('latitude');
                 $longitude = Session::get('longitude');
             }
+         
+            if( $action == 'appointment'){ // no need to check serviceArea in appointment
+                $latitude =  '';
+                $longitude = '';
+            }
 
             /* Uodating client other details in order object */
             $order->payment_option_id = $request->payment_option_id;
@@ -778,7 +796,7 @@ class OrderController extends FrontController
             $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
             $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
             $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
-            $order->schedule_pickup = $cart->schedule_pickup ?? null;
+            $order->schedule_pickup  = $cart->schedule_pickup ?? null;
             $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
             $order->fixed_fee_amount = $fixed_fee_amount;
             $order->specific_instructions = $cart->specific_instructions ?? null;
@@ -934,6 +952,7 @@ class OrderController extends FrontController
                     //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
                     
                     $OrderVendor->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
+                    
                     $OrderVendor->scheduled_date_time = !empty($vendor_cart_product->scheduled_date_time)? $vendor_cart_product->scheduled_date_time : '';
                     $deliver_Vendor_type = ['delivery','appointment','on_demand']; // pass vendor type for delivery option
                     if ( in_array($action, $deliver_Vendor_type) ) {
@@ -1052,6 +1071,9 @@ class OrderController extends FrontController
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                     $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
                     $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
+                    if(checkColumnExists('order_vendor_products', 'dispatch_agent_id')){
+                    $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id)? $vendor_cart_product->dispatch_agent_id : null;
+                    }
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
@@ -1240,7 +1262,7 @@ class OrderController extends FrontController
                 
             }//End cart product loop
             //echo "loop end";
-            $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
+            $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('',$payable_amount);
 
             // calculate subscription discount
             if ($user_subscription) {
@@ -1426,7 +1448,7 @@ class OrderController extends FrontController
             // }
             
             DB::commit();
-            //$this->sendSuccessSMS($request, $order);
+            $this->sendSuccessSMS($request, $order);
 
             return $this->successResponse($order);
         } catch (Exception $e) {
@@ -1451,14 +1473,12 @@ class OrderController extends FrontController
         foreach ($devices as $device) {
             $token[] = $device;
         }
-        $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
-        $from = env('FIREBASE_SERVER_KEY');
+        //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+        //$from = env('FIREBASE_SERVER_KEY');
         $notification_content = NotificationTemplate::where('id', 1)->first();
-        if ($notification_content) {
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+           
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -1466,17 +1486,8 @@ class OrderController extends FrontController
                     'body'  => $notification_content->content,
                 ]
             ];
-            $dataString = $data;
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            // dd($result);
-            curl_close($ch);
+            
+            sendFcmCurlRequest($data);
         }
     }
 
@@ -1512,10 +1523,10 @@ class OrderController extends FrontController
                 ],
                 "priority" => "high"
             ];
-           
+           Log::info('data for notification '.json_encode($data));
             if(!empty($from)){
                 // helper function
-                curlJsonRequest($from, $data);
+                sendFcmCurlRequest($data);
             }
 
             // Individual Vendor App User Token
@@ -1527,8 +1538,8 @@ class OrderController extends FrontController
                 $from = $client_preferences->vendor_fcm_server_key;
                 $data['registration_ids'] = $vendorAppUserDevices;
                
-                $result = curlJsonRequest($from, $data);
-                Log::info($result);
+                $result = sendFcmCurlRequest($data);
+                //Log::info($result);
             }
         }
     }
@@ -2353,17 +2364,15 @@ class OrderController extends FrontController
         foreach ($devices as $device) {
             $token[] = $device;
         }
-        $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+        //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
         // dd($token);
 
-        $from = env('FIREBASE_SERVER_KEY');
+        //$from = env('FIREBASE_SERVER_KEY');
 
         $notification_content = NotificationTemplate::where('id', 2)->first();
-        if ($notification_content) {
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+           
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -2373,16 +2382,7 @@ class OrderController extends FrontController
             ];
             $dataString = $data;
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            // dd($result);
-            curl_close($ch);
+            sendFcmCurlRequest($data);
         }
     }
 

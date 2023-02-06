@@ -1924,7 +1924,7 @@ class CartController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function getCartData($domain = '', Request $request)
-    {   $cart_details = [];
+    {   $cart_details = null;
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
@@ -2443,7 +2443,8 @@ class CartController extends FrontController
                 }else{
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
+                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time,'dispatch_agent_id' => $request->dispatch_agent_id]);
+                
 
                 // $cartProductDetails = CartProduct::where('id', $request->cart_product_id)->get()->first();
                 // CartProduct::where('cart_id', $cartProductDetails->cart_id )->where('vendor_id', $cartProductDetails->vendor_id  )->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
@@ -2461,6 +2462,30 @@ class CartController extends FrontController
         }
     }
 
+     # update dispatch agent id  home services basis on services
+     public function updateDispatcherAgent(Request $request, $domain = '')
+     {
+        //pr($request->all());
+         DB::beginTransaction();
+         try{
+             $user = Auth::user();
+             if ($user) {
+                 
+                 CartProduct::where('id', $request->cart_product_id)->update(['dispatch_agent_id' => $request->dispatch_agent_id]);
+                 
+                 DB::commit();
+                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
+             }
+             else{
+                 return response()->json(['status'=>'Error', 'message'=>'Invalid user']);
+             }
+         }
+         catch(\Exception $ex){
+             DB::rollback();
+             return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
+         }
+     }
+ 
     // add ones add in cart for ondemand
 
     public function postAddToCartAddons(Request $request, $domain = '')

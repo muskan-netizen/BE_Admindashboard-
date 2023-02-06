@@ -38,12 +38,22 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('fcm', 'Front\CustomerAuthController@fcm');
 	Route::get('send-notification', 'Front\CustomerAuthController@sendNotification');
     Route::get('vendor-notification', 'Front\DispatcherController@test');
+	Route::get('test/email1', 'Front\FrontController@sendmailtest');
 	Route::get('test/email', function () {
 		$send_mail = 'test@yopmail.com';
 		// App\Jobs\SendRefferalCodeEmailJob::dispatch($send_mail);
-		dispatch(new App\Jobs\SendRefferalCodeEmailJob($send_mail));
-
-		dd('send mail successfully !!');
+		// dispatch(new App\Jobs\SendRefferalCodeEmailJob($send_mail));
+		$details = [
+			'title' => 'Mail from ItSolutionStuff.com',
+			'body' => 'This is for testing email using smtp'
+		];
+	   
+		try {
+				\Mail::to('sandeep.kumar@codebrewinnovations.com')->send(new \App\Mail\MyTestMail($details));
+				dd('send mail successfully !!');
+			}catch(\Exception $e) {
+					return response()->json(['data' => $e->getMessage()]);
+			}
 	});
 
 
@@ -347,6 +357,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+
+	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
+	
+	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
 	Route::get('/homeTest', 'Front\UserhomeController@indexTest')->name('homeTest');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
 	//Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup')->name('page/driver-registration');
@@ -396,6 +410,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cart/dropoff/schedule/slots', 'Front\CartController@checkDropoffScheduleSlots')->name('cart.check_dropoff_schedule_slots'); // Added by Ovi
 
 	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
+	Route::post('cart/product-schedule/dispatch_agent_update', 'Front\CartController@updateDispatcherAgent')->name('cart.updateDispatcherAgent');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
 	Route::get('cartDetails', 'Front\CartController@getCartProducts')->name('cartDetails');
 	Route::post('get/product/prescription', 'Front\CartController@getProductPrescription')->name('getProductPrescription');
@@ -449,6 +464,14 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//cities
 	Route::get('cities/{slug}','Front\VendorCitiesController@getCities')->name('city.getCities');
+
+	Route::post('getSlotFromDispatchDemand', 'Front\FrontController@getSlotFromDispatchDemand')->name('getSlotFromDispatchDemand');
+	//chatNotification to all users from dispacther
+	Route::any('sendNotificationToUserByDispatcher', 'Front\ChatDispatcherNotificationController@sendNotificationToUserByDispatcher')->name('sendNotificationToUserByDispatcher'); // Order Status update Dispatch
+	/**
+	 * booking routes
+	 */
+	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
@@ -559,9 +582,25 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
 
 
-	/**
-	 * booking routes
-	 */
-	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
-
+	
 });
+Route::get('js/translations.js', function (Request $request) {
+    $lang = config('app.locale');
+    $strings = \Illuminate\Support\Facades\Cache::rememberForever('lang_'.$lang.'.js', function () use($lang) {
+        $files = [
+            resource_path('lang/' . $lang . '/common.php'),
+            resource_path('lang/' . $lang . '/validation.php'),
+        ];
+        $strings = [];
+
+        foreach ($files as $file) {
+            $name = basename($file, '.php');
+            $strings[$name] =  $file;
+        }
+
+        return $strings;
+    });
+    header('Content-Type: text/javascript');
+    echo('window.i18n = ' . json_encode($strings) . ';');
+    exit();
+})->name('translations');

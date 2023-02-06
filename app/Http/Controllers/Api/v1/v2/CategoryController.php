@@ -263,7 +263,7 @@ class CategoryController extends BaseController
                 );
             }
             return $category_details;
-        } elseif ($type == 'product' || $type == 'Product' || $type == 'on demand service' || $type == 'laundry' || $type == 'Laundry') {
+        } elseif ($type == 'product' || $type == 'appointment' || $type == 'on demand service' || strtolower($type) == 'laundry' || $type = 'rental service') {
             $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
 
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();

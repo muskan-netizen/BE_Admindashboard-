@@ -52,7 +52,7 @@
                 <div class="card-body position-relative al">
                     <div class="top-input position-absoluteal">
                         <div class="row">
-                            <div class="col-md-9">
+                            <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-sm-3 mb-1">
                                         <input type="text" id="range-datepicker" class="form-control al_box_height flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">

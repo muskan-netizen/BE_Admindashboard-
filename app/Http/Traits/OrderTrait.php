@@ -148,7 +148,7 @@ trait OrderTrait{
      // place Request To Dispatch for Appointment , OnDemand
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain,$request)
     {
-      
+       
         try {
 
             $order = Order::find($order);
@@ -164,7 +164,8 @@ trait OrderTrait{
             $order_vendor = OrderVendor::with('products.product')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
        
             foreach( $order_vendor->products as $product){
-              
+                $allocation_type = 'a';
+                $agent = '';
                 if ($order->payment_option_id == 1 ) {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
@@ -189,36 +190,44 @@ trait OrderTrait{
                     $scheduleDateTime = $selectedDate.' '.$slotTime;
                     $schedule_time =  $scheduleDateTime?? null;
                 }
-                
+
+                $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
+                $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
+                Log::info('service_time');
+                Log::info($service_time);
+                $tasks[] = array(
+                    'task_type_id' => $task_type_id,
+                    'latitude'     => $vendor_details->latitude ?? '',
+                    'longitude'    => $vendor_details->longitude ?? '',
+                    'short_name'   => '',
+                    'address'      => $vendor_details->address ?? '',
+                    'post_code'    => '',
+                    'barcode'      => '',
+                    'flat_no'     => null,
+                    'email'       => $vendor_details->email ?? null,
+                    'phone_number' => $vendor_details->phone_no ?? null,
+                    'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ?  $service_time  : null ,
+                );
+                if($product->dispatch_agent_id){
+                    $allocation_type = 'm';
+                    $agent = $product->dispatch_agent_id;
+                }
+                if($dispatch_domain['service_type'] == 'on_demand' ){
                     $tasks[] = array(
-                        'task_type_id' => $dispatch_domain['service_type'] == 'appointment' ?  3 : 1,
-                        'latitude' => $vendor_details->latitude ?? '',
-                        'longitude' => $vendor_details->longitude ?? '',
+                        'task_type_id' => 2,
+                        'latitude' => $cus_address->latitude ?? '',
+                        'longitude' => $cus_address->longitude ?? '',
                         'short_name' => '',
-                        'address' => $vendor_details->address ?? '',
-                        'post_code' => '',
+                        'address' => $cus_address->address ?? '',
+                        'post_code' => $cus_address->pincode ?? '',
                         'barcode' => '',
-                        'flat_no'     => null,
-                        'email'       => $vendor_details->email ?? null,
-                        'phone_number' => $vendor_details->phone_no ?? null,
-                        'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ? ($product->product->first() ? $product->product->minimum_duration_min : 0) : null ,
+                        'flat_no'     => $cus_address->house_number ?? null,
+                        'email'       => $customer->email ?? null,
+                        'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
                     );
-                
-                    if($dispatch_domain['service_type'] == 'on_demand' ){
-                        $tasks[] = array(
-                            'task_type_id' => 2,
-                            'latitude' => $cus_address->latitude ?? '',
-                            'longitude' => $cus_address->longitude ?? '',
-                            'short_name' => '',
-                            'address' => $cus_address->address ?? '',
-                            'post_code' => $cus_address->pincode ?? '',
-                            'barcode' => '',
-                            'flat_no'     => $cus_address->house_number ?? null,
-                            'email'       => $customer->email ?? null,
-                            'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
-                        );
-                    }
-        
+                }
+                Log::info('send agent id to driver');
+                Log::info($agent);
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                     $customerno = "0" . $customer->phone_number;
@@ -226,20 +235,21 @@ trait OrderTrait{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
+               
                 $client = CP::orderBy('id', 'asc')->first();
                 for ($x = 1; $x <= $product->quantity; $x++) {
                     //  send all payment to fist order 
-                 if( $paymentSentAlready == 0){
-                    $paymentSentAlready =1;
-                 }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                 }
+                    if( $paymentSentAlready == 0){
+                        $paymentSentAlready =1;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
                     $dynamic = uniqid($order->id . $vendor . $product->product_id.$x);
                
                     $call_back_url = route('dispatch-order-product-status-update', $dynamic);
                     $postdata =  [
-                        'order_number' =>  $order->order_number,
+                        'order_number'  =>  $order->order_number,
                         'customer_name' => $customer->name ?? 'Dummy Customer',
                         'customer_phone_number' => $customerno ?? rand(111111, 11111),
                         'customer_dial_code' => $customer->dial_code ?? null,
@@ -247,7 +257,7 @@ trait OrderTrait{
                         'recipient_phone' => $customerno ?? rand(111111, 11111),
                         'recipient_email' => $customer->email ?? null,
                         'task_description' => "Order From :" . $vendor_details->name,
-                        'allocation_type' => 'a',
+                        'allocation_type' => $allocation_type,
                         'task_type' => $task_type,
                         'schedule_time' => $schedule_time ?? null,
                         'cash_to_be_collected' => $payable_amount ?? 0.00,
@@ -261,10 +271,13 @@ trait OrderTrait{
                         'dbname' => @$client->database_name,
                         'order_id' => @$order->id,
                         'customer_id' => @$order->user_id,
-                        'user_icon' => $customer->image
+                        'user_icon' => $customer->image,
+                        'agent'     => $agent,
+                        'task_type_id' =>$task_type_id, //  for add agent booking in case of appointment
+                        'service_time' =>  $service_time
                     ];
                   
-                   
+                    
                     if($order_vendor->is_restricted == 1)
                     {
                         $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -314,7 +327,7 @@ trait OrderTrait{
             }
             return $return_response;
         } catch (\Exception $e) {
-            return 2;
+            //return 2;
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()

@@ -58,7 +58,7 @@
                                     <p class="text-muted">April 22 2019 <small class="text-muted">05:16 PM</small></p>
                                 </li>
                                 <li>
-                                    <h5 class="mt-0 mb-1"> Delivered</h5>
+                                    <h5 class="mt-0 mb-1"> {{ __('Delivered') }}</h5>
                                     <p class="text-muted">Estimated delivery within 3 days</p>
                                 </li>
                             </ul>

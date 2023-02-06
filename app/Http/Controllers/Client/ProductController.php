@@ -334,11 +334,17 @@ class ProductController extends BaseController
             $product->is_new                    = ($request->has('is_new') && $request->is_new == 'on') ? 1 : 0;
             $product->is_featured               = ($request->has('is_featured') && $request->is_featured == 'on') ? 1 : 0;
             $product->is_physical               = ($request->has('is_physical') && $request->is_physical == 'on') ? 1 : 0;
-            $product->pharmacy_check               = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
+            $product->pharmacy_check            = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
             $product->has_inventory             = ($request->has('has_inventory') && $request->has_inventory == 'on') ? 1 : 0;
             $product->sell_when_out_of_stock    = ($request->has('sell_stock_out') && $request->sell_stock_out == 'on') ? 1 : 0;
             $product->requires_shipping         = ($request->has('require_ship') && $request->require_ship == 'on') ? 1 : 0;
             $product->Requires_last_mile        = ($request->has('last_mile') && $request->last_mile == 'on') ? 1 : 0;
+            if(checkColumnExists('products', 'is_slot_from_dispatch')){
+                $product->is_slot_from_dispatch     = ($request->has('is_slot_from_dispatch') && $request->is_slot_from_dispatch == 'on') ? 1 : 0;
+            }
+            if(checkColumnExists('products', 'is_show_dispatcher_agent')){
+                $product->is_show_dispatcher_agent  = ($request->has('is_show_dispatcher_agent') && $request->is_show_dispatcher_agent == 'on') ? 1 : 0;
+            }
             $product->need_price_from_dispatcher = ($request->has('need_price_from_dispatcher') && $request->need_price_from_dispatcher == 'on') ? 1 : 0;
             $product->age_restriction = ($request->has('age_restriction') && $request->age_restriction == 'on') ? 1 : 0;
             $product->mode_of_service        = $request->mode_of_service??null;
@@ -418,12 +424,13 @@ class ProductController extends BaseController
                     }
                 }
                 ProductImage::insert($productImageSave);
-                $cat = $addonsArray = $upArray = $crossArray = $relateArray = $tagSetArray = array();
+                $cat = $addonsArray = $upArray = $crossArray = $relatedArray = $tagSetArray = array();
                 $delete = ProductAddon::where('product_id', $product->id)->delete();
                 $delete = ProductUpSell::where('product_id', $product->id)->delete();
                 $delete = ProductCrossSell::where('product_id', $product->id)->delete();
                 $delete = ProductCelebrity::where('product_id', $product->id)->delete();
                 $delete = ProductTag::where('product_id', $product->id)->delete();
+                $delete=ProductRelated::where('product_id',$product->id)->delete();
 
                 if ($request->has('addon_sets') && count($request->addon_sets) > 0) {
                     foreach ($request->addon_sets as $key => $value) {
@@ -474,11 +481,15 @@ class ProductController extends BaseController
                     }
                     ProductCrossSell::insert($crossArray);
                 }
-
-
-
-
-
+                if ($request->has('releted_product') && count($request->releted_product) > 0) {
+                    foreach ($request->releted_product as $key => $value) {
+                        $relatedArray[] = [
+                            'product_id' => $product->id,
+                            'related_product_id' => $value
+                        ];
+                    }
+                    ProductRelated::insert($relatedArray);
+                }
                 $existv = array();
 
                 if ($request->has('variant_ids')) {
@@ -1118,9 +1129,13 @@ class ProductController extends BaseController
     }
 
     # check if last mile delivery on
-    public function getProductFaq(Request $request){
-        pr($request->all());
-        
+    public function getProductVariant(Request $request){
+        $ProductVariants =   ProductVariant::where('product_id',$request->product_id)->get();
+        $options = [];
+        foreach($ProductVariants as $key => $variant){
+            $options[] = "<option value=".$variant['id'].">".($variant['title'] ?? $variant['sku'])."</option>";
+        }
+        return $this->successResponse($options, '');
     }
 
 

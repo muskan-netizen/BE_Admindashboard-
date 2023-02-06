@@ -372,7 +372,7 @@
                                 <div class="card-footer bg-transparent px-0">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <a href="#"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
-                                        <button class="btn btn-solid">Next</button>
+                                        <button class="btn btn-solid">{{__('Next')}}</button>
                                     </div>
                                 </div>
                             </div>

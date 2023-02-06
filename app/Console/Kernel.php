@@ -16,7 +16,8 @@ class Kernel extends ConsoleKernel
         Commands\CartReminder::class,
         Commands\AutoRejectOrders::class,
         Commands\SetDummyDataForDemo::class,
-        Commands\RejectOrderNotification::class
+        Commands\RejectOrderNotification::class,
+        Commands\HubSpotSyncData::class
         //
     ];
 

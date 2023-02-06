@@ -188,11 +188,11 @@ class CategoryController extends BaseController
 
      //   $del = CategoryTranslation::where('category_id',$id)->whereNotIn('id',$get_multi_cat)->delete();
 
-        $category = Category::with('translationSetUnique', 'tags')->where('id', $id)->first();
+        $category = Category::with('translationSetUnique', 'tags','primary')->where('id', $id)->first();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
             ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
             ->where('client_languages.client_code', Auth::user()->code)
-            ->where('client_languages.is_active', 1)
+            ->where('client_languages.is_active', 1)            
             ->orderBy('client_languages.is_primary', 'desc')->get();
         $existlangs = $langIds = array();
         foreach ($langs as $key => $value) {
@@ -214,6 +214,12 @@ class CategoryController extends BaseController
         $trans = [];
         if(!empty($request->categoryId) && !empty($request->languageId)){
             $trans = Category_translation::where('category_id', $request->categoryId)->where('language_id', $request->languageId)->first();
+            if(!$trans){
+                $trans = new Category_translation();
+                $trans->category_id = $request->categoryId;
+                $trans->language_id = $request->languageId;
+                $trans->save();
+            }
             return response()->json(array('status' => 'success', 'data' => $trans));
         }
         return response()->json(array('status' => 'error', 'data' => $trans));
@@ -248,9 +254,9 @@ class CategoryController extends BaseController
                 $trans->meta_title = $request->cat_lang['meta_title'];
                 $trans->meta_description = $request->cat_lang['meta_description'];
                 $trans->meta_keywords = $request->cat_lang['meta_keywords'];
-                $trans->save();                
+                $trans->save();
                     $trans->save();
-                $trans->save();                
+                $trans->save();
             }
             $hs = new CategoryHistory();
             $hs->action = 'Update';
@@ -393,31 +399,31 @@ class CategoryController extends BaseController
         $parent = Category::where('id', $id)->first();
         $array_of_ids = $this->getChildren($parent);
         array_push($array_of_ids, $id);
-       
+
 
         $dynamic = time().substr(md5(mt_rand()), 0, 7);
-     
+
         $tot_var  = Product::whereIn('category_id', $array_of_ids)->select('id','sku')->get();
         foreach($tot_var as $varr)
-        {   
+        {
             $dynamic = time().substr(md5(mt_rand()), 0, 7);
             Product::where('id', $varr->id)->update(['sku' => $varr->sku.$dynamic]);
             ProductVariant::where('product_id', $varr->product_id)->update(['sku' => $varr->sku.$dynamic]);
         }
 
         foreach($array_of_ids as $varr)
-        {   
+        {
             $dynamic = time().substr(md5(mt_rand()), 0, 7);
             Category::where('id', $varr)->update(['slug' => $dynamic]);
-            
+
         }
 
 
 
         Product::whereIn('category_id', $array_of_ids)->delete();
         Category::destroy($array_of_ids);
-        
-        // category kyc document delete 
+
+        // category kyc document delete
         CategoryKycDocumentMapping::where('category_id',$id)->delete();
         // CategoryKycDocuments::whereIn(['id', $category_kyc_document_ids])->delete();
         // CategoryKycDocumentTranslation::whereIn(['category_kyc_document_id',  $category_kyc_document_ids])->delete();
@@ -479,5 +485,5 @@ class CategoryController extends BaseController
         else
             return false;
     }
-    
+
 }

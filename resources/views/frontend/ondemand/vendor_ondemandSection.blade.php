@@ -1,9 +1,5 @@
 @section('customcss')
-<style>
-    .radio-btns input[type="radio"].ondemand_checked + label span{background: var(--theme-deafult);
-    color: #fff;}
-
-</style>
+<link defer type="text/css" href="{{asset('css/ondemand.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 @endsection
 <section class="home-serivces" id="alSixHomeServices">
     <div class="container">
@@ -176,7 +172,7 @@
 
                                         @if (!empty($vendor->banner))
                                             <div class="service-img mb-3">
-                                                <img class="img-fluid" src="{{$vendor->banner['proxy_url'] . '1000/200' . $vendor->banner['image_path']}}" alt="">
+                                                <img class="img-fluid" src="{{$vendor->banner['proxy_url'] . '1000/300' . $vendor->banner['image_path']}}" alt="">
                                             </div>
                                         @endif
 
@@ -195,7 +191,7 @@
                                                                     <div class="d-flex align-items-center justify-content-between border-bottom">
                                                                         <p class="m-0 productTitle"> {{ $prod->translation_title }}</p>
                                                                         <ul class="m-0 p-0 d-flex align-items-center">
-                                                                            <li>From</li>
+                                                                            <li>{{ __('From') }}</li>
 
                                                                             <li class="ml-2"><span class="productsPrice">
                                                                                 {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
@@ -208,6 +204,30 @@
                                                                     <div class="productDetails pl-0 pr-lg-5 m-0 position-relative">
                                                                         <p class="position-relative px-3 py-2">{!! $prod->translation_description !!} </p>
                                                                     </div>
+                                                                    {{-- <div class=" pt-3 m-0 position-relative row">
+                                                                        <div class="col-md-9 col-sm-8 pr-md-2 productDetails">
+                                                                        <p class="position-relative px-3 py-2">{!! $prod->translation_description !!} </p>
+                                                                        </div>
+                                                                        <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
+                                                                         
+                                                                            <?php $imagePath = $imagePath2 = '';
+                                                                            $mediaCount = count($prod->media);
+                                                                            for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
+                                                                                if($i == 0){
+                                                                                    $imagePath = $prod->media[$i]->image->path['proxy_url'].'300/300'.$prod->media[$i]->image->path['image_path'];
+                                                                                }
+                                                                                $imagePath2 = $prod->media[$i]->image->path['proxy_url'].'300/300'.$prod->media[$i]->image->path['image_path'];
+                                                                            } ?>
+                                                                        <div class="class_img">
+                                                                            @if($imagePath != '')
+                                                                            <img src="{{$imagePath}}" alt="">
+                                                                            @else
+    
+                                                                            @endif
+    
+                                                                        </div>
+                                                                    </div>
+                                                                </div> --}}
                                                                     {{-- <ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
                                                                         <li class="position-relative px-3 py-2">
                                                                             <p class="m-0">One night bed and breakfast</p>
@@ -298,10 +318,11 @@
                                                                                     ({{ $minimum_order_count }})
                                                                                 @endif
                                                                             </a>
+                                                                            @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
                                                                             <div class="number"
                                                                                 id="show_plus_minus{{ $cartProductId }}">
                                                                                 <span
-                                                                                    class="minus qty-minus-product {{ $productVariantInCartWithDifferentAddons ? 'remove-customize' : '' }}"
+                                                                                    class="minus qty-minus-product  {{ $productVariantInCartWithDifferentAddons ? 'remove-customize' : '' }}"
                                                                                     data-variant_id="{{ $productVariantIdInCart }}"
                                                                                     data-parent_div_id="show_plus_minus{{ $cartProductId }}"
                                                                                     data-id="{{ $cartProductId }}"
@@ -336,6 +357,9 @@
                                                                                         aria-hidden="true"></i>
                                                                                 </span>
                                                                             </div>
+                                                                            @else
+                                                                            <a class="btn btn-solid " id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                            @endif
                                                                         @else
                                                                             @if ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1))
                                                                                 {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
@@ -353,40 +377,45 @@
                                                                                         ({{ $minimum_order_count }})
                                                                                     @endif
                                                                                 </a>
-                                                                                <div class="number"
-                                                                                    style="display:none;"
-                                                                                    id="ashow_plus_minus{{ $data->id }}">
-                                                                                    <span
-                                                                                        class="minus qty-minus-product"
-                                                                                        data-parent_div_id="show_plus_minus{{ $data->id }}"
-                                                                                        data-id="{{ $data->id }}"
-                                                                                        data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
-                                                                                        data-vendor_id="{{ $data->vendor_id }}"
-                                                                                        data-batch_count="{{ $batch_count }}"
-                                                                                        data-minimum_order_count="{{ $minimum_order_count }}">
-                                                                                        <i class="fa fa-minus"
-                                                                                            aria-hidden="true"></i>
-                                                                                    </span>
-                                                                                    <input
-                                                                                        style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
-                                                                                        id="quantity_ondemand_d{{ $data->id }}"
-                                                                                        readonly
-                                                                                        placeholder="{{ $minimum_order_count }}"
-                                                                                        type="text"
-                                                                                        value="{{ $minimum_order_count }}"
-                                                                                        class="input-number input_qty"
-                                                                                        step="0.01">
-                                                                                    <span
-                                                                                        class="plus qty-plus-product"
-                                                                                        data-id=""
-                                                                                        data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
-                                                                                        data-vendor_id="{{ $data->vendor_id }}"
-                                                                                        data-batch_count="{{ $batch_count }}"
-                                                                                        data-minimum_order_count="{{ $minimum_order_count }}">
-                                                                                        <i class="fa fa-plus"
-                                                                                            aria-hidden="true"></i>
-                                                                                    </span>
-                                                                                </div>
+                                                                                @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
+                                                                                    <div class="number"
+                                                                                        style="display:none;"
+                                                                                        id="ashow_plus_minus{{ $data->id }}">
+                                                                                        <span
+                                                                                            class="minus qty-minus-product"
+                                                                                            data-parent_div_id="show_plus_minus{{ $data->id }}"
+                                                                                            data-id="{{ $data->id }}"
+                                                                                            data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
+                                                                                            data-vendor_id="{{ $data->vendor_id }}"
+                                                                                            data-batch_count="{{ $batch_count }}"
+                                                                                            data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                            <i class="fa fa-minus"
+                                                                                                aria-hidden="true"></i>
+                                                                                        </span>
+                                                                                        <input
+                                                                                            style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
+                                                                                            id="quantity_ondemand_d{{ $data->id }}"
+                                                                                            readonly
+                                                                                            placeholder="{{ $minimum_order_count }}"
+                                                                                            type="text"
+                                                                                            value="{{ $minimum_order_count }}"
+                                                                                            class="input-number input_qty"
+                                                                                            step="0.01">
+                                                                                        <span
+                                                                                            class="plus qty-plus-product"
+                                                                                            data-id=""
+                                                                                            data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
+                                                                                            data-vendor_id="{{ $data->vendor_id }}"
+                                                                                            data-batch_count="{{ $batch_count }}"
+                                                                                            data-minimum_order_count="{{ $minimum_order_count }}">
+                                                                                            <i class="fa fa-plus"
+                                                                                                aria-hidden="true"></i>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                @else
+                                                                                    <a class="btn btn-solid "  style="display:none;" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
+                                                                                @endif
+
                                                                             @else
                                                                                 <span class="text-danger">{{ __('Out of stock') }}</span>
                                                                             @endif
@@ -503,14 +532,16 @@
                                    @endphp
                                    {{ Arr::last($cartData)}}
                                     @foreach ($cartData as $cd => $cart_data)
-                                      @if(!empty($cart_data->product->mode_of_service) && ($cart_data->product->mode_of_service == 'schedule') &&(count($cart_data->timeSlots)) > 0 )
+                                    {{-- && (count($cart_data->timeSlots)) > 0 --}}
+                                      @if(!empty($cart_data->product->mode_of_service) && ($cart_data->product->mode_of_service == 'schedule')  )
 
-                                      @php
-                                        $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
-                                      @endphp
+                                        @php
+                                            $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
+                                        @endphp
 
 
-                                        <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
+                                        <div  id="date_time_set_div{{$cart_data->id}}" class="booking_date_section">
+                                            {{-- <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif> --}}
 
                                             <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
                                             <div class="date-items radio-btns hide">
@@ -536,40 +567,67 @@
                                                     </div>
                                                 @endforeach
                                             </div>
+                                            @if($cart_data->is_dispatch_slot == 1)
+                                                @php
+                                            
+                                                $dispatch_agents = $cart_data->dispatchAgents ?? [];
+                                                $cart_product_id = $cart_data->id;
+                                              
+                                                $show_dispatcher_agent = @$cart_data->product->is_show_dispatcher_agent;
+                                                $selected_agent_id = @$cart_data->dispatch_agent_id;
+                                                $schedule_slot = $cart_data->schedule_slot;
+                                                
+                                                @endphp
+                                                <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
+                                                    @include('frontend.ondemand.dispatcher_agent_slots')
+                                                </div>
+                                            @else
+                                                @php
+                                                $time_slots = [];
+                                                $cart_product_id = $cart_data->id;
+                                                $schedule_slot = $cart_data->schedule_slot;
+                                                if(!empty($cart_data->timeSlots)){
+                                                    $time_slots = $cart_data->timeSlots;
+                                                }
+                                                @endphp
+                                                <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" ">
+                                                    {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif   --}}
+                                                    @include('frontend.ondemand.time-slots-for-date')
+                                                </div>
+                                                {{-- <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
+                                                    <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
 
-                                            <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
-                                                <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
-
-                                                <div class="booking-time radio-btns long-radio mb-0">
-                                                    @php
-                                                    if(!empty($cart_data->timeSlots)){
-                                                        $time_slots = $cart_data->timeSlots;
-                                                    }
-                                                    @endphp
-                                                    @foreach ($time_slots as $key => $date)
-                                                    @if($key+1 < count($time_slots))
-                                                    @php
-                                                    $checked='';
-                                                        $slotTime = $date.' - '.@$time_slots[$key+1];
-                                                        if(isset($cart_data->schedule_slot) && $cart_data->schedule_slot == $slotTime){
-                                                            echo $checked="checked";
+                                                    <div class="booking-time radio-btns long-radio mb-0">
+                                                        @php
+                                                        if(!empty($cart_data->timeSlots)){
+                                                            $time_slots = $cart_data->timeSlots;
                                                         }
-                                                    @endphp
-                                                    <div>
-                                                        <div class="radios">
-                                                            <div class="alCustomHomeServiceRadio">
-                                                                <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif class="ondemand_{{$checked }}"/>
-                                                                <label for='time{{$cart_data->id}}{{$key+1}}'>
-                                                                    <span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$date}} - {{@$time_slots[$key+1]}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
-                                                                </label>
+                                                        @endphp
+                                                        @foreach ($time_slots as $key => $date)
+                                                        @if($key+1 < count($time_slots))
+                                                        @php
+                                                        $checked='';
+                                                            $slotTime = $date.' - '.@$time_slots[$key+1];
+                                                            if(isset($cart_data->schedule_slot) && $cart_data->schedule_slot == $slotTime){
+                                                                echo $checked="checked";
+                                                            }
+                                                        @endphp
+                                                        <div>
+                                                            <div class="radios">
+                                                                <div class="alCustomHomeServiceRadio">
+                                                                    <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif class="ondemand_{{$checked }}"/>
+                                                                    <label for='time{{$cart_data->id}}{{$key+1}}'>
+                                                                        <span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$date}} - {{@$time_slots[$key+1]}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
+                                                                    </label>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                        @endif
+                                                        @endforeach
                                                     </div>
-                                                    @endif
-                                                    @endforeach
-                                                </div>
-                                                <P id="message_of_time{{$cart_data->id}}"></P>
-                                            </div>
+                                                    <P id="message_of_time{{$cart_data->id}}"></P>
+                                                </div> --}}
+                                            @endif
 
                                             <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
                                         </div>
@@ -764,10 +822,10 @@
                         </div>
                         <div class="footer-card">
                             @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && empty(app('request')->input('addons')))
-                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">Next</span></a>
+                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">{{__('Next')}}</span></a>
                                 @elseif(app('request')->input('step') == '1' && app('request')->input('addons') == '1')
                                     <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
-                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">Next</span></a>
+                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">{{__('Next')}}</span></a>
                                 @elseif(app('request')->input('step') == '2' && empty(app('request')->input('addons')))
                                     <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
                                     @if(Auth::guest())
@@ -797,3 +855,6 @@
         </div>
     </div>
 </section>
+@section('custom-js')
+<script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
+@endsection

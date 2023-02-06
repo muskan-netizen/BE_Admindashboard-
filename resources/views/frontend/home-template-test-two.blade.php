@@ -313,11 +313,11 @@ height: auto;
 			</div>
 			<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
 				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
+				<span class="sr-only">{{__('Previous')}}</span>
 			</a>
 			<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
 				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
+				<span class="sr-only">{{__('Next')}}</span>
 			</a>
 		</div>
 
@@ -337,11 +337,11 @@ height: auto;
 			</div>
 			<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
 				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
+				<span class="sr-only">{{__('Previous')}}</span>
 			</a>
 			<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
 				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
+				<span class="sr-only">{{__('Next')}}</span>
 			</a>
 		</div>
 
@@ -383,11 +383,11 @@ height: auto;
 	</div>
 	<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
 		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">Previous</span>
+		<span class="sr-only">{{__('Previous')}}</span>
 	</a>
 	<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">Next</span>
+		<span class="sr-only">{{__('Next')}}</span>
 	</a>
 </script>
 
@@ -417,11 +417,11 @@ height: auto;
 	</div>
 	<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
 		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">Previous</span>
+		<span class="sr-only">{{__('Previous')}}</span>
 	</a>
 	<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">Next</span>
+		<span class="sr-only">{{__('Next')}}</span>
 	</a>
 </script>
 
@@ -548,99 +548,7 @@ height: auto;
         <% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
         <% _.each(order.vendors, function(vendor, k){ %>
         <%   product_total_count = product_subtotal_amount = product_taxable_amount = 0; %>
-        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0">
-            <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
-                <div class="progress-order font-12">
-                <% if(order.scheduled_date_time){ %>
-                        <span class="badge badge-success ml-2">Scheduled</span>
-                        <span class="ml-2">Your order will arrive by <%= order.converted_scheduled_date_time %></span>
-                    <% } else { %>
-                        <span class="ml-2">Your order will arrive by <%= vendor.ETA %></span>
-                    <% } %>
-                </div>
-            <% } %>
-            <span class="left_arrow pulse"></span>
-            <div class="row">
-                <div class="col-5 col-sm-3">
-                    <h5 class="m-0">{{__('Order Status')}}</h5>
-                    <ul class="status_box mt-1 pl-0">
-                    <% if(vendor.order_status){ %>
-                        <li>
-                        <% if(vendor.order_status == 'placed'){ %>
-                                <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
-                        <% }else if(vendor.order_status == 'accepted'){ %>
-                                <img src="{{ asset('assets/images/payment_icon.svg') }}" alt="">
-                        <% } else if(vendor.order_status == 'processing'){ %>
-                                <img src="{{ asset('assets/images/customize_icon.svg') }}" alt="">
-                        <% } else if(vendor.order_status == 'out for delivery'){ %>
-                                <img src="{{ asset('assets/images/driver_icon.svg') }}" alt="">
-                        <% } %>
-                            <label class="m-0 in-progress"><%= (vendor.order_status).charAt(0).toUpperCase() + (vendor.order_status).slice(1) %></label>
-                        </li>
-                    <% } %>
-
-                    <% if(vendor.dispatch_traking_url){ %>
-                        <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
-                        <a href="{{route('front.booking.details')}}/<%= order.order_number %>" target="_blank">{{ __('Details') }}</a>
-                    <% } %>
-
-                    <% if(vendor.dineInTable){ %>
-                        <li>
-                            <h5 class="mb-1">{{ __('Dine-in') }}</h5>
-                            <h6 class="m-0"><%= vendor.dineInTableName %></h6>
-                            <h6 class="m-0">Category : <%=  vendor.dineInTableCategory %></h6>
-                            <h6 class="m-0">Capacity : <%= vendor.dineInTableCapacity %></h6>
-                        </li>
-                    <% } %>
-
-                    </ul>
-                </div>
-                <div class="col-7 col-sm-4">
-                    <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
-                    <% _.each(vendor.products, function(product, k){ %>
-                            <% if(vendor.vendor_id == product.vendor_id){ %>
-                                <li class="text-center">
-                                    <img src="<%= product.image_url %>" alt="">
-                                    <span class="item_no position-absolute">x <%= product.quantity %></span>
-                                    <label class="items_price">{{Session::get('currencySymbol')}}<%= product.price  * product.pricedoller_compare %></label>
-                                </li>
-                                <%
-                                    product_total_price = product.price * product.doller_compare;
-                                    product_total_count += product.quantity * product_total_price;
-                                    product_taxable_amount += product.taxable_amount;
-                                    total_tax_order_price += product.taxable_amount;
-                                %>
-                            <% } %>
-                        <% }); %>
-                    </ul>
-                </div>
-                <div class="col-md-5 mt-md-0 mt-sm-2">
-                    <ul class="price_box_bottom m-0 p-0">
-                        <li class="d-flex align-items-center justify-content-between">
-                            <label class="m-0">{{__('Product Total')}}</label>
-                            <span>{{Session::get('currencySymbol')}} <%=Helper.formatPrice(vendor.subtotal_amount)%></span>
-                        </li>
-                        <li class="d-flex align-items-center justify-content-between">
-                            <label class="m-0">{{__('Coupon Discount')}}</label>
-                            <span>{{Session::get('currencySymbol')}} <%=Helper.formatPrice(vendor.discount_amount)%></span>
-                        </li>
-                        <li class="d-flex align-items-center justify-content-between">
-                            <label class="m-0">{{__('Delivery Fee')}}</label>
-                            <span>{{Session::get('currencySymbol')}} <%= Helper.formatPrice(vendor.delivery_fee)%></span>
-                        </li>
-                        <li class="grand_total d-flex align-items-center justify-content-between">
-                            <label class="m-0">{{__('Amount')}}</label>
-                            <%
-                                product_subtotal_amount = product_total_count - vendor.discount_amount + vendor.delivery_fee;
-                                subtotal_order_price += product_subtotal_amount;
-                            %>
-                            <span>{{Session::get('currencySymbol')}} <%=Helper.formatPrice(vendor.payable_amount)%></span>
-                        </li>
-                    </ul>
-                </div>
-
-            </div>
-        </div>
+        @include('frontend.common_section.recent_order_j')
 
         <% }); %>
     <% }); %>
@@ -655,10 +563,10 @@ height: auto;
                    <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
                 </div>
                 <p><%=city.title %></p>
-             </div>            
+             </div>
           </div>
        </div>
-        <% }); 
+        <% });
     %>
 </script><!-- cities cities end -->
 
@@ -684,7 +592,7 @@ height: auto;
                     @elseif($homePageLabel->slug == 'recent_orders' && count($homePageData[$homePageLabel->slug]) != 0)
                         <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
                         @foreach ($homePageData[$homePageLabel->slug] as $order )
-                        @include('frontend.home_page_2.recent_order')
+                        @include('frontend.common_section.recent_order')
                         @endforeach</div>
                     @elseif($homePageLabel->slug == 'brands' && count($homePageData[$homePageLabel->slug]) != 0)
                     <div class="brand-slider product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}" >
@@ -699,7 +607,7 @@ height: auto;
                            <div>
                               <div class="alSpaListBox">
                                  <div class="alSpaCityBox">
-                                    <a href="/cities/{{$cities['slug']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
+                                    <a href="javascript:void(0);" class="cities updateLocationByCity" data-lat="{{$cities['latitude']}}" data-long="{{$cities['longitude']}}" data-place_id="{{$cities['place_id']}}" data-address="{{$cities['address']}}"><img class="w-100" src="{{$cities['image']['image_fit']}}260/260{{$cities['image']['image_path']}}"></a>
                                  </div>
                                  <p>{{$cities["title"]}} </p>
                               </div>
@@ -765,30 +673,14 @@ height: auto;
     </div>
 </div>
 @endsection
+@section('home-page')
+<script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/template/template-two/templateFunction.js')}}"></script>
+@endsection
 @section('js-script')
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection
 @section('script')
-<script type="text/javascript">
-    // AOS.init();
-    function changeImage(image, check) {
-       var  icon = $(image).attr('data-icon');
-       var  icon_two = $(image).attr('data-icon_two');
-       if(check == 1)
-       {
-        setTimeout(function () {
-            $(image).attr('data-src',icon_two);
-            $(image).attr('src',icon_two);
-        },200);
-       }else if(check == 0){
-            setTimeout(function () {
-                $(image).attr('data-src',icon);
-                $(image).attr('src',icon);
-            },200);
-
-       }
-    }
-</script>
 @endsection

@@ -1,20 +1,3 @@
-/*arbic dashboard css start here---*/
-body[dir="rtl"] .page-title-right .input-group-text {
-    border-radius: .2rem 0 0 .2rem;
-}
-body[dir="rtl"] .card.alDasBoxItems .float-right {
-    float: left !important;
-}
-/*arbic dashboard css start end---*/
-
-
-
-
-
-
-
-
-
 /*arbic language css start here---*/
 body[dir="rtl"] .product-order h3,
 body[dir="rtl"] .product-order .total-sec ul li {
@@ -479,6 +462,7 @@ body[dir=rtl] ul.order-detail.row {
 body[dir=rtl]  span.order_reject {
     display: inline-block;
 }
+
 
 
 

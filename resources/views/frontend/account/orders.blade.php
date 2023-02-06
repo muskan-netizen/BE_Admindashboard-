@@ -144,7 +144,7 @@
                                                                         <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                                                                     </div>
                                                                     <div class="col-md-3 alOrderStatus">
-                                                                        <h4>{{ __('Vendor Name') }}</h4>
+                                                                        <h4>{{ __(getNomenclatureName('Vendor Name',true)) }}</h4>
                                                                         <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
@@ -555,7 +555,7 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format(($order->taxable_amount+$total_other_taxes)
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format(($order->taxable_amount)
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
@@ -1894,6 +1894,26 @@
           </div>
         </div>
       </div>
+
+      <div class="modal fade remove-cart-modal" id="repeat_cart_modal1" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header pb-0">
+              <h5 class="modal-title" id="remove_cartLabel">{{__('Repeat Order')}}</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body text-center">
+              <h6 class="m-0 px-3">{{__('Are u sure u want to repeat same order')}}</h6>
+            </div>
+            <div class="modal-footer flex-nowrap justify-content-center align-items-center">
+              <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
+              <button type="button" class="btn btn-solid" id="repeat_cart_button" data-cart_id="">{{__('Yes')}}</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <!-- end repat order modal -->
 
 
@@ -2114,14 +2134,22 @@
                 dataType: 'json',
                 url: cart_details_url,
                 success: function (response) {
+                   
                     if (response.data != "") {
                         let cartProducts = response.data.products;
-                        $("#repeat_cart_modal").modal('show');
+                        
 
                         if (cartProducts != "") {
+                            $("#repeat_cart_modal").modal('show');
                             $("#repeat_cart_modal #repeat_cart_button").attr("data-cart_id", response.data.id);
+                            $("#repeat_cart_modal #repeat_cart_button").attr("data-order_vendor_id", order_vendor_id);
+                           
+                        }else{
+                            $("#repeat_cart_modal1").modal('show');
+                            $("#repeat_cart_modal1 #repeat_cart_button").attr("data-cart_id", response.data.id);
+                            $("#repeat_cart_modal1 #repeat_cart_button").attr("data-order_vendor_id", order_vendor_id);
                         }
-                        $("#repeat_cart_modal #repeat_cart_button").attr("data-order_vendor_id", order_vendor_id);
+                        
 
                     }
                 }

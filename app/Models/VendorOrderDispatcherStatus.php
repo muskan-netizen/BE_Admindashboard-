@@ -39,7 +39,7 @@ class VendorOrderDispatcherStatus extends Model
                 elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Order Accepted');
                 elseif($productcategorytype == "Pickup/Parent" || $productcategorytype == "Pickup/Delivery"):
-                    $status_data['driver_status'] = __('Ride Accepted');
+                    $status_data['driver_status'] = __(getNomenclatureName('Ride Accepted'));
                 elseif($productcategorytype == "Laundry"):
                     $status_data['driver_status'] = __('Order Accepted');
                 else:

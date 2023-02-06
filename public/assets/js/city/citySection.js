@@ -18,6 +18,7 @@ $(function(){
                             <input type="hidden" id="map_lat">
                             <input type="hidden" id="map_long">
                             <input type="hidden" id="map_address">
+                            <input type="hidden" id="place_id">
                             <div class="pick_address p-2 mb-2 position-relative">
                                 <div class="text-center">
                                     <button type="button" class="btn btn-solid ml-auto pick_address_confirm w-100" data-dismiss="modal"></button>
@@ -70,9 +71,11 @@ $(function(){
                         }, function(results, status) {
                             if (status == google.maps.GeocoderStatus.OK) {
                                 if (results[0]) {
+                                   
                                     document.getElementById('map_lat').value = marker.getPosition().lat();
                                     document.getElementById('map_long').value = marker.getPosition().lng();
                                     document.getElementById('map_address').value = results[0].formatted_address;
+                                    document.getElementById('place_id').value = results[0].place_id;
 
                                     infowindow.setContent(results[0].formatted_address);
 
@@ -88,6 +91,7 @@ $(function(){
             document.getElementById('city_latitude').value  = document.getElementById('map_lat').value;
             document.getElementById('city_longitude').value = document.getElementById('map_long').value;
             document.getElementById('city-address').value = document.getElementById('map_address').value;
+            document.getElementById('city-place_id').value = document.getElementById('place_id').value;
             // var formData = {
             // blocktime:result.value.blocktime,
             // memo:result.value.memo,
@@ -255,9 +259,11 @@ $(function(){
 
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             var place = autocomplete.getPlace();
-            // console.log(place);
+            
+             console.log(place.place_id);
             document.getElementById('city_longitude').value = place.geometry.location.lng();
             document.getElementById('city_latitude').value = place.geometry.location.lat();
+            document.getElementById('place_id').value = place.place_id;
         });
 
         setTimeout(function(){
@@ -288,6 +294,7 @@ $(function(){
                         document.getElementById('city_latitude').value = data.latitude;
                         document.getElementById('city_longitude').value = data.longitude;
                         document.getElementById('city-address').value = data.address;
+                        document.getElementById('place_id').value = data.place_id;
                         var image = data.image.proxy_url+'100/100'+data.image.image_path;
                         var html = `<input type="file" id="vendor_city_image" name="vendor_city_image" class="dropify form-control" data-default-file="${image}" required />`;
                         $('.vendor_city_image').html(html);

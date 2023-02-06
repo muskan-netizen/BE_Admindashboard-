@@ -15,6 +15,7 @@
 @php
     $mapKey = '1234';
     $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
+    $analytics = getAdditionalPreference(['gtag_id', 'fpixel_id']);
     if($theme && !empty($theme->map_key)){
         $mapKey = $theme->map_key;
     }
@@ -79,7 +80,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <script defer type="text/javascript" src="{{asset('js/spinner.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/location.js')}}"></script>
-
+@yield('custom-js')
 {{--
 <!-- All js merged -->
 <script type="text/javascript" src="{{asset('front-assets/js/all-min.js')}}" defer></script>
@@ -107,6 +108,9 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endif
 
 @yield('js-script')
+<script>
+    var Alltranslations = {!! \Cache::get('translations') !!};
+ </script>
 
 @if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
@@ -195,6 +199,8 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endif
 <script src="{{asset('assets/libs/moment/moment.min.js')}}"></script>
 <script src="{{asset('assets/libs/datetimepicker/daterangepicker.min.js')}}" ></script>
+<script src="{{ asset('js/storage/OrderStorage.js') }}"></script>
+<script src="{{ asset('assets/js/alert/alert.js') }}"></script>
 @if((!empty($socket_url)))
 <!-- /** socket_accept */ -->
 <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
@@ -207,7 +213,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
-@if (isset($set_template)  && $set_template->template_id == 6))
+@if (isset($set_template)  && $set_template->template_id == 6)
 <script async src="{{asset('frontend/template_six/homepage/spa_slider_custom.js')}}"></script>
 @endif
 <script type="text/javascript">
@@ -215,6 +221,11 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-5LPF1QP3Y3');
+
+@if(isset($analytics['gtag_id']))
+    gtag('config', "{{$analytics['gtag_id'] ?? ''}}");
+@endif   
+
 @if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
     $(document).ready(function() {
         $("#show-subscription-plan-mdl").modal("show");
@@ -222,6 +233,24 @@ gtag('config', 'G-5LPF1QP3Y3');
 @endif
 </script>
 <!-- End googletagmanager -->
+    @if(isset($analytics['fpixel_id']))
+    <!-- Meta Pixel Code -->
+        <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', "{{$analytics['fpixel_id']}}");
+        fbq('track', 'PageView');
+        </script>
+        <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{$analytics['fpixel_id']}}&ev=PageView&noscript=1"/></noscript>
+    <!-- End Meta Pixel Code -->
+    @endif   
+
 @php
 if($showSubscriptionPlanPopUp == 1){
     setcookie('show-subscription-plan','showed',0);
@@ -411,7 +440,8 @@ if($showSubscriptionPlanPopUp == 1){
     }
     bindLatestCoords(userLatitude, userLongitude);
 
-    @if($client_preference_detail->hide_nav_bar == 1 || $set_common_business_type == 'taxi')
+    // || $set_common_business_type == 'taxi'
+    @if($client_preference_detail->hide_nav_bar == 1)
       $('.main-menu').addClass('d-none').removeClass('d-block');
       $('.menu-navigation').addClass('d-none').removeClass('d-block');
     @endif

@@ -4,5 +4,6 @@
 Route::group(['middleware' => ['domain', 'webAuth'], 'prefix' => '/common'], function () {
 
     Route::post('chat/sendNotificationToUser', 'Client\ChatController@sendNotificationToUser')->name('chat.sendNotificationToUser');
+    
 
 });

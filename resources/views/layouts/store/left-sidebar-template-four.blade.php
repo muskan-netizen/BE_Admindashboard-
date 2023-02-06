@@ -161,7 +161,7 @@ $pages = \App\Models\Page::with([
                     <div class="row d-flex align-items-center justify-content-between">
                         <div class="col-lg-2">
                             <div class="logo_area d-none d-lg-block">
-                                <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" style="width:100%;max-height:100px;" src="{{$urlImg}}"></a>
+                                <a class="navbar-brand alFourThLogo m-0" href="{{ route('userHome') }}"><img alt="" class="logo-image" style="height:50px;" src="{{$urlImg}}"></a>
                             </div>
                             <div class="col-12 d-block d-lg-none p-0">
                                 <div class="row no-gutters">
@@ -280,7 +280,7 @@ $pages = \App\Models\Page::with([
                                         </div>
                                     </div>
                                     <div class="col-8">
-                                        <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" class="w-100" src="{{$urlImg}}"></a>
+                                        <a class="navbar-brand m-0" href="{{ route('userHome') }}"><img alt="" class="logo-image w-100" style="height:60px;" src="{{$urlImg}}"></a>
                                     </div>
 
                                     <div class="col-2 d-flex justify-content-end align-items-center">
@@ -421,14 +421,14 @@ $pages = \App\Models\Page::with([
                                         @if(count($languageList) > 1)
                                         <li class="onhover-dropdown mobile-account pr-2">
                                             <span class="al_BGcolor"><i class="fa fa-globe" aria-hidden="true"></i></span>
-                                            {{__('Language')}}
-
-                                            <ul class="onhover-show-div">
-                                                <li class="{{ session()->get('locale') == $listl->language->sort_code ? 'active' : '' }}">
-                                                    <a href="javascript:void(0)" class="customerLang" langId="{{ $listl->language_id }}">{{ $listl->language->name }}</a>
-                                                </li>
+                                            {{__('Language')}}    
+                                           
+                                            <ul class="onhover-show-div"> @foreach ($languageList as $key => $list)
+                                                <li class="{{ session()->get('locale') == $list->language->sort_code ? 'active' : '' }}">
+                                                    <a href="javascript:void(0)" class="customerLang" langId="{{ $list->language_id }}">{{ $list->language->name }}</a>
+                                                </li> @endforeach
                                             </ul>
-
+                                           
                                         </li>
                                         @endif
 
@@ -463,39 +463,40 @@ $pages = \App\Models\Page::with([
 
 
                                 </div>
+                                @if(count($navCategories))
+                                    <div class="col-sm-12 p-0 d-flex align-items-center alOverflow">
+                                        <div class="menu_navigation_al_four mt-lg-3">
+                                            <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
+                                                @foreach($navCategories as $cate)
+                                                @if($cate['name'])
+                                                <li class="alMainMenu @if(!empty($cate['children'])) has-children @endif ">
+                                                    <a class="alMainLink" href="{{route('categoryDetail', $cate['slug'])}}">
 
-                                <div class="col-sm-12 p-0 d-flex align-items-center alOverflow">
-                                    <div class="menu_navigation_al_four mt-lg-3">
-                                        <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
-                                            @foreach($navCategories as $cate)
-                                            @if($cate['name'])
-                                            <li class="alMainMenu @if(!empty($cate['children'])) has-children @endif ">
-                                                <a class="alMainLink" href="{{route('categoryDetail', $cate['slug'])}}">
-
-                                                    {{$cate['name']}}
-                                                </a>
-                                                @if(!empty($cate['children']))
-                                                <ul class="alInnerMenu">
-                                                    @foreach($cate['children'] as $childs)
-                                                    <li class="alInnerLink">
-                                                        <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
-                                                        @if(!empty($childs['children']))
-                                                        <ul class="alInnerSubMenu">
-                                                            @foreach($childs['children'] as $chld)
-                                                            <li class="alInnerSublink"><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
-                                                            @endforeach
-                                                        </ul>
+                                                        {{$cate['name']}}
+                                                    </a>
+                                                    @if(!empty($cate['children']))
+                                                    <ul class="alInnerMenu">
+                                                        @foreach($cate['children'] as $childs)
+                                                        <li class="alInnerLink">
+                                                            <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
+                                                            @if(!empty($childs['children']))
+                                                            <ul class="alInnerSubMenu">
+                                                                @foreach($childs['children'] as $chld)
+                                                                <li class="alInnerSublink"><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
+                                                        </li>
+                                                        @endforeach
+                                                    </ul>
                                                     @endif
-                                                    </li>
-                                                    @endforeach
-                                                </ul>
+                                                </li>
                                                 @endif
-                                            </li>
-                                            @endif
-                                            @endforeach
-                                        </ul>
+                                                @endforeach
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             </div>
 
 

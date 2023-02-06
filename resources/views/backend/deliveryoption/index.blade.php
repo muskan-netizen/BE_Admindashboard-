@@ -33,7 +33,7 @@
     </div>
 
 
-<div class="container-fluid">
+<div class="container-fluid alDeliveryOptionsPage">
     <div class="row h-100">
         <!-- Last Mile Delivery For Dispatcher -->
         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry')
@@ -52,9 +52,9 @@
                     <div class="row mt-2">
                         <div class="col-12">
                             <div class="form-group mb-0">
-                                <div class="form-group mb-0 switchery-demo">
-                                <label for="need_delivery_service" class="mr-3">{{ __("Enable") }}</label>
-                                <input data-plugin="switchery" name="need_delivery_service" id="need_delivery_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_delivery_service == '1')) checked @endif >
+                                <div class="form-group mb-0 switchery-demo d-flex justify-content-between align-items-center">
+                                    <label for="need_delivery_service" class="mr-3">{{ __("Enable") }}</label>
+                                    <input data-plugin="switchery" name="need_delivery_service" id="need_delivery_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_delivery_service == '1')) checked @endif >
                                 </div>
                             </div>
                             <div class="mt-3 deliveryServiceFields" style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
@@ -121,7 +121,7 @@
         @endif
         <!-- End Last Mile Delivery for Dispatcher -->
 
-        <div class="col-md-6 ">
+        <div class="col-md-6 mb-3">
             <form method="POST" id="payment_option_form" action="{{route('deliveryoption.store')}}" class="h-100">
                 @csrf
                 @method('POST')
@@ -151,13 +151,13 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col-6">
-                            <div class="form-group mb-0 switchery-demo">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
                                 <input type="checkbox"  data-title="{{$delOption->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($delOption->status == 1) checked @endif>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="form-group mb-0 switchery-demo">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
                                 <label for="" class="mr-3">{{ __('Sandbox') }}</label>
                                 <input type="checkbox"  data-title="{{$delOption->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($delOption->test_mode == 1) checked @endif>
                             </div>
@@ -334,14 +334,14 @@
 
                     <div class="row mt-2">
                         <div class="col-6">
-                            <div class="form-group mb-0 switchery-demo">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                             </div>
                         </div>
                         @if ( (strtolower($opt->code) == 'shiprocket'))
                         <div class="col-6">
-                            <div class="form-group mb-0 switchery-demo">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
                                 <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="sandbox[{{$opt->id}}]" class="chk_box" data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
                             </div>
@@ -486,14 +486,14 @@
 
                     <div class="row mt-2">
                         <div class="col-6">
-                            <div class="form-group mb-0 switchery-demo">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
                                 <input type="checkbox" data-id="{{$optDunzo->id}}" data-title="{{$optDunzo->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($optDunzo->status == 1) checked @endif>
                             </div>
                         </div>
                         @if ( (strtolower($optDunzo->code) == 'dunzo'))
                         <div class="col-6">
-                            <div class="form-group mb-0 switchery-demo">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
                                 <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
                                 <input type="checkbox" data-id="{{$optDunzo->id}}" data-title="{{$optDunzo->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($optDunzo->test_mode == 1) checked @endif>
                             </div>
@@ -601,23 +601,23 @@
                     $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
                     ?>
                     <div class="row">
-                    <div class="col-md-12 d-flex justify-content-between align-items-center">
-                        <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optAhoy->code.'.png')}}" alt=""></span>  {{$optAhoy->title}}</h3>
-                        <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
-                    </div>
+                        <div class="col-md-12 d-flex justify-content-between align-items-center">
+                            <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optAhoy->code.'.png')}}" alt=""></span>  {{$optAhoy->title}}</h3>
+                            <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                        </div>
 
                     </div>
 
                     <div class="row mt-2">
                         <div class="col-6">
-                            <div class="form-group mb-0 switchery-demo">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
                                 <input type="checkbox" data-id="{{$optAhoy->id}}" data-title="{{$optAhoy->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($optAhoy->status == 1) checked @endif>
                             </div>
                         </div>
                         @if ( (strtolower($optAhoy->code) == 'ahoy'))
                         <div class="col-6">
-                            <div class="form-group mb-0 switchery-demo">
+                            <div class="form-group mb-0 switchery-demo d-flex justify-content-between align-items-center">
                                 <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
                                 <input type="checkbox" data-id="{{$optAhoy->id}}" data-title="{{$optAhoy->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($optAhoy->test_mode == 1) checked @endif>
                             </div>
@@ -732,25 +732,22 @@
                      $weight = (isset($creds->weight)) ? $creds->weight : '0';
                      ?>
                      <div class="row">
-                     <div class="col-md-12 d-flex justify-content-between align-items-center">
-                         <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$shippoOption->code.'.png')}}" alt=""></span>  {{$shippoOption->title}}</h3>
-                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
-                     </div>
-                     <div class="col-md-6 text-right">
-
-                     </div>
+                        <div class="col-md-12 d-flex justify-content-between align-items-center">
+                            <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$shippoOption->code.'.png')}}" alt=""></span>  {{$shippoOption->title}}</h3>
+                            <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                        </div>
                      </div>
 
                      <div class="row">
                          <div class="col-6">
-                             <div class="form-group mb-0 switchery-demo">
+                             <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
                                  <label for="" class="mr-3">{{ __("Enable") }}</label>
                                  <input type="checkbox" data-id="{{$shippoOption->id}}" data-title="{{$shippoOption->code}}" data-plugin="switchery" name="active[{{$shippoOption->id}}]" class="chk_box all_select" data-color="#43bee1" @if($shippoOption->status == 1) checked @endif>
                              </div>
                          </div>
                          @if ( (strtolower($shippoOption->code) == 'shippo'))
                          <div class="col-6">
-                             <div class="form-group mb-0 switchery-demo">
+                             <div class="form-group mb-0 switchery-demo d-flex justify-content-between align-items-center">
                                  <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
                                  <input type="checkbox" data-id="{{$shippoOption->id}}" data-title="{{$shippoOption->code}}" data-plugin="switchery" name="sandbox[{{$shippoOption->id}}]" class="chk_box" data-color="#43bee1" @if($shippoOption->test_mode == 1) checked @endif>
                              </div>

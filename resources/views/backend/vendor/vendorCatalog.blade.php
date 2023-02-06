@@ -356,6 +356,39 @@
                                     </div>
                                 </div>
                             </div>
+                            @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)
+                            <div class="card-box">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h4 class="mb-0"> {{ __('Long Term service') }}</h4>
+                                    </div>
+                                    <div class="col-md-6 d-md-flex align-items-center justify-content-end mb-3">
+                                            <a class="btn btn-info waves-effect waves-light text-sm-right alAddProductBtn  @if($vendor->status == 1) addServiceBtn @endif {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                                dataid="0" href="javascript:void(0);"><i
+                                                    class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Service') }}
+                                            </a>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-centered dataTable table-nowrap table-striped w-100" id="vendor_longTerm_service_table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>{{ __('Name') }}</th>
+                                                        <th>{{ __('Product Name') }}</th>
+                                                        <th>{{ __('Quantity') }}</th>
+                                                        <th>{{ __('Period') }}</th>
+                                                        <th>{{ __('Price') }}</th>
+                                                        <th>{{ __('Action') }}</th>
+                                                    </tr>
+                                                </thead>
+                                              
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -365,6 +398,139 @@
     <div class="row address" id="def" style="display: none;">
         <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
     </div>
+    @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)
+    <div id="add-service" class="modal fade add_service" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h4 class="modal-title">{{ __('Add Service') }}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <form id="save_service_form" method="post" enctype="multipart/form-data">
+                    @csrf
+                    {!! Form::hidden('vendor_id', $vendor->id) !!}
+                    <input type="hidden" name="long_term__service_id" id="long_term__service_id">
+                    <div class="modal-body pb-0">
+                        <div class="col-md-12  ">
+                            <label>{{ __('Upload Service Image') }}</label>
+                        
+                            <div class="service_image">
+                                <input type="file" data-plugins="dropify" name="image" id="service_image" class="dropify" />
+                             </div>
+                             <label class="logo-size text-right w-100">{{ __("City image") }} 1000X1000</label>
+                        </div>
+                        <div class="col-md-12 selector-option-al ">
+                            {!! Form::label('title', __('Service Name'), ['class' => 'control-label']) !!}
+                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                                <tr class="trForClone">
+
+                                    @foreach($client_languages as $langs)
+                                        <th>{{$langs->langName}}</th>
+                                    @endforeach
+                                    <th></th>
+                                </tr>
+                                <tbody id="table_body">
+                                        <tr>
+                                    @foreach($client_languages as $lankey => $User_langs)
+                                        <td>
+                                            <input class="form-control" name="language_id[{{$lankey}}]" type="hidden" value="{{$User_langs->langId}}">
+                                            <input class="form-control" @if($lankey ==0) onkeyup='setServiceSkuFromName(event,"service_name_1","srviceSku")' @endif  name="name[{{$lankey}}]" type="text" id="service_name_{{$User_langs->langId}}" autocomplete='off'>
+                                        </td>
+                                    @endforeach
+                                    <td class="lasttd"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="Service_nameInput">
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-6">
+                                <div class="form-group" id="serviceSkuInput">
+                                    {!! Form::label('title', __('SKU'), ['class' => 'control-label']) !!}
+                                    <span class="text-danger">*</span>
+                                    {!! Form::text('serviceSku', null, ['class' => 'form-control', 'id' => 'srviceSku', 'onkeyup' => 'return alplaNumeric(event)', 'placeholder' =>  __('SKU')]) !!}
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong></strong>
+                                    </span>
+                                    <span class="valid-feedback" role="alert">
+                                        <strong></strong>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group" id="serice_priceInput">
+                                    {!! Form::label('title', __('Service Price'), ['class' => 'control-label']) !!}
+                                    {!! Form::text('serice_price',null ,['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong></strong>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group" id="product_quantityInput">
+                                    {!! Form::label('title', __('Quantity of Product'), ['class' => 'control-label']) !!}
+                                    {!! Form::text('product_quantity',null ,['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '10', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong></strong>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group" id="service_periodInput">
+                                    {!! Form::label('title', __('Select Time Period'),['class' => 'control-label']) !!}
+                                        <select class="form-control selectizeInput" id="service_period" name="service_period">
+                                            <option value="days">{{ __('Day') }}</option>
+                                            <option value="week">{{ __('Weekly') }}</option>
+                                            <option value="months">{{ __('Monthly') }}</option>
+                                        </select>
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group" id="service_product_idInput">
+                                    {!! Form::label('title', __('Select Product'),['class' => 'control-label']) !!}
+                                <select class="form-control selectizeInput" id="service_product_list" name="service_product_id">
+                                    <option value="">{{ __("Select Product") }}...</option>
+                                    @foreach($products as $product)
+                                        <option value="{{$product['id']}}" data-product_title="{{ $product->primary->title ?? '' }}">{{ Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30) }}</option>
+                                    @endforeach
+                                    </select>
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong></strong>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group" id="service_product_variantInput">
+                                    {!! Form::label('title', __('Product variant'),['class' => 'control-label']) !!}
+                                     <select class="form-control selectizeInput" id="service_product_variant" name="service_product_variant_id">
+                                   
+                                    </select>
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong></strong>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                            class="btn btn-info waves-effect waves-light submitServiceProduct">{{ __('Submit') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
     <div id="add-product" class="modal fade add_product" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-dialog-centered">
@@ -467,14 +633,14 @@
                         <div class="col-md-12 text-center">
 
                             <div id="import_csv" class="row align-items-center mb-3">
-                                <div class="col-md-4 text-right mb-2">
+                                <div class="col-md-12 text-center mb-2">
                                     <button class="btn btn-info button" id="csv_button"
                                         type="button">{{ __('Import form Woocommerce') }}</button>
                                 </div>
 
                                 @if($client_preference_detail->enable_inventory_service == 1)
                                 <a href="{{route('get.inventory.import',$vendor->slug)}}">
-                                    <div class="col-12 text-right mb-2">
+                                    <div class="col-12 text-center mb-2">
                                         <button class="btn btn-info button"
                                             type="button">{{ __('Import form Inventory') }}</button>
                                     </div>
@@ -482,12 +648,12 @@
                                 @endif
 
                             @if($client_preference_detail->business_type == 'laundry')
-                                <div class="col-md-4 text-right mb-2">
+                                <div class="col-md-12 text-center mb-2">
                                     <button class="btn btn-info button" id="import_global"
                                         type="button">{{ __('Import Global Product') }}</button>
                                 </div>
 
-                                {{-- <div class="col-md-4 text-right mb-2">
+                                {{-- <div class="col-md-12 text-center mb-2">
                                     <button class="btn btn-info button" id="import_bagqrcode"
                                         type="button">{{ __('Import Bag Qrcode') }}</button>
                                 </div> --}}
@@ -831,7 +997,7 @@
                                             <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
                                         </tr>
                                         @empty
-                                        <tr><td>No record found.</td></tr>
+                                        <tr><td>{{ __('No record found.') }}</td></tr>
                                     @endforelse
                                     </tbody>
                                 </table>
@@ -845,10 +1011,12 @@
     </div>
 
     <!--- End popup qrcode -->
-
-
+    @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)
+      <script src="{{asset('js/adminVendor.js')}}"></script>
+    @endif
     <script type="text/javascript">
-
+    var  sku_start = "{{ $sku_url }}" + ".";
+    
         $(".all-product_check").click(function() {
             if ($(this).is(':checked')) {
                 $("#action_product_button").css("display", "block");
@@ -1062,12 +1230,11 @@
                 $('#url_slug').val(n1);
                 slugify();
             } else {
-                $('#sku').val(total_sku.split(' ').join(''));
+            $('#sku').val(total_sku.split(' ').join(''));
             }
-
             // alplaNumeric();
-
         }
+      
 
         function alplaNumeric() {
             var n1 = $('#sku').val();
@@ -1212,8 +1379,10 @@
     @include('backend.vendor.modals')
 @endsection
 @section('script')
+
     @include('backend.vendor.pagescript')
     <script>
+        var vendor_id = `{{ $vendor->id }}`;
         $(document).on('click', '.copy_link', function() {
             var $temp = $("<input>");
             $("body").append($temp);

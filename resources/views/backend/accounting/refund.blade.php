@@ -21,9 +21,9 @@
                     <table class="table table-centered table-nowrap table-striped" id="pending_payouts_datatable" width="100%">
                         <thead>
                             <tr>
-                                <th>{{ __('Customer | Email |Phone') }}</th>
-                                <th>{{ _('Order Number') }}</th>
-                                <th>{{ _('Transaction Id') }}</th>
+                                <th>{{ __('Customer')}} | {{ __('Email')}}  | {{ __('Phone')}}</th>
+                                <th>{{ __('Order Number') }}</th>
+                                <th>{{ __('Transaction Id') }}</th>
                                 <th>{{ __('Refund Id') }}</th>
                                 <th>{{ __('Refund Amount') }}</th>
                                 <th>{{ __('Destination') }}</th>

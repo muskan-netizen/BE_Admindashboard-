@@ -297,11 +297,11 @@ $preference = $client_preference_detail;
          </div>
          <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-         <span class="sr-only">Previous</span>
+         <span class="sr-only">{{__('Previous')}}</span>
          </a>
          <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-         <span class="sr-only">Next</span>
+         <span class="sr-only">{{__('Next')}}</span>
          </a>
       </div>
       <div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
@@ -318,11 +318,11 @@ $preference = $client_preference_detail;
          </div>
          <a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-         <span class="sr-only">Previous</span>
+         <span class="sr-only">{{__('Previous')}}</span>
          </a>
          <a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-         <span class="sr-only">Next</span>
+         <span class="sr-only">{{__('Next')}}</span>
          </a>
       </div>
       <!-- <div class="shimmer_effect">
@@ -345,7 +345,7 @@ $preference = $client_preference_detail;
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -368,18 +368,18 @@ $preference = $client_preference_detail;
 	</div>
 	<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
 		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">Previous</span>
+		<span class="sr-only">{{__('Previous')}}</span>
 	</a>
 	<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">Next</span>
+		<span class="sr-only">{{__('Next')}}</span>
 	</a>
 </script>
 
 <script type="text/template" id="mobile_banners_template">
 	<div class="carousel-inner">
 	   <% _.each(banners, function(banner, k){%>
-		  <% 
+		  <%
 		  var url='#';
 		  if(banner.link == 'category'){
 			 if(banner.category != null){
@@ -402,11 +402,11 @@ $preference = $client_preference_detail;
 	</div>
 	<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
 		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">Previous</span>
+		<span class="sr-only">{{__('Previous')}}</span>
 	</a>
 	<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">Next</span>
+		<span class="sr-only">{{__('Next')}}</span>
 	</a>
 </script>
 
@@ -457,10 +457,10 @@ $preference = $client_preference_detail;
                   <a href="/cities/<%=city.slug %>"><img class="w-100" src="<%=city.image.image_fit %>260/260<%=city.image.image_path %>"></a>
                </div>
                <p><%=city.title %></p>
-            </div>            
+            </div>
          </div>
       </div>
-   	<% }); 
+   	<% });
    %>
 </script><!-- cities cities end -->
 <script type="text/template" id="products_template">

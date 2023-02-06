@@ -125,7 +125,7 @@
                     <img src="<%= product_image %>" alt="">
                 </div>
                 <div class="cab-location-details mt-2" id="searching_main_div">
-                    <h6 class="text-center"><b>{{__('Searching For Nearby Drivers')}}</b></h6>
+                    <h6 class="text-center"><b>{{__(getNomenclatureName('Searching For Nearby Drivers',true))}}</b></h6>
                     <div class="new-loader">
                     </div>
                 </div>

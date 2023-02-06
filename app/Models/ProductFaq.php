@@ -17,4 +17,9 @@ class ProductFaq extends Model
       $langData = $this->hasMany('App\Models\ProductFaqTranslation');
       return $langData;
     }
+
+    public function selection(){
+      $langData = $this->hasMany('App\Models\ProductFaqSelectOption');
+      return $langData;
+    }
 }

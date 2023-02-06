@@ -80,7 +80,7 @@
                                             <a href="{{route('second', ['ecommerce', 'dashboard'])}}">Dashboard</a>
                                         </li>
                                         <li>
-                                            <a href="{{route('second', ['ecommerce', 'products'])}}">Products</a>
+                                            <a href="{{route('second', ['ecommerce', 'products'])}}">{{ __('Products') }}</a>
                                         </li>
                                         <li>
                                             <a href="{{route('second', ['ecommerce', 'product-detail'])}}">Product Detail</a>

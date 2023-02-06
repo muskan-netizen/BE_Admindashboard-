@@ -1,15 +1,26 @@
 <?php
 namespace App\Http\Traits;
-
-use DB;
-use HttpRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,UserDevice,ClientPreference};
+use App\Models\{Order,OrderVendor,UserDevice,ClientPreference};
 use Auth;
+use GuzzleHttp\Client as GCLIENT;
+
 trait ChatTrait{
 
+
+     # get prefereance if last mile on or off and all details updated in config
+     public function getDispatchDomain()
+     {
+         $preference = ClientPreference::first();
+         return $preference;
+        
+     }
+    
+    /**
+     * OrderVendorDetail
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function OrderVendorDetail($request)
     {
         $data = $request->all();
@@ -22,23 +33,35 @@ trait ChatTrait{
         ))->findOrFail($order_id);
         return  $order;
     }
-
-    public function sendNotification($request)
+    
+    /**
+     * sendNotification
+     *
+     * @param  mixed $request
+     * @param  mixed $from
+     * @return void
+     */
+    public function sendNotification($request,$from='')
     {
-
-        // echo "<pre>";
-        // print_r($request->all()['user_ids']);
-        $username =  Auth::user()->name;
-        $auid =  Auth::user()->id;
-        
-        $result = array_values(array_column($request->all()['user_ids'], 'auth_user_id'));
-        $removeAuth = array_values(array_diff($result, array($auid)));
-        
+        $data = $request->all();
+        if($from=='from_dispatcher'){
+            $username =  $data['username'];
+            $removeAuth = array_values(array_column($request->all()['user_ids'], 'auth_user_id'));
+        } else{
+            $username =  Auth::user()->name;
+            $auid =  Auth::user()->id;
+            
+            $result = array_values(array_column($request->all()['user_ids'], 'auth_user_id'));
+            $removeAuth = array_values(array_diff($result, array($auid)));
+             /**dispacth noti */
+            $this->getDispacthUrl($data['order_vendor_id'],$data['order_id'],$data['vendor_id'],$data);
+            /**end */
+        }
+       
         $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
         $devices            = UserDevice::whereNotNull('device_token')->whereIn('user_id',$removeAuth)->pluck('device_token') ?? [];
         
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $SERVER_API_KEY = $client_preferences->fcm_server_key;
             $data = [
                 "registration_ids" => $devices,
                 "notification" => [
@@ -46,7 +69,7 @@ trait ChatTrait{
                     "body"  => $request->text_message,
                     'sound' => "default",
                     "icon"  => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                    "android_channel_id" => "sound-channel-id"
+                    "android_channel_id" => "default-channel-id"
                 ],
                 "data" => [
                     "title" => $username,
@@ -58,22 +81,89 @@ trait ChatTrait{
                 ],
                 "priority" => "high"
             ];
-            $dataString = json_encode($data);
-            $headers = [
-                'Authorization: key=' . $SERVER_API_KEY,
-                'Content-Type: application/json',
-            ];
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
-            $response = curl_exec($ch);
-            curl_close($ch);
+                      
+            $response = sendFcmCurlRequest($data);
             $result = json_decode($response); 
             return $result;
         }
     }
+    
+    /**
+     * getDispacthUrl
+     *
+     * @param  mixed $order_vendor_id
+     * @param  mixed $order_id
+     * @param  mixed $vendor_id
+     * @param  mixed $postdata
+     * @return void
+     */
+    public function getDispacthUrl($order_vendor_id,$order_id,$vendor_id,$postdata)
+    {
+     $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $order_id, 'vendor_id' => $vendor_id])->first();      
+     
+        $luxury_option_id = isset($checkdeliveryFeeAdded) ? @$checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
+        $dispatchDomain = $this->getDispatchDomain();
+      
+        /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
+        if ($luxury_option_id == 8) { // only for appointment type 
+                $dispatch_domain=[
+                    'service_key'      => $dispatchDomain->appointment_service_key,
+                    'service_key_code' => $dispatchDomain->appointment_service_key_code,
+                    'service_key_url'  => $dispatchDomain->appointment_service_key_url,
+                ];
+            
+        }elseif ($luxury_option_id == 6) { // only for on_demand type         
+            if($dispatchDomain && $dispatchDomain != false){
+               
+                $dispatch_domain=[
+                    'service_key'      => $dispatchDomain->dispacher_home_other_service_key,
+                    'service_key_code' => $dispatchDomain->dispacher_home_other_service_key_code,
+                    'service_key_url'  => $dispatchDomain->dispacher_home_other_service_key_url,
+                 
+                ];
+            }
+        } else{
+            $dispatch_domain=[
+                'service_key'      => $dispatchDomain->delivery_service_key,
+                'service_key_code' => $dispatchDomain->delivery_service_key_code,
+                'service_key_url'  => $dispatchDomain->delivery_service_key_url,
+                
+              
+            ];
+        }
+       $this->hitDispacthHook($dispatch_domain,$postdata);
+       
+    }    
+    /**
+     * hitDispacthHook
+     *
+     * @param  mixed $dispatch_domain
+     * @param  mixed $postdata
+     * @return void
+     */
+    public function hitDispacthHook($dispatch_domain,$postdata){
+      
+        if ($dispatch_domain && $dispatch_domain != false) {
+            
+                $client = new GClient([
+                    'headers' => [
+                        'personaltoken' => $dispatch_domain['service_key'],
+                        'shortcode' => $dispatch_domain['service_key_code'],
+                        'content-type' => 'application/json'
+                    ]
+                ]);
+                $url = $dispatch_domain['service_key_url'];
+                $res = $client->post(
+                    $url . '/api/chat/sendNotificationToAgent',
+                    ['form_params' => ($postdata)]
+                );
+                $response = json_decode($res->getBody(), true);
+                return $response;
+        } else{
+            return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found!!!')]);
+        }
+    }
+
+
+    
 }

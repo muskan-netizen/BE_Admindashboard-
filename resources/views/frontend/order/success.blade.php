@@ -18,6 +18,8 @@ $serviceType =  Session::get('vendorType');
     border-left: 1px solid #000;
     padding-left: 5px;
 }
+.spa_order_detail_slot .sch_slot h6 {display: inline-block;}
+.product_slot{    color: var(--theme-deafult); font-weight: 400;margin-left: 15px;};
 </style>
 @endsection
 <section class="section-b-space light-layout_alFour">
@@ -44,94 +46,105 @@ $serviceType =  Session::get('vendorType');
 
                 <div class="row">
                     <div class="col-lg-6">
-                        <div class="product-order py-3">
+                        <div class="product-order py-3 pro-scroller">
                             <h3>{{__('Your Order Details')}}</h3>
                          
                             @foreach($order->products as $product)
                             {{-- {{dd($product['vendor']->name)}} --}}
                                 @php
-
                                     $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
                                     $additional_price+= $product->incremental_price;
                                 @endphp
 
                                     <div class="row product-order-detail">
-                                    <div class="col-12"><h4>{{$product['vendor']->name}}</h4></div>
-                                        <div class="col-2">
-                                        <img src="{{ $image }}" class="img-fluid blur-up lazyloaded">
-                                    </div>
-                                    <div class="col-10">
-                                        <div class="row">
-                                            <div class="col-4 order_detail">
-                                                <div>
-                                                    <h4>{{__('Product Name')}}</h4>
-                                                    <h5>{{ (!empty($product->pvariant->translation) && isset($product->pvariant->translation[0])) ? $product->pvariant->translation[0]->title : ''}}</h5>
-                                                    @foreach($product->pvariant->vset as $vset)
-                                                        <label><span>{{$vset->optionData->trans->title}}:</span>{{$vset->variantDetail->trans->title}}</label>
-                                                    @endforeach
-
-                                                </div>
-
-                                            </div>
-                                            <div class="col-4 order_detail">
-                                                <div>
-                                                    @if($serviceType=='rental')
-                                                        <h4>{{__('Duration')}}</h4>
-                                                        @php  $dura = getHoursMinutes($product->total_booking_time);  @endphp
-                                                        <h5>{{$dura}}</h5>
-                                                    @else
-                                                        <h4>{{__('Quantity')}}</h4>
-                                                        
-                                                        <h5>{{$product->quantity}}</h5>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="col-4 order_detail">
-                                                <div>
-                                                    <h4>{{__('Price')}}</h4>
-                                                    <h5 class="total_booking_time" >{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}} @if(in_array($serviceType , ['appointment','on_demand'])) 
-                                                        <span > {{ $product->total_booking_time > 0 ? $product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif</h5>
-                                                    @if($product->container_charges>0)
-                                                    <h4>{{__('Container Charges')}}</h4>
-                                                    <p>{{decimal_format($product->container_charges)}}</p>
-                                                    @endif
-                                                    @if($serviceType=='rental' && $product->incremental_price>0)
-                                                        <h4>{{__('Additional Price')}}</h4>
-                                                        <p>{{decimal_format($product->incremental_price)}}</p>
-                                                    @endif
-                                                </div>
-                                            </div>
+                                        <div class="col-12"><h4>{{$product['vendor']->name}}</h4></div>
+                                            <div class="col-2">
+                                            <img src="{{ $image }}" class="img-fluid blur-up lazyloaded">
                                         </div>
-                                        @if(count($product->addon) != 0)
-                                        <hr class="my-2" style="width:100%">
-                                        <div class="col-12">
-                                            <div class="row align-items-md-center">
-                                                <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
-                                            </div>
-                                        </div>
-                                        @foreach($product->addon as $addon)
-                                            @if($addon->option)
-                                            <div class="col-12">
-                                                <div class="row">
-                                                    <div class="col-md-4 col col-sm-4 items-details text-left">
-                                                        <p class="p-0 m-0">{{ $addon->option->title }}</p>
-                                                    </div>
-                                                    <div class="col-md-3 col col-sm-4 text-center">
+                                        <div class="col-10">
+                                            <div class="row">
+                                                <div class="col-4 order_detail">
+                                                    <div>
+                                                        <h4>{{__('Product Name')}}</h4>
+                                                        <h5>{{ (!empty($product->pvariant->translation) && isset($product->pvariant->translation[0])) ? $product->pvariant->translation[0]->title : ''}}</h5>
+                                                        @foreach($product->pvariant->vset as $vset)
+                                                            <label><span>{{$vset->optionData->trans->title}}:</span>{{$vset->variantDetail->trans->title}}</label>
+                                                        @endforeach
 
                                                     </div>
-                                                    <div class="col-md-5 col col-sm-4 text-right">
-                                                        <div class="extra-items-price">{{Session::get('currencySymbol')}}{{decimal_format($addon->option->price )}}</div>
+
+                                                </div>
+                                                <div class="col-4 order_detail">
+                                                    <div>
+                                                        @if($serviceType=='rental')
+                                                            <h4>{{__('Duration')}}</h4>
+                                                            @php  $dura = getHoursMinutes($product->total_booking_time);  @endphp
+                                                            <h5>{{$dura}}</h5>
+                                                        @else
+                                                            <h4>{{__('Quantity')}}</h4>
+                                                            
+                                                            <h5>{{$product->quantity}}</h5>
+                                                        @endif
                                                     </div>
                                                 </div>
+                                                <div class="col-4 order_detail">
+                                                    <div>
+                                                        <h4>{{__('Price')}}</h4>
+                                                        <h5 class="total_booking_time" >{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}} @if(in_array($serviceType , ['appointment','on_demand'])) 
+                                                            <span > {{ $product->total_booking_time > 0 ? $product->total_booking_time : 0 }} {{  __(' min') }}  </span>@endif</h5>
+                                                        @if($product->container_charges>0)
+                                                        <h4>{{__('Container Charges')}}</h4>
+                                                        <p>{{decimal_format($product->container_charges)}}</p>
+                                                        @endif
+                                                        @if($serviceType=='rental' && $product->incremental_price>0)
+                                                            <h4>{{__('Additional Price')}}</h4>
+                                                            <p>{{decimal_format($product->incremental_price)}}</p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
                                             </div>
+                                            @if(count($product->addon) != 0)
+                                                <hr class="my-2" style="width:100%">
+                                                <div class="col-12">
+                                                    <div class="row align-items-md-center">
+                                                        <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
+                                                    </div>
+                                                </div>
+                                                @foreach($product->addon as $addon)
+                                                    @if($addon->option)
+                                                    <div class="col-12">
+                                                        <div class="row">
+                                                            <div class="col-md-4 col col-sm-4 items-details text-left">
+                                                                <p class="p-0 m-0">{{ $addon->option->title }}</p>
+                                                            </div>
+                                                            <div class="col-md-3 col col-sm-4 text-center">
+
+                                                            </div>
+                                                            <div class="col-md-5 col col-sm-4 text-right">
+                                                                <div class="extra-items-price">{{Session::get('currencySymbol')}}{{decimal_format($addon->option->price )}}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                @endforeach
+
                                             @endif
-                                        @endforeach
-
-                                    @endif
+                                            @if(isset($product->scheduled_date_time))
+                                                <hr class="my-2" style="width:100%;  display: block !important;">
+                                                <div class="spa_order_detail_slot">
+                                                    <div class="sch_slot py-1">
+                                                        <h6 class="m-0 pl-0">{{__('Scheduled slot')}}</h6>
+                                                        <p class="p-0 m-0 float-right product_slot"><span>
+                                                            {{ date('F d, Y',strtotime(dateTimeInUserTimeZone($product->scheduled_date_time, $timezone))) }}  
+                                                        @if($product->schedule_slot!='')  {{' ; '. $product->schedule_slot }}  @endif
+                                                        </span></p>
+                                                    </div>
+                                                </div>
+                                        
+                                            @endif
+                                        </div>
                                     </div>
-
-
-                                </div>
                             @endforeach
                             <div class="total-sec row">
                                 <ul class="col-sm-6 offset-sm-6">
@@ -185,7 +198,7 @@ $serviceType =  Session::get('vendorType');
                         <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($total_amount) * @$clientCurrency->doller_compare)}}</span></h3>
                     </div>
                 </div></div>
-                               <div class="col-lg-6">
+                        <div class="col-lg-6">
                         <div class="row order-success-sec">
                             <h3 class="col-12">{{__('Summary')}}</h3>
                             <div class="col-sm-12">

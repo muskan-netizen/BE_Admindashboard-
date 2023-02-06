@@ -59,16 +59,12 @@ class CustomerAuthController extends FrontController
     public function sendNotification(){
         // $token = ["fXC1tzHiywg:APA91bGj3YXxPXuiBjCSAhlt0leikG2eq2gIJm3EFtSjkfp4c6akzpeDOqq2XfvUxxX99i36aCPf8gFsJIZrU7Ywcx6ZCIMh9vAPJctpxyU0_pagKF-wgVURZ2Z6C6XMaWAFZCDlas3L"];
         $token = ["eeYu6qYp4Uknu9TiiXY-AQ:APA91bGE-MSY_KRBOBoZcBtUUgVZtFFHRcQAHK0dad-7J0X9JvX4r9fS7Ywrj700nOM1tm4IMVA4jG9P6nOHgae0HnmxFkY62U4cRDpOq_7HIZuNVs8lWqvrZ6_IssydzMw375GDyum_"];
-       //previous
-    //    $from = 'AAAA-gxQcf4:APA91bF2-7wHcDDUpdnOAjPkRECMcMqZyto1g3CloNTSvp4tvaM6yX2H1H3FFWQj3mHE_t0LkKKu5M_ASTjIaKvvuLDTrXe9eO7Xi7k8YbH6M355gz7x0GTbK7E9F7I7CAQS3AILs4J_';
-        $from = 'AAAAA_v18xQ:APA91bFEvE7X7b8xFL6sV5F8iT1-RDRHLniD6mVypmx39XLtDavdE25910WJMig0y43Mp3kJPuhRphXKA1SERhkH_u_lzuujc0Gpf4BGN-wdC80ddDqcccGOKfplwV9LQ5qZVyKuWZRx';
+        //previous
+        //$from = 'AAAAA_v18xQ:APA91bFEvE7X7b8xFL6sV5F8iT1-RDRHLniD6mVypmx39XLtDavdE25910WJMig0y43Mp3kJPuhRphXKA1SERhkH_u_lzuujc0Gpf4BGN-wdC80ddDqcccGOKfplwV9LQ5qZVyKuWZRx';
 
         $notification_content = NotificationTemplate::where('id', 3)->first();
         if($notification_content){
-            $headers = [
-                'Authorization: key=' . $from,
-                'Content-Type: application/json',
-            ];
+           
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -76,18 +72,7 @@ class CustomerAuthController extends FrontController
                     'body'  => "Sample Body Message",
                 ]
             ];
-            $dataString = $data;
-
-            $ch = curl_init();
-            curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
-            curl_setopt( $ch,CURLOPT_POST, true );
-            curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
-            curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
-            curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
-            curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $dataString ) );
-            $result = curl_exec($ch );
-            dd($result);
-            curl_close( $ch );
+            sendFcmCurlRequest($data);
         }
     }
 
@@ -366,16 +351,20 @@ class CustomerAuthController extends FrontController
                         $to = '+' . $user->dial_code . $user->phone_number;
                     }
                     $provider = $prefer->sms_provider;
-                    $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
-                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                  //  $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:''); 
+                    $keyData = ['{user_name}'=>ucwords($user->name)];
+                    $body = sendSmsTemplate('user-signup-sms',$keyData);              
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
 
                     if( $prefer->verify_phone == 1 ){
                         $response['send_otp'] = 1;
                         $to = '+'.$user->dial_code.$user->phone_number;
                         $provider = $prefer->sms_provider;
-                        $body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
-                        $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                        //$body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
+                        $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
+                        $body = sendSmsTemplate('verify-account',$keyData); 
+                        $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     }
                 }
                 if(!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)){
@@ -515,7 +504,7 @@ class CustomerAuthController extends FrontController
                     if(session()->get("locale") == "ar"){
                         return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك.'), 404);
                     }
-                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
+                   // return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
 
                     $registerUser = $this->registerViaPhone($request)->getData();
                     if($registerUser->status == 'Success'){
@@ -538,9 +527,11 @@ class CustomerAuthController extends FrontController
                     $to = '+'.$dialCode.$phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Please enter OTP ".$phoneCode." to verify your account.";
+                //$body = "Please enter OTP ".$phoneCode." to verify your account.";
+                $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
+                $body = sendSmsTemplate('verify-account',$keyData);
                 if(!empty($provider) ){
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
 
                     if($send ==1){
                         $request->request->add(['codeSent' => 1]);

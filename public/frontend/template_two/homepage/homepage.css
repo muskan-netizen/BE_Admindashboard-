@@ -1,5 +1,5 @@
 #main-menu.menu-slider li.active a{color: var(--theme-deafult);border-bottom: 1px solid var(--theme-deafult);}
-.al_body_template_two .home-slider-wrapper .banner-img-outer img{max-width: 1920px;max-height: 550px;}
+.al_body_template_two .home-slider-wrapper .banner-img-outer img{max-width: 100%;max-height: 550px;}
 .fa-facebook-square:before, .fa-heart:before, .fa-twitter:before, .fa-user:before, .fa-whatsapp:before{font-family: FontAwesome !important;}
 .al_body_template_two .pixelstrap ul{padding: 5px 0;z-index: 9;}
 .al_body_template_two .common-banner{height: 300px;margin-bottom: 0px;}
@@ -37,15 +37,32 @@ article#page-container{position: relative;min-height: 100vh;}
 body .category-head{
 top: 145px;
 }
+.al_body_template_two.dark footer#footer section.section-b-space.light-layout{
+    background-color: #0c0c0c;
+}
+.al_body_template_two.dark footer#footer .sub-footer{
+    background-color: #000;
+}
+.al_template_two_content .card .rating, .al_template_two_content .inner_spacing .rating{
+    width: auto;
+    padding: 0 6px;
+}
+.dark #our_vendor_main_div  button.slick-arrow{background-color:var(--theme-deafult) !important;}
 @media (max-width: 767px){
 .footer-contant .footer-social ul{margin:unset;text-align:center;margin:0 auto}.al_body_template_two .common-banner{height:150px}.al_body_template_two .al_template_two_content .product-image{height:90px}body.al_body_template_two #page-container .vendors .slick-slider .slick-slide{margin:20px 0 0}body.al_body_template_two .top-header .header-dropdown .mobile-account i:before,body.al_body_template_two .top-header .header-dropdown .mobile-wishlist i:before{font-family:themify!important}body.al_body_template_two .mobile-menu.main-menu{bottom:10px;padding:0 10px;width:97%}body.al_body_template_two #content-wrap .site-header .navbar-brand{padding:0;margin:auto;width:100%;height:auto!important}body.al_body_template_two header{padding:0}body.al_body_template_two .inner_spacing h4{font-size:12px}body.al_body_template_two .shimmer_effect .grid-row .card_image{height:90px!important}
 .footer-theme .footer-logo img.blur-up.lazyloaded{height: 20px;margin-top: 20px;}
 .al_body_template_two .timing-box_al li img{height: 20px;}
 .ratio_asos .top-banner-wrapper .top-banner-content h4{padding: 10px 0 0;}
 .al_body_template_two .collection-product-wrapper .product-top-filter{border: none;}
-.al_body_template_two .suppliers-box .suppliers-img-outer img {object-fit: contain;width: 100% !important;height: 100%;}
+.al_body_template_two .suppliers-box .suppliers-img-outer img{object-fit: contain;width: 100% !important;height: 100%;}
 .al_body_template_two footer#footer section.section-b-space.light-layout{padding-top: 0 !important;}
 .al_body_template_two .store-btn.mb-3.d-flex.align-items-left.justify-content-start{margin-bottom: 0 !important;}
+.al_body_template_two .vendor-search-bar .radius-bar {
+    display: block !important;
+    position: relative;
+    bottom: 0;
+    z-index: 1;
+}
 }
 
 /* Order Placed css start */
@@ -75,12 +92,6 @@ body.al_body_template_two .mobile-menu.main-menu{
     padding: 0 10px;
     width: 97%;
 }
-/* body.al_body_template_two #content-wrap .site-header .navbar-brand{
-    padding: 0;
-    margin: auto;
-    width: 100%;
-    height: auto !important;
-} */
 body.al_body_template_two header{
     padding: 0;
 }
@@ -98,8 +109,15 @@ body[dir=rtl] .slick-prev{
 }
 
 
-
-.al_body_template_four .al_addCart li.onhover-div a span#cart_qty_span {
+.al_body_template_two .al_template_two_content .product-image{
+    height: 100%;
+padding-bottom: 100%;
+}
+.al_body_template_two .al_template_two_content .product-image img{
+    height: 100%;
+    object-fit: cover;position: absolute;
+}
+.al_body_template_two .al_addCart li.onhover-div a span#cart_qty_span{
     background-color: #ab180c;
     display: inline-block;
     width: 20px;
@@ -109,6 +127,15 @@ body[dir=rtl] .slick-prev{
     padding: 0px;
     color: #fff;
 }
-
+.p-64{padding:64px!important;margin-bottom: 30px;}
+.al_body_template_two  .render_full_brands a.barnd-img-outer{
+    padding-bottom: 100%;
+}
+.al_body_template_two .product-box .blur-up.lazyloaded{
+    background-size: cover !important;
+}
+.al_body_template_two  .render_full_brands a.barnd-img-outer img.blur-up.lazyloaded{
+    object-fit: cover;
+}
 
 

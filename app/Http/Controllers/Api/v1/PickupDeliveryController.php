@@ -67,6 +67,8 @@ class PickupDeliveryController extends BaseController{
                             $q->groupBy('product_id');
                         },'ProductFaq.translations' => function ($qs) use($langId){
                             $qs->where('language_id',$langId);
+                        },'ProductFaq.selection.translations' => function ($qs) use($langId){
+                            $qs->where('language_id',$langId);
                         },
                     ])->join('product_categories as pc', 'pc.product_id', 'products.id')
                     ->whereNotIn('pc.category_id', function($qr) use($vid){

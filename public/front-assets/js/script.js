@@ -26,6 +26,19 @@ function  layoutMode(){
 !(async function (e) {
     "use strict";
 
+    var sliderConfig = {
+        infinite: !0,
+        speed: 300,
+        slidesToShow: 5,
+        slidesToScroll: 1,
+        autoplay: !0,
+        autoplaySpeed: 3e3,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
 
     if (
         (e(window).on("load", function () {
@@ -172,237 +185,74 @@ function  layoutMode(){
             e(".slide-1").slick({autoplay: true, autoplaySpeed: 3000});
         }
         e(".slide-2").slick({ infinite: !0, slidesToShow: 2, slidesToScroll: 2, responsive: [{ breakpoint: 991, settings: { slidesToShow: 1, slidesToScroll: 1 } }] }),
-        e(".slide-3").slick({
-            infinite: !0,
-            speed: 300,
-            slidesToShow: 3,
-            slidesToScroll: 1,
-            autoplay: !0,
-            autoplaySpeed: 5e3,
-            responsive: [
-                { breakpoint: 1200, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-                { breakpoint: 767, settings: { slidesToShow: 1, slidesToScroll: 1 } },
-            ],
-        }),
-        e(".team-4").slick({
-            infinite: !0,
-            speed: 300,
-            slidesToShow: 4,
-            slidesToScroll: 1,
-            autoplay: !0,
-            autoplaySpeed: 3e3,
-            responsive: [
-                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-                { breakpoint: 586, settings: { slidesToShow: 2, slidesToScroll: 1 } },
-            ],
-        }),
-        e(".slide-4").slick({
-            infinite: !1,
-            speed: 300,
-            slidesToShow: 4,
-            slidesToScroll: 1,
-            autoplay: !0,
-            autoplaySpeed: 5e3,
-            responsive: [
-                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-                { breakpoint: 586, settings: { slidesToShow: 1, slidesToScroll: 1 } },
-            ],
-        }),
-        e(".product-4").slick({
-            infinite: !0,
+        e(".slide-3").slick(sliderConfig),
+        e(".team-4").slick(sliderConfig),
+        e(".slide-4").slick(sliderConfig),
+        e(".product-4").slick(sliderConfig),
+        e(".product-4-on_sale").slick(sliderConfig),
+        e(".product-4-new_products").slick(sliderConfig),
+        e(".product-4-best_sellers").slick(sliderConfig),
+        e(".product-4-featured_products").slick(sliderConfig),
+
+        e('.suppliers-slider').slick({
+            dots: false,
+            infinite: true,
             speed: 300,
             slidesToShow: 5,
             slidesToScroll: 1,
-            autoplay: !0,
-            autoplaySpeed: 3e3,
-            arrows: true,
+            arrows: false,
+            dots: false,
             responsive: [
-                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-                { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-            ],
-        }),
-        e(".product-4-on_sale").slick({
-            infinite: !0,
-            speed: 300,
-            slidesToShow: 5,
-            slidesToScroll: 1,
-            autoplay: !0,
-            autoplaySpeed: 3e3,
-            responsive: [
-                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
-            ],
-        }),
-        e(".product-4-new_products").slick({
-            infinite: !0,
-            speed: 300,
-            slidesToShow: 5,
-            slidesToScroll: 1,
-            autoplay: !0,
-            autoplaySpeed: 3e3,
-            responsive: [
-                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
-            ],
-        }),
-        e(".product-4-best_sellers").slick({
-            infinite: !0,
-            speed: 300,
-            slidesToShow: 5,
-            slidesToScroll: 1,
-            autoplay: !0,
-            autoplaySpeed: 3e3,
-            responsive: [
-                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
-            ],
-        }),
-        e(".product-4-featured_products").slick({
-            infinite: !0,
-            speed: 300,
-            slidesToShow: 5,
-            slidesToScroll: 1,
-            autoplay: !0,
-            autoplaySpeed: 3e3,
-            responsive: [
-                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
-            ],
-        }),
+              {
+                breakpoint: 991,
+                settings: {
+                  slidesToShow: 3,
+                  slidesToScroll: 1,
+                  infinite: true,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 767,
+                settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 480,
+                settings: {
+                  slidesToShow:1,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              }
+            ]
+        });
         e(".recent-orders").slick({
             infinite: !0,
             speed: 300,
-            slidesToShow: 2.1,
-            slidesToScroll: 2,
-            autoplay: !0,
-            autoplaySpeed: 3e3,
-            responsive: [
-                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
-            ],
-        }),
-        e('.suppliers-slider').slick({
-            dots: false,
-            infinite: true,
-            speed: 300,
-            slidesToShow: 5,
-            slidesToScroll: 1,
-            arrows: false,
-            dots: false,
-            responsive: [
-              {
-                breakpoint: 991,
-                settings: {
-                  slidesToShow: 3,
-                  slidesToScroll: 1,
-                  infinite: true,
-                  dots: false
-                }
-              },
-              {
-                breakpoint: 767,
-                settings: {
-                  slidesToShow: 2,
-                  slidesToScroll: 1,
-                  dots: false
-                }
-              },
-              {
-                breakpoint: 480,
-                settings: {
-                  slidesToShow:1,
-                  slidesToScroll: 1,
-                  dots: false
-                }
-              }
-            ]
-        });
-        e('.suppliers-slider').slick({
-            dots: false,
-            infinite: true,
-            speed: 300,
-            slidesToShow: 5,
-            slidesToScroll: 1,
-            arrows: false,
-            dots: false,
-            responsive: [
-              {
-                breakpoint: 991,
-                settings: {
-                  slidesToShow: 3,
-                  slidesToScroll: 1,
-                  infinite: true,
-                  dots: false
-                }
-              },
-              {
-                breakpoint: 767,
-                settings: {
-                  slidesToShow: 2,
-                  slidesToScroll: 1,
-                  dots: false
-                }
-              },
-              {
-                breakpoint: 480,
-                settings: {
-                  slidesToShow:1,
-                  slidesToScroll: 1,
-                  dots: false
-                }
-              }
-            ]
-        });
-        e(".brand-slider").slick({
-            infinite: !0,
-            speed: 300,
-            slidesToShow: 4,
+            slidesToShow: 2,
             arrows:false,
             slidesToScroll: 1,
             autoplay: !0,
             autoplaySpeed: 3e3,
             responsive: [
-                {
-                  breakpoint: 1367,
-                  settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                    arrows: false,
-                    infinite: true
-                  }
-                },
-                {
-                  breakpoint: 991,
-                  settings: {
-                    slidesToShow: 2,
-                    arrows: false,
-                    slidesToScroll: 1
-                  }
-                },
-                {
-                  breakpoint: 767,
-                  settings: {
-                    slidesToShow: 2,
-                    arrows: false,
-                    slidesToScroll: 1
-                  }
-                },
-                {
-                  breakpoint: 480,
-                  settings: {
-                    slidesToShow: 1,
-                    arrows:false,
-                    slidesToScroll: 1
-                  }
-                }
+                {breakpoint: 767,settings: {slidesToShow: 1,arrows: false,slidesToScroll: 1}}
+              ],
+        }),
+        e(".brand-slider").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            arrows:false,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                {breakpoint: 991,settings: {slidesToShow: 4,arrows: false,slidesToScroll: 1}},
+                {breakpoint: 767,settings: {slidesToShow: 2,arrows: false,slidesToScroll: 1}}
               ],
         }),
         e(".tools-product-4").slick({
@@ -746,7 +596,7 @@ function  layoutMode(){
             if($('body').hasClass('al_body_template_six')){
                 await layoutMode();
             }
-            
+
 
 
 })(jQuery),

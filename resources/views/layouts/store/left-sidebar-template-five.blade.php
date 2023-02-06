@@ -474,7 +474,10 @@ $pages = \App\Models\Page::with([
             </div>
         </div>
     </div>
-    @if(count($navCategories))
+    
+   @endif
+
+   @if(count($navCategories))
     <div class="menu-navigation al">
       <div class="container-fluid">
          <div class="row">
@@ -516,7 +519,6 @@ $pages = \App\Models\Page::with([
         </div>
     </div>
     @endif
-   @endif
 </header>
 
 <div class=" @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset al_offset-top @else al_offset-top-home_five @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>

@@ -624,10 +624,11 @@
                                                             <td class="table-user">
                                                                 <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$vendor_table->category->title??null}}</a>
                                                             </td>
-                                                            <td class="table-user">
+                                                            <td class="table-user qr-code-{{$vendor_table->id}}">
                                                             {{ QrCode::size(100)->generate($vendor_table->qr_url); }}
                                                             </td>
                                                             <td>
+                                                                <button type="button" class="btn btn-primary-outline action-icon " data-id="{{$vendor_table->id}}" onclick="downloadSVGAsPNG({{$vendor_table->id}})"><i class="mdi mdi-download ms-1"></i></button>
                                                                 <button type="button" class="btn btn-primary-outline action-icon editTablebtn" data-id="{{$vendor_table->id}}"><i class="mdi mdi-square-edit-outline"></i></button>
 
                                                                 <form action="{{route('vendor.table.delete', $vendor->id)}}" method="POST" class="action-icon">
@@ -895,6 +896,39 @@
     $( document ).ready(function() {
         $(".base_url").html(base_url);
     });
+
+    function downloadSVGAsPNG(e){
+        const cussvg = `.qr-code-${e} svg`;
+        const canvas = document.createElement("canvas");
+        console.log(cussvg);
+          const svg = document.querySelector(cussvg);
+  const base64doc = btoa(unescape(encodeURIComponent(svg.outerHTML)));
+  const w = parseInt(svg.getAttribute('width'));
+  const h = parseInt(svg.getAttribute('height'));
+  const img_to_download = document.createElement('img');
+  img_to_download.src = 'data:image/svg+xml;base64,' + base64doc;
+  console.log(w, h);
+  img_to_download.onload = function () {
+    console.log('img loaded');
+    canvas.setAttribute('width', w);
+    canvas.setAttribute('height', h);
+    const context = canvas.getContext("2d");
+    //context.clearRect(0, 0, w, h);
+    context.drawImage(img_to_download,0,0,w,h);
+    const dataURL = canvas.toDataURL('image/png');
+    if (window.navigator.msSaveBlob) {
+      window.navigator.msSaveBlob(canvas.msToBlob(), "download.png");
+      e.preventDefault();
+    } else {
+      const a = document.createElement('a');
+      const my_evt = new MouseEvent('click');
+      a.download = 'download.png';
+      a.href = dataURL;
+      a.dispatchEvent(my_evt);
+    }
+    //canvas.parentNode.removeChild(canvas);
+  }  
+}
 
     $(document).on("click", ".editTablebtn", function() {
         let table_id = $(this).data('id');

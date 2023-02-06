@@ -9,7 +9,7 @@
                 @csrf
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 offset-md-3 text-center">
                             <div class="form-group" id="imageInput">
                                 <label>{{ __('Profile image') }}</label>
                                 <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify" />
@@ -382,7 +382,7 @@
                         </ul>
                     </div>
                 </div>
-                
+
                 <div class="modal-body px-3 py-0">
                     <div class="row">
                         <div class="col-md-12">
@@ -415,7 +415,7 @@
                 <div class="modal-footer border-0">
                     <button type="submit" class="btn btn-blue waves-effect waves-light">{{__("Add")}}</button>
                 </div>
-            </form>    
+            </form>
         </div>
     </div>
 </div><!-- /.modal -->

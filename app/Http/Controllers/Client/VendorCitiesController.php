@@ -93,6 +93,7 @@ class VendorCitiesController extends BaseController
             $VendorCities->address = $request->address ;
             $VendorCities->latitude = $request->latitude ;
             $VendorCities->longitude = $request->longitude ;
+            $VendorCities->place_id  = $request->place_id ;
 
             $VendorCities->save();
             $language_id = $request->language_id;

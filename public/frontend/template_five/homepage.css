@@ -123,7 +123,8 @@ top:6px;border-radius:50px}
 .add-more-location::before{font-family:FontAwesome;content:"\f055";position:absolute;left:-14px;top:50%;transform:translateY(-50%);
 color:#fff;font-size:20px}
 a.vehical-view-box.row.no-gutters{padding:0 10px}
-.vehicle-icon .img-fluid{width:70px}
+.vehicle-icon .img-fluid{width:50px;padding-right: 0;border-radius: 50%;height: 50px;}
+a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2{padding: 5px 0;}a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover{background-color: #f5f5f5;}
 .vehical-container{overflow-y:auto;overflow-x:hidden;padding:0 0 20px}
 .location-inputs li .fa-times{opacity:0}
 .location-inputs li:hover .fa-times{opacity:1}
@@ -135,7 +136,7 @@ a.vehical-view-box.row.no-gutters{padding:0 10px}
 .coupon_box{background:#f3f9ff;padding:5px 10px;width:300px}
 .search-location-result h4,.select-location h4{font-size:14px;font-weight:400}
 .search-location-result h4 b, .current-location.ellips.mb-2{font-size:14px;font-weight:400}
-.scheduled-ride-list{position:absolute;top:0;left:0;background:#fff;width:100%;padding:0;height:100%;display:none;z-index:11}
+.scheduled-ride-list{position:absolute;top:0;left:0;background:#fff;width:100%;padding:0;height:100%;display:none;z-index:1}
 .scheduled-ride-list-heading{padding:0 24px}.scheduled-ride-list-heading h3{color:#000;font-size:20px;font-weight:600;margin:23px 0}
 .skip-clear{cursor:pointer}.date-radio-list{height:calc(100% - 156px);overflow-y:auto}
 .date-radio-list .form-check{display:block;width:100%;margin:0;padding:24px 0 24px 70px}

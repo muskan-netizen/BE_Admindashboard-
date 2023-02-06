@@ -87,14 +87,10 @@ class RejectOrderNotification extends Command
                     $devices = UserDevice::on($database_name)->whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token')->toArray();
 
                     if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-                        $from = $client_preferences->fcm_server_key;
                         $body_content = str_ireplace("{order_id}", "#" . $orderDetail->order_number, $notification_content->content);
                         if ($body_content) {
                             $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/user/orders";
-                            $headers = [
-                                'Authorization: key=' . $from,
-                                'Content-Type: application/json',
-                            ];
+                           
                             $data = [
                                 "registration_ids" => $devices,
                                 "notification" => [
@@ -112,17 +108,7 @@ class RejectOrderNotification extends Command
                                 ],
                                 "priority" => "high"
                             ];
-                            $dataString = $data;
-                            $ch = curl_init();
-                            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                            curl_setopt($ch, CURLOPT_POST, true);
-                            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                            $result = curl_exec($ch);
-                          //  Log::info($result);
-                            curl_close($ch);
+                            sendFcmCurlRequest($data);
                         }
                     }
                 }

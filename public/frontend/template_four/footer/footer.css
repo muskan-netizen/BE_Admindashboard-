@@ -7,10 +7,11 @@ footer#footer{
 section.section-b-space.light-layout{
     background: linear-gradient(0deg,var(--theme-deafult) -1009%, #fff 390%);
 }
-.sub-footer p{color: #fff;}
+.sub-footer p{color: #fff;margin: 0;padding: 10px 0;}
 .sub-footer{
     background-color: var(--theme-deafult);
 }
+
 .payment-card-bottom li{display: inline-block;}
 .royo_whatsapp_img{
     position: fixed;
@@ -76,3 +77,6 @@ ul.social-links.d-flex a:hover{
     background-color: var(--theme-deafult);
 }
 ul.social-links.d-flex a:hover i{color: #fff;}
+.tap-top.top-cls {
+    display: none;
+}

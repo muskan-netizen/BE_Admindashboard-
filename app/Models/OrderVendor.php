@@ -71,7 +71,7 @@ class OrderVendor extends Model{
 			switch ($dispatcher_status_option) {
 				case 1:
 					if ($type == '1') {
-						$title = __('Hold on! We are looking for drivers nearby!');
+						$title = __(getNomenclatureName('Hold on! We are looking for drivers nearby!',true));
 					}
 				break;
 				case 2:
@@ -101,7 +101,7 @@ class OrderVendor extends Model{
 					}
 				break;
 				default:
-					$title = __("Hold on! We are looking for drivers nearby!");
+					$title = __(getNomenclatureName('Hold on! We are looking for drivers nearby!'));
 			   }
 		}
         return ucfirst($title);

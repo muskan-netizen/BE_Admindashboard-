@@ -13,3 +13,30 @@
 .al_body_template_four .al_addCart li.onhover-div a span#cart_qty_span{background-color: var(--top-header-color);width: 25px;border-radius: 50%;height:25px;margin: 0px;padding: 0px;color: #fff;position: absolute;right: 0px;top: 0px;font-size: 12px;display: flex;align-items: center;justify-content: center;}
 
 .ellips{text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+
+
+.al_body_template_four .pixelstrap ul.alInnerMenu{padding: 0;background: #fff;position: absolute;width: 16em!important;border: none;box-shadow: 0 1px 6px 0 #ebebeb;border-radius: 0;z-index: 9;display: none;list-style: none;margin: 0;line-height: normal;direction: ltr;text-align: left;padding: 0;}
+.dark.al_body_template_four .pixelstrap ul.alInnerMenu{background-color: #242424;box-shadow: 0 1px 6px 0 #242424;}
+.dark .pixelstrap ul.al_main_category_list li,
+.dark .pixelstrap ul.al_main_category_list li a,
+.dark .pixelstrap ul.al_main_category_list li a span.new-tag{color: #fff;}
+.al_body_template_four .pixelstrap ul.alInnerMenu li{display: block;}
+.al_body_template_four .pixelstrap ul.alInnerMenu li a{padding: 10px !important;text-align: left;width: 100%;-webkit-transform: scale(1);transform: scale(1);letter-spacing: 0;display: block;font-size: 14px;text-transform: capitalize;white-space: normal;font-weight: 400;line-height: 23px;text-decoration: none;}
+.al_body_template_four .pixelstrap ul.alInnerMenu li a:hover{background-color:#eee;}
+.dark.al_body_template_four .pixelstrap ul.alInnerMenu li a:hover{background-color:#333;}
+.al_body_template_four .pixelstrap ul.alInnerMenu li a:hover span.new-tag{color:var(--theme-deafult)}
+.al_body_template_four .pixelstrap ul.alInnerMenu li a span.new-tag{font-size: 14px;}
+#main-menu .slick-list{overflow: inherit;}
+.al_body_template_four .pixelstrap ul.alInnerMenu{top: 30px;padding: 0;display: none;}
+.al_searchType .form-control{background-color: transparent;}
+
+
+
+
+@media (max-width:767px){
+    .al_searchType {width: 100%;  }
+}
+
+.onhover-show-div li.active a{
+    color: #DB1919;
+}

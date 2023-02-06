@@ -168,23 +168,27 @@ trait cartManager{
   }
 
 
-  public function getOrderLoyalityAmount($user)
+  public function getOrderLoyalityAmount($user,$customerCurrency = '')
   {
-    $customerCurrency = $this->customerCurrency;
+    $customerCurrency = $customerCurrency??$this->customerCurrency;
     $loyalty_amount_saved = 0;
+    $loyalty_points_used = 0;
     $redeem_points_per_primary_currency = '';
     $loyalty_card = LoyaltyCard::where('status', '0')->first();
     if ($loyalty_card) {
         $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
     }
-  
-    
+
+    $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+    	$balanced_points = ($order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used);
+
+    	$result = LoyaltyCard::where('minimum_points','<=', $balanced_points)->orderBy('minimum_points', 'desc')->value('minimum_points');
     /* Getting All User Subscription plans */
     $subscription_features = array();
     $user_subscription = null;
 
-        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-        if ($order_loyalty_points_earned_detail) {
+      
+        if ($order_loyalty_points_earned_detail && $result) {
             $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
             if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
                 $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
@@ -194,7 +198,7 @@ trait cartManager{
             }
         }
 
-        return $loyalty_amount_saved??0;
+        return (object)array('loyalty_amount_saved'=>$loyalty_amount_saved??0,'loyalty_points_used'=>$loyalty_points_used??0);
 
   }
 
@@ -312,6 +316,8 @@ trait cartManager{
             'vendorProducts.product.categoryName' => function ($q) use ($langId) {
                 $q->select('category_id', 'name');
                 $q->where('language_id', $langId);
+            },'vendorProducts.product.productcategory'=> function ($q1)  {
+                $q1->select('id', 'type_id');
             },
             'vendorProducts.addon.option' => function ($qry) use ($langId) {
                 $qry->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
@@ -335,13 +341,12 @@ trait cartManager{
         $subscription_features = array();
         $user_subscription = null;
         if($user){
-           
           //Get earn and used loyalty amount 
-          $loyalty_amount_saved = $this->getOrderLoyalityAmount($user);
-
+          $loyaltyCheck = $this->getOrderLoyalityAmount($user);
+          $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
           //d Get user subscription
           $user_subscription = $this->userSubscription($user->id);
-
+ 
           $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
         }
         $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = $total_fixed_fee_amount = 0.00;
@@ -394,18 +399,24 @@ trait cartManager{
                     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
                 }
                 $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
- 
+
                 $slots = (object)$slotsRes['slots'];
+                // this variable for get slot from dispatc
                 $slotsdate = $slotsRes['date'];
+              
+                $slotcount =count((array)$slots);
                
-               
+                $vendor_latitude = $vendorData->vendor->latitude ?? 30.71728880;
+                $vendor_longitude =  $vendorData->vendor->longitude ?? 76.80350870;
+              
+                
                 if($cartData->count() > 1 || in_array($action,['appointment','on_demand']) ){
                     $vendorData->selected_slot = $vendorData->schedule_slot;
                 }
                 
                 $vendorData->slotsdate = $slotsdate;
                 $vendorData->slots = $slots;
-                $vendorData->slotsCnt = count((array)$slots);
+                $vendorData->slotsCnt =  $slotcount ;//count((array)$slots);
                 $vendorData->delay_date = date('Y-m-d');
 
                 if(session()->has('vendorTable')) {
@@ -461,7 +472,11 @@ trait cartManager{
                 $total_markup_fee_tax = 0;
                 /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-
+                  $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet');
+                 
+                  $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
+                  $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');
+                  $vendorStartTime =  (($slotsDate)? ( $slotsDate['time'] ?  $slotsDate['time'] : '' ):'');
                 if($prod->pvariant)   {
                     
                     $cart_product_ids[] = $prod->product_id;    
@@ -696,6 +711,43 @@ trait cartManager{
                     }
                 }
 
+                $is_slot_from_dispatch =  checkColumnExists('products', 'is_slot_from_dispatch') ?  $prod->product->is_slot_from_dispatch : '';
+                $show_dispatcher_agent =  checkColumnExists('products', 'is_show_dispatcher_agent') ? $prod->product->is_show_dispatcher_agent  : '';
+                $last_mile_check       = $prod->product->Requires_last_mile  ;
+                $cateTypeId = $prod->product->productcategory->type_id ; 
+                
+                $getSlotingDate = $prod->scheduled_date_time ;
+                if( ($prod->scheduled_date_time =='') || ( strtotime($prod->scheduled_date_time) < strtotime($vendorStartDate) ) ){
+                    $prod->scheduled_date_time = $getSlotingDate = $vendorStartDate ;
+                }
+                $prod->dispatchAgents = [];
+                if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
+                    $Dispatch =  $this->getDispatchAppointmentDomain();
+                    $dispatchAgents = [];
+                   
+                    if($Dispatch){
+                        $location[] = array(
+                            'latitude' =>   $vendor_longitude,
+                            'longitude' =>  $vendor_longitude
+                        );
+                        $dispatchData=[
+                            'service_key'      => $Dispatch->appointment_service_key,
+                            'service_key_code' => $Dispatch->appointment_service_key_code,
+                            'service_key_url'  => $Dispatch->appointment_service_key_url,
+                            'service_type'     => 'appointment',
+                            'tags'             => $prod->product->tags,
+                            'latitude'         => $vendor_latitude,
+                            'longitude'        => $vendor_longitude,
+                            'service_time'     => $prod->product->minimum_duration_min,
+                            'schedule_date'    => $getSlotingDate,
+                            'slot_start_time'  => $vendorStartTime
+                        ];
+                        //pr($dispatchData);
+                        $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                    }
+                    $prod->dispatchAgents =  $dispatchAgents;
+                    $prod->vendorStartDate = $vendorStartDate;
+                }
                     $product = Product::with([
                         'variant' => function ($sel) {
                             $sel->groupBy('product_id');
@@ -822,8 +874,7 @@ trait cartManager{
                 //$payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total
               
-                $slotsDate = findSlot('',$vendorData->vendor->id,'');
-                $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
+                
                     
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
@@ -851,8 +902,8 @@ trait cartManager{
                 $vendorData->isDeliverable = 1;
                 $vendorData->promo_free_deliver = $PromoFreeDeliver;
                 $vendorData->is_vendor_closed = $is_vendor_closed;
-                $slotsDate = findSlot('',$vendorData->vendor->id,'');
-                $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
+                // $slotsDate = findSlot('',$vendorData->vendor->id,'');
+                // $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                 $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
                 $vendorData->delOptions = $select;
 
