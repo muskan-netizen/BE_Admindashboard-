@@ -44,7 +44,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 
     label.rating-star.cancel_order,
     .rating-star.request_cancel_order {
-        position: relative;
+       
         left: 70px;
         top: 4px;
         background: #a22c7f;
@@ -173,11 +173,16 @@ $timezone = Auth::user()->timezone;
             </div>
         </div>
         <div class="row my-md-3">
-            <div class="col-lg-3">
-                <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
-                <div class="dashboard-left mb-3">
-                    <div class="collection-mobile-back"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{ __('Back') }}</span></div>
-                    @include('layouts.store/profile-sidebar')
+                <div class="col-lg-3">
+                    <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
+                        <div class="dashboard-left mb-3">
+                            <div class="collection-mobile-back">
+                                <span class="filter-back d-lg-none d-inline-block">
+                                    <i class="fa fa-angle-left" aria-hidden="true"></i>{{ __('Back') }}
+                                </span>
+                            </div>
+                            @include('layouts.store/profile-sidebar')
+                    </div>
                 </div>
                 <div class="col-lg-9">
                     <div class="dashboard-right">
@@ -246,15 +251,15 @@ $timezone = Auth::user()->timezone;
                                             @endif
 
                                         </div>
-                                        @endforeach
-                                        @else
+                                        {{-- @endforeach
+                                        @else --}}
                                         <div class="col-12">
                                             <div class="no-gutters order_head">
                                                 <h4 class="text-center">{{ __('No Rejected/Cancel Order Found') }}
                                                 </h4>
                                             </div>
                                         </div>
-                                        @endif
+                                        {{-- @endif --}}
                                     </div>
                                     {{ $pastOrders->appends(['pageType' => 'rejectedOrders'])->links() }}
                                 </div>

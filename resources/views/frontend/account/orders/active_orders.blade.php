@@ -252,6 +252,11 @@
                                                                                                         $total_tax_order_price += $product->taxable_amount;
                                                                                                     @endphp
                                                                                                 @endif
+                                                                                                {{-- {{dd($product)}} --}}
+
+                                                @include('frontend.account.recurringItems')
+
+
                                                                                             @endforeach
                                                                                         </ul>
 
@@ -410,7 +415,7 @@
 
                                                                                 <div class="row">
                                                                                     <div class="col-12 d-flex align-items-center justifiy-content-end alListBtnGroups">
-                                                                                    @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
+                                                                                        @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
                                                                                             <?php
                                                                                             if($clientPreference->business_type == 'laundry'){
                                                                                                 $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
@@ -436,8 +441,9 @@
                                                                                                     <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Order Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$order->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
                                                                                                 @endif
                                                                                             @endif
+                                                                                           
                                                                                             {{-- Check if order is created only --}}
-                                                                                            @if ($vendor->status == 0)
+                                                                                            @if ($vendor->status == 0 && @$order->recurring_booking_type == '')
                                                                                                 @if ($vendor->order_status == 'placed')
                                                                                                     <button  data-toggle="modal" data-target="#orderModel{{$order->id}}" class="reschedule_order btn btn-solid" data-id="{{$order->id}}" data-order_vendor_id="{{ $vendor->id ?? 0 }}" data-vendor_id="{{$vendor->id}}">Reschedule</button>
                                                                                                 @endif
