@@ -619,7 +619,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
 	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
 
-	Route::get('azulpay', 'Front\AzulPaymentController@beforePayment')->name('beforePayment');
+	//Route::get('azulpay', 'Front\AzulPaymentController@beforePayment')->name('beforePayment');
     //bidding system
 	Route::get('user/bidRequest', [BidController::class, 'index'])->name('user.bidRequest');
 	Route::POST('user/bidUpdatePdf', [BidController::class, 'uploadPrescription'])->name('bid.update_pdf');
