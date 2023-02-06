@@ -171,7 +171,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         AkibTanjim\Currency\CurrencyServiceProvider::class,
         Kreait\Laravel\Firebase\ServiceProvider::class,
-        // Maatwebsite\Excel\ExcelServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         Orangehill\Iseed\IseedServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
