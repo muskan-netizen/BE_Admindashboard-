@@ -79,6 +79,7 @@ class Kernel extends HttpKernel
         'ApiLocalization' => \App\Http\Middleware\ApiLocalization::class,
         'onlysuperadmin' => \App\Http\Middleware\OnlySuperAdmin::class,
         'ConnectDbFromInventory' => \App\Http\Middleware\ConnectDbFromInventory::class,
+        'ConnectDbFromDispatcher' => \App\Http\Middleware\ConnectDbFromDispatcher::class,
       
     ];
 }

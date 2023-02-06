@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController,OpenpayPaymentController,UseRedePaymentController,UPayGatewayController,ConektaGatewayController, TelrGatewayController, KhaltiGatewayController};
+use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController,OpenpayPaymentController,UseRedePaymentController,UPayGatewayController,ConektaGatewayController, TelrGatewayController, KhaltiGatewayController,PlugnpayGatewayController};
 use App\Http\Controllers\Front\DpoController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
@@ -30,43 +30,50 @@ class PaymentOptionController extends BaseController{
 
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
-            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti');
+            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
         }
         elseif($page == 'pickup_delivery'){
-            $code = array('cod', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti');
+            $code = array('cod', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay');
         }
         else{
-            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti');
+            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
         }
-        $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
-        foreach($payment_options as $option){
-            if($option->code == 'stripe'){
-                $option->title = __('Credit/Debit Card (Stripe)');
-            }elseif($option->code == 'kongapay'){
-                $option->title = 'Pay Now';
-            }elseif($option->code == 'mvodafone'){
-                $option->title = 'Vodafone M-PAiSA';
-            }elseif($option->code == 'mobbex'){
-                $option->title = __('Mobbex');
-            }elseif($option->code == 'offline_manual'){
-                $json = json_decode($option->credentials);
-                $option->title = $json->manule_payment_title;
-            }elseif($option->code == 'mycash'){
-                $option->title = __('Digicel MyCash');
-            }elseif($option->code == 'windcave'){
-                $option->title = __('Windcave (Debit/Credit card)');
-            }elseif($option->code == 'stripe_ideal'){
-                $option->title = __('iDEAL');
-            }elseif($option->code == 'authorize_net'){
-                $option->title = __('Credit/Debit Card');
+        //mohit sir branch code added by sohail
+        $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+        if($request->service_type == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+            $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->where('id', '!=', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
+        }else{
+        //Till here
+            $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
+            foreach($payment_options as $option){
+                if($option->code == 'stripe'){
+                    $option->title = __('Credit/Debit Card (Stripe)');
+                }elseif($option->code == 'kongapay'){
+                    $option->title = 'Pay Now';
+                }elseif($option->code == 'mvodafone'){
+                    $option->title = 'Vodafone M-PAiSA';
+                }elseif($option->code == 'mobbex'){
+                    $option->title = __('Mobbex');
+                }elseif($option->code == 'offline_manual'){
+                    $json = json_decode($option->credentials);
+                    $option->title = $json->manule_payment_title;
+                }elseif($option->code == 'mycash'){
+                    $option->title = __('Digicel MyCash');
+                }elseif($option->code == 'windcave'){
+                    $option->title = __('Windcave (Debit/Credit card)');
+                }elseif($option->code == 'stripe_ideal'){
+                    $option->title = __('iDEAL');
+                }elseif($option->code == 'authorize_net'){
+                    $option->title = __('Credit/Debit Card');
+                }
+                $option->title = __($option->title);
             }
-            $option->title = __($option->title);
+            return $this->successResponse($payment_options, '', 201);
         }
-        return $this->successResponse($payment_options, '', 201);
     }
 
     public function postPayment(Request $request, $gateway = ''){
-        if(!empty($gateway)){            
+        if(!empty($gateway)){
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
             $domain = '';
@@ -79,7 +86,7 @@ class PaymentOptionController extends BaseController{
             $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
-            
+
             $function = 'postPaymentVia_'.$gateway;
             if(method_exists($this, $function)) {
                 if(!empty($request->action)){
@@ -129,7 +136,7 @@ class PaymentOptionController extends BaseController{
         $gateway = new StripeGatewayController();
         return $gateway->paymentWebViewStripeIdeal($request);
     }
-    
+
     public function postPaymentVia_stripe_oxxo(Request $request){
         $gateway = new StripeGatewayController();
         return $gateway->paymentWebViewStripeOXXO($request);
@@ -177,7 +184,7 @@ class PaymentOptionController extends BaseController{
         $gateway = new PagarmeGatewayController();
         return $gateway->pagarmePurchase($request);
     }
-    public function postPaymentVia_upay(Request $request){ 
+    public function postPaymentVia_upay(Request $request){
         $gateway = new UPayGatewayController();
         return $gateway->upayPurchase($request);
     }
@@ -196,7 +203,7 @@ class PaymentOptionController extends BaseController{
     }
     public function postPaymentVia_authorize_net(Request $request){
         $gateway = new AuthorizeGatewayController();
-        return $gateway->authorizePurchase($request); 
+        return $gateway->authorizePurchase($request);
     }
 
     public function postPaymentVia_cashfree(Request $request){
@@ -223,9 +230,14 @@ class PaymentOptionController extends BaseController{
         return $gateway->createHashApp($request);
     }
 
-    public function postPaymentVia_toyyibpay(Request $request){ 
+    public function postPaymentVia_mvodafone(Request $request){
+        $gateway = new MvodafoneController();
+        return $gateway->createPayLinkApp($request);
+    }
 
-        //for getting server main url from header        
+    public function postPaymentVia_toyyibpay(Request $request){
+
+        //for getting server main url from header
         $code = $request->header('code');
         $client = Client::where('code',$code)->first();
         $domain = '';
@@ -236,7 +248,7 @@ class PaymentOptionController extends BaseController{
         }
         $server_url = "https://".$domain."/";
         $request['serverUrl'] = $server_url;
-        $request['currencyId'] = $request->header('currency'); 
+        $request['currencyId'] = $request->header('currency');
         $request['auth_token'] = $request->header('authorization') ?? "";
 
         $gateway = new ToyyibPayController();
@@ -248,10 +260,6 @@ class PaymentOptionController extends BaseController{
         return $gateway->order($request);
     }
 
-    public function postPaymentVia_mvodafone(Request $request){
-        $gateway = new MvodafoneController();
-        return $gateway->createPayLinkApp($request);
-    }
     public function postPaymentVia_openpay(Request $request){
         $gateway = new OpenpayPaymentController();
         return $gateway->beforePayment($request);
@@ -260,10 +268,17 @@ class PaymentOptionController extends BaseController{
         $gateway = new UseRedePaymentController();
         return $gateway->beforePayment($request);
     }
-    
+
     public function postPaymentVia_khalti(Request $request){
         $gateway = new KhaltiGatewayController();
         return $gateway->khaltiPurchase($request);
+    }
+
+    public function postPaymentVia_plugnpay(Request $request){
+
+        $gateway = new PlugnpayGatewayController();
+
+        return $gateway->PlugPayPurchase($request);
     }
 
     public function postPaymentVia_paypal(Request $request){
@@ -639,7 +654,20 @@ class PaymentOptionController extends BaseController{
                         $this->savePaymentCartDetails($request,$order,$user);
                     }
                 }
-            } elseif($request->action == 'wallet'){
+            }
+            elseif($request->action == 'pickup_delivery'){
+                $order_number = $request->order_number;
+                $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                if ($order) {
+                    $order->payment_status = 1;
+                    $order->save();
+                    $payment_exists = Payment::where('transaction_id', $transaction_id)->first();
+                    if (!$payment_exists) {
+                        $this->csavePaymentOrderPickup($request,$order);
+                        $url = OrderVendor::where('order_id',$order->id)->select('dispatch_traking_url')->first();
+                    }
+                }
+           } elseif($request->action == 'wallet'){
                  $this->savePaymentWalletDetails($request);
             }
             elseif($request->action == 'tip'){
@@ -649,7 +677,7 @@ class PaymentOptionController extends BaseController{
                 $request->request->add(['payment_option_id' => '30']);
                  $this->savePaymentSubscriptionDetails($request);
             }
-            return $this->successResponse('', __('Payment completed successfully'), 200);
+            return $this->successResponse(['dispatch_traking_url'=>$url->dispatch_traking_url??''], __('Payment completed successfully'), 200);
         }
         catch(Exception $ex){
             return $this->errorResponse($ex->getMessage(), 400);
@@ -708,6 +736,16 @@ class PaymentOptionController extends BaseController{
         return true;
     }
 
+    public function csavePaymentOrderPickup(Request $request,$order)
+    {
+       // $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
+        $orderDeatils = (object) array('order_number'=> $order->order_number, 'payment_option_id' => 30, 'amount' => $order->payable_amount, 'transaction_id' => $request->transaction_id);
+
+        $plaseOrderForPickup = new PickupDeliveryController();
+        $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($orderDeatils);
+        return true;
+    }
+
     function savePaymentCartDetails(Request $request, $order,$user)
     {
         $transaction_id = $request->transaction_id;
@@ -722,15 +760,17 @@ class PaymentOptionController extends BaseController{
         // Auto accept order
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
+        // \Log::info(json_encode($order));
 
         // Remove cart
-        $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-        Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-        CartAddon::where('cart_id', $cart->id)->delete();
-        CartCoupon::where('cart_id', $cart->id)->delete();
-        CartProduct::where('cart_id', $cart->id)->delete();
-        CartProductPrescription::where('cart_id', $cart->id)->delete();
-        CartDeliveryFee::where('cart_id', $cart->id)->delete();
+        // $cart = Cart::select('id')->where('status', '0')->where('user_id', $order->user_id)->first();
+        // \Log::info(json_encode($cart));
+        // Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+        // CartAddon::where('cart_id', $cart->id)->delete();
+        // CartCoupon::where('cart_id', $cart->id)->delete();
+        // CartProduct::where('cart_id', $cart->id)->delete();
+        // CartProductPrescription::where('cart_id', $cart->id)->delete();
+        // CartDeliveryFee::where('cart_id', $cart->id)->delete();
 
         // Send Notification
         if (!empty($order->vendors)) {
@@ -753,7 +793,7 @@ class PaymentOptionController extends BaseController{
         }
         //Send SMS to customer
         $orderController->sendSuccessSMS($request, $order);
-    
+
         return true;
     }
 

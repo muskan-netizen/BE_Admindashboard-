@@ -2084,7 +2084,7 @@ label.position-relative.control-label{padding-right:25px}
 .alInfoIocn .tooltiptext::after {content: " ";position: absolute;top: 0;left: 0;margin-left: -5px;border-width: 5px;border-style: solid;border-color: black transparent transparent transparent;}
 
 #import-product .modal-dialog {max-width: 600px;}
-#import-product .modal-dialog .table-responsive {overflow-x: visible;}
+#import-product .modal-dialog .table-responsive {overflow-x: auto;}
 ul.nav-second-level.p-0.mx-2 span.mdi.mdi-book-outline,
 ul.nav-second-level.p-0.mx-2 span.mdi.mdi-chat-processing-outline {margin-top: -4px;}
 .tabs_radio {display: none;}
@@ -2124,7 +2124,7 @@ table.dataTable {width: 100% !important;}
 .dataTable {width: 100% !important;}
 .commonModalLabel {display: flex;}
 #import-product .modal-dialog {max-width: 600px;}
-#import-product .modal-dialog .table-responsive {overflow-x: visible;}
+#import-product .modal-dialog .table-responsive {overflow-x: auto;}
 span.mdichat,
 span.mdibookoutline,
 span.mdibookoutline svg {height: 18px;left: 0;width: 20px;color: #6e768e;fill: #6e768e;}
@@ -2259,6 +2259,7 @@ body[dir=rtl] .modal-header .close{padding:1rem;margin:-1rem!important}
 .dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before{color: #acbfd2;}
 .order_data_box .error-msg {font-size: 20px;position: relative;width: 100%;top: 0;-webkit-transform: translate(0px, 0);transform: translate(0px, 0%);}
 .alDeliveryOptionsPage .switchery-demo label{margin: 0 !important;}
+.dark .table thead th {background: #32383e;border: none;}
 /* dark dashboard css end */
 
 /*============================================= dashboard page responsive css start here ======================================= */
@@ -2383,5 +2384,12 @@ body .ctext-wrap {max-width: 90%;}
 
 
 
+/*======================= new css add for p2p template on 1/12/2023===================== */
+body.dark .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
+  background-color: #303841;
+}
+#order-status-icon .dropify-wrapper.has-preview{
+height: 50px;
+}
 
-
+/*======================= new css add for p2p template on 1/12/2023===================== */

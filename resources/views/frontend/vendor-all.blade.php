@@ -15,7 +15,7 @@
       <div class="row margin-res">
          @foreach($vendors as $vendor)
          <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-3">
-            <a class="suppliers-box d-block" href="{{route('vendorDetail', $vendor->slug)}}">
+            <a class="suppliers-box d-block custom-vender-card" href="{{route('vendorDetail', $vendor->slug)}}">
                <div class="suppliers-img-outer">
                   <img class="fluid-img mx-auto blur-up lazyload" data-src="{{$vendor->logo['image_fit']}}200/200{{$vendor->logo['image_path']}}" alt="">
 

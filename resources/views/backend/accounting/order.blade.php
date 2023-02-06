@@ -122,6 +122,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                     @endif
                                     <th>{{ __('Promo Code Discount') }}</th>
                                     <th>{{ __('Delivery Fee') }}</th>
+                                    <th>{{ __('Service Fee') }}</th>
                                     <th>{{ __('Admin Commission') }} [{{ __("Fixed") }}]</th>
                                     <th>{{ __('Admin Commission') }} [%{{ __("Age") }}]
                                     <a href="javascript:void(0);" onclick="alert('First, it shows the total admin commission of the sub total amount then it shows the total percentage value.');" rel="noopener noreferrer"> <i class="fa fa-info-circle"></i> </a>
@@ -152,7 +153,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
         function getPercentageAmount(percent,amount){
 
             // var totalPercent = (percent/amount * 100);
-            var totalPercent = (amount*percent) / 100; // Added by ovi
+            var totalPercent = (percent * 100) / amount; // Added by ovi
 
             return parseFloat(totalPercent).toFixed(2);
         }
@@ -251,6 +252,11 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                 return numberWithCommas(data);
                             }},
 
+                            {data: 'service_fee_percentage_amount', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
+
                             {data: 'admin_commission_fixed_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
@@ -258,7 +264,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 
                             {data: 'admin_commission', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
-                                return data;
+                                return data+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
 

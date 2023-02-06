@@ -2107,7 +2107,6 @@ class VendorController extends BaseController{
                         'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled')
                         ->withAvg('product', 'averageRating');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                \Log::info('latitude '.$latitude);
                
                 $latitude = (($latitude != '') && ($latitude != "undefined")) ? $latitude : $preferences->Default_latitude;
                 $longitude = (($longitude != '') &&( $longitude != "undefined")) ? $longitude : $preferences->Default_longitude;
@@ -2833,6 +2832,7 @@ class VendorController extends BaseController{
 
                     $products = $products->orderBy('order_product_count', 'desc');
                 }
+                $products = $products->distinct();
                 $products = $products->paginate($limit, $page);
            
                 $response['products'] = $products ?? [];

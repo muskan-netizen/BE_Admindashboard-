@@ -13,6 +13,7 @@
 $user = Auth::user();
 $timezone = $user->timezone;
 $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurrency->doller_compare ?? 1) ) : 0;
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
 @endphp
 
 <style type="text/css">
@@ -99,16 +100,22 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h2 class="">{{__('My Wallet')}}</h3>
+                            <h2 class="">{{__('My Wallet')}}</h2>
                         </div>
                         <div class="box-account box-info">
                             <div class="card-box mb-0">
                                 <div class="row align-items-center">
-                                    <div class="col-md-6 text-md-left text-center mb-md-0 mb-4">
+                                    <div class="col-md-4 text-md-left text-center mb-md-0 mb-4">
                                         <h5 class="text-17 mb-2 mt-0">{{__('Available Balance')}}</h5>
                                         <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format(Auth::user()->balanceFloat * ( $clientCurrency->doller_compare ?? 1))}}</span></div>
                                     </div>
-                                    <div class="col-md-6 text-md-right text-center">
+                                    <div class="col-md-4 text-md-left text-center">
+                                        @if( $additionalPreference["is_token_currency_enable"])
+                                        <h5 class="text-17 mb-2 mt-0">{{__('Token Balance')}}</h5>
+                                        <div class="text-36 mb-md-0 mb-4"><span class="wallet_balance">{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format(Auth::user()->balanceFloat * ( $clientCurrency->doller_compare ?? 1)))}}</span></div>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-4 text-md-right text-center">
                                         <button type="button" class="btn btn-solid" id="topup_wallet_btn" data-toggle="modal" data-target="#topup_wallet">{{__('Topup Wallet')}}</button>
                                         <button type="button" class="btn btn-solid" id="transfer_wallet_btn" data-toggle="modal" data-target="#transfer_wallet">{{__('Transfer Funds')}}</button>
                                     </div>
@@ -134,7 +141,13 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                                     <tr>
                                         <td> {{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
                                         <td  class="name_">{!! $reason->description ?? $reason[0]!!}</td>
-                                        <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}{{decimal_format($amount)}}</b></td>
+                                        <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}">
+                                            @if($ut->type == 'deposit')
+                                            {{ Session::get('currencySymbol').decimal_format($amount)}}
+                                            @else
+                                            <b>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($amount)) : Session::get('currencySymbol').decimal_format($amount)}}</b>
+                                            @endif
+                                        </td>
                                     </tr>
                                     @empty
                                     <tr><td align="center" colspan="4">{{__('No Transaction History Exists')}}</td></tr>
@@ -356,7 +369,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                               <!-- A Stripe Element will be inserted here. -->
                             </div>
                         </div>
-                       
+
                         <span class="error text-danger"id="error-message"></span>
                     </div>
                 <% } %>
@@ -378,11 +391,30 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                             <!-- form will be added here -->
                         </div>
                         <span class="error text-danger" id="checkout_card_error"></span>
-                    </div>  
+                    </div>
                 <% } %>
                 <% if(payment_option.slug == 'payphone') { %>
                     <div id="pp-button"></div>
                 <% } %>
+
+                <% if(payment_option.slug == 'plugnpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="plugnpay_card_error"></span>
+                    </div>
+                <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -460,6 +492,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
     var wallet_balance_insufficient_msg = "{{ __('Insufficient funds in wallet') }}";
     var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
+    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 
 
     var inline='';

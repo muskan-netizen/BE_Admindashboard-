@@ -100,7 +100,8 @@ class OrderController extends Controller{
                 return number_format($vendor_orders->subtotal_amount - $vendor_orders->total_markup_price??0, 2);
             })
             ->addColumn('admin_commission', function($vendor_orders) {
-                return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+                // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+                return number_format($vendor_orders->admin_commission_percentage_amount, 2);
             })
             ->addColumn('order_status', function($vendor_orders) {
                 return $vendor_orders->OrderStatusOption->title;

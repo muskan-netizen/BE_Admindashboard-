@@ -85,7 +85,7 @@ class VendorCitiesController extends FrontController
             $value->categoriesList = $categoriesList;
             $value->vendorRating = $this->vendorRating($value->products);
         }
-        $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
+        $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->web()->where('for_no_product_found_html',1)->orderBy('order_by')->get();
         $page_title = ($VendorCities->translations->first() ? $VendorCities->translations->first()->name : $VendorCities->slug).' '.getNomenclatureName('Vendors', true);  
         return view('frontend/vendor-all')->with(['navCategories' => $navCategories,'for_no_product_found_html' => $for_no_product_found_html,'vendors' => $vendors,'page_title'=> $page_title ]);
         } catch (Exception $e) {

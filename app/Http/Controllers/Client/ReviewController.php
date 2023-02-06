@@ -20,7 +20,6 @@ class ReviewController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request){
-        // echo "review";
         $product = Product::whereHas('reviews')->withCount('reviews')->with('translation_one','media.image');
         if (Auth::user()->is_superadmin == 0) {
             $product = $product->whereHas('vendor.permissionToUser', function ($query) {

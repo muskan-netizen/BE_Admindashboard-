@@ -4,7 +4,7 @@
     headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
     });
 
-   $(document).delegate(".cab_payment_method_selection", "click", function(){
+   $(document).on("click",".cab_payment_method_selection", function(){
         $.ajax({
             type: "GET",
             dataType: 'json',
@@ -33,11 +33,14 @@
     }
    $(document).on("click", ".select_cab_payment_method",function() {
        var payment_method = $(this).attr('data-payment_method');
-    
+
             if (payment_method == 4) {
                 stripeInitialize();
                 $("#cab_payment_method_form .stripe_element_wrapper").removeClass('d-none');
-            }else {
+            }else if (payment_method == 49) {
+                 $("#cab_payment_method_form .plugnpay_element_wrapper").removeClass('d-none');
+            }
+            else {
                 $("#cab_payment_method_form .stripe_element_wrapper").addClass('d-none');
             }
     //    if(payment_method == 2)
@@ -54,9 +57,9 @@
    });
     $(document).on("click", ".select_payment_option_done",function() {
         $("#cab_payment_method_form, .select_payment_option_done").attr("disabled", true);
-         
+
         let payment_option_id = $("#cab_payment_method_form input[name='select_cab_payment_method']:checked").val();
-       
+
         if (payment_option_id == 4) {
             stripe.createToken(card).then(function(result) {
                 //card error case
@@ -73,7 +76,7 @@
                 }
             });
         }else{
-            //hide model  
+            //hide model
              $('#stripe_card_error').html('');
             $("#payment_modal").modal('toggle');
         }
@@ -136,7 +139,7 @@ function getOrderDriverDetails(dispatch_traking_url,order_id) {
 
 
 $(document).ready(function () {
-   
+
     $('.cab-booking-main-loader').hide();
     var selected_address = '';
     // const styles = [{"stylers":[{"visibility":"on"},{"saturation":-100},{"gamma":0.54}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"water","stylers":[{"color":"#4d4946"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"gamma":0.48}]},{"featureType":"transit.station","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"gamma":7.18}]}];
@@ -145,8 +148,58 @@ $(document).ready(function () {
         initMap2();
     });
 
+    // PlugPay payment
+
+    $(document).on("click", "#paywithplugpay",function() {
+
+        cno = $('#plugnpay-card-element').val();
+        dt  = $('#plugnpay-date-element').val();
+        cv  = $('#plugnpay-cvv-element').val();
+        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+        {
+            success_error_alert('error', 'Please Fill Details', "#plugnpay_card_error");
+            return false;
+        }else{
+            $("#pickup_now, #pickup_later").trigger('click');
+            $('#paywithplugpay').prop('disabled',true);
+        }
+
+    });
+    $(document).on("click", ".right-top",function() {
+        var payment_option_id = $(".select_cab_payment_method:checked").val();
+        if(payment_option_id == 49){
+           $("#plugnpay_card_error").empty();
+           $("#proceed_to_pay_loader").hide();
+           $('#paywithplugpay').prop('disabled',false);
+           $('#plugnpay-card-element').val('');
+           $('#plugnpay-date-element').val('');
+           $('#plugnpay-cvv-element').val('');
+        }
+    });
+
     // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_later",function() {
+
+        var payid = $(this).attr('data-payment_method');
+        if(payid == 49){
+
+            cno = $('#plugnpay-card-element').val();
+            dt  = $('#plugnpay-date-element').val();
+            cv  = $('#plugnpay-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                $('#plugpaymethod').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $("#proceed_to_pay_loader").hide();
+                $('#paywithplugpay').prop('disabled',false);
+                return false;
+            }else{
+                $("#proceed_to_pay_loader").show();
+            }
+        }
+
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
         if($(this).data('rel') =='pickup_later'){
@@ -172,8 +225,6 @@ $(document).ready(function () {
             time_zone = time_zone;
         }
 
-        // $('#pickup_now').attr('disabled', true);
-      //  $('#pickup_later').attr('disabled', true);
         var pickup_location_names = $('input[name="pickup_location_name[]"]').map(function(){return this.value;}).get();
         var destination_location_names = $('input[name="destination_location_name[]"]').map(function(){return this.value;}).get();
         var pickup_location_latitudes = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
@@ -194,7 +245,7 @@ $(document).ready(function () {
             tasks.push(sample_array);
             tasks2.push(sample_array);
         });
-        
+
         $(destination_location_latitudes).each(function(index, latitude) {
             var sample_array = {};
             sample_array.barcode = null;
@@ -207,24 +258,30 @@ $(document).ready(function () {
             sample_array.longitude = destination_location_longitudes[index];
             tasks.push(sample_array);
         });
-       
-        let amount = $(this).attr('data-amount');
+
+        let amount                      = $(this).attr('data-amount');
+        let tollamount                  = $(this).attr('data-tollamount');
+        let servicechargeamount         = $(this).attr('data-servicechargeamount');
+        let totalamount                 = $(this).attr('data-totalamount');
         let subscription_payable_amount = $(this).attr('data-subscriptionPayableAmount');
-        let product_image = $(this).attr('data-image');
-        let vendor_id = $(this).attr('data-vendor_id');
-        let coupon_id = $(this).attr('data-coupon_id');
-        let product_id = $(this).attr('data-product_id');
-        let payment_option_id = $(this).attr('data-payment_method');
-        let type = parseFloat($('input[name=is_for_friend]:checked').val());
+        let product_image               = $(this).attr('data-image');
+        let vendor_id                   = $(this).attr('data-vendor_id');
+        let coupon_id                   = $(this).attr('data-coupon_id');
+        let product_id                  = $(this).attr('data-product_id');
+        let payment_option_id           = $(this).attr('data-payment_method');
+        let type                        = parseFloat($('input[name=is_for_friend]:checked').val());
         // alert(type);
         // return false;
         let friendName=$('input[name=friendName]').val();
         let friendPhoneNumber= $('input[name=friendPhoneNumber]').val();
+
+        var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
+        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,type:type,friendName:friendName,friendPhoneNumber:friendPhoneNumber},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
@@ -233,7 +290,7 @@ $(document).ready(function () {
                     let reload_route = response.data.route;
                     if((payment_option_id == 1) || (payment_option_id == 2)){
                         window.location.replace(response.data.route);
-                        
+
                         // $('#cab_detail_box').html('');
                         // var orderSuccessData = _.extend({ Helper: NumberFormatHelper },{result: response.data, product_image: product_image});
                         // let order_success_template = _.template($('#order_success_template').html());
@@ -251,7 +308,7 @@ $(document).ready(function () {
                             type: "POST",
                             dataType: 'json',
                             url: payment_stripe_url,
-                            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,order_number:order_number },
+                            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: totalamount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,order_number:order_number },
                             success: function(resp) {
                                 if (resp.status == 'Success') {
                                     window.location.replace(resp.data);
@@ -262,7 +319,7 @@ $(document).ready(function () {
                             error: function(f) {
                                 alert(error);
                                 //var response = $.parseJSON(error.responseText);
-                               
+
                             }
                         });
                         //var stripe_token = $('#stripe_token').val();
@@ -277,6 +334,11 @@ $(document).ready(function () {
                         payphoneButton(response.data);
                     }else if(payment_option_id == 42){
                         payWithDpo(response.data);
+                    }else if(payment_option_id == 30){
+                        payWithFlutterWave(response.data);
+                    }
+                    else if(payment_option_id == 49){
+                        paymentViaplugnpay(reload_route,'',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
@@ -452,7 +514,7 @@ $(document).ready(function () {
         setTimeout(function(){
             $(".pac-container").appendTo(".booking-experience #destination_location_add_temp");
         }, 300);
-      } 
+      }
     }
     $(document).on("click",".search-location-result",function() {
         var latitude             = $(this).data('latitude');
@@ -560,29 +622,30 @@ $(document).ready(function () {
         let destination_location = $('#destination_location').val();
         if(pickup_location && destination_location){
             $('.location-list').hide();
-            $('.cab-booking-main-loader').show();
             $.ajax({
                 data: {locations: post_data, schedule_date_delivery:schedule_datetime},
                 type: "POST",
                 dataType: 'json',
                 url: autocomplete_urls,
+                beforeSend: function(){
+                    add_spinner('.cab-booking-loader');
+                },
                 success: function(response) {
                     if(response.status == 'Success'){
-                        // $('.cab-booking-main-loader').hide();
+                        remove_spinner('.cab-booking-loader');
                         $('#vendor_main_div').html('');
                         if(response.data.length != 0){
                             let vendors_template = _.template($('#vendors_template').html());
                             $("#vendor_main_div").append(vendors_template({results: response.data})).show();
                             if(response.data.length == 1){
                                 $('.vendor-list').trigger('click');
-                                $('.table-responsive').remove();
+                                $('.table-responsive').hide();
                             }else{
                                 $('.vendor-list').first().trigger('click');
                             }
                         }else{
                             $("#vendor_main_div").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
                         }
-                       // $('.cab-booking-main-loader').hide();
                     }
                 }
             });
@@ -604,6 +667,43 @@ $(document).ready(function () {
             $('#product_rider_div').hide();
         }
     });
+
+    $(document).on("change",".is_cab_pooling",function() {
+        getListOfCabs();
+    });
+
+    $(document).on("change","#no_seats_for_pooling",function() {
+        var product_id = $("#pickup_now").attr('data-product_id');
+        getVehicleDetail(product_id);
+    });
+
+    $(document).on("click",".btn-number-up-down",function(){
+        var product_id = $("#pickup_now").attr('data-product_id');
+        type      = $(this).attr('data-type');
+        var input = $("input[name='no_seats_for_pooling']");
+        var currentVal = parseInt(input.val());
+        if (!isNaN(currentVal)) {
+            if(type == 'minus') {
+
+                if(currentVal > input.attr('min')) {
+                    input.val(currentVal - 1).trigger('change');
+                }
+                if(parseInt(input.val()) == input.attr('min')) {
+                }
+
+            } else if(type == 'plus') {
+
+                if(currentVal < input.attr('max')) {
+                    input.val(currentVal + 1).trigger('change');
+                }
+                if(parseInt(input.val()) == input.attr('max')) {
+                }
+            }
+        } else {
+            input.val(1);
+        }
+    });
+
     $(document).on("click","#submit_product_rider_button",function(){
         let product_id = $('input[name="rider_product_id"]:checked').val();
         let rider_id = 0;
@@ -620,9 +720,9 @@ $(document).ready(function () {
         window.intlTelInput(input, {
             separateDialCode: true,
             utilsScript: utilsScript_path,
-            initialCountry: initial_country_code, 
+            initialCountry: initial_country_code,
         });
-    })
+    });
     $(document).delegate('.iti__country','click', function() {
         var code = $(this).attr('data-country-code');
         $('#countryData').val(code);
@@ -659,7 +759,7 @@ $(document).ready(function () {
                 $(".loader_box").hide();
             }
         });
-    })
+    });
     $(document).on('click','.deleteRider',function(){
         var parent = $(this).parent()[0];
         var rider_id = $(this).data('id');
@@ -698,6 +798,12 @@ $(document).ready(function () {
     {
         $('a[data-vendor="'+$("#default_cab_vendor_id").val()+'"]').show();
         let vendor_id = $("#default_cab_vendor_id").val();
+
+        if(vendor_id =='' || vendor_id == undefined){
+            $('.location-list').attr("style", "display: blank !important");
+            return false;
+        }
+
         var locations = [];
         var pickup_location_latitude = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
         var pickup_location_longitude = $('input[name="pickup_location_longitude[]"]').map(function(){return this.value;}).get();
@@ -722,14 +828,19 @@ $(document).ready(function () {
             data.longitude = destination_location_longitudes[index];
             locations.push(data);
         });
+        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
+        $('input[name="no_seats_for_pooling"]').val(1);
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations, schedule_date_delivery:schedule_datetime},
+            data: {locations:locations, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling},
             url: get_vehicle_list+'/'+vendor_id+'/'+category_id,
+            beforeSend: function(){
+                add_spinner('.cab-booking-loader');
+            },
             success: function(response) {
                 if(response.status == 'Success'){
-                    $('.cab-booking-main-loader').hide();
+                    remove_spinner('.cab-booking-loader');
                     $('#search_product_main_div').html('');
                     $('#search_product_rider_main_div').html('');
                     if(response.data.length != 0){
@@ -742,6 +853,16 @@ $(document).ready(function () {
                         let products_rider_template = _.template($('#products_rider_template').html());
                         $("#search_product_main_div").append(products_template(productData));
                         $("#search_product_rider_main_div").append(products_rider_template(productData));
+
+                        if($('input[name="is_cab_pooling"]:checked').val() == 0)
+                        {
+                            $("#search_product_main_div .double_price_p").hide();
+                            $("#search_product_main_div .single_price_p").show();
+                        }else{
+                            $("#search_product_main_div .double_price_p").show();
+                            $("#search_product_main_div .single_price_p").hide();
+                        }
+
                         let is_friend = $('input[name="is_for_friend"]:checked').val();
                         if(is_friend == undefined || is_friend == '0')
                         {
@@ -756,7 +877,7 @@ $(document).ready(function () {
                 }
             },
             complete:function(data){
-                $('.cab-booking-main-loader').hide();
+                remove_spinner('.cab-booking-loader');
             }
         });
     }
@@ -807,7 +928,7 @@ $(document).ready(function () {
                     let subscriptionAmout = $('#subscription-amout-h').val();
                     if(subscriptionAmout != undefined){
                         $('#subscription-amout').text(response.data.currency_symbol+''+subscriptionAmout);
-                        $('#pickup_now').attr("data-subscriptionPayableAmount",subscriptionAmout);  
+                        $('#pickup_now').attr("data-subscriptionPayableAmount",subscriptionAmout);
                     }
                     $('#pickup_now').attr("data-coupon_id",'');
                     $('#pickup_later').attr("data-coupon_id",'');
@@ -842,7 +963,7 @@ $(document).ready(function () {
                         //console.log('response.data.new_amount', response.data.new_amount);
                         var subscriptionPercent = $('#subscription-percent-h').val();
                         let newPayableAmount = current_amount - (subscriptionPercent * current_amount / 100);
-                        $('#subscription-amout').text(response.data.currency_symbol+''+newPayableAmount);  
+                        $('#subscription-amout').text(response.data.currency_symbol+''+newPayableAmount);
                         $('#pickup_now').attr("data-subscriptionPayableAmount",newPayableAmount);
                     }
                     $('.cab-detail-box #real_amount').text(response.data.currency_symbol+''+current_amount);
@@ -867,9 +988,10 @@ $(document).ready(function () {
         let product_id = $(this).data('product_id');
         getVehicleDetail(product_id);
     });
-    function getVehicleDetail(product_id,rider_id=0)
+
+    function getVehicleDetail(product_id, rider_id=0)
     {
-        $('.cab-booking-main-loader').show();
+        add_spinner('.cab-booking-loader');
         var locations = [];
         var pickup_location_latitude = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
         var pickup_location_longitude = $('input[name="pickup_location_longitude[]"]').map(function(){return this.value;}).get();
@@ -893,21 +1015,27 @@ $(document).ready(function () {
         if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
             schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
         }
-
+        var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
+        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime},
+            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling},
             url: get_product_detail+'/'+product_id,
             success: function(response) {
+                remove_spinner('.cab-booking-loader');
                 if(response.status == 'Success'){
                     $('#cab_detail_box').html('');
-                    $('.cab-booking-main-loader').hide();
                     if(response.data.length != 0){
                         // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
                         //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                         //      } };
-                        var cabData = _.extend({ Helper: NumberFormatHelper },{result: response.data});
+                        var schedule_date_time = ''
+                        if(schedule_datetime !='' && schedule_datetime != undefined){
+                            schedule_date_time = moment(schedule_datetime).format('MMM Do YY, h:mm:ss a')
+                        }
+
+                        var cabData = _.extend({ Helper: NumberFormatHelper },{result: response.data,schedule_datetime:schedule_date_time});
 
                         $('.address-form').addClass('d-none');
                         $('.cab-detail-box').removeClass('d-none');
@@ -915,12 +1043,18 @@ $(document).ready(function () {
                             // console.log('innset');
                         }
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
-                        
+
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
+                        if($('input[name="is_cab_pooling"]:checked').val() == 0)
+                        {
+                            $(".show_no_of_seats_if_pooling").hide();
+                        }else{
+                            $(".show_no_of_seats_if_pooling").show();
+                        }
                         getDistance();
                         if($('input[name=is_for_friend]:checked').val()==1){
                             $('.for_friend_fields_div').removeClass('d-none');
-                            
+
 
                         }else{
                             $('.for_friend_fields_div').addClass('d-none');
@@ -949,7 +1083,7 @@ $(document).ready(function () {
         /* var currentLocation          = $('#address-input').val();
         var currentLocationLatitude  = $('#address-latitude').val();
         var currentLocationLongitude = $('#address-longitude').val(); */
-        
+
         var latitude             = $('#address-latitude').val();
         var longitude            = $('#address-longitude').val();
 
@@ -961,7 +1095,7 @@ $(document).ready(function () {
             $('#pickup_location_latitude').val(latitude);
             $('#pickup_location_longitude').val(longitude);
 
-        
+
             var pickupLocationLatitude  = latitude;
             var pickupLocationLongitude = longitude;
             var currentUrl              = window.location.href;
@@ -1075,15 +1209,17 @@ $(document).ready(function () {
         $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
             $(this).hide();
         }).get();
-        
+
     });
 
     $(document).on("click",".scheduled-ride",function() {
         $('.location-list').attr("style", "display: none !important");
         $('.scheduled-ride-list').attr("style", "display: block !important");
-        var fromDate = moment();
-        var toDate   = moment().add(31, 'days');
-        enumerateDaysBetweenDates(fromDate, toDate);
+
+        $(".scheduled-footer").html('<button class="btn btn-solid w-100" id="check-schedule-date-time">Select</button>');
+        // var fromDate = moment();
+        // var toDate   = moment().add(31, 'days');
+       // enumerateDaysBetweenDates(fromDate, toDate);
     });
 
     var enumerateDaysBetweenDates = function(startDate, endDate) {
@@ -1107,14 +1243,43 @@ $(document).ready(function () {
             now.add(1, 'days');
         }
 
-        $(".scheduled-footer").append('<button id="check-schedule-date-time" onclick="getScheduleDateTime(this)" disabled>Select</button>');
+        $(".scheduled-footer").html('<button id="check-schedule-date-time" onclick="getScheduleDateTime(this)" disabled>Select</button>');
     };
 
+    $(document).on("click","#check-schedule-date-time",function() {
+        var scheduleDateTimeSet = $('#schedule_pickup_date').val();
+
+        if(scheduleDateTimeSet != '' || scheduleDateTimeSet != undefined ){
+            //if(moment(scheduleDateTimeSet).format('MMDDYYYY') != moment().format('MMDDYYYY') ){
+                var currentUrl  = window.location.href;
+                var queryString = removeURLParameterNew(currentUrl, 'schedule_date');
+                var perm = "?" + (queryString != '' ? queryString : '') + "&schedule_date=" + scheduleDateTimeSet;
+                window.history.replaceState(null, null, perm);
+
+                $('#schedule_date').val(scheduleDateTimeSet);
+                $('.scheduleDateTimeApnd').text( moment(scheduleDateTimeSet).format('MMM Do YY, h:mm:ss a'));
+                $('#schedule_datetime').val(scheduleDateTimeSet);
+            // }else{
+            //     $('#schedule_datetime').val('');
+            //     $('#schedule_date').val('');
+            //     $('.scheduleDateTimeApnd').text('Now');
+            // }
+
+
+
+            $('.cab-detail-box').attr("style", "display: block !important");
+            $('.scheduled-ride-list').attr("style", "display: none !important");
+            getListOfCabs();
+        }else{
+
+        }
+
+    });
 
 
     $(document).on("click",".apremove",function() {
         var destination_location_add_temp = $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').length;
-        
+
         if(destination_location_add_temp == 0){
             return false;
         }else if(destination_location_add_temp == 1){
@@ -1148,7 +1313,7 @@ $(document).ready(function () {
         }
 
         var random_id = $(this).data('rel');
-        
+
         if(random_id == ''){
             $(".where-to-second").remove();
             $("#destination_location").remove();
@@ -1263,11 +1428,12 @@ $(document).ready(function () {
             }else if(perm[0] == 'schedule_date'){
                 $('#schedule_date').val(perm[1]);
                 $('#schedule_date_time').val(perm[1]);
-            }else if(perm[0] == 'schedule_date_set'){
+                $('.scheduleDateTimeApnd').html(moment(perm[1]).format('MMM Do YY, h:mm:ss a'));
+            }else if(perm[0] == 'schedule_date_set'){ //schedule_date_set
                 $('.scheduleDateTimeApnd').html(perm[1]);
             }
         }
-        
+
         var pickup_location      = $("#pickup_location").val();
         var destination_location = $("#destination_location").val();
         if(pickup_location != '' && destination_location != ''){
@@ -1300,7 +1466,7 @@ $(document).ready(function () {
         var locations = [];
         let pickup_location_latitude  = $('#pickup_location_latitude').val();
         let pickup_location_longitude = $('#pickup_location_longitude').val();
-    
+
         var pointA = new google.maps.LatLng(pickup_location_latitude, pickup_location_longitude);
         map = new google.maps.Map(document.getElementById('booking-map'), {zoom: 7,center: pointA});
         map.setOptions({ styles:  styles});
@@ -1332,7 +1498,7 @@ $(document).ready(function () {
                 stopover: true,
               });
         });
-        
+
         let origin ='';
         if($('#pickup_location').val()=="Your Location"){
             var latmy = parseFloat($("#address-latitude").val());
@@ -1341,7 +1507,7 @@ $(document).ready(function () {
         }else{
             origin = $('#pickup_location').val();
         }
-        
+
         let destination = (random_id != '') ? $('#destination_location_'+random_id).val() : $('#destination_location').val();
         if(origin && destination){
             directionsService.route({
@@ -1456,11 +1622,16 @@ $(document).ready(function () {
     function getDistance(){
             //Find the distance
             var distanceService = new google.maps.DistanceMatrixService();
+            if(distance_unit == "IMPERIAL"){
+                var unitSystem = google.maps.UnitSystem.IMPERIAL;
+            }else{
+                var unitSystem = google.maps.UnitSystem.METRIC;
+            }
             distanceService.getDistanceMatrix({
             origins: [$("#pickup_location").val()],
             destinations: [$("#destination_location").val()],
             travelMode: google.maps.TravelMode.DRIVING,
-            unitSystem: google.maps.UnitSystem.METRIC,
+            unitSystem: unitSystem,
             durationInTraffic: true,
             avoidHighways: false,
             avoidTolls: false
@@ -1479,14 +1650,14 @@ $(document).ready(function () {
             var options = {
                 enableHighAccuracy: true,
                 timeout: 5000,
-                maximumAge: 0       
+                maximumAge: 0
               };
             navigator.geolocation.getCurrentPosition(showPosition, errorcallback, options);
         } else {
             alert("Geolocation is not supported by this browser.");
         }
     }
-    
+
     function errorcallback(positionerror) {
         if (window.console) {
             //console.log(positionerror);
@@ -1508,7 +1679,7 @@ $(document).ready(function () {
 
         var google_map_pos = new google.maps.LatLng( lat, long );
 
-        
+
         var google_maps_geocoder = new google.maps.Geocoder();
         google_maps_geocoder.geocode(
             { 'latLng': google_map_pos },
@@ -1522,7 +1693,7 @@ $(document).ready(function () {
                 }
             }
         );
-        
+
         $('#address-latitude').val(lat);
         $('#address-longitude').val(long);
         displayLocationCab(lat, long);
@@ -1587,11 +1758,11 @@ $(document).ready(function () {
             case '18':
                 paymentViaAuthorize('', order);
                 break;
-            
+
             case '47':
                 paymentViaKhalti('', order);
                 break;
-        
+
         }
 
     }
@@ -1605,10 +1776,10 @@ $(document).ready(function () {
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
         // let payment_option_id = paymentAjaxData.payment_option_id;
-        
+
         paymentAjaxData.payment_method_id = result.paymentMethod.id;
         // paymentAjaxData.payment_option_id = payment_option_id;
-        
+
         if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
             total_amount = cartElement.val();
@@ -1692,7 +1863,7 @@ $(document).ready(function () {
             // Show error in payment form
         } else {
             paymentAjaxData.payment_intent_id = result.paymentIntent.id;
-            
+
             // The card action has been handled
             // The PaymentIntent can be confirmed again on the server
             fetch('/payment/payment_init', {
@@ -1756,8 +1927,7 @@ function getScheduleDateTime(thisObj){
 
     $('.cab-detail-box').attr("style", "display: block !important");
     $('.scheduled-ride-list').attr("style", "display: none !important");
-    //window.location.reload();
-    $('.cab-booking-main-loader').show();
+
     getListOfCabs();
 }
 

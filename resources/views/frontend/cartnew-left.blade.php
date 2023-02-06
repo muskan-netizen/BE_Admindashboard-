@@ -12,7 +12,7 @@
 <div class="row mb-sm-2 mb-1">
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
         <h4 class="page-title m-0">{{ __($label)  }} {{ __('Address') }}</h4>
-        @if(!in_array($action , ['dine_in','takeaway','on_demand','appointment']))
+        @if(!in_array($action , ['dine_in','takeaway','appointment']))
             <a class="add-address ml-auto" href="#add_new_address_form" data-toggle="modal" data-target="#add_new_address_form_modal">
                 <i class="fa fa-plus mr-1" aria-hidden="true"></i>
                 <!-- {{__('Add New Address')}} -->
@@ -21,12 +21,26 @@
     </div>
 </div>
 @if($action != 'delivery' && $action != 'on_demand' )
-    @if(isset($vendor_details['vendor_address']))
+    @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
+        <div>
+            <input type="hidden" id="latitude" value="{{ $processorProduct->latitude }}">
+            <input type="hidden" id="longitude" value="{{ $processorProduct->longitude }}">
+        </div>
+        <label>{{ $processorProduct->address }}</label>
+        <div class="row mt-3 mb-3" id="address_template_main_div">
+            <div class="col-12">
+                <div id="vendor-address-map-container" style="height: 200px;">
+                    <div id="vendor-address-map" style="height:100%"></div>
+                </div>
+            </div>
+        </div>
+    @else
+    @if (isset($vendor_details['vendor_address']))
         <div>
             <input type="hidden" id="latitude" value="{{ $vendor_details['vendor_address']->latitude }}">
             <input type="hidden" id="longitude" value="{{ $vendor_details['vendor_address']->longitude }}">
         </div>
-        <label>{{$vendor_details['vendor_address']->address}}</label>
+        <label>{{ $vendor_details['vendor_address']->address }}</label>
         <div class="row mt-3 mb-3" id="address_template_main_div">
             <div class="col-12">
                 <div id="vendor-address-map-container" style="height: 200px;">
@@ -35,6 +49,7 @@
             </div>
         </div>
     @endif
+@endif
     @if(isset($vendor_details['vendor_tables']))
         <div class="vendor_tables">
             <h4>Book a table</h4>
@@ -220,7 +235,7 @@
                                 <div class="form-row mb-3">
                                     <div class="col-md-6 mb-3">
                                         <label for="house_number">{{ __('House / Apartment/ Flat No.') }}</label>
-                                        <input type="text" class="form-control" id="house_number" placeholder="{{ __('House / Apartment/ Flat number') }}" name="house_number" >
+                                        <input type="text" class="form-control" id="house_number" placeholder="{{ __('House / Apartment/ Flat No.') }}" name="house_number" >
                                         <span class="text-danger" id="house_number_error"></span>
                                     </div>
                                     <div class="col-md-6 mb-3">

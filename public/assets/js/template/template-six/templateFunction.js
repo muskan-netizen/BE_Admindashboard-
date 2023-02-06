@@ -61,5 +61,20 @@ $(function () {
     //         {breakpoint: 360,settings: {slidesToShow: 3,slidesToScroll: 1}}
     //     ]
     // });
-
+    $('.render_long_term_service').slick({
+        infinite: true,
+        speed: 300,
+        slidesToShow: 6,
+        slidesToScroll: 1,
+        centerMode: false,
+        centerPadding: '60px',
+        arrows: true,
+        dots: false,
+        responsive: [
+            { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
+            { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, } },
+            { breakpoint: 767, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, } },
+            { breakpoint: 576, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, centerPadding: '0', } }
+        ]
+    });
 })

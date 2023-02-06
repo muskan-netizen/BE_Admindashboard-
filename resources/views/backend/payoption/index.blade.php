@@ -3,6 +3,7 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<style>#payment_48{display:none;}</style>
 @endsection
 
 @section('content')
@@ -51,7 +52,7 @@
         <div class="row">
 
             @foreach($payOption as $key => $opt)
-            <div class="col-6 col-md-3 col-xl-2 mb-3">
+            <div class="col-6 col-md-3 col-xl-2 mb-3" id="payment_{{$opt->id}}">
 
                 <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
                 <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
@@ -59,7 +60,9 @@
                 <?php
                 $creds = json_decode($opt->credentials);
                 $id = (isset($creds->id)) ? $creds->id : '';
+                $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
                 $token = (isset($creds->token)) ? $creds->token : '';
+                $cod_min_amount = (isset($creds->cod_min_amount)) ? $creds->cod_min_amount : '';
                 $username = (isset($creds->username)) ? $creds->username : '';
                 $password = (isset($creds->password)) ? $creds->password : '';
                 $signature = (isset($creds->signature)) ? $creds->signature : '';
@@ -112,6 +115,10 @@
                 $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
                 $aes_key = (isset($creds->aes_key)) ? $creds->aes_key : '';
                 $uuid_key = (isset($creds->uuid_key)) ? $creds->uuid_key : '';
+                $subscription_key = (isset($creds->subscription_key)) ? $creds->subscription_key : '';
+                $reference_id = (isset($creds->reference_id)) ? $creds->reference_id : '';
+                $mtn_api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                $plugnpay_publisher_name = (isset($creds->plugnpay_publisher_name)) ? $creds->plugnpay_publisher_name : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -134,6 +141,21 @@
                         </div>
                         @endif
                     </div>
+
+
+                    @if ( (strtolower($opt->code) == 'cod') )
+                    <div class="mt-2" id="cod_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="cod_min_amount" class="mr-3">{{ __("Minimum Amount For Cod") }}</label>
+                                    <input type="text" name="cod_min_amount" id="cod_min_amount" class="form-control" value="{{@$cod_min_amount}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    @endif
 
                     @if ( (strtolower($opt->code) == 'easypaisa') )
                     <div class="mt-2" id="easypaisa_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
@@ -1088,6 +1110,55 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'mtn_momo') )
+                    <div class="mt-2 d-none" id="mtn_momo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="company_token" class="mr-3">{{ __("Subscription Key") }}</label>
+                                    <input type="text" name="subscription_key" id="subscription_key" class="form-control" value="{{$subscription_key}}" @if($opt->status == 1) required @endif>
+                                    <p id="subscription_key_error"></p>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="reference_id" class="mr-3">{{ __("Reference Id") }}</label>
+                                    <input type="text" name="reference_id" id="reference_id" class="form-control" value="{{$reference_id}}" @if($opt->status == 1) required @endif>
+                                    <p id="reference_id_error"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-12 @if(empty($mtn_api_key)) d-none @else d-block @endif" id="api_key_frm">
+                                <div class="form-group mb-2">
+                                    <label for="reference_id" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="api_key" id="api_key" class="form-control" readonly value="{{$mtn_api_key}}" @if($opt->status == 1) required @endif>
+                                    <p id="api_key_error"></p>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-2 mx-auto">
+                                <a class="btn btn-primary" id="generate_mtn_momo_api_key" href="javascript:void(0)">Generate Api Key</a>
+                            </div>
+                            <div class="form-group mb-2 mx-auto" id="msg_status">
+
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'plugnpay') )
+                        <div class="mt-2" id="plugnpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group mb-2">
+                                        <label for="plugnpay_publisher_name" class="mr-3">{{ __("plugnpay Publisher Name") }}</label>
+                                        <input type="text" name="plugnpay_publisher_name" id="plugnpay_publisher_name" class="form-control" value="{{$plugnpay_publisher_name}}" @if($opt->status == 1) required @endif>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                 </div>
             </div>
             @endforeach
@@ -1195,6 +1266,33 @@
                         </div>
                     </div>
                     @endif
+
+
+                    @if ( (strtolower($opt->code) == 'razorpay') )
+                    <div class="2" id="razorpay_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="razorpay_payout_api_key" class="mr-3">{{ __("API Key") }}</label>
+                                    <input type="text" name="razorpay_payout_api_key" id="razorpay_payout_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="razorpay_payout_secret_key" class="mr-3">{{ __("API Secret Key") }}</label>
+                                    <input type="text" name="razorpay_payout_secret_key" id="razorpay_payout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <h6 class="mt-3">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.razorpay.payout.notify')}}</span></a>
+                            </h6>
+                        </div>
+                    </div>
+                    @endif
+
+
 
 
                 </div>

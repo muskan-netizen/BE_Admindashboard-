@@ -14,7 +14,7 @@
     border-radius: 50%;
     text-align: center;
 }
-.alNewOrderTabs.nav-tabs .nav-link.active, 
+.alNewOrderTabs.nav-tabs .nav-link.active,
 .alNewOrderTabs.nav-tabs .nav-item.show .nav-link {
     color: #43bee1;
     background-color: transparent;
@@ -71,7 +71,7 @@
     <div class="row">
         <div class="col-md-7">
             <div class="card">
-                <div class="card-body"> 
+                <div class="card-body">
                     @if(isset($subadmin))
                     <form id="UpdateSubadmin"  enctype="multipart/form-data" method="post" action="{{route('customer.new.update', $subadmin->id)}}"
                         enctype="multipart/form-data">
@@ -130,6 +130,28 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row">
+                            @if (isset($getAdditionalPreference['is_price_by_role']))
+                                @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="roles" class="control-label">{{ __("User Roles") }}</label>
+                                            <select name="role_id" class="form-control">
+                                                @if (isset($roles))
+                                                    @foreach ($roles as $key => $_role)
+                                                        <option value="{{$_role['id'] ?? ''}}" @if($subadmin->role_id == $_role['id']) selected @endif>{{ $_role['role'] }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endif
+
+                        </div>
+
+
                         <div class="row mt-2">
                             @if(!empty($user_registration_documents) && count($user_registration_documents) > 0)
                             @foreach($user_registration_documents as $user_registration_document)
@@ -348,7 +370,7 @@
                     </a>
                     <div class="material-border"></div>
                 </li>
-            </ul> 
+            </ul>
 
             <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
                 <div class="tab-pane fade past-order show active position-relative h-100" id="active_orders"  role="tabpanel" aria-labelledby="active_order-tab">
@@ -367,7 +389,7 @@
                                     <span class="alNewOrderListingView_orderAddress">{{$order->orderDetail->address->house_number?$order->orderDetail->address->house_number.', ' : ''}}{{$order->orderDetail->address->address}}</span>
                                 </div>
                                 @endif
-                            </div> 
+                            </div>
                             <div class="row mt-2">
                                 <div class="col-sm-3">
                                     <span class="alNewOrderListingView_orderName">{{$order->vendor->name ?? ''}}</span>
@@ -384,64 +406,64 @@
                                 <div class="col-sm-5">
                                     <div class="alNewOrderListingView_orderTotalPrice">
                                         <ul class="price_box_bottom m-0 p-0">
-                                            @if($order->subtotal_amount > 0)                                                    
+                                            @if($order->subtotal_amount > 0)
                                             <li class="d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Total</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->subtotal_amount)}}</span>
                                             </li>
                                             @endif
-                                            @if($order->discount_amount > 0)                                          
+                                            @if($order->discount_amount > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Promocode') }}</label>                                                
+                                                <label class="m-0">{{ __('Promocode') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->discount_amount)}}</span>
                                             </li>
                                             @endif
-                                            @if($order->total_container_charges > 0)                                          
+                                            @if($order->total_container_charges > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Container Charges') }}</label>                                                
+                                                <label class="m-0">{{ __('Container Charges') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->total_container_charges??'0.00')}}</span>
                                             </li>
                                             @endif
-                                            @if($order->taxable_amount > 0)                                          
+                                            @if($order->taxable_amount > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Tax') }}</label>                                                
+                                                <label class="m-0">{{ __('Tax') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->taxable_amount??'0.00')}}</span>
                                             </li>
                                             @endif
-                                            @if($order->service_fee_percentage_amount > 0)                                          
+                                            @if($order->service_fee_percentage_amount > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Service Fee') }}</label>                                                
+                                                <label class="m-0">{{ __('Service Fee') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->service_fee_percentage_amount??'0.00')}}</span>
                                             </li>
                                             @endif
-                                            @if($order->fixed_fee_amount > 0)                                          
+                                            @if($order->fixed_fee_amount > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __($fixedFee) }}</label>                                                
+                                                <label class="m-0">{{ __($fixedFee) }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->fixed_fee_amount??'0.00')}}</span>
                                             </li>
                                             @endif
-                                            @if($order->delivery_fee > 0)                                          
+                                            @if($order->delivery_fee > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Delivery') }}</label>                                                
+                                                <label class="m-0">{{ __('Delivery') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->delivery_fee??'0.00')}}</span>
                                             </li>
                                             @endif
 
                                             <li class="grand_total d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Amount') }}</label>                                                
+                                                <label class="m-0">{{ __('Amount') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{ decimal_format($order->subtotal_amount) - decimal_format($order->discount_amount)  + decimal_format($order->total_container_charges) + decimal_format($order->taxable_amount) + decimal_format($order->service_fee_percentage_amount) + decimal_format($order->fixed_fee_amount) + decimal_format($order->delivery_fee ) }}</span>
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
-                            </div>   
+                            </div>
                         </div>
                     </div>
                     @empty
                     {{__('No Order History Found.')}}
                     @endforelse
 
-                    
+
                 </div>
                 <div class="tab-pane fade past-order position-relative h-100" id="complete_orders"  role="tabpanel" aria-labelledby="cpmplete_order-tab">
                     @forelse($completed_orders as $order)
@@ -459,7 +481,7 @@
                                     <span class="alNewOrderListingView_orderAddress">{{$order->orderDetail->address->house_number?$order->orderDetail->address->house_number.', ' : ''}}{{$order->orderDetail->address->address}}</span>
                                 </div>
                                 @endif
-                            </div> 
+                            </div>
                             <div class="row mt-2">
                                 <div class="col-sm-3">
                                     <span class="alNewOrderListingView_orderName">{{$order->vendor->name ?? ''}}</span>
@@ -476,57 +498,57 @@
                                 <div class="col-sm-5">
                                     <div class="alNewOrderListingView_orderTotalPrice">
                                         <ul class="price_box_bottom m-0 p-0">
-                                            @if($order->subtotal_amount > 0)                                                    
+                                            @if($order->subtotal_amount > 0)
                                             <li class="d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Total</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->subtotal_amount)}}</span>
                                             </li>
                                             @endif
-                                            @if($order->discount_amount > 0)                                          
+                                            @if($order->discount_amount > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Promocode') }}</label>                                                
+                                                <label class="m-0">{{ __('Promocode') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->discount_amount)}}</span>
                                             </li>
                                             @endif
-                                            @if($order->total_container_charges > 0)                                          
+                                            @if($order->total_container_charges > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Container Charges') }}</label>                                                
+                                                <label class="m-0">{{ __('Container Charges') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->total_container_charges??'0.00')}}</span>
                                             </li>
                                             @endif
-                                            @if($order->taxable_amount > 0)                                          
+                                            @if($order->taxable_amount > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Tax') }}</label>                                                
+                                                <label class="m-0">{{ __('Tax') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->taxable_amount??'0.00')}}</span>
                                             </li>
                                             @endif
-                                            @if($order->service_fee_percentage_amount > 0)                                          
+                                            @if($order->service_fee_percentage_amount > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Service Fee') }}</label>                                                
+                                                <label class="m-0">{{ __('Service Fee') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->service_fee_percentage_amount??'0.00')}}</span>
                                             </li>
                                             @endif
-                                            @if($order->fixed_fee_amount > 0)                                          
+                                            @if($order->fixed_fee_amount > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __($fixedFee) }}</label>                                                
+                                                <label class="m-0">{{ __($fixedFee) }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->fixed_fee_amount??'0.00')}}</span>
                                             </li>
                                             @endif
-                                            @if($order->delivery_fee > 0)                                          
+                                            @if($order->delivery_fee > 0)
                                             <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Delivery') }}</label>                                                
+                                                <label class="m-0">{{ __('Delivery') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{decimal_format($order->delivery_fee??'0.00')}}</span>
                                             </li>
                                             @endif
 
                                             <li class="grand_total d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Amount') }}</label>                                                
+                                                <label class="m-0">{{ __('Amount') }}</label>
                                                 <span>{{$clientCurrency->currency->symbol}}{{ decimal_format($order->subtotal_amount) - decimal_format($order->discount_amount)  + decimal_format($order->total_container_charges) + decimal_format($order->taxable_amount) + decimal_format($order->service_fee_percentage_amount) + decimal_format($order->fixed_fee_amount) + decimal_format($order->delivery_fee ) }}</span>
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
-                            </div>   
+                            </div>
                         </div>
                     </div>
                     @empty

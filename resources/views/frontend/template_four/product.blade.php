@@ -4,6 +4,9 @@
 'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
 'meta_description'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description:'',
 ])
+@php
+$clientData = \App\Models\Client::select('socket_url')->first();
+@endphp
 
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
@@ -20,6 +23,17 @@
         .exzoom .exzoom_zoom_outer{display:none}
         }
     .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
+.container-badge-value span{
+    padding: 0px;
+    margin-right: 10px;
+    color: #6c757d;
+    font-size: 15px;}
+
+.container-badge{display: flex;margin-bottom: 10px;}
+.value-badge{width:100px;font-weight: bold;}
+.container-badge-value{width:calc( 100% - 100px);}
+
+
 </style>
 
 @endsection
@@ -71,7 +85,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                             </div>
                         </div>--}}
                         <div class="row no-gutters">
-                            <div class="col-lg-5 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                            <div class="col-lg-5 @php if(count($product->media) == 0){  echo 'd-block'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -140,20 +154,24 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                 <div class="exzoom hidden w-100" id="exzoom">
                                     <div class="exzoom_img_box mb-2">
                                         <ul class='exzoom_img_ul'>
-                                        @if(!empty($product->media))
-                                        @foreach($product->media as $k => $image)
-                                        @php
-                                                        if(isset($image->pimage)){
-                                                            $img = $image->pimage->image;
-                                                        }else{
-                                                            $img = $image->image;
-                                                        }
-                                                    @endphp
-                                            @if(!is_null($img))
-                                            <li><img class="" src="{{$img->path['image_fit'].'1000/1000'.$img->path['image_path']}}" /></li>
+                                        @if(!empty($product->media) && count($product->media) > 0)
+                                                @foreach($product->media as $k => $image)
+                                                        @php
+                                                            if(isset($image->pimage)){
+                                                                $img = $image->pimage->image;
+                                                            }else{
+                                                                $img = $image->image;
+                                                            }
+                                                        @endphp
+                                                @endforeach
+                                                @if(!is_null($img))
+                                                <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
+                                                @endif
+                                                @else
+                                                        
+                                                    <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
+                                                        
                                             @endif
-                                        @endforeach
-                                        @endif
                                         </ul>
                                     </div>
                                     @if(count($product->media) > 1)
@@ -205,7 +223,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                     </div>
                             </div>
 
-                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text">
+                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'col-lg-7'; } @endphp rtl-text">
                                 <div class="product-right inner_spacing pl-sm-3 p-0">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -251,13 +269,14 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                                 <div class="size-box">
                                                     <ul class="productVariants">
                                                         <li class="firstChild">{{$variant->title}}</li>
-                                                        <li class="otherSize">
+                                                        <li class="row otherSize">
                                                             @foreach($variant->option2 as $k => $optn)
                                                             <?php $var_id = $variant->variant_type_id;
                                                             $opt_id = $optn->variant_option_id;
                                                             $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                             ?>
-                                                            <label class="radio d-inline-block txt-14 mr-2">{{$optn->title}}
+                                                            <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2">{{$optn->title}}
+                                                                <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
                                                                 <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}} data-cartCheck="{{(($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($optn->quantity <= $product_quantity_in_cart && $product->has_inventory) || ($optn->quantity < $product->minimum_order_count)) ? 1 : 0}}">
                                                                 <span class="checkround"></span>
                                                             </label>
@@ -274,10 +293,38 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                         <span class="text-danger mb-2 mt-2"></span>
                                     </div>
                                     <div class="border-product al_disc">
-                                        <h6 class="product-title">{{__('Product Details')}}</h6>
-                                        <p></p>
+                                        <h6 class="product-title mb-2">{{__('Product Details')}}</h6>
+
                                         {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}
+
+                                        @if( p2p_module_status() )
+                                            @if( !empty($attr_array) )
+                                                @foreach($attr_array as $attr_key => $attr_val)
+                                                    <div class="container-badge">
+                                                        <div class="value-badge">{{ $attr_key }} : </div>
+                                                        @if( !empty($attr_val) )
+                                                            <div class="container-badge-value">
+                                                                @foreach($attr_val as $inn_key => $inn_val)
+                                                                    <span>{{$inn_val['value']}}</span>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+
+                                                    </div>
+                                                @endforeach
+                                            @endif
+
+                                            {{-- Chat Button --}}
+                                            @if($clientData->socket_url !='' )
+                                                <hr>
+                                                <h6 class="sold-by">
+                                                    <span>Sold by : </span>
+                                                    <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                                                    <a class="start_p2p_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
+                                                </h6>
+                                            @endif
+                                    @endif
                                     </div>
                                     <div class="border-product">
                                         <h6 class="product-title">{{__('Share It')}}</h6>
@@ -816,6 +863,10 @@ $checkSlot = findSlot('',$product->vendor->id,'');
     $(document).ready(function() {
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
+        $(".color_var").click(function () {
+            $(".color_var").removeClass("var-active");
+            $(this).toggleClass("var-active");
+            });
     });
 </script>
 
@@ -1588,5 +1639,6 @@ $checkSlot = findSlot('',$product->vendor->id,'');
 
         });
     </script>
-
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 @endsection

@@ -244,7 +244,7 @@
                                         @endif
                                     @endforeach
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check mb-4">
                                     <input type="checkbox" name="term_and_condition" class="form-check-input @error('term_and_condition') is-invalid @enderror" id="html">
                                     <label for="html" class="mr-3">{{ __('I accept the') }}
                                         <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
@@ -286,7 +286,7 @@
 
 
                                     </div> -->
-                                    <div class="col-md-6 hide position-absolute">
+                                    <div class="col-md-6 position-absolute">
                                         <label for="">Referral Code</label>
                                         <input type="text" class="form-control" id="refferal_code"
                                             placeholder="Refferal Code" name="refferal_code"
@@ -298,7 +298,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="row mt-3">
+                                <div class="row  mt-5">
                                     <div class="col-md-12">
                                         <input type="hidden" name="device_type" value="web">
                                         <input type="hidden" name="device_token" value="web">
@@ -317,6 +317,7 @@
 @endsection
 @section('script')
     <script src="{{ asset('assets/js/intlTelInput.js') }}"></script>
+    <script src="{{asset('js/phone_number_validation.js')}}"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
     <script>
         $(document).ready(function() {
@@ -362,6 +363,13 @@
                     password: "{{ __('Please enter your password')}}",
                 }
             });
+
+            $("#register").submit(function() {
+                if($("#phone").hasClass("is-invalid")){
+                    $("#phone").focus();
+                    return false;
+                }
+            });
         });
         jQuery(window.document).ready(function () {
             jQuery("body").addClass("register_body");
@@ -377,12 +385,14 @@
             }, 2500);
         });
         var input = document.querySelector("#phone");
-        window.intlTelInput(input, {
+        var iti = window.intlTelInput(input, {
             separateDialCode: true,
             hiddenInput: "full_number",
             utilsScript: "{{ asset('assets/js/utils.js') }}",
             initialCountry: "{{ Session::get('default_country_code', 'US') }}",
         });
+
+        phoneNumbervalidation(iti, input);
 
         $(document).ready(function() {
             $("#phone").keypress(function(e) {

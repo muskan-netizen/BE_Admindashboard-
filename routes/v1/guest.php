@@ -1,9 +1,14 @@
 <?php
 Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
 
+    Route::post('dispatcher/check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromDispatcher');
+
+    Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+
     Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 
     Route::post('vendor-sync-inventory', 'Api\v1\VendorController@vendorSyncInventory')->middleware('ConnectDbFromInventory');
+
 
 
     Route::group(['middleware' => ['dbCheck', 'checkAuth']], function () { //apilogger
@@ -31,6 +36,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
 
         Route::post('cart/add', 'Api\v1\CartController@add');
+        Route::post('checkProductAvailibility', 'Api\v1\RentalProductController@checkProductAvailibility');
         Route::get('cart/list', 'Api\v1\CartController@index');
         Route::post('upload/prescriptions', 'Api\v1\CartController@uploadPrescriptions');
         Route::post('delete/prescriptions', 'Api\v1\CartController@deleteProductPrescription');
@@ -40,7 +46,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('homepage', 'Api\v1\HomeController@homepage');
         Route::post('get/subcategory/vendor', 'Api\v1\HomeController@getSubcategoryVendor');
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
-        Route::post('header', 'Api\v1\HomeController@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
         Route::POST('checkProductAvailibility', 'Api\v1\ProductController@checkProductAvailibility');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
@@ -49,7 +54,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('cms/page/list', 'Api\v1\CMSPageController@getPageList');
         Route::get('brand/{id?}', 'Api\v1\BrandController@productsByBrand');
         Route::get('category/{id?}', 'Api\v1\CategoryController@categoryData');
-        // get Category kyc document 
+        // get Category kyc document
         Route::post('category_kyc_document', 'Api\v1\CategoryController@getcategoryKycDocument');
         Route::post('submit_category_kyc', 'Api\v1\CartController@updateCartCategoryKyc');
 
@@ -79,13 +84,23 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('upload-image-pickup', 'Api\v1\PickupDeliveryController@uploadImagePickup');  ////// upload image while pickup delivery
 
+        //Bidding Controller
+        Route::post('upload/bid/prescriptions',    'Api\v1\BiddingController@uploadBiddingPrescription');
+        Route::get('get/vendor/bid/prescriptions', 'Api\v1\BiddingController@getVendorPrescription');
+        Route::get('get/user/bid/prescriptions',   'Api\v1\BiddingController@getUserPrescription');
+        Route::post('delete/bid/prescriptions',     'Api\v1\BiddingController@deleteProductPrescription');
+        Route::post('get/vendor/product/search',   'Api\v1\BiddingController@search');
+
+
         Route::post('cart/product/lastAdded', 'Api\v1\CartController@getLastAddedProductVariant');
         Route::post('cart/product/variant/different-addons', 'Api\v1\CartController@getProductVariantWithDifferentAddons');
 
         Route::post('promo-code-open/list', 'Api\v1\PickupDeliveryController@postPromoCodeListOpen');
         Route::post('order/after/payment', 'Front\PaytabController@after_app_payment');
-        //Passbase Store 
+        //Passbase Store
         Route::post('passbase/store', 'Api\v1\PassbaseController@storeAuthkey');
+
+        Route::post('order-tracking', 'Api\v1\OrderController@OrderTracking');
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger
@@ -102,5 +117,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/product-schedule/update', 'Api\v1\CartController@updateProductSchedule');
         Route::post('cart/productfaq/update', 'Api\v1\CartController@updateCartProductFaq');
         Route::post('dropoff-location', 'Api\v1\StaticDropoffController@getStaticLocation');
+    });
+    Route::group(['middleware' => ['dbCheck']], function () {
+        Route::post('header', 'Api\v1\HomeController@headerContent');
     });
 });

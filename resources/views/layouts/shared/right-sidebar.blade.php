@@ -27,7 +27,7 @@
 
               <form class="search-bar p-3">
                   <div class="position-relative">
-                      <input type="text" class="form-control" placeholder="Search...">
+                      <input type="text" class="form-control" placeholder="{{ __('Search') }}...">
                       <span class="mdi mdi-magnify"></span>
                   </div>
               </form>
@@ -282,6 +282,47 @@
         </div>
     </div>
 </div>
+
+{{-- mohit sir code added by sohail --}}
+<div class="modal fade bd-example-modal-lg" id="vendor_order_product_price_modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __('Update Product Price') }}</h4><br>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <form id="update-order-product-price-form" class="p-3">
+                @csrf
+                <input type="hidden" name="or_vend_prod_id" id="or-vend-prod-id">
+                <input type="hidden" name="or_prod_old_price" id="or-prod-old-price">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            {!! Form::label('title', __('New Price'),['class' => 'control-label']) !!}
+                            <input class="form-control" placeholder="New Price" name="product_price" type="number" min=0 required />
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group" id="pushBody">
+                            <label for="push_body" class="control-label">{{__("Reason")}}</label>
+                            <textarea class="txtarea form-control" rows="3" required placeholder={{__("Reason")}} name="update_price_reason" type="text" id="update_price_reason"></textarea>
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="submit" class="btn btn-info waves-effect waves-light submitOrderUpdatedPriceByVendor">{{ __('Submit') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{-- till here --}}
 
 <script type="text/template" id="latest_order_template">
 

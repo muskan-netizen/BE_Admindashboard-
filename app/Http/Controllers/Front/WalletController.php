@@ -18,6 +18,7 @@ class WalletController extends FrontController
      *
      * @return \Illuminate\Http\Response
      */
+    
     public function index(){
         $langId = Session::get('customerLanguage');
         $currency_id = Session::get('customerCurrency');
@@ -220,5 +221,16 @@ class WalletController extends FrontController
         echo '<pre>';
         echo 'Successfully Done';
         echo '</pre>';
+    }
+    //    
+    /**
+     * this function is just for testing 
+     * addWalletAmount
+     *
+     * @return void
+     */
+    public function addWalletAmount(){
+        $request = new Request(['wallet_amount' => 100, 'transaction_id' => rand()]);
+        $this->creditWallet($request);
     }
 }
