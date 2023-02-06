@@ -50,7 +50,7 @@ trait ProductTrait{
             },
             'category.categoryDetail.allParentsAccount','ServicePeriod', 'productVariantByRoles',            
         ];
-        
+
         if( checkTableExists('product_attributes') ) {
             $with_array[] = 'ProductAttribute';
             $with_array[] = 'ProductAttribute.attribute';
@@ -58,7 +58,7 @@ trait ProductTrait{
             $with_array[] = 'ProductAttribute.attribute';
         }
         $product = Product::with($with_array);
-           
+
             if($user){
                 $product = $product->with('inwishlist', function ($query) use($user) {
                     $query->where('user_wishlists.user_id', $user->id);
@@ -66,11 +66,11 @@ trait ProductTrait{
             }
             $product = $product->with('related');
             if(checkColumnExists('products','return_days')){
-                $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','is_long_term_service','service_duration', 'returnable' , 'replaceable' , 'return_days', 'same_day_delivery', 'next_day_delivery','hyper_local_delivery' );
+                $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','is_long_term_service','service_duration', 'returnable' , 'replaceable' , 'return_days', 'same_day_delivery', 'next_day_delivery','hyper_local_delivery','is_recurring_booking' );
             }else{
-                $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','service_duration','same_day_delivery', 'next_day_delivery', 'hyper_local_delivery' );
+                $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','service_duration','same_day_delivery', 'next_day_delivery', 'hyper_local_delivery','is_recurring_booking' );
             }
-            
+
             $product = $product->whereHas('vendor',function($q) use($vendor_slug){
                     $q->where('slug',$vendor_slug);
                 })->where('url_slug', $url_slug)
@@ -102,8 +102,6 @@ trait ProductTrait{
                 'latitude'      => $latitude,
                 'longitude'     => $longitude
             ];
-            \Log::info('getProductPrice api data');
-            \Log::info($postdata);
             $client = new Guzzle([
                 'headers' => [
                     'personaltoken' => $dispatch_domain_ondemand->dispacher_home_other_service_key,

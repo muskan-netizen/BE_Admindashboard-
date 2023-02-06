@@ -114,6 +114,9 @@ $add_to_cart =  route('addToCart') ;
                                             $isAddonExist = 0;
                                             $minimum_order_count = $data->minimum_order_count == 0 ? 1 : $data->minimum_order_count;
                                             $batch_count = $data->batch_count;
+                                            $redirec = ($data->is_recurring_booking ==1) ? route('productDetail', [$prod->vendor->slug, $prod->url_slug]) : 'javascript:void(0)' ;
+                                            $class = ($data->is_recurring_booking ==1) ? 'add_vendor_product_btn' : 'add_vendor_product' ;
+                                            
                                             if (count($data->addOn) > 0) {
                                                 $isAddonExist = 1;
                                             }
@@ -158,7 +161,7 @@ $add_to_cart =  route('addToCart') ;
                                             @if( $is_service_product_price_from_dispatch_forOnDemand ==1)
                                                 <a class="btn btn-solid btn btn-solid view_on_demand_price"  style="display:none;" id="add_button_href{{$cartProductId}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                             @else
-                                                <a class="add-cart-btn add_vendor_product"
+                                                <a class="add-cart-btn {{$class}}"
                                                     style="display:none;"
                                                     id="add_button_href{{ $cartProductId }}"
                                                     data-variant_id="{{ $productVariantIdInCart }}"
@@ -168,7 +171,7 @@ $add_to_cart =  route('addToCart') ;
                                                     data-addon="{{ $isAddonExist }}"
                                                     data-minimum_order_count="{{ $minimum_order_count }}"
                                                     data-batch_count="{{ $batch_count }}"
-                                                    href="javascript:void(0)">{{ __('Add') }}
+                                                    href="{{ $redirec }}">{{ __('Add') }}
                                                     @if ($minimum_order_count > 0)
                                                         ({{ $minimum_order_count }})
                                                     @endif
@@ -223,7 +226,7 @@ $add_to_cart =  route('addToCart') ;
                                                     <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                                 @else 
                                                     {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                                    <a class="add-cart-btn add_vendor_product"
+                                                    <a class="add-cart-btn {{$class}}"
                                                         id="aadd_button_href{{ $data->id }}"
                                                         data-variant_id="{{ $data->variant[0]->id }}"
                                                         data-add_to_cart_url="{{ $add_to_cart }}"
@@ -232,7 +235,7 @@ $add_to_cart =  route('addToCart') ;
                                                         data-addon="{{ $isAddonExist }}"
                                                         data-batch_count="{{ $batch_count }}"
                                                         data-minimum_order_count="{{ $minimum_order_count }}"
-                                                        href="javascript:void(0)">{{ __('Add') }}
+                                                        href="{{ $redirec }}">{{ __('Add') }}
                                                         @if ($minimum_order_count > 1)
                                                             ({{ $minimum_order_count }})
                                                         @endif

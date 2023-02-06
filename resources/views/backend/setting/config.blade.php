@@ -3442,7 +3442,15 @@
 
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                   <label for="is_service_product_price_from_dispatch_switch" class="mr-2 mb-0">{{__('Freelancer Mod for Service Booking')}}<small class="d-block pr-5">{{__("To view list of agents on booking")}}</small></label>
+                                   <label for="is_recurring_booking_switch" class="mr-2 mb-0">{{__('Recurring Booking')}}<small class="d-block pr-5">{{__("Enable to vendor on which product recurring booking.")}}</small></label>
+                                  <span> <input type="checkbox" data-plugin="switchery" name="is_recurring_booking_switch" id="is_recurring_booking_switch" class="form-control checkbox_change" data-className="is_recurring_booking"  data-color="#43bee1" @if( @getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == '1') checked='checked' @endif>
+                                   </span>
+                                   <input type="hidden"  @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1) value="1" @else value="0" @endif  name="is_recurring_booking"  id="is_recurring_booking"/>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                <label for="is_service_product_price_from_dispatch_switch" class="mr-2 mb-0">{{__('Freelancer Mod for Service Booking')}}<small class="d-block pr-5">{{__("To view list of agents on booking")}}</small></label>
                                   <span> <input type="checkbox" data-plugin="switchery" name="is_service_product_price_from_dispatch_switch" id="is_service_product_price_from_dispatch_switch" class="form-control checkbox_change" data-className="is_service_product_price_from_dispatch"  data-color="#43bee1" @if(   $getAdditionalPreference ['is_service_product_price_from_dispatch'] == '1') checked='checked' @endif>
                                    </span>
                                    <input type="hidden"  @if(   $getAdditionalPreference['is_service_product_price_from_dispatch'] == '1')  value="1" @else value="0" @endif  name="is_service_product_price_from_dispatch"  id="is_service_product_price_from_dispatch"/>

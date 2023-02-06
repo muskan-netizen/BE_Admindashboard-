@@ -101,16 +101,16 @@ class ProductController extends FrontController{
         if($product->is_long_term_service == 1){
             $product_id = $product->LongTermProducts->product_id;
             $url_slug   = $product->LongTermProducts->product->url_slug;
-           
+
             $LongTermProducts                    = $this->getProduct($product->LongTermProducts->product_id,$vendor,$url_slug,$user,$langId);
             $LongTermProducts->long_term_product = $product->LongTermProducts;
             $addon =  $product->LongTermProducts->addons->pluck('option_id','addon_id')->toArray() ?? [];
             if($product->ServicePeriod){
                 $product->ServicePeriods = $product->ServicePeriod->pluck('service_period')->toArray();
             }
-        
+
             $LongTermProducts->product_addon     =  $addon;
-          
+
             return view('frontend.long_term_service_product')->with(['product' => $product, 'navCategories' => $navCategories,  'rating_details' => $rating_details,  'product_in_cart' => $product_in_cart,'is_available'=>$is_available,'LongTermProducts'=> $LongTermProducts]);
         }
 
@@ -122,7 +122,7 @@ class ProductController extends FrontController{
                 $v->multiplier = $clientCurrency->doller_compare;
             }
         }
-       
+
         $is_inwishlist_btn = 0;
         if($product->category){
             $category_detail = Category::select()->where('id',$product->category->category_id)->first();
@@ -250,7 +250,7 @@ class ProductController extends FrontController{
                 $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
                 $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->orderby('id', 'desc')->limit(20)->get();
             }
-               
+
 
             foreach($suggested_category_products as $r_product){
                 foreach ($r_product->variant as $key => $value) {
@@ -259,13 +259,13 @@ class ProductController extends FrontController{
                     }
                 }
             }
-                
+
 
             if( !empty($product->brand_id) ) {
                 $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
                 $suggested_brand_products = $suggested_product->where('brand_id', $product->brand_id)->orderby('id', 'desc')->limit(20)->get();
             }
-                
+
 
                 foreach($suggested_brand_products as $r_product){
                 foreach ($r_product->variant as $key => $value) {
@@ -274,12 +274,12 @@ class ProductController extends FrontController{
                     }
                 }
             }
-            
+
             if( !empty($product->vendor_id) ) {
                 $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
                 $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
             }
-                
+
 
                 foreach($suggested_vendor_products as $r_product){
                 foreach ($r_product->variant as $key => $value) {
@@ -302,7 +302,7 @@ class ProductController extends FrontController{
                             $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
                             $product_attr[$key]['hexacode'] = optional($value->attributeOption)->hexacode ?? '';
                             $product_attr[$key]['type'] = optional($value->attribute)->type ?? '';
-                            
+
                             if( !empty($value->attribute) && $value->attribute->type != 4) {
                                 $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
                             }
@@ -312,11 +312,11 @@ class ProductController extends FrontController{
                         }
                     }
                 }
-                
+
                 $attr_id = '';
                 $attr_array = [];
                 foreach($product_attr as $pro_att_key => $pro_att_val) {
-                    
+
                     if( empty($attr_id) || ($pro_att_val['attribute_id'] != $attr_id) ) {
                         $attr_id = $pro_att_val['attribute_id'];
                         $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
@@ -453,7 +453,7 @@ class ProductController extends FrontController{
 
                     $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
                     // dump($variant->productPrice);
-                   
+
                     // $variant->productPrice = Session::get('currencySymbol') . number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
                     // $sets[] = $availableSet->toArray();
                     // foreach($availableSet->groupBy('product_variant_id') as $avSets){
@@ -501,11 +501,11 @@ class ProductController extends FrontController{
                 if($is_token_enable){
                     $tokenAmount = getJsToken();
                 }
-                
+
                 $data['variant'] = $variantData;
                 $data['tokenAmount'] = $tokenAmount;
                 $data['is_token_enable'] = $is_token_enable;
-                
+
                 return response()->json(array('status' => 'Success', 'data' => $data));
             }
 

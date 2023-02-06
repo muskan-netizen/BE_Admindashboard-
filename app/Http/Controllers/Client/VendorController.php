@@ -121,7 +121,7 @@ class VendorController extends BaseController
 
                 if($row->show_slot == 1){
                     $show_slot_option ="Open";
-                    
+
                 }elseif ($row->slot->count() > 0) {
                     $show_slot_option = "Open";
                 }else{
@@ -129,7 +129,7 @@ class VendorController extends BaseController
                 }
                 return $show_slot_option;
             })
-          
+
             ->addColumn('show_slot_label', function ($row) {
                 if($row->show_slot == 1){
                     $show_slot_label ="success";
@@ -139,7 +139,7 @@ class VendorController extends BaseController
                     $show_slot_label = "Closed";
                 }
                 return $show_slot_label ;
-            }) 
+            })
             ->addColumn('offers', function ($row) use ($client_preference) {
                 $offers  = [];
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
@@ -305,7 +305,7 @@ class VendorController extends BaseController
         // dd($additionalData);
         if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1 || @$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
             $saveVendorAdditionalInfo = VendorAdditionalInfo::updateOrCreate(
-                ['vendor_id'=> $saveVendor], 
+                ['vendor_id'=> $saveVendor],
                 $additionalData
             );
         }
@@ -533,7 +533,7 @@ class VendorController extends BaseController
         // dd($additionalData);
         if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1 || @$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
             $saveVendorAdditionalInfo = VendorAdditionalInfo::updateOrCreate(
-                ['vendor_id'=> $request->vendor_id], 
+                ['vendor_id'=> $request->vendor_id],
                 $additionalData
             );
         }
@@ -892,7 +892,7 @@ class VendorController extends BaseController
                 }
             }
         }
-        
+
         // $accepted = Bid::whereHas('bidRequests',function($q)use($vendor)
         // {
         //     $q->where(['user_id'=>$vendor->id]);
@@ -900,7 +900,7 @@ class VendorController extends BaseController
 
 
         $reqBidCnt = Bid::where('vendor_id','!=',$id)->groupBy('bid_req_id')->count();
-        
+
         return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates,'files'=>$files,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages, 'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference,'reqBidCnt'=>$reqBidCnt]);
     }
     // vendor product datatable
@@ -913,19 +913,19 @@ class VendorController extends BaseController
         $client_preference_detail =ClientPreference::select('id','business_type')->first();
         /**
          * is_live and not a long term service check in byProductWhereCheck this scope
-         *  */ 
+         *  */
         $product = Product::where('is_long_term_service',0)->with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
             $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
-        }])->select('products.id', 'products.sku', 'products.vendor_id','products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id')
-        ->join('product_translations', 'product_translations.product_id', '=', 'products.id') 
-        ->orderBy('product_translations.title', $ordring)  
+        }])->select('products.id', 'products.sku', 'products.vendor_id','products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id','products.is_recurring_booking')
+        ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
+        ->orderBy('product_translations.title', $ordring)
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
          $need_sync_with_order = 0;
         if(checkColumnExists('vendors', 'need_sync_with_order')){
             $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
         }
-          
+
         // pr($product->get()->toArray());
         $datatable = Datatables::of($product)
             ->addIndexColumn()
@@ -953,6 +953,7 @@ class VendorController extends BaseController
                 }
                 return $live_status;
             })
+
             ->addColumn('action', function ($product) use ($request) {
                 $edit_url = route('product.edit', $product->id);
                 $delete_url = route('product.destroy', $product->id);
@@ -981,10 +982,10 @@ class VendorController extends BaseController
             })
             ->addColumn('expiry_date', function ($product) use ($request) {
                 return $product->variant->first() ? $product->variant->first()->expiry_date : '-';
-            }) 
+            })
             ->addColumn('bar_code', function ($product) use ($request) {
                 return $product->variant->first() ? $product->variant->first()->barcode : '-';
-            }); 
+            });
 
 
             $datatable->addColumn('product_name', function ($product) use ($request) {
@@ -997,7 +998,14 @@ class VendorController extends BaseController
             ->addColumn('product_category', function ($product) use ($request) {
                 return $product->category && $product->category->cat && $product->category->cat->name ? $product->category->cat->name : 'N/A';
             });
+            if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1){
+                $datatable->addColumn('is_recurring_booking', function ($product) use ($request) {
+                   if($product->is_recurring_booking == 1){ $result = 'Yes';}else{$result = 'No';}
+                   return $result;
+                    //return '<input type="checkbox" class="form-control checkbox_change" data-className="is_recurring_booking" "'.$checked.'" data-color="#43bee1">';
 
+                });
+            }
             if ($client_preference_detail->business_type != 'taxi'){
 
                 $datatable->addColumn('product_brand', function ($product) use ($request) {
@@ -1008,7 +1016,10 @@ class VendorController extends BaseController
                 })
                 ->addColumn('product_price', function ($product) use ($request) {
                     return $product->variant->first() ? decimal_format($product->variant->first()->price) : 0;
-                })->addColumn('product_is_new', function ($product) use ($request) {
+
+                })
+
+                ->addColumn('product_is_new', function ($product) use ($request) {
 
                     return $product->is_new == 0 ? __('No') : __('Yes');
                 })
@@ -1046,15 +1057,17 @@ class VendorController extends BaseController
             if($need_sync_with_order != 1){
                 array_push($columg_arr, 'action');
             }
-            
+
+
+
             return $datatable->rawColumns($columg_arr)->make(true);
-            
+
     }
 
 
     /**   show vendor page - payout tab      */
     public function vendorPayout($domain = '', $id){
-      
+
         $product_categories = [];
         $active = array();
         $type = Type::all();
@@ -1246,7 +1259,7 @@ class VendorController extends BaseController
 
             $payout = new VendorPayout();
             $payout->vendor_id = $id;
-            
+
             $payout->payout_option_id = $request->payout_option_id;
             $payout->transaction_id = ($pay_option != 1) ? $request->transaction_id : '';
             $payout->amount = $request->amount;
@@ -1467,7 +1480,7 @@ class VendorController extends BaseController
                 VendorMinAmount::updateOrCreate($where, $create);
             }
         }
-        
+
         $return_json   = $request->has('return_json') && $request->return_json ? $request->return_json : 0;
         if($return_json ==  1 ){
             return $this->successResponse($vendor,__("Vendor update successfully!"));
@@ -2623,18 +2636,18 @@ class VendorController extends BaseController
         $preference = InventoryService::checkIfInventoryOn();
         if($preference){
             $email = Auth::user()->email;
-           
+
             $response = Http::get($preference->inventory_service_key_url."/admin/generate_inventory_login_token", [
                 'email' => $email
             ]);
             // $response->body();
            $token =  $response->json();
-           
+
             return response()->json(['success' => true,'data' => $token['data']?? null]);
         }else{
             return $this->errorResponse(['success' => false,'message'=>'Not Found'], 401);
         }
-        
+
     }
 
 

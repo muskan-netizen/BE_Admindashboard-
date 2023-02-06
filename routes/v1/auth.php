@@ -250,6 +250,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('bid/accept',   'Api\v1\BiddingController@bidAccept');
         Route::post('bid/placeBid',   'Api\v1\BiddingController@placeBid');
 
+
         // gift Card Order
         Route::group(['prefix' => 'giftCard'], function () {
             Route::get('list', 'Api\v1\GiftcardController@getGiftCard');

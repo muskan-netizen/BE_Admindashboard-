@@ -13,6 +13,7 @@ use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
 use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product};
+use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -27,6 +28,7 @@ if (!function_exists('setUserCode')) {
         }
     }
 }
+
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {
@@ -1665,4 +1667,55 @@ if (!function_exists('GerenalSlot')) {
 }
 
 
+
+if (!function_exists('GetDayFromDate')) {
+    function GetDayFromDate($date)
+    {
+        return strtolower(date('l', strtotime($date)));
+    }
+}
+
+if (!function_exists('weekDaysArray')) {
+    function weekDaysArray($daysArray='')
+    {
+        $daysArray = explode(',',$daysArray);
+        $daysArrayName = [];
+        $days = ['0'=>'Sunday','1'=>'Monday','2'=>'Tuesday','3'=>'Wednesday','4'=>'Thursday','5'=>'Friday','6'=>'Saturday'];
+        foreach($days as $key=> $day)
+        {
+            if(in_array($key,$daysArray)){
+                $daysArrayName[] = $day; 
+            }
+        }
+        return implode(',',$daysArrayName);
+    }
+}
+
+if (!function_exists('getDaysArrayBetweenTwoDates')) {
+
+    function getDaysArrayBetweenTwoDates($sdate,$edate,$matchDays=[],$alternate = ''){
+      $period = CarbonPeriod::create($sdate, $edate);
+        // Iterate over the period
+        $periods = [];
+            foreach ($period as $k => $date) {
+                if($alternate){
+
+                    if($k%2==0)
+                        $periods[] =  $date->format('Y-m-d');
+
+
+                }elseif(count($matchDays)>0){
+                    $dayNumber = $date->dayOfWeek; // get day number
+                    if(in_array($dayNumber,$matchDays))
+                    {
+                        $periods[] =  $date->format('Y-m-d');
+                    }
+                }else{
+                    $periods[] =  $date->format('Y-m-d');
+                }
+            }
+        // Convert the period to an array of dates
+        return $periods;
+    }
+}
 

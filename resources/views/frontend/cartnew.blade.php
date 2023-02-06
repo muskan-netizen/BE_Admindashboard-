@@ -1,5 +1,4 @@
 @extends('layouts.store', ['title' => __('Cart')])
-
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
@@ -89,7 +88,7 @@ display: flex;align-items: center;justify-content: center;border: 1px solid#eee;
 .new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
 justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
 .cart-checkout_btn button{width:100%;}
-.cart-checkout_btn #order_placed_btn {padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
+.cart-checkout_btn #order_placed_btn{padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .cart_delivery a i {font-weight: 600;font-size: 16px;}
 .schedule_btn ul li label.taskschedulebtn {padding: 6px 10px !important;font-size: 10px !important;}
 .cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;}
@@ -121,7 +120,6 @@ font-size: 12px;padding: 6.7px 10px;}
 .login-form #schedule_div input{display:block;width: 100% !important;}
 .login-form #schedule_div input::-webkit-calendar-picker-indicator{color: rgba(0, 0, 0, 0);opacity: 1}
 /*------cart page css end here------ */
-
 @media (max-width:576px){
 .al_body_template_two .show-prescription-doc {width:100%;}
 .item-show-cart h4 {font-size:14px !important;}
@@ -146,6 +144,7 @@ font-size: 12px;padding: 6.7px 10px;}
 .cart-design .alFourTemplateCartButtons a.btn.shoping {font-size:10px;display: block;width: 100%;text-align: left;height:auto;}
 .cart-design .alFourTemplateCartButtons a.shoping i{font-size:10px;vertical-align: middle;}
 }
+
 </style>
 
 @endsection
@@ -889,6 +888,8 @@ $client_preferences = \App\Models\ClientPreference::first();
       </div>
     </div>
   </div>
+
+
 @endsection
 
 @section('script')
@@ -1796,6 +1797,12 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
+
+
+
+
+
+
 
 </script>
 @if(in_array('kongapay',$client_payment_options))
