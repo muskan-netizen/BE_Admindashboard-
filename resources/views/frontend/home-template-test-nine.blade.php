@@ -666,7 +666,7 @@
 				<h2 class="h2-heading mb-3"> @php
 					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 					@endphp </h2>
-					<a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a>
+					{{-- <a class="" href="">View all  <img class="" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""> </a> --}}
 			</div>
 			<div class="row">
 				<div class="col-12">
@@ -742,7 +742,6 @@
 				</div>
 			</div>
 		</section> -->
-
 		@if( $homePageLabel->slug == 'featured_products' )
 			<section class="product-1 main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 				<div class="container">
@@ -752,7 +751,7 @@
 								<h2 class="h2-heading"> @php
 									echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 									@endphp </h2>
-									<a class="" href="">View all</a>
+									{{-- <a class="" href="">View all</a> --}}
 							</div>
 						</div>
 					</div>
@@ -775,7 +774,7 @@
 								<h2 class="h2-heading"> @php
 									echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 									@endphp </h2>
-									<a class="" href="">View all </a>
+									{{-- <a class="" href="">View all </a> --}}
 							</div>
 						</div>
 					</div>
@@ -797,12 +796,13 @@
 								<h2 class="h2-heading"> @php
 									echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 									@endphp </h2>
-									<a class="" href="">View all </a>
+									{{-- <a class="" href="">View all </a> --}}
 							</div>
 						</div>
 					</div>
 				<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					<div class="row">
+						{{-- @dd($homePageData[$homePageLabel->slug]) --}}
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
 								@include('frontend.home_page_9.product')
 								@endforeach

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup, TaxCategory, VendorCities};
+use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup, TaxCategory, VendorCities, UserWishlist};
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
 use Redirect;
@@ -835,10 +835,18 @@ class UserhomeController extends FrontController
             $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
             $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $user_id = Auth::user()->id;
+            $product_id = $new_product_detail->id;
+            $is_inwishlist_btn = 0;
+            $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
+            if(@$userWishlistProd){
+                $is_inwishlist_btn = 1;
+            }
             $new_products[] = array(
                 'tag_title' => $new_products_title??0,
                 'image_url' => $image_url,
                 'sku' => $new_product_detail->sku,
+                'is_inwishlist_btn' => $is_inwishlist_btn,
                 'title' => Str::limit($title, 18, '..'),
                 'url_slug' => $new_product_detail->url_slug,
                 'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
@@ -856,10 +864,18 @@ class UserhomeController extends FrontController
             $multiply = $feature_product_detail->variant->first()->multiplier ?? 1;
             $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
             $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $user_id = Auth::user()->id;
+            $product_id = $feature_product_detail->id;
+            $is_inwishlist_btn = 0;
+            $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
+            if(@$userWishlistProd){
+                $is_inwishlist_btn = 1;
+            }
             $feature_products[] = array(
                 'tag_title' => $featured_products_title??'0',
                 'image_url' => $image_url,
                 'sku' => $feature_product_detail->sku,
+                'is_inwishlist_btn' => $is_inwishlist_btn,
                 'title' => Str::limit($title, 18, '..'),
                 'url_slug' => $feature_product_detail->url_slug,
                 'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
@@ -877,10 +893,18 @@ class UserhomeController extends FrontController
             $multiply = $on_sale_product_detail->variant->first()->multiplier ?? 1;
             $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
             $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $user_id = Auth::user()->id;
+            $product_id = $on_sale_product_detail->id;
+            $is_inwishlist_btn = 0;
+            $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
+            if(@$userWishlistProd){
+                $is_inwishlist_btn = 1;
+            }
             $on_sale_products[] = array(
                 'tag_title' => $on_sale_title??'0',
                 'image_url' => $image_url,
                 'sku' => $on_sale_product_detail->sku,
+                'is_inwishlist_btn' => $is_inwishlist_btn,
                 'title' => Str::limit($title, 18, '..'),
                 'url_slug' => $on_sale_product_detail->url_slug,
                 'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),

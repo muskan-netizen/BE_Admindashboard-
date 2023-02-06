@@ -972,6 +972,30 @@ body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.s
 }
 
 
+/*============== 06-02-2023===================*/
+.al_body_template_nine .menu-slider .al_main_category a {
+    font-size: 18px!important;
+    font-weight: 700;
+}
+.al_body_template_nine .buy_details .product-right .sold-by a{
+    padding:3px 4px!important;
+    transition: all 0.3s;
+}
+.al_body_template_nine .buy_details .product-right .sold-by a i{
+    font-size: 26px;
+}
+.al_body_template_nine .buy_details .product-right .sold-by a:hover i{
+    color:var(--theme-deafult)
+}
+.al_body_template_nine .main-product  .wishlist-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 99;
+}
+.al_body_template_nine .main-product   .wishlist-icon:hover{
+    color:var(--theme-deafult)
+}
 /*----------media css--------------*/
 
 @media(max-width:991px) {
@@ -1270,8 +1294,9 @@ padding-top: 10px;
 padding-bottom: 10px;
 }
 body.al_body_template_nine.p2p-module .home-slider-wrapper .banner-img-outer img {
-max-height: 510px !important;
-height: 510px;
+max-height: 500px !important;
+height: 500px;
+object-fit: cover;
 }
 body .alPostBoxOuter .breadcrumb-item:empty::before{display: none;}
 
