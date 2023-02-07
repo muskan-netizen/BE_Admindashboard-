@@ -445,7 +445,7 @@ class CartController extends BaseController
 
             return $this->successResponse($cartProduct, '', 200);
         }
-        catch(Exception $ex){
+        catch(\Exception $ex){
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
         }
     }
