@@ -586,7 +586,7 @@ class HomeController extends BaseController{
                         }
 
                     }elseif($value->slot->isNotEmpty()){
-                        \Log::info( date('g:i A',strtotime($value->slot->first()->end_time)));
+                      //  \Log::info( date('g:i A',strtotime($value->slot->first()->end_time)));
                         if($value->slot->first()->start_time && $value->slot->first()->end_time){
                             $value->opening_time = date('g:i A',strtotime($value->slot->first()->start_time));
                             $value->closing_time = date('g:i A',strtotime($value->slot->first()->end_time));

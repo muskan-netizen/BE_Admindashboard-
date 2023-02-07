@@ -811,15 +811,15 @@ ul.social-links li:last-child {
 }
 
 footer ul.social-links li a i {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     color: #fff;
     background: #000;
     border-radius: 50%;
-    box-shadow: 0 4px 7px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 7px 0 rgb(0 0 0 / 5%);
     display: inline-block;
-    line-height: 40px;
-    font-size: 20px
+    line-height: 31px;
+    font-size: 14px;
 }
 
 ul.social-links li:hover a i,
@@ -6272,7 +6272,7 @@ section.royo-business .title-36 {
     height: 216px
 }
 
-.progress-order {
+#orders_wrapper .progress-order {
     width: calc(100% + 48px);
     margin: -24px 0 20px;
     background: #00000012;
@@ -6280,7 +6280,7 @@ section.royo-business .title-36 {
     position: relative;
     left: -24px;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 14px !important;
     border-top-left-radius: .25rem;
     border-top-right-radius: .25rem;
     padding: 5px 0
@@ -9828,9 +9828,9 @@ body.al_body_template_two #page-container .small-slider .home-slider .home {
     .top-header .header-dropdown li span:last-child {
         display: none
     }
-    .top-header .header-dropdown li span:first-child {
+    /* .top-header .header-dropdown li span:first-child {
         font-size: 24px
-    }
+    } */
     .top-header .header-dropdown li {
         padding: 5px 10px 5px 0
     }
@@ -11138,4 +11138,8 @@ section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center {
 }
 section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center label {
     padding: 10px;
+}
+
+.inner_spacing .border-product .product-icon #social-links ul li a {
+    font-size: 20px;
 }

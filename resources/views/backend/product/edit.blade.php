@@ -343,7 +343,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
                         @endif
-
                         @if($product->vendor->need_container_charges == 1)
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Container Charges (Optional)'), ['class' => 'control-label']) !!}
@@ -709,6 +708,13 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 <div class="card-box">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Other Information") }}</h5>
                     <div class="row mb-2">
+
+                        @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Recurring Booking'),['class' => 'control-label']) !!}
+                                <input type="checkbox" id="is_recurring_booking" data-plugin="switchery" name="is_recurring_booking" class="chk_box" data-color="#43bee1" @if($product->is_recurring_booking == 1) checked @endif>
+                            </div>
+                        @endif
                         @if(!in_array($client_preference_detail->business_type,['taxi','laundry']))
                                 @if(Auth::user()->is_superadmin == 1)
                                     <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -768,6 +774,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Individual Delivery Fee'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="individual_delivery_fee" data-plugin="switchery" name="individual_delivery_fee" class="chk_box" data-color="#43bee1" @if($product->individual_delivery_fee == 1) checked @endif>
                         </div>
+
+
                         <div class="col-md-6 justify-content-between mb-2" id="dispatcher_tags_div">
                             <div class="row">
                                 <div class="col-md-5">

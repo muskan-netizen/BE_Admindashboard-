@@ -74,6 +74,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <script defer type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+<script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
 @yield('home-page')
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 <script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
@@ -260,13 +261,19 @@ if($showSubscriptionPlanPopUp == 1){
 @endphp
 
 <script type="text/javascript">
+    var currencySymbol = "{{ Session::get('currencySymbol') }}";
     var is_hyperlocal = 0;
     var selected_address = 0;
     var vendor_type = "delivery";
     var currentRouteName = "{{Route::currentRouteName()}}";
+    var is_service_product_price_from_dispatch_forOnDemand = 0;
     @if(Session::has('vendorType') && (Session::get('vendorType') != '') )
         vendor_type = "{{Session::get('vendorType')}}";
     @endif
+    @if((getAdditionalPreference(['is_service_product_price_from_dispatch'])['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand'))
+        is_service_product_price_from_dispatch_forOnDemand =1;
+    @endif
+
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
     let stripe_fpx_publishable_key = '{{ $stripe_fpx_publishable_key }}';

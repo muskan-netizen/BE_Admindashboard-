@@ -26,7 +26,7 @@
                         </div>
                         <div class="row">
                             <div class="container">
-                                
+
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
@@ -34,7 +34,7 @@
 
 
                                             <div class="row">
-                                                <div class="col-lg-4 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                                                <div class="col-lg-6 p-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
 
 
                                                     <div class="exzoom hidden w-100">
@@ -86,7 +86,7 @@
                                                     <div id="myresult" class="img-zoom-result"></div>
                                                 </div>
 
-                                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-5'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
+                                                <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-6'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
                                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                                         <h2 class="mb-0">
                                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -110,7 +110,7 @@
                                                         <input type="hidden" name="end_time" id="end_time" value="">
                                                         <div id="product_variant_wrapper">
                                                             <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
-                                                            
+
                                                             @if($product->inquiry_only == 0)
                                                             <h3 id="productPriceValue" class="mb-md-3">
                                                                 <input type="hidden" name="product_a_price" class="product_a_price" value="{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}" />
@@ -159,9 +159,9 @@
                                                             <span class="text-danger mb-2 mt-2"></span>
                                                         </div>
 
-                                                       
+
                                                         @if(!empty($product->addOn) && $product->addOn->count() > 0)
-                                                        
+
                                                         <div class="border-product">
                                                             <h6 class="product-title">{{ __('Addon List')}}</h6>
 
@@ -191,7 +191,7 @@
                                                                     </h4>
 
                                                                     <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
-                                                                    @if($addon->setoptions)   
+                                                                    @if($addon->setoptions)
                                                                     @foreach($addon->setoptions as $k => $option)
                                                                         <div class="checkbox checkbox-success form-check-inline mb-1">
                                                                             <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
@@ -204,8 +204,6 @@
                                                                 </div>
                                                                 @endforeach
                                                             </div>
-
-
 
                                                         </div>
                                                         @endif
@@ -224,13 +222,10 @@
                                                             else
                                                             $product_quantity_in_cart = $product_in_cart->quantity??0;
 
-
                                                             @endphp
                                                             @if($is_available == 1)
                                                             {{-- <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>--}}
                                                             @endif
-
-
 
                                                             @endif
                                                             @endif
@@ -241,14 +236,14 @@
                                                             {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                                             $product->translation[0]->body_html : ''!!}
                                                         </div>
-                                                        
+
 
                                                     </div>
 
                                                 </div>
                                             </div>
                                             <!---------------------------------------------------END-->
-                                            
+
                                             <input id="item_one" type="hidden" name="return_ids" value="{{ $product->id }}" required>
                                             {{-- <label class="order-items d-flex" for="item_one{{$key}}">
                                                 <div class="item-img mx-1">
@@ -260,40 +255,34 @@
                                                 </div>
                                             </label> --}}
                                         </div>
-                                       
+
                                     </td>
-
-
                                 </tr>
-                               
 
 
-                                <input type="hidden" name="order_vendor_product_id" value="{{ $order->products[0]->id }}">
-                                <input type="hidden" name="file_set" id="files_set" value="0">
-                                    <div id="remove_files">
-                                    </div>
-                                <div class="row rating_files">
-                                        <div class="col-12">
-                                        <label>{{__('Upload Images')}}</label>
+                                <div class="row  bg-light p-2 pb-3">
+                                    <div class="col-md-6">
+                                        <input type="hidden" name="order_vendor_product_id" value="{{ $order->products[0]->id }}">
+                                        <input type="hidden" name="file_set" id="files_set" value="0">
+                                        <div id="remove_files">
                                         </div>
-                                        <div class="col-6 col-md-3 col-lg-2">
-                                            <div class="file file--upload">
-                                                <label for="input-file">
-                                                    <span class="plus_icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                                </label>
-                                                <input id="input-file" type="file" name="images[]" accept="image/*"  multiple>
+                                        <div class="row rating_files my-2">
+                                            <div class="col-md-12 mb-3">
+                                                <label>{{__('Upload Images')}}</label>
+                                                <div class="file file--upload w-100 h-100">
+                                                    <label for="input-file">
+                                                        <span class="plus_icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                                    </label>
+                                                    <input id="input-file" type="file" name="images[]" accept="image/*"  multiple>
 
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <span class="row show-multiple-image-preview" id="thumb-output">
+                                                </span>
                                             </div>
                                         </div>
-                                        <div class="col-10">
-                                            <span class="row show-multiple-image-preview" id="thumb-output">
-                                            </span>
-                                        </div>
-
                                     </div>
-
-
-                                <div class="row form-group">
                                     <div class="col-md-6">
                                         <label>{{__('Reason for exchange product')}}</label>
                                         <select class="form-control" name="reason" id="reason">
@@ -301,26 +290,30 @@
                                             <option value="{{$reason->title}}">{{$reason->title}}</option>
                                             @endforeach
                                         </select>
+                                        <div class="mt-2">
+                                            <label>{{__('Comments (Optional)')}}:</label>
+                                            <textarea class="form-control" name="coments" id="comments" cols="20" rows="4"></textarea>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>{{__('Comments (Optional)')}}:</label>
-                                    <textarea class="form-control" name="coments" id="comments" cols="20" rows="4"></textarea>
+
                                 </div>
 
 
-                                <div class="row mb-sm-2 m-0 p-0" id="address_template_main_div">
-                                    <div class="row w-100">
+
+
+                                <div class="col-12 p-0 mt-3" id="address_template_main_div">
+                                    <div class="row">
 
                                         @forelse($addresses as $k => $address)
+                                            @if(!empty(Auth::user()) && $address->is_primary)
+                                            <div class="col-12 mb-2 text-right">
+                                                <a class="alEditAddressIcons" href="{{route('user.addressBook')}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Add New Address</a>
+                                            </div>
+                                            @endif
 
                                         <div class="col-md-6 mb-2">
-                                            <div class="delivery_box cart_delivery p-2 mb-sm-3 mb-1 position-relative">
+                                            <div class="delivery_box cart_delivery  card h-100 p-2 mb-sm-3 mb-1 position-relative">
                                                 <!-- <a class="deleteAddress"><i class="fa fa-trash-o"></i></a> -->
-                                                @if(!empty(Auth::user()) && $address->is_primary)
-                                                <a class="alEditAddressIcons" href="{{route('user.addressBook')}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-
-                                                @endif
                                                 <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
                                                     @if($address->is_primary)
                                                     <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">
@@ -338,21 +331,13 @@
 
                                     @if($k ==1)
                                 </div>
-                                <div class="view_all_address d-none" id="view_all_address_div">
+                                <div class="view_all_address col-12 p-0 d-none" id="view_all_address_div">
                                     @endif
 
 
                                     @if((($k+1)%2)==0)
-                                    <div class="row w-100">
+                                    <div class="row">
                                         @endif
-
-
-
-
-
-
-
-
                                         {{-- @if($k ==2)
 
 
@@ -399,10 +384,11 @@
                         <a class="d-block w-100" id="view_all_address" href="javascript:void(0)">{{ __('View all address') }}</a>
                     </div>
                 </div>
-
-                <span class="text-danger" id="error-msg"></span>
-                <span class="text-success" id="success-msg"></span>
-                <button type="submit" class="btn btn-solid mt-3" id="return_form_button">{{__('Done')}}</button>
+                <div class="col-12 border-top pt-2 mt-2">
+                    <span class="text-danger" id="error-msg"></span>
+                    <span class="text-success" id="success-msg"></span>
+                    <button type="submit" class="btn btn-solid float-right" id="return_form_button">{{__('EXCHANGE NOW')}}</button>
+                </div>
                 <!-- </form> -->
             </div>
         </div>
@@ -528,7 +514,7 @@
     });
     function updatePrice()
     {
-        
+
         var variants = [];
         var options = [];
         $('.changeVariant').each(function() {
@@ -566,7 +552,7 @@
                             $('.incremental-left-minus').click();
                             //$('#blocktime, #blocktime2').change();
                         }
-                        
+
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
@@ -708,7 +694,7 @@
             }
             else
             {
-            
+
 
                 $.ajax({
                     type: 'POST',

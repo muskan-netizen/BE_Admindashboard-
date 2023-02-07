@@ -1,10 +1,12 @@
-@extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Payment
-Options']) @section('css')
-<link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}"
-	rel="stylesheet" type="text/css" />
-<link href="{{asset('assets/libs/dropify/dropify.min.css')}}"
-	rel="stylesheet" type="text/css" />
-@endsection @section('content')
+@extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Payment Options'])
+
+@section('css')
+<link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<style>#payment_48{display:none;}</style>
+@endsection
+
+@section('content')
 
 <!-- Start Content-->
 <div class="container-fluid alpaymentOptionPage">
@@ -16,46 +18,44 @@ Options']) @section('css')
                 <h4 class="page-title">Payment Options</h4>
             </div>
         </div> -->
-		<div class="col-12">
-			<div class="text-sm-left">
-				@if (\Session::has('success'))
-				<div class="alert mt-2 mb-0 alert-success">
-					<span>{!! \Session::get('success') !!}</span>
-				</div>
-				@endif @if ( ($errors) && (count($errors) > 0) )
-				<div class="alert mt-2 mb-0 alert-danger">
-					<ul class="m-0">
-						@foreach ($errors->all() as $error)
-						<li>{{ $error }}</li> @endforeach
-					</ul>
-				</div>
-				@endif
-			</div>
-		</div>
-	</div>
+        <div class="col-12">
+            <div class="text-sm-left">
+                @if (\Session::has('success'))
+                <div class="alert mt-2 mb-0 alert-success">
+                    <span>{!! \Session::get('success') !!}</span>
+                </div>
+                @endif
+                @if ( ($errors) && (count($errors) > 0) )
+                <div class="alert mt-2 mb-0 alert-danger">
+                    <ul class="m-0">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
 
-	<form method="POST" id="payment_option_form"
-		action="{{route('payoption.updateAll')}}"
-		enctype="multipart/form-data">
-		@csrf @method('POST')
-		<div class="row align-items-center">
-			<div class="col-sm-12">
-				<div
-					class="page-title-box d-flex align-items-center justify-content-between">
-					<h4 class="page-title">{{ __("Payment Options") }}</h4>
-					<button class="btn btn-info waves-effect waves-light save_btn"
-						type="submit">{{ __("Save") }}</button>
-				</div>
-			</div>
-		</div>
-		<div class="row">
+    <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}">
+        @csrf
+        @method('POST')
+        <div class="row align-items-center">
+            <div class="col-sm-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title">{{ __("Payment Options") }}</h4>
+                    <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
 
-			@foreach($payOption as $key => $opt)
-			<div class="col-6 col-md-3 col-xl-2 mb-3">
+            @foreach($payOption as $key => $opt)
+            <div class="col-6 col-md-3 col-xl-2 mb-3" id="payment_{{$opt->id}}">
 
-				<input type="hidden" name="method_id[]" id="{{$opt->id}}"
-					value="{{$opt->id}}"> <input type="hidden" name="method_name[]"
-					id="{{$opt->code}}" value="{{$opt->code}}">
+                <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
+                <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
 
                 <?php
                 $creds = json_decode($opt->credentials);
@@ -126,12 +126,10 @@ Options']) @section('css')
                 $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
                 $aes_key = (isset($creds->aes_key)) ? $creds->aes_key : '';
                 $uuid_key = (isset($creds->uuid_key)) ? $creds->uuid_key : '';
-
                 $subscription_key = (isset($creds->subscription_key)) ? $creds->subscription_key : '';
                 $reference_id = (isset($creds->reference_id)) ? $creds->reference_id : '';
                 $mtn_api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $plugnpay_publisher_name = (isset($creds->plugnpay_publisher_name)) ? $creds->plugnpay_publisher_name : '';
-
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -1585,150 +1583,114 @@ Options']) @section('css')
                 ?>
 
                 <div class="card-box h-100">
-					<div class="d-flex align-items-center justify-content-between mb-2">
-						<h4 class="header-title mb-0">
-							<span class="alPaymentImage"
-								style="height: 24px; width: 24px; display: inline-block;"> <img
-								style="width: 100%;"
-								src="{{asset('paymentsLogo/'.$opt->code.'.png')}}" alt=""></span>
-							{{$opt->title}}
-						</h4>
-					</div>
-					<div class="row">
-						<div class="col-6">
-							<div class="form-group mb-0 switchery-demo">
-								<label for="" class="mr-0 d-block">{{ __("Enable") }}</label> <input
-									type="checkbox" data-id="{{$opt->id}}"
-									data-title="{{$opt->code}}" data-plugin="switchery"
-									name="active[{{$opt->id}}]" class="chk_box payout_all_select"
-									data-color="#43bee1" @if($opt->status == 1) checked @endif>
-							</div>
-						</div>
-						@if ( (strtolower($opt->code) != 'cash') )
-						<div class="col-6">
-							<div class="form-group mb-0 switchery-demo">
-								<label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label> <input
-									type="checkbox" data-id="{{$opt->id}}"
-									data-title="{{$opt->code}}" data-plugin="switchery"
-									name="sandbox[{{$opt->id}}]" class="chk_box"
-									data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
-							</div>
-						</div>
-						@endif
-					</div>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title mb-0"> <span class="alPaymentImage" style="height:24px;width:24px;display:inline-block;"> <img style="width:100%;" src="{{asset('paymentsLogo/'.$opt->code.'.png')}}" alt=""></span>  {{$opt->title}}</h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-0 d-block">{{ __("Enable") }}</label>
+                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box payout_all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
+                            </div>
+                        </div>
+                        @if ( (strtolower($opt->code) != 'cash') )
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label>
+                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="sandbox[{{$opt->id}}]" class="chk_box" data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
 
-					@if ( (strtolower($opt->code) == 'stripe') )
-					<div class="mt-2" id="stripe_payout_fields_wrapper" @if($opt->
-						status != 1) style="display:none" @endif>
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="stripe_payout_secret_key" class="mr-3">{{
-										__("Secret Key") }}</label> <input type="password"
-										name="stripe_payout_secret_key" id="stripe_payout_secret_key"
-										class="form-control" value="{{$secret_key}}" @if($opt->status
-									== 1) required @endif>
-								</div>
-							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="stripe_payout_publishable_key" class="mr-3">{{
-										__("Publishable Key") }}</label> <input type="password"
-										name="stripe_payout_publishable_key"
-										id="stripe_payout_publishable_key" class="form-control"
-										value="{{$publishable_key}}" @if($opt->status == 1) required
-									@endif>
-								</div>
-							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="stripe_payout_client_id" class="mr-3">{{ __("Client
-										ID") }}</label> <input type="password"
-										name="stripe_payout_client_id" id="stripe_payout_client_id"
-										class="form-control" value="{{$client_id}}" @if($opt->status
-									== 1) required @endif>
-								</div>
-							</div>
-						</div>
-					</div>
-					@endif @if ( (strtolower($opt->code) == 'pagarme') )
-					<div class="mt-2" id="pagarme_payout_fields_wrapper" @if($opt->
-						status != 1) style="display:none" @endif>
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="pagarme_payout_api_key" class="mr-3">{{ __("API
-										Key") }}</label> <input type="text"
-										name="pagarme_payout_api_key" id="pagarme_payout_api_key"
-										class="form-control" value="{{$api_key}}" @if($opt->status ==
-									1) required @endif>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="pagarme_payout_secret_key" class="mr-3">{{
-										__("Secret Key") }}</label> <input type="password"
-										name="pagarme_payout_secret_key"
-										id="pagarme_payout_secret_key" class="form-control"
-										value="{{$secret_key}}" @if($opt->status == 1) required
-									@endif>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="pagarme_payout_multiplier" class="mr-3">{{
-										__("Multiplier") }}</label> <input type="number"
-										name="pagarme_payout_multiplier"
-										id="pagarme_payout_multiplier" class="form-control"
-										value="{{$multiplier}}" step="0.01" @if($opt->status == 1)
-									required @endif>
-								</div>
-							</div>
-						</div>
-					</div>
-					@endif @if ( (strtolower($opt->code) == 'razorpay') )
-					<div class="2" id="razorpay_payout_fields_wrapper" @if($opt->
-						status != 1) style="display:none" @endif>
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="razorpay_payout_api_key" class="mr-3">{{ __("API
-										Key") }}</label> <input type="text"
-										name="razorpay_payout_api_key" id="razorpay_payout_api_key"
-										class="form-control" value="{{$api_key}}" @if($opt->status ==
-									1) required @endif>
-								</div>
-							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="razorpay_payout_secret_key" class="mr-3">{{ __("API
-										Secret Key") }}</label> <input type="text"
-										name="razorpay_payout_secret_key"
-										id="razorpay_payout_secret_key" class="form-control"
-										value="{{$secret_key}}" @if($opt->status == 1) required
-									@endif>
-								</div>
-							</div>
+                    @if ( (strtolower($opt->code) == 'stripe') )
+                    <div class="mt-2" id="stripe_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_payout_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="stripe_payout_secret_key" id="stripe_payout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_payout_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
+                                    <input type="password" name="stripe_payout_publishable_key" id="stripe_payout_publishable_key" class="form-control" value="{{$publishable_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_payout_client_id" class="mr-3">{{ __("Client ID") }}</label>
+                                    <input type="password" name="stripe_payout_client_id" id="stripe_payout_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
-							<h6 class="mt-3">
-								<span>{{ __('Webhook Url') }} : </span> <a href="javascript:;"
-									class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.razorpay.payout.notify')}}</span></a>
-							</h6>
-						</div>
-					</div>
-					@endif
+                    @if ( (strtolower($opt->code) == 'pagarme') )
+                    <div class="mt-2" id="pagarme_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pagarme_payout_api_key" class="mr-3">{{ __("API Key") }}</label>
+                                    <input type="text" name="pagarme_payout_api_key" id="pagarme_payout_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pagarme_payout_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="pagarme_payout_secret_key" id="pagarme_payout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pagarme_payout_multiplier" class="mr-3">{{ __("Multiplier") }}</label>
+                                    <input type="number" name="pagarme_payout_multiplier" id="pagarme_payout_multiplier" class="form-control" value="{{$multiplier}}" step="0.01" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
 
-				</div>
-			</div>
-			@endforeach
-		</div>
-	</form>
-	@endif
+                    @if ( (strtolower($opt->code) == 'razorpay') )
+                    <div class="2" id="razorpay_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="razorpay_payout_api_key" class="mr-3">{{ __("API Key") }}</label>
+                                    <input type="text" name="razorpay_payout_api_key" id="razorpay_payout_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="razorpay_payout_secret_key" class="mr-3">{{ __("API Secret Key") }}</label>
+                                    <input type="text" name="razorpay_payout_secret_key" id="razorpay_payout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <h6 class="mt-3">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.razorpay.payout.notify')}}</span></a>
+                            </h6>
+                        </div>
+                    </div>
+                    @endif
+
+
+
+
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </form>
+@endif
 
 </div>
 
