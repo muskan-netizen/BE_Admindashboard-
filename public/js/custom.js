@@ -2345,7 +2345,7 @@ $(document).ready(function () {
                         }
 
                     }
-                    $.each($('.vendor_schedule_slot'), function() { 
+                    $.each($('.vendor_schedule_slot'), function() {
                         if($(this).val()!=''){
                             $responst = checkSlotAvailability(this);
                         }
@@ -2945,7 +2945,7 @@ $(document).ready(function () {
             });
             return false;
         }
-    
+
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
             if(product_id == OrderStorage.getStorage('cartFirstProductId')  ){

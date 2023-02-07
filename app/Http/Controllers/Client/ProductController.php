@@ -482,6 +482,12 @@ class ProductController extends BaseController
             $product->minimum_order_count        = $request->minimum_order_count??0;
             $product->batch_count        = $request->batch_count??1;
             $product->return_days        = $request->return_days??0;
+
+            // product pickup date by vendor vendor FramMeat priyal by sohail
+            if(checkColumnExists('products', 'product_pickup_date')){
+                $product->product_pickup_date  = isset($request->product_pickup_date) ? $request->product_pickup_date : '';
+            }
+
             if(checkColumnExists('products', 'is_product_instant_booking')){
                 $product->is_product_instant_booking   = ($request->has('is_product_instant_booking') && $request->is_product_instant_booking == 'on') ? 1 : 0;
             }
@@ -623,7 +629,7 @@ class ProductController extends BaseController
                     }
                     ProductCrossSell::insert($crossArray);
                 }
-                
+
                 if ( $request->has('corporate_user_price') && $request->has('minimum_order_count_corporate_user')) {
                     $corporate_user_price   = $request->corporate_user_price;
                     $minimum_order_count    = $request->minimum_order_count_corporate_user;
@@ -875,7 +881,7 @@ class ProductController extends BaseController
                 }
             }
         }
-        
+
         $makeHtml = $this->combinationHtml($combination, $multiArray, $variantNames, $product->id, $request->sku, $edit);
         return response()->json(array('success' => true, 'html' => $makeHtml));
     }
@@ -1462,7 +1468,7 @@ class ProductController extends BaseController
     {
         try{
             if($request->has('role_id')){
-                
+
                 foreach ($request->role_id as $key => $value) {
                     $productVariantByRole = ProductVariantByRole::where('product_id', $request->product_id)->where('product_variant_id',$request->variant_id)->where('role_id',$value)->first();
                     if (!$productVariantByRole) {

@@ -136,7 +136,7 @@ class OrderController extends FrontController
 
 
         ]);
-        
+
         $activeOrders->whereHas('vendors', function ($q) {
             $q->whereNotIn('order_status_option_id',  [3,6,9]);
         })
@@ -935,7 +935,7 @@ class OrderController extends FrontController
                         }
                     }
                 }
-                
+
                 $order->is_edited = 1;
             } else {
                 $order = new Order;
@@ -1037,7 +1037,7 @@ class OrderController extends FrontController
             $totalAdditionalPrice = 0.00;
             $is_long_term_order = 0;
             $deliveryfeeOnCoupon = 0;
-            
+
             $checkLongTermInDB = checkColumnExists('products', 'is_long_term_service');
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (!empty($request->other_taxes_string)) {
@@ -1079,7 +1079,7 @@ class OrderController extends FrontController
                 } else {
                     $OrderVendor = new OrderVendor();
                 }
-                
+
                 $OrderVendor->status = 0;
                 $OrderVendor->user_id = $user->id;
                 $OrderVendor->order_id = $order->id;
@@ -1135,14 +1135,14 @@ class OrderController extends FrontController
 
                     if ( (Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) ) {
                         $quantity_role_price = $this->calculatePrice($vendor_cart_product->productVariantByRoles, $vendor_cart_product->quantity);
-                        
+
                     }
                     if( @$quantity_role_price['quantity_price'] != 0 && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1)) {
 
                         $quantity_price = $quantity_role_price['quantity_price'];
                     } else {
 
-                        $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;    
+                        $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
                     }
 
                     $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
@@ -1210,7 +1210,7 @@ class OrderController extends FrontController
                     $vendor_taxable_amount = $taxable_amount;
 
                     if( @$quantity_role_price['quantity_price'] != 0 && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1)) {
-                        
+
                         $quantity_price = $quantity_role_price['quantity_price'];
                         $total_amount += $vendor_cart_product->quantity * $quantity_role_price['amount'];
                         $variant_price = $quantity_role_price['amount'];
@@ -1218,8 +1218,8 @@ class OrderController extends FrontController
                         $total_amount += $vendor_cart_product->quantity * $variant->price;
                         $variant_price = $variant->price;
                     }
-               
-       
+
+
                     $total_amount += $vendor_cart_product->quantity * $variant->price;
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
@@ -1321,7 +1321,7 @@ class OrderController extends FrontController
                     }
 
                     if(checkColumnExists('order_vendor_products', 'slot_price')){
-                        
+
                         $order_product->slot_price = !empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
                     }
 
@@ -1542,7 +1542,7 @@ class OrderController extends FrontController
                     }
 
                     $coupon_name = $vendor_cart_product->coupon->promo->name;
-                    
+
                     //-------------Coupon Related discount calculations start here----------------------
                         //----fixed amount----------
                     if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
@@ -1753,7 +1753,7 @@ class OrderController extends FrontController
                 }
                 $order->payable_amount = $orderTotalPay;
             }else{
-            // Slot based price added to payable amount column   
+            // Slot based price added to payable amount column
             $order->payable_amount = decimal_format($payable_amount + $slot_based_price);
 
                 $orderTotalPay = decimal_format($payable_amount - $total_other_taxes);
@@ -3516,7 +3516,7 @@ class OrderController extends FrontController
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
-    
+
     function calculatePrice($productVariantByRoles, $prodQuantity) {
         $quantity_price = 0;
         $current_price = 0;
@@ -3537,6 +3537,6 @@ class OrderController extends FrontController
         return [
             'quantity_price' => $quantity_price,
             'amount' => $amount
-        ]; 
+        ];
     }
 }

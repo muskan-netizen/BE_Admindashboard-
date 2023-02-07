@@ -520,7 +520,7 @@
                                         {{-- Home Service Schedual code Start at down --}}
                                         {{-- @php
                        pr($cart_details->closed_store_order_scheduled);
-                        @endphp --}} 
+                        @endphp --}}
                                         @if (($cart_details->closed_store_order_scheduled == 1 ||
                                             $client_preference_detail->off_scheduling_at_cart != 1) &&
                                             (in_array($serviceType, ['appointment', 'on_demand']) && $vendor_product->product->mode_of_service == 'schedule'))
@@ -1050,7 +1050,7 @@
                             @endif
                             @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
                                 <div class="row">
-                                    
+
                                     <div class="col-6">{{__('Delivery Slot Fees')}}</div>
                                     <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
                                 </div>
@@ -1387,7 +1387,7 @@
                                 <hr class="my-2">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="total_amt m-0"> {{ __('Advanced Token Amount') }}</p>
+                                        <p class="total_amt m-0"> {{ __('Deposit Required') }}</p>
                                     </div>
                                     <div class="col-6 text-right">
                                         @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
@@ -1428,7 +1428,7 @@
                                 <hr class="my-2">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="total_amt m-0"> {{ __('Pending Amount') }}</p>
+                                        <p class="total_amt m-0"> {{ __('Outstanding Amount') }}</p>
                                     </div>
                                     <div class="col-6 text-right">
                                         @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
