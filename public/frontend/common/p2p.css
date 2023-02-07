@@ -996,6 +996,63 @@ body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.s
 .al_body_template_nine .main-product   .wishlist-icon:hover{
     color:var(--theme-deafult)
 }
+/*============== 07-02-2023===================*/
+body.al_body_template_nine .p2p-full-width {
+    max-width: 98% !important;
+}
+body.al_body_template_nine  .prod-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0 10px;
+}
+body.al_body_template_nine  .product-description .update_year b{
+    font-size: 14px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--theme-deafult);
+    ;
+}
+body.al_body_template_nine  .product-description  h6.card_title{
+    text-align: left;
+}
+body.al_body_template_nine .product-m .item {
+    width: 16.33%;
+    padding: 0 5px;
+}
+body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn{
+    background: var(--theme-deafult)!important;
+    color: #000!important;
+    border-radius: 5px!important;
+    font-weight: 500!important;
+}
+body.al_body_template_nine  .header-dropdown li:first-child a span,
+body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn span,
+body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn span i {
+    color: #fff!important;
+    background: transparent!important;
+}
+body.al_body_template_nine  .navbar ul.header-dropdown li.search-b a img {
+    margin: 0 auto;
+}
+body.al_body_template_nine   ul.header-dropdown.ml-auto {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+body.al_body_template_nine .product-price-chat-sec {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect{
+    height: auto;
+}
+
+
+
+
+.img-white-s{display: block !important;}
+.img-black-s{display: none !important;}
 /*----------media css--------------*/
 
 @media(max-width:991px) {

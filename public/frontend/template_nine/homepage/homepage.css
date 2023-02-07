@@ -1576,7 +1576,7 @@ body.al_body_template_nine .product-m .item {
     width: 16.33%;
     padding: 0 5px;
 }
-body.al_body_template_nine  .header-dropdown > li:first-child a {
+body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn{
     background: var(--theme-deafult)!important;
     color: #000!important;
     border-radius: 5px!important;
@@ -1588,7 +1588,14 @@ body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.s
     color: #fff!important;
     background: transparent!important;
 }
-
+body.al_body_template_nine  .navbar ul.header-dropdown li.search-b a img {
+    margin: 0 auto;
+}
+body.al_body_template_nine   ul.header-dropdown.ml-auto {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
 
 /*------------ipad view css-------------*/
 

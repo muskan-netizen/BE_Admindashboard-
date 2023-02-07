@@ -247,4 +247,20 @@ class ProfileController extends FrontController
         return response()->json([ 'status'=>'success', 'message' => 'Token updated successfully']);
     }
 
+    //get my ads/products
+    public function getMyAds(){
+        $products = Product::with(['media.image', 'primary', 'category.cat', 'category.categoryDetail', 'brand', 'variant' => function ($v) {
+            $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
+        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title','category_id')
+            ->where(['vendor_id'=> Auth::user()->id])->whereHas('category.categoryDetail', function ($query) {
+                $query->where('type_id','!=','7');
+            })->get()->sortBy('primary.title', SORT_REGULAR, false);
+        // dd($products);
+        return view('frontend.account.my-ads',compact('products'));
+    }
+
+    public function getNotification(){
+        return view('frontend.account.notifications');
+    }
+
 }

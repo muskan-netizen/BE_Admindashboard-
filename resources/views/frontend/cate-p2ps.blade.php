@@ -425,6 +425,7 @@
                                             <div class="row margin-res">
                                               @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
+                                                {{-- @dd($data->vendor->id) --}}
                                                 <?php /*$imagePath = $imagePath2 = '';
                                                 $mediaCount = count($data->media);
                                                 for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
@@ -459,10 +460,23 @@
                                                                         <p>{{ $data->translation_description }}</p>
                                                                     @endif
                                                                     </div>
-                                                                    @if($data->inquiry_only == 0)
-                                                                        <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
-                                                                    @endif
-                                                                
+                                                                    <div class="product-price-chat-sec">
+                                                                        @if($data->inquiry_only == 0)
+                                                                            <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        @endif
+                                                                        {{-- <div class="prod-details">
+                                                                            <div class="chat-button">
+                                                                                @if(getAdditionalPreference(['chat_button'])['chat_button'])
+                                                                                    <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$data->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$data->id}}"><i class="fa fa-comments" aria-hidden="true"></i></button>
+                                                                                    
+                                                                                @endif
+                                                                                @if(getAdditionalPreference(['call_button'])['call_button'])
+                                                                                    <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></button>
+                                                                                    
+                                                                                @endif
+                                                                            </div>
+                                                                        </div> --}}
+                                                                    </div>
                                                             </div>
                                                         </div>
                                                     </a>
@@ -489,8 +503,32 @@
     </div>
     <input type="hidden" id="vendor_id" value="{{ isset($vendor_id) ? $vendor_id : ''}}">
 </section>
+@php
+      $authData = json_encode(@$data->toArray());
+      $user_type = 'user';
+      $to_message = 'to_vendor';
+      $from_message = 'from_user';
+      $chat_type = 'vendor_to_user';
+      $startChatype = 'vendor_to_user';
+      $apiPre = 'client';
+      $rePre = 'user/chat/userVendor';
+      $fetchDe = 'fetchRoomByUserId';
+  @endphp
 @endsection
+
 @section('script')
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
 <script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
