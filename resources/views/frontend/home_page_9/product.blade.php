@@ -9,7 +9,7 @@
         {{-- @dd($product['vendor']->id) --}}
         <a class="common-product-box text-center" href="{{ $product['vendor']->slug }}/product/{{ $product['url_slug'] }}">
             <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product['image_url'] }}" alt="" title="">
-                <div class="pref-timing"> </div>
+                {{-- <div class="pref-timing"> </div> --}}
                 <div class="wishlist-icon btn-default" prosku="{{ $product['sku'] }}" remwishlist='<i class="fa fa-heart" aria-hidden="true"></i>' addwishlist='<i class="fa fa-heart-o" aria-hidden="true"></i>'>
                     @if($product['is_inwishlist_btn'] == 0) 
                         <i class="fa fa-heart-o" aria-hidden="true"></i>
