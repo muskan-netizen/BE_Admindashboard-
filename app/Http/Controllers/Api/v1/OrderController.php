@@ -133,6 +133,14 @@ class OrderController extends BaseController
             if ($user) {
                 DB::beginTransaction();
 
+                $client_timezone = DB::table('clients')->first('timezone');
+
+                if($user){
+                    $timezone = $user->timezone ??  $client_timezone->timezone;
+                }else{
+                    $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
+                }
+
                 if($action == 'takeaway' || $action == 'dine_in'){
                     $latitude = $user->latitude ?? '';
                     $longitude = $user->longitude ?? '';
