@@ -284,29 +284,21 @@
                         </div>
                     @endif
 
-                    @if ($is_cab_pooling == 1 || $is_bid_ride_enable == 1)
-                        <div class="pool_radio_controls text-center">
-                            <input type="radio" class="pool_radio is_cab_pooling_bid_ride" id="cab_booking" name="is_cab_pooling_bid_ride"
-                                value="0" checked>
-                            <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
-                                <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
-                            </label>
-                            @if($is_cab_pooling ==1)
-                            <input type="radio" class="pool_radio is_cab_pooling_bid_ride" id="cab_pooling" name="is_cab_pooling_bid_ride"
-                                value="1">
-                            <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
-                                <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
-                            </label>
-                            @endif
-                            @if($is_bid_ride_enable ==1)
-                            <input type="radio" class="pool_radio is_cab_pooling_bid_ride" id="cab_bid_ride" name="is_cab_pooling_bid_ride"
-                                value="2">
-                            <label class="pool_label mb-0  my-2" for="cab_bid_ride" id="label_cab_bid_ride">
-                                <h5 class="m-0" id="pool_5">{{ __('Bid & Ride') }}</h5>
-                            </label>
-                            @endif
-                        </div>
-                    @endif
+                    <div class="pool_radio_controls text-center">
+                        <input type="radio" class="pool_radio is_cab_pooling_bid_ride" id="cab_booking" name="is_cab_pooling_bid_ride"
+                            value="0" checked>
+                        <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
+                            <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
+                        </label>
+                        @if($is_cab_pooling ==1)
+                        <input type="radio" class="pool_radio is_cab_pooling_bid_ride" id="cab_pooling" name="is_cab_pooling_bid_ride"
+                            value="1">
+                        <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
+                            <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
+                        </label>
+                        @endif
+                    </div>
+                    
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
                             <div class="title title-36">{{ __('Where can we pick you up?') }}</div>
