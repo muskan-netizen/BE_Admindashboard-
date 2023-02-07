@@ -117,10 +117,10 @@ class CartController extends BaseController
                     $cartData->passbase_status= $passbase['status']??'';
                 }
 
-                return $this->successResponse($cart);
+                return $this->successResponse($cartData);
             }
 
-            return $this->successResponse($cart);
+            return $this->successResponse($cartData);
         } catch (Exception $e) {
             \Log::info($e->getMessage());
             return $this->successResponse([]);
