@@ -168,9 +168,10 @@ trait HomePageTrait
 
     public function getSelectedProduct($layout_id)
     {
-       
+        if(checkColumnExists('home_products','layout_id')){
             $selected_products = HomeProduct::with(['products.variants','products.media.image'])->where('layout_id',$layout_id)->get();
-        return $selected_products; 
+        return $selected_products;
+        }
     }
 
     public function getProducts($preferences, $vendor_ids, $language_id, $currency_id = 'USD', $p_dim, $product_ids)

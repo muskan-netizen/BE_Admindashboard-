@@ -57,10 +57,12 @@ class AppStylingController extends BaseController
 
 
         $client_preferences = ClientPreference::first();
+        if(checkColumnExists('home_products','layout_id')){
         $Selected_products= HomeProduct::get();
         foreach ($Selected_products as $key => $value) {
             $selected_ids[] = $value->products;
         }
+    }
 
         switch($client_preferences->business_type){
             case "taxi":    # if business type is taxi
