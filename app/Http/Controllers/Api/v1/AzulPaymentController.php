@@ -159,13 +159,13 @@ class AzulPaymentController extends BaseController
         \Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         // dd($responsePay);
-        /*if ($dataResponse['ok'] === false) {
+        if ($dataResponse['ok'] === false) {
             $response['status'] = 'Fail';
             $response['msg'] = 'Invalid Card Details.';
             $response['payment_from'] = $request->action;
             return response()->json($response, 400);
-        }*/
-        if (isset($dataResponse['ok']) && $dataResponse['ok'] === false) {
+        }
+        if (isset($dataResponse['ok']) && $dataResponse['ok'] === true) {
             // \Log::info('Done');
 
             if ($request->from == 'tip') {
@@ -205,7 +205,7 @@ class AzulPaymentController extends BaseController
     public function completeOrderCart($request, $payment)
     {
         $order = Order::where('order_number', $payment->transaction_id)->first();
-        if (isset($request['ok']) && $request['ok'] == false) {
+        if (isset($request['ok']) && $request['ok'] == true) {
             $order->payment_status = '1';
             $order->save();
 
