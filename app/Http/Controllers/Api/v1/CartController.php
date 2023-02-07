@@ -113,8 +113,8 @@ class CartController extends BaseController
                         $passbase['status'] = $user->passbase_verification->status;
                     }
 
-                    $cart->passbase_check = $passbase['check']??0;
-                    $cart->passbase_status= $passbase['status']??'';
+                    $cartData->passbase_check = $passbase['check']??0;
+                    $cartData->passbase_status= $passbase['status']??'';
                 }
 
                 return $this->successResponse($cart);
