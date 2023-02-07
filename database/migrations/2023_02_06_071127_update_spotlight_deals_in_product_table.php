@@ -28,8 +28,11 @@ class UpdateSpotlightDealsInProductTable extends Migration
      */
     public function down()
     {
-        Schema::table('product', function (Blueprint $table) {
-            //
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('spotlight_deals');
+        });
+        Schema::table('home_products', function (Blueprint $table) {
+            $table->dropColumn('layout_id');
         });
     }
 }
