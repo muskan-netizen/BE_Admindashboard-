@@ -1740,7 +1740,7 @@ class OrderController extends FrontController
                     if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
                         $days_count                         =  count($date);
                         $pvariant_new_price                 =   $order->total_amount * $days_count;
-                        $order->total_amount                =  decimal_format($pvariant_new_price);
+                        //$order->total_amount                =  decimal_format($pvariant_new_price);
                     }
                 }
             }

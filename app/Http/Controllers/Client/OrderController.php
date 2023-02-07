@@ -733,7 +733,7 @@ class OrderController extends BaseController
                 $product_id             = @$product->product->id;
                 $recurring_product      = Product::find($product_id);
                 if(isset($recurring_product->is_recurring_booking) && $recurring_product->is_recurring_booking == 1){
-                    $product->recurring_bookings =  OrderLongTermServiceSchedule::where(['order_vendor_product_id'=>$recurring_product->id,'order_number'=>$order->order_number,'type'=>2])->get();
+                    $product->recurring_bookings =  OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number,'type'=>2])->get();
                 }
 
 

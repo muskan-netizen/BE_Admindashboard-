@@ -192,6 +192,7 @@
                                             </ul>
                                         </div>
                                     </div>
+                                    @include('frontend.account.recurringItems')
                                 </div>
                             @endforeach
                         </div>

@@ -64,6 +64,7 @@
                                                                     @endif
                                                                 </div>
                                                                 <div class="row mt-2">
+
                                                                     <div class="col-md-9 mb-3">
                                                                         @php
                                                                             $subtotal_order_price = $total_order_price = $total_tax_order_price = 0;
@@ -252,15 +253,15 @@
                                                                                                         $total_tax_order_price += $product->taxable_amount;
                                                                                                     @endphp
                                                                                                 @endif
-                                                                                                {{-- {{dd($product)}} --}}
+                                                                                                {{-- {{dd($product->recurringService)}} --}}
 
-                                                @include('frontend.account.recurringItems')
 
 
                                                                                             @endforeach
                                                                                         </ul>
 
                                                                                     </div>
+                                              
                                                                                     <div class="col-md-5 mt-md-0 mt-sm-2">
                                                                                         <ul class="price_box_bottom m-0 p-0">
                                                                                             <li
@@ -449,7 +450,11 @@
                                                                                                 @endif
                                                                                             @endif
                                                                                     </div>
+
+
                                                                                 </div>
+                                                                                    @include('frontend.account.recurringItems')
+
                                                                             </div>
 
                                                                         @endforeach
