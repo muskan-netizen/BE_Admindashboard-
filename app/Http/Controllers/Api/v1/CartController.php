@@ -81,19 +81,19 @@ class CartController extends BaseController
             if ($cart) {
 
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
-                
+
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
                 {
                     $editlimit_datetime = Carbon::now()->toDateTimeString();
                     $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
                     $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-                    $cart->cart_error_message = '';
+                    $cartData->cart_error_message = '';
                     if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
-                        $cart->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
+                        $cartData->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
                     }
                     $VendorOrderStatus = VendorOrderStatus::where('order_id', $cart->editingOrder->id)->whereNotIn('order_status_option_id', [1, 2])->count();
                     if($VendorOrderStatus > 0){
-                        $cart->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
+                        $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                     }
                 }
                 
