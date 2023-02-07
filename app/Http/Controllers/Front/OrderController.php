@@ -860,7 +860,7 @@ class OrderController extends FrontController
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
             if (checkColumnExists('carts', 'order_id')) { //get if any order is being edit
-                $cart = Cart::where('user_id', $user->id)->with(['editingOrder', 'cartvendor'])->first();
+                $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
             } else {
                 $cart = Cart::where('user_id', $user->id)->first();
             }
@@ -904,7 +904,14 @@ class OrderController extends FrontController
                     return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing."), 400);
                 }
                 $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-                if($VendorOrderStatus > 0){
+                $order_vendor_status_error = 0;
+                foreach ($cart->editingOrder->orderStatusVendor as $key => $status) {
+                    if($status->order_status_option_id  > 2) {
+                        $order_vendor_status_error = 1;
+                    }
+                }
+                
+                if($VendorOrderStatus > 0 || $order_vendor_status_error == 1){
                     return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing. Please discard order editing."), 400);
                 }
                 OrderProduct::where('order_id', $order->id)->delete();
