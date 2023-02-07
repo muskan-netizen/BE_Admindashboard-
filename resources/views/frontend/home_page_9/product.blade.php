@@ -14,11 +14,17 @@
                 <div class="inner_spacing">
                     <div class="product-description">
                         <div class="d-flex align-items-center justify-content-between">
-                            <h6 class="card_title ellips" style="width:50%;">{{ $product["title"] }}</h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-                            @if($product["averageRating"] >0)
+                            <h6 class="card_title ellips" style="width:50%;">{{ $product["title"] }}</h6> 
+                            @if(isset($client_preference_detail) && ($client_preference_detail->rating_check==1)) 
+                                @if($product["averageRating"] >0)
                             <!-- <span class="rating-number">{{ $product["averageRating"] }}</span> -->
-                            <span class="d-flex"><strong>AED</strong><h3>{!!$product["price"] ?? ''!!} </h3></span>
-                            @endif @endif @endif </div>
+                                @endif 
+                            @endif
+                            @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
+                                <span class="d-flex"><strong>AED</strong><h3>{!!$product["price"] ?? ''!!} </h3></span>
+                            @endif
+                            
+                            </div>
                         <div class="product-description_list">
                             <!-- <span class="flag-discount">30% Off</span> -->
                             <!-- <p>

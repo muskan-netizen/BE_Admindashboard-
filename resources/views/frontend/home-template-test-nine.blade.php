@@ -131,7 +131,7 @@
 @if(count($banners))
 <section class="home-slider-wrapper pt-md-0 pb-0">
 
-	<div class="container">
+	<div class="container-alFulid">
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<!-- Indicators -->
 			<ol class="carousel-indicators">

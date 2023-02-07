@@ -2291,7 +2291,7 @@ class VendorController extends BaseController{
                     ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 
                     'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant',
                      'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 
-                     'products.batch_count',DB::raw("'$multipli' as variant_multiplier"))
+                     'products.batch_count','products.is_recurring_booking',DB::raw("'$multipli' as variant_multiplier"))
                     ->where('products.vendor_id', $vid)
                     ->where('products.is_live', 1)->withCount(['variantSet','addOn']);
                     
@@ -2832,6 +2832,7 @@ class VendorController extends BaseController{
 
                     $products = $products->orderBy('order_product_count', 'desc');
                 }
+                $products = $products->distinct();
                 $products = $products->paginate($limit, $page);
            
                 $response['products'] = $products ?? [];

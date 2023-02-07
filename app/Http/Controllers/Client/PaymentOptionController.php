@@ -558,13 +558,13 @@ class PaymentOptionController extends BaseController
                             ));
                             break;
                         case 'plugnpay':
-                                $validatedData = $request->validate([
-                                    'plugnpay_publisher_name' => 'required',
-                                ]);
-                                $json_creds = json_encode(array(
-                                    'plugnpay_publisher_name' => $request->plugnpay_publisher_name
-                                ));
-                                break;
+                            $validatedData = $request->validate([
+                                'plugnpay_publisher_name' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'plugnpay_publisher_name' => $request->plugnpay_publisher_name
+                            ));
+                        break;
 
                         case 'offline_manual':
                             $validatedData = $request->validate([

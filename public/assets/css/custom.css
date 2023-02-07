@@ -1949,6 +1949,96 @@ th {
 .file>label>i {
     padding-right: 5px
 }
+/* ===================== dashboard ======================== */
+.apexcharts-canvas .apexcharts-legend.position-bottom .apexcharts-legend-series {display: block;align-items: end;clear: both;width: 100%;text-align: right;}
+.apexcharts-canvas .apexcharts-legend.position-bottom.apexcharts-align-center {justify-content: center;max-width: 260px;margin: 0 auto;}
+.web-style .alSignUpImageControal .dropify-wrapper.has-preview {width: 100%;max-width: 100%;}
+/* .card-body.al_custom_control .alThemeDemoSec:nth-child(5) {display: none;} */
+#alDashboardStyle h2.fw-normal.mb-3 span,
+#alDashboardStyle h3{color: #555657;}
+.dark #alDashboardStyle h2.fw-normal.mb-3 span,
+.dark #alDashboardStyle h3{color: #c6c6c6;}
+#alDashboardStyle h3 {font-weight: 600 !important;}
+#alDashboardStyle h5{color: #777;}
+.dark #alDashboardStyle h5{color: #98a6ad;}
+.alDasBoxItems span.text-nowrap {padding-left: 8px;}
+.card-body.alRevenueBox {min-height: 364px;}
+.card.alDasBoxItems {  min-height: 170px;}
+.alRevenueByLocation{min-height: 585px;}
+.dark #alDashboardStyle h3{color: #c6c6c6;}
+
+.al_new_export_table.royo_customber_btn.table_customber_add .position-absolute.mb-2 {z-index: 999; right: 0;margin: 0 !important;text-align: right;}
+.al_new_export_table.royo_customber_btn.table_customber_add .row.mt-1.sml_royo-responsive {margin-top: -40px !important;}
+.al_new_export_table.royo_customber_btn.table_customber_add .row.mt-1.sml_royo-responsive .tab-pane .card-body {padding: 10px 0;}
+.alCustomCheckBoxText input[type="radio"]:checked,
+.alCustomCheckBoxText input[type="radio"]:not(:checked) {position: absolute;left: -9999px;}
+.alCustomCheckBoxText input[type="radio"]:checked + label,
+.alCustomCheckBoxText input[type="radio"]:not(:checked) + label{position: relative;padding-left: 28px;cursor: pointer;line-height: 20px;display: inline-block;color: #666;}
+.alCustomCheckBoxText input[type="radio"]:checked + label:before,
+.alCustomCheckBoxText input[type="radio"]:not(:checked) + label:before {content: '';position: absolute;left: 0;top: 0;width: 18px;height: 18px;border: 1px solid #ddd;border-radius: 100%;background: #fff;}
+.alCustomCheckBoxText input[type="radio"]:checked + label:after,
+.alCustomCheckBoxText input[type="radio"]:not(:checked) + label:after {content: '';width: 12px;height: 12px;background: #43bee1;position: absolute;top: 3px;left: 3px;border-radius: 100%;-webkit-transition: all 0.2s ease;transition: all 0.2s ease;}
+.alCustomCheckBoxText input[type="radio"]:not(:checked) + label:after {opacity: 0;-webkit-transform: scale(0);transform: scale(0);}
+.alCustomCheckBoxText input[type="radio"]:checked + label:after {opacity: 1;-webkit-transform: scale(1);transform: scale(1);}
+/* dark dashboard css start */
+.dark body div.dataTables_wrapper div.dataTables_info {color: #94a0ad;}
+.dark .al_add_user,
+.dark form#save_banner_form {background-color: #424e5a ;}
+.dark .dropify-wrapper {background-color: #3b4651;}
+.dark .dropify-wrapper:hover {background-image: -webkit-linear-gradient(135deg,#424e5a 25%,transparent 25%,transparent 50%,#424e5a 50%,#424e5a 75%,transparent 75%,transparent);background-image: linear-gradient(-45deg,#424e5a 25%,transparent 25%,transparent 50%,#424e5a 50%,#424e5a 75%,transparent 75%,transparent);}
+.dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect {color: #acbfd2;}
+
+.card.changeIcon {box-shadow: none !important;}
+.dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before{color: #acbfd2;}
+.outer-box.border-dashed {border-style: dashed;border-width: 2px;height: 100%;min-height: 80px;border-radius: 7px;overflow: hidden;}
+.alProDuctBannerImg {position: relative;padding-bottom: 100%;border-radius: 7px;overflow: hidden;}
+.alProDuctBannerImg img.w-100 {position: absolute;left: 0;top: 0;object-fit: cover;height: 100%;}
+.alProDuctBannerImg span {position: absolute;z-index: 1;background-color: red;right: 0px;top: 0;height: 20px;width: 20px;border-radius: 20px;line-height: 23px;color: #fff;font-weight: 400;}
+.dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before {  color: #acbfd2;}
+.dark .dd-list .dd-item .dd-handle {  background: transparent;}
+.dark .content h1,
+.dark .content h2,
+.dark .content h3,
+.dark .content h4,
+.dark .content h5 {  color: #acbfd2;}
+.dark .content .tabs_radio_controls h5{color: #000;}
+.dark #edit_page_content  label.control-label{  color: #acbfd2;}
+.dark .price_box_bottom li,
+.dark .cms-content .form-control {  color: #acbfd2;}
+.dark .status_box li img {  opacity: 1;  background: #ffffff4d;  border-radius: 25px;}
+.dark .flatpickr-months .flatpickr-month,
+.dark .flatpickr-months .flatpickr-prev-month,
+.dark .flatpickr-months .flatpickr-next-month,
+.dark .flatpickr-day,
+.dark span.flatpickr-weekday {  color: #acbfd2;fill: #acbfd2;}
+.dark .flatpickr-calendar.open{background: #303841;}
+.dark .flatpickr-day.flatpickr-disabled,
+.dark .flatpickr-day.flatpickr-disabled:hover,
+.dark .flatpickr-day.prevMonthDay,
+.dark .flatpickr-day.nextMonthDay,
+.dark .flatpickr-day.notAllowed,
+.dark .flatpickr-day.notAllowed.prevMonthDay,
+.dark .flatpickr-day.notAllowed.nextMonthDay {  color: #6d767f;}
+.dark .form-control-light {background-color: #3b4651 !important;border-color: #3b4651!important;}
+#alDashboardStyle h5 {text-transform: capitalize;}
+.dark .table,
+.dark .progress-w-percent .progress-value {color: #acbfd2;}
+.dark .progress {background-color: #303841;}
+.dark .dd-list .dd3-content{background: rgba(66, 190, 225, .09);}
+.dark .modal-content {background-color: #424e5a;}
+.dark .border-bottom {border-bottom: 1px solid #424e5a !important;}
+.dark .modal-content label{color: #acbfd2;}
+.dark .modal-content  .form-control{color: #94a0ad;background-color: #3b4651;border: 1px solid #424e5a;}
+.dark .close {color: #f7f7f7;}
+.dark #alLightBg {background-color: #3b4651;}
+#UpdateSubadmin .table-borderless td, #UpdateSubadmin .table-borderless th {padding: 8px 10px 8px 10px !important;}
+.dark .dropzone {background: #3b4651;}
+.dark .selectize-input {border: 1px solid #424e5a;}
+.dark .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before{color: #acbfd2;}
+.order_data_box .error-msg {font-size: 20px;position: relative;width: 100%;top: 0;-webkit-transform: translate(0px, 0);transform: translate(0px, 0%);}
+.alDeliveryOptionsPage .switchery-demo label{margin: 0 !important;}
+.dark .table thead th {background: #32383e;border: none;}
+/* dark dashboard css end */
 
 .file--upload>label {
     width: 100%;
@@ -4750,4 +4840,8 @@ body[dir=rtl] .modal-header .close {
 body.dark .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
   background-color: #303841;
 }
+#order-status-icon .dropify-wrapper.has-preview{
+height: 50px;
+}
+
 /*======================= new css add for p2p template on 1/12/2023===================== */

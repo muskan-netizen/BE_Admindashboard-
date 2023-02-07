@@ -3,6 +3,7 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<style>#payment_48{display:none;}</style>
 @endsection
 
 @section('content')
@@ -51,7 +52,7 @@
         <div class="row">
 
             @foreach($payOption as $key => $opt)
-            <div class="col-6 col-md-3 col-xl-2 mb-3">
+            <div class="col-6 col-md-3 col-xl-2 mb-3" id="payment_{{$opt->id}}">
 
                 <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
                 <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
@@ -114,13 +115,10 @@
                 $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
                 $aes_key = (isset($creds->aes_key)) ? $creds->aes_key : '';
                 $uuid_key = (isset($creds->uuid_key)) ? $creds->uuid_key : '';
-
-
                 $subscription_key = (isset($creds->subscription_key)) ? $creds->subscription_key : '';
                 $reference_id = (isset($creds->reference_id)) ? $creds->reference_id : '';
                 $mtn_api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $plugnpay_publisher_name = (isset($creds->plugnpay_publisher_name)) ? $creds->plugnpay_publisher_name : '';
-
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -1115,7 +1113,7 @@
                     @endif
 
                     @if ( (strtolower($opt->code) == 'mtn_momo') )
-                    <div class="mt-2" id="mtn_momo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                    <div class="mt-2 d-none" id="mtn_momo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
@@ -1295,6 +1293,8 @@
                         </div>
                     </div>
                     @endif
+
+
 
 
                 </div>

@@ -22,9 +22,11 @@
                             <span>{{__('In') . $product["category"]}} </span>
                         </p>
                     </div>
+                    @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                     <div class="d-flex align-items-center justify-content-end al_clock px-2">
                         <b>@if($product['inquiry_only']==0) {!!$product["price"] ?? ''!!} @endif</b>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

@@ -34,13 +34,11 @@
     }
    $(document).on("click", ".select_cab_payment_method",function() {
        var payment_method = $(this).attr('data-payment_method');
-    
+
             if (payment_method == 4) {
                 stripeInitialize();
                 $("#cab_payment_method_form .stripe_element_wrapper").removeClass('d-none');
-            }
-            else if (payment_method == 49) {
-                console.log(49)
+            }else if (payment_method == 49) {
                  $("#cab_payment_method_form .plugnpay_element_wrapper").removeClass('d-none');
             }
             else {
@@ -60,9 +58,9 @@
    });
     $(document).on("click", ".select_payment_option_done",function() {
         $("#cab_payment_method_form, .select_payment_option_done").attr("disabled", true);
-         
+
         let payment_option_id = $("#cab_payment_method_form input[name='select_cab_payment_method']:checked").val();
-       
+
         if (payment_option_id == 4) {
             stripe.createToken(card).then(function(result) {
                 //card error case
@@ -79,7 +77,7 @@
                 }
             });
         }else{
-            //hide model  
+            //hide model
              $('#stripe_card_error').html('');
             $("#payment_modal").modal('toggle');
         }
@@ -141,7 +139,9 @@ function getOrderDriverDetails(dispatch_traking_url,order_id) {
 
 
 
-jQuery(function () {
+$(document).ready(function () {
+
+    $('.cab-booking-main-loader').hide();
     var selected_address = '';
     // const styles = [{"stylers":[{"visibility":"on"},{"saturation":-100},{"gamma":0.54}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"water","stylers":[{"color":"#4d4946"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"gamma":0.48}]},{"featureType":"transit.station","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"gamma":7.18}]}];
     const styles = [];
@@ -166,20 +166,18 @@ jQuery(function () {
         }
 
     });
-
-    
     $(document).on("click", ".right-top",function() {
-        
-         var payment_option_id = $(".select_cab_payment_method:checked").val();
-         if(payment_option_id == 49){
-            $("#plugnpay_card_error").empty();
-            $("#proceed_to_pay_loader").hide();
-            $('#paywithplugpay').prop('disabled',false);
-            $('#plugnpay-card-element').val('');
-            $('#plugnpay-date-element').val('');
-            $('#plugnpay-cvv-element').val('');
-         }
-     });
+        var payment_option_id = $(".select_cab_payment_method:checked").val();
+        if(payment_option_id == 49){
+           $("#plugnpay_card_error").empty();
+           $("#proceed_to_pay_loader").hide();
+           $('#paywithplugpay').prop('disabled',false);
+           $('#plugnpay-card-element').val('');
+           $('#plugnpay-date-element').val('');
+           $('#plugnpay-cvv-element').val('');
+        }
+    });
+
     // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_later",function() {
 
@@ -202,8 +200,6 @@ jQuery(function () {
                 $("#proceed_to_pay_loader").show();
             }
         }
-        
-       
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
         if($(this).data('rel') =='pickup_later'){
@@ -249,7 +245,7 @@ jQuery(function () {
             tasks.push(sample_array);
             tasks2.push(sample_array);
         });
-        
+
         $(destination_location_latitudes).each(function(index, latitude) {
             var sample_array = {};
             sample_array.barcode = null;
@@ -262,7 +258,7 @@ jQuery(function () {
             sample_array.longitude = destination_location_longitudes[index];
             tasks.push(sample_array);
         });
-       
+
         let amount                      = $(this).attr('data-amount');
         let tollamount                  = $(this).attr('data-tollamount');
         let servicechargeamount         = $(this).attr('data-servicechargeamount');
@@ -294,7 +290,7 @@ jQuery(function () {
                     let reload_route = response.data.route;
                     if((payment_option_id == 1) || (payment_option_id == 2)){
                         window.location.replace(response.data.route);
-                        
+
                         // $('#cab_detail_box').html('');
                         // var orderSuccessData = _.extend({ Helper: NumberFormatHelper },{result: response.data, product_image: product_image});
                         // let order_success_template = _.template($('#order_success_template').html());
@@ -323,7 +319,7 @@ jQuery(function () {
                             error: function(f) {
                                 alert(error);
                                 //var response = $.parseJSON(error.responseText);
-                               
+
                             }
                         });
                         //var stripe_token = $('#stripe_token').val();
@@ -342,6 +338,9 @@ jQuery(function () {
                         payWithFlutterWave(response.data);
                     }else if(payment_option_id == 49){
                         
+                        paymentViaplugnpay(reload_route,'',response.data);
+                    }
+                    else if(payment_option_id == 49){
                         paymentViaplugnpay(reload_route,'',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
@@ -518,7 +517,7 @@ jQuery(function () {
         setTimeout(function(){
             $(".pac-container").appendTo(".booking-experience #destination_location_add_temp");
         }, 300);
-      } 
+      }
     }
     $(document).on("click",".search-location-result",function() {
         var latitude             = $(this).data('latitude');
@@ -679,24 +678,24 @@ jQuery(function () {
     $(document).on("change","#no_seats_for_pooling",function() {
         var product_id = $("#pickup_now").attr('data-product_id');
         getVehicleDetail(product_id);
-    });    
+    });
 
-    $(document).on("click",".btn-number-up-down",function(){    
+    $(document).on("click",".btn-number-up-down",function(){
         var product_id = $("#pickup_now").attr('data-product_id');
         type      = $(this).attr('data-type');
         var input = $("input[name='no_seats_for_pooling']");
         var currentVal = parseInt(input.val());
         if (!isNaN(currentVal)) {
             if(type == 'minus') {
-                
+
                 if(currentVal > input.attr('min')) {
                     input.val(currentVal - 1).trigger('change');
-                } 
+                }
                 if(parseInt(input.val()) == input.attr('min')) {
                 }
-    
+
             } else if(type == 'plus') {
-    
+
                 if(currentVal < input.attr('max')) {
                     input.val(currentVal + 1).trigger('change');
                 }
@@ -724,7 +723,7 @@ jQuery(function () {
         window.intlTelInput(input, {
             separateDialCode: true,
             utilsScript: utilsScript_path,
-            initialCountry: initial_country_code, 
+            initialCountry: initial_country_code,
         });
     });
     $(document).delegate('.iti__country','click', function() {
@@ -802,12 +801,12 @@ jQuery(function () {
     {
         $('a[data-vendor="'+$("#default_cab_vendor_id").val()+'"]').show();
         let vendor_id = $("#default_cab_vendor_id").val();
-        
+
         if(vendor_id =='' || vendor_id == undefined){
             $('.location-list').attr("style", "display: blank !important");
             return false;
         }
-      
+
         var locations = [];
         var pickup_location_latitude = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
         var pickup_location_longitude = $('input[name="pickup_location_longitude[]"]').map(function(){return this.value;}).get();
@@ -931,7 +930,7 @@ jQuery(function () {
                     let subscriptionAmout = $('#subscription-amout-h').val();
                     if(subscriptionAmout != undefined){
                         $('#subscription-amout').text(response.data.currency_symbol+''+subscriptionAmout);
-                        $('#pickup_now').attr("data-subscriptionPayableAmount",subscriptionAmout);  
+                        $('#pickup_now').attr("data-subscriptionPayableAmount",subscriptionAmout);
                     }
                     $('#pickup_now').attr("data-coupon_id",'');
                     $('#pickup_later').attr("data-coupon_id",'');
@@ -966,7 +965,7 @@ jQuery(function () {
                         //console.log('response.data.new_amount', response.data.new_amount);
                         var subscriptionPercent = $('#subscription-percent-h').val();
                         let newPayableAmount = current_amount - (subscriptionPercent * current_amount / 100);
-                        $('#subscription-amout').text(response.data.currency_symbol+''+newPayableAmount);  
+                        $('#subscription-amout').text(response.data.currency_symbol+''+newPayableAmount);
                         $('#pickup_now').attr("data-subscriptionPayableAmount",newPayableAmount);
                     }
                     $('.cab-detail-box #real_amount').text(response.data.currency_symbol+''+current_amount);
@@ -1037,7 +1036,7 @@ jQuery(function () {
                         if(schedule_datetime !='' && schedule_datetime != undefined){
                             schedule_date_time = moment(schedule_datetime).format('MMM Do YY, h:mm:ss a')
                         }
-                       
+
                         var cabData = _.extend({ Helper: NumberFormatHelper },{result: response.data,schedule_datetime:schedule_date_time});
 
                         $('.address-form').addClass('d-none');
@@ -1046,7 +1045,7 @@ jQuery(function () {
                             // console.log('innset');
                         }
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
-                        
+
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
                         if($('input[name="is_cab_pooling_radio"]:checked').val() == 0)
                         {
@@ -1057,7 +1056,7 @@ jQuery(function () {
                         getDistance();
                         if($('input[name=is_for_friend]:checked').val()==1){
                             $('.for_friend_fields_div').removeClass('d-none');
-                            
+
 
                         }else{
                             $('.for_friend_fields_div').addClass('d-none');
@@ -1086,7 +1085,7 @@ jQuery(function () {
         /* var currentLocation          = $('#address-input').val();
         var currentLocationLatitude  = $('#address-latitude').val();
         var currentLocationLongitude = $('#address-longitude').val(); */
-        
+
         var latitude             = $('#address-latitude').val();
         var longitude            = $('#address-longitude').val();
 
@@ -1098,7 +1097,7 @@ jQuery(function () {
             $('#pickup_location_latitude').val(latitude);
             $('#pickup_location_longitude').val(longitude);
 
-        
+
             var pickupLocationLatitude  = latitude;
             var pickupLocationLongitude = longitude;
             var currentUrl              = window.location.href;
@@ -1212,13 +1211,13 @@ jQuery(function () {
         $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
             $(this).hide();
         }).get();
-        
+
     });
 
     $(document).on("click",".scheduled-ride",function() {
         $('.location-list').attr("style", "display: none !important");
         $('.scheduled-ride-list').attr("style", "display: block !important");
-        
+
         $(".scheduled-footer").html('<button class="btn btn-solid w-100" id="check-schedule-date-time">Select</button>');
         // var fromDate = moment();
         // var toDate   = moment().add(31, 'days');
@@ -1251,14 +1250,14 @@ jQuery(function () {
 
     $(document).on("click","#check-schedule-date-time",function() {
         var scheduleDateTimeSet = $('#schedule_pickup_date').val();
-      
+
         if(scheduleDateTimeSet != '' || scheduleDateTimeSet != undefined ){
             //if(moment(scheduleDateTimeSet).format('MMDDYYYY') != moment().format('MMDDYYYY') ){
                 var currentUrl  = window.location.href;
                 var queryString = removeURLParameterNew(currentUrl, 'schedule_date');
                 var perm = "?" + (queryString != '' ? queryString : '') + "&schedule_date=" + scheduleDateTimeSet;
                 window.history.replaceState(null, null, perm);
-        
+
                 $('#schedule_date').val(scheduleDateTimeSet);
                 $('.scheduleDateTimeApnd').text( moment(scheduleDateTimeSet).format('MMM Do YY, h:mm:ss a'));
                 $('#schedule_datetime').val(scheduleDateTimeSet);
@@ -1267,22 +1266,22 @@ jQuery(function () {
             //     $('#schedule_date').val('');
             //     $('.scheduleDateTimeApnd').text('Now');
             // }
-           
-            
-       
+
+
+
             $('.cab-detail-box').attr("style", "display: block !important");
             $('.scheduled-ride-list').attr("style", "display: none !important");
             getListOfCabs();
         }else{
 
         }
-       
+
     });
 
 
     $(document).on("click",".apremove",function() {
         var destination_location_add_temp = $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').length;
-        
+
         if(destination_location_add_temp == 0){
             return false;
         }else if(destination_location_add_temp == 1){
@@ -1316,7 +1315,7 @@ jQuery(function () {
         }
 
         var random_id = $(this).data('rel');
-        
+
         if(random_id == ''){
             $(".where-to-second").remove();
             $("#destination_location").remove();
@@ -1436,7 +1435,7 @@ jQuery(function () {
                 $('.scheduleDateTimeApnd').html(perm[1]);
             }
         }
-        
+
         var pickup_location      = $("#pickup_location").val();
         var destination_location = $("#destination_location").val();
         if(pickup_location != '' && destination_location != ''){
@@ -1469,7 +1468,7 @@ jQuery(function () {
         var locations = [];
         let pickup_location_latitude  = $('#pickup_location_latitude').val();
         let pickup_location_longitude = $('#pickup_location_longitude').val();
-    
+
         var pointA = new google.maps.LatLng(pickup_location_latitude, pickup_location_longitude);
         map = new google.maps.Map(document.getElementById('booking-map'), {zoom: 7,center: pointA});
         map.setOptions({ styles:  styles});
@@ -1501,7 +1500,7 @@ jQuery(function () {
                 stopover: true,
               });
         });
-        
+
         let origin ='';
         if($('#pickup_location').val()=="Your Location"){
             var latmy = parseFloat($("#address-latitude").val());
@@ -1510,7 +1509,7 @@ jQuery(function () {
         }else{
             origin = $('#pickup_location').val();
         }
-        
+
         let destination = (random_id != '') ? $('#destination_location_'+random_id).val() : $('#destination_location').val();
         if(origin && destination){
             directionsService.route({
@@ -1653,14 +1652,14 @@ jQuery(function () {
             var options = {
                 enableHighAccuracy: true,
                 timeout: 5000,
-                maximumAge: 0       
+                maximumAge: 0
               };
             navigator.geolocation.getCurrentPosition(showPosition, errorcallback, options);
         } else {
             alert("Geolocation is not supported by this browser.");
         }
     }
-    
+
     function errorcallback(positionerror) {
         if (window.console) {
             //console.log(positionerror);
@@ -1682,7 +1681,7 @@ jQuery(function () {
 
         var google_map_pos = new google.maps.LatLng( lat, long );
 
-        
+
         var google_maps_geocoder = new google.maps.Geocoder();
         google_maps_geocoder.geocode(
             { 'latLng': google_map_pos },
@@ -1696,7 +1695,7 @@ jQuery(function () {
                 }
             }
         );
-        
+
         $('#address-latitude').val(lat);
         $('#address-longitude').val(long);
         displayLocationCab(lat, long);
@@ -1761,11 +1760,11 @@ jQuery(function () {
             case '18':
                 paymentViaAuthorize('', order);
                 break;
-            
+
             case '47':
                 paymentViaKhalti('', order);
                 break;
-        
+
         }
 
     }
@@ -1779,10 +1778,10 @@ jQuery(function () {
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
         // let payment_option_id = paymentAjaxData.payment_option_id;
-        
+
         paymentAjaxData.payment_method_id = result.paymentMethod.id;
         // paymentAjaxData.payment_option_id = payment_option_id;
-        
+
         if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
             total_amount = cartElement.val();
@@ -1866,7 +1865,7 @@ jQuery(function () {
             // Show error in payment form
         } else {
             paymentAjaxData.payment_intent_id = result.paymentIntent.id;
-            
+
             // The card action has been handled
             // The PaymentIntent can be confirmed again on the server
             fetch('/payment/payment_init', {
@@ -1930,7 +1929,7 @@ function getScheduleDateTime(thisObj){
 
     $('.cab-detail-box').attr("style", "display: block !important");
     $('.scheduled-ride-list').attr("style", "display: none !important");
-    
+
     getListOfCabs();
 }
 

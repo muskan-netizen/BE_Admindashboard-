@@ -58,7 +58,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
 </style>
 <section class="section-b-space">
     <div class="container">
-    
+
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-sm-left" >
@@ -103,17 +103,17 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                             <h2 class="">{{__('Make Bid Request')}}</h3>
                         </div>
                         <div class="box-account box-info">
-                            <div class="card-box mb-0">
+                            <div class="card-box">
                                 <div class="row ">
-                                    
-                                    <div class="col-md-6 float-right">
-                                        <button type="button" class="btn btn-solid" id="my_bid_btn" data-toggle="modal" data-target="#myBidModal">{{ __('Place bid request') }}</button>
-                                 
+
+                                    <div class="col-md-12 ">
+                                        <button type="button" class="btn btn-solid float-right" id="my_bid_btn" data-toggle="modal" data-target="#myBidModal">{{ __('Place bid request') }}</button>
+
                                     </div>
                                 </div>
                             </div>
                             </div>
-                            
+
                             <div class="card-box" >
                                 <div class="table-responsive table-responsive-xs">
                                      <table class="table table-centered table-nowrap table-striped" id="client_customer_table" width="100%">
@@ -130,7 +130,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                                                     @foreach ($prescriptions as $prescription)
                                                     <tr>
                                                         <td>{{$loop->iteration}}</td>
-                                                        <td><a target ="_blank" href="{{$prescription->prescription}}">View File</a></td>
+                                                        <td><a target ="_blank" href="{{$prescription->prescription}}"><i class="fa fa-file-pdf-o" style="font-size:24px;color:red"></i></a></td>
                                                         <td><span class="text-wrap">{{$prescription->description??null}}</span></td>
                                                         <td>{{$prescription->created_at}}</td>
                                                         <td>
@@ -156,7 +156,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
     @if(@getAdditionalPreference(['is_bid_enable'])['is_bid_enable'] == 1)
 
          @include('frontend.bidding_module.modal')
-         
+
         <div class="modal fade" id="myBidModal" tabindex="-1" aria-labelledby="myBidModal" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -172,11 +172,13 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                                 <div class="row">
                                 <div class="col-md-12 mb-2">
                                     <textarea required  name="description" class="form-control " id="description" placeholder="Description"></textarea>
-                                </div> 
+                                </div>
                                 <div class="col-md-12 mb-2">
                                     <input required type="file" accept=".pdf" name="prescription" class="form-control">
-                                </div>  
-                                    <input type="submit" id="button" class="btn btn-primary btn-sm" value="Submit">
+                                </div>
+                                <div class="col-md-12">
+                                    <input type="submit" id="button" class="btn btn-solid btn-sm float-right" value="Submit">
+                                </div>
                             </div>
                         </form>
                         </div>
@@ -184,7 +186,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
         </div>
         </div>
 
-    @endif 
+    @endif
 
 @endsection
 
