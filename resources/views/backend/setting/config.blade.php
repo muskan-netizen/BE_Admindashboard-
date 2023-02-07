@@ -2958,7 +2958,7 @@
                                     </span>
                                 </div>
                             </div>
-                        @elseif($client_preference_detail->subscription_tab_taxi == 1)
+                        @if($client_preference_detail->subscription_tab_taxi == 1)
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                     <label for="subscription_mode"
