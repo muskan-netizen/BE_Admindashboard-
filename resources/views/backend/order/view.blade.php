@@ -495,7 +495,6 @@ $timezone = Auth::user()->timezone;
                                         </td>
                                     </tr>
 
-
                                     @if (count($product->routes) > 0)
                                     <tr class="route">
                                         <th scope="row" colspan="4" class="text-end">
@@ -523,6 +522,7 @@ $timezone = Auth::user()->timezone;
                                         <td></td>
                                     </tr>
                                     @endif
+                                    {{-- {{dd($product)}} --}}
 
                                     @if( isset($product->recurring_bookings))
                                         <tr class="route">
