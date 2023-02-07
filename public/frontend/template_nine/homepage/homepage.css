@@ -1537,10 +1537,31 @@ body.al_body_template_nine .product-card-box.position-relative.al_box_third_temp
     color: #222;
     margin-right: 20px;
 }
-
-
+body.al_body_template_nine  a.common-product-box.text-center{
+    box-shadow: unset;
+}
+body.al_body_template_nine  .product-description .update_year  b{
+    color:#ccc;
+    font-size: 14px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #f5f5f5;
+    text-align: left;
+    width: 100%;
+}
 /*----------new design media css---------*/
 
+
+
+
+/*---------- 07-02-2023 home page css ---------*/
+body.al_body_template_nine .p2p-full-width {
+    max-width: 98% !important;
+}
+body.al_body_template_nine  .prod-details {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px 0 10px;
+}
 
 /*------------ipad view css-------------*/
 

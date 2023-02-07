@@ -6,7 +6,7 @@
             <input id="fav_pro_one" type="checkbox">
             <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
         </div>--}}
-        {{-- @dd($product) --}}
+        {{-- @dd($product['updated_at']) --}}
         <a class="common-product-box text-center" href="{{ $product['vendor']->slug }}/product/{{ $product['url_slug'] }}">
             <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product['image_url'] }}" alt="" title="">
                 <div class="pref-timing"> </div>
@@ -41,8 +41,23 @@
                             <span class="rating"><i class="fa fa-star" aria-hidden="true"></i>4.5</span>
                             </p> -->
                         </div>
-                        <div class="d-flex align-items-center justify-content-between al_clock pt-2">
-                            <b>{{$product["price"] ?? ''}} </b>
+                        <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
+                            <b>Updated {{ convertDateToHumanReadable($product["updated_at"]) }} </b>
+                        </div>
+                        <div class="prod-details">
+                            <div class="d-flex align-items-center justify-content-between al_clock pt-2">
+                                <b>{{$product["price"] ?? ''}} </b>
+                            </div>
+                            <div class="chat-button">
+                                @if(getAdditionalPreference(['chat_button'])['chat_button'])
+                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-orderid="" data-order_id="" data-product_id=""><i class="fa fa-comments" aria-hidden="true"></i></a>
+                                    {{-- {{__('Chat')}} --}}
+                                @endif
+                                @if(getAdditionalPreference(['call_button'])['call_button'])
+                                    <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
+                                    {{-- {{__('Call Button')}} --}}
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>

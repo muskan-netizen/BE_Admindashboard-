@@ -28,6 +28,7 @@
                         <option value="3" @if($variant->type == 3) selected @endif>Radio</option>
                         <option value="4" @if($variant->type == 4) selected @endif>Textbox</option>
                         <option value="5" @if($variant->type == 5) selected @endif>Checkbox</option>
+                        <option value="6" @if($variant->type == 6) selected @endif>Location</option>
                     </select>
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
