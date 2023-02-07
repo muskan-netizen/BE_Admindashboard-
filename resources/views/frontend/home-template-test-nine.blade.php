@@ -841,7 +841,28 @@
 		</div>
 	</div>
 </div><!-- age-restriction end -->
+@php
 
+$user_type = 'user';
+$to_message = 'to_user';
+$from_message = 'from_user';
+$chat_type = 'user_to_user';
+$startChatype = 'user_to_user';
+$apiPre = 'client';
+$rePre = 'user/chat/userToUser';
+$fetchDe = 'fetchRoomByUserIdUserToUser';
+@endphp
+
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
 <!-- footer code in layouts.store/footercontent-template-two -->
 @section('home-page')
 {{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage-three.js')}}"></script> --}}
@@ -850,6 +871,9 @@
 @endsection
 @endsection
 @section('js-script')
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+{{-- <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script> --}}
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
 {{--<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}

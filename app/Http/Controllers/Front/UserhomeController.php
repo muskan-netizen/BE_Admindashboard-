@@ -845,6 +845,7 @@ class UserhomeController extends FrontController
             $new_products[] = array(
                 'tag_title' => $new_products_title??0,
                 'image_url' => $image_url,
+                'id' => $new_product_detail->id,
                 'sku' => $new_product_detail->sku,
                 'updated_at' => $new_product_detail->updated_at,
                 'is_inwishlist_btn' => $is_inwishlist_btn,
@@ -875,6 +876,7 @@ class UserhomeController extends FrontController
             $feature_products[] = array(
                 'tag_title' => $featured_products_title??'0',
                 'image_url' => $image_url,
+                'id' => $feature_product_detail->id,
                 'sku' => $feature_product_detail->sku,
                 'updated_at' => $feature_product_detail->updated_at,
                 'is_inwishlist_btn' => $is_inwishlist_btn,
@@ -905,6 +907,7 @@ class UserhomeController extends FrontController
             $on_sale_products[] = array(
                 'tag_title' => $on_sale_title??'0',
                 'image_url' => $image_url,
+                'id' => $on_sale_product_detail->id,
                 'sku' => $on_sale_product_detail->sku,
                 'updated_at' => $on_sale_product_detail->updated_at,
                 'is_inwishlist_btn' => $is_inwishlist_btn,
@@ -1090,9 +1093,9 @@ class UserhomeController extends FrontController
             $products = $products->where($where, 1);
         }
         if(checkColumnExists('products','is_long_term_service')){
-            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','updated_at','is_long_term_service');
+            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','updated_at', 'id','is_long_term_service');
         }else{
-            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','updated_at');
+            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','updated_at', 'id');
         }
         $pndCategories = Category::where('type_id', 7)->pluck('id');
         // if (is_array($venderIds)) {

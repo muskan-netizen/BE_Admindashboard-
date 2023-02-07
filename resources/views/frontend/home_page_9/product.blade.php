@@ -6,7 +6,7 @@
             <input id="fav_pro_one" type="checkbox">
             <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
         </div>--}}
-        {{-- @dd($product['updated_at']) --}}
+        {{-- @dd($product['vendor']->id) --}}
         <a class="common-product-box text-center" href="{{ $product['vendor']->slug }}/product/{{ $product['url_slug'] }}">
             <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product['image_url'] }}" alt="" title="">
                 <div class="pref-timing"> </div>
@@ -50,7 +50,7 @@
                             </div>
                             <div class="chat-button">
                                 @if(getAdditionalPreference(['chat_button'])['chat_button'])
-                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-orderid="" data-order_id="" data-product_id=""><i class="fa fa-comments" aria-hidden="true"></i></a>
+                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$product['vendor']->id}}" data-orderid="" data-order_id="" data-product_id="{{$product["id"]}}"><i class="fa fa-comments" aria-hidden="true"></i></a>
                                     {{-- {{__('Chat')}} --}}
                                 @endif
                                 @if(getAdditionalPreference(['call_button'])['call_button'])
