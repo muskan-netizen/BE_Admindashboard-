@@ -57,7 +57,7 @@ class AppStylingController extends BaseController
 
 
         $client_preferences = ClientPreference::first();
-       
+        $selected_ids=[];
         $Selected_products= HomeProduct::get();
         foreach ($Selected_products as $key => $value) {
             $selected_ids[] = $value->products ?? 0;
