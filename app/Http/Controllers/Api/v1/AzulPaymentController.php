@@ -63,7 +63,7 @@ class AzulPaymentController extends BaseController
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $time,
-                'balance_transaction' => $request->amt,
+                'balance_transaction' => $request->amount,
                 'type' => 'cart',
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id
@@ -73,7 +73,7 @@ class AzulPaymentController extends BaseController
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $time,
-                'balance_transaction' => $request->amt,
+                'balance_transaction' => $request->amount,
                 'type' => 'wallet',
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id
@@ -83,7 +83,7 @@ class AzulPaymentController extends BaseController
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $request->order_number . '_' . $time,
-                'balance_transaction' => $request->amt,
+                'balance_transaction' => $request->amount,
                 'type' => 'tip',
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id
@@ -93,7 +93,7 @@ class AzulPaymentController extends BaseController
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $request->subsid . '_' . $time,
-                'balance_transaction' => $request->amt,
+                'balance_transaction' => $request->amount,
                 'type' => 'subscription',
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id
@@ -103,7 +103,7 @@ class AzulPaymentController extends BaseController
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $time,
-                'balance_transaction' => $request->amt,
+                'balance_transaction' => $request->amount,
                 'type' => 'pickup_delivery',
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id
@@ -159,14 +159,13 @@ class AzulPaymentController extends BaseController
         \Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         // dd($responsePay);
-        if ($dataResponse['ok'] === false) {
+        /*if ($dataResponse['ok'] === false) {
             $response['status'] = 'Fail';
             $response['msg'] = 'Invalid Card Details.';
             $response['payment_from'] = $request->action;
-            $response['route'] = '';
             return response()->json($response, 400);
-        }
-        if (isset($dataResponse['ok']) && $dataResponse['ok'] === true) {
+        }*/
+        if (isset($dataResponse['ok']) && $dataResponse['ok'] === false) {
             // \Log::info('Done');
 
             if ($request->from == 'tip') {
@@ -206,7 +205,7 @@ class AzulPaymentController extends BaseController
     public function completeOrderCart($request, $payment)
     {
         $order = Order::where('order_number', $payment->transaction_id)->first();
-        if (isset($request['ok']) && $request['ok'] == true) {
+        if (isset($request['ok']) && $request['ok'] == false) {
             $order->payment_status = '1';
             $order->save();
 
@@ -236,7 +235,7 @@ class AzulPaymentController extends BaseController
             CartProductPrescription::where('cart_id', $cartid)->delete();
 
             // send sms
-            $this->sendSuccessSMS($request, $order);
+            $orderController->sendSuccessSMS($request, $order);
 
             // Send Notification
             if (! empty($order->vendors)) {

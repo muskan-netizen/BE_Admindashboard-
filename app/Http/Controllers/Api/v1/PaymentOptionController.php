@@ -283,6 +283,13 @@ class PaymentOptionController extends BaseController{
 
         return $gateway->PlugPayPurchase($request);
     }
+    
+    public function postPaymentVia_azul(Request $request){
+        
+        $gateway = new AzulPaymentController();
+        
+        return $gateway->beforePayment($request);
+    }
 
     public function postPaymentVia_paypal(Request $request){
         try{
