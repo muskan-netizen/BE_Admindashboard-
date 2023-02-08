@@ -160,7 +160,7 @@ class AzulPaymentController extends BaseController
                 $payment = Payment::where('transaction_id', $dataResponse['data']->CustomOrderId)->first();
             }
             // \Log::info(json_encode($request->all()));
-            if ($payment) {
+            if (! empty($payment)) {
                 $payment->viva_order_id = $dataResponse['data']->AzulOrderId;
                 $payment->save();
             }
