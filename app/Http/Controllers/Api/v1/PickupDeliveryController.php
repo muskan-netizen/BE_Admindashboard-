@@ -1,7 +1,8 @@
 <?php
+
 namespace App\Http\Controllers\Api\v1;
 
-use DB, Log;
+use DB,Log;
 use Config;
 use Validation;
 use Carbon\Carbon;
@@ -10,152 +11,110 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\ {
-    Category,
-    ClientPreference,
-    ClientCurrency,
-    Vendor,
-    ProductVariantSet,
-    Product,
-    SubscriptionInvoicesUser,
-    LoyaltyCard,
-    UserAddress,
-    Order,
-    OrderVendor,
-    OrderProduct,
-    VendorOrderStatus,
-    Client,
-    Promocode,
-    PromoCodeDetail,
-    VendorOrderDispatcherStatus,
-    Payment,
-    Rider,
-    OrderLocations,
-    LuxuryOption,
-    OrderDriverRating,
-    OrderVendorProduct,
-    ProductFaq,
-    ProductFaqSelectOption,
-    PickDropDriverBid
-};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, PickDropDriverBid};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 
-class PickupDeliveryController extends BaseController
-{
+class PickupDeliveryController extends BaseController{
 
     use ApiResponser;
-
     private $riderObj;
-
     public function __construct()
     {
         $this->riderObj = new Rider();
     }
 
+
     # get all vehicles category by vendor
-    public function productsByVendorInPickupDelivery(Request $request, $vid = 0, $cid = 0)
-    {
+
+    public function productsByVendorInPickupDelivery(Request $request, $vid = 0, $cid = 0){
         try {
-            if ($vid == 0) {
-                return response()->json([
-                    'error' => __('No record found.')
-                ], 404);
+            if($vid == 0){
+                return response()->json(['error' => __('No record found.')], 404);
             }
 
             $preferences = ClientPreference::where('id', '>', 0)->first();
-            $preferences->is_cab_pooling = getAdditionalPreference([
-                'is_cab_pooling'
-            ])['is_cab_pooling'];
+            $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
 
             $user = Auth::user();
             $userid = $user->id;
 
             $schedule_datetime_del = '';
-            if (isset($request->schedule_date_delivery) && ! empty($request->schedule_date_delivery)) {
+            if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
                 $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
-            } else {
+            }else{
                 $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
             }
 
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $langId = Auth::user()->language;
-            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')->where('id', $vid)->first();
-            if (! $vendor) {
-                return response()->json([
-                    'error' => __('No record found.')
-                ], 200);
+            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude',
+                        'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')
+                        ->where('id', $vid)->first();
+            if(!$vendor){
+                return response()->json(['error' => __('No record found.')], 200);
             }
 
-            $products = Product::with([
-                'category.categoryDetail',
-                'vendor',
-                'tollpass',
-                'travelmode',
-                'emissiontype',
-                'inwishlist' => function ($qry) use ($userid) {
-                    $qry->where('user_id', $userid);
-                },
-                'media.image',
-                'translation' => function ($q) use ($langId) {
-                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-                },
-                'variant' => function ($q) use ($langId) {
-                    $q->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode');
-                    $q->groupBy('product_id');
-                },
-                'ProductFaq.translations' => function ($qs) use ($langId) {
-                    $qs->where('language_id', $langId);
-                },
-                'ProductFaq.selection.translations' => function ($qs) use ($langId) {
-                    $qs->where('language_id', $langId);
-                }
-            ])->join('product_categories as pc', 'pc.product_id', 'products.id')
-                ->whereNotIn('pc.category_id', function ($qr) use ($vid) {
-                $qr->select('category_id')
-                    ->from('vendor_categories')
-                    ->where('vendor_id', $vid)
-                    ->where('status', 0);
-            })
-                ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id', 'products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')
-                ->where('products.vendor_id', $vid);
-            if ($cid > 0) {
-                $products = $products->where('products.category_id', $cid);
-            }
+            $products = Product::with(['category.categoryDetail', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'inwishlist' => function($qry) use($userid){
+                            $qry->where('user_id', $userid);
+                        },
+                        'media.image', 'translation' => function($q) use($langId){
+                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                        },
+                        'variant' => function($q) use($langId){
+                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->groupBy('product_id');
+                        },'ProductFaq.translations' => function ($qs) use($langId){
+                            $qs->where('language_id',$langId);
+                        },'ProductFaq.selection.translations' => function ($qs) use($langId){
+                            $qs->where('language_id',$langId);
+                        },
+                    ])->join('product_categories as pc', 'pc.product_id', 'products.id')
+                    ->whereNotIn('pc.category_id', function($qr) use($vid){
+                                $qr->select('category_id')->from('vendor_categories')
+                                    ->where('vendor_id', $vid)->where('status', 0);
+                    })
+                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')
+                    ->where('products.vendor_id', $vid);
+                    if($cid > 0){
+                        $products = $products->where('products.category_id', $cid);
+                    }
 
-            if (! empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && ! empty($preferences) && $preferences->is_cab_pooling == 1) {
-                Log::info($request->no_seats_for_pooling);
-                $products = $products->where('products.available_for_pooling', 1);
-                if (isset($request->no_seats_for_pooling)) {
-                    $products = $products->where('products.seats_for_booking', '>=', $request->no_seats_for_pooling);
-                }
-            }
-            $products = $products->where('products.is_live', 1)
-                ->distinct()
-                ->paginate($paginate);
+                    if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+                    {
+                        Log::info($request->no_seats_for_pooling);
+                        $products = $products->where('products.available_for_pooling', 1);
+                        if(isset($request->no_seats_for_pooling))
+                        {
+                            $products = $products->where('products.seats_for_booking', '>=', $request->no_seats_for_pooling);
+                        }
+                    }
+                    $products = $products->where('products.is_live', 1)->distinct()->paginate($paginate);
 
-            if (! empty($products)) {
+            if(!empty($products)){
                 foreach ($products as $key => $product) {
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-                    $product->service_charge_amount = ($product->vendor->fixed_service_charge == 1) ? $product->vendor->service_charge_amount : 0.00;
-                    $product->toll_fee = $tags_price['toll_fee'] ?? 0;
-                    $product->tags_price = $tags_price['delivery_fee'] ?? 0;
+                    $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+                    $product->toll_fee   = $tags_price['toll_fee']??0;
+                    $product->tags_price = $tags_price['delivery_fee']??0;
 
-                    $product->seats_for_booking = ($product->seats_for_booking > 0) ? $product->seats_for_booking : 1;
-                    if (isset($request->is_cab_pooling) && $request->is_cab_pooling == 1 && ! empty($preferences) && $preferences->is_cab_pooling == 1) {
-                        if (isset($request->no_seats_for_pooling)) {
+                    $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
+                    if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+                    {
+                        if(isset($request->no_seats_for_pooling))
+                        {
                             $no_seats_for_pooling = $request->no_seats_for_pooling;
-                        } else {
+                        }else{
                             $no_seats_for_pooling = 1;
                         }
-                        $product->tags_price = decimal_format(($product->tags_price / $product->seats_for_booking) * $no_seats_for_pooling);
-                        $product->toll_fee = decimal_format(($product->toll_fee / $product->seats_for_booking) * $no_seats_for_pooling);
-                    } else {
+                        $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+                        $product->toll_fee   = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
+                    }else{
                         $product->tags_price = decimal_format($product->tags_price);
-                        $product->toll_fee = decimal_format($product->toll_fee);
+                        $product->toll_fee   = decimal_format($product->toll_fee);
                     }
                     $product->total_tags_price = $product->tags_price + $product->toll_fee + $product->service_charge_amount;
                     foreach ($product->variant as $k => $v) {
@@ -166,6 +125,7 @@ class PickupDeliveryController extends BaseController
                 }
             }
 
+
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -173,87 +133,76 @@ class PickupDeliveryController extends BaseController
                 $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
             }
             $loyalty_points_used;
-            $order_loyalty_points_earned_detail = Order::where('user_id', $userid)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-            if ($order_loyalty_points_earned_detail) {
-                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                $order_loyalty_points_earned_detail = Order::where('user_id', $userid)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+                if ($order_loyalty_points_earned_detail) {
+                    $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                    if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                        $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                    }
                 }
-            }
 
             $response['vendor'] = $vendor;
             $response['products'] = $products;
-            $response['loyalty_amount_saved'] = $loyalty_amount_saved ?? 0.00;
-            return response()->json([
-                'status',
-                'data' => $response
-            ]);
+            $response['loyalty_amount_saved'] = $loyalty_amount_saved??0.00;
+             return response()->json(['status','data' => $response]);
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage() . '' . $e->getLineNo(), $e->getCode());
+            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }
     }
-
     /**
      * list of vehicles details
-     */
-    /**
-     * * Get Company ShortCode *
-     */
-    public function getListOfVehicles(Request $request, $cid = 0)
-    {
-        try {
+    */
+     /**     * Get Company ShortCode     *     */
+     public function getListOfVehicles(Request $request, $cid = 0){
+        try{
 
-            if ($cid == 0) {
-                return response()->json([
-                    'error' => __('No record found.')
-                ], 404);
+            if($cid == 0){
+                return response()->json(['error' => __('No record found.')], 404);
             }
             $userid = Auth::user()->id;
             $langId = Auth::user()->language;
 
             $user = Auth::user();
             $schedule_datetime_del = '';
-            if (isset($request->schedule_date_delivery) && ! empty($request->schedule_date_delivery)) {
+            if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
                 $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
-            } else {
+            }else{
                 $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
             }
 
-            $category = Category::with([
-                'tags',
-                'type' => function ($q) {
-                    $q->select('id', 'title as redirect_to');
-                },
-                'childs.translation' => function ($q) use ($langId) {
-                    $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')->where('category_translations.language_id', $langId);
-                },
-                'translation' => function ($q) use ($langId) {
-                    $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')->where('category_translations.language_id', $langId);
-                }
-            ])->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products')
-                ->where('id', $cid)
-                ->first();
+            $category = Category::with(['tags','type'  => function($q){
+                            $q->select('id', 'title as redirect_to');
+                        },
+                        'childs.translation'  => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        },
+                        'translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        }])
+                        ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products')
+                        ->where('id', $cid)->first();
 
-            if (! $category) {
-                return response()->json([
-                    'error' => 'No record found.'
-                ], 200);
+
+            if(!$category){
+                return response()->json(['error' => 'No record found.'], 200);
             }
             $response['category'] = $category;
-            $response['listData'] = $this->listData($langId, $cid, $category->type->redirect_to, $userid, $request, $schedule_datetime_del);
+            $response['listData'] = $this->listData($langId, $cid, $category->type->redirect_to, $userid,$request, $schedule_datetime_del);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+
     }
 
-    public function listData($langId, $category_id, $type = '', $userid, $request, $schedule_datetime_del = '')
-    {
+    public function listData($langId, $category_id, $type = '', $userid,$request, $schedule_datetime_del=''){
         if ($type == 'Pickup/Delivery') {
             $category_details = [];
             $delivercharge = $this->getDeliveryFeeDispatcher($request, null, $schedule_datetime_del);
-            $deliver_charge = $delivercharge['delivery_fee'] ?? 0.00;
-            $toll_charge = $delivercharge['toll_fee'] ?? 0.00;
+            $deliver_charge = $delivercharge['delivery_fee']??0.00;
+            $toll_charge = $delivercharge['toll_fee']??0.00;
             $category_list = Category::where('parent_id', $category_id)->get();
             foreach ($category_list as $category) {
                 $category_details[] = array(
@@ -262,112 +211,108 @@ class PickupDeliveryController extends BaseController
                     'icon' => $category->icon,
                     'image' => $category->image,
                     'price' => $deliver_charge + $toll_charge,
-                    'toll_price' => $toll_charge
+                    'toll_price' => $toll_charge,
                 );
             }
             return $category_details;
-        } else {
+        }
+        else{
             $arr = array();
             return $arr;
         }
     }
 
-    # get delivery fee from dispatcher
-    public function getDeliveryFeeDispatcher($request, $product = null, $schedule_datetime_del = '')
-    {
+
+     # get delivery fee from dispatcher
+     public function getDeliveryFeeDispatcher($request, $product=null, $schedule_datetime_del=''){
         try {
-            $dispatch_domain = $this->checkIfPickupDeliveryOn();
-            if ($dispatch_domain && $dispatch_domain != false) {
-                $all_location = array();
-                $postdata = [
-                    'locations' => $request->locations,
-                    'agent_tag' => $product->tags ?? '',
-                    'schedule_datetime_del' => $schedule_datetime_del,
-                    'toll_passes' => ((! empty($product) && $product->is_toll_tax == 1) ? $product->tollpass->toll_pass : 'IN_FASTAG'),
-                    'VehicleEmissionType' => ((! empty($product) && $product->is_toll_tax == 1) ? $product->emissiontype->emission_type : 'GASOLINE'),
-                    'travelMode' => ((! empty($product) && $product->is_toll_tax == 1) ? $product->travelmode->travelmode : 'TAXI')
-                ];
-                $client = new GCLIENT([
-                    'headers' => [
-                        'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                        'content-type' => 'application/json'
-                    ]
-                ]);
-                $url = $dispatch_domain->pickup_delivery_service_key_url;
-                $res = $client->post($url . '/api/get-delivery-fee', [
-                    'form_params' => ($postdata)
-                ]);
-                $response = json_decode($res->getBody(), true);
-                if ($response && $response['message'] == 'success') {
-                    return array(
-                        'delivery_fee' => $response['total'],
-                        'toll_fee' => isset($response['toll_fee']) ? ((! empty($product) && $product->is_toll_tax == 1) ? $response['toll_fee'] : 0.00) : 0.00
+                $dispatch_domain = $this->checkIfPickupDeliveryOn();
+                if ($dispatch_domain && $dispatch_domain != false)
+                {
+                    $all_location = array();
+                    $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI')];
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                                                'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                                                'content-type' => 'application/json']
+                                                    ]);
+                    $url = $dispatch_domain->pickup_delivery_service_key_url;
+                    $res = $client->post($url.'/api/get-delivery-fee',
+                        ['form_params' => ($postdata)]
                     );
-                } else {
-                    return array(
-                        'delivery_fee' => 0,
-                        'toll_fee' => 0
-                    );
+                    $response = json_decode($res->getBody(), true);
+                    if($response && $response['message'] == 'success'){
+                        return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00);
+                    }else{
+                        return array('delivery_fee' => 0, 'toll_fee' => 0);
+                    }
+
                 }
             }
-        } catch (\Exception $e) {}
-    }
+            catch(\Exception $e){
 
+            }
+    }
     # check if last mile delivery on
-    public function checkIfPickupDeliveryOn()
-    {
+    public function checkIfPickupDeliveryOn(){
         $preference = ClientPreference::first();
-        if ($preference->need_dispacher_ride == 1 && ! empty($preference->pickup_delivery_service_key) && ! empty($preference->pickup_delivery_service_key_code) && ! empty($preference->pickup_delivery_service_key_url))
+        if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
             return $preference;
         else
             return false;
     }
 
+
+
+
     /**
      * create order for booking
-     */
-    public function createOrder(Request $request)
-    {
+    */
+     public function createOrder(Request $request){
+
         DB::beginTransaction();
         try {
             $order_place = $this->orderPlaceForPickupDelivery($request);
-            if ($order_place && $order_place['status'] == 200) {
-                if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (($request->has('transaction_id')) && (! empty($request->transaction_id))) || (($request->has('is_postpay')) && ($request->is_postpay == 1))) {
+            if($order_place && $order_place['status'] == 200){
+                if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
                     $data = [];
                     $order = $order_place['data'];
                     $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
-                    if ($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0) {
+                    if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
 
-                        // Send message if ride is booked for friend
-                        if ($request->bookingType == 1 && isset($request->friendPhoneNumber)) {
-                            $msg = "Hi " . $request->friendName ?? 'User' . ", " . $user->name . " has booked a ride for you.";
+                        //Send message if ride is booked for friend
+                        if($request->bookingType == 1 && isset($request->friendPhoneNumber))
+                        {
+                            $msg = "Hi ".$request->friendName??'User'.", ".$user->name." has booked a ride for you.";
                             $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
                         }
-                    } else {
+                    }else{
                         DB::rollback();
                         return $request_to_dispatch;
                     }
                 }
                 DB::commit();
                 return $order_place;
-            } else {
+            }
+            else{
                 DB::rollback();
                 return $order_place;
             }
-        } catch (\Exception $e) {
+        }
+        catch(\Exception $e){
             DB::rollback();
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
             ]);
         }
+
     }
 
+
     // order place for pickup delivery
-    public function orderPlaceForPickupDelivery($request)
-    {
+
+    public function orderPlaceForPickupDelivery($request){
         $total_amount = 0;
         $total_discount = 0;
         $taxable_amount = 0;
@@ -375,8 +320,8 @@ class PickupDeliveryController extends BaseController
         $user = Auth::user();
         $action = 'pick_drop';
         $luxury_option = LuxuryOption::where('title', $action)->first();
-        $request->address_id = $request->address_id ?? null;
-        $request->payment_option_id = $request->payment_option_id ?? 1;
+        $request->address_id = $request->address_id ??null;
+        $request->payment_option_id = $request->payment_option_id ??1;
         if ($user) {
             $loyalty_amount_saved = 0;
             $total_service_fee = 0;
@@ -391,7 +336,7 @@ class PickupDeliveryController extends BaseController
                 if ($user->is_email_verified == 0) {
                     $data = [];
                     $data['status'] = 404;
-                    $data['message'] = 'Your account is not verified.';
+                    $data['message'] =  'Your account is not verified.';
                     return $data;
                 }
             }
@@ -399,7 +344,7 @@ class PickupDeliveryController extends BaseController
                 if ($user->is_phone_verified == 0) {
                     $data = [];
                     $data['status'] = 404;
-                    $data['message'] = 'Your phone is not verified.';
+                    $data['message'] =  'Your phone is not verified.';
                     return $data;
                 }
             }
@@ -414,31 +359,34 @@ class PickupDeliveryController extends BaseController
                     }
                 }
 
-                if ($request->payment_option_id == 2) {
+                if($request->payment_option_id == 2){
                     $payment_option = 1;
-                } else {
+                }
+                else{
                     $payment_option = $request->payment_option_id;
                 }
 
-                $order = new Order();
+                $order = new Order;
                 $order->user_id = $user->id;
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
-                /* book for a friend */
+                /*book for a friend*/
                 $order->type = $request->bookingType ?? 0;
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
                 $order->luxury_option_id = $luxury_option->id;
-                if (checkColumnExists('orders', 'is_postpay')) {
-                    $order->is_postpay = (isset($request->is_postpay)) ? $request->is_postpay : 0;
+                if(checkColumnExists('orders', 'is_postpay')){
+                    $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
                 }
 
+
+
                 $schedule_datetime_del = NULL;
-                if (isset($request->schedule_time) && ! empty($request->schedule_time)) {
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                $order->scheduled_date_time = $schedule_datetime_del ?? NULL;
+                $order->scheduled_date_time = $schedule_datetime_del??NULL;
                 $order->save();
 
                 // save pickup delivery task
@@ -448,26 +396,24 @@ class PickupDeliveryController extends BaseController
                 $order_location->vendor_id = $request->vendor_id;
                 $order_location->phone_number = $request->phone_number ?? null;
                 $order_location->email = $request->email ?? null;
-                $order_location->tasks = json_encode($request->tasks);
+                $order_location->tasks = json_encode($request->tasks );
                 $order_location->save();
 
                 $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
                     $q->where('id', $request->product_id);
-                })->select('*', 'id as vendor_id')
-                    ->orderBy('created_at', 'asc')
-                    ->first();
+                })->select('*','id as vendor_id')->orderBy('created_at', 'asc')->first();
                 $vendor_id = $vendor->id;
-                $product = Product::where('id', $request->product_id)->with('pimage', 'variants', 'taxCategory.taxRate', 'addon')->first();
+                $product = Product::where('id',$request->product_id)->with('pimage', 'variants', 'taxCategory.taxRate', 'addon')->first();
                 $total_delivery_fee = 0;
                 $delivery_fee = 0;
                 $vendor_payable_amount = 0;
                 $vendor_discount_amount = 0;
-                $order_vendor = new OrderVendor();
+                $order_vendor = new OrderVendor;
                 $order_vendor->status = 0;
-                $order_vendor->user_id = $user->id;
-                $order_vendor->order_id = $order->id;
-                $order_vendor->vendor_id = $vendor->id;
+                $order_vendor->user_id= $user->id;
+                $order_vendor->order_id= $order->id;
+                $order_vendor->vendor_id= $vendor->id;
                 $order_vendor->save();
                 $variant = $product->variants->where('product_id', $request->product_id)->first();
                 $variant->price = $request->tags_amount;
@@ -495,7 +441,7 @@ class PickupDeliveryController extends BaseController
                 }
                 $vendor_taxable_amount += $taxable_amount;
                 $total_amount += $variant->price;
-                $order_product = new OrderProduct();
+                $order_product = new OrderProduct;
                 $order_product->order_vendor_id = $order_vendor->id;
                 $order_product->order_id = $order->id;
                 $order_product->price = $variant->price;
@@ -506,17 +452,18 @@ class PickupDeliveryController extends BaseController
                 $order_product->created_by = null;
                 $order_product->variant_id = $variant->id;
                 $order_product->product_name = $product->sku;
-                $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling == 1 && isset($request->no_seats_for_pooling)) ? $request->no_seats_for_pooling : 0;
-                $order_product->is_cab_pooling = isset($request->is_cab_pooling) ? $request->is_cab_pooling : 0;
+                $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0;
+                $order_product->is_cab_pooling = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
 
-                if (checkColumnExists('order_vendor_products', 'is_one_push_booking')) {
-                    $order_product->is_one_push_booking = isset($request->is_one_push_booking) ? $request->is_one_push_booking : 0;
+                if(checkColumnExists('order_vendor_products', 'is_one_push_booking'))
+                {
+                    $order_product->is_one_push_booking = isset($request->is_one_push_booking)?$request->is_one_push_booking:0;
                 }
 
-                if (isset($request->user_product_order_form) && ! empty($request->user_product_order_form))
-                    $user_product_order_form = json_encode($request->user_product_order_form);
+                if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
+                $user_product_order_form = json_encode($request->user_product_order_form);
                 else
-                    $user_product_order_form = null;
+                $user_product_order_form = null;
 
                 $order_product->user_product_order_form = $user_product_order_form;
                 if ($product->pimage) {
@@ -534,20 +481,20 @@ class PickupDeliveryController extends BaseController
                         $coupon_discount_amount = $coupon->amount;
                         $total_discount += $coupon_discount_amount;
                         $vendor_payable_amount -= $coupon_discount_amount;
-                        $vendor_discount_amount += $coupon_discount_amount;
+                        $vendor_discount_amount +=$coupon_discount_amount;
                     } else {
                         $coupon_discount_amount = ($quantity_price * $coupon->amount / 100);
                         $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
                         $total_discount += $final_coupon_discount_amount;
-                        $vendor_payable_amount -= $final_coupon_discount_amount;
-                        $vendor_discount_amount += $final_coupon_discount_amount;
+                        $vendor_payable_amount -=$final_coupon_discount_amount;
+                        $vendor_discount_amount +=$final_coupon_discount_amount;
                     }
                 }
-                $total_toll_amount += (isset($request->tollamount)) ? $request->tollamount : 0.00;
-                $total_service_fee += (isset($request->servicechargeamount)) ? $request->servicechargeamount : 0.00;
+                $total_toll_amount +=(isset($request->tollamount))?$request->tollamount:0.00;
+                $total_service_fee +=(isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
 
-                $vendor_payable_amount += (isset($request->tollamount)) ? $request->tollamount : 0.00;
-                $vendor_payable_amount += (isset($request->servicechargeamount)) ? $request->servicechargeamount : 0.00;
+                $vendor_payable_amount +=(isset($request->tollamount))?$request->tollamount:0.00;
+                $vendor_payable_amount +=(isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
 
                 $order_vendor->coupon_id = $coupon_id;
                 $order_vendor->coupon_code = $coupon_name;
@@ -555,10 +502,10 @@ class PickupDeliveryController extends BaseController
                 $order_vendor->subtotal_amount = $actual_amount;
                 $order_vendor->payable_amount = $vendor_payable_amount;
                 $order_vendor->taxable_amount = $vendor_taxable_amount;
-                $order_vendor->discount_amount = $vendor_discount_amount;
+                $order_vendor->discount_amount= $vendor_discount_amount;
                 $order_vendor->payment_option_id = $request->payment_option_id;
-                $order_vendor->toll_amount = (isset($request->tollamount)) ? $request->tollamount : 0.00;
-                $order_vendor->service_fee_percentage_amount = (isset($request->servicechargeamount)) ? $request->servicechargeamount : 0.00;
+                $order_vendor->toll_amount = (isset($request->tollamount))?$request->tollamount:0.00;
+                $order_vendor->service_fee_percentage_amount = (isset($request->servicechargeamount))?$request->servicechargeamount:0.00;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -582,7 +529,7 @@ class PickupDeliveryController extends BaseController
                 $order->taxable_amount = $taxable_amount;
                 if ($loyalty_amount_saved > 0) {
                     if ($payable_amount < $loyalty_amount_saved) {
-                        $loyalty_amount_saved = $payable_amount;
+                        $loyalty_amount_saved =  $payable_amount;
                         $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                     }
                 }
@@ -590,15 +537,16 @@ class PickupDeliveryController extends BaseController
                 $order->total_delivery_fee = $total_delivery_fee;
                 $order->loyalty_points_used = $loyalty_points_used;
                 $order->loyalty_amount_saved = $loyalty_amount_saved;
-                $order->total_toll_amount = $total_toll_amount;
-                $order->total_service_fee = $total_service_fee;
+                $order->total_toll_amount    = $total_toll_amount;
+                $order->total_service_fee    = $total_service_fee;
+
 
                 $now = Carbon::now()->toDateTimeString();
-                $user_subscription = SubscriptionInvoicesUser::with('features')->select('id', 'user_id', 'subscription_id')
+                $user_subscription = SubscriptionInvoicesUser::with('features')
+                    ->select('id', 'user_id', 'subscription_id')
                     ->where('user_id', $user->id)
                     ->where('end_date', '>', $now)
-                    ->orderBy('end_date', 'desc')
-                    ->first();
+                    ->orderBy('end_date', 'desc')->first();
                 if ($user_subscription) {
                     foreach ($user_subscription->features as $feature) {
                         if ($feature->feature_id == 2) {
@@ -607,18 +555,20 @@ class PickupDeliveryController extends BaseController
                             $order->payable_amount = $subscriptionAmount + $total_toll_amount + $total_service_fee;
                         }
                     }
-                } else {
+                }else{
                     $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $total_service_fee;
                 }
 
+
+
                 $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
-                if (isset($request->transaction_id) && (! empty($request->transaction_id))) {
+                if (isset($request->transaction_id) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
                 }
                 $order->save();
 
-                if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && (! empty($request->transaction_id))) {
+                if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && (!empty($request->transaction_id))) {
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
                     $payment->order_id = $order->id;
@@ -629,64 +579,61 @@ class PickupDeliveryController extends BaseController
                 }
             }
 
-            $data = [];
-            $data['status'] = 200;
-            $data['message'] = __('Order Placed');
-            $data['data'] = $order;
-            return $data;
+                        $data = [];
+                        $data['status'] = 200;
+                        $data['message'] =  __('Order Placed');
+                        $data['data'] =
+                        $order;
+                        return $data;
         }
     }
 
-    // order update for pickup delivery
-    public function orderUpdateAfterPaymentPickupDelivery($request)
-    {
-        $order = Order::where('order_number', $request->order_number)->first();
-        $vendorId = OrderVendor::where('order_id', $order->id)->first();
-        $vendor_id = $vendorId->vendor_id;
-        $productId = OrderVendorProduct::where('order_vendor_id', $vendorId->id)->select('product_id')->first();
-        $tasks = OrderLocations::where('order_id', $order->id)->select('tasks')->first();
-        $request->request->add([
-            'product_id',
-            $productId->product_id
-        ]);
-        $request->request->add([
-            'tasks',
-            json_decode($tasks->tasks)
-        ]);
-        if (! empty($request->transaction_id)) {
-            $order->payment_status = 1;
-        }
-        $order->save();
-        if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->transaction_id) && (! empty($request->transaction_id))) {
-            $payment = new Payment();
-            $payment->date = date('Y-m-d');
-            $payment->order_id = $order->id;
-            $payment->transaction_id = $request->transaction_id;
-            $payment->balance_transaction = ! empty($order->payable_amount) ? $order->payable_amount : $request->amount;
-            $payment->type = 'pickup/delivery';
-            $payment->save();
-        }
 
-        if ($request->payment_option_id = 49) {
-            $data['product_id'] = $productId->product_id;
-            $data['tasks'] = json_decode($tasks->tasks);
-            $request = new \Illuminate\Http\Request($data);
-        }
-        $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $vendor_id);
-        if ($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0) {
-            $user = Auth::user();
-            $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
-            $order_place['data']['user_name'] = $user->email;
-            $order_place['data']['phone_number'] = '+' . $user->dial_code . '' . $user->phone_number;
-            return $order_place;
-        } else {
-            return $request_to_dispatch;
-        }
+     // order update for pickup delivery
+     public function orderUpdateAfterPaymentPickupDelivery($request){
+            $order = Order::where('order_number', $request->order_number)->first();
+            $vendorId = OrderVendor::where('order_id',$order->id)->first();
+            $vendor_id = $vendorId->vendor_id;
+            $productId = OrderVendorProduct::where('order_vendor_id',$vendorId->id)->select('product_id')->first();
+            $tasks = OrderLocations::where('order_id',$order->id)->select('tasks')->first();
+            $request->request->add(['product_id', $productId->product_id]);
+            $request->request->add(['tasks', json_decode($tasks->tasks)]);
+            if (!empty($request->transaction_id)) {
+                $order->payment_status = 1;
+            }
+            $order->save();
+            if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->transaction_id) && (!empty($request->transaction_id))) {
+                $payment = new Payment();
+                $payment->date = date('Y-m-d');
+                $payment->order_id = $order->id;
+                $payment->transaction_id = $request->transaction_id;
+                $payment->balance_transaction = !empty($order->payable_amount)?$order->payable_amount:$request->amount;
+                $payment->type = 'pickup/delivery';
+                $payment->save();
+            }
+
+            if($request->payment_option_id = 49){
+                $data['product_id']         =   $productId->product_id;
+                $data['tasks']              =   json_decode($tasks->tasks);
+                $request                    =   new \Illuminate\Http\Request($data);
+            }
+            $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$vendor_id);
+            if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
+                $user = Auth::user();
+                $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+                $order_place['data']['user_name'] = $user->email;
+                $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
+                return  $order_place;
+            }else{
+                return $request_to_dispatch;
+            }
+
+
+
     }
 
     // place Request To Dispatch
-    public function placeRequestToDispatch($request, $order, $vendor)
-    {
+    public function placeRequestToDispatch($request,$order,$vendor){
         try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
@@ -697,59 +644,60 @@ class PickupDeliveryController extends BaseController
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order->payable_amount;
                 } else {
-                    if (checkColumnExists('orders', 'is_postpay')) {
-                        if ($order->is_postpay == 1) {
+                    if(checkColumnExists('orders', 'is_postpay'))
+                    {
+                        if($order->is_postpay==1)
+                        {
                             $cash_to_be_collected = 'Yes';
                             $payable_amount = $order->payable_amount;
-                        } else {
+                        }else{
                             $cash_to_be_collected = 'No';
                             $payable_amount = 0.00;
                         }
-                    } else {
+                    }else{
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
                 }
 
                 $schedule_datetime_del = NULL;
-                if (isset($request->schedule_time) && ! empty($request->schedule_time)) {
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
-                if (isset($request->task_type) && ! empty($request->task_type)) {
+                if(isset($request->task_type) && !empty($request->task_type))
+                {
                     $request->task_type = $request->task_type;
                     $schedule_datetime_del = null;
                     $request->order_time = $schedule_datetime_del;
-                } else {
+                }else{
                     $request->task_type = 'schedule';
                     $request->scheduled_date_time = $schedule_datetime_del;
                     $request->order_time = $schedule_datetime_del;
                 }
-                $order_vendor = OrderVendor::where([
-                    'order_id' => $order->id,
-                    'vendor_id' => $vendor
-                ])->first();
-                $dynamic = (! empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id . $vendor);
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
+                $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
-                $client_do = Client::where('code', $unique)->first();
+                $client_do = Client::where('code',$unique)->first();
 
-                if (! empty($client_do->custom_domain)) {
+                if(!empty($client_do->custom_domain)){
                     $domain = $client_do->custom_domain;
-                } else {
-                    $domain = $client_do->sub_domain . env('SUBMAINDOMAIN');
+                }else{
+                    $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "https://" . $domain . "/dispatch-pickup-delivery/" . $dynamic;
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
                 $tasks = array();
                 $meta_data = '';
-                $team_tag = $unique . "_" . $vendor;
+                $team_tag = $unique."_".$vendor;
                 $product = Product::find($request->product_id);
-                $order_agent_tag = $product->tags ?? '';
+                $order_agent_tag = $product->tags??'';
                 $type = $request->bookingType ?? 0;
-                $friendName = $request->friendName ?? null;
-                $friendPhoneNumber = $request->friendPhoneNumber ?? null;
-                if (empty($friendPhoneNumber)) {
-                    $type = 0;
+                $friendName=$request->friendName?? null;
+                $friendPhoneNumber=$request->friendPhoneNumber?? null;
+                if(empty($friendPhoneNumber)){
+                    $type=0;
                 }
+
 
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
@@ -759,126 +707,114 @@ class PickupDeliveryController extends BaseController
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
 
-                $postdata = [
-                    'order_number' => $order->order_number,
-                    'customer_name' => $customer->name ?? 'Dummy Customer',
-                    'customer_phone_number' => $customerno ?? rand(111111, 11111),
-                    'customer_dial_code' => $customer->dial_code ?? null,
-                    'customer_email' => $customer->email ?? '',
-                    'recipient_phone' => $request->phone_number ?? $customerno,
-                    'recipient_email' => $request->email ?? $customer->email,
-                    'task_description' => $request->task_description ?? null,
-                    'allocation_type' => 'a',
-                    'task_type' => $request->task_type,
-                    'schedule_time' => $schedule_datetime_del ?? null,
-                    'cash_to_be_collected' => $payable_amount ?? 0.00,
-                    'barcode' => '',
-                    'call_back_url' => $call_back_url ?? null,
-                    'order_team_tag' => $team_tag,
-                    'order_agent_tag' => $order_agent_tag,
-                    'task' => $request->tasks,
-                    'order_time_zone' => $request->order_time_zone ?? null,
-                    'images_array' => $request->images_array ?? null,
-                    'type' => $type,
-                    'friend_name' => $friendName,
-                    'friend_phone_number' => $friendPhoneNumber,
-                    'vendor_id' => $vendor,
-                    'order_vendor_id' => $order_vendor->id,
-                    'dbname' => $client_do->database_name,
-                    'order_id' => $order->id,
-                    'customer_id' => $order->user_id,
-                    'user_icon' => $customer->image,
-                    'toll_passes' => ((! empty($product) && $product->is_toll_tax == 1) ? $product->tollpass->toll_pass : 'IN_FASTAG'),
-                    'VehicleEmissionType' => ((! empty($product) && $product->is_toll_tax == 1) ? $product->emissiontype->emission_type : 'GASOLINE'),
-                    'travelMode' => ((! empty($product) && $product->is_toll_tax == 1) ? $product->travelmode->travelmode : 'TAXI'),
-                    'no_seats_for_pooling' => (isset($request->is_cab_pooling) && $request->is_cab_pooling == 1 && isset($request->no_seats_for_pooling)) ? $request->no_seats_for_pooling : 0,
-                    'is_cab_pooling' => isset($request->is_cab_pooling) ? $request->is_cab_pooling : 0,
-                    'is_one_push_booking' => isset($request->is_one_push_booking) ? $request->is_one_push_booking : 0,
-                    'available_seats' => isset($request->seats_for_booking) ? $request->seats_for_booking : 0
-                ];
-                $client = new GClient([
-                    'headers' => [
-                        'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                        'content-type' => 'application/json'
-                    ]
-                ]);
+                $postdata =  [
+                            'order_number' =>  $order->order_number,
+                            'customer_name' => $customer->name ?? 'Dummy Customer',
+                            'customer_phone_number' => $customerno??rand(111111,11111),
+                            'customer_dial_code' => $customer->dial_code ?? null,
+                            'customer_email' => $customer->email ?? '',
+                            'recipient_phone' => $request->phone_number ?? $customerno,
+                            'recipient_email' => $request->email ?? $customer->email,
+                            'task_description' => $request->task_description??null,
+                            'allocation_type' => 'a',
+                            'task_type' => $request->task_type,
+                            'schedule_time' => $schedule_datetime_del ?? null,
+                            'cash_to_be_collected' => $payable_amount??0.00,
+                            'barcode' => '',
+                            'call_back_url' => $call_back_url??null,
+                            'order_team_tag' => $team_tag,
+                            'order_agent_tag' => $order_agent_tag,
+                            'task' => $request->tasks,
+                            'order_time_zone' => $request->order_time_zone??null,
+                            'images_array' => $request->images_array??null,
+                            'type'=>$type,
+                            'friend_name'=>$friendName,
+                            'friend_phone_number'=>$friendPhoneNumber,
+                            'vendor_id' => $vendor,
+                            'order_vendor_id' => $order_vendor->id,
+                            'dbname' => $client_do->database_name,
+                            'order_id' => $order->id,
+                            'customer_id' => $order->user_id,
+                            'user_icon' => $customer->image,
+                            'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'),
+                            'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'),
+                            'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI'),
+                            'no_seats_for_pooling' =>(isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
+                            'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
+                            'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
+                            'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
+                        ];
+                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                                                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                                                    'content-type' => 'application/json']
+                                                        ]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
-                $res = $client->post($url . '/api/task/create', [
-                    'form_params' => ($postdata)
-                ]);
+                $res = $client->post(
+                    $url.'/api/task/create',
+                    ['form_params' => (
+                            $postdata
+                        )]
+                );
                 $response = json_decode($res->getBody(), true);
                 if ($response && isset($response['task_id']) && $response['task_id'] > 0) {
-                    $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
-                    $up_web_hook_code = OrderVendor::where([
-                        'order_id' => $order->id,
-                        'vendor_id' => $vendor
-                    ])->update([
-                        'web_hook_code' => $dynamic,
-                        'dispatch_traking_url' => $dispatch_traking_url
-                    ]);
+                    $dispatch_traking_url = $response['dispatch_traking_url']??'';
+                    $up_web_hook_code = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])
+                                    ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
                     $response['dispatch_traking_url'] = $dispatch_traking_url;
 
-                    $or_ids = OrderVendor::where([
-                        'order_id' => $order->id,
-                        'vendor_id' => $vendor
-                    ])->with([
-                        'vendor'
-                    ])->first();
 
-                    // if($or_ids->vendor->auto_accept_order==1):
-                    $update_vendor = VendorOrderStatus::updateOrCreate([
-                        'order_id' => $order->id,
-                        'order_status_option_id' => 2,
-                        'vendor_id' => $vendor,
-                        'order_vendor_id' => $or_ids->id
-                    ]);
+                    $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
 
-                    OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update([
-                        'order_status_option_id' => 2,
-                        'dispatcher_status_option_id' => 1
-                    ]);
+                    //if($or_ids->vendor->auto_accept_order==1):
+                        $update_vendor = VendorOrderStatus::updateOrCreate([
+                            'order_id' =>  $order->id,
+                            'order_status_option_id' => 2,
+                            'vendor_id' =>  $vendor,
+                            'order_vendor_id' =>  $or_ids->id]);
+
+                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
                     // else:
-                    // OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
+                    //     OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
                     // endif;
 
-                    $update = VendorOrderDispatcherStatus::updateOrCreate([
-                        'dispatcher_id' => null,
-                        'order_id' => $order->id,
-                        'dispatcher_status_option_id' => 1,
-                        'vendor_id' => $vendor
-                    ]);
+                    $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
+                    'order_id' =>  $order->id,
+                    'dispatcher_status_option_id' =>  1,
+                    'vendor_id' =>  $vendor]);
 
-                    if ($request->payment_option_id == 2) {
-                        $wal = $wallet->forceWithdrawFloat($order->payable_amount, [
-                            'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
-                        ]);
+                    if ($request->payment_option_id == 2){
+                        $wal =   $wallet->forceWithdrawFloat($order->payable_amount, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                     }
                 }
                 return $response;
-            }
-        } catch (\Exception $e) {
-            $data = [];
-            $data['status'] = 400;
-            $data['message'] = $e->getMessage();
-            return $data;
-        }
+                }
+            }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+
+
     }
 
-    /**
+      /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAgents(Request $request)
-    {
-        try {
+    public function getAgents(Request $request){
+
+        try{
             $validator = Validator::make(request()->all(), [
                 'latitude' => 'required',
-                'longitude' => 'required'
+                'longitude' => 'required',
             ]);
 
-            if ($validator->fails()) {
+            if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
             }
 
@@ -887,91 +823,76 @@ class PickupDeliveryController extends BaseController
                 'longitude' => $request->longitude
             ];
 
-            if (! empty($request->tag)) {
+            if(!empty($request->tag)){
                 $postdata['tag'] = $request->tag;
             }
 
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
 
-            $header = [
-                'headers' => [
-                    'personaltoken' => ! empty($dispatch_domain->delivery_service_key) ? $dispatch_domain->delivery_service_key : $dispatch_domain->pickup_delivery_service_key,
-                    'shortcode' => ! empty($dispatch_domain->delivery_service_key_code) ? $dispatch_domain->delivery_service_key_code : $dispatch_domain->pickup_delivery_service_key_code,
-                    'content-type' => 'application/json'
-                ]
+            $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->delivery_service_key)? $dispatch_domain->delivery_service_key : $dispatch_domain->pickup_delivery_service_key,
+                'shortcode' => !empty($dispatch_domain->delivery_service_key_code)? $dispatch_domain->delivery_service_key_code : $dispatch_domain->pickup_delivery_service_key_code,
+                'content-type' => 'application/json']
             ];
 
             $client = new GClient($header);
-            $url = ! empty($dispatch_domain->delivery_service_key_url) ? $dispatch_domain->delivery_service_key_url . '/api/get/agents' : $dispatch_domain->pickup_delivery_service_key_url . '/api/get/agents';
-            $res = $client->post($url, [
-                'form_params' => ($postdata)
-            ]);
+            $url    = !empty($dispatch_domain->delivery_service_key_url)? $dispatch_domain->delivery_service_key_url.'/api/get/agents' : $dispatch_domain->pickup_delivery_service_key_url.'/api/get/agents';
+            $res = $client->post(
+                $url,
+                ['form_params' => (
+                        $postdata
+                    )]
+            );
             $response = json_decode($res->getBody(), true);
             return $response;
-        } catch (\Exception $e) {
+
+        }catch(\Exception $e){
             $data = [];
             $data['status'] = 400;
-            $data['message'] = $e->getMessage();
+            $data['message'] =  $e->getMessage();
             return $data;
         }
+
     }
 
-    /**
+
+      /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function postPromoCodeList(Request $request)
-    {
+    public function postPromoCodeList(Request $request){
         try {
-            $promo_codes = new \Illuminate\Database\Eloquent\Collection();
+            $promo_codes = new \Illuminate\Database\Eloquent\Collection;
             $vendor_id = $request->vendor_id;
             $validator = $this->validatePromoCodeList();
-            if ($validator->fails()) {
+            if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
             }
             $vendor = Vendor::where('id', $request->vendor_id)->first();
-            if (! $vendor) {
-                return response()->json([
-                    'error' => 'Invalid vendor id.'
-                ], 404);
+            if(!$vendor){
+                return response()->json(['error' => 'Invalid vendor id.'], 404);
             }
             $now = Carbon::now()->toDateTimeString();
             $product_ids = Product::where('vendor_id', $request->vendor_id)->where('id', $request->product_id)->pluck("id");
-            $cart_products = Product::with([
-                'variant' => function ($q) {
-                    $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
-                }
-            ])->where('vendor_id', $request->vendor_id)
-                ->where('id', $request->product_id)
-                ->get();
+            $cart_products = Product::with(['variant' => function($q){
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                        }])->where('vendor_id', $request->vendor_id)->where('id', $request->product_id)->get();
 
-            $total_minimum_spend = $request->amount ?? 0;
-            if ($product_ids) {
+            $total_minimum_spend = $request->amount??0;
+            if($product_ids){
                 $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
-                if ($promo_code_details->count() > 0) {
-                    $result1 = Promocode::whereIn('id', $promo_code_details->toArray())->whereDate('expiry_date', '>=', $now)
-                        ->where('minimum_spend', '<=', $total_minimum_spend)
-                        ->where('maximum_spend', '>=', $total_minimum_spend)
-                        ->where('restriction_on', 0)
-                        ->where('restriction_type', 0)
-                        ->where('is_deleted', 0)
-                        ->get();
+                if($promo_code_details->count() > 0){
+                    $result1 = Promocode::whereIn('id', $promo_code_details->toArray())->whereDate('expiry_date', '>=', $now)->where('minimum_spend','<=',$total_minimum_spend)->where('maximum_spend','>=',$total_minimum_spend)->where('restriction_on', 0)->where('restriction_type', 0)->where('is_deleted', 0)->get();
                     $promo_codes = $promo_codes->merge($result1);
                 }
 
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
-                $result2 = Promocode::whereIn('id', $vendor_promo_code_details->toArray())->where('restriction_on', 1)
-                    ->whereHas('details', function ($q) use ($vendor_id) {
+                $result2 = Promocode::whereIn('id', $vendor_promo_code_details->toArray())->where('restriction_on', 1)->whereHas('details', function($q) use($vendor_id){
                     $q->where('refrence_id', $vendor_id);
-                })
-                    ->where('restriction_on', 1)
-                    ->where('is_deleted', 0)
-                    ->where('minimum_spend', '<=', $total_minimum_spend)
-                    ->where('maximum_spend', '>=', $total_minimum_spend)
-                    ->whereDate('expiry_date', '>=', $now)
-                    ->get();
+                })->where('restriction_on', 1)->where('is_deleted', 0)->where('minimum_spend','<=',$total_minimum_spend)->where('maximum_spend','>=',$total_minimum_spend)->whereDate('expiry_date', '>=', $now)->get();
                 $promo_codes = $promo_codes->merge($result2);
+
+
             }
             return $this->successResponse($promo_codes, '', 200);
         } catch (Exception $e) {
@@ -979,52 +900,47 @@ class PickupDeliveryController extends BaseController
         }
     }
 
-    public function postVerifyPromoCode(Request $request)
-    {
+    public function postVerifyPromoCode(Request $request){
         try {
             $validator = $this->validatePromoCode();
-            if ($validator->fails()) {
+            if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
             }
             $vendor = Vendor::where('id', $request->vendor_id)->first();
-            if (! $vendor) {
-                return response()->json([
-                    'error' => __('Invalid vendor id.')
-                ], 404);
+            if(!$vendor){
+                return response()->json(['error' => __('Invalid vendor id.')], 404);
             }
             $cart_detail = Promocode::where('id', $request->coupon_id)->first();
-            if (! $cart_detail) {
+            if(!$cart_detail){
                 return $this->errorResponse(__('Invalid Promocode Id'), 422);
             }
-            if ($cart_detail->promo_type_id == 2) {
+            if($cart_detail->promo_type_id == 2){
                 $cart_detail['new_amount'] = $cart_detail->amount;
-                if ($cart_detail['new_amount'] < 0)
-                    $cart_detail['new_amount'] = 0.00;
+                if($cart_detail['new_amount'] < 0)
+                $cart_detail['new_amount'] = 0.00;
             }
-            if ($cart_detail->promo_type_id == 1) {
-                $cart_detail['new_amount'] = ($request->amount * ($cart_detail->amount / 100));
-                if ($cart_detail['new_amount'] < 0)
-                    $cart_detail['new_amount'] = 0.00;
+            if($cart_detail->promo_type_id == 1){
+                $cart_detail['new_amount'] = ($request->amount * ($cart_detail->amount/100));
+                if($cart_detail['new_amount'] < 0)
+                $cart_detail['new_amount'] = 0.00;
             }
             return $this->successResponse($cart_detail, __('Promotion Code Used Successfully.'), 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-
-    public function postRemovePromoCode(Request $request)
-    {
+    public function postRemovePromoCode(Request $request){
         try {
             $validator = $this->validatePromoCode();
-            if ($validator->fails()) {
+            if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
             }
             $cart_detail = Cart::where('id', $request->cart_id)->first();
-            if (! $cart_detail) {
+            if(!$cart_detail){
                 return $this->errorResponse(__('Invalid Cart Id'), 422);
             }
             $cart_detail = Promocode::where('id', $request->coupon_id)->first();
-            if (! $cart_detail) {
+            if(!$cart_detail){
                 return $this->errorResponse(__('Invalid Promocode Id'), 422);
             }
 
@@ -1034,15 +950,13 @@ class PickupDeliveryController extends BaseController
         }
     }
 
-    public function validatePromoCodeList()
-    {
+    public function validatePromoCodeList(){
         return Validator::make(request()->all(), [
-            'vendor_id' => 'required'
+            'vendor_id' => 'required',
         ]);
     }
 
-    public function validatePromoCode()
-    {
+    public function validatePromoCode(){
         return Validator::make(request()->all(), [
             'vendor_id' => 'required',
             'coupon_id' => 'required',
@@ -1050,77 +964,66 @@ class PickupDeliveryController extends BaseController
         ]);
     }
 
-    public function getOrderTrackingDetails(Request $request)
-    {
+
+    public function getOrderTrackingDetails(Request $request){
         $user = Auth::user();
         $langId = $user->language ?? 1;
-        $order = OrderVendor::with('orderDetail')->where('order_id', $request->order_id)
-            ->with([
-            'products.productRating.reviewFiles',
-            'products.product.category.categoryDetail.translation' => function ($q) use ($langId) {
-                $q->where('category_translations.language_id', $langId);
-            }
-        ])
-            ->select('*', 'dispatcher_status_option_id as dispatcher_status')
-            ->first();
-        $dispatch_traking_url = ($request->has('new_dispatch_traking_url') && ! empty($request->new_dispatch_traking_url)) ? $request->new_dispatch_traking_url : $order->dispatch_traking_url;
+        $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)
+        ->with(['products.productRating.reviewFiles', 'products.product.category.categoryDetail.translation' => function($q) use($langId){
+            $q->where('category_translations.language_id', $langId);
+        }])
+        ->select('*','dispatcher_status_option_id as dispatcher_status')->first();
+        $dispatch_traking_url = ($request->has('new_dispatch_traking_url') && !empty($request->new_dispatch_traking_url)) ? $request->new_dispatch_traking_url : $order->dispatch_traking_url;
         $dispatch_traking_url = str_replace('/order/', '/order-details/', $dispatch_traking_url);
         $response = Http::get($dispatch_traking_url);
-        if ($response->status() == 200) {
-            $type = VendorOrderDispatcherStatus::where([
-                'order_id' => $order->order_id,
-                'vendor_id' => $order->vendor_id
-            ])->latest()->first();
+        if($response->status() == 200){
+            $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
             // OrderProductRating::where('order_id', $order->order_id)
             $order_driver_rating = OrderDriverRating::where('order_id', $request->order_id)->first();
-            $order->dispatcher_status_type = $type ? $type->type : 1;
-            $response = $response->json();
+            $order->dispatcher_status_type=  $type ?  $type->type :1;
+           $response = $response->json();
 
-            $response['order_details'] = $order->toArray();
-            $response['order_driver_rating'] = $order_driver_rating;
-            return $this->successResponse($response);
-        } else {
+           $response['order_details'] = $order->toArray();
+           $response['order_driver_rating'] = $order_driver_rating;
+           return $this->successResponse($response);
+        }else{
             return $this->errorResponse('', 400, $response);
         }
     }
 
+
+
     # upload image in pickup & delivery
     public function uploadImagePickup(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'upload_photo' => 'required|image'
-        ]);
-        // dd('1');
-        try {
-            $dispatch_domain = $this->checkIfPickupDeliveryOnCommon();
+
+            $validator = Validator::make($request->all(), [
+                'upload_photo' => 'required|image'
+            ]);
+           // dd('1');
+           try {
+             $dispatch_domain = $this->checkIfPickupDeliveryOnCommon();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $files = [];
                 // $dispatch_domain->pickup_delivery_service_key_code ='745e3f';
                 // $dispatch_domain->pickup_delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
                 // $dispatch_domain->pickup_delivery_service_key_url ='http://192.168.96.20:8010';
-                $client = new GCLIENT([
-                    'headers' => [
-                        'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code
-                    ]
-                ]);
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
 
                 $profile_photo = [];
                 if ($request->hasFile('upload_photo')) {
-                    $profile_photo = [
-                        'Content-type' => 'multipart/form-data',
-                        'name' => 'upload_photo',
-                        'filename' => $request->upload_photo->getClientOriginalName(),
-                        'Mime-Type' => $request->upload_photo->getMimeType('image'),
-                        'contents' => fopen($request->upload_photo, 'r')
-                    ];
+                    $profile_photo =
+                        [
+                            'Content-type' => 'multipart/form-data',
+                            'name' => 'upload_photo',
+                            'filename' => $request->upload_photo->getClientOriginalName(),
+                            'Mime-Type' => $request->upload_photo->getMimeType('image'),
+                            'contents' =>  fopen($request->upload_photo, 'r'),
+                        ];
                 }
                 if ($profile_photo == null) {
-                    $profile_photo = [
-                        'name' => 'profile_photo[]',
-                        'contents' => 'abc'
-                    ];
+                    $profile_photo = ['name' => 'profile_photo[]', 'contents' => 'abc'];
                 }
                 $res = $client->post($url . '/api/upload-image-for-task', [
                     'multipart' => [
@@ -1130,69 +1033,68 @@ class PickupDeliveryController extends BaseController
 
                 $response = json_decode($res->getBody(), true);
                 return $response;
-            } else {
+            }else{
                 $data = [];
-                $data['status'] = 400;
-                $data['message'] = __('Error in pickup & delivery configuration');
-                return $data;
+               $data['status'] = 400;
+               $data['message'] =  __('Error in pickup & delivery configuration');
+               return $data;
             }
         } catch (\Exception $e) {
             $data = [];
             $data['status'] = 400;
-            $data['message'] = $e->getMessage();
+            $data['message'] =  $e->getMessage();
             return $data;
         }
+
     }
 
-    /**
+
+
+
+     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function postPromoCodeListOpen(Request $request)
-    {
+    public function postPromoCodeListOpen(Request $request){
         try {
-            $promo_codes = new \Illuminate\Database\Eloquent\Collection();
+            $promo_codes = new \Illuminate\Database\Eloquent\Collection;
 
             $now = Carbon::now()->toDateTimeString();
             $promo_code_details = PromoCodeDetail::pluck('promocode_id');
-            if ($promo_code_details->count() > 0) {
-                $promo_codes = Promocode::whereIn('id', $promo_code_details->toArray())->whereDate('expiry_date', '>=', $now)
-                    ->where('is_deleted', 0)
-                    ->get();
-            }
+                if($promo_code_details->count() > 0){
+                    $promo_codes = Promocode::whereIn('id', $promo_code_details->toArray())->whereDate('expiry_date', '>=', $now)->where('is_deleted', 0)->get();
+
+                }
+
 
             return $this->successResponse($promo_codes, '', 200);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-
     public function getAllRiders(Request $request)
     {
         $data = $request->all();
         $data['user_id'] = Auth::user()->id;
-        if ($request->isMethod('post')) {
+        if($request->isMethod('post')){
             $add = $this->riderObj->createRider($data);
         }
         $all_riders = $this->riderObj->getAllByUserId($data['user_id']);
-        return response()->json([
-            'riders' => $all_riders
-        ], 200);
+        return response()->json(['riders' => $all_riders],200);
     }
 
-    public function updatePickupDeliveryOrderByCustomer(Request $request)
-    {
+    public function updatePickupDeliveryOrderByCustomer(Request $request){
         try {
             DB::beginTransaction();
-            $user = Auth::user();
-            $order = Order::where('order_number', $request->order_number)->first();
-            $order_vendor = OrderVendor::where('order_id', $order->id)->first();
-            $vendor_id = $order_vendor->vendor_id;
-            $order_product = OrderProduct::where('order_vendor_id', $order_vendor->id)->select('product_id')->first();
-            $product = Product::where('id', $order_product->product_id)->with('pimage', 'variants', 'taxCategory.taxRate', 'addon')->first();
-            $tasks = OrderLocations::where('order_id', $order->id)->select('tasks')->first();
-            $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+            $user                   = Auth::user();
+            $order                  = Order::where('order_number', $request->order_number)->first();
+            $order_vendor           = OrderVendor::where('order_id', $order->id)->first();
+            $vendor_id              = $order_vendor->vendor_id;
+            $order_product          = OrderProduct::where('order_vendor_id', $order_vendor->id)->select('product_id')->first();
+            $product                = Product::where('id',$order_product->product_id)->with('pimage', 'variants', 'taxCategory.taxRate', 'addon')->first();
+            $tasks                  = OrderLocations::where('order_id', $order->id)->select('tasks')->first();
+            $clientCurrency         = ClientCurrency::where('currency_id', $user->currency)->first();
 
             $redeem_points_per_primary_currency = '';
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -1200,65 +1102,45 @@ class PickupDeliveryController extends BaseController
                 $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
             }
 
-            if (isset($request->tasks)) {
-                if (! empty($tasks)) {
-                    OrderLocations::where('order_id', $order->id)->update([
-                        'tasks' => $request->tasks
-                    ]);
-                } else {
-                    OrderLocations::insert([
-                        'tasks' => $request->tasks,
-                        'order_id' => $order->id,
-                        'vendor_id' => $vendor_id,
-                        'product_id' => $order_product->product_id
-                    ]);
+            if(isset($request->tasks))
+            {
+                if(!empty($tasks))
+                {
+                    OrderLocations::where('order_id', $order->id)->update(['tasks' => $request->tasks]);
+                }else{
+                    OrderLocations::insert(['tasks' => $request->tasks, 'order_id' => $order->id, 'vendor_id' => $vendor_id, 'product_id' => $order_product->product_id]);
                 }
             }
 
-            $schedule_datetime_del = (! empty($order->scheduled_date_time)) ? $order->scheduled_date_time : NULL;
-            $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-            $product_tags_price = $tags_price['delivery_fee'] ?? 0;
-            $product_toll_fee = $tags_price['toll_fee'] ?? 0;
+            $schedule_datetime_del = (!empty($order->scheduled_date_time)) ? $order->scheduled_date_time : NULL;
+            $tags_price            = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+            $product_tags_price    = $tags_price['delivery_fee']??0;
+            $product_toll_fee      = $tags_price['toll_fee']??0;
 
-            $product->seats_for_booking = ($product->seats_for_booking > 0) ? $product->seats_for_booking : 1;
+            $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
             $no_seats_for_pooling = 1;
-            if (isset($order->is_cab_pooling) && $order->is_cab_pooling == 1) {
-                if ($product->no_seats_for_pooling > 0) {
+            if(isset($order->is_cab_pooling) && $order->is_cab_pooling==1)
+            {
+                if($product->no_seats_for_pooling > 0)
+                {
                     $no_seats_for_pooling = $order_product->no_seats_for_pooling;
-                } else {
+                }else{
                     $no_seats_for_pooling = 1;
                 }
-                $product_tags_price = decimal_format(($product_tags_price / $product->seats_for_booking) * $no_seats_for_pooling);
-                $product_toll_fee = decimal_format(($product_toll_fee / $product->seats_for_booking) * $no_seats_for_pooling);
+                $product_tags_price = decimal_format(($product_tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+                $product_toll_fee   = decimal_format(($product_toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
             }
 
-            $request->request->add([
-                'product_id' => $order_product->product_id
-            ]);
-            $request->request->add([
-                'tags_amount' => $product_tags_price
-            ]);
-            $request->request->add([
-                'tollamount' => $product_toll_fee
-            ]);
-            $request->request->add([
-                'schedule_time' => $order->scheduled_date_time
-            ]);
-            $request->request->add([
-                'payment_option_id' => $order->payment_option_id
-            ]);
-            $request->request->add([
-                'task_type' => $order->task_type
-            ]);
-            $request->request->add([
-                'order_time' => $order->task_type
-            ]);
-            $request->request->add([
-                'no_seats_for_pooling' => $order_product->no_seats_for_pooling
-            ]);
-            $request->request->add([
-                'is_cab_pooling' => $order_product->is_cab_pooling
-            ]);
+            $request->request->add(['product_id' => $order_product->product_id]);
+            $request->request->add(['tags_amount' => $product_tags_price]);
+            $request->request->add(['tollamount' => $product_toll_fee]);
+            $request->request->add(['schedule_time' => $order->scheduled_date_time]);
+            $request->request->add(['payment_option_id' => $order->payment_option_id]);
+            $request->request->add(['task_type' => $order->task_type]);
+            $request->request->add(['order_time' => $order->task_type]);
+            $request->request->add(['no_seats_for_pooling' => $order_product->no_seats_for_pooling]);
+            $request->request->add(['is_cab_pooling' => $order_product->is_cab_pooling]);
+
 
             $total_delivery_fee = 0;
             $delivery_fee = 0;
@@ -1273,9 +1155,7 @@ class PickupDeliveryController extends BaseController
             $total_toll_amount = 0;
 
             $loyalty_points_used;
-            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->where('id', '!=', $order->id)
-                ->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))
-                ->first();
+            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->where('id', '!=', $order->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
             if ($order_loyalty_points_earned_detail) {
                 $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
                 if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
@@ -1316,7 +1196,7 @@ class PickupDeliveryController extends BaseController
             $coupon_id = null;
             $coupon_name = null;
             $actual_amount = $vendor_payable_amount;
-            if (! empty($order_vendor->coupon_id)) {
+            if (!empty($order_vendor->coupon_id)) {
                 $coupon = Promocode::find($order_vendor->coupon_id);
                 $coupon_id = $coupon->id;
                 $coupon_name = $coupon->name;
@@ -1324,26 +1204,26 @@ class PickupDeliveryController extends BaseController
                     $coupon_discount_amount = $coupon->amount;
                     $total_discount += $coupon_discount_amount;
                     $vendor_payable_amount -= $coupon_discount_amount;
-                    $vendor_discount_amount += $coupon_discount_amount;
+                    $vendor_discount_amount +=$coupon_discount_amount;
                 } else {
                     $coupon_discount_amount = ($quantity_price * $coupon->amount / 100);
                     $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
                     $total_discount += $final_coupon_discount_amount;
-                    $vendor_payable_amount -= $final_coupon_discount_amount;
-                    $vendor_discount_amount += $final_coupon_discount_amount;
+                    $vendor_payable_amount -=$final_coupon_discount_amount;
+                    $vendor_discount_amount +=$final_coupon_discount_amount;
                 }
             }
-            $total_toll_amount += (isset($request->tollamount)) ? $request->tollamount : 0.00;
-            $total_service_fee += $order_vendor->service_fee_percentage_amount;
+            $total_toll_amount +=(isset($request->tollamount))?$request->tollamount:0.00;
+            $total_service_fee +=$order_vendor->service_fee_percentage_amount;
 
-            $vendor_payable_amount += (isset($request->tollamount)) ? $request->tollamount : 0.00;
-            $vendor_payable_amount += $order_vendor->service_fee_percentage_amount;
+            $vendor_payable_amount +=(isset($request->tollamount))?$request->tollamount:0.00;
+            $vendor_payable_amount +=$order_vendor->service_fee_percentage_amount;
 
             $order_vendor->subtotal_amount = $actual_amount;
             $order_vendor->payable_amount = $vendor_payable_amount;
             $order_vendor->taxable_amount = $vendor_taxable_amount;
-            $order_vendor->discount_amount = $vendor_discount_amount;
-            $order_vendor->toll_amount = (isset($request->tollamount)) ? $request->tollamount : 0.00;
+            $order_vendor->discount_amount= $vendor_discount_amount;
+            $order_vendor->toll_amount = (isset($request->tollamount))?$request->tollamount:0.00;
 
             $vendor_info = Vendor::where('id', $vendor_id)->first();
             if ($vendor_info) {
@@ -1362,7 +1242,7 @@ class PickupDeliveryController extends BaseController
             $order->taxable_amount = $taxable_amount;
             if ($loyalty_amount_saved > 0) {
                 if ($payable_amount < $loyalty_amount_saved) {
-                    $loyalty_amount_saved = $payable_amount;
+                    $loyalty_amount_saved =  $payable_amount;
                     $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                 }
             }
@@ -1370,18 +1250,18 @@ class PickupDeliveryController extends BaseController
             $order->total_delivery_fee = $total_delivery_fee;
             $order->loyalty_points_used = $loyalty_points_used;
             $order->loyalty_amount_saved = $loyalty_amount_saved;
-            $order->total_toll_amount = $total_toll_amount;
-            $order->total_service_fee = $total_service_fee;
-            if (checkColumnExists('orders', 'is_edited')) {
+            $order->total_toll_amount    = $total_toll_amount;
+            $order->total_service_fee    = $total_service_fee;
+            if(checkColumnExists('orders', 'is_edited')){
                 $order->is_edited = 1;
             }
 
             $now = Carbon::now()->toDateTimeString();
-            $user_subscription = SubscriptionInvoicesUser::with('features')->select('id', 'user_id', 'subscription_id')
+            $user_subscription = SubscriptionInvoicesUser::with('features')
+                ->select('id', 'user_id', 'subscription_id')
                 ->where('user_id', $user->id)
                 ->where('end_date', '>', $now)
-                ->orderBy('end_date', 'desc')
-                ->first();
+                ->orderBy('end_date', 'desc')->first();
             if ($user_subscription) {
                 foreach ($user_subscription->features as $feature) {
                     if ($feature->feature_id == 2) {
@@ -1390,208 +1270,204 @@ class PickupDeliveryController extends BaseController
                         $order->payable_amount = $subscriptionAmount + $total_toll_amount + $total_service_fee;
                     }
                 }
-            } else {
+            }else{
                 $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $total_service_fee;
             }
+
+
 
             $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
 
             $order->save();
 
-            if (! empty($order_vendor->web_hook_code)) {
+
+
+            if(!empty($order_vendor->web_hook_code)){
                 Log::info("web hook found");
                 $request_to_dispatch = $this->updateOrderRequestToDispatch($request, $order, $vendor_id);
             }
             DB::commit();
             return $this->successResponse([], __('Drop Off Location Updated.'), 200);
+
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
+
     // place edit dropoff Request To Dispatch
-    public function updateOrderRequestToDispatch($request, $order, $vendor)
-    {
-        try {
+    public function updateOrderRequestToDispatch($request,$order,$vendor){
+        try
+        {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
             $wallet = $customer->wallet;
-            if ($dispatch_domain && $dispatch_domain != false) {
+            if($dispatch_domain && $dispatch_domain != false)
+            {
                 $tasks = array();
                 if ($request->payment_option_id == 1) {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order->payable_amount;
                 } else {
-                    if (checkColumnExists('orders', 'is_postpay')) {
-                        if ($order->is_postpay == 1) {
+                    if(checkColumnExists('orders', 'is_postpay'))
+                    {
+                        if($order->is_postpay==1)
+                        {
                             $cash_to_be_collected = 'Yes';
                             $payable_amount = $order->payable_amount;
-                        } else {
+                        }else{
                             $cash_to_be_collected = 'No';
                             $payable_amount = 0.00;
                         }
-                    } else {
+                    }else{
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
                 }
 
                 $schedule_datetime_del = NULL;
-                if (isset($request->schedule_time) && ! empty($request->schedule_time)) {
+                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
-                if (isset($request->task_type) && ! empty($request->task_type)) {
+                if(isset($request->task_type) && !empty($request->task_type))
+                {
                     $request->task_type = $request->task_type;
                     $schedule_datetime_del = null;
                     $request->order_time = $schedule_datetime_del;
-                } else {
+                }else{
                     $request->task_type = 'schedule';
                     $request->scheduled_date_time = $schedule_datetime_del;
                     $request->order_time = $schedule_datetime_del;
                 }
-                $order_vendor = OrderVendor::where([
-                    'order_id' => $order->id,
-                    'vendor_id' => $vendor
-                ])->first();
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
 
                 $unique = Auth::user()->code;
-                $client_do = Client::where('code', $unique)->first();
-                if (! empty($client_do->custom_domain)) {
+                $client_do = Client::where('code',$unique)->first();
+                if(!empty($client_do->custom_domain)){
                     $domain = $client_do->custom_domain;
-                } else {
-                    $domain = $client_do->sub_domain . env('SUBMAINDOMAIN');
+                }else{
+                    $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "https://" . $domain . "/dispatch-pickup-delivery/" . $order_vendor->web_hook_code;
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$order_vendor->web_hook_code;
                 $tasks = array();
 
                 $product = Product::find($request->product_id);
-                $order_agent_tag = $product->tags ?? '';
+                $order_agent_tag = $product->tags??'';
                 $type = $request->bookingType ?? 0;
 
-                $postdata = [
-                    'task_type' => $request->task_type,
-                    'schedule_time' => $schedule_datetime_del ?? null,
-                    'cash_to_be_collected' => $payable_amount ?? 0.00,
-                    'call_back_url' => $call_back_url ?? null,
-                    'order_agent_tag' => $order_agent_tag,
-                    'task' => $request->tasks_dropoff,
-                    'allocation_type' => 'a',
-                    'toll_passes' => ((! empty($product) && $product->is_toll_tax == 1) ? $product->tollpass->toll_pass : 'IN_FASTAG'),
-                    'VehicleEmissionType' => ((! empty($product) && $product->is_toll_tax == 1) ? $product->emissiontype->emission_type : 'GASOLINE'),
-                    'travelMode' => ((! empty($product) && $product->is_toll_tax == 1) ? $product->travelmode->travelmode : 'TAXI'),
-                    'no_seats_for_pooling' => (isset($request->is_cab_pooling) && $request->is_cab_pooling == 1 && isset($request->no_seats_for_pooling)) ? $request->no_seats_for_pooling : 0,
-                    'is_cab_pooling' => isset($request->is_cab_pooling) ? $request->is_cab_pooling : 0,
-                    'available_seats' => $product->seats_for_booking
-                ];
+                $postdata =  [
+                            'task_type' => $request->task_type,
+                            'schedule_time' => $schedule_datetime_del ?? null,
+                            'cash_to_be_collected' => $payable_amount??0.00,
+                            'call_back_url' => $call_back_url??null,
+                            'order_agent_tag' => $order_agent_tag,
+                            'task' => $request->tasks_dropoff,
+                            'allocation_type' => 'a',
+                            'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'),
+                            'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'),
+                            'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI'),
+                            'no_seats_for_pooling' =>(isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
+                            'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
+                            'available_seats' => $product->seats_for_booking,
+                        ];
 
-                $client = new GClient([
-                    'headers' => [
-                        'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+
+                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                         'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                        'content-type' => 'application/json'
-                    ]
-                ]);
+                        'content-type' => 'application/json']
+                            ]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
-                $res = $client->post($url . '/api/task/update', [
-                    'form_params' => ($postdata)
-                ]);
+                $res = $client->post(
+                    $url.'/api/task/update',
+                    ['form_params' => (
+                            $postdata
+                        )]
+                );
                 $response = json_decode($res->getBody(), true);
 
                 return $response;
             }
-        } catch (\Exception $e) {
+        }catch(\Exception $e)
+        {
             $data = [];
             $data['status'] = 400;
-            $data['message'] = $e->getMessage();
+            $data['message'] =  $e->getMessage();
             return $data;
         }
     }
 
-    // -----function to accept bids related to ride request/instant booking-----
+
+    //-----function to accept bids related to ride request/instant booking-----
     public function acceptBidsRelatedToOrderRide(Request $request)
     {
-        try {
+        try
+        {
             DB::beginTransaction();
-            $user = Auth::user();
-            $order_bid_id = $request->order_id;
-            $bid_id = $request->bid_id;
-            $task_type = $request->task_type;
+            $user              = Auth::user();
+            $order_bid_id      = $request->order_id;
+            $bid_id            = $request->bid_id;
+            $task_type         = $request->task_type;
 
-            $biddata = PickDropDriverBid::where('id', $bid_id)->where('order_bid_id', $order_bid_id)->first();
-            $order = Order::where('id', $order_bid_id)->first();
-            $order_vendor = OrderVendor::where('order_id', $order->id)->first();
-            $vendor_id = $order_vendor->vendor_id;
-            $order_product = OrderProduct::where('order_vendor_id', $order_vendor->id)->select('product_id')->first();
-            $product = Product::where('id', $order_product->product_id)->with('pimage', 'variants', 'taxCategory.taxRate', 'addon')->first();
-            $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+            $biddata           = PickDropDriverBid::where('id', $bid_id)->where('order_bid_id', $order_bid_id)->first();
+            $order             = Order::where('id', $order_bid_id)->first();
+            $order_vendor      = OrderVendor::where('order_id', $order->id)->first();
+            $vendor_id         = $order_vendor->vendor_id;
+            $order_product     = OrderProduct::where('order_vendor_id', $order_vendor->id)->select('product_id')->first();
+            $product           = Product::where('id',$order_product->product_id)->with('pimage', 'variants', 'taxCategory.taxRate', 'addon')->first();
+            $clientCurrency    = ClientCurrency::where('currency_id', $user->currency)->first();
 
-            if (! empty($biddata) && ! empty($order) && ! empty($order_vendor) && ! empty($order_product)) {
+            if(!empty($biddata) && !empty($order) && !empty($order_vendor) && !empty($order_product)){
 
-                $tasks = OrderLocations::where('order_id', $order->id)->select('tasks')->first();
-                if (isset($biddata->tasks)) {
-                    if (! empty($tasks)) {
-                        OrderLocations::where('order_id', $order->id)->update([
-                            'tasks' => $biddata->tasks
-                        ]);
-                    } else {
-                        OrderLocations::insert([
-                            'tasks' => $biddata->tasks,
-                            'order_id' => $order->id,
-                            'vendor_id' => $order_product->vendor_id,
-                            'product_id' => $order_product->product_id
-                        ]);
+                $tasks         = OrderLocations::where('order_id', $order->id)->select('tasks')->first();
+                if(isset($biddata->tasks))
+                {
+                    if(!empty($tasks))
+                    {
+                        OrderLocations::where('order_id', $order->id)->update(['tasks' => $biddata->tasks]);
+                    }else{
+                        OrderLocations::insert(['tasks' => $biddata->tasks, 'order_id' => $order->id, 'vendor_id' => $order_product->vendor_id, 'product_id' => $order_product->product_id]);
                     }
                 }
 
-                // --------------------------------------------------------------------------------------------------------------
-                $request->request->add([
-                    'product_id' => $order_product->product_id
-                ]);
-                $request->request->add([
-                    'tags_amount' => $biddata->bid_price
-                ]);
-                $request->request->add([
-                    'tasks' => json_decode($biddata->tasks)
-                ]);
-                $request->request->add([
-                    'tollamount' => 0
-                ]);
-                $request->request->add([
-                    'agent_id' => $biddata->driver_id
-                ]);
+                //--------------------------------------------------------------------------------------------------------------
+                $request->request->add(['product_id' => $order_product->product_id]);
+                $request->request->add(['tags_amount' => $biddata->bid_price]);
+                $request->request->add(['tasks' => json_decode($biddata->tasks)]);
+                $request->request->add(['tollamount' => 0]);
+                $request->request->add(['agent_id' => $biddata->driver_id]);
 
-                $variant = $product->variants->where('product_id', $product->id)->first();
-                $variant->price = $request->tags_amount;
-                $variant->toll_price = 0;
+                $variant                            = $product->variants->where('product_id', $product->id)->first();
+                $variant->price                     = $request->tags_amount;
+                $variant->toll_price                = 0;
+                
+                $divider                            = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
+                $divider                            = isset($divider) ? $divider : 1;
+                $price_in_currency                  = $request->tags_amount / $divider;
+                $price_in_dollar_compare            = $price_in_currency * $divider;
+                $quantity_price                     = $price_in_dollar_compare * 1;
+                $payable_amount                     = $quantity_price;
+                $vendor_payable_amount              = $quantity_price;
+                
+                $total_amount                       = $variant->price;
 
-                $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
-                $divider = isset($divider) ? $divider : 1;
-                $price_in_currency = $request->tags_amount / $divider;
-                $price_in_dollar_compare = $price_in_currency * $divider;
-                $quantity_price = $price_in_dollar_compare * 1;
-                $payable_amount = $quantity_price;
-                $vendor_payable_amount = $quantity_price;
-
-                $total_amount = $variant->price;
-
-                $order_product->price = $variant->price;
-                $order_product->toll_price = $variant->toll_price;
+                $order_product->price               = $variant->price;
+                $order_product->toll_price          = $variant->toll_price;
                 $order_product->save();
-                $coupon_id = null;
-                $coupon_name = null;
-                $actual_amount = $vendor_payable_amount;
+                $coupon_id                          = null;
+                $coupon_name                        = null;
+                $actual_amount                      = $vendor_payable_amount;
 
                 $order_vendor->service_fee_percentage_amount = 0;
-                $order_vendor->subtotal_amount = $actual_amount;
-                $order_vendor->payable_amount = $vendor_payable_amount;
-                $order_vendor->taxable_amount = 0;
-                $order_vendor->discount_amount = 0;
-                $order_vendor->toll_amount = 0;
+                $order_vendor->subtotal_amount               = $actual_amount;
+                $order_vendor->payable_amount                = $vendor_payable_amount;
+                $order_vendor->taxable_amount                = 0;
+                $order_vendor->discount_amount               = 0;
+                $order_vendor->toll_amount                   = 0;
 
-                $vendor_info = Vendor::where('id', $vendor_id)->first();
+                $vendor_info                                 = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
                         $order_vendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($vendor_payable_amount / 100), 2);
@@ -1602,53 +1478,48 @@ class PickupDeliveryController extends BaseController
                 }
                 $order_vendor->save();
 
-                $order->total_delivery_fee = 0;
-                $order->loyalty_points_used = 0;
-                $order->loyalty_amount_saved = 0;
-                $order->total_toll_amount = 0;
-                $order->total_service_fee = 0;
 
-                $order->total_amount = $payable_amount;
-                $order->payable_amount = $payable_amount;
+                $order->total_delivery_fee      = 0;
+                $order->loyalty_points_used     = 0;
+                $order->loyalty_amount_saved    = 0;
+                $order->total_toll_amount       = 0;
+                $order->total_service_fee       = 0;
 
-                $order->loyalty_points_earned = 0;
-                $order->loyalty_membership_id = 0;
+                $order->total_amount            = $payable_amount;
+                $order->payable_amount          = $payable_amount;
+                
+                $order->loyalty_points_earned   = 0;
+                $order->loyalty_membership_id   = 0;
 
                 $order->save();
-                // -------------------------------------------------------------------------------------------------------------
+                //-------------------------------------------------------------------------------------------------------------
+
 
                 $request_to_dispatch = $this->placeInstantOrderBidAcceptRequestToDispatch($request, $order, $vendor_id);
-                if ($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0) {
-                    PickDropDriverBid::where('id', $bid_id)->where('order_bid_id', $order_bid_id)
-                        ->where('task_type', '=', $task_type)
-                        ->update([
-                        'status' => 1
-                    ]);
-                    PickDropDriverBid::where('id', '!=', $bid_id)->where('order_bid_id', $order_bid_id)
-                        ->where('task_type', '=', $task_type)
-                        ->update([
-                        'status' => 2
-                    ]);
+                if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
+                    PickDropDriverBid::where('id', $bid_id)->where('order_bid_id', $order_bid_id)->where('task_type', '=', $task_type)->update(['status' => 1]);
+                    PickDropDriverBid::where('id', '!=', $bid_id)->where('order_bid_id', $order_bid_id)->where('task_type', '=', $task_type)->update(['status' => 2]);
                     DB::commit();
                     return $this->successResponse($order, null, 200);
-                } else {
+                }else{
                     DB::rollback();
                     return $request_to_dispatch;
                 }
-            } else {
+            }else{
                 DB::rollback();
                 $message = "Something went wrong, Please try again.";
                 return $this->errorResponse($message, 400);
             }
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
 
+
     // place Request To Dispatch
-    public function placeInstantOrderBidAcceptRequestToDispatch($request, $order, $vendor)
-    {
+    public function placeInstantOrderBidAcceptRequestToDispatch($request, $order, $vendor){
         try {
             $meta_data = '';
             $tasks = array();
@@ -1659,122 +1530,104 @@ class PickupDeliveryController extends BaseController
             if ($dispatch_domain && $dispatch_domain != false) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
-
+                
                 $unique = $customer->code;
-                $team_tag = $unique . "_" . $vendor;
-                $order_vendor = OrderVendor::where([
-                    'order_id' => $order->id,
-                    'vendor_id' => $vendor
-                ])->first();
-                $dynamic = (! empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id . $vendor);
+                $team_tag = $unique."_".$vendor;
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
+                $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $product = Product::find($request->product_id);
-                $order_agent_tag = $product->tags ?? '';
+                $order_agent_tag = $product->tags??'';
                 $client_do = Client::where('code', $unique)->first();
                 $domain = '';
-                if (! empty($client_do->custom_domain)) {
+                if(!empty($client_do->custom_domain)){
                     $domain = $client_do->custom_domain;
-                } else {
-                    $domain = $client_do->sub_domain . env('SUBMAINDOMAIN');
+                }else{
+                    $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "https://" . $domain . "/dispatch-pickup-delivery/" . $dynamic;
-
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                
                 $client = Client::orderBy('id', 'asc')->first();
 
-                $postdata = [
-                    'order_number' => $order->order_number,
+                $postdata =  [
+                    'order_number' =>  $order->order_number,
                     'allocation_type' => 'm',
                     'task' => $request->tasks,
                     'order_agent_tag' => $order_agent_tag,
-                    'call_back_url' => $call_back_url ?? null,
-                    'cash_to_be_collected' => $payable_amount ?? 0.00,
+                    'call_back_url' => $call_back_url??null,
+                    'cash_to_be_collected' => $payable_amount??0.00,
                     'customer_id' => $order->user_id,
-                    'task_type' => $request->task_type,
-                    'agent_id' => $request->agent_id
+                    'task_type'   => $request->task_type,
+                    'agent_id'    => $request->agent_id,
                 ];
                 Log::info($postdata);
-                $client = new GClient([
-                    'headers' => [
-                        'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                        'content-type' => 'application/json'
-                    ]
-                ]);
+                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                                                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                                                    'content-type' => 'application/json']
+                                                        ]);
 
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
-                $res = $client->post($url . '/api/task/updateBidRide', [
-                    'form_params' => ($postdata)
-                ]);
+                $res = $client->post($url.'/api/task/updateBidRide',['form_params' => ($postdata)]);
                 $response = json_decode($res->getBody(), true);
                 if ($response && isset($response['task_id']) && $response['task_id'] > 0) {
-
-                    if ($response['status'] == 'assigned') {
+                    
+                    if($response['status'] == 'assigned'){
                         $update_vendor = VendorOrderStatus::updateOrCreate([
-                            'order_id' => $order->id,
+                            'order_id' =>  $order->id,
                             'order_status_option_id' => 2,
-                            'vendor_id' => $vendor,
-                            'order_vendor_id' => $order_vendor->id
-                        ]);
+                            'vendor_id' =>  $vendor,
+                            'order_vendor_id' =>  $order_vendor->id]);
 
-                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update([
-                            'order_status_option_id' => 2,
-                            'dispatcher_status_option_id' => 2
-                        ]);
-
-                        $update = VendorOrderDispatcherStatus::updateOrCreate([
-                            'dispatcher_id' => null,
-                            'order_id' => $order->id,
-                            'dispatcher_status_option_id' => 2,
-                            'vendor_id' => $vendor
-                        ]);
+                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 2]);
+    
+                        $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
+                        'order_id' =>  $order->id,
+                        'dispatcher_status_option_id' =>  2,
+                        'vendor_id' =>  $vendor]);
                     }
-
+                    
                     return $response;
                 }
                 return $response;
             }
-        } catch (\Exception $e) {
-            $data = [];
-            $data['status'] = 400;
-            $data['message'] = $e->getMessage();
-            return $data;
-        }
+        }catch(\Exception $e){
+                $data = [];
+                $data['status'] = 400;
+                $data['message'] =  $e->getMessage();
+                return $data;
+            }
     }
 
-    // -----function to get bids related to ride request/instant booking-----
+    //-----function to get bids related to ride request/instant booking-----
     public function getBidsRelatedToOrderRide(Request $request)
     {
-        try {
-            $getAdditionalPreference = getAdditionalPreference([
-                'bid_expire_time_limit_seconds'
-            ]);
+        try
+        {
+            $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
             $order_bid_id = $request->order_id;
-            $task_type = $request->task_type;
-            $biddata = PickDropDriverBid::where('order_bid_id', $order_bid_id)->where('task_type', $task_type)
-                ->where('expired_at', '>', now()->format('Y-m-d H:i:s'))
-                ->where('status', 0)
-                ->get();
-            return $this->successResponse([
-                'biddata' => $biddata,
-                'bid_expire_time_limit_seconds' => $getAdditionalPreference['bid_expire_time_limit_seconds']
-            ], "Request sent to customer successfully", 200);
-        } catch (\Exception $e) {
+            $task_type    = $request->task_type;
+            $biddata      = PickDropDriverBid::where('order_bid_id', $order_bid_id)->where('task_type', $task_type)->where('expired_at', '>', now()->format('Y-m-d H:i:s'))->where('status', 0)->get();
+            return $this->successResponse(['biddata' => $biddata, 'bid_expire_time_limit_seconds' => $getAdditionalPreference['bid_expire_time_limit_seconds']], "Request sent to customer successfully", 200);
+        }
+        catch (\Exception $e) {
             \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
 
-    // -----function to decline bids related to bid & ride/instant booking-----
+
+    //-----function to decline bids related to bid & ride/instant booking-----
     public function declineBidsRelatedToOrderRide(Request $request)
     {
-        try {
-            $bid_id = $request->bid_id;
-            $update = PickDropDriverBid::where('id', $bid_id)->update([
-                'status' => 2
-            ]);
+        try
+        {
+            $bid_id       = $request->bid_id;
+            $update       = PickDropDriverBid::where('id', $bid_id)->update(['status' => 2]);
             return $this->successResponse($update, "Request declined successfully", 200);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
+
 }
