@@ -142,7 +142,7 @@ class ProductController extends FrontController{
             }
             $sets[] = ['variant_types' => $variant_type_id, 'variant_options' => $variant_option_id];
         }
-        if(  in_array($product->category->categoryDetail->type_id ,[8,12]) ){ // onDemand and appointent
+        if(  in_array($product->category->categoryDetail->type_id ,[8,12])  && $product->is_recurring_booking !=1){ // onDemand and appointent
 
             $cartDataGet = $this->getCartOnDemand($request);
             $nlistData = clone $product;
