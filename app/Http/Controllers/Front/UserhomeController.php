@@ -835,7 +835,7 @@ class UserhomeController extends FrontController
             $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
             $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-            $user_id = Auth::user()->id;
+            $user_id = Auth::user()->id??'';
             $product_id = $new_product_detail->id;
             $is_inwishlist_btn = 0;
             $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
@@ -866,7 +866,7 @@ class UserhomeController extends FrontController
             $multiply = $feature_product_detail->variant->first()->multiplier ?? 1;
             $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
             $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-            $user_id = Auth::user()->id;
+            $user_id = Auth::user()->id??'';
             $product_id = $feature_product_detail->id;
             $is_inwishlist_btn = 0;
             $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
@@ -897,7 +897,7 @@ class UserhomeController extends FrontController
             $multiply = $on_sale_product_detail->variant->first()->multiplier ?? 1;
             $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
             $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-            $user_id = Auth::user()->id;
+            $user_id = Auth::user()->id??'';
             $product_id = $on_sale_product_detail->id;
             $is_inwishlist_btn = 0;
             $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
