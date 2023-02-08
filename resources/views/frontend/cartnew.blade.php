@@ -1,5 +1,4 @@
 @extends('layouts.store', ['title' => __('Cart')])
-
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
@@ -89,7 +88,7 @@ display: flex;align-items: center;justify-content: center;border: 1px solid#eee;
 .new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
 justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
 .cart-checkout_btn button{width:100%;}
-.cart-checkout_btn #order_placed_btn {padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
+.cart-checkout_btn #order_placed_btn{padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .cart_delivery a i {font-weight: 600;font-size: 16px;}
 .schedule_btn ul li label.taskschedulebtn {padding: 6px 10px !important;font-size: 10px !important;}
 .cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;}
@@ -121,7 +120,6 @@ font-size: 12px;padding: 6.7px 10px;}
 .login-form #schedule_div input{display:block;width: 100% !important;}
 .login-form #schedule_div input::-webkit-calendar-picker-indicator{color: rgba(0, 0, 0, 0);opacity: 1}
 /*------cart page css end here------ */
-
 @media (max-width:576px){
 .al_body_template_two .show-prescription-doc {width:100%;}
 .item-show-cart h4 {font-size:14px !important;}
@@ -146,6 +144,7 @@ font-size: 12px;padding: 6.7px 10px;}
 .cart-design .alFourTemplateCartButtons a.btn.shoping {font-size:10px;display: block;width: 100%;text-align: left;height:auto;}
 .cart-design .alFourTemplateCartButtons a.shoping i{font-size:10px;vertical-align: middle;}
 }
+
 </style>
 
 @endsection
@@ -562,7 +561,23 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <span class="error text-danger" id="plugnpay_card_error"></span>
                             </div>
                         <% } %>
+                         <% if(payment_option.slug == 'azulpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="azul-date-element" placeholder="YYYYMM" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" required />
+                            </div>
+                        </div>
 
+                        <span class="error text-danger" id="azul_card_error"></span>
+                    </div>
+                <% } %>
 
 
                     </div>
@@ -889,6 +904,8 @@ $client_preferences = \App\Models\ClientPreference::first();
       </div>
     </div>
   </div>
+
+
 @endsection
 
 @section('script')
@@ -994,6 +1011,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var business_type = "<?= $client_preferences->business_type; ?>";
     var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
     var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
+    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+    
 </script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
@@ -1058,7 +1077,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
-
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
     var update_cart_slot = "{{ route('updateCartSlot') }}";
@@ -1796,6 +1814,12 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
+
+
+
+
+
+
 
 </script>
 @if(in_array('kongapay',$client_payment_options))

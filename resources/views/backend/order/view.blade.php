@@ -494,6 +494,7 @@ $timezone = Auth::user()->timezone;
                                             {{-- till here --}}
                                         </td>
                                     </tr>
+
                                     @if (count($product->routes) > 0)
                                     <tr class="route">
                                         <th scope="row" colspan="4" class="text-end">
@@ -521,6 +522,38 @@ $timezone = Auth::user()->timezone;
                                         <td></td>
                                     </tr>
                                     @endif
+                                    {{-- {{dd($product)}} --}}
+
+                                    @if( isset($product->recurring_bookings))
+                                        <tr class="route">
+                                            <th scope="row" colspan="4" class="text-end">
+                                                <div class="outer_div p-2 mb-2">
+                                                    <h6>{{ __('Recurring Booking') }}</h6>
+                                                    <hr class="my-2">
+                                                    <div class="service_product">
+                                                        <table class="wp-table w-100">
+                                                            <th width="20%">#</th>
+                                                            <th width="40%">{{ __('Scheduled date time') }}</th>
+                                                            <th width="20%">{{ __('Dispatch Traking Url') }}</th>
+
+                                                            @foreach ($product->recurring_bookings as $key=>$booking)
+                                                                <tr>
+                                                                    <td>{{ $key + 1 }}</td>
+                                                                    <td>{{ $booking->schedule_date }} </td>
+                                                                    @if(!empty($booking->dispatch_traking_url))
+                                                                        <td><a href="{{ $booking->dispatch_traking_url }}" target="_blank">View</a></td>
+                                                                    @else
+                                                                        <td>Pending</td>
+                                                                    @endif
+                                                                </tr>
+                                                            @endforeach
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    @endif
+
                                     @if ( isset($product->longTermSchedule) && isset($product->longTermSchedule->schedule) && count($product->longTermSchedule->schedule) > 0)
 
                                     <tr class="route">
@@ -772,7 +805,6 @@ $timezone = Auth::user()->timezone;
         </div>
     </div>
 </div>
-
 
 <div class="row">
     @if (Auth::user()->is_superadmin ||

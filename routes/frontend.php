@@ -162,6 +162,9 @@ Route::group(['middleware' => ['domain']], function () {
 
     //plugnpay
     Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
+    
+    //azulpay
+    Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
 
 	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
 	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
@@ -493,6 +496,8 @@ Route::group(['middleware' => ['domain']], function () {
 	//chatNotification to all users from dispacther
 	Route::any('sendNotificationToUserByDispatcher', 'Front\ChatDispatcherNotificationController@sendNotificationToUserByDispatcher')->name('sendNotificationToUserByDispatcher'); // Order Status update Dispatch
 
+    // get recurring booking vendor time slots
+    Route::post('vendor-time-slot', 'Front\CartController@VendorTimeSlot')->name('recurring.booking.vendor.slot');
 	Route::post('get_price_from_dispatcher', 'Front\ProductController@getFreeLincerFromDispatcher')->name('product.get_price_from_dispatcher');
 	Route::post('get_gerenal_slot', 'Front\ProductController@getGerenalSlot')->name('getGerenalSlot');
 });
@@ -620,7 +625,8 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
 	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
 
-	//bidding system
+	//Route::get('azulpay', 'Front\AzulPaymentController@beforePayment')->name('beforePayment');
+    //bidding system
 	Route::get('user/bidRequest', [BidController::class, 'index'])->name('user.bidRequest');
 	Route::POST('user/bidUpdatePdf', [BidController::class, 'uploadPrescription'])->name('bid.update_pdf');
 	Route::get('bidding/make', [BidController::class, 'index'])->name('bid.index');
@@ -632,9 +638,6 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('get/bid/prescription', [BidController::class, 'getPrescription'])->name('getPrescription'); //get bedding prescription
 	Route::get('product-search', [BidController::class, 'search'])->name('searchProduct'); //vendor product search
 	Route::get('bid/add/to/cart/{id}', [CartController::class, 'initCart'])->name('bidding-cart');
-
-
-
 
 	/**
 	 * booking routes

@@ -1,0 +1,372 @@
+<?php
+namespace App\Http\Controllers\Api\v1;
+
+use DB;
+use Log;
+use Auth;
+use Session;
+use Redirect;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use App\Http\Traits\ApiResponser;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Api\v1\ {
+    BaseController,
+    OrderController,
+    WalletController
+};
+use App\Models\Client as CP;
+use App\Models\ {
+    PaymentOption,
+    Client,
+    ClientPreference,
+    Order,
+    OrderProduct,
+    EmailTemplate,
+    Cart,
+    CartAddon,
+    OrderProductPrescription,
+    CartProduct,
+    User,
+    Product,
+    OrderProductAddon,
+    Payment,
+    ClientCurrency,
+    OrderVendor,
+    UserAddress,
+    Vendor,
+    CartCoupon,
+    CartProductPrescription,
+    LoyaltyCard,
+    NotificationTemplate,
+    VendorOrderStatus,
+    OrderTax,
+    SubscriptionInvoicesUser,
+    UserDevice,
+    UserVendor,
+    CaregoryKycDoc
+};
+use App\Http\Traits\AzulPaymentService;
+
+class AzulPaymentController extends BaseController
+{
+    use AzulPaymentService;
+
+    public function orderNumber($request)
+    {
+        $time = time();
+
+        $user_id = auth()->user()->id;
+
+        if ($request->action == 'cart') {
+            $time = $request->order_number;
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $request->amount,
+                'type' => 'cart',
+                'date' => date('Y-m-d'),
+                'user_id' => $user_id
+            ]);
+        } elseif ($request->action == 'wallet') {
+            $time = $request->transaction_id ?? time();
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $request->amount,
+                'type' => 'wallet',
+                'date' => date('Y-m-d'),
+                'user_id' => $user_id
+            ]);
+        } elseif ($request->action == 'tip') {
+            $time = time();
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $request->order_number . '_' . $time,
+                'balance_transaction' => $request->amount,
+                'type' => 'tip',
+                'date' => date('Y-m-d'),
+                'user_id' => $user_id
+            ]);
+        } elseif ($request->action == 'subscription') {
+            $time = time();
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $request->subsid . '_' . $time,
+                'balance_transaction' => $request->amount,
+                'type' => 'subscription',
+                'date' => date('Y-m-d'),
+                'user_id' => $user_id
+            ]);
+        } else if ($request->action == 'pickup_delivery') {
+            $time = $request->order_number;
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $request->amount,
+                'type' => 'pickup_delivery',
+                'date' => date('Y-m-d'),
+                'user_id' => $user_id
+            ]);
+        }
+        return $time;
+    }
+
+    public function beforePayment(Request $request)
+    {
+        $response = [];
+
+        if ($request->action == 'wallet') {
+            $number = $this->orderNumber($request);
+            $request->request->add([
+                'order_number' => $number,
+                'amount' => $request->amount
+            ]);
+        }
+        if ($request->action == 'subscription') {
+            $number = $this->orderNumber($request);
+            $request->request->add([
+                'order_number' => $number,
+                'amount' => $request->amount
+            ]);
+        }
+
+        if ($request->action == 'cart') {
+            $number = $this->orderNumber($request);
+            $request->request->add([
+                'order_number' => $number,
+                'amount' => $request->amount
+            ]);
+        }
+        if ($request->action == 'tip') {
+            $number = $this->orderNumber($request);
+            $request->request->add([
+                'order_number' => $number,
+                'amount' => $request->amount
+            ]);
+        }
+
+        if ($request->action == 'pickup_delivery') {
+            $number = $this->orderNumber($request);
+            $request->request->add([
+                'order_number' => $number,
+                'amount' => $request->amount
+            ]);
+        }
+
+        // \Log::info(json_encode($request->all()));
+        $dataResponse = $this->payWithCard($request->all());
+        \Log::info(json_encode($dataResponse));
+        // $dataResponse = json_decode($responsePay);
+        // dd($responsePay);
+        if ($dataResponse['ok'] === false) {
+            $response['status'] = 'Fail';
+            $response['msg'] = 'Invalid Card Details.';
+            $response['payment_from'] = $request->action;
+            return response()->json($response, 400);
+        }
+        if (isset($dataResponse['ok']) && $dataResponse['ok'] === true) {
+            // \Log::info('Done');
+
+            if ($request->from == 'tip') {
+                $payment = Payment::where('transaction_id', $dataResponse['data']->CustomOrderId . '_' . $number)->first();
+            } else if ($request->from == 'subscription') {
+                $payment = Payment::where('transaction_id', $request->subsid . '_' . $number)->first();
+            } else {
+                $payment = Payment::where('transaction_id', $dataResponse['data']->CustomOrderId)->first();
+            }
+
+            // \Log::info(json_encode($request->all()));
+            if ($payment) {
+                $payment->viva_order_id = $dataResponse['data']->AzulOrderId;
+                $payment->save();
+            }
+
+            if ($payment->type == 'cart') {
+                return $this->completeOrderCart($dataResponse, $payment);
+            } elseif ($payment->type == 'wallet') {
+                return $this->completeOrderWallet($dataResponse, $payment, $request->amount, $request->come_from);
+            } elseif ($payment->type == 'tip') {
+                return $this->completeOrderTip($dataResponse, $payment, $request->amount, $request->come_from);
+            } elseif ($payment->type == 'subscription') {
+                return $this->completeOrderSubs($dataResponse, $payment, $request, $request->come_from);
+            } elseif ($payment->type == 'pickup_delivery') {
+                return $this->completePickupDelivery($dataResponse, $payment, $request, $request->come_from);
+            }
+        } else {
+            // \Log::info('fail--'.$dataResponse->FinalStatus.'--');
+            $response['status'] = 'Fail';
+            $response['msg'] = 'Failed.';
+            $response['payment_from'] = 'cart';
+            return response()->json($response, 200);
+        }
+    }
+
+    public function completeOrderCart($request, $payment)
+    {
+        $order = Order::where('order_number', $payment->transaction_id)->first();
+        if (isset($request['ok']) && $request['ok'] == true) {
+            $order->payment_status = '1';
+            $order->save();
+
+            // Auto accept order
+            $orderController = new OrderController();
+            $orderController->autoAcceptOrderIfOn($order->id);
+
+            $cart = Cart::where('user_id', auth()->id())->select('id')->first();
+            $cartid = $cart->id;
+            Cart::where('id', $cartid)->update([
+                'schedule_type' => null,
+                'scheduled_date_time' => null,
+                'comment_for_pickup_driver' => null,
+                'comment_for_dropoff_driver' => null,
+                'comment_for_vendor' => null,
+                'schedule_pickup' => null,
+                'schedule_dropoff' => null,
+                'specific_instructions' => null
+            ]);
+            CaregoryKycDoc::where('cart_id', $cartid)->update([
+                'ordre_id' => $order->id,
+                'cart_id' => ''
+            ]);
+            CartAddon::where('cart_id', $cartid)->delete();
+            CartCoupon::where('cart_id', $cartid)->delete();
+            CartProduct::where('cart_id', $cartid)->delete();
+            CartProductPrescription::where('cart_id', $cartid)->delete();
+
+            // send sms
+            $orderController->sendSuccessSMS($request, $order);
+
+            // Send Notification
+            if (! empty($order->vendors)) {
+                foreach ($order->vendors as $vendor_value) {
+                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                    $user_vendors = UserVendor::where([
+                        'vendor_id' => $vendor_value->vendor_id
+                    ])->pluck('user_id');
+                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                }
+            }
+
+            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+            $super_admin = User::where('is_superadmin', 1)->pluck('id');
+            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+            if (isset($request->auth_token) && ! empty($request->auth_token)) {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Order.';
+                $response['payment_from'] = 'cart';
+                return response()->json($response, 200);
+            } else {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Order.';
+                $response['payment_from'] = 'cart';
+                return response()->json($response, 200);
+            }
+        } else {
+            $user = auth()->user();
+            $wallet = $user->wallet;
+            if (isset($order->wallet_amount_used)) {
+                $wallet->depositFloat($order->wallet_amount_used, [
+                    'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number
+                ]);
+            }
+            if (isset($request->auth_token) && ! empty($request->auth_token)) {
+                $response['status'] = 'Fail';
+                $response['msg'] = 'Failed Order.';
+                $response['payment_from'] = 'cart';
+                return response()->json($response, 200);
+            } else {
+                $response['status'] = 'Fail';
+                $response['msg'] = 'Failed Order.';
+                $response['payment_from'] = 'cart';
+                return response()->json($response, 200);
+            }
+        }
+    }
+
+    public function completeOrderWallet($request, $payment, $amount, $come_from)
+    {
+        if (isset($request['ok']) && $request['ok'] === true) {
+
+            $data['wallet_amount'] = $amount;
+            $data['transaction_id'] = $payment->transaction_id;
+            $request = new \Illuminate\Http\Request($data);
+            $walletController = new WalletController();
+            $walletController->creditWallet($request);
+
+            if ($come_from == 'app') {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Added wallet.';
+                $response['payment_from'] = 'wallet';
+            }
+            return response()->json($response, 200);
+        }
+    }
+
+    public function completeOrderTip($request, $payment, $amount, $come_from)
+    {
+        if (isset($request['ok']) && $request['ok'] == true) {
+            $data['tip_amount'] = $amount;
+            $data['order_number'] = $payment->transaction_id;
+            $data['transaction_id'] = $payment->transaction_id;
+
+            $request = new \Illuminate\Http\Request($data);
+
+            $orderController = new OrderController();
+            $orderController->tipAfterOrder($request);
+            if ($come_from == 'app') {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Added Tip.';
+                $response['payment_from'] = 'tip';
+            }
+            return response()->json($response, 200);
+        }
+    }
+
+    public function completeOrderSubs($request, $payment, $requestdata, $come_from)
+    {
+        if (isset($request['ok']) && $request['ok'] == true) {
+
+            $data['transaction_id'] = $payment->transaction_id;
+            $data['payment_option_id'] = 50;
+            $data['subsid'] = $requestdata['subsid'];
+            $data['subscription_id'] = $requestdata['subsid'];
+            $data['amount'] = $requestdata['amt'];
+
+            $request = new \Illuminate\Http\Request($data);
+
+            $subscriptionController = new UserSubscriptionController();
+            $subscriptionController->purchaseSubscriptionPlan($request, '', $requestdata->subsid);
+            if ($come_from == 'app') {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Added Subscription.';
+                $response['payment_from'] = 'subscription';
+            }
+            return response()->json($response, 200);
+        }
+    }
+
+    public function completePickupDelivery($request, $payment, $requestdata, $come_from)
+    {
+        if (isset($request['ok']) && $request['ok'] == true) {
+
+            $data['payment_option_id'] = 50;
+            $data['transaction_id'] = $payment->transaction_id;
+            $data['amount'] = $requestdata['amt'];
+            $data['order_number'] = $requestdata['order_number'];
+            $data['reload_route'] = $requestdata['reload_route'];
+            $request = new \Illuminate\Http\Request($data);
+            $plaseOrderForPickup = new PickupDeliveryController();
+            $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+            if ($come_from == 'app') {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Added Pickup Delivery.';
+                $response['payment_from'] = 'pickup_delivery';
+                $response['data'] = $res;
+            }
+
+            return response()->json($response, 200);
+        }
+    }
+}

@@ -448,9 +448,6 @@ class CartController extends FrontController
                 'service_date'        => $request->has('service_date') ? $request->service_date : null,
                 'service_period'      => $request->has('service_period') ? $request->service_period : null,
                 'service_start_date'  => @$service_start_date,
-                'slot_id'  => $request->has('sele_slot_id') ? $request->sele_slot_id : null,
-                'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
-                'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
             ];
              //Check if 
             if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
@@ -471,6 +468,26 @@ class CartController extends FrontController
                 $cart_product_detail['bid_discount'] =@$request->bid_discount??null;
                 // dd($request->bid_number);
             }
+
+            $recurringformPost = '';
+            if(isset($request->recurringformPost) && !empty($request->recurringformPost))
+            {
+                //This Function Return objected array of recurring data
+                $recurringformPost = $this->recurringCalculationFunction($request);
+
+                 //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
+                if(checkColumnExists('cart_products','recurring_booking_type')){
+                    $cart_product_detail['recurring_booking_type']  =@$recurringformPost->action??null;
+                    $cart_product_detail['recurring_week_day']      =@$recurringformPost->weekTypes??null;
+                    $cart_product_detail['recurring_week_type']     =@$recurringformPost->weekTypes??null;
+                    $cart_product_detail['recurring_day_data']      =@$recurringformPost->selectedCustomdates??null;
+                    $cart_product_detail['recurring_booking_time']  =@$recurringformPost->schedule_time??null;
+                    
+                    // dd($request->bid_number);
+                }
+
+            }
+
 
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
@@ -528,7 +545,10 @@ class CartController extends FrontController
             }
 
             if($isnew == 1){
+                // dd($cart_product_detail);
                 $cartProduct = CartProduct::create($cart_product_detail);
+                // \Log::info(json_encode($cart_product_detail));11
+
                 if(!empty($addon_ids) && !empty($addon_options)){
                     $saveAddons = array();
                     foreach ($addon_options as $key => $opts) {
@@ -2927,4 +2947,123 @@ class CartController extends FrontController
         }
         return json_encode($today);
     }
+    
+
+    public function VendorTimeSlot(Request $request){
+        $user       = Auth::user();
+        $dates      = $request->dates;
+        $dates      = explode(",",$dates);
+        $userdates  = [];
+        $dayArr     = ['sunday'=>1,'monday'=>2,'tuesday'=>3,'wednesday'=>4,'thursday'=>5,'friday'=>6,'saturday'=>7];
+        if($dates){
+            foreach($dates as $date){
+                $day = GetDayFromDate($date);
+                $day = $dayArr[$day];
+                array_push($userdates,$day);
+            }
+        }
+        if ($user) {
+            $cart       = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $addresses  = UserAddress::where('user_id', $user->id)->where('status',1)->get();
+            $guest_user = false;
+        } else {
+            $cart       = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $addresses  = collect();
+        }
+        if ($cart) {
+            $cartData   = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        }
+
+        if($cartData){
+            foreach ($cartData as $key => $data) {
+                $vendorWeeklySlotDay = VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$data->vendor_id])->get()->toArray();
+                $checkAvailableSlots = $this->RecurringBookingAvailableSlots($vendorWeeklySlotDay,$userdates);
+                //pr($checkAvailableSlots);
+            }
+        }
+    }
+
+    public function RecurringBookingAvailableSlots($vendorWeeklySlotDay,$userdates){
+        $AvailableSlots = [];
+        if($vendorWeeklySlotDay){
+            foreach($vendorWeeklySlotDay as $slot){
+                if(in_array($slot['day'],$userdates)){
+                    $AvailableSlots[]=['start_time'=>convertDateTimeInTimeZone(date('Y-M-d')." ".$slot['start_time'], Auth()->user()->timezone, 'H:i'),'end_time'=>substr($slot['end_time'],0,-3)];
+                }
+            }
+            return $AvailableSlots;
+        }
+
+    }
+
+    public function recurringCalculationFunction($request)
+    {
+        $recurringformPost = (object)$request->recurringformPost;
+        $weekTypes ='';
+        $daysCnt ='';
+        if(!empty($recurringformPost->weekDay)){
+            $weekTypes = implode(',',$recurringformPost->weekDay);
+        }
+
+        $startDate = $recurringformPost->startDate;
+        $endDate = $recurringformPost->endDate;
+
+        $selectedCustomdates = [];
+        
+        if($recurringformPost->action=='2' || $recurringformPost->action=='1'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay);
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='3'){
+            $startDate = Carbon::now()->addDays(1);
+            $endDate = Carbon::now()->addDays(1);
+            $endDate = $endDate->addMonths($recurringformPost->month_number);
+            $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='4'){
+            if(!empty($recurringformPost->selectedCustomdates)){
+                $daysCnt =count($recurringformPost->selectedCustomdates);
+                $selectedCustomdates = implode(',',$recurringformPost->selectedCustomdates);
+            }
+        }elseif($recurringformPost->action=='6'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay,'A');
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }
+
+
+        if(empty($daysCnt)){
+            $days = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($days);
+        }
+
+            return (object)[
+                'weekTypes' => @$weekTypes,
+                'selectedCustomdates' => @$selectedCustomdates,
+                'startDate' => @$startDate,
+                'endDate' => @$endDate,
+                'action'  => @$recurringformPost->action,
+                'schedule_time'=>@$recurringformPost->schedule_time??'10:00',
+                'daysCnt'=>@$daysCnt??'1'
+            ];
+
+    }
+
+
 }

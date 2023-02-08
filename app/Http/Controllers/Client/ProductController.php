@@ -195,6 +195,7 @@ class ProductController extends BaseController
 
         $product = Product::with($with_array)->where('id', $id)->firstOrFail();
 
+
         $type = Type::all();
         $countries = Country::all();
         $addons = AddonSet::with('option')->select('id', 'title')
@@ -535,6 +536,7 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
+            $product->is_recurring_booking        = $request->is_recurring_booking == 'on' ? 1 : 0;
             if(checkColumnExists('products','get_price_from_dispatcher')){
               //pr(($request->has('get_price_from_dispatcher') && $request->get_price_from_dispatcher == 'on') ? 1 : 0);
                 $product->get_price_from_dispatcher = ($request->has('get_price_from_dispatcher') && $request->get_price_from_dispatcher == 'on') ? 1 : 0;
@@ -1384,6 +1386,10 @@ class ProductController extends BaseController
                     $update_product = ProductVariant::whereIn('product_id',$request->product_id)->update(['markup_price' => $request->markup_price]);
 
                 break;
+                case "is_recurring_booking":
+                    $update_product = Product::whereIn('id',$request->product_id)->update(['is_recurring_booking' => 1]);
+                break;
+
                 case "for_sell_when_out_of_stock":
                     $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
                 break;
