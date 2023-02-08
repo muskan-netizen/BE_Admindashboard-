@@ -302,7 +302,8 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                 $isAddonExist = 1;
                                                                             }
                                                                             $productInquiryCheck = $data->inquiry_only  ; 
-                                                                          
+                                                                            $redirec = ($data->is_recurring_booking ==1) ? route('productDetail', [@$data->vendor->slug, $data->url_slug]) : 'javascript:void(0)' ;
+                                                                             $class = ($data->is_recurring_booking ==1) ? 'add_on_demand_btn' : 'add_on_demand' ;
                                                                         @endphp
 
                                                                         @foreach ($data->variant as $var)
@@ -348,7 +349,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                 <a class="btn btn-solid btn btn-solid view_on_demand_price"  style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                                                                 @else
                                                                                     {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>  alProductBtns--}}
-                                                                                    <a class="add-cart-btn  btn btn-solid add_on_demand "
+                                                                                    <a class="add-cart-btn  btn btn-solid {{$class}} "
                                                                                         style="display:none;"
                                                                                         id="add_button_href{{ $cartProductId }}"
                                                                                         data-variant_id="{{ $productVariantIdInCart }}"
@@ -358,7 +359,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                         data-aaddon="{{ $isAddonExist }}"
                                                                                         data-minimum_order_count="{{ $minimum_order_count }}"
                                                                                         data-batch_count="{{ $batch_count }}"
-                                                                                        href="javascript:void(0)">{{ __('Add') }}
+                                                                                        href="{{ $redirec }}">{{ __('Add') }}
                                                                                         @if ($minimum_order_count > 0)
                                                                                             ({{ $minimum_order_count }})
                                                                                         @endif
@@ -422,7 +423,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                         <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                                                                     @else
                                                                                     {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                                                                        <a class="add-cart-btn btn btn-solid  add_on_demand"
+                                                                                        <a class="add-cart-btn btn btn-solid  {{$class}}"
                                                                                             id="aadd_button_href{{ $data->id }}"
                                                                                             data-variant_id="{{ $data->variant[0]->id }}"
                                                                                             data-add_to_cart_url="{{ $add_to_cart }}"
@@ -431,7 +432,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                             data-aaddon="{{ $isAddonExist }}"
                                                                                             data-batch_count="{{ $batch_count }}"
                                                                                             data-minimum_order_count="{{ $minimum_order_count }}"
-                                                                                            href="javascript:void(0)">{{ __('Add') }}
+                                                                                            href="{{ $redirec }}">{{ __('Add') }}
                                                                                             @if ($minimum_order_count > 1)
                                                                                                 ({{ $minimum_order_count }})
                                                                                             @endif
