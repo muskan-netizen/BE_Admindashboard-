@@ -340,8 +340,9 @@ $(document).ready(function () {
                         
                         paymentViaplugnpay(reload_route,'',response.data);
                     }
-                    else if(payment_option_id == 49){
-                        paymentViaplugnpay(reload_route,'',response.data);
+                    else if(payment_option_id == 50){
+                        
+                        paymentViazulpay(reload_route,'',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{

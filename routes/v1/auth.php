@@ -133,7 +133,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         //Route::post('get-vendor-transactions', 'Api\v1\VendorController@getOrdersList');
 
         Route::match(['get','post'],'payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
-        //Route::match(['get','post'],'payment/plugnpay','Api\v1\PlugnpayGatewayController@beforePayment');
+      //  Route::match(['get','post'],'payment/plugnpay','Api\v1\PlugnpayGatewayController@beforePayment');
+        
+        //azulpay
+        Route::match(['get','post'],'payment/azulpay','Api\v1\AzulPaymentController@beforePayment');
+        
         //Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
         Route::post('payment/razorpay/pay/{amount}/{order}', 'Api\v1\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
         Route::post('payment/complete/paytab','Api\v1\PaytabController@completePayment');
