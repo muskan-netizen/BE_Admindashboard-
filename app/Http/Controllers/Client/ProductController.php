@@ -469,6 +469,7 @@ class ProductController extends BaseController
             $product->pharmacy_check            = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
             $product->individual_delivery_fee   = ($request->has('individual_delivery_fee') && $request->individual_delivery_fee == 'on') ? 1 : 0;
             $product->returnable        = ($request->has('returnable') && $request->returnable == 'on') ? 1 : 0;
+            $product->spotlight_deals        = ($request->has('spotlight_deals') && $request->spotlight_deals == 'on') ? 1 : 0;
             $product->replaceable        = ($request->has('replaceable') && $request->replaceable == 'on') ? 1 : 0;
             $product->has_inventory             = ($request->has('has_inventory') && $request->has_inventory == 'on') ? 1 : 0;
             $product->sell_when_out_of_stock    = ($request->has('sell_stock_out') && $request->sell_stock_out == 'on') ? 1 : 0;

@@ -1054,7 +1054,10 @@ $(document).ready(function () {
                         }else{
                             $(".show_no_of_seats_if_pooling").show();
                         }
-                        getDistance();
+                        if(response.data.distance == 0 || response.data.duration == 0)
+                        {
+                            getDistance();
+                        }
                         if($('input[name=is_for_friend]:checked').val()==1){
                             $('.for_friend_fields_div').removeClass('d-none');
 
