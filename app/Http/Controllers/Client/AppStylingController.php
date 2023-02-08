@@ -60,7 +60,7 @@ class AppStylingController extends BaseController
         $selected_ids=[];
         $Selected_products= HomeProduct::get();
         foreach ($Selected_products as $key => $value) {
-            $selected_ids[] = $value->products ?? 0;
+            $selected_ids[] = $value->product_id ?? 0;
         
     }
 
