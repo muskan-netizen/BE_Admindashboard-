@@ -92,7 +92,7 @@ class AzulPaymentController extends BaseController
             $time = time();
             Payment::create([
                 'amount' => 0,
-                'transaction_id' => $request->subsid . '_' . $time,
+                'transaction_id' => $request->subscription_id . '_' . $time,
                 'balance_transaction' => $request->amount,
                 'type' => 'subscription',
                 'date' => date('Y-m-d'),
@@ -115,7 +115,7 @@ class AzulPaymentController extends BaseController
     public function beforePayment(Request $request)
     {
         $response = [];
-
+        $number = $this->orderNumber($request);
         if ($request->action == 'wallet') {
             $number = $this->orderNumber($request);
             $request->request->add([
@@ -131,51 +131,34 @@ class AzulPaymentController extends BaseController
             ]);
         }
 
-        if ($request->action == 'cart') {
-            $number = $this->orderNumber($request);
+        if (! isset($request->come_from)) {
             $request->request->add([
-                'order_number' => $number,
-                'amount' => $request->amount
+                'come_from' => 'app'
             ]);
         }
-        if ($request->action == 'tip') {
-            $number = $this->orderNumber($request);
-            $request->request->add([
-                'order_number' => $number,
-                'amount' => $request->amount
-            ]);
-        }
-
-        if ($request->action == 'pickup_delivery') {
-            $number = $this->orderNumber($request);
-            $request->request->add([
-                'order_number' => $number,
-                'amount' => $request->amount
-            ]);
-        }
-
         // \Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
         \Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         // dd($responsePay);
-        if ($dataResponse['ok'] === false) {
+
+        if ($dataResponse['ok'] === false && $this->mode) {
             $response['status'] = 'Fail';
             $response['msg'] = 'Invalid Card Details.';
             $response['payment_from'] = $request->action;
             return response()->json($response, 400);
         }
-        if (isset($dataResponse['ok']) && $dataResponse['ok'] === true) {
+
+        if (isset($dataResponse['ok']) && $dataResponse['ok'] === $this->mode) {
             // \Log::info('Done');
 
-            if ($request->from == 'tip') {
-                $payment = Payment::where('transaction_id', $dataResponse['data']->CustomOrderId . '_' . $number)->first();
-            } else if ($request->from == 'subscription') {
-                $payment = Payment::where('transaction_id', $request->subsid . '_' . $number)->first();
+            if ($request->action == 'tip') {
+                $payment = Payment::where('transaction_id', $request->order_number . '_' . $number)->first();
+            } else if ($request->action == 'subscription') {
+                $payment = Payment::where('transaction_id', $request->subscription_id . '_' . $number)->first();
             } else {
                 $payment = Payment::where('transaction_id', $dataResponse['data']->CustomOrderId)->first();
             }
-
             // \Log::info(json_encode($request->all()));
             if ($payment) {
                 $payment->viva_order_id = $dataResponse['data']->AzulOrderId;
@@ -187,7 +170,7 @@ class AzulPaymentController extends BaseController
             } elseif ($payment->type == 'wallet') {
                 return $this->completeOrderWallet($dataResponse, $payment, $request->amount, $request->come_from);
             } elseif ($payment->type == 'tip') {
-                return $this->completeOrderTip($dataResponse, $payment, $request->amount, $request->come_from);
+                return $this->completeOrderTip($dataResponse, $payment, $request, $request->amount, $request->come_from);
             } elseif ($payment->type == 'subscription') {
                 return $this->completeOrderSubs($dataResponse, $payment, $request, $request->come_from);
             } elseif ($payment->type == 'pickup_delivery') {
@@ -205,7 +188,7 @@ class AzulPaymentController extends BaseController
     public function completeOrderCart($request, $payment)
     {
         $order = Order::where('order_number', $payment->transaction_id)->first();
-        if (isset($request['ok']) && $request['ok'] == true) {
+        if (isset($request['ok']) && $request['ok'] == $this->mode) {
             $order->payment_status = '1';
             $order->save();
 
@@ -287,13 +270,13 @@ class AzulPaymentController extends BaseController
 
     public function completeOrderWallet($request, $payment, $amount, $come_from)
     {
-        if (isset($request['ok']) && $request['ok'] === true) {
+        if (isset($request['ok']) && $request['ok'] === $this->mode) {
 
-            $data['wallet_amount'] = $amount;
+            $data['amount'] = $amount;
             $data['transaction_id'] = $payment->transaction_id;
             $request = new \Illuminate\Http\Request($data);
             $walletController = new WalletController();
-            $walletController->creditWallet($request);
+            $walletController->creditMyWallet($request);
 
             if ($come_from == 'app') {
                 $response['status'] = 'Success';
@@ -304,11 +287,11 @@ class AzulPaymentController extends BaseController
         }
     }
 
-    public function completeOrderTip($request, $payment, $amount, $come_from)
+    public function completeOrderTip($request, $payment, $requestdata, $amount, $come_from)
     {
-        if (isset($request['ok']) && $request['ok'] == true) {
+        if (isset($request['ok']) && $request['ok'] == $this->mode) {
             $data['tip_amount'] = $amount;
-            $data['order_number'] = $payment->transaction_id;
+            $data['order_number'] = $requestdata->order_number;
             $data['transaction_id'] = $payment->transaction_id;
 
             $request = new \Illuminate\Http\Request($data);
@@ -326,18 +309,18 @@ class AzulPaymentController extends BaseController
 
     public function completeOrderSubs($request, $payment, $requestdata, $come_from)
     {
-        if (isset($request['ok']) && $request['ok'] == true) {
+        if (isset($request['ok']) && $request['ok'] == $this->mode) {
 
             $data['transaction_id'] = $payment->transaction_id;
             $data['payment_option_id'] = 50;
-            $data['subsid'] = $requestdata['subsid'];
-            $data['subscription_id'] = $requestdata['subsid'];
-            $data['amount'] = $requestdata['amt'];
+            $data['subsid'] = $requestdata['subscription_id'];
+            $data['subscription_id'] = $requestdata['subscription_id'];
+            $data['amount'] = $requestdata['amount'];
 
             $request = new \Illuminate\Http\Request($data);
 
             $subscriptionController = new UserSubscriptionController();
-            $subscriptionController->purchaseSubscriptionPlan($request, '', $requestdata->subsid);
+            $subscriptionController->purchaseSubscriptionPlan($request, $requestdata->subscription_id);
             if ($come_from == 'app') {
                 $response['status'] = 'Success';
                 $response['msg'] = 'Success Added Subscription.';
@@ -349,11 +332,11 @@ class AzulPaymentController extends BaseController
 
     public function completePickupDelivery($request, $payment, $requestdata, $come_from)
     {
-        if (isset($request['ok']) && $request['ok'] == true) {
+        if (isset($request['ok']) && $request['ok'] == $this->mode) {
 
             $data['payment_option_id'] = 50;
             $data['transaction_id'] = $payment->transaction_id;
-            $data['amount'] = $requestdata['amt'];
+            $data['amount'] = $requestdata['amount'];
             $data['order_number'] = $requestdata['order_number'];
             $data['reload_route'] = $requestdata['reload_route'];
             $request = new \Illuminate\Http\Request($data);

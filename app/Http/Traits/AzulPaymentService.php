@@ -15,7 +15,7 @@ trait AzulPaymentService
 
     public function __construct()
     {
-        $this->creds = PaymentOption::select('credentials')->where('code', 'azul')
+        $this->creds = PaymentOption::where('code', 'azul')
             ->where('status', 1)
             ->first();
         $this->creds_arr = json_decode($this->creds->credentials);
@@ -23,7 +23,7 @@ trait AzulPaymentService
         $this->ALTERNATE_URL = $this->creds_arr->azul_alternate_url;
         $this->TEST_URL = $this->creds_arr->azul_test_url;
         $this->ECOMMERCE_URL = $this->creds_arr->azul_ecommerce_url;
-
+        $this->TEST_MODE = $this->creds->test_mode;
         $this->SAVE_TO_DATAVAULT = 1;
         $this->DONT_SAVE_TO_DATAVAULT = 2;
         $this->HOLD_TRANSACTION = 'Hold';
@@ -40,6 +40,10 @@ trait AzulPaymentService
         $this->errors = [
             'INSUF FONDOS' => 'Tu tarjeta no tiene fondos suficientes para completar la transacción'
         ];
+        $this->mode = true;
+        if ($this->TEST_MODE) {
+            $this->mode = false;
+        }
     }
 
     /**
