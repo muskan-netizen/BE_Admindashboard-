@@ -2890,12 +2890,12 @@
                                     </div>
                                 @endif
                                 {{-- <div class="col-md-4">
-                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
-            <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->off_scheduling_at_cart == '1') checked='checked' @endif>
-            </span>
-         </div>
-      </div> --}}
+                                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                    <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
+                                        <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->off_scheduling_at_cart == '1') checked='checked' @endif>
+                                        </span>
+                                    </div>
+                                </div> --}}
                                 <div class="col-md-4">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Influencer Mod') }}
@@ -2929,12 +2929,12 @@
                                 </div>
                             @endif
                             {{-- <div class="col-md-4">
-                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
-            <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->off_scheduling_at_cart == '1') checked='checked' @endif>
-            </span>
-         </div>
-      </div> --}}
+                                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
+                                    <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->off_scheduling_at_cart == '1') checked='checked' @endif>
+                                    </span>
+                                </div>
+                            </div> --}}
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                     <label for="isolate_single_vendor_order"
@@ -2958,7 +2958,7 @@
                                     </span>
                                 </div>
                             </div>
-                        @elseif($client_preference_detail->subscription_tab_taxi == 1)
+                        @if($client_preference_detail->subscription_tab_taxi == 1)
                             <div class="col-md-4">
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                     <label for="subscription_mode"
