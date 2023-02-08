@@ -36,29 +36,9 @@
                 @if ($client_preference_detail->business_type != 'taxi')
                 <div class="col-md-3 ellipsis">
                     <h4>{{ __('Address') }}</h4>
-                    @if($order->luxury_option_id == 3)
-
-                    <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                        @if ( count($order->vendors) > 0)
-                        {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
-                        @else
-                        NA
-                        @endif
-                    </span>
-                    @else
-                    <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                        @if ($order->address)
-                        {{ $order->address->address }},
-                        {{ $order->address->street }},
-                        {{ $order->address->city }},
-                        {{ $order->address->state }},
-                        {{ $order->address->country }}
-                        {{ $order->address->pincode }}
-                        @else
-                        NA
-                        @endif
-                    </span>
-                    @endif
+                    <div class="alOrderAddressBox">
+                        @include('frontend.account.orders.order_address')
+                    </div>
                 </div>
                 @endif
             </div>
@@ -75,32 +55,12 @@
             </div>
             @if ($client_preference_detail->business_type != 'taxi')
             <div class="col-md-3">
-                @if($order->luxury_option_id == 3)
-
-                <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                    @if ( count($order->vendors) >0)
-                    {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
-                    @else
-                    NA
-                    @endif
-                </span>
-                @else
-                <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                    @if ($order->address)
-                    {{ $order->address->address }},
-                    {{ $order->address->street }},
-                    {{ $order->address->city }},
-                    {{ $order->address->state }},
-                    {{ $order->address->country }}
-                    {{ $order->address->pincode }}
-                    @else
-                    NA
-                    @endif
-                </span>
-                @endif
-
+                <h4>{{ __('Address') }}</h4>
+                <div class="alOrderAddressBox">
+                    @include('frontend.account.orders.order_address')
+                </div>
             </div>
-            @endif
+        @endif
         </div>
         <div class="row mt-2">
             <div class="col-md-9 mb-3">

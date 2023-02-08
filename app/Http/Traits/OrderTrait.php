@@ -50,7 +50,6 @@ trait OrderTrait
     public function ProductVariantStockIncrease($product)
     {
         $ProductVariant = ProductVariant::find($product->variant_id);
-        dd($ProductVariant);
         if ($ProductVariant) {
             $update_quantity  = $ProductVariant->quantity + $product->quantity;
             if ($update_quantity < 0)
