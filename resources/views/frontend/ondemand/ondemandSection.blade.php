@@ -268,6 +268,8 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                             @if($productInquiryCheck == 0)
                                                             @php
                                                                 $cartcount = 0;
+                                                                $redirec = ($data->is_recurring_booking ==1) ? route('productDetail', [@$data->vendor->slug, $data->url_slug]) : 'javascript:void(0)' ;
+                                                                $class = ($data->is_recurring_booking ==1) ? 'add_on_demand_btn' : 'add_on_demand' ;
                                                             @endphp
                                                             @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                 @php
@@ -296,7 +298,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                     @if($cartcount > 0)
                                                                     
                                                                         @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
-                                                                            <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                            <a class="btn btn-solid  {{$class}} " style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="{{ $redirec }}">Add <i class="fa fa-plus"></i></a>
                                                                             <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
                                                                                 <span class="minus qty-minus-ondemand 245"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
                                                                                     <i class="fa fa-minus" aria-hidden="true"></i>
@@ -311,7 +313,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 
                                                                         @endif
                                                                     @else
-                                                                    <a class="btn btn-solid add_on_demand" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                    <a class="btn btn-solid  {{$class}}" id="add_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="{{ $redirec }}">Add <i class="fa fa-plus"></i></a>
                                                                         @if(isset($data->category_type_id) && (!in_array($data->category_type_id,[12])) )
                                                                         <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
                                                                             <span class="minus qty-minus-ondemand 256"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
