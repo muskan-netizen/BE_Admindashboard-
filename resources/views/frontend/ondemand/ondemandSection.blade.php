@@ -722,7 +722,8 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Total')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total) %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total_inc_tax) %></span>
+                                                   
                                                 </h6>
                                             </div>
                                         </li>

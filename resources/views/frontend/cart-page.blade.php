@@ -1092,6 +1092,18 @@
                                 </div>
                                 <hr class="my-2">
                             @endif
+                            @if ($cart_details->delivery_charges > 0)
+                                <div class="row">
+                                    <div class="col-6">{{ __('Total Delivery Fee') }}</div>
+                                    <div class="col-6 text-right"><b>
+                                            @if ($additionalPreference['is_token_currency_enable'])
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->delivery_charges) }}
+                                            @endif
+                                        </b>
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
                             @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
                                 <div class="row">
                                     
