@@ -311,11 +311,15 @@ trait OrderTrait
                     $scheduleDateTime = $selectedDate . ' ' . $slotTime;
                     $schedule_time =  $scheduleDateTime ?? null;
                 }
+                $rejectable_order = isset($dispatch_domain['rejectable_order'])? $dispatch_domain['rejectable_order'] : 0;
 
                 $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
                 $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
-                Log::info('service_time');
-                Log::info($service_time);
+                
+                if( $rejectable_order ==1){
+                    $service_time = '60';
+                }
+              
                 $tasks[] = array(
                     'task_type_id' => $task_type_id,
                     'latitude'     => $vendor_details->latitude ?? '',
@@ -394,9 +398,10 @@ trait OrderTrait
                         'user_icon' => $customer->image,
                         'agent'     => $agent,
                         'task_type_id' => $task_type_id, //  for add agent booking in case of appointment
-                        'service_time' =>  $service_time
+                        'service_time' =>  $service_time,
+                        'rejectable_order' =>  $rejectable_order
                     ];
-
+                    
 
                     if ($order_vendor->is_restricted == 1) {
                         $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -1270,8 +1275,7 @@ trait OrderTrait
 
                  $rejectable_order = isset($dispatch_domain['rejectable_order'])? $dispatch_domain['rejectable_order'] : 0;
                  
-                //  Log::info('service_time');
-                //  Log::info($service_time);
+            
                  $tasks[] = array(
                      'task_type_id' => $task_type_id,
                      'latitude'     => $vendor_details->latitude ?? '',
