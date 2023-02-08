@@ -80,7 +80,6 @@ trait AzulPaymentService
             'ForceNo3DS' => '1'
         ];
         $response = $this->sendRequest($request);
-
         if ($response['code'] != 200) {
             Log::info([
                 'error http payWithCard',
@@ -88,7 +87,8 @@ trait AzulPaymentService
             ]);
             return [
                 'message' => $response['message'],
-                'ok' => false
+                'ok' => false,
+                'data' => $response['data']
             ];
         }
 
@@ -99,7 +99,8 @@ trait AzulPaymentService
             ]);
             return [
                 'message' => $response['data']->ErrorDescription,
-                'ok' => false
+                'ok' => $response['data']->ResponseCode,
+                'data' => $response['data']
             ];
         }
 

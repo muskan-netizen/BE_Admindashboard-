@@ -127,7 +127,7 @@ class AzulPaymentController extends FrontController
             } else if ($request->from == 'subscription') {
                 $payment = Payment::where('transaction_id', $request->subsid . '_' . $number)->first();
             } else {
-                $payment = Payment::where('transaction_id', $dataResponse['data']->CustomOrderId)->first();
+                $payment = Payment::where('transaction_id', $request->order_number)->first();
             }
 
             // \Log::info(json_encode($request->all()));

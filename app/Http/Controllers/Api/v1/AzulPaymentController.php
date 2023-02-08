@@ -140,8 +140,7 @@ class AzulPaymentController extends BaseController
         $dataResponse = $this->payWithCard($request->all());
         \Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
-        // dd($responsePay);
-
+        // dd($dataResponse);
         if ($dataResponse['ok'] === false && $this->mode) {
             $response['status'] = 'Fail';
             $response['msg'] = 'Invalid Card Details.';
@@ -157,7 +156,7 @@ class AzulPaymentController extends BaseController
             } else if ($request->action == 'subscription') {
                 $payment = Payment::where('transaction_id', $request->subscription_id . '_' . $number)->first();
             } else {
-                $payment = Payment::where('transaction_id', $dataResponse['data']->CustomOrderId)->first();
+                $payment = Payment::where('transaction_id', $request->order_number)->first();
             }
             // \Log::info(json_encode($request->all()));
             if (! empty($payment)) {
@@ -179,8 +178,8 @@ class AzulPaymentController extends BaseController
         } else {
             // \Log::info('fail--'.$dataResponse->FinalStatus.'--');
             $response['status'] = 'Fail';
-            $response['msg'] = 'Failed.';
-            $response['payment_from'] = 'cart';
+            $response['msg'] = $dataResponse['message'];
+            $response['payment_from'] = $request->action;
             return response()->json($response, 200);
         }
     }
