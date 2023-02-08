@@ -391,6 +391,8 @@ $timezone = Auth::user()->timezone;
                                     </tr>
                                 </thead>
                                 @foreach ($order->vendors as $vendor)
+                                @if($vendor->vendor_id == $vendor_id)
+
                                 <tbody>
                                     @php
                                     $sub_total = 0;
@@ -798,6 +800,8 @@ $timezone = Auth::user()->timezone;
                     </tr>
                     @endif
                     </tbody>
+                    @endif
+                    
                     @endforeach
                     </table>
                 </div>
