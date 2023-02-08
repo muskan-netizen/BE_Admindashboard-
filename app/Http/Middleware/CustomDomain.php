@@ -76,7 +76,7 @@ class CustomDomain
         $sub_domain = ltrim($sub_domain, "https://");
         $callback = "https://" . $sub_domain . ".royoorders.com/auth/facebook/callback";
       }
-      $clientPreference = ClientPreference::select('theme_admin', 'distance_unit', 'currency_id', 'date_format', 'time_format', 'fb_login', 'fb_client_id', 'fb_client_secret', 'fb_client_url', 'twitter_login', 'twitter_client_id', 'twitter_client_secret', 'twitter_client_url', 'google_login', 'google_client_id', 'google_client_secret', 'google_client_url', 'apple_login', 'apple_client_id', 'apple_client_secret', 'apple_client_url', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'map_provider', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'web_template_id', 'is_hyperlocal', 'need_delivery_service', 'need_dispacher_ride', 'delivery_service_key', 'dispatcher_key', 'primary_color', 'secondary_color', 'fcm_api_key', 'fcm_auth_domain', 'fcm_project_id', 'fcm_storage_bucket', 'fcm_messaging_sender_id', 'fcm_app_id', 'fcm_measurement_id', 'distance_unit_for_time', 'distance_to_time_multiplier', 'delay_order', 'product_order_form', 'digit_after_decimal', 'dinein_check', 'takeaway_check', 'delivery_check', 'concise_signup', 'rental_check', 'pick_drop_check', 'on_demand_check', 'laundry_check', 'appointment_check', 'slots_with_service_area', 'is_vendor_tags', 'signup_image', 'map_on_search_screen', 'p2p_check')->where('client_code', $redisData->code)->first();
+      $clientPreference = ClientPreference::where('client_code', $redisData->code)->first();
       if ($clientPreference) {
         Config::set('FACEBOOK_CLIENT_ID', $clientPreference->fb_client_id);
         Config::set('FACEBOOK_CLIENT_SECRET', $clientPreference->fb_client_secret);
@@ -140,11 +140,6 @@ class CustomDomain
       $enabled_vendor_types = [];
 
       if ($clientPreference) {
-
-        // if($clientPreference->dinein_check == 1){$vendor_mode_count++;    $single_vendor_type = "dine_in";}
-        // if($clientPreference->takeaway_check == 1){$vendor_mode_count++;  $single_vendor_type = "takeaway";}
-        // if($clientPreference->delivery_check == 1){$vendor_mode_count++;  $single_vendor_type = "delivery";}
-
         foreach (config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value) {
           $clientVendorTypes = $vendor_typ_key . '_check';
 

@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Client;
+
+use App\Http\Controllers\BidController;
 use DB;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -23,10 +25,10 @@ class VendorBidController extends BaseController{
 
     public function bidRequests(Request $request,$domain = '',$id = null)
     {
-        $prescriptions = BidRequest::withCount(['bids'=>function($q)use($id){
+        $prescriptions = BidRequest::withCount(['bid'=>function($q) use ($id)
+        {
             $q->where('vendor_id',$id);
-         }])->where('status' , '=' , 0)->get();
-        
+        }])->where('status' , '=' , 0)->orderBy('id','desc')->get();
         return view('backend.bidding_module.vendorBidRequests', compact('prescriptions','id'));
     }
 
@@ -34,7 +36,6 @@ class VendorBidController extends BaseController{
     {
         
     try{
-            $user = Auth::user();
             $vendors = Vendor::where('status','1');
             if (Auth::user()->is_superadmin == 0) {
                 $vendors = $vendors->whereHas('permissionToUser', function ($query) {
@@ -84,6 +85,9 @@ class VendorBidController extends BaseController{
                 }
 
             }
+            $bidUserId = BidRequest::where('id' ,$prescription_id)->first();
+            $sendNoti = New BidController();
+            $sendNoti->sendBidPushNotificationUser($bidUserId->user_id);
 
             Session()->flash('success', 'Bid Placed Successfully');
             return ['status'=>1];

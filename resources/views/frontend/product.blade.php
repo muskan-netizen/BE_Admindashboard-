@@ -14,6 +14,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
     <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
+    @if($product->is_recurring_booking == 1)
+        <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
+    @endif
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style type="text/css">
     /* .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
@@ -57,7 +60,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         z-index: 10;
         display: none;
     }
-
+   
     </style>
 
 @endsection
@@ -168,58 +171,25 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     $product->media[] = $coll;
                                                 }
                                             @endphp
-
-                                            <div class="swiper-container gallery-top">
-                                                <div class="swiper-wrapper">
-
-                                                @if(!empty($product->media) && count($product->media) > 0)
-
-                                                    @foreach($product->media as $k => $image)
-                                                        @php
-                                                            if(isset($image->pimage)){
-                                                                $img = $image->pimage->image;
-                                                            }else{
-                                                                $img = $image->image;
-                                                            }
-                                                        @endphp
-                                                        <div class="swiper-slide easyzoom easyzoom--overlay">
-                                                            <a href="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}">
-                                                            <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
-                                                            </a>
-                                                        </div>
-                                                    @endforeach
-                                                @else
-
-                                                    <div class="swiper-slide easyzoom easyzoom--overlay">
-                                                            <a href="{{loadDefaultImage()}}">
-                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-                                                            </a>
-                                                        </div>
-
-                                                @endif
-                                                </div>
-
-                                                <div class="swiper-button-next swiper-button-white"></div>
-                                                <div class="swiper-button-prev swiper-button-white"></div>
-                                            </div>
-                                            <div class="swiper-container gallery-thumbs">
-                                                <div class="swiper-wrapper">
-                                                    @if(!empty($product->media) && count($product->media) > 0)
-                                                        @foreach($product->media as $k => $image)
-                                                        @php
-                                                            if(isset($image->pimage)){
-                                                                $img = $image->pimage->image;
-                                                            }else{
-                                                                $img = $image->image;
-                                                            }
-                                                        @endphp
-
-                                                        @endforeach
-                                                    @else
-                                                        <div class="swiper-slide">
-                                                            <img class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-                                                        </div>
-                                                    @endif
+                                            @foreach($product->variantSet as $key => $variant)
+                                                @if($variant->type == 1 || $variant->type == 2)
+                                                <div class="size-box">
+                                                    <ul class="productVariants">
+                                                        <li class="firstChild">{{$variant->title}}</li>
+                                                        <li class="row otherSize">
+                                                            @foreach($variant->option2 as $k => $optn)
+                                                            <?php $var_id = $variant->variant_type_id;
+                                                            $opt_id = $optn->variant_option_id;
+                                                            $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
+                                                            ?>
+                                                            <label class="radio d-inline-block txt-14 col-3 position-relative"> {{$optn->title}}
+                                                            <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
+                                                                <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
+                                                                <span class="checkround"></span>
+                                                            </label>
+                                                            @endforeach
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -363,7 +333,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     <?php /*<span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
                                                     <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
-                                                
+
                                             @endif
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
                                                 <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
@@ -394,13 +364,14 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     <div class="size-box">
                                                         <ul class="productVariants">
                                                             <li class="firstChild">{{$variant->title}}</li>
-                                                            <li class="otherSize">
+                                                            <li class="row otherSize">
                                                                 @foreach($variant->option2 as $k => $optn)
                                                                 <?php $var_id = $variant->variant_type_id;
                                                                 $opt_id = $optn->variant_option_id;
                                                                 $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                                 ?>
-                                                                <label class="radio d-inline-block txt-14 mr-2">{{$optn->title}}
+                                                                    <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"> <span class="color_name ellipsis">{{$optn->title}}</span>
+                                                                    <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
                                                                     <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                     <span class="checkround"></span>
                                                                 </label>
@@ -416,10 +387,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         <div id="variant_response">
                                             <span class="text-danger mb-2 mt-2"></span>
                                         </div>
+
+                                        @if($product->is_recurring_booking == 1)
+                                            @include('frontend.product-part.recurring-booking')
+                                        @endif
                                         @if($product->category->categoryDetail->type_id == 10)
                                             @include('frontend.product-part.booking-slot')
                                         @endif
-
 
 
                                         @if(!empty($product->addOn) && $product->addOn->count() > 0)
@@ -1113,6 +1087,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
 @endsection
 @section('script')
 <script>
+    var recurringformPost = '';
     var maximumquantitylert = "{{__('Quantity is not available in stock')}}";
     var minimumquantitylert = "{{__('Minimum Quantity count is')}}";
     $(document).on('click', '.submitInquiryForm', function(e) {
@@ -1331,6 +1306,10 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     $(document).ready(function() {
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
+        $(".color_var").click(function () {
+            $(".color_var").removeClass("var-active");
+            $(this).toggleClass("var-active");
+            });
     });
 </script>
 

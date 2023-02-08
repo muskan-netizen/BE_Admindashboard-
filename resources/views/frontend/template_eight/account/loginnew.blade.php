@@ -18,7 +18,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
             </div>
             <div class="col-lg-6 pl-3 mb-lg-0 mb-3 text-center pb-sm-0 {{(@$getAdditionalPreference['is_phone_signup'] == 1) ? 'offset-lg-3' : 'border-right' }}">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
-               
+
                 <div class="row mt-3 arabic-language">
                     <div class="col-xl-12 text-left">
                         {{-- <form name="login" id="login" action="{{route('customer.loginData')}}" method="post">
@@ -146,7 +146,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                 </div>
 
             </div>
-           
+
         </div>
         <div class="row justify-content-center" id="verify-phone-section" style="display:none">
             <div class="verify-login-code">

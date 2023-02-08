@@ -135,7 +135,7 @@ pr($products->toArray());
                                 {{ __('Catalog') }}
                             </a>
                         </li>
-                        
+
                         @if(($client_preference_detail->business_type != 'taxi') || (($client_preference_detail->business_type == 'taxi') && ($client_preference_detail->pickup_delivery_service_area == 1)))
                         <li class="nav-item">
                             <a href="{{ route('vendor.show', $vendor->id) }}" aria-expanded="false"
@@ -169,7 +169,7 @@ pr($products->toArray());
                                 </a>
                             </li>
                          @endif
-                        
+
                     </ul>
                     <div class="row mt-4">
                         <div class="col-12">
@@ -256,13 +256,13 @@ pr($products->toArray());
                                                 {{ __('Action') }}
                                             </a>
                                             @endif
-                                         
+
                                             <a class="btn btn-info waves-effect waves-light ml-1 text-sm-right @if($vendor->status == 1) importProductBtn @endif  {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                                             </a>
-                                           
+
                                         @if(isset($vendor['need_sync_with_order']) && $vendor['need_sync_with_order'] != 1)
                                             <a class="btn btn-info waves-effect waves-light text-sm-right mx-1" dataid="0" href="{{ route('vendor.product.export', $vendor->id) }}"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
@@ -292,6 +292,9 @@ pr($products->toArray());
                                                         <th>{{ __('Bar Code') }}</th>
                                                         <th>{{ __('Status') }}</th>
                                                         <th>{{ __('Expiry Date') }}</th>
+                                                        @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                                                            <th>{{ __('Recurring Booking') }}</th>
+                                                        @endif
                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                             <th>{{ __('New') }}</th>
                                                             <th>{{ __('Featured') }}</th>
@@ -302,7 +305,7 @@ pr($products->toArray());
                                                         <th>{{ __('Action') }}</th>
                                                     </tr>
                                                 </thead>
-                                                
+
                                             </table>
                                         </div>
                                     </div>
@@ -334,7 +337,7 @@ pr($products->toArray());
                                                         <th>{{ __('Action') }}</th>
                                                     </tr>
                                                 </thead>
-                                              
+
                                             </table>
                                         </div>
                                     </div>
@@ -366,7 +369,7 @@ pr($products->toArray());
                     <div class="modal-body pb-0">
                         <div class="col-md-12  ">
                             <label>{{ __('Upload Service Image') }}</label>
-                        
+
                             <div class="service_image">
                                 <input type="file" data-plugins="dropify" name="file" id="service_image" class="dropify" />
                              </div>
@@ -466,7 +469,7 @@ pr($products->toArray());
                                     {!! Form::label('title', __('Select Product'),['class' => 'control-label']) !!}
                                 <select class="form-control selectizeInput" id="service_product_list" name="service_product_id">
                                     <option value="">{{ __("Select Product") }}...</option>
-                                  
+
                                     @foreach($products->where('category_id','!=','7') as $product)
                                         <option value="{{$product['id']}}" data-category_id="{{ $product->category_id ?? '' }} data-product_title="{{ $product->primary->title ?? '' }}">{{ Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30) }}</option>
                                     @endforeach
@@ -476,12 +479,12 @@ pr($products->toArray());
                                     </span>
                                 </div>
                             </div>
-                            
+
                             <div class="col-6">
                                 <div class="form-group" id="service_product_variantInput">
                                     {!! Form::label('title', __('Product variant'),['class' => 'control-label']) !!}
                                      <select class="form-control selectizeInput" id="service_product_variant" name="service_product_variant_id">
-                                   
+
                                     </select>
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
@@ -777,6 +780,10 @@ pr($products->toArray());
                                 @if(@$vendor->add_markup_price)
                                   <option value="for_markup">{{__('Markup Price')}}</option>
                                 @endif
+
+                                @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                                    <option value="is_recurring_booking">{{__('Recurring Booking')}}</option>
+                                @endif
                                   <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock')}}</option>
                                   <option value="delete">{{__('Delete')}}</option>
                              </select>
@@ -985,7 +992,7 @@ pr($products->toArray());
     @endif
     <script type="text/javascript">
     var  sku_start = "{{ $sku_url }}" + ".";
-    
+
         $(".all-product_check").click(function() {
             if ($(this).is(':checked')) {
                 $("#action_product_button").css("display", "block");
@@ -1203,7 +1210,7 @@ pr($products->toArray());
             }
             // alplaNumeric();
         }
-      
+
 
         function alplaNumeric() {
             var n1 = $('#sku').val();
@@ -1422,7 +1429,7 @@ pr($products->toArray());
         });
 
     function dataTableColumn(){
-       var business_type =  "{{$client_preference_detail->business_type}}";
+       var business_type         =  "{{$client_preference_detail->business_type}}";
             if(business_type == 'taxi'){
                 return [
                     {data: 'single_product_check', name: 'single_product_check', orderable: false, searchable: false},
@@ -1446,10 +1453,14 @@ pr($products->toArray());
                     {data: 'bar_code', name: 'bar_code', orderable: false, searchable: false},
                     {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
                     {data: 'expiry_date', name: 'expiry_date', orderable: false, searchable: false},
+                    @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                      {data: 'is_recurring_booking', name: 'is_recurring_booking', orderable: false, searchable: false},
+                    @endif
                     {data: 'product_is_new', name: 'product_is_new', orderable: false, searchable: false},
                     {data: 'product_is_featured', name: 'product_is_featured', orderable: false, searchable: false},
                     {data: 'product_last_mile', name: 'product_last_mile', orderable: false, searchable: false},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                    {data: 'action', name: 'action', orderable: false, searchable: false},
+
                 ]
             }
         }

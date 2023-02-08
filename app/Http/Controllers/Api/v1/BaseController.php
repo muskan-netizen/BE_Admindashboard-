@@ -902,7 +902,7 @@ class BaseController extends Controller{
 
     /******************    ---- check Keys from order Panel keys -----   ******************/
     public function checkOrderPanelKeys(Request $request){
-
+    
         if(checkColumnExists('users', 'is_panel_auth_user')){
             $user =  User::where('is_panel_auth_user', 1)->first();
             if(!$user){

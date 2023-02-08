@@ -508,3 +508,11 @@ body.dark a.navbar-brand img {
         position: absolute;
     }
 }
+
+footer ul.social-links li a i{
+    text-align: center;
+}
+.container.shimmer_effect.main_shimer{
+    max-width: 100%;
+    padding: 0;
+}

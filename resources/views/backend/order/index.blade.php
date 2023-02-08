@@ -166,7 +166,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         </div>
                                                     <% } %>
                                                     <% if(order.scheduled_date_time || order.schedule_pickup || order.schedule_dropoff) { %>
+
+                                                        <% if(order.recurring_booking_time) { %>
+                                                            <span class="badge badge-success ml-2">{{__('Recurring Scheduled')}}</span>
+                                                        <% }else{ %>
+
                                                         <span class="badge badge-success ml-2">{{__('Scheduled')}}</span>
+                                                        <% } %>
                                                        <!-- <span class="ml-2"><%= order.scheduled_date_time %></span> -->
                                                     <% } %>
 
@@ -501,7 +507,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.wallet_amount_used) %></span>
                                     </li>
                                     <% } %>
-                                    
+
                                     <% if(order.total_discount_calculate > 0 || order.total_discount_calculate < 0) { %>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{__('Total Discount')}}</label>

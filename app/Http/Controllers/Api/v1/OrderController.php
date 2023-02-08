@@ -84,7 +84,8 @@ class OrderController extends BaseController
     }
     public function postPlaceOrder(Request $request)
     {
-        try {
+     
+       try {
             $action = ($request->has('type')) ? $request->type : 'delivery';
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             if(isset($set_template)  && $set_template->template_id == 9){
@@ -127,9 +128,18 @@ class OrderController extends BaseController
             $latitude = '';
             $longitude = '';
             $Order_bid_discount = 0;
+            $daysCnt ='';
 
             if ($user) {
                 DB::beginTransaction();
+
+                $client_timezone = DB::table('clients')->first('timezone');
+
+                if($user){
+                    $timezone = $user->timezone ??  $client_timezone->timezone;
+                }else{
+                    $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
+                }
 
                 if($action == 'takeaway' || $action == 'dine_in'){
                     $latitude = $user->latitude ?? '';
@@ -157,9 +167,9 @@ class OrderController extends BaseController
                 $client_preference = ClientPreference::first();
 
                 $editlimit_datetime = Carbon::now()->toDateTimeString();
-                $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','order_edit_before_hours','is_service_product_price_from_dispatch']);
+                $order_edit_before_hours =  @$additionalPreferences->order_edit_before_hours;
                 $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
                 // if ($client_preference->verify_email == 1) {
                 //     if ($user->is_email_verified == 0) {
                 //         return response()->json(['error' => 'Your account is not verified.'], 404);
@@ -182,11 +192,12 @@ class OrderController extends BaseController
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 if(checkColumnExists('carts','order_id'))
                 {//get if any order is being edit
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder', 'cartvendor'])->first();
+                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
                 }else{
                     $cart = Cart::where('user_id', $user->id)->first();
                 }
                 if ($cart) {
+                    
                     // $loyalty_points_used=0;
                     // $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
                     // if ($order_loyalty_points_earned_detail) {
@@ -223,10 +234,16 @@ class OrderController extends BaseController
                             return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
                         }
                         $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-                        if($VendorOrderStatus > 0){
-                            return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
+                        $order_vendor_status_error = 0;
+                        foreach ($cart->editingOrder->orderStatusVendor as $key => $status) {
+                            if($status->order_status_option_id  > 2) {
+                                $order_vendor_status_error = 1;
+                            }
                         }
-
+                        
+                        if($VendorOrderStatus > 0 || $order_vendor_status_error == 1){
+                            return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing. Please discard order editing."), 400);
+                        }
                         OrderProduct::where('order_id', $order->id)->delete();
                         OrderProductPrescription::where('order_id', $order->id)->delete();
                         OrderTax::where('order_id', $order->id)->delete();
@@ -274,13 +291,13 @@ class OrderController extends BaseController
                     $order->user_latitude = $latitude ? $latitude : null;
                     $order->user_longitude = $longitude ? $longitude : null;
 
-                                $total_taxes = 0;
-                                if($cart->total_other_taxes!=''){
-                                    foreach(explode(",",$cart->total_other_taxes) as $row){
-                                    $row1 = explode(":",$row);
-                                        $total_taxes+=(float)$row1[1];
-                                    }
-                                }
+                    $total_taxes = 0;
+                    if($cart->total_other_taxes!=''){
+                        foreach(explode(",",$cart->total_other_taxes) as $row){
+                        $row1 = explode(":",$row);
+                            $total_taxes+=(float)$row1[1];
+                        }
+                    }
                     $order->taxable_amount = $total_taxes;
                     if(checkColumnExists('orders', 'is_postpay')){
                         $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
@@ -381,12 +398,27 @@ class OrderController extends BaseController
                             $quantity_price = 0;
                             $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                             $price_in_currency = $variant->price / $divider;
+                             // change product price when is_service_product_price_from_dispatch on 
+                            if(( checkColumnExists('cart_products', 'dispatch_agent_price') && ($action == 'on_demand') && $additionalPreferences->is_service_product_price_from_dispatch ==1 )){
+                                $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
+                            }
                             $container_charges_in_currency = $variant->container_charges / $divider;
                             $price_container_charges = $variant->container_charges;
                             $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
                             $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
-                            $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
-                            $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
+
+
+                            $daysCountRecurring       = 1;
+                            if(checkColumnExists('cart_products','recurring_booking_type')){
+                                if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                                    $date       = count(explode(",",$vendor_cart_product->recurring_day_data));
+                                    $daysCountRecurring =  $date;
+                                }
+                            }
+
+
+                            $quantity_price = ($price_in_dollar_compare * $vendor_cart_product->quantity) * $daysCountRecurring;
+                            $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity ;
 
                             $total_container_charges = $total_container_charges + $quantity_container_charges;
 
@@ -463,14 +495,24 @@ class OrderController extends BaseController
                                     }
                                 }
                             }
+                           
+
                             //$taxable_amount += $product_taxable_amount;
                             $vendor_taxable_amount += $taxable_amount;
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
-                            $total_amount += ($vendor_cart_product->quantity * $variant->price);
+                            $variant_price = $variant->price;
+
+                            if( checkColumnExists('cart_products', 'dispatch_agent_price') && 
+                            (($action == 'on_demand') && ($additionalPreferences->is_service_product_price_from_dispatch ==1) )){
+                                $variant_price =$vendor_cart_product->dispatch_agent_price ;
+                            }
+                            $total_amount += ($vendor_cart_product->quantity * $variant_price);
                             $order_product = new OrderProduct;
                             $order_product->order_vendor_id = $order_vendor->id;
                             $order_product->order_id = $order->id;
-                            $order_product->price = $variant->price;
+
+                            //Multiply by Recurring product item days
+                            $order_product->price = $variant->price * $daysCountRecurring;
                             $order_product->bid_number = @$vendor_cart_product->bid_number ?? null;
                             $order_product->bid_discount = @$vendor_cart_product->bid_discount ?? null;
                             $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
@@ -543,6 +585,42 @@ class OrderController extends BaseController
                             }
                             
                             $order_product->save();
+
+
+            
+            // Recurring Booking Functionity
+            if(checkColumnExists('cart_products','recurring_booking_type')){
+                if(!empty($vendor_cart_product->recurring_booking_time)){
+
+                    $user_timezone          =   $timezone;
+                    $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+
+                        $RecurringServiceSchedule = array();
+                        // No Nee other action
+                        if(@$vendor_cart_product->recurring_booking_type){
+                            $Recurring_quantity     = $vendor_cart_product->quantity;
+                            $recurring_day_data     = $vendor_cart_product->recurring_day_data;
+                            $recurring_day_data     = explode(",",$recurring_day_data);
+
+                            $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
+                            $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                            for ($x = 0; $x < count($recurring_day_data); $x++) {
+                                $date           = $recurring_day_data[$x];
+                                $newDate        = $date.' '. $recurring_booking_time;
+                                $RecurringServiceSchedule [] = [
+                                    'order_vendor_product_id' => $order_product->id,
+                                    'schedule_date'           => $newDate,
+                                    'type'                    => 2,
+                                    'order_number'            => $order->order_number
+                                ];
+                            }
+                        }
+                        if (!empty($RecurringServiceSchedule)) {
+                            OrderLongTermServiceSchedule::insert($RecurringServiceSchedule);
+                        }
+                }
+            }
+
 
                             if( ($checkLongTermInDB ==1) && $vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
                                 $is_long_term_order = 1;
@@ -617,7 +695,7 @@ class OrderController extends BaseController
                                     if($vendor_cart_product->service_date == 0){
 
                                         $startdate =  Carbon::now()->endOfMonth()->format('Y-m-d');
-                                        echo $startdate . ' ';
+                                        // echo $startdate . ' ';
                                         if(strtotime($startdate) < strtotime($start_service_date))
                                         $startdate = Carbon::now()->addMonths(1);
 
@@ -678,7 +756,17 @@ class OrderController extends BaseController
                         }
                         $coupon_id = null;
                         $coupon_name = null;
+
+                        // if(checkColumnExists('cart_products','recurring_booking_type')){
+                        //     if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                        //         $date       = count(explode(",",$vendor_cart_product->recurring_day_data));
+                        //         $vendor_payable_amount = $vendor_payable_amount * $date;
+                        //     }
+                        // }
+
                         $actual_amount = $vendor_payable_amount;
+                       
+
                         if ($vendor_cart_product->coupon && !empty($vendor_cart_product->coupon->promo)) {
                             $coupon_id = $vendor_cart_product->coupon->promo->id;
 
@@ -725,8 +813,8 @@ class OrderController extends BaseController
                             $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
-                            Log::info("service_fee_percentage_amount ".$service_fee_percentage_amount);
                         }
+
                         //End applying service fee on vendor products total
                         $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
                         $order_vendor->service_fee_percentage_amount = $service_fee_percentage_amount;
@@ -784,9 +872,10 @@ class OrderController extends BaseController
                         $order_status->order_vendor_id = $order_vendor->id;
                         $order_status->save();
                     }
-        
-                    $payable_amount = $payable_amount + $total_taxes + $additional_price + $slot_based_price;
+                  
 
+                    $payable_amount = $payable_amount + $total_taxes + $additional_price + $slot_based_price;
+                   
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 
                     // calculate subscription discount
@@ -801,17 +890,24 @@ class OrderController extends BaseController
                             }
                         }
                     }
+                 
 
-                    // if (in_array(1, $subscription_features)) {
-                    //     $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
-                    // }
+                    if(checkColumnExists('cart_products','recurring_booking_type')){
+                        if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                            $date       = explode(",",$vendor_cart_product->recurring_day_data);
+                            if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
+                                $days_count     =  count($date);
+                                $total_amount   =  decimal_format($total_amount * $days_count);
+                            }
+                        }
+                    }
+           
                     $total_discount = $total_discount + $total_subscription_discount;
                     $order->total_amount = ($total_amount + $total_container_charges) - $Order_bid_discount??0;
-                    // $order->total_amount = $total_amount - $Order_bid_discount??0;
                     $order->total_discount = $total_discount;
-                    //$order->taxable_amount = $taxable_amount;
                     $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
-// dump($payable_amount);
+
+
                     if ($loyalty_amount_saved > 0) {
                         if ($loyalty_amount_saved > $payable_amount) {
                             $loyalty_amount_saved = $payable_amount;
@@ -819,7 +915,7 @@ class OrderController extends BaseController
                         }
                     }
                     $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved;
-// dump($payable_amount);
+
                     $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
                     $wallet_amount_used = 0;
                     if ($user->balanceFloat > 0) {
@@ -840,9 +936,19 @@ class OrderController extends BaseController
                         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                         $order->tip_amount = decimal_format($tip_amount);
                     }
-// dd( "last- ".$total_service_fee, $payable_amount);
+
+                    $client_timezone = DB::table('clients')->first('timezone');
+
+                    if($user){
+                        $timezone = $user->timezone ??  $client_timezone->timezone;
+                    }else{
+                        $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
+                    }
+
                     $payable_amount = $payable_amount + $tip_amount ;
                     $payable_amount = $payable_amount - $wallet_amount_used;
+                   
+
                     $order->total_service_fee = $total_service_fee;
                     $order->total_delivery_fee = $total_delivery_fee;
                     $order->loyalty_points_used = $loyalty_points_used;
@@ -879,7 +985,24 @@ class OrderController extends BaseController
                         $order->is_long_term            = $is_long_term_order;
                     }
                     $order->bid_discount  = $Order_bid_discount??0;
+
+                    if(checkColumnExists('cart_products','recurring_booking_type')){
+                        if(!empty($vendor_cart_product->recurring_booking_time)){
+                            $user_timezone          =   $timezone;
+                            $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                            if(checkColumnExists('orders','recurring_booking_type')){
+                                $order->recurring_booking_type  = $vendor_cart_product->recurring_booking_type;
+                                $order->recurring_week_day      = json_encode($vendor_cart_product->recurring_week_day);
+                                $order->recurring_week_type     = $vendor_cart_product->recurring_week_type;
+                                $order->recurring_day_data      = $vendor_cart_product->recurring_day_data;
+                                $order->recurring_booking_time  = $recurring_booking_time;
+                            }
+                        }
+                    }
+
                     $order->save();
+
+            
 
                     // pr($res);
                     // exit();
@@ -1059,7 +1182,7 @@ class OrderController extends BaseController
         $checkOrder = Order::findOrFail($request->order_id);
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
                 $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
-                \Log::info($order_ship);
+                // \Log::info($order_ship);
             }
             if ($order_ship->object_id){
                     $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])->update([
@@ -2006,7 +2129,7 @@ class OrderController extends BaseController
             $replaceable = 0;
 
             foreach ($order->products as $product) {
-                if($this->checkOrderDaysForReturn($order, $product->product->return_days) && $order->is_exchanged_or_returned==0){
+                if($this->checkOrderDaysForReturn($order, @$product->product->return_days) && $order->is_exchanged_or_returned==0){
 
 
                     if(@$product->product->replaceable && $product->product->replaceable == 1){
@@ -2227,6 +2350,7 @@ class OrderController extends BaseController
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
                         $product->longTermSchedule = array();
+                        $product->recurring_date_count = 1;
                         if($product->product->is_long_term_service ==1){
                             $product->longTermSchedule =  OrderLongTermServices::with(['schedule','product.primary','addon.set','addon.option','addon.option.translation' => function ($q) use ($language_id) {
                                             $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
@@ -2421,7 +2545,7 @@ class OrderController extends BaseController
            // $order['user_document_value'] =  $user_docs;
 
 
-           Log::info('order'.json_encode($order));
+        //    Log::info('order'.json_encode($order));
             if(auth()->user()->is_admin){
                 $order['total_amount'] = $order->total_amount  - $total_markup_Price;
                 $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
