@@ -404,8 +404,7 @@ class ProductController extends BaseController
             foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id') as $k => $val) {
                 $product->{$k} = $val;
             }
-
-            if( clientPrefrenceModuleStatus('p2p_check') ) {
+            if( clientPrefrenceModuleStatus('p2p_check') || is_attribute_enabled() ) {
                 if( !empty($request->attribute) ) {
                     if( checkTableExists('product_attributes') ) {
                         $insert_arr = [];
@@ -537,6 +536,8 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
+            
+            $product->security_amount = ($request->has('security_amount')) ? $request->security_amount : null;
             $product->is_recurring_booking        = $request->is_recurring_booking == 'on' ? 1 : 0;
             if(checkColumnExists('products','get_price_from_dispatcher')){
               //pr(($request->has('get_price_from_dispatcher') && $request->get_price_from_dispatcher == 'on') ? 1 : 0);
