@@ -42,10 +42,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         font-size: 15px;
     }
 
-    label.rating-star.cancel_order,
-    .rating-star.request_cancel_order {
-       
-        left: 70px;
+    label.rating-star.cancel_order, .rating-star.request_cancel_order, .extend-order {
+        position: relative;
+        left: 0px;
         top: 4px;
         background: #a22c7f;
         color: #fff;
@@ -53,6 +52,23 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         font-size: 10px;
         padding: 5px 10px 4px 10px;
         text-transform: uppercase;
+    }
+    .single-cancel-order {
+        left: 0px !important;
+        top: 0px !important;
+    }
+
+    .rental_return, .rental_stop {
+        position: relative;
+        left: 0px;
+        top: 4px;
+        background: #a22c7f;
+        color: #fff;
+        font-weight: 600;
+        font-size: 10px;
+        padding: 5px 10px 4px 10px;
+        text-transform: uppercase;
+
     }
 
     .single-cancel-order {
@@ -320,20 +336,108 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 
-    <div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                    <div id="replace-order-form-modal"></div>
+<div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div id="replace-order-form-modal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- start cancel order -->
+<div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <div id="review-rating-form-modal">
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade driver-rating" id="driver_rating" tabindex="-1" aria-labelledby="driver_ratingLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div id="driver-review-rating-form-modal">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade return-order" id="return_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div id="return-order-form-modal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade return-rental-order" id="return_rental_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div id="return-rental-order-form-modal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade extend-order-rental" id="extend_order_rental" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Extend Order Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="extend-rental-order-form-modal"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="extend-btn">Extend</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div id="replace-order-form-modal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- start cancel order -->
 <div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
@@ -389,6 +493,9 @@ $timezone = Auth::user()->timezone;
 <!-- tip after order complete -->
 @include('frontend.modals.tip_after_order')
 
+<!-- tip after order complete -->
+@include('frontend.modals.extend_order_payment')
+
 <!-- end tip order after complete -->
 <!-- repeat order modal -->
 <div class="modal fade remove-cart-modal" id="repeat_cart_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
@@ -404,8 +511,8 @@ $timezone = Auth::user()->timezone;
                 <h6 class="m-0 px-3">{{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
-              <button type="button" class="btn w-50 btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
-              <button type="button" class="btn w-50 btn-solid" id="repeat_cart_button" data-cart_id="">{{__('Remove')}}</button>
+                <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
+                <button type="button" class="btn btn-solid" id="repeat_cart_button" data-cart_id="">{{__('Remove')}}</button>
             </div>
         </div>
     </div>
@@ -424,8 +531,8 @@ $timezone = Auth::user()->timezone;
                 <h6 class="m-0 px-3">{{__('Are u sure u want to repeat same order')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
-              <button type="button" class="btn w-50 btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
-              <button type="button" class="btn w-50 btn-solid" id="repeat_cart_button" data-cart_id="">{{__('Yes')}}</button>
+                <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
+                <button type="button" class="btn btn-solid" id="repeat_cart_button" data-cart_id="">{{__('Yes')}}</button>
             </div>
         </div>
     </div>
@@ -482,6 +589,9 @@ $timezone = Auth::user()->timezone;
 @endif
 <script src="{{ asset('js/payment.js') }}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+
 <script type="text/javascript">
     $(document).delegate(".topup_wallet_btn_tip", "click", function() {
         $('#topup_wallet').modal('show');
@@ -651,6 +761,31 @@ $timezone = Auth::user()->timezone;
         });
     });
 
+    $('body').on('click', '.rental_return', function(event) {
+        event.preventDefault();
+        var order_vendor_product_id = $(this).data('order_vendor_product_id');
+        var attr = $(this).data('type');
+        var type = '';
+        if (typeof attr !== 'undefined' && attr !== false) {
+            var type = attr;
+        }
+        $.get('/return-order/get-order-rental-data-in-model?order_vendor_product_id=' + order_vendor_product_id +'&type=' + type, function(markup) {
+            $('#return_rental_model').modal('show');
+            $('#return-rental-order-form-modal').html(markup);
+        });
+    });
+
+    $('body').on('click', '.extend-order', function(event) {
+        event.preventDefault();
+        var order_vendor_product_id = $(this).data('order_vendor_product_id');
+        var vendor_product_id = $(this).data('vendor_product_id');vendor_end_date_time
+        var vendor_end_date_time = $(this).data('vendor_end_date_time');
+        $.get('/extend-durartion/get-order-vendor-product-duration-data-in-model?order_vendor_product_id=' + order_vendor_product_id +'&vendor_product_id=' + vendor_product_id +'&vendor_end_date_time=' + vendor_end_date_time, function(markup) {
+            $('#extend_order_rental').modal('show');
+            $('#extend-rental-order-form-modal').html(markup);
+        });
+    });
+
     $('body').on('click', '.replace-order-product', function(event) {
         event.preventDefault();
         var id = $(this).data('id');
@@ -668,7 +803,6 @@ $timezone = Auth::user()->timezone;
             dataType: 'json',
             url: cart_details_url,
             success: function(response) {
-
                 if (response.data != "") {
                     let cartProducts = response.data.products;
 
@@ -865,11 +999,11 @@ $timezone = Auth::user()->timezone;
         });
     });
 
-
-    $(".recurring-btn").click(function(e){
-        $(".recurringClass-"+$(this).attr("data-id")).toggle('3000');
+    $(document).on('click', '#extend-btn', function(){
+        // alert('click');
+        // $('#extend_order_rental').modal('hide');
+        // $('#proceed_to_pay_modal').modal();
     });
-
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>

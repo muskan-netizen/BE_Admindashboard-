@@ -147,6 +147,33 @@ trait HomePageTrait
         return $product_ids;
     }
 
+    public function getSingleCategoryWithProducts()
+    {
+        $product_ids = [];
+        if (checkTableExists('home_products')) {
+            $single_category_products = HomeProduct::with(['categoryDetail.products.variants','categoryDetail.products.media.image'])->whereSlug('single_category_products')->first();
+        }
+        
+        return $single_category_products;
+    }
+
+    public function getSpotlightProducts()
+    {
+        if(checkColumnExists('products','spotlight_deals')){
+            $spotlight_products = Product::with(['variants','media.image'
+            ])->select('id', 'sku','title', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','spotlight_deals')->where('spotlight_deals', 1)->take(9)->get();
+        } 
+        return $spotlight_products; 
+    }
+
+    public function getSelectedProduct($layout_id)
+    {
+        if(checkColumnExists('home_products','layout_id')){
+            $selected_products = HomeProduct::with(['products.variants','products.media.image'])->where('layout_id',$layout_id)->get();
+        return $selected_products;
+        }
+    }
+
     public function getProducts($preferences, $vendor_ids, $language_id, $currency_id = 'USD', $p_dim, $product_ids)
     {
         $productFiltered = [];

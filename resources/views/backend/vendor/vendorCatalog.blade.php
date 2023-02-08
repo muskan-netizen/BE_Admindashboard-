@@ -286,6 +286,7 @@ pr($products->toArray());
                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                             <th>{{ __('Brand') }}</th>
                                                             <th>{{ __('Quantity') }}</th>
+                                                            <th>{{ __('Rented Product') }}</th>
                                                             <th>{{ __('Price') }}</th>
                                                         @endif
                                                         <th>{{ __('Bar Code') }}</th>
@@ -1436,7 +1437,8 @@ pr($products->toArray());
                     {data: 'product_name', name: 'product_name', orderable: true, searchable: false},
                     {data: 'product_category', name: 'phone_number', orderable: false, searchable: false},
                     {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                    {data: 'action', name: 'action', orderable: false, searchable: false},
+                    {data: 'rental_product_count', name: 'rental_product_count', orderable: false, searchable: false}
                 ];
             }else{
                 return [
@@ -1446,6 +1448,7 @@ pr($products->toArray());
                     {data: 'product_category', name: 'phone_number', orderable: false, searchable: false},
                     {data: 'product_brand', name: 'product_brand', orderable: false, searchable: false},
                     {data: 'product_quantity', name: 'product_quantity', orderable: false, searchable: false},
+                    {data: 'rental_product_count', name: 'rental_product_count', orderable: false, searchable: false},
                     {data: 'product_price', name: 'product_price', orderable: false, searchable: false},
                     {data: 'bar_code', name: 'bar_code', orderable: false, searchable: false},
                     {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
