@@ -43,7 +43,7 @@ trait WebStylingTrait
     public function updateSingleCategoryProductsToDb($request)
     {
 
-        
+
         if (checkTableExists('home_products')) {
             $insert = ['slug' => 'single_category_products', 'product_category' => $request->product_category];
             HomeProduct::updateOrCreate(
@@ -53,6 +53,24 @@ trait WebStylingTrait
         }
         return true;
     }
+    public function updateSelectedProductstoDb($id, $request)
+    {
+      
+        if (checkColumnExists('home_products','product_id')) {
+            $delete = HomeProduct::where('layout_id', $id)->delete();
+            foreach($request->selected_products as $products){
+            $relatedArray[] = [
+                'slug' => 'selected_products',
+                'product_id' => $products,
+                'layout_id'=> $id
+            ];
+        }
+            HomeProduct::insert($relatedArray);
+
+        }
+        return true;
+    }
+
 
     public function getSingleCategoryProducts($slug)
     {
@@ -67,10 +85,10 @@ trait WebStylingTrait
         $product_ids = [];
         if (checkColumnExists('home_products', 'slug')) {
             $single_category_products = HomeProduct::whereSlug('selected_products')->first();
-            if( !empty($single_category_products->products) ) {
+            if (!empty($single_category_products->products)) {
 
                 $product_ids = json_decode($single_category_products->products);
-            }else {
+            } else {
                 $product_ids = [];
             }
         }
