@@ -34,6 +34,7 @@ $(document).ready(function() {
     let queryString = window.location.search;
     let path = window.location.pathname;
     let urlParams = new URLSearchParams(queryString);
+    alert(path);
     if ((urlParams.has('gateway')) && (urlParams.get('gateway') == 'paystack')) {
         $('.spinner-overlay').show();
         let tipAmount = 0;
