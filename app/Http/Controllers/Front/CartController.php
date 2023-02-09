@@ -296,7 +296,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-
+        
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -2096,6 +2096,7 @@ class CartController extends FrontController
             }
 
         }
+
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
         if (isset( $address_id) && !empty( $address_id)) {
            // $address_id $address_id = $request->address_id;
@@ -2170,7 +2171,7 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
 
-    
+           
 
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }
@@ -2737,7 +2738,6 @@ class CartController extends FrontController
 
     public function postAddToCartAddons(Request $request, $domain = '')
     {
-
         try {
 
             $user = Auth::user();

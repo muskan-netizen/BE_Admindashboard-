@@ -19,7 +19,7 @@
                         <label class="control-label">{{$var->title??null}}</label>
                     </div>
                     <div class="col-sm-9">
-                        
+                        {{-- @dd($var->option) --}}
                         @if( !empty($var->type) && $var->type == 1 )
                             @foreach($var->option as $key => $opt)
                                 <input type="hidden" name="attribute[{{$var->id}}][type]" value="{{$var->type}}">
@@ -36,6 +36,7 @@
                             </select>
                             <button class="btn btn-sm add_attr_options" data-attribute_id="{{ $var->id }}" ><i class="fas fa-plus"></i></button>
                         @elseif( !empty($var->type) && $var->type == 4 )
+                        @foreach($var->option as $key => $opt)
                             <div class="form-check-inline w-100">
                                 <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
                                 <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
@@ -49,6 +50,7 @@
                                 value=""
                                 @endif>
                             </div>
+                            @endforeach
                             {{-- <button class="btn btn-sm add_attr_options" data-attribute_id="{{ $var->id }}" ><i class="fas fa-plus"></i></button> --}}
                         @elseif( !empty($var->type) && $var->type == 3 )
                         

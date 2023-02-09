@@ -160,11 +160,7 @@ class OrderController extends FrontController
             ->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
-                $q->with([
-                    'products',
-                    'products.media.image',
-                    'products.pvariant.media.pimage.image'
-                ]);
+                $q->with(['products', 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
                     $q->with('exchanged_of_order.orderDetail');
                 }
@@ -503,7 +499,8 @@ class OrderController extends FrontController
         foreach (explode(":", $order->total_other_taxes) as $row) {
             $total_other_taxes += (float) $row;
         }
-        $order->total_other_taxes_amount = $total_other_taxes;
+
+        $order->total_other_taxes_amount=$total_other_taxes;
 
         $slot_delivery_fees = 0;
         foreach ($order->products as $product) {
@@ -971,7 +968,7 @@ class OrderController extends FrontController
                 $latitude = Session::get('latitude') ?? '';
                 $longitude = Session::get('longitude') ?? '';
             }
-
+            
             $fixed_fee_amount = $request->total_fixed_fee_amount ?? 0.00;
             DB::beginTransaction();
 
@@ -1209,6 +1206,7 @@ class OrderController extends FrontController
             $total_other_taxes = 0.00;
             $additionalPrice = 0.00;
             $totalAdditionalPrice = 0.00;
+            $security_amount = 0.00;
             $is_long_term_order = 0;
             $deliveryfeeOnCoupon = 0;
 
@@ -1283,10 +1281,10 @@ class OrderController extends FrontController
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
 
-                    if (! empty($vendor_cart_product->slot_price)) {
-
+                    if( !empty($vendor_cart_product->slot_price) ) {
                         $slot_based_price += $vendor_cart_product->slot_price;
                     }
+
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (! empty($latitude) && ! empty($longitude)) {
                             if (($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)) {
@@ -1310,6 +1308,10 @@ class OrderController extends FrontController
                                 }
                             }
                         }
+                    }
+
+                    if($luxury_option->id == 4){
+                        $security_amount += $vendor_cart_product->product->security_amount;
                     }
 
                     if ($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1) {
@@ -1546,9 +1548,11 @@ class OrderController extends FrontController
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
 
+                    if ($luxury_option->id == 4) {
+                        $order_product->security_amount = $vendor_cart_product->product->security_amount;
+                    }
 
                     $order_product->save();
-
 
                     /** for Recurring Service */
                     if(checkColumnExists('cart_products','recurring_booking_type')){
@@ -1724,9 +1728,9 @@ class OrderController extends FrontController
                             'order_vendor_id' => $order_product->vendor_id,
                             'end_date' => $order_product->end_date_time
                         ];
-                        // pr($data);
-                        $res = $this->bookingSlot($data);
-                        // pr($res);
+                        //pr($data);
+                        $res =   $this->bookingSlot($data, $order_product->id, $order->id);
+                        //pr($res);
                     }
                     // pr($order_product);
                     if (! empty($vendor_cart_product->addon)) {
@@ -1775,8 +1779,8 @@ class OrderController extends FrontController
                             $rate = $tax_rate_detail->tax_rate;
                         }
                     }
-                } // End products loop
-
+                } //End products loop
+                
                 $payable_amount += $vendor_total_container_charges;
                 // dump("+Container_charges ".$vendor_total_container_charges."/- ---".$payable_amount);
 
@@ -1945,7 +1949,7 @@ class OrderController extends FrontController
                     $order->tip_amount = $tip_amount;
                 }
             }
-            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes + $security_amount;
             // ---------------------------------------
             $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
 

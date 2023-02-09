@@ -481,6 +481,9 @@ $timezone = Auth::user()->timezone;
                                                                     </ul>
                                                                 </div>
                                                                 <div class="col-6 col-sm-3">
+                                                                    @php
+                                                                        $security_amount = 0.00;
+                                                                    @endphp
                                                                     <ul class="product_list p-0 m-0 text-center">
                                                                         @foreach ($vendor->products as $product)
                                                                         @if ($vendor->vendor_id == $product->vendor_id)
@@ -491,6 +494,11 @@ $timezone = Auth::user()->timezone;
                                                                         <li>
                                                                             <label class="items_price">{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                         </li>
+                                                                        @if($order->luxury_option_id == 4)
+                                                                            <li>
+                                                                                <a class="btn btn-primary btn-sm track_btn" target="_blank" href="#" role="button">Track</a>
+                                                                            </li>
+                                                                        @endif
                                                                         @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
                                                                         <li>
                                                                             <label class="rating-star single-cancel-order cancel_order" data-order_product_id="{{$product->product_id??0}}" data-order_vendor_product_id="{{$product->id}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
@@ -517,6 +525,7 @@ $timezone = Auth::user()->timezone;
                                                                         $product_total_count += $product->quantity * $product_total_price;
                                                                         $product_taxable_amount += $product->taxable_amount;
                                                                         $total_tax_order_price += $product->taxable_amount;
+                                                                        $security_amount += $product->security_amount;
                                                                         @endphp
                                                                         @endif
                                                                         @endforeach
@@ -713,6 +722,12 @@ $timezone = Auth::user()->timezone;
                                                                                         *
                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                 </li>
+                                                                @if($order->luxury_option_id == 4)
+                                                                    <li class="d-flex align-items-center justify-content-between">
+                                                                        <label class="m-0">{{ __('Security Amount') }}</label>
+                                                                        <span>{{ Session::get('currencySymbol') .decimal_format($security_amount)}}</span>
+                                                                    </li>
+                                                                @endif
                                                                 @if ($order->wallet_amount_used > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Wallet') }}</label>

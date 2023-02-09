@@ -717,9 +717,9 @@
                 <div class="cab-amount-details px-2">
                     <div class="row">
                         <div class="col-6 mb-2">{{__('Distance')}}</div>
-                        <div class="col-6 mb-2 text-right" id="distance"></div>
+                        <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
                         <div class="col-6 mb-2">{{__('Duration')}}</div>
-                        <div class="col-6 mb-2 text-right" id="duration"></div>
+                        <div class="col-6 mb-2 text-right" id="duration"><%= result.duration %> {{__('mins')}}</div>
                         <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
                         <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
                         <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>

@@ -892,10 +892,10 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
         height: 100px;
     }
 
-    .al_body_template_three .slick-next,
+    /* .al_body_template_three .slick-next,
     .al_body_template_three .slick-prev {
         display: none !important;
-    }
+    } */
 
     .al_body_template_three .vendors .slick-slide {
         padding: 0;
