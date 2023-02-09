@@ -610,10 +610,6 @@
     //     // filterProducts();
     // });
 
-    $('#search_location').change(function() {
-        filterProducts();
-    });
-
     function filterProducts(page='', limit=''){
         var brands = [];
         var variants = [];
@@ -757,7 +753,9 @@
                         const lng = results[0].geometry.location.lng();
                         document.getElementById('latitude').value = lat;
                         document.getElementById('longitude').value = lng;
+                        filterProducts();
                     }
+
                 });
             });
 

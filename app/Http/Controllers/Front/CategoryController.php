@@ -445,6 +445,7 @@ class CategoryController extends FrontController{
      */
     public function categoryFilters(Request $request, $domain = '', $cid = 0)
     {
+        // dd($request->all());
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $limit = $request->has('limit') ? $request->limit : 12;
