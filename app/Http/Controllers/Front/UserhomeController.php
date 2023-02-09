@@ -1841,14 +1841,7 @@ class UserhomeController extends FrontController
 
         return response()->json(["status" => true]);
     }
-    public function setSessionLocation(Request $request)
-    {
-        
-        Session::forget('vendorType');
-        Session::put('vendorType', $request->type);
-
-        return response()->json(["status" => true]);
-    }
+   
 
     public function homePageSection()
     {
