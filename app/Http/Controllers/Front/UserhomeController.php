@@ -583,7 +583,9 @@ class UserhomeController extends FrontController
         //if ((!empty($latitude)) && (!empty($longitude)) && (!empty($selectedAddress))) {
             Session::put('latitude', $latitude);
             Session::put('longitude', $longitude);
+            if($selectedAddress)
             Session::put('selectedAddress', $selectedAddress);
+            if($selectedPlaceId)
             Session::put('selectedPlaceId', $selectedPlaceId);
        // }
         return redirect()->route('userHome');
@@ -1839,7 +1841,7 @@ class UserhomeController extends FrontController
 
         return response()->json(["status" => true]);
     }
-
+   
 
     public function homePageSection()
     {
