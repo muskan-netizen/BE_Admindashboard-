@@ -91,11 +91,26 @@
                                     @else
                                     value=""
                                     @endif> --}}
+                                    {{-- @dd($attribute_latitude) --}}
                                     <div class="input-group">
-                                        <input type="text" name="address" id="add-address" onkeyup="checkAddressString(this,'add')" placeholder="" class="form-control">
-                                        <div class="input-group-append">
+                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][latitude]" id="latitude" @if(in_array($opt->id, $attribute_value))  
+                                        value="{{$attribute_latitude[$opt->id]}}"
+                                        @else
+                                        value=""
+                                        @endif/>
+                                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][longitude]" id="longitude" @if(in_array($opt->id, $attribute_value))  
+                                        value="{{$attribute_longitude[$opt->id]}}"
+                                        @else
+                                        value=""
+                                        @endif/>
+                                        <input type="text" name="attribute[{{$var->id}}][option][{{$counter}}][value]" id="add-address" onkeyup="checkAddressString(this,'add')" placeholder="" class="form-control" @if(in_array($opt->id, $attribute_value))  
+                                        value="{{$attribute_key_value[$opt->id]}}"
+                                        @else
+                                        value=""
+                                        @endif>
+                                        {{-- <div class="input-group-append">
                                             <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="add"> <i class="mdi mdi-map-marker-radius"></i></button>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
@@ -125,7 +140,7 @@
 </div>
 @section('script')
 <script>
-var autocomplete = {};
+    var autocomplete = {};
     var autocompletesWraps = [];
     var count = 1;
     editCount = 0;
@@ -145,7 +160,6 @@ var autocomplete = {};
                 return;
             }
             //autocomplete[name] = new google.maps.places.Autocomplete(('.form-control')[0], { types: ['geocode'] }); console.log('hello');
-            console.log(document.getElementById(name + "-address"));
             autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById('add-address'), {
                 types: ['geocode']
             });
@@ -163,42 +177,10 @@ var autocomplete = {};
                     if (status === google.maps.GeocoderStatus.OK) {
                         const lat = results[0].geometry.location.lat();
                         const lng = results[0].geometry.location.lng();
-                        document.getElementById(name + '_latitude').value = lat;
-                        document.getElementById(name + '_longitude').value = lng;
+                        document.getElementById('latitude').value = lat;
+                        document.getElementById('longitude').value = lng;
                     }
                 });
-
-                for (let i = 1; i < place.address_components.length; i++) {
-                    let mapAddress = place.address_components[i];
-                    if (mapAddress.long_name != '') {
-                        let streetAddress = '';
-                        if (mapAddress.types[0] == "street_number") {
-                            streetAddress += mapAddress.long_name;
-                        }
-                        if (mapAddress.types[0] == "route") {
-                            streetAddress += mapAddress.short_name;
-                        }
-                        if ($('#street').length > 0) {
-                            document.getElementById('street').value = streetAddress;
-                        }
-                        if (mapAddress.types[0] == "locality") {
-                            document.getElementById('city').value = mapAddress.long_name;
-                        }
-                        if (mapAddress.types[0] == "administrative_area_level_1") {
-                            document.getElementById('state').value = mapAddress.long_name;
-                        }
-                        if (mapAddress.types[0] == "postal_code") {
-                            document.getElementById('pincode').value = mapAddress.long_name;
-                        } else {
-                            document.getElementById('pincode').value = '';
-                        }
-                        if (mapAddress.types[0] == "country") {
-                            document.getElementById('country').value = mapAddress.long_name.toUpperCase();
-
-                        }
-                    }
-                }
-
             });
 
         });
@@ -207,8 +189,8 @@ var autocomplete = {};
     {
         if($(obj).val() == "")
         {
-            document.getElementById(name + '_latitude').value = '';
-            document.getElementById(name + '_longitude').value = '';
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
         }
     }
 </script>

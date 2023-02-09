@@ -6,7 +6,7 @@
             <input id="fav_pro_one" type="checkbox">
             <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
         </div>--}}
-        {{-- @dd($product['vendor']->id) --}}
+        {{-- @dd($product['ProductAttribute'][0]->key_value) --}}
         <a class="common-product-box text-center" href="{{ $product['vendor']->slug }}/product/{{ $product['url_slug'] }}">
             <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product['image_url'] }}" alt="" title="">
                 {{-- <div class="pref-timing"> </div> --}}
@@ -41,6 +41,11 @@
                             <span class="rating"><i class="fa fa-star" aria-hidden="true"></i>4.5</span>
                             </p> -->
                         </div>
+                        @if(!empty($product['ProductAttribute'][0]))
+                            <div class="d-flex align-items-center justify-content-between prod_location pt-2">
+                                <b><i class="fa fa-map-marker" aria-hidden="true"></i> <span class="loction">{{$product['ProductAttribute'][0]->key_value}}</span></b>
+                            </div>
+                        @endif
                         <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
                             <b>Updated {{ convertDateToHumanReadable($product["updated_at"]) }} </b>
                         </div>

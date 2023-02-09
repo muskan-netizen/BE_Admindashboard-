@@ -87,16 +87,6 @@
 
 @section('script')
 <script>
-    $(document).ready(function(){
-        let currentPage = '{{$currentPage}}';
-        if(currentPage){
-            $('.page-link').each(function(){
-                if($(this).text()==currentPage){
-                    $(this).prev().addClass('active');
-                    break;
-                }
-            })
-        }
-    })
+    
 </script>
 @endsection

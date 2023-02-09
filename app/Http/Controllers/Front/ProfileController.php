@@ -263,4 +263,13 @@ class ProfileController extends FrontController
         return view('frontend.account.notifications');
     }
 
+    public function updatePostStatus(Request $request,$domain = ''){
+        if ($request->ajax()) {
+            $product = Product::where('id', $request->product_id)->update([
+                'is_live' => $request->status
+            ]);
+            return response()->json([ 'status'=>'success', 'message' => 'Post status updated successfully']);
+        }
+    }
+
 }

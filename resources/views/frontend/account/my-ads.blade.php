@@ -118,6 +118,7 @@ $applocale = session()->get('applocale');
             </div>
             <div class="col-lg-9">
                 <div class="dashboard-right">
+                    <div id="success-msg"></div>
                     <div class="dashboard">
                         <div class="page-title">
                             <h2>{{__('My Ads')}}</h2>
@@ -133,7 +134,8 @@ $applocale = session()->get('applocale');
                                                     <th scope="col">{{__('Image')}}</th>
                                                     <th scope="col">{{__(getNomenclatureName('Product Name', true)) }}</th>
                                                     <th scope="col">{{__(getNomenclatureName('Category Name', true)) }}</th>
-                                                    <th scope="col"></th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -141,7 +143,6 @@ $applocale = session()->get('applocale');
                                                     $i=0;
                                                 @endphp
                                                 @forelse($products as $key => $wish)
-                                                
                                                 <tr class="wishlist-row">
                                                     <td>
                                                         <div class="product-icon">
@@ -162,7 +163,20 @@ $applocale = session()->get('applocale');
                                                         </div>
                                                     </td>
                                                     <td>{{$wish['category']['cat']['name']??''}}</td>
-                                                    
+                                                    <td>
+                                                        @if($wish['is_live'] == 1)
+                                                            <span class="badge badge-success">Publish</span>
+                                                        @else
+                                                            <span class="badge badge-danger">Draft</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if($wish['is_live'] == 1)
+                                                            <button type="button" class="btn btn-danger btn-sm update_product_status" data-status="0" data-product_id="{{$wish['id']}}">Draft</button>
+                                                        @else
+                                                            <button type="button" class="btn btn-success btn-sm update_product_status" data-status="1" data-product_id="{{$wish['id']}}">Publish</button>
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                                 @php
                                                     $i=$i+1;
@@ -188,24 +202,53 @@ $applocale = session()->get('applocale');
 @section('script')
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script>
-    var input = document.querySelector("#phone");
-    window.intlTelInput(input, {
-        separateDialCode: true,
-        hiddenInput: "full_number",
-        utilsScript: "{{asset('assets/js/utils.js')}}",
-        initialCountry: "{{ Session::get('default_country_code','US') }}",
-    });
-    $(document).ready(function () {
-        $("#phone").keypress(function (e) {
-            if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-                return false;
+    // var input = document.querySelector("#phone");
+    // window.intlTelInput(input, {
+    //     separateDialCode: true,
+    //     hiddenInput: "full_number",
+    //     utilsScript: "{{asset('assets/js/utils.js')}}",
+    //     initialCountry: "{{ Session::get('default_country_code','US') }}",
+    // });
+    // $(document).ready(function () {
+    //     $("#phone").keypress(function (e) {
+    //         if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // });
+    // $('.iti__country').click(function(){
+    //     var code = $(this).attr('data-country-code');
+    //     $('#countryData').val(code);
+    // });
+    $(document).on('click', 'button.update_product_status', function(){
+        var status = $(this).data('status');
+        var product_id = $(this).data('product_id');
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
-            return true;
+        });
+        $.ajax({
+            type: "post",
+            url: "{{route('user.updatePostStatus')}}",
+            data: {
+                'status': status,
+                'product_id': product_id
+            },
+            dataType: 'json',
+            success: function(data) {
+                console.log(data);
+                if(data.status == 'success'){
+                    $('#success-msg').html('<div class="alert alert-success">'+ data.message +'</div>');
+                    setTimeout(function(){
+                        location.reload(); 
+                    }, 2000); 
+                }
+            },
+            error: function(data) {
+            }
         });
     });
-    $('.iti__country').click(function(){
-        var code = $(this).attr('data-country-code');
-        $('#countryData').val(code);
-    })
 </script>
 @endsection

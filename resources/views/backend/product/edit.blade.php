@@ -1520,7 +1520,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 @include('backend.catalog.modals')
 @endsection
 
-@section('script')
+@section('script-bottom')
 
 <link href="{{asset('assets/css/dropzone.css')}}" rel="stylesheet" />
 <script src="{{asset('assets/js/dropzone.js')}}"></script>

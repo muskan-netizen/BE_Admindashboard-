@@ -350,6 +350,10 @@
                                                     <div class="form-check-inline d-block">
                                                         <input type="textbox" class="text_field custom-search" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="" data-key="{{$var->title}}">
                                                     </div>
+                                                @elseif( !empty($var->type) && $var->type == 6 )
+                                                    <input type="hidden" name="latitude" id="latitude" value="">
+                                                    <input type="hidden" name="longitude" id="longitude" value="">
+                                                    <input type="text" name="search_location" id="search_location" onkeyup="checkAddressString(this,'add')" placeholder="" class="form-control" value="">
                                                 @else
                                                     <div class="checkbox checkbox-success form-check-inline">
                                                         <input type="checkbox" name="" value="{{$opt->id}}" class="dynamic_checkbox" data-key="{{$var->title}}">
@@ -597,6 +601,19 @@
         filterProducts();
     });
 
+    // $(document).on('change','#search_location',function(){
+    //     $latitude = $('#latitude').val();
+    //     $longitude = $('#longitude').val();
+    //     alert('longitude >>>>>> ' +longitude);
+    //     alert('latitude >>>>>> ' +latitude);
+    //     alert($(this).val());
+    //     // filterProducts();
+    // });
+
+    $('#search_location').change(function() {
+        filterProducts();
+    });
+
     function filterProducts(page='', limit=''){
         var brands = [];
         var variants = [];
@@ -651,6 +668,10 @@
         });
         var range = $('.rangeSliderPrice').val();
         var order_type = $('.sortingFilter').val();
+        var latitude = $('#latitude').val();
+        console.log(latitude);
+        var longitude = $('#longitude').val();
+        console.log(longitude);
         var ajaxData = {
             "_token": "{{ csrf_token() }}",
             "brands": brands,
@@ -660,7 +681,9 @@
             "range": range,
             "order_type" : order_type,
             "dynamic_options" : dynamic_options,
-            "filter_type" : 1
+            "filter_type" : 1,
+            "latitude" : latitude,
+            "longitude" : longitude
         };
 
         if(limit != ''){
@@ -694,5 +717,59 @@
     }
 
     $('.select2-multiple').select2();
+
+    var autocomplete = {};
+    var autocompletesWraps = [];
+    var count = 1;
+    editCount = 0;
+    $(document).ready(function() {
+        
+        autocompletesWraps.push('def');
+        loadMap(autocompletesWraps);
+    });
+
+    function loadMap(autocompletesWraps) {
+        
+        // console.log(autocompletesWraps);
+        $.each(autocompletesWraps, function(index, name) {
+            const geocoder = new google.maps.Geocoder;
+
+            // if ($('#' + name).length == 0) {
+            //     return;
+            // }
+            //autocomplete[name] = new google.maps.places.Autocomplete(('.form-control')[0], { types: ['geocode'] }); console.log('hello');
+            autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById('search_location'), {
+                types: ['geocode']
+            });
+
+            google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
+                var place = autocomplete[name].getPlace();
+                if (!place.geometry) {
+                    window.alert("Autocomplete's returned place contains no geometry");
+                    return;
+                }
+                geocoder.geocode({
+                    'placeId': place.place_id
+                }, function(results, status) {
+
+                    if (status === google.maps.GeocoderStatus.OK) {
+                        const lat = results[0].geometry.location.lat();
+                        const lng = results[0].geometry.location.lng();
+                        document.getElementById('latitude').value = lat;
+                        document.getElementById('longitude').value = lng;
+                    }
+                });
+            });
+
+        });
+    }
+    function checkAddressString(obj,name)
+    {
+        if($(obj).val() == "")
+        {
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+        }
+    }
 </script>
 @endsection
