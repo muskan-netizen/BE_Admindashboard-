@@ -256,7 +256,7 @@ class CartController extends FrontController
 
         // Get current vendor
         $vendor = Vendor::find($vendor_id);
-        $orders_per_slot = $vendor->orders_per_slot;
+        $orders_per_slot = $vendor->orders_per_slot??0;
         $orderCount = 0;
         // Get Vendor orders
         $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
@@ -265,11 +265,23 @@ class CartController extends FrontController
             // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
             $order = Order::where('id', $orderVendor->order_id)->where('scheduled_slot', $schedule_slot)->first();
             // dd($order);
+            $if_order_scheduled = 0;
             if($order){
                 $schedule_pickup = Carbon::parse($order->scheduled_date_time);
                 $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
                 // dump($schedule_pickup_final);
                 // dd($schedule_datetime);
+                if($schedule_pickup_final == $schedule_datetime){
+                    // Increment orderCount and return this count to front end for validation
+                    $orderCount++;
+                    $if_order_scheduled = 1;
+                }
+            }
+            
+            if($orderVendor->schedule_slot == $schedule_slot && $if_order_scheduled == 0){
+                $schedule_pickup = Carbon::parse($orderVendor->scheduled_date_time);
+                $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
+                
                 if($schedule_pickup_final == $schedule_datetime){
                     // Increment orderCount and return this count to front end for validation
                     $orderCount++;
@@ -715,10 +727,6 @@ class CartController extends FrontController
      */
     public function getCartProducts(Request $request,$domain = '')
     {
-
-        Session()->forget('vendorType');
-        Session()->put('vendorType', $request->type);
-
         $cart_details = [];
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
@@ -1922,7 +1930,7 @@ class CartController extends FrontController
      */
     public function deleteCartProduct($domain = '', Request $request)
     {
-        $cartProd =  CartProduct::where('id', $request->cartproduct_id)->select('vendor_id','bid_number')->first();
+        $cartProd =  CartProduct::where('id', $request->cartproduct_id)->select('cart_id', 'vendor_id','bid_number')->first();
         if($cartProd->bid_number)
         {
             CartProduct::where('vendor_id',$cartProd->vendor_id)->update(['bid_number'=>null,'bid_discount'=>null]);
@@ -1931,17 +1939,17 @@ class CartController extends FrontController
         CartCoupon::where('vendor_id', $request->vendor_id)->delete();
         CartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
 
-        if(!empty($CartProductdata)){
-            $cartpro_count = CartProduct::where('cart_id', $CartProductdata->cart_id)->count();
+        if(!empty($cartProd)){
+            $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
             if($cartpro_count == 0){
                 if(checkColumnExists('carts','order_id'))
                 {
-                    Cart::where('id', $CartProductdata->cart_id)->update([
+                    Cart::where('id', $cartProd->cart_id)->update([
                         'schedule_type' => null, 'scheduled_date_time' => null,
                         'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null, 'order_id' => NULL
                     ]);
                 }else{
-                    Cart::where('id', $CartProductdata->cart_id)->update([
+                    Cart::where('id', $cartProd->cart_id)->update([
                         'schedule_type' => null, 'scheduled_date_time' => null,
                         'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
                     ]);

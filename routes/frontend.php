@@ -16,7 +16,6 @@ use App\Http\Controllers\Front\CartController;
 		//throw new Exception('My first Sentry error!');
 	});
 
-
 Route::group(['middleware' => ['domain']], function () {
 	//easypay test
 	Route::get('test_notification', 'Front\FrontController@test_notification');
@@ -46,6 +45,22 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('send-notification', 'Front\CustomerAuthController@sendNotification');
     Route::get('vendor-notification', 'Front\DispatcherController@test');
 	Route::get('test/email1', 'Front\FrontController@sendmailtest');
+	Route::get('test/email', function () {
+		$send_mail = 'test@yopmail.com';
+		// App\Jobs\SendRefferalCodeEmailJob::dispatch($send_mail);
+		// dispatch(new App\Jobs\SendRefferalCodeEmailJob($send_mail));
+		$details = [
+			'title' => 'Mail from ItSolutionStuff.com',
+			'body' => 'This is for testing email using smtp'
+		];
+
+		try {
+				\Mail::to('sandeep.kumar@codebrewinnovations.com')->send(new \App\Mail\MyTestMail($details));
+				dd('send mail successfully !!');
+			}catch(\Exception $e) {
+					return response()->json(['data' => $e->getMessage()]);
+			}
+	});
 
 
 	// Start edit order routes
@@ -143,6 +158,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/gcash','Front\GCashController@beforePayment')->name('payment.gcash.beforePayment');
 	Route::get('payment/gcash/view','Front\GCashController@webView')->name('payment.gcash.webView');
 
+     //plugnpay
+     Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
 
 	//Simplify
 	Route::match(['get','post'],'payment/simplify/page','Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
@@ -327,6 +344,9 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
+    // Mtn Momo payment gateway
+
+	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createTocken')->name('mtn.momo.createTocken');
 
 	Route::get('user/login', [
 		'as' => 'customer.login',
@@ -444,7 +464,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('/updateCartSlot', 'Front\CartController@updateCartSlot')->name('updateCartSlot');
 
 	Route::post('/updateCartBookingSlot', 'Front\CartController@updateCartBookingSlot')->name('updateCartBookingSlot');
-
 
 
 

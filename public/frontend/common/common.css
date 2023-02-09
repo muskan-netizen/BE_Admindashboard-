@@ -3644,42 +3644,67 @@ body.al_body_template_three.homeHeader .page-main-content .product-wrapper-grid.
     border-radius: 4px;
 }
 
+/*--------------dark theme css-----------*/
+.al_body_template_six .displayProducts .product-box .product-image {
+    padding-bottom: 0 !important;
+}
+.al_body_template_six .collection-product-wrapper .col-grid-box .media-body h3 {
+    text-align: left !important;
+}
+body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body h6 b {
+    color: #fff !important;
+}
 
-/*======================= new css add for p2p template on 1/12/2023===================== */
-body .dashboard-left .block-content ul li:before {display: none;}
-body .dashboard-left .block-content ul li a{position: relative;}
-body .dashboard-left .block-content ul li a:before {
-    content: "";
+.size-box ul.productVariants li.row.otherSize label span.color_var {
     position: absolute;
-    width: 10px;
-    height: 10px;
-    border-top: 2px solid #000;
-    border-left: 2px solid #000;
-    -webkit-transform: rotate(135deg);
-    transform: rotate(135deg);
-    right: 20px;
-    top: 18px;
+    left: 0px;
+    top: 6px;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
 }
-body .dashboard-left .block-content ul li a[aria-expanded="true"]::before{
-    -webkit-transform: rotate(225deg);
-    transform: rotate(225deg);
+.product-right .size-box ul li label {
+    padding: 10px 0px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+.product-right .size-box ul li label span.color_name.ellipsis{white-space: nowrap;}
+ul.productVariants li.row.otherSize .checkround{opacity: 0;}
+.size-box ul.productVariants li.row.otherSize label .var-active{border: 2px solid#4c4a4a !important;}
 
-body .dashboard-left .block-content ul li a[aria-expanded="true"]{
-    border-color: var(--theme-deafult);
-    background: linear-gradient(90deg, var(--theme-deafult) -540%, #fff 100%);
-}
-body .dashboard-left .block-content ul li::before{top:24px}
-body .dashboard-left .block-content ul li:first-child.active::before{color: red;}
-body .dashboard-left .block-content ul li.active .collapse a,
-body .dashboard-left .block-content ul li:hover .collapse a{
-    border-color: transparent;
-    background: none;
-}
-body .dashboard-left .block-content ul li.active .collapse li.active a,
-body .dashboard-left .block-content ul li:hover .collapse li:hover a{
-    border-color: var(--theme-deafult);
-    background: linear-gradient(90deg, var(--theme-deafult) -540%, #fff 100%);
-}
 
-/*======================= new css add for p2p template on 1/12/2023===================== */
+
+body #myBidModal input.form-control{height: 42px;}
+body.al_body_template_six #myBidModal input.form-control{height: 50px;}
+body.al_body_template_two #myBidModal input.form-control {padding-top: 7px;}
+/* ============================ common address in order-page =============================================== */
+.alNewHidder{overflow: hidden;}
+span.ellipsis.alTTitle{white-space: nowrap;text-overflow: ellipsis;max-width: 100%;display: inline-block;}
+img.update_pic {width: 100%;background-color: #efefef;border-radius: 10px;box-shadow: 0 0 10px rgba(0,0,0,0.2);height: 100%;object-fit: contain;}
+.show-multiple-image-preview{position: relative;}
+.show-multiple-image-preview i{position: absolute;right: 0;top: -10px;color: #fff;background-color: red;border-radius: 50px;height: 30px;width: 30px;text-align: center;line-height: 30px;}
+.item-img.mx-1{border-radius: 10px;overflow: hidden;}
+.view_all_address .delivery_box,
+#address_template_main_div .delivery_box {box-shadow: 0 0 5px rgb(0 0 0 / 10%);}
+#replace_order_model button.close,
+#cancel_request_order button.close,
+#return_order_model button.close {position: absolute;right: 0;top: 0;}
+.order_detail_data  .step-indicator.step-indicator-order{margin-top: 15px;}
+
+.size-box ul.productVariants li.row.otherSize label span.color_var {
+    position: absolute;
+    left: 0px;
+    top: 6px;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+}
+.product-right .size-box ul li label .checkround {
+    height: 0;
+    width: 0;
+}
+ul.productVariants li.row.otherSize .checkround{opacity: 0;}
+
+.size-box ul.productVariants li.row.otherSize label .var-active{border: 2px solid#4c4a4a !important;
+}

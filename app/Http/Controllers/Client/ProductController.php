@@ -543,12 +543,13 @@ class ProductController extends BaseController
                     }
                 }
                 ProductImage::insert($productImageSave);
-                $cat = $addonsArray = $upArray = $crossArray = $relateArray = $tagSetArray = array();
+                $cat = $addonsArray = $upArray = $crossArray = $relatedArray = $tagSetArray = array();
                 $delete = ProductAddon::where('product_id', $product->id)->delete();
                 $delete = ProductUpSell::where('product_id', $product->id)->delete();
                 $delete = ProductCrossSell::where('product_id', $product->id)->delete();
                 $delete = ProductCelebrity::where('product_id', $product->id)->delete();
                 $delete = ProductTag::where('product_id', $product->id)->delete();
+                $delete=ProductRelated::where('product_id',$product->id)->delete();
 
                 if ($request->has('addon_sets') && count($request->addon_sets) > 0) {
                     foreach ($request->addon_sets as $key => $value) {
@@ -599,11 +600,15 @@ class ProductController extends BaseController
                     }
                     ProductCrossSell::insert($crossArray);
                 }
-
-
-
-
-
+                if ($request->has('releted_product') && count($request->releted_product) > 0) {
+                    foreach ($request->releted_product as $key => $value) {
+                        $relatedArray[] = [
+                            'product_id' => $product->id,
+                            'related_product_id' => $value
+                        ];
+                    }
+                    ProductRelated::insert($relatedArray);
+                }
                 $existv = array();
 
                 if ($request->has('variant_ids')) {

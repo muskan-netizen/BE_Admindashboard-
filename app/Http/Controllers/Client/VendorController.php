@@ -65,14 +65,14 @@ class VendorController extends BaseController
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
             });
-            if(auth()->user()->getRoleNames()[0]=='App Managers')
+            if(@auth()->user()->getRoleNames()[0]=='Manager')
             {
                 $vendors = $vendors->where('refference_id',auth()->id());
             }
 
         }
         $users = User::whereHas('roles',function($q){
-            $q->where('name','App Managers');
+            $q->where('name','Manager');
         })->orderBy('id','desc')->select('id','name')->get();
 
         // $vendors = $vendors->get();
@@ -181,7 +181,7 @@ class VendorController extends BaseController
                 $query->where('user_id', $user->id);
             });
         }
-        if(auth()->user()->getRoleNames()[0]=='App Managers')
+        if(@auth()->user()->getRoleNames()[0]=='Manager')
         {
             $vendors = $vendors->where('refference_id',auth()->id());
         }
@@ -397,7 +397,7 @@ class VendorController extends BaseController
         $vendor->city = $request->city;
         $vendor->state = $request->state;
         $vendor->country = $request->country;
-        if(auth()->user()->getRoleNames()[0]=='App Managers')
+        if(@auth()->user()->getRoleNames()[0]=='Manager')
         {
             $vendor->refference_id = auth()->id();
         }
@@ -406,7 +406,7 @@ class VendorController extends BaseController
         $vendor->slug = Str::slug($request->name, "-").rand(10,100);
         $vendor->save();
 
-        if(auth()->user()->getRoleNames()[0]=='App Managers')
+        if(@auth()->user()->getRoleNames()[0]=='Manager')
         {
             UserVendor::updateOrCreate(['user_id' =>  auth()->id(),'vendor_id' => $vendor->id]);
         }

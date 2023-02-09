@@ -14,9 +14,9 @@ class RolePermissionController extends Controller
     public function indexRole(Request $request)
     {
         $roles = Role::with('permissions');
-        if(auth()->user()->is_superadmin != 1){
-            $roles =$roles->where('id','>','4');
-        }
+        // if(auth()->user()->is_superadmin != 1){
+        //     $roles =$roles->where('id','>','5');
+        // }
         $roles =$roles->orderBy('id','ASC')->get();
         $permissions = Permission::get();
         return view('backend/role_permission/index',compact('roles','permissions'));

@@ -26,7 +26,7 @@ class DashBoardController extends BaseController
     public function index(Request $request)
     {  
        $managers = User::whereHas('roles',function($q){
-            $q->where('name','App Managers');
+            $q->where('name','Manager');
        })->get();
         return view('backend/dashboard',compact('managers'));
     }
@@ -342,11 +342,11 @@ class DashBoardController extends BaseController
             $managerId = (($request->manager_id)?$request->manager_id:auth()->id());
             $vendors = Vendor::latest();
 
-            if(auth()->user()->getRoleNames()[0]=='App Managers' || $request->manager_id)
+            if(@auth()->user()->getRoleNames()[0]=='Manager' || $request->manager_id)
             {
                 $vendors = $vendors->where('refference_id',$managerId);
                 $vendorIds = $vendors->pluck('id')->toArray();
-            }elseif(auth()->user()->getRoleNames()[0]=='Seller')
+            }elseif(@auth()->user()->getRoleNames()[0]=='Seller')
             {
                 $managerId = UserVendor::where('user_id',$managerId)->value('vendor_id');
                 $vendors = $vendors->where('id',$managerId);
@@ -365,7 +365,7 @@ class DashBoardController extends BaseController
 
             $vendorCounts = $vendors->count();
             $managersCount = User::whereHas('roles',function($q){
-                $q->where('name','App Managers');
+                $q->where('name','Manager');
             })->count();
             $date_filter = $request->date_filter;
             if($date_filter){
@@ -447,7 +447,7 @@ class DashBoardController extends BaseController
 
             $total_orders = $vendor_orders->count();
 
-            if(auth()->user()->getRoleNames()[0]=='Seller'){
+            if(@auth()->user()->getRoleNames()[0]=='Seller'){
                 $total_sold_products = OrderVendorProduct::where('order_vendor_id',$vendorIds);
 
                 if($date_filter)

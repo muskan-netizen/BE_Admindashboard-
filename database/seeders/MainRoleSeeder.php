@@ -13,10 +13,6 @@ class MainRoleSeeder extends Seeder
     public function run()
     {
 
-        $countRoles = Role::count();
-        if($countRoles==0)
-        {
-            \DB::table('main_roles')->delete();
             $maps = array(
                 array(
                     'id' => 1,
@@ -39,9 +35,41 @@ class MainRoleSeeder extends Seeder
                     'name' => 'Seller',
                     'guard_name'=>'web'
 
+                ),
+                array(
+                    'id' => 5,
+                    'name' => 'Manager',
+                    'guard_name'=>'web'
+
                 )
             ); 
-            \DB::table('main_roles')->insert($maps);
+          
+
+        $option_count = DB::table('main_roles')->count();
+        if($option_count == 0)
+        {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            DB::table('main_roles')->truncate();
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            DB::table('main_roles')->insert($maps);
+
+        }else{
+
+            foreach ($maps as $key=> $permission) {
+                $payop = Role::where('id', $permission['id'])->first();
+  
+                if ($payop !== null) {
+                    $payop->update(['name' => $permission['name']]);
+                } else {
+                    $payop = Role::create([
+                        'id' => $permission['id'],
+                        'name' => $permission['name'],
+                    ]);
+                }
+            }
         }
+
+
     }
 }

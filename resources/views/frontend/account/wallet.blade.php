@@ -396,6 +396,25 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                 <% if(payment_option.slug == 'payphone') { %>
                     <div id="pp-button"></div>
                 <% } %>
+
+                <% if(payment_option.slug == 'plugnpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="plugnpay_card_error"></span>
+                    </div>
+                <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -473,6 +492,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
     var wallet_balance_insufficient_msg = "{{ __('Insufficient funds in wallet') }}";
     var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
+    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 
 
     var inline='';

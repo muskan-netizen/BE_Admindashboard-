@@ -172,7 +172,7 @@ class VendorImport implements ToCollection
                             'longitude' => $longitude,
                         );
 
-                        if(auth()->user()->getRoleNames()[0]=='App Managers')
+                        if(@auth()->user()->getRoleNames()[0]=='Manager')
                         {
                             $insert_vendor_details['refference_id'] = auth()->id()??null;
                         }
@@ -180,7 +180,7 @@ class VendorImport implements ToCollection
                         $vendorID  =  Vendor::insertGetId($insert_vendor_details);
                         $vendorData = Vendor::where('id', $vendorID)->first();
 
-                        if(auth()->user()->getRoleNames()[0]=='App Managers')
+                        if(@auth()->user()->getRoleNames()[0]=='Manager')
                         {
                             UserVendor::updateOrCreate(['user_id' =>  auth()->id(),'vendor_id' => $vendorID]);
                         }

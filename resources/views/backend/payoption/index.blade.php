@@ -3,6 +3,7 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<style>#payment_48{display:none;}</style>
 @endsection
 
 @section('content')
@@ -51,7 +52,7 @@
         <div class="row">
 
             @foreach($payOption as $key => $opt)
-            <div class="col-6 col-md-3 col-xl-2 mb-3">
+            <div class="col-6 col-md-3 col-xl-2 mb-3" id="payment_{{$opt->id}}">
 
                 <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
                 <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
@@ -114,6 +115,10 @@
                 $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
                 $aes_key = (isset($creds->aes_key)) ? $creds->aes_key : '';
                 $uuid_key = (isset($creds->uuid_key)) ? $creds->uuid_key : '';
+                $subscription_key = (isset($creds->subscription_key)) ? $creds->subscription_key : '';
+                $reference_id = (isset($creds->reference_id)) ? $creds->reference_id : '';
+                $mtn_api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                $plugnpay_publisher_name = (isset($creds->plugnpay_publisher_name)) ? $creds->plugnpay_publisher_name : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -1105,6 +1110,55 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'mtn_momo') )
+                    <div class="mt-2 d-none" id="mtn_momo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="company_token" class="mr-3">{{ __("Subscription Key") }}</label>
+                                    <input type="text" name="subscription_key" id="subscription_key" class="form-control" value="{{$subscription_key}}" @if($opt->status == 1) required @endif>
+                                    <p id="subscription_key_error"></p>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="reference_id" class="mr-3">{{ __("Reference Id") }}</label>
+                                    <input type="text" name="reference_id" id="reference_id" class="form-control" value="{{$reference_id}}" @if($opt->status == 1) required @endif>
+                                    <p id="reference_id_error"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-12 @if(empty($mtn_api_key)) d-none @else d-block @endif" id="api_key_frm">
+                                <div class="form-group mb-2">
+                                    <label for="reference_id" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="api_key" id="api_key" class="form-control" readonly value="{{$mtn_api_key}}" @if($opt->status == 1) required @endif>
+                                    <p id="api_key_error"></p>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-2 mx-auto">
+                                <a class="btn btn-primary" id="generate_mtn_momo_api_key" href="javascript:void(0)">Generate Api Key</a>
+                            </div>
+                            <div class="form-group mb-2 mx-auto" id="msg_status">
+
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'plugnpay') )
+                        <div class="mt-2" id="plugnpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group mb-2">
+                                        <label for="plugnpay_publisher_name" class="mr-3">{{ __("plugnpay Publisher Name") }}</label>
+                                        <input type="text" name="plugnpay_publisher_name" id="plugnpay_publisher_name" class="form-control" value="{{$plugnpay_publisher_name}}" @if($opt->status == 1) required @endif>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                 </div>
             </div>
             @endforeach
@@ -1237,6 +1291,8 @@
                         </div>
                     </div>
                     @endif
+
+
 
 
                 </div>

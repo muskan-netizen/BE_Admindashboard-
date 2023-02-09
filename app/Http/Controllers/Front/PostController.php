@@ -101,9 +101,9 @@ class PostController extends FrontController
         
         // try {
             // dd($request->all());
-            $request->sku = "adfasdf".time();
+            // $request->sku = "adfasdf".time();
 
-            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            // $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
             // $product = Product::where('id', $id)->firstOrFail();

@@ -182,7 +182,7 @@ class OrderController extends BaseController
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 if(checkColumnExists('carts','order_id'))
                 {//get if any order is being edit
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder'])->first();
+                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
                 }else{
                     $cart = Cart::where('user_id', $user->id)->first();
                 }
@@ -222,13 +222,39 @@ class OrderController extends BaseController
                             return $this->errorResponse(__("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date."), 400);
                         }
                         $VendorOrderStatus = VendorOrderStatus::where('order_id', $order->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-                        if($VendorOrderStatus > 0){
-                            return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing."), 400);
+                        $order_vendor_status_error = 0;
+                        foreach ($cart->editingOrder->orderStatusVendor as $key => $status) {
+                            if($status->order_status_option_id  > 2) {
+                                $order_vendor_status_error = 1;
+                            }
+                        }
+                        
+                        if($VendorOrderStatus > 0 || $order_vendor_status_error == 1){
+                            return $this->errorResponse(__("You can not edit this order. Either order is in processed or in processing. Please discard order editing."), 400);
                         }
                         OrderProduct::where('order_id', $order->id)->delete();
                         OrderProductPrescription::where('order_id', $order->id)->delete();
                         OrderTax::where('order_id', $order->id)->delete();
                         VendorOrderStatus::where('order_id', $order->id)->delete();
+
+                        if(!empty($cart->cartvendor)){
+                            $array_cart_vendors = array();
+                            foreach($cart->cartvendor as $cartvendor){
+                                $array_cart_vendors[] = $cartvendor->vendor_id;
+                            }
+                            if(count($array_cart_vendors) > 0){
+                                $noincartVendors = OrderVendor::where('order_id', $cart->editingOrder->id)->whereNotIn('vendor_id', $array_cart_vendors)->get();
+                                foreach($noincartVendors as $noincartVendor){
+                                    OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $noincartVendor->vendor_id)->delete();
+                                    if($noincartVendor->dispatch_traking_url!='' && $noincartVendor->dispatch_traking_url!=NULL)
+                                    {
+                                        $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $noincartVendor->dispatch_traking_url);
+                                        $response = Http::get($dispatch_traking_url);
+                                    }
+                                }
+                            }
+                        }
+
                         $order->is_edited = 1;
                     }else{
                         $order = new Order;
@@ -291,6 +317,7 @@ class OrderController extends BaseController
                     $total_container_charges = 0;
                     $fixed_fee_amount = 0.00;
                     $vendor_total_container_charges = 0;
+                    $deliveryfeeOnCoupon = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $delivery_fee = 0;
                         $deliver_charge = $delivery_fee_charges = 0.00;
@@ -304,16 +331,21 @@ class OrderController extends BaseController
                         $is_restricted = 0;
                         $bid_vendor_discount = 0;
                         $deliveryfeeOnCoupon = 0;
+                        $vendor_service_fee_percentage_amount = 0;
 
                         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                         if(isset($cart->editingOrder) && !empty($cart->editingOrder))
                         {
                             $order_vendor = OrderVendor::where('order_id', $cart->editingOrder->id)->where('vendor_id', $vendor_id)->first();
-                            $order_vendor->web_hook_code = $order_vendor->web_hook_code;
+                            if(!empty($order_vendor)){
+                                $order_vendor->web_hook_code = $order_vendor->web_hook_code;
+                            }else{
+                                $order_vendor = new OrderVendor();
+                            }
                         }else{
                             $order_vendor = new OrderVendor();
                         }
-                        //$order_vendor = new OrderVendor;
+                        
                         $order_vendor->status = 0;
                         $order_vendor->user_id = $user->id;
                         $order_vendor->order_id = $order->id;
@@ -376,7 +408,7 @@ class OrderController extends BaseController
                                     $productAddon_price = $productAddon_price + $opt_quantity_price;
                                     $payable_amount = $payable_amount + $opt_quantity_price;
                                     $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
-
+                                    $vendor_products_total_amount = $vendor_products_total_amount + $opt_quantity_price;
                                 }
                             }
 
@@ -643,6 +675,11 @@ class OrderController extends BaseController
 
                             $coupon_name = $vendor_cart_product->coupon->promo->name;
 
+                            /* if ($vendor_cart_product->coupon->promo->allow_free_delivery) {
+                                $total_discount += $delivery_fee;
+                                $vendor_payable_amount -= $delivery_fee;
+                                $vendor_discount_amount += $delivery_fee;
+                            } */
                             //-------------Coupon Related discount calculations start here----------------------
                                 //----fixed amount----------
                             if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
@@ -669,16 +706,17 @@ class OrderController extends BaseController
                             //-------------Coupon Related discount calculations Ends here----------------------
                         }
                         //Start applying service fee on vendor products total
-                        $vendor_service_fee_percentage_amount = 0;
+                        $service_fee_percentage_amount = 0;
                         if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                            $vendor_service_fee_percentage_amount = ((($vendor_products_total_amount+$opt_quantity_price)-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
-
-                            $vendor_payable_amount += $vendor_service_fee_percentage_amount;
-                            $payable_amount += $vendor_service_fee_percentage_amount;
+                            $service_fee_percentage_amount = (($vendor_products_total_amount-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                            $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
+                            $vendor_payable_amount += $service_fee_percentage_amount;
+                            $payable_amount += $service_fee_percentage_amount;
+                            Log::info("service_fee_percentage_amount ".$service_fee_percentage_amount);
                         }
                         //End applying service fee on vendor products total
-                        $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
-                        $order_vendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
+                        $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
+                        $order_vendor->service_fee_percentage_amount = $service_fee_percentage_amount;
 
                         $total_delivery_fee += $delivery_fee;
                         $vendor_payable_amount += $delivery_fee;
@@ -698,8 +736,8 @@ class OrderController extends BaseController
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
 
                         $vendor_subs_disc_percent       = isset($vendor_cart_product->vendor->subscription_discount_percent) ? $vendor_cart_product->vendor->subscription_discount_percent : 0;
-                        $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
-                        $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_ifnot_discounted, ($vendor_payable_amount - $delivery_fee), $vendor_subs_disc_percent);
+                        $deliveryfee_ifnot_discounted   = ($deliveryfeeOnCoupon == 0) ? $delivery_fee : 0;
+                        $subs_discount_arr              = $this->calCulateSubscriptionDiscount($user->id, $deliveryfee_ifnot_discounted, ($vendor_payable_amount - $deliveryfee_ifnot_discounted), $vendor_subs_disc_percent);
                         $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                         $subs_discount_vendor           = $subs_discount_arr['vendor'];
 
@@ -735,7 +773,7 @@ class OrderController extends BaseController
                     }
 
                     $payable_amount = $payable_amount + $total_taxes + $additional_price;
-// dump("point - ".$payable_amount);
+
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 
                     // calculate subscription discount
@@ -1955,7 +1993,7 @@ class OrderController extends BaseController
             $replaceable = 0;
 
             foreach ($order->products as $product) {
-                if($this->checkOrderDaysForReturn($order, $product->product->return_days) && $order->is_exchanged_or_returned==0){
+                if($this->checkOrderDaysForReturn($order, @$product->product->return_days) && $order->is_exchanged_or_returned==0){
 
 
                     if(@$product->product->replaceable && $product->product->replaceable == 1){

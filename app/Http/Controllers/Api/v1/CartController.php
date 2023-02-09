@@ -79,7 +79,7 @@ class CartController extends BaseController
 
             if ($cart) {
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
-                if(isset($cart->editingOrder) && !empty($cart->editingOrder))
+                if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
                 {
                     $editlimit_datetime = Carbon::now()->toDateTimeString();
                     $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
@@ -92,9 +92,8 @@ class CartController extends BaseController
                     if($VendorOrderStatus > 0){
                         $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                     }
-                }else{
-                    $cartData->cart_error_message = '';
                 }
+                
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
                                 $q->where('age_restriction',1);
@@ -1249,7 +1248,7 @@ class CartController extends BaseController
                     }
                 }
                 $vendorData->is_promo_code_available = $is_promo_code_available;
-                $slotsDate = findSlot('',$vendorData->vendor->id,'','api');
+                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'api');
                 $vendorData->delaySlot = $slotsDate;
                 $totalDeliveryCharges+=$deliveryCharges_real;
 
@@ -1374,11 +1373,11 @@ class CartController extends BaseController
             $vendorId = $cartData[0]->vendor_id;
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
-            $slotsDate = findSlot('',$vendorId,'','api');
-            $slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+            $slotsDate = findSlot('',$vendorId,$type,'api');
+            $slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 1);
             $cart->slots = $slots;
             if($preferences->business_type == 'laundry'){
-                $dropoff_slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                $dropoff_slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 2);
                 $cart->dropoff_slots = $dropoff_slots;
             }else{
                 $cart->dropoff_slots = [];
@@ -1444,7 +1443,7 @@ class CartController extends BaseController
             ['label' => 'Deliver fee tax', 'value' => decimal_format($deliver_fee_charges_tax)],
             ['label' => 'Markup fee tax', 'value' => decimal_format($total_markup_fee_tax)],
             ['label' => 'Container fee tax', 'value' => decimal_format($container_charges_tax)],
-            ['label' => 'Total taxable amount', 'value' => decimal_format($total_taxable_amount)]
+            ['label' => "Total ".@$taxData[0]['identifier']." amount", 'value' => decimal_format($total_taxable_amount)]
         );
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
@@ -1750,6 +1749,60 @@ class CartController extends BaseController
             DB::rollback();
             return response()->json(['status' => 'Error', 'message' => $ex->getMessage()]);
         }
+    }
+
+    public function checkSlotOrders(Request $request)
+    {
+        // Get Logged in user
+       $user = Auth::user();
+
+       $client_timezone = DB::table('clients')->first('timezone');
+       $timezone = (!empty($user->timezone))?$user->timezone:$client_timezone->timezone;
+
+       $schedule_datetime = $request->schedule_datetime;
+       $schedule_slot     = $request->schedule_slot;
+       $vendor_id         = $request->vendor_id;
+
+        // Get current vendor
+        $vendor = Vendor::find($vendor_id);
+        $orders_per_slot = $vendor->orders_per_slot;
+        $orderCount = 0;
+        // Get Vendor orders
+        $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
+        // dd($orderVendors);
+        foreach($orderVendors as $orderVendor){
+            // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
+            $order = Order::where('id', $orderVendor->order_id)->where('scheduled_slot', $schedule_slot)->first();
+            // dd($order);
+            $if_order_scheduled = 0;
+            if($order){
+                $schedule_pickup = Carbon::parse($order->scheduled_date_time);
+                $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
+                // dump($schedule_pickup_final);
+                // dd($schedule_datetime);
+                if($schedule_pickup_final == $schedule_datetime){
+                    // Increment orderCount and return this count to front end for validation
+                    $orderCount++;
+                    $if_order_scheduled = 1;
+                }
+            }
+
+            if($orderVendor->schedule_slot == $schedule_slot && $if_order_scheduled == 0){
+                $schedule_pickup = Carbon::parse($orderVendor->scheduled_date_time);
+                $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
+                
+                if($schedule_pickup_final == $schedule_datetime){
+                    // Increment orderCount and return this count to front end for validation
+                    $orderCount++;
+                }
+            }
+        }
+
+        // Return JSON Response
+        return response()->json(['status' => 'Success',
+            'orderCount' => $orderCount,
+            'orders_per_slot' => $orders_per_slot,
+        ], 200);
     }
 
     public function checkIsolateSingleVendor(Request $request, $domain = '')

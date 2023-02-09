@@ -637,6 +637,7 @@ if (!function_exists('SplitTime')) {
 if (!function_exists('showSlot')) {
     function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
     {
+        $type = empty($type)? "delivery": $type;
         $slotDuration = Vendor::select('slot_minutes')->where('id', $vid)->first();
         $duration = ($slotDuration->slot_minutes) ?? $duration;
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
@@ -852,22 +853,24 @@ if (!function_exists('SplitTimeTemp')) {
 if (!function_exists('findSlot')) {
     function findSlot($myDate = null, $vid, $type = 'delivery', $api = null)
     {
+        $type = empty($type) ? 'delivery' :$type;
         $myDate  = date('Y-m-d');
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-        $slots = showSlot($myDate, $vid, 'delivery');
+        $slots = showSlot($myDate, $vid,  $type);
+
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+1 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+2 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+3 day'));
-            $slots = showSlot($myDate, $vid, 'delivery');
+            $slots = showSlot($myDate, $vid, $type);
         }
         if (isset($slots) && count((array)$slots)>0) {
             $time = explode(' - ', $slots[0]['value']);
@@ -889,22 +892,22 @@ if (!function_exists('findSlot')) {
     }
 }
 if (!function_exists('findSlotNew')) {
-    function findSlotNew($myDate,$vid,$type=0)
+    function findSlotNew($myDate,$vid,$type = 'delivery', $duration = 0)
     {
-            $slots = showSlot($myDate,$vid,'delivery', $type);
+            $slots = showSlot($myDate,$vid,$type, $duration);
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+1 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
 
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+2 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
 
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+3 day'));
-                    $slots = showSlot($myDate,$vid,'delivery', $type);
+                    $slots = showSlot($myDate,$vid,$type, $duration);
                 }
                 if(isset($slots)){
                     $slots = $slots;
@@ -1139,13 +1142,13 @@ if (!function_exists('getServiceTypesCategory')) {
         try {
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
-            if(isset($set_template)  && $set_template->template_id == 9){
+            // if(isset($set_template)  && $set_template->template_id == 9){
 
-                if(@$client_preference->p2p_check){
-                    $vendorType = 'p2p';
-                    // session()->put('vendorType', 'p2p');
-                }
-            }
+            //     if(@$client_preference->p2p_check){
+            //         $vendorType = 'p2p';
+            //         // session()->put('vendorType', 'p2p');
+            //     }
+            // }
 
             $types =   Type::query();
             $service_types = [];
@@ -1166,7 +1169,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             elseif ($vendorType == "p2p") {
-                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
+                $service_types = ['p2p'];
             }
 
             if ($client_preference->business_type == 'taxi') {
@@ -1183,7 +1186,7 @@ if (!function_exists('getServiceTypesCategory')) {
             //     $service_types = ['products_service'];
             // }
             if ($client_preference->business_type == 'p2p') {
-                $service_types = ['p2p', 'on_demand_service', 'appointment_service', 'products_service'];
+                $service_types = ['p2p'];
             }
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
@@ -1257,7 +1260,7 @@ if (!function_exists('getCategoryTypesServices')) {
                 $typeArray = ['rental_service'];
                 break;
             case "p2p":
-                $typeArray = ['products_service', 'on_demand_service', 'appointment_service', 'p2p' ];
+                $typeArray = ['p2p' ];
                 break;
             case "super_app":
                 $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p'];
@@ -1481,6 +1484,17 @@ if( !function_exists('is_category_p2p') ) {
 //         return false;
 //     }
 // }
+
+if( !function_exists('productDiscountPercentage()') ) {
+    function productDiscountPercentage($product_price = 0, $product_compare_price)
+    {
+        if($product_compare_price > 0) {
+            $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;
+            return round($discount);
+        }
+        return 0;
+    }
+}
 
 if( !function_exists('generateSlug') ) {
     function generateSlug($name)

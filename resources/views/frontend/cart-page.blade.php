@@ -250,7 +250,7 @@
                                 {{-- @php
             pr($vendor_product);
             @endphp --}}
-                                <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage"
+                                <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
                                     <div class="product-img col-3 col-md-2">
                                         @if (!empty($vendor_product->pvariant->media_one))
@@ -405,9 +405,9 @@
                                                         @endif
                                                     @endif
 
-                                                    @if (isset($vendor_product->product->product_delivery_fee) && $vendor_product->product->product_delivery_fee > 0)
+                                                    @if (isset($vendor_product->product_delivery_fee) && $vendor_product->product_delivery_fee > 0)
                                                         <div class="float-left mt-2">Delivery Fee : <span
-                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product->product_delivery_fee }}</span>
+                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee }}</span>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -528,7 +528,7 @@
                                             @if ($client_preference_detail->business_type != 'laundry')
                                                 @if (@$vendor_product->product->is_slot_from_dispatch != 1 || $vendor_product->product->Requires_last_mile != 1)
                                                     <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime"
-                                                        style="{{ $cart_details->schedule_type == 'schedule' ? '' : 'display:none!important' }}">
+                                                        style="{{ ($cart_details->schedule_type == 'schedule' || $vendor_product->product->mode_of_service=='schedule') ? '' : 'display:none!important' }}">
                                                         <div class="col-5 offset-3 text-lg-right">
                                                             <label class="m-0 radio">
                                                                 {{ __('Scheduled Slot') }} :</label>
