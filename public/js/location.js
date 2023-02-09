@@ -262,6 +262,7 @@ $(document).ready( async function () {
         if(cartProductCount > 0){
             $("#remove_cart_modal").modal('show');
             $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
+            $(".nav-tabs.vendor_mods").attr("data-mod", type);
             return false;
         }
         $.ajax({
