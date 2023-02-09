@@ -167,7 +167,7 @@
                     var data = response.data.orderData;
                     
 
-                    if(product_id!='undefined'){
+                    if(product_id!=''){
                         Chat.orderData.order_number  =  (data.title != undefined ) ? data.title : '';
                         Chat.orderData.payable_amount = (data.variant[0].price != undefined ) ? data.variant[0].price : '';
                         Chat.orderData.vendor_name = (data.vendor.name != undefined ) ? data.vendor.name : '';
@@ -647,15 +647,21 @@
                    
                     var renderUserd = await renderUser(data);
                     var last_message_name = data.chat_Data[0]!=undefined?data.chat_Data[0].username : '';
-                    if(fetchDe=='fetchRoomByUserIdUserToUser'){
+                    // if(fetchDe=='fetchRoomByUserIdUserToUser'){
+                    //     last_message_name = data.vendor_name!=undefined?(data.vendor_name + ' (' +   data.product_name +')' ): '';
+                    //     chatType= 'userToUser';
+                    // }
+
+                    if(data.p2p_id!= undefined && data.p2p_id!=''){
                         last_message_name = data.vendor_name!=undefined?(data.vendor_name + ' (' +   data.product_name +')' ): '';
                         chatType= 'userToUser';
                     }
+                    
                     var last_message =  data.chat_Data[0]!=undefined?data.chat_Data[0].message:'';
                     
                     var updateDate =  new Date(data.updated_date);
-                    html = `<div id="chatRooms_${data._id}" data-text="${data.room_id}" data-chat_type="${chatType}" data-product_id="${data.product_id}"  data-sort="${i}" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
-                        <div id="room_${data._id}" data-orderid="${data.order_id}" data-chat_type="${chatType}" data-ordervendorid="${data.order_vendor_id}" data-vendor_id="${data.vendor_id}" data-product_id="${data.product_id}"  data-id="${data._id}" data-roomid="${data.room_id}" data-roomname="${data.room_id}" class="chat-list-item row fetchChat">
+                    html = `<div id="chatRooms_${data._id}" data-text="${data.room_id}" data-chat_type="${chatType}" data-product_id="${data.product_id!=undefined?data.product_id:''}"  data-sort="${i}" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
+                        <div id="room_${data._id}" data-orderid="${data.order_id}" data-chat_type="${chatType}" data-ordervendorid="${data.order_vendor_id}" data-vendor_id="${data.vendor_id}" data-product_id="${data.product_id!=undefined?data.product_id:''}"  data-id="${data._id}" data-roomid="${data.room_id}" data-roomname="${data.room_id}" class="chat-list-item row fetchChat">
                             <div class="align-self-center col-4">
                                 <div class="user_show">
                                 ${renderUserd}
