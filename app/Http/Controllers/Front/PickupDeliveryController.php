@@ -25,7 +25,7 @@ class PickupDeliveryController extends FrontController{
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti','flutterwave','plugnpay');
+        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti','flutterwave','plugnpay','azul');
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -184,6 +184,9 @@ class PickupDeliveryController extends FrontController{
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
+
+        $product->distance = decimal_format($tags_price['distance']);
+        $product->duration = decimal_format($tags_price['duration']);
 
         //for cab pooling
         $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
@@ -451,9 +454,9 @@ class PickupDeliveryController extends FrontController{
                 $response = json_decode($res->getBody(), true);
                 //pr($response);
                 if($response && $response['message'] == 'success'){
-                    return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00);
+                    return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00, 'distance' => isset($response['total_distance']) ? $response['total_distance'] : 0, 'duration' => isset($response['total_duration']) ? $response['total_duration'] :0);
                 }else{
-                    return array('delivery_fee' => 0, 'toll_fee' => 0);
+                    return array('delivery_fee' => 0, 'toll_fee' => 0, 'distance' => 0, 'duration' => 0);
                 }
             }
         }catch(\Exception $e){

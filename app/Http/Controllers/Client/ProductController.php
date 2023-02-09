@@ -404,8 +404,7 @@ class ProductController extends BaseController
             foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id') as $k => $val) {
                 $product->{$k} = $val;
             }
-
-            if( clientPrefrenceModuleStatus('p2p_check') ) {
+            if( clientPrefrenceModuleStatus('p2p_check') || is_attribute_enabled() ) {
                 if( !empty($request->attribute) ) {
                     if( checkTableExists('product_attributes') ) {
                         $insert_arr = [];
@@ -470,6 +469,7 @@ class ProductController extends BaseController
             $product->pharmacy_check            = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
             $product->individual_delivery_fee   = ($request->has('individual_delivery_fee') && $request->individual_delivery_fee == 'on') ? 1 : 0;
             $product->returnable        = ($request->has('returnable') && $request->returnable == 'on') ? 1 : 0;
+            $product->spotlight_deals        = ($request->has('spotlight_deals') && $request->spotlight_deals == 'on') ? 1 : 0;
             $product->replaceable        = ($request->has('replaceable') && $request->replaceable == 'on') ? 1 : 0;
             $product->has_inventory             = ($request->has('has_inventory') && $request->has_inventory == 'on') ? 1 : 0;
             $product->sell_when_out_of_stock    = ($request->has('sell_stock_out') && $request->sell_stock_out == 'on') ? 1 : 0;
@@ -536,6 +536,8 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
+            
+            $product->security_amount = ($request->has('security_amount')) ? $request->security_amount : null;
             $product->is_recurring_booking        = $request->is_recurring_booking == 'on' ? 1 : 0;
             if(checkColumnExists('products','get_price_from_dispatcher')){
               //pr(($request->has('get_price_from_dispatcher') && $request->get_price_from_dispatcher == 'on') ? 1 : 0);

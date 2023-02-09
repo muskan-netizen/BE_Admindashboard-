@@ -136,6 +136,7 @@ class ChatController extends FrontController
             $roomData['status'] = false;
             $view = "VendorUserChat";
         }
+        
         try {
            
             if($roomData['status']){

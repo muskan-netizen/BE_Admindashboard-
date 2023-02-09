@@ -561,7 +561,23 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <span class="error text-danger" id="plugnpay_card_error"></span>
                             </div>
                         <% } %>
+                         <% if(payment_option.slug == 'azulpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="azul-date-element" placeholder="YYYYMM" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" required />
+                            </div>
+                        </div>
 
+                        <span class="error text-danger" id="azul_card_error"></span>
+                    </div>
+                <% } %>
 
 
                     </div>
@@ -995,6 +1011,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var business_type = "<?= $client_preferences->business_type; ?>";
     var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
     var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
+    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+    
 </script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
@@ -1059,7 +1077,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
-
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
     var update_cart_slot = "{{ route('updateCartSlot') }}";

@@ -92,6 +92,8 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                 $data->variant_multiplier = (!empty($clientCurrency)) ? $clientCurrency->doller_compare : 1;
                                                                 $data->variant_price = (!empty($data->variant->first())) ? $data->variant->first()->price : 0;
                                                                 $productInquiryCheck = $data->inquiry_only  ; 
+                                                                $redirec = ($data->is_recurring_booking ==1) ? route('productDetail', [@$data->vendor->slug, $data->url_slug]) : 'javascript:void(0)' ;
+                                                                $class = ($data->is_recurring_booking ==1) ? 'add_on_demand_btn' : 'add_on_demand' ;
                                                             @endphp
 
                                                             <div class="row classes_wrapper no-gutters align-items-center" href="#">
@@ -116,7 +118,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                             @if(   $is_service_product_price_from_dispatch_forOnDemand ==1)
                                                                                 <a class="btn btn-solid btn btn-solid view_on_demand_price"  style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                                                             @else
-                                                                                <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                                <a class="btn btn-solid {{  $class }}" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="{{  $redirec }}">Add <i class="fa fa-plus"></i></a>
                                                                             @endif
                                                                             @if(
                                                                                 isset($data->category_type_id) && 
@@ -137,7 +139,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                 <a class="btn btn-solid " id="added_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
                                                                             @endif
                                                                         @else
-                                                                        <a class="btn btn-solid add_on_demand" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                        <a class="btn btn-solid {{  $class }}" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="{{ $redirec }}">Add <i class="fa fa-plus"></i></a>
                                                                         <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
                                                                             <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
                                                                                 <i class="fa fa-minus" aria-hidden="true"></i>
@@ -302,7 +304,8 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                 $isAddonExist = 1;
                                                                             }
                                                                             $productInquiryCheck = $data->inquiry_only  ; 
-                                                                          
+                                                                            $redirec = ($data->is_recurring_booking ==1) ? route('productDetail', [@$data->vendor->slug, $data->url_slug]) : 'javascript:void(0)' ;
+                                                                             $class = ($data->is_recurring_booking ==1) ? 'add_on_demand_btn' : 'add_on_demand' ;
                                                                         @endphp
 
                                                                         @foreach ($data->variant as $var)
@@ -348,7 +351,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                 <a class="btn btn-solid btn btn-solid view_on_demand_price"  style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                                                                 @else
                                                                                     {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>  alProductBtns--}}
-                                                                                    <a class="add-cart-btn  btn btn-solid add_on_demand "
+                                                                                    <a class="add-cart-btn  btn btn-solid {{$class}} "
                                                                                         style="display:none;"
                                                                                         id="add_button_href{{ $cartProductId }}"
                                                                                         data-variant_id="{{ $productVariantIdInCart }}"
@@ -358,7 +361,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                         data-aaddon="{{ $isAddonExist }}"
                                                                                         data-minimum_order_count="{{ $minimum_order_count }}"
                                                                                         data-batch_count="{{ $batch_count }}"
-                                                                                        href="javascript:void(0)">{{ __('Add') }}
+                                                                                        href="{{ $redirec }}">{{ __('Add') }}
                                                                                         @if ($minimum_order_count > 0)
                                                                                             ({{ $minimum_order_count }})
                                                                                         @endif
@@ -422,7 +425,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                         <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                                                                     @else
                                                                                     {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                                                                        <a class="add-cart-btn btn btn-solid  add_on_demand"
+                                                                                        <a class="add-cart-btn btn btn-solid  {{$class}}"
                                                                                             id="aadd_button_href{{ $data->id }}"
                                                                                             data-variant_id="{{ $data->variant[0]->id }}"
                                                                                             data-add_to_cart_url="{{ $add_to_cart }}"
@@ -431,7 +434,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                             data-aaddon="{{ $isAddonExist }}"
                                                                                             data-batch_count="{{ $batch_count }}"
                                                                                             data-minimum_order_count="{{ $minimum_order_count }}"
-                                                                                            href="javascript:void(0)">{{ __('Add') }}
+                                                                                            href="{{ $redirec }}">{{ __('Add') }}
                                                                                             @if ($minimum_order_count > 1)
                                                                                                 ({{ $minimum_order_count }})
                                                                                             @endif

@@ -20,7 +20,7 @@
         @endif
     </div>
 </div>
-@if($action != 'delivery' && $action != 'on_demand' )
+@if($action != 'delivery' && $action != 'on_demand' && $action != 'rental' )
     @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
         <div>
             <input type="hidden" id="latitude" value="{{ $processorProduct->latitude }}">

@@ -79,7 +79,9 @@ class CartController extends BaseController
             $cart = $cart->first();
 
             if ($cart) {
+
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
                 {
                     $editlimit_datetime = Carbon::now()->toDateTimeString();
@@ -118,7 +120,7 @@ class CartController extends BaseController
                 return $this->successResponse($cartData);
             }
 
-            return $this->successResponse($cart);
+            return $this->successResponse($cartData);
         } catch (Exception $e) {
             \Log::info($e->getMessage());
             return $this->successResponse([]);
@@ -445,7 +447,7 @@ class CartController extends BaseController
 
             return $this->successResponse($cartProduct, '', 200);
         }
-        catch(Exception $ex){
+        catch(\Exception $ex){
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
         }
     }
