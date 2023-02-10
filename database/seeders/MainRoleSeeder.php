@@ -11,7 +11,7 @@ class MainRoleSeeder extends Seeder
      * @return void
      */
     public function run()
-    {
+    { 
 
             $maps = array(
                 array(
