@@ -10,7 +10,7 @@ use Auth;
 use Session;
 use DB;
 use App\Http\Traits\{ApiResponser,OrderTrait};
-use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid};
+use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid,VendorOrderProductStatus};
 
 class DispatcherController extends FrontController
 {
@@ -171,7 +171,8 @@ class DispatcherController extends FrontController
                 //$this->sendOrderProductNotification($update->id);
                 $type = $request->task_type??1;
                 $dispatch_status = $request->dispatcher_status_option_id;
-
+                \Log::info('dispatcher_status_option_id');
+                \Log::info($dispatch_status );
                 switch ($dispatch_status) {
                     case 2:
                         $request->status_option_id = 2;
@@ -223,10 +224,11 @@ class DispatcherController extends FrontController
                     $total_route_query = OrderProductDispatchRoute::where('order_vendor_id', $checkiftokenExist->order_vendor_id);
                     $total_route = $total_route_query->count();
                     $total_complet_route = $total_route_query->where('dispatcher_status_option_id', '5')->count(); // dispatch complet task
-                
+                    \Log::info('total_route '. $total_route );
+                    \Log::info('total_complet_route '. $total_complet_route );
                     // update order status
                     if($total_route == ($total_complet_route +1 )){
-                    
+                    \Log::info('complelete order vendor');
                         $OrderVendor = OrderVendor::where('id', $checkiftokenExist->order_vendor_id)->select('vendor_id','id','order_status_option_id')->first();
                     
                         if( $OrderVendor ){
@@ -254,6 +256,16 @@ class DispatcherController extends FrontController
                     $update_tr = OrderProductDispatchRoute::where('web_hook_code',$web_hook_code)->update(['dispatch_traking_url' =>  $request->dispatch_traking_url]);
                 }
                 OrderProductDispatchRoute::where('id', $checkiftokenExist->id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
+
+
+                $update = VendorOrderProductStatus::updateOrCreate([
+                    'order_id' =>  $checkiftokenExist->order_id,
+                    'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
+                    'order_status_option_id' =>  $request->status_option_id,
+                    'order_vendor_id' =>  $checkiftokenExist->order_vendor_id,
+                    'order_vendor_product_id' =>  $checkiftokenExist->order_vendor_product_id,
+                ]);
+           
     
                 $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
                 DB::commit();
@@ -1028,10 +1040,11 @@ class DispatcherController extends FrontController
             }
 
             // diarise loyalty in order table
-            $order->loyalty_points_used    =  $order->loyalty_points_used - $return_response['vendor_loyalty_points'];
-            $order->loyalty_amount_saved   =  $order->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
-            $order->loyalty_points_earned  =  $order->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
-            $order->save();
+            // $order->loyalty_points_used    =  $order->loyalty_points_used - $return_response['vendor_loyalty_points'];
+            // $order->loyalty_amount_saved   =  $order->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
+            // $order->loyalty_points_earned  =  $order->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
+            // $order->save();
+
         }
     }
 

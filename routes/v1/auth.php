@@ -63,6 +63,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('get/agents', 'Api\v1\PickupDeliveryController@getAgents');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
+        Route::get('RejectedOrderProduct', 'Api\v1\OrderController@getRejectedOrdersList');
         Route::post('orders/tip-after-order', 'Api\v1\OrderController@tipAfterOrder');
         Route::get('wishlists', 'Api\v1\ProfileController@wishlists');
         Route::get('newsLetter', 'Api\v1\ProfileController@newsLetter');

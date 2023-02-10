@@ -2067,15 +2067,155 @@ class OrderController extends BaseController
                     ->orWhere(function($q3) {
                         $q3->where('orders.is_postpay', 1) //1 for order is post paid
                             ->whereNotIn('orders.payment_option_id', [1, 38]);
-                    });
+                    }); 
 
                 });
             })
             ->paginate($paginate);
+        $orders =    $this->orderlistLoop($orders, $user ,$request);
+        // $is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
+        // $is_order_edit_enable = getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
+        // $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+        // $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
 
-        $is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
-        $is_order_edit_enable = getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
-        $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+        // foreach ($orders as $order) {
+        //     $order_item_count = 0;
+        //     $order->user_name = $user->name;
+        //     $order->user_image = $user->image;
+        //     $order->date_time = dateTimeInUserTimeZone($order->orderDetail->created_at, $user->timezone);
+        //     $order->payment_option_title = __($order->orderDetail->paymentOption->title ?? '');
+        //     $order->order_number = $order->orderDetail->order_number;
+        //     $order->schedule_pickup = date('d/m/Y',strtotime($order->orderDetail->schedule_pickup));
+        //     $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
+        //     $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
+        //     $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
+        //     if(checkColumnExists('orders', 'is_postpay')){
+        //         $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+        //     }
+        //     if(checkColumnExists('orders', 'is_edited')){
+        //         $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
+        //     }
+        //     if(!empty($order->orderDetail->scheduled_date_time) && $is_order_edit_enable == 1 && $order_edit_before_hours > 0 && ($order->orderDetail->payment_option_id==1 || $order->orderDetail->payment_status !=1)){
+        //         if((strtotime($order->orderDetail->scheduled_date_time) - strtotime($editlimit_datetime)) > 0){
+        //             $order->is_editable  = 1;
+        //         }else{
+        //             $order->is_editable  = 0;
+        //         }
+        //     }else{
+        //         $order->is_editable  = 0;
+        //     }
+
+        //     if(!empty($order->orderDetail->editingInCart)){
+        //         $order->is_editable  = 2;
+        //     }
+
+        //     $product_details = [];
+        //     $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->orderDetail->id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
+        //     if ($vendor_order_status) {
+        //         $order_sts = OrderStatusOption::where('id',$order->order_status_option_id)->first();
+        //        // $order->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => __($vendor_order_status->OrderStatusOption->title)]];
+        //        if(@$order->exchanged_to_order->order_status_option_id && $order->exchanged_to_order->order_status_option_id== 6){
+        //         $order->order_status =  ['current_status' => ['id' => 6, 'title' => __("Replaced")]];
+        //         // $order->order_status->current_status->title = "Replaced";
+        //         }else{
+        //             $order->order_status =  ['current_status' => ['id' => $order_sts->id, 'title' => __($order_sts->title)]];
+        //         }
+
+        //     } else {
+        //         $order->current_status = null;
+        //     }
+        //     $return_request_status = 0;
+        //     $returnable = 0;
+        //     $replaceable = 0;
+
+        //     foreach ($order->products as $product) {
+        //         if($this->checkOrderDaysForReturn($order, @$product->product->return_days) && $order->is_exchanged_or_returned==0){
+
+
+        //             if(@$product->product->replaceable && $product->product->replaceable == 1){
+        //                 $replaceable = $product->product->replaceable;
+        //             }
+
+        //             if(@$product->product->returnable && $order->vendor->return_request == 1 && $product->product->returnable == 1){
+        //                 $returnable = $product->product->returnable;
+        //             }
+        //         }
+        //         // dd($product->productReturn->status);
+        //         if(@$product->productReturn &&  $return_request_status== 0 && $order->is_exchanged_or_returned!=1){
+        //             if($product->productReturn->status == 'Accepted'){
+        //                 $return_request_status = 1;
+        //             }
+        //             if($product->productReturn->status == 'Rejected'){
+        //                 $return_request_status = 2;
+        //             }
+        //             if($product->productReturn->status == 'Pending'){
+        //                 $return_request_status = 3;
+        //             }
+        //         }
+        //         $order_item_count += $product->quantity;
+
+        //         $product_details[] = array(
+        //             'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
+        //             'price' => $product->price,
+        //             'qty' => $product->quantity,
+        //             'category_type' => $product->product->category->categoryDetail->type->title ?? '',
+        //             'product_id' => $product->product_id,
+        //             'title' => $product->product_name
+        //         );
+        //     }
+        //     if ($order->delivery_fee > 0) {
+        //         $order_pre_time = ($order->order_pre_time > 0) ? $order->order_pre_time : 0;
+        //         $user_to_vendor_time = ($order->user_to_vendor_time > 0) ? $order->user_to_vendor_time : 0;
+        //         $ETA = $order_pre_time + $user_to_vendor_time;
+        //         $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $order->created_at, $order->orderDetail->scheduled_date_time) : dateTimeInUserTimeZone($order->created_at, $user->timezone);
+        //     }
+        //     if (!empty($order->orderDetail->scheduled_date_time)) {
+        //         $order->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
+        //     }
+        //     $luxury_option_name = '';
+        //     if ($order->orderDetail->luxury_option_id > 0) {
+        //         $luxury_option = LuxuryOption::where('id', $order->orderDetail->luxury_option_id)->first();
+        //         if ($luxury_option->title == 'takeaway') {
+        //             $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+        //         } elseif ($luxury_option->title == 'dine_in') {
+        //             $luxury_option_name = __('Dine-In');
+        //         }elseif ($luxury_option->title == 'on_demand') {
+        //             $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+        //         } else {
+        //             //$luxury_option_name = __('Delivery');
+        //             $luxury_option_name = getNomenclatureName($luxury_option->title);
+        //         }
+        //     }
+        //     $order->is_long_term  =0;
+        //     if(checkColumnExists('orders','is_long_term')){
+        //         $order->is_long_term  = $order->orderDetail->is_long_term;
+        //     }
+        //     $order->luxury_option_name = $luxury_option_name;
+        //     $order->luxury_option_name = $luxury_option_name;
+        //     $order->product_details = $product_details;
+        //     $order->item_count = $order_item_count;
+        //     $order->return_request_status = $return_request_status;
+
+
+        //     //product returnable and replaceble
+
+        //     $order->returnable = $returnable;
+        //     $order->replaceable = $replaceable;
+
+        //     unset($order->user);
+        //     unset($order->products);
+        //     unset($order->paymentOption);
+        //     unset($order->payment_option_id);
+        //     unset($order->orderDetail);
+        // }
+        return $this->successResponse($orders, '', 201);
+    }
+
+    public function orderlistLoop($orders,   $user ,$request){
+        $additionalPreferences   = @getAdditionalPreference(['is_postpay_enable','is_order_edit_enable','order_edit_before_hours']);
+        $is_postpay_enable       =  $additionalPreferences['is_postpay_enable'];
+        $is_order_edit_enable    =  $additionalPreferences['is_order_edit_enable'];
+        $order_edit_before_hours =  $additionalPreferences['order_edit_before_hours'];
         $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
 
         foreach ($orders as $order) {
@@ -2208,7 +2348,41 @@ class OrderController extends BaseController
             unset($order->payment_option_id);
             unset($order->orderDetail);
         }
-        return $this->successResponse($orders, '', 201);
+        return $orders;
+    }
+
+    public function getRejectedOrdersList(Request $request)
+    {
+        $user = Auth::user();
+      //  pr($user);
+       
+        $paginate = $request->has('limit') ? $request->limit : 12;
+        $type = $request->has('type') ? $request->type : 'active';
+        $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
+       
+      
+        $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.orderProductStatus' =>function($q){
+            $q->where('order_status_option_id',3); // cancel order product
+        }
+        ])
+            ->whereHas('orderDetail', function ($q1) {
+                $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
+                $q1->orWhere(function ($q2) {
+                    $q2->whereIn('orders.payment_option_id', [1,38])
+                    ->orWhere(function($q3) {
+                        $q3->where('orders.is_postpay', 1) //1 for order is post paid
+                            ->whereNotIn('orders.payment_option_id', [1, 38]);
+                    }); 
+
+                });
+            })
+            ->whereHas('products.orderProductStatus', function ($q1) {
+                $q1->where('order_status_option_id',3); // cancel order product
+            })
+            ->paginate($paginate);
+            $orders =    $this->orderlistLoop($orders, $user ,$request);
+            return $this->successResponse($orders, '', 201);
     }
 
     public function postOrderDetail(Request $request)
