@@ -14,7 +14,8 @@ class DispatcherController extends Controller
     
     public function categoryProductSyncDispatcher(Request $request)
     {
-  
+        
+        \Log::info('categoryProductSyncDispatcher asd');
         if(@$request->order_panel_id){
               
             $dispatcher_service_key_url = @$request->dispatcher_url;
@@ -28,7 +29,10 @@ class DispatcherController extends Controller
                 //     $this->sendDataToDispatcher($client_preferences , $inspectors);
                 // });
                 ->get();
+                
                 $categories = $categories->toArray();
+                \Log::info('categoryProductSyncDispatcher categories');
+                \Log::info( $categories);
             }
             
         $DatabaseName = DB::connection()->getDatabaseName();
