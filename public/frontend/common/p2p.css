@@ -369,7 +369,7 @@ body.al_body_template_nine .pagination.pagination-rounded.justify-content-end.mb
     margin-top: 40px;
 }
 
-body.al_body_template_nine .start_chat {
+body.al_body_template_nine .start_chat, body.al_body_template_nine .prod-details .btn-solid {
     float: none !important;
     margin: 0 !important;
     padding: 6.7px 10px !important;
@@ -409,7 +409,7 @@ body.al_body_template_nine.p2p-module .info-text label {
     display: inline-block;
 }
 
-body.al_body_template_nine.p2p-module.homeHeader .collection-content.col-lg-9.outter-fillter-data div#category_products_filter .inner_spacing h3 {
+body.al_body_template_nine.p2p-module .collection-content.col-lg-9.outter-fillter-data div#category_products_filter .inner_spacing h3 {
     margin: 10px 0;
 }
 
@@ -1077,13 +1077,41 @@ body.al_body_template_nine .product-wrapper-grid .media-body .prod_location span
     font-size: 12px;
     padding-bottom: 5px;
     display: inline-block;
+    width: 214px !important;
 }
 body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect{
     transform: scale(1);
 }
 body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect:hover{
-    transform: scale(1.03);
+    transform: scale(1.01);
     color: var(--theme-deafult);
+}
+body.al_body_template_nine .product-wrapper-grid .media-body .inner_spacing {
+    min-height: 234px;
+}
+body.al_body_template_nine.p2p-module .main-product .prod_location b span.loction.ellips {
+    width: 276px;
+    display: inline-block;
+    margin: 0;
+    text-align: left;
+}
+body.al_body_template_nine.p2p-module  button.btn.btn-danger.btn-sm.update_product_status, 
+body.al_body_template_nine.p2p-module  span.badge.badge-success {
+    padding: 5px 12px;
+    font-size: 14px;
+    border-radius: 5px;
+    text-transform: capitalize;
+    line-height: 1.2;
+}
+body.al_body_template_nine.p2p-module .product-right .product-buttons button{
+    margin-top: 10px!important;
+}
+body.al_body_template_nine.p2p-module  .prod-details .chat-button {
+    display: flex;
+}
+body.al_body_template_nine.p2p-module  .prod-details .chat-button a {
+    display: inline-block;
+    margin-left: 7px!important;
 }
 
 /*----------media css--------------*/
@@ -1373,6 +1401,7 @@ body.al_body_template_nine .outter-fillter-data div#category_products_filter a.p
     body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
         right: 0;
     }
+   
 }
 
 

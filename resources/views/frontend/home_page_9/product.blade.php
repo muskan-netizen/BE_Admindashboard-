@@ -43,7 +43,7 @@
                         </div>
                         @if(!empty($product['ProductAttribute'][0]))
                             <div class="d-flex align-items-center justify-content-between prod_location pt-2">
-                                <b><i class="fa fa-map-marker" aria-hidden="true"></i> <span class="loction">{{$product['ProductAttribute'][0]->key_value}}</span></b>
+                                <b> <span class="loction ellips"><i class="fa fa-map-marker" aria-hidden="true"></i> {{$product['ProductAttribute'][0]->key_value}}</span></b>
                             </div>
                         @endif
                         <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">

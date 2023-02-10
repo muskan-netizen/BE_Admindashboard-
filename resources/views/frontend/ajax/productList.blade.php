@@ -38,42 +38,47 @@
         @foreach($listData as $key => $data)
         {{-- @dd($data->ProductAttribute) --}}
         <div class="col-xl-3 col-md-3 col-6 col-grid-box mt-3">
-            <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0">
-                <div class="product-image">
-                    <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
-                </div>
+            <div class="product-box scale-effect mt-0">
+            {{-- <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0"> --}}
                 <div class="media-body align-self-center">
+                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank">
+                        <div class="product-image">
+                            <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
+                        </div>
+                    </a>
                     <div class="inner_spacing w-100">
-                        <h3 class="d-flex align-items-center justify-content-between">
-                            <label class="mb-0"><b>{{ $data->translation_title }}</b></label>
-                            @if($client_preference_detail)
-                                @if($client_preference_detail->rating_check == 1)
-                                    @if($data->averageRating > 0)
-                                        <span class="rating">{{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
+                        <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank">
+                            <h3 class="d-flex align-items-center justify-content-between">
+                                <label class="mb-0"><b>{{ $data->translation_title }}</b></label>
+                                @if($client_preference_detail)
+                                    @if($client_preference_detail->rating_check == 1)
+                                        @if($data->averageRating > 0)
+                                            <span class="rating">{{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
+                                        @endif
                                     @endif
                                 @endif
-                            @endif
-                        </h3>
-                        <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
-                        @if(!empty($data->translation_description))
-                            @if (strlen($data->translation_description) >= 65)
-                                <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
-                            @else
-                                <p>{{ $data->translation_description }}</p>
-                            @endif
-                        @endif
-                        @if(!empty($data->ProductAttribute))
-                            @foreach ($data->ProductAttribute as $attribute) 
-                                @if(@$attribute && $attribute->key_name == "Location") 
-                                    <div class="d-flex align-items-center justify-content-between prod_location pt-2">
-                                        <b><i class="fa fa-map-marker" aria-hidden="true"></i> <span class="loction">{{$attribute->key_value}}</span></b>
-                                    </div>
+                            </h3>
+                            <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
+                            @if(!empty($data->translation_description))
+                                @if (strlen($data->translation_description) >= 65)
+                                    <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
+                                @else
+                                    <p>{{ $data->translation_description }}</p>
                                 @endif
-                            @endforeach
-                        @endif
-                        <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
-                            <b>Updated {{ convertDateToHumanReadable($data->updated_at) }} </b>
-                        </div>
+                            @endif
+                            @if(!empty($data->ProductAttribute))
+                                @foreach ($data->ProductAttribute as $attribute) 
+                                    @if(@$attribute && $attribute->key_name == "Location") 
+                                        <div class="d-flex align-items-center justify-content-between prod_location pt-2">
+                                            <b class="flex nowrap"><span class="loction ellips"><i class="fa fa-map-marker" aria-hidden="true"></i>   {{$attribute->key_value}}</span></b>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            @endif
+                            <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
+                                <b>Updated {{ convertDateToHumanReadable($data->updated_at) }} </b>
+                            </div>
+                        </a>
                         <div class="product-price-chat-sec">
                             @if($data->inquiry_only == 0)
                             <h4 class="mt-1">
@@ -91,7 +96,7 @@
                                         
                                     @endif
                                     @if(getAdditionalPreference(['call_button'])['call_button'])
-                                        <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></button>
+                                        <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
                                         
                                     @endif
                                 </div>
@@ -99,7 +104,8 @@
                         </div>
                     </div>
                 </div>
-            </a>
+            {{-- </a> --}}
+            </div>
         </div>
         @endforeach
       @else

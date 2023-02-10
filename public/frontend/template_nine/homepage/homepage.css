@@ -1612,7 +1612,9 @@ body.al_body_template_nine.p2p-module .main-product  .al_clock{
     padding-top:10px!important;
 }
 
-
+body.al_body_template_nine .product-m .item .media-body{
+    min-height: 184px;
+}
 
 
 

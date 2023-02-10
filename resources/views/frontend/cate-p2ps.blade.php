@@ -508,15 +508,14 @@
     <input type="hidden" id="vendor_id" value="{{ isset($vendor_id) ? $vendor_id : ''}}">
 </section>
 @php
-      $authData = json_encode(@$data->toArray());
       $user_type = 'user';
-      $to_message = 'to_vendor';
-      $from_message = 'from_user';
-      $chat_type = 'vendor_to_user';
-      $startChatype = 'vendor_to_user';
-      $apiPre = 'client';
-      $rePre = 'user/chat/userVendor';
-      $fetchDe = 'fetchRoomByUserId';
+        $to_message = 'to_user';
+        $from_message = 'from_user';
+        $chat_type = 'user_to_user';
+        $startChatype = 'user_to_user';
+        $apiPre = 'client';
+        $rePre = 'user/chat/userToUser';
+        $fetchDe = 'fetchRoomByUserIdUserToUser';
   @endphp
 @endsection
 
@@ -767,6 +766,7 @@
         {
             document.getElementById('latitude').value = '';
             document.getElementById('longitude').value = '';
+            filterProducts();
         }
     }
 </script>

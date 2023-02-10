@@ -82,7 +82,7 @@
             <div class="col-md-12" style="overflow-x: auto;">
                 <table class="table table-responsive al_table_responsive_data table-borderless optionTableEditAttribute" id="edit_variant-datatable">
                     <tr class="trForClone">
-                        <td class="hexacodeClass-edit" style="@if($variant->type == 1 || $variant->type == 3 || $variant->type == 4 || $variant->type == 5) display: none @endif">{{ __("Color Code") }}</td>
+                        <td class="hexacodeClass-edit" style="@if($variant->type == 1 || $variant->type == 3 || $variant->type == 4 || $variant->type == 5 || $variant->type == 6) display: none @endif">{{ __("Color Code") }}</td>
                         @foreach($languages as $langs)
                             <td>{{$langs->language->name}}</td>
                         @endforeach
@@ -91,7 +91,7 @@
 
                    @foreach($variant->option as $first => $opt)
                    <tr>
-                        <td style="min-width: 150px; @if($variant->type == 1 || $variant->type == 3 || $variant->type == 4 || $variant->type == 5) display: none @endif" class="hexacodeClass-edit">
+                        <td style="min-width: 150px; @if($variant->type == 1 || $variant->type == 3 || $variant->type == 4 || $variant->type == 5 || $variant->type == 6) display: none @endif" class="hexacodeClass-edit">
                             <input type="text" name="hexacode[]" class="form-control hexa-colorpicker" value="{{$opt->hexacode}}" id="hexa-colorpicker-{{$opt->id}}">
 
                             {!! Form::hidden('option_id[]', $opt->id) !!}

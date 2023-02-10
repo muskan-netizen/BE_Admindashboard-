@@ -304,7 +304,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
                                                     <div class="container-badge">
-                                                        <div class="value-badge">{{ $attr_key }} : </div>
+                                                        <div class="value-badge pr-1">{{ $attr_key }} : </div>
                                                         @if( !empty($attr_val) )
                                                             <div class="container-badge-value">
                                                                 @foreach($attr_val as $inn_key => $inn_val)
@@ -312,7 +312,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                                 @if($inn_val['type'] == 2) <!--- for color---->
                                                                     <span style="background-color: {{$inn_val['hexacode']}}; width: 20px;height: 20px;margin-left: 5px;display: inline-block;border: 1px solid #ccc;"></span>
                                                                 @else
-                                                                    <span>{{$inn_val['value']}}</span>
+                                                                    <span> {{$inn_val['value']}}</span>
                                                                 @endif
                                                                 @endforeach
                                                             </div>
