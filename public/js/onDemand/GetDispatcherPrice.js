@@ -116,7 +116,7 @@ async function renderAgent(filter=0){
                              <div class="userDetailsImage mr-2"> <img class="w-100" src="${data.image_url}" alt="${data.name}" title=""></div>
                              <ul class="userDetailsNameJob p-0 m-0">
                                  <li class="userDetailsName d-block">${data.name}</li>
-                                 <li class="userDetailsJobDone  d-block">${_language.getLanString('Jobs Done ')} <b class="text-success">${data?.complete_order_count}</b></li>
+                                 <li class="userDetailsJobDone  d-block">${_language.getLanString('Jobs Done ')} <b class="text-success">${data?.averageTaskComplete} %</b></li>
                              </ul>
                          </div>
                          <div class="userDetailsRating">
