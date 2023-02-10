@@ -547,6 +547,9 @@ $client_preferences = \App\Models\ClientPreference::first();
                         <% if(payment_option.slug == 'plugnpay') { %>
                             <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
                                 <div class="row no-gutters">
+<div class="col-12">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-name-element" placeholder="Enter card holder name" />
+                                    </div>
                                     <div class="col-6">
                                         <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" />
                                     </div>
@@ -1012,6 +1015,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
     var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
     var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+        var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
+    
     
 </script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
@@ -1109,7 +1114,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
-    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
     var error_unchanged_schedule_date = "{{__('Schedule date can not be changed, Because order being edited is scheduled order. In case of multi vendor, order can not be edited.')}}";
     var discard_order_editing_url = "{{route('user.discardeditorder')}}";
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";

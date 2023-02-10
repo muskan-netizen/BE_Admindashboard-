@@ -2784,6 +2784,7 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
 
 
         cno = $('#plugnpay-card-element').val();
+         cname = $('#plugnpay-name-element').val();
         dt  = $('#plugnpay-date-element').val();
         cv  = $('#plugnpay-cvv-element').val();
         let total_amount    = 0;
@@ -2805,7 +2806,8 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                     { name: 'order_number', value: order.order_number },
                     { name: 'cno', value: cno },
                     { name: 'dt', value: dt },
-                    { name: 'cv', value: cv }
+                    { name: 'cv', value: cv },
+                    { name:'cname',value:cname }
                 );
         
             // }
@@ -2922,9 +2924,11 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                     
                 }
                 else if(response.status == "Success") {
-                    window.location.replace(response.route);
+                   window.location.replace(response.route);
+                     // console.log(response);
                 } else {
-                    window.location.replace(response.route);
+                   window.location.replace(response.route);
+                  
                 }
             },
             error: function(response) {
@@ -3337,6 +3341,7 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
 
       ///////////////////////////Plugnpay payment Gateway //////////////////////////////
     window.paymentViaplugnpay = function paymentViaplugnpay(address_id='', payment_option_id='',order='') {
+		 cname = $('#plugnpay-name-element').val();
         cno = $('#plugnpay-card-element').val();
         dt  = $('#plugnpay-date-element').val();
         cv  = $('#plugnpay-cvv-element').val();
@@ -3358,6 +3363,7 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 data.push(
                     { name: 'order_number', value: order.order_number },
                     { name: 'cno', value: cno },
+                    { name: 'cname', value: cname },
                     { name: 'dt', value: dt },
                     { name: 'cv', value: cv }
                 );
@@ -3471,16 +3477,16 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
 
                 }
                 else if(response.status == "Success") {
-                    window.location.replace(response.route);
+                  window.location.replace(response.route);
                 } else {
-                    window.location.replace(response.route);
+                  window.location.replace(response.route);
                 }
             },
             error: function(response) {
 
-                window.location.replace(response.route);
+              window.location.replace(response.route);
                 // var error = response.responseJSON;
-                // console.log(error, 'Error');
+                //console.log(error, 'Error');
             }
         });
     }
