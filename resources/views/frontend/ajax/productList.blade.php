@@ -36,6 +36,7 @@
     <div class="row margin-res">
       @if($listData->isNotEmpty())
         @foreach($listData as $key => $data)
+        {{-- @dd($data->ProductAttribute) --}}
         <div class="col-xl-3 col-md-3 col-6 col-grid-box mt-3">
             <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0">
                 <div class="product-image">
@@ -54,20 +55,48 @@
                             @endif
                         </h3>
                         <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
-                        @if (strlen($data->translation_description) >= 65)
-                            <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
-                        @else
-                            <p>{{ $data->translation_description }}</p>
+                        @if(!empty($data->translation_description))
+                            @if (strlen($data->translation_description) >= 65)
+                                <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
+                            @else
+                                <p>{{ $data->translation_description }}</p>
+                            @endif
                         @endif
-                        @if($data->inquiry_only == 0)
-                        <h4 class="mt-1">
-                        @if( $additionalPreference["is_token_currency_enable"]) 
-                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken((decimal_format($data->variant_price * $data->variant_multiplier))) }}
-                        @else
-                        {{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}
+                        @if(!empty($data->ProductAttribute))
+                            @foreach ($data->ProductAttribute as $attribute) 
+                                @if(@$attribute && $attribute->key_name == "Location") 
+                                    <div class="d-flex align-items-center justify-content-between prod_location pt-2">
+                                        <b><i class="fa fa-map-marker" aria-hidden="true"></i> <span class="loction">{{$attribute->key_value}}</span></b>
+                                    </div>
+                                @endif
+                            @endforeach
                         @endif
-                        </h4>
-                        @endif
+                        <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
+                            <b>Updated {{ convertDateToHumanReadable($data->updated_at) }} </b>
+                        </div>
+                        <div class="product-price-chat-sec">
+                            @if($data->inquiry_only == 0)
+                            <h4 class="mt-1">
+                            @if( $additionalPreference["is_token_currency_enable"]) 
+                            {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken((decimal_format($data->variant_price * $data->variant_multiplier))) }}
+                            @else
+                            {{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}
+                            @endif
+                            </h4>
+                            @endif
+                            <div class="prod-details">
+                                <div class="chat-button">
+                                    @if(getAdditionalPreference(['chat_button'])['chat_button'])
+                                        <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$data->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$data->id}}"><i class="fa fa-comments" aria-hidden="true"></i></button>
+                                        
+                                    @endif
+                                    @if(getAdditionalPreference(['call_button'])['call_button'])
+                                        <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></button>
+                                        
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </a>
@@ -87,6 +116,16 @@
 
 @section('script')
 <script>
-    
+    $(document).ready(function(){
+        let currentPage = '{{$_GET["page"]??"1"}}';
+        if(currentPage){
+            $('.page-link').each(function(){
+                if($(this).text()==currentPage){
+                    $(this).prev().addClass('active');
+                    break;
+                }
+            })
+        }
+    })
 </script>
 @endsection

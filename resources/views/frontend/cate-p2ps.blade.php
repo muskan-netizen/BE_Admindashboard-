@@ -468,7 +468,7 @@
                                                                         @if($data->inquiry_only == 0)
                                                                             <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                         @endif
-                                                                        {{-- <div class="prod-details">
+                                                                        <div class="prod-details">
                                                                             <div class="chat-button">
                                                                                 @if(getAdditionalPreference(['chat_button'])['chat_button'])
                                                                                     <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$data->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$data->id}}"><i class="fa fa-comments" aria-hidden="true"></i></button>
@@ -479,7 +479,7 @@
                                                                                     
                                                                                 @endif
                                                                             </div>
-                                                                        </div> --}}
+                                                                        </div>
                                                                     </div>
                                                             </div>
                                                         </div>

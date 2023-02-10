@@ -1053,6 +1053,39 @@ body.al_body_template_nine .outter-fillter-data div#category_products_filter a.p
 
 .img-white-s{display: block !important;}
 .img-black-s{display: none !important;}
+
+
+/*===== 10-02-2023 CSS =====*/
+body.al_body_template_nine .product-wrapper-grid .media-body .al_clock b{
+    font-size: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--theme-deafult);
+    color:#ccc;
+    width: 100%;;
+}
+body.al_body_template_nine .product-wrapper-grid .media-body .al_clock {
+    padding-top:0!important;
+}
+body.al_body_template_nine .product-wrapper-grid .media-body h6{
+    color: var(--theme-deafult);
+    font-size: 18px!important;
+}
+body.al_body_template_nine .product-wrapper-grid .media-body .prod_location{
+    padding-top: 4px!important;
+}
+body.al_body_template_nine .product-wrapper-grid .media-body .prod_location span.loction {
+    font-size: 12px;
+    padding-bottom: 5px;
+    display: inline-block;
+}
+body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect{
+    transform: scale(1);
+}
+body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect:hover{
+    transform: scale(1.03);
+    color: var(--theme-deafult);
+}
+
 /*----------media css--------------*/
 
 @media(max-width:991px) {
