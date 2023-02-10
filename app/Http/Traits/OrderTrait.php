@@ -334,20 +334,24 @@ trait OrderTrait
                     $scheduleDateTime = $selectedDate . ' ' . $slotTime;
                     $schedule_time =  $scheduleDateTime ?? null;
                 }
+                $rejectable_order = isset($dispatch_domain['rejectable_order'])? $dispatch_domain['rejectable_order'] : 0;
 
                 $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
                 $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
+                
+                if( $rejectable_order ==1){
+                    $service_time = '60';
+                }
+                if ($product->dispatch_agent_id) {
+                    $allocation_type = 'm';
+                    $agent = $product->dispatch_agent_id;
+                }
                 $is_assign_warehouse = $dispatch_domain['service_type'] == 'rental' ? 1 : 0;
                 $order__product_status_option_id = 1;
                 if(!empty($product->order_product_status) && $product->order_product_status->order_status_option_id == 3){
                     $order__product_status_option_id = 0;
                 }
-                // dd($order_status_option_id);
-                Log::info('service_time');
-                Log::info($service_time);
-
-                if ($order__product_status_option_id > 0) {
-
+                if ($order__product_status_option_id > 0 ) {
                     $tasks[] = array(
                         'task_type_id' => $task_type_id,
                         'latitude' => $vendor_details->latitude ?? '',
@@ -430,7 +434,8 @@ trait OrderTrait
                             'agent'     => $agent,
                             'task_type_id' =>$task_type_id, //  for add agent booking in case of appointment
                             'service_time' =>  $service_time,
-                            'is_assign_warehouse' => $is_assign_warehouse
+                            'is_assign_warehouse' => $is_assign_warehouse,
+                            'rejectable_order' =>  $rejectable_order
                         ];
 
 
@@ -1307,8 +1312,10 @@ trait OrderTrait
  
                  $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
                  $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
-                //  Log::info('service_time');
-                //  Log::info($service_time);
+
+                 $rejectable_order = isset($dispatch_domain['rejectable_order'])? $dispatch_domain['rejectable_order'] : 0;
+                 
+            
                  $tasks[] = array(
                      'task_type_id' => $task_type_id,
                      'latitude'     => $vendor_details->latitude ?? '',
@@ -1388,7 +1395,8 @@ trait OrderTrait
                          'user_icon' => $customer->image,
                          'agent'     => $agent,
                          'task_type_id' => $task_type_id, //  for add agent booking in case of appointment
-                         'service_time' =>  $service_time
+                         'service_time' =>  $service_time,
+                         'rejectable_order' =>  $rejectable_order
                      ];
  
                      
