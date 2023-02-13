@@ -26,12 +26,15 @@ class VendorOrderProductDispatcherStatus extends Model
                 $query->where('vendor_id', $vendor_id);
             }
        })->find($order_id);
+       $productcategorytype =   '';
        $isLongTerm = 0;
-       if(checkColumnExists('orders','is_long_term') && ($order->is_long_term ==1 )){
-        $productcategorytype =   @$order->vendors[0]->products->first()->LongTermService->product->category->categoryDetail->type->title ;
-        $isLongTerm = 1;
-       }else{
-           $productcategorytype =  $order->vendors[0]->products[0]->product->category->categoryDetail->type->title ;
+       if($order){
+           if(checkColumnExists('orders','is_long_term') && ((isset($order)) && @$order->is_long_term ==1 )){
+            $productcategorytype =   @$order->vendors[0]->products->first()->LongTermService->product->category->categoryDetail->type->title ;
+            $isLongTerm = 1;
+           }else{
+               $productcategorytype =  $order->vendors[0]->products[0]->product->category->categoryDetail->type->title ;
+           }
        }
 
        $status_data = [];
