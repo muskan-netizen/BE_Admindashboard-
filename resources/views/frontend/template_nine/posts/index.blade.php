@@ -4,6 +4,8 @@
 <link href="{{asset('assets/libs/multiselect/multiselect.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
 
+<link href="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.css')}}" rel="stylesheet" type="text/css" />
+
 <style type="text/css">
         
         
@@ -290,6 +292,8 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
     <script src="{{ asset('assets/libs/dropzone/dropzone.min.js') }}"></script>
 <script src="{{ asset('assets/libs/dropify/dropify.min.js') }}"></script>
     <script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
+    <script src="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.js')}}"></script>
+<script src="{{asset('assets/js/pages/toastr.init.js')}}"></script>
 <script>
 
 $(document).on('click', '#view-all_cats', function() {
@@ -346,5 +350,18 @@ $(document).on('click', '.select-category', function() {
     }
 
 </script>
+
+<?php
+// dd(Session::get('toaster'));
+if (Session::has('toaster')) {
+    $toast = Session::get('toaster');
+    echo '<script>
+            $(document).ready(function(){
+                $.NotificationApp.send("' . $toast["title"] . '", "' . $toast["body"] . '", "top-right", "' . $toast["color"] . '", "' . $toast["type"] . '");
+            });
+        </script>';
+}
+
+?>
 
 @endsection
