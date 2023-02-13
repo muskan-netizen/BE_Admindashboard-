@@ -648,6 +648,9 @@ class UserhomeController extends FrontController
 
         $recent_orders_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
 
+        $selected_products_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','selected_products
+            ');})->value('title');
+
         $enable_layout = CabBookingLayout::where('is_active',1)->web()->pluck('slug')->toArray();
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
