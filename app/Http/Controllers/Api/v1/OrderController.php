@@ -2397,7 +2397,7 @@ class OrderController extends BaseController
             $preferences = ClientPreference::first();
 
             if ($vendor_id) {
-                $order = Order::with(['driver_rating','reports',
+                $order = Order::with(['driver_rating','vendors.products.Routes','reports',
                     'vendors' => function ($q) use ($vendor_id) {
                         $q->where('vendor_id', $vendor_id);
                     },
@@ -2440,6 +2440,7 @@ class OrderController extends BaseController
                         'driver_rating',
                         'reports',
                         'vendors.vendor',
+                        'vendors.products.Routes',
                         'vendors.products.translation' => function ($q) use ($language_id) {
                             $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $language_id);
