@@ -368,7 +368,7 @@ class CartController extends BaseController
                 if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
                   
                     $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                    $slot = $request->dispatcherAgentData['onDemandBookingdate'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
+                    $slot = @$request->dispatcherAgentData['slot'] ?  @$request->dispatcherAgentData['slot'] : Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
                     $cart_product_detail['schedule_type'] = 'schedule';
                     $cart_product_detail['scheduled_date_time'] = @$dataTime;
                     $cart_product_detail['schedule_slot'] = @$slot ?? null;
