@@ -1303,21 +1303,23 @@ class CartController extends BaseController
                         $delivery_status = 0;
                     }
                 }
-                if (($vendorData->vendor->show_slot == 0) && ($is_service_product_price_from_dispatch !=1) ) {
-                    if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
-                        $vendorData->vendor->is_vendor_closed = 1;
-                        if ($delivery_status != 0) {
+                if($is_service_product_price_from_dispatch !=1){ // no need to check slot and web styling 
+                    if (($vendorData->vendor->show_slot == 0)  ) {
+                        if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
+                            $vendorData->vendor->is_vendor_closed = 1;
+                            if ($delivery_status != 0) {
+                                $delivery_status = 0;
+                            }
+                        } else {
+                            $vendorData->vendor->is_vendor_closed = 0;
+                        }
+                    }
+                    $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+                    if(isset($set_template)  && $set_template->template_id != 9){
+                        if($vendorData->vendor->$action == 0){
+                            $vendorData->is_vendor_closed = 1;
                             $delivery_status = 0;
                         }
-                    } else {
-                        $vendorData->vendor->is_vendor_closed = 0;
-                    }
-                }
-                $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-                if(isset($set_template)  && $set_template->template_id != 9){
-                    if($vendorData->vendor->$action == 0){
-                        $vendorData->is_vendor_closed = 1;
-                        $delivery_status = 0;
                     }
                 }
 
