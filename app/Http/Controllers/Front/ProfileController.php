@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\UserDevice;
-use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction,UserDocs,UserRegistrationDocuments};
+use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction,UserDocs,UserRegistrationDocuments, UserVendor};
 
 class ProfileController extends FrontController
 {
@@ -249,12 +249,17 @@ class ProfileController extends FrontController
 
     //get my ads/products
     public function getMyAds(){
-        $products = Product::with(['media.image', 'primary', 'category.cat', 'category.categoryDetail', 'brand', 'variant' => function ($v) {
-            $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
-        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title','category_id')
-            ->where(['vendor_id'=> Auth::user()->id])->whereHas('category.categoryDetail', function ($query) {
-                $query->where('type_id','!=','7');
-            })->get()->sortBy('primary.title', SORT_REGULAR, false);
+        $user = Auth::user();	
+        $user_vendor = UserVendor::where('user_id', $user->id)->pluck('vendor_id')->toArray();
+        $products = [];
+        if(@$user_vendor){
+            $products = Product::with(['media.image', 'primary', 'category.cat', 'category.categoryDetail', 'brand', 'variant' => function ($v) {
+                $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
+            }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title','category_id')
+                ->whereIn('vendor_id', $user_vendor)->whereHas('category.categoryDetail', function ($query) {
+                    $query->where('type_id','!=','7');
+                })->get()->sortBy('primary.title', SORT_REGULAR, false);
+        }
         // dd($products);
         return view('frontend.account.my-ads',compact('products'));
     }
