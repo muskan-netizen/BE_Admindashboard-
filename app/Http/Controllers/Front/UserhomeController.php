@@ -856,8 +856,8 @@ class UserhomeController extends FrontController
         }
         foreach ($feature_product_details as  $feature_product_detail) {
             $multiply = $feature_product_detail->variant->first()->multiplier ?? 1;
-            $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-            $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $title = $feature_product_detail->translation->first() ? @$feature_product_detail->translation->first()->title : $feature_product_detail->sku;
+            $image_url = $feature_product_detail->media->first() ? @$feature_product_detail->media->first()->image->path['proxy_url'] . @$p_dim . @$feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $feature_products[] = array(
                 'tag_title' => $featured_products_title??'0',
                 'image_url' => $image_url,
