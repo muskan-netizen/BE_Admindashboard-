@@ -2058,7 +2058,7 @@ class OrderController extends BaseController
                 break;
         }
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
-        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request'
+        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes'
         ])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
@@ -2300,8 +2300,10 @@ class OrderController extends BaseController
                     'qty' => $product->quantity,
                     'category_type' => $product->product->category->categoryDetail->type->title ?? '',
                     'product_id' => $product->product_id,
-                    'title' => $product->product_name
+                    'title' => $product->product_name,
+                    'routes' => $product->routes
                 );
+                
             }
             if ($order->delivery_fee > 0) {
                 $order_pre_time = ($order->order_pre_time > 0) ? $order->order_pre_time : 0;
@@ -2689,7 +2691,10 @@ class OrderController extends BaseController
             // 12345
             if (isset($request->new_dispatch_traking_url) && !empty($request->new_dispatch_traking_url)) {
                 try {
-                    $response = Http::get($request->new_dispatch_traking_url);
+                    $new_dispatch_traking_url = str_replace('/order/', '/order-details/', $request->new_dispatch_traking_url);
+           
+                    $response = Http::get($new_dispatch_traking_url);
+  
                 } catch (\Exception $ex) {
                     \Log::info('Error:');
                     \Log::info(json_encode($ex->getMessage()));
@@ -2698,6 +2703,7 @@ class OrderController extends BaseController
 
                 if (isset($response) && $response->status() == 200) {
                     $response = $response->json();
+                   
                     $order['order_data'] = $response;
                 }
             }
