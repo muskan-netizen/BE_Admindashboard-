@@ -438,8 +438,8 @@ trait OrderTrait
                             'is_assign_warehouse' => $is_assign_warehouse,
                             'rejectable_order' =>  $rejectable_order
                         ];
-
-
+                        \Log::info('dispatcher data');
+                        \Log::info($postdata);
                         if($order_vendor->is_restricted == 1)
                         {
                             $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;

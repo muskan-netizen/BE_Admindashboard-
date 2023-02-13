@@ -1324,8 +1324,9 @@ class OrderController extends BaseController
         if ($luxury_option_id == 6) { // only for on_demand type
             
             $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
-
+           
             if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false) {
+                \Log::info('dispatch_domain_OnDemand in one ' );
                 $OnDemand = 0;
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                     $dispatch_domain = [
@@ -1338,7 +1339,8 @@ class OrderController extends BaseController
                     if(( $AdditionalPreference['is_service_product_price_from_dispatch'] == 1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
                        
                         $dispatch_domain['rejectable_order'] = 1;
-                       // $order_dispatchs = $this->placeRequestToDispatchSingleProductUpdate($request->order_id, $request->vendor_id, $dispatch_domain, $prod,$is_restricted,$request);
+                        \Log::info('dispatch_domain_OnDemand dispatchre data ' );
+                        \Log::info($dispatch_domain );
                         $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
                         if ($order_dispatchs && $order_dispatchs == 1) {
                             $OnDemand = 1;
