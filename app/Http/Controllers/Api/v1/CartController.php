@@ -77,7 +77,7 @@ class CartController extends BaseController
                 }
             }
             $cart = $cart->first();
-
+            $cartData = [];
             if ($cart) {
 
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
