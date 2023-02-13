@@ -1354,7 +1354,6 @@ trait cartManager{
                         $delivery_status = 0;
                     }
                 }
-                \ Log::info('is_service_product_price_from_dispatch' .$is_service_product_price_from_dispatch );
                 if(($vendorData->vendor->show_slot == 0) && ($is_service_product_price_from_dispatch !=1)){
                     if( ($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty()) ){
                         $vendorData->is_vendor_closed = 1;
@@ -1365,9 +1364,9 @@ trait cartManager{
                         $vendorData->is_vendor_closed = 0;
                     }
                 }
-                //pr();
+             
                 $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-                if(isset($set_template)  && $set_template->template_id != 9){
+                if((isset($set_template)  && $set_template->template_id != 9) && ($is_service_product_price_from_dispatch !=1)){
                     if($vendorData->vendor->$action == 0){
                         $vendorData->vendot_type_not_active = 1;
                         $vendorData->is_vendor_closed = 1;
