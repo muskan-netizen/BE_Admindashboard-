@@ -5448,3 +5448,31 @@ function numberWithCommas(x) {
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
 
+//pending payment 
+$(document).on("click", ".pending_payment", function () {
+
+    var wallet_amount = $('#wallet_amount').val();
+    let total_amount = $("input[name='cart_total_payable_amount']").val();
+    alert(total_amount);
+    return false;
+    let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
+    if(payment_option_id == undefined){
+        success_error_alert('error', 'Please select payment option', ".payment_response");
+        return false;
+    }
+
+    if(payment_option_id == 49){
+        cno = $('#plugnpay-card-element').val();
+        dt = $('#plugnpay-date-element').val();
+        cv = $('#plugnpay-cvv-element').val();
+        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+        {
+            success_error_alert('error', 'Please Fill Details', ".payment_response");
+            return false;
+        }
+    }
+    $(".topup_wallet_confirm").attr("disabled", true);
+    // $('#topup_wallet').modal('hide');
+    walletPaymentOPtions(payment_option_id);
+
+});

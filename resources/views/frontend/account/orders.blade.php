@@ -844,7 +844,7 @@ $timezone = Auth::user()->timezone;
                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Pending Amount') }}</label>
                                                                     <span id="advance_cart_total_payable_amount_pending_{{$order->id}}">{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
-                                                                    <button data-id={{$order->id}}  class="btn btn-solid order_placed_btn_pending" type="button">Pay</button>
+                                                                    <button data-id={{$order->id}} data-order={{$order->order_number}} data-amount={{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}  class="btn btn-solid order_placed_btn_pending" type="button">Pay</button>
                                                                 </li>
                                                                 @endif
                                                                 {{-- till here --}}
@@ -2250,7 +2250,7 @@ $timezone = Auth::user()->timezone;
          
             <div class="row">
                 <div class="col-sm-12 p-0 d-flex flex-fill">
-                    <button type="button" style="width:100%;" class="btn btn-solid ml-1 proceed_to_pay">Pay
+                    <button type="button" style="width:100%;" class="btn btn-solid ml-1 pending_payment">Pay
                         <img style="width:5%; display:none;" id="proceed_to_pay_loader" src="{{asset('assets/images/loader.gif')}}"/>
                     </button>
                 </div>
@@ -2704,6 +2704,11 @@ $timezone = Auth::user()->timezone;
 
     $(document).on("click", ".order_placed_btn_pending", async function () {
                     var dataId = $(this).attr("data-id");
+                    var amount = $(this).attr("data-amount");
+                    var order_number = $(this).attr("data-order");
+                    $("#order_number").val(order_number);
+
+                    alert(amount);
            $.ajax({
                             data: {},
                             type: "POST",

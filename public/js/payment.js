@@ -29,12 +29,11 @@ $(document).ready(function() {
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-        }
+        }   
     });
     let queryString = window.location.search;
     let path = window.location.pathname;
     let urlParams = new URLSearchParams(queryString);
-    alert(path);
     if ((urlParams.has('gateway')) && (urlParams.get('gateway') == 'paystack')) {
         $('.spinner-overlay').show();
         let tipAmount = 0;
@@ -46,7 +45,8 @@ $(document).ready(function() {
         if (urlParams.has('ordernumber')) {
             order_number = urlParams.get('ordernumber');
 
-        }if (urlParams.has('payment_from')) {
+        }
+        if (urlParams.has('payment_from')) {
             paymentFrom = urlParams.get('payment_from');
             if(paymentFrom == "pickup_delivery"){
                 path = "pickup_delivery";
