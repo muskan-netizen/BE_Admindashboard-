@@ -69,14 +69,13 @@ trait PlugnpaypaymentManager
         $card_cvv = $data['cv'];
         $card_exp = $data['dt'];
         $card_amount = $data['amount'];
-        $card_name = isset($data['cname']) ? $data['cname'] : '';
         // $card_name = auth()->user()->name;
         if ($environment == 'sandbox') {
             $card_name = 'cardtest';
         } else {
 
-            if (isset($data['come_from'])) {
-                $card_name = $data['user']['name'];
+            if (isset($data['cname'])) {
+                $card_name = $data['cname'];
             } else {
                 $card_name = auth()->user()->name;
             }
@@ -88,12 +87,12 @@ trait PlugnpaypaymentManager
             $email = auth()->user()->email ?? "Delivadrinks@gmail.com";
         }
         // billing address info
-        $card_address1 = "";
-        $card_address2 = "";
-        $card_zip = "";
-        $card_city = "";
-        $card_state = "";
-        $card_country = "";
+        $card_address1 = $data['caddr1'] ?? "";
+        $card_address2 = $data['caddr2'] ?? "";
+        $card_zip = $data['czip'] ?? "";
+        $card_city = $data['city'] ?? "";
+        $card_state = $data['state'] ?? "";
+        $card_country = $data['country'] ?? "";
         // shipping address info
         $shipname = "";
 
@@ -107,6 +106,7 @@ trait PlugnpaypaymentManager
 
         if ($pnp_post_values == "") {
             $pnp_post_values .= "publisher-name=" . $publisher_name . "&";
+            $pnp_post_values .= "publisher-email=" . $publisher_email . "&";
             $pnp_post_values .= "card-number=" . $card_number . "&";
             $pnp_post_values .= "card-cvv=" . $card_cvv . "&";
             $pnp_post_values .= "card-exp=" . $card_exp . "&";

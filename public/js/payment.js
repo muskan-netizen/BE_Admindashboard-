@@ -2787,6 +2787,14 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
          cname = $('#plugnpay-name-element').val();
         dt  = $('#plugnpay-date-element').val();
         cv  = $('#plugnpay-cvv-element').val();
+
+		caddr1 = $('#plugnpay-addr1-element').val();
+        caddr2 = $('#plugnpay-addr2-element').val();
+        czip  = $('#plugnpay-zip-element').val();
+        city  = $('#plugnpay-city-element').val();
+        state = $('#plugnpay-state-element').val();
+        country  = $('#plugnpay-country-element').val();
+
         let total_amount    = 0;
         let cartElement     = $("input[name='cart_total_payable_amount']");
         let walletElement   = $("input[name='wallet_amount']");
@@ -2829,6 +2837,13 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 { name: 'from', value: payment_from },
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
+                { name:'cname',value:cname },
+                { name: 'caddr1', value: caddr1 },
+                { name: 'caddr2', value: caddr2 },
+                { name: 'czip', value: czip },
+                { name: 'city', value: city },
+                { name:'state',value:state },
+                { name:'country',value:country }
             );
         }
 
@@ -3345,6 +3360,14 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
         cno = $('#plugnpay-card-element').val();
         dt  = $('#plugnpay-date-element').val();
         cv  = $('#plugnpay-cvv-element').val();
+        
+        caddr1 = $('#plugnpay-addr1-element').val();
+        caddr2 = $('#plugnpay-addr2-element').val();
+        czip  = $('#plugnpay-zip-element').val();
+        city  = $('#plugnpay-city-element').val();
+        state = $('#plugnpay-state-element').val();
+        country  = $('#plugnpay-country-element').val();
+        
         let total_amount    = 0;
         let cartElement     = $("input[name='cart_total_payable_amount']");
         let walletElement   = $("input[name='wallet_amount']");
@@ -3387,6 +3410,13 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 { name: 'from', value: payment_from },
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
+                 { name:'cname',value:cname },
+                { name: 'caddr1', value: caddr1 },
+                { name: 'caddr2', value: caddr2 },
+                { name: 'czip', value: czip },
+                { name: 'city', value: city },
+                { name:'state',value:state },
+                { name:'country',value:country }
             );
         }
 
