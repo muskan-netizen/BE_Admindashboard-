@@ -586,6 +586,7 @@ class OrderController extends BaseController
                             if (checkColumnExists('order_vendor_products', 'dispatch_agent_id')) {
                                 $order_product->dispatch_agent_id = ! empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
                             }
+                            $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                             $order_product->schedule_slot = ! empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
                             $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
                            
