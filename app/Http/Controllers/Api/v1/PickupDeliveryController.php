@@ -610,7 +610,7 @@ class PickupDeliveryController extends BaseController{
                 $payment->date = date('Y-m-d');
                 $payment->order_id = $order->id;
                 $payment->transaction_id = $request->transaction_id;
-                $payment->balance_transaction = $order->payable_amount;
+                $payment->balance_transaction = !empty($order->payable_amount)?$order->payable_amount:$request->amount;
                 $payment->type = 'pickup/delivery';
                 $payment->save();
             }
