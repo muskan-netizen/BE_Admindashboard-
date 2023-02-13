@@ -98,8 +98,7 @@ class PostController extends FrontController
      */
     public function store(Request $request)
     {
-        
-        // try {
+        try {
             // dd($request->all());
             $request->sku = "adfasdf".time();
 
@@ -126,19 +125,17 @@ class PostController extends FrontController
             $product = $this->saveProduct($request);
             $fileIds = $this->uploadProductImages($product, $request);
 
-            $productImageSave = array();
-            if (@$fileIds) {
-                foreach ($fileIds as $key => $value) {
-                    $productImageSave[] = [
-                        'product_id' => $product->id,
-                        'media_id' => $value,
-                        'is_default' => 1
-                    ];
-                }
-            }
-            ProductImage::insert($productImageSave);
-
-
+            // $productImageSave = array();
+            // if (@$fileIds) {
+            //     foreach ($fileIds as $key => $value) {
+            //         $productImageSave[] = [
+            //             'product_id' => $product->id,
+            //             'media_id' => $value,
+            //             'is_default' => 1
+            //         ];
+            //     }
+            // }
+            // ProductImage::insert($productImageSave);
 
             if( clientPrefrenceModuleStatus('p2p_check') ) {
                 if( !empty($request->attribute) ) {
@@ -173,6 +170,8 @@ class PostController extends FrontController
                                             $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
                                             $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
                                             $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+                                            $insert_arr[$insert_count]['latitude'] = $option['latitude'] ?? null;
+                                            $insert_arr[$insert_count]['longitude'] = $option['longitude'] ?? null;
                                             $insert_arr[$insert_count]['is_active'] = 1;
 
                                         }
@@ -205,13 +204,13 @@ class PostController extends FrontController
            
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
             return redirect()->back()->with('toaster', $toaster);
-        // } catch (\Exception $e) {
-        //    dd($e->getMessage());
+        } catch (\Exception $e) {
+           dd($e->getMessage());
 
-        //     $toaster = $this->errorToaster(__('ERROR'),$e->getMessage() );
-        //     return redirect()->back()->with('toaster', $toaster);
+            $toaster = $this->errorToaster(__('ERROR'),$e->getMessage() );
+            return redirect()->back()->with('toaster', $toaster);
 
-        // }
+        }
     }
 
     /**

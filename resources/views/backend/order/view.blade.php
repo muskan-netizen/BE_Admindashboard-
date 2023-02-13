@@ -159,7 +159,7 @@ $timezone = Auth::user()->timezone;
                                 </div>
                             </div>
 
-                            @if (!in_array($order->luxury_option_id, [6, 8]) && $order->is_long_term !=1 )
+                            @if (!in_array($order->luxury_option_id, [6, 8]) && @$order->is_long_term !=1 )
                             @if (isset($order->vendors) &&
                             empty($order->vendors->first()->dispatch_traking_url) &&
                             $order->vendors->first()->delivery_fee > 0 &&
@@ -391,6 +391,8 @@ $timezone = Auth::user()->timezone;
                                     </tr>
                                 </thead>
                                 @foreach ($order->vendors as $vendor)
+                                @if($vendor->vendor_id == $vendor_id)
+
                                 <tbody>
                                     @php
                                     $sub_total = 0;
@@ -657,7 +659,7 @@ $timezone = Auth::user()->timezone;
                             $adminDiscount = 0;
                             // dd($vendor);
                             if ($vendor->coupon_code) {
-                                if ($vendor->coupon_paid_by == 1) { 
+                                if ($vendor->coupon_paid_by == 1) {
                                     $couponFrom = 'From Admin';
                                     $adminDiscount = $vendor->discount_amount;
                                 } else {
@@ -739,11 +741,11 @@ $timezone = Auth::user()->timezone;
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                             <td>
-                                
+
                               <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
                             </td>
                     </tr>
-                    
+
                     <tr>
                         <th scope="row" colspan="4" class="text-end">{{ __("Payable Amount") }} :</th>
                         <td>
@@ -765,6 +767,8 @@ $timezone = Auth::user()->timezone;
                     </tr>
                     @endif
                     </tbody>
+                    @endif
+                    
                     @endforeach
                     </table>
                 </div>
@@ -1091,7 +1095,7 @@ $timezone = Auth::user()->timezone;
 
 <!-- product return modal -->
 <div class="modal fade return-order" id="return_order" tabindex="-1" aria-labelledby="return_orderLabel">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

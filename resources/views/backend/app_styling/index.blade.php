@@ -4,7 +4,7 @@
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
-
+<link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
@@ -261,13 +261,14 @@
 
                                 @if($home_page_label->slug == 'selected_products')
                                 <a class="action-icon openProductsModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
-                                    <select class="form-control" id='product' name="product"  data-placeholder="Choose ..." required>
+                                    <div class="col pl-1">
+                                    <select class="form-control select2-multiple" id='product' name="selected_products[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
                                         <option value="">{{ __("Select Product") }}</option>
                                         @foreach($select_products as $products)
-                                        <option value="{{$products->title}}">{{$products->title}}</option>
+                                        <option value="{{$products->id}}" @if(in_array($products->id, $selected_ids)) selected @endif>{{$products->title}}</option>
                                         @endforeach
                                     </select>
-                                    
+                                    </div>
                                 </a>
                                 @endif
 

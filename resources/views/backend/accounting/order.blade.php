@@ -122,6 +122,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                     @endif
                                     <th>{{ __('Promo Code Discount') }}</th>
                                     <th>{{ __('Delivery Fee') }}</th>
+                                    <th>{{ __('Service Fee') }}</th>
                                     <th>{{ __('Admin Commission') }} [{{ __("Fixed") }}]</th>
                                     <th>{{ __('Admin Commission') }} [%{{ __("Age") }}]
                                     <a href="javascript:void(0);" onclick="alert('First, it shows the total admin commission of the sub total amount then it shows the total percentage value.');" rel="noopener noreferrer"> <i class="fa fa-info-circle"></i> </a>
@@ -247,6 +248,11 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             }},
 
                             {data: 'delivery_fee', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
+
+                            {data: 'service_fee_percentage_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},

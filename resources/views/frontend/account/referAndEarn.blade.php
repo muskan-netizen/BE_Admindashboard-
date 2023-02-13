@@ -109,14 +109,14 @@
                     <div class="dashboard">
                         @if(empty($influencer_user))
                             <div class="page-title">
-                                    <h2>{{ __('Refer and earn') }}</h2>
+                                    <h2>{{ __('Choose the type of influencer you are') }}</h2>
                             </div>
                             <div class="box-account box-info order-address">
                             @if( !empty($influencer_category) && count($influencer_category) > 0) 
                                 <div class="row">
                                     @foreach($influencer_category as $key => $val)
-                                        <div class="col-md-4">
-                                            <a class="alert alert-dark cursor-pointer d-block" role="alert" href="{{ route('refer-earn.form', $val->id) }}">
+                                        <div class="col-md-4 mb-2">
+                                            <a class="alert alert-dark cursor-pointer d-block text-center" role="alert" href="{{ route('refer-earn.form', $val->id) }}">
                                                 {{$val->name ?? ''}}
                                             </a>
                                         </div>

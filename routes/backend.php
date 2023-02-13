@@ -100,7 +100,6 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::get('account/vendor/payout/requests', [VendorPayoutController::class, 'vendorPayoutRequests'])->name('account.vendor.payout.requests');
         Route::get('vendor/bid/requests/{id?}', [VendorBidController::class, 'bidRequests'])->name('vendor.bid.request');
-        Route::get('vendor/bid/store', [VendorBidController::class, 'vendor.bid.store'])->name('vendor.bid.store');
         Route::get('vendor/bid/product-search/{id?}', [VendorBidController::class, 'search'])->name('searchProduct'); //vendor product search
         
 

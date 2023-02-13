@@ -2388,4 +2388,8 @@ body .ctext-wrap {max-width: 90%;}
 body.dark .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
   background-color: #303841;
 }
+#order-status-icon .dropify-wrapper.has-preview{
+height: 50px;
+}
+
 /*======================= new css add for p2p template on 1/12/2023===================== */

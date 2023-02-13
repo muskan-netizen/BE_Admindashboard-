@@ -250,7 +250,7 @@
                                 {{-- @php
             pr($vendor_product);
             @endphp --}}
-                                <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage"
+                                <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
                                     <div class="product-img col-3 col-md-2">
                                         @if (!empty($vendor_product->pvariant->media_one))
@@ -520,7 +520,7 @@
                                         {{-- Home Service Schedual code Start at down --}}
                                         {{-- @php
                        pr($cart_details->closed_store_order_scheduled);
-                        @endphp --}} 
+                        @endphp --}}
                                         @if (($cart_details->closed_store_order_scheduled == 1 ||
                                             $client_preference_detail->off_scheduling_at_cart != 1) &&
                                             (in_array($serviceType, ['appointment', 'on_demand']) && $vendor_product->product->mode_of_service == 'schedule'))
@@ -1039,6 +1039,19 @@
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
                                                 {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->sub_total) }}
+                                            @endif
+                                        </b>
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+
+                            @if ($cart_details->delivery_charges > 0)
+                                <div class="row">
+                                    <div class="col-6">{{ __('Total Delivery Fee') }}</div>
+                                    <div class="col-6 text-right"><b>
+                                            @if ($additionalPreference['is_token_currency_enable'])
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->delivery_charges) }}
                                             @endif
                                         </b>
                                     </div>
