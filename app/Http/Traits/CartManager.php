@@ -1354,7 +1354,7 @@ trait cartManager{
                         $delivery_status = 0;
                     }
                 }
-
+                \ Log::info('is_service_product_price_from_dispatch' .$is_service_product_price_from_dispatch );
                 if(($vendorData->vendor->show_slot == 0) && ($is_service_product_price_from_dispatch !=1)){
                     if( ($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty()) ){
                         $vendorData->is_vendor_closed = 1;
