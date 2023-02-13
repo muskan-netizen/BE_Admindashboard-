@@ -205,7 +205,7 @@ class PostController extends FrontController
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
             return redirect()->back()->with('toaster', $toaster);
         } catch (\Exception $e) {
-           dd($e->getMessage());
+        //    dd($e->getMessage());
 
             $toaster = $this->errorToaster(__('ERROR'),$e->getMessage() );
             return redirect()->back()->with('toaster', $toaster);
