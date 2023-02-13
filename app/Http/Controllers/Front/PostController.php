@@ -157,6 +157,8 @@ class PostController extends FrontController
                                             $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
                                             $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
                                             $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['latitude'] = null;
+                                            $insert_arr[$insert_count]['longitude'] = null;
                                             $insert_arr[$insert_count]['is_active'] = 1;
                                         }
                                         $insert_count++;
