@@ -586,6 +586,7 @@ class OrderController extends BaseController
                             if (checkColumnExists('order_vendor_products', 'dispatch_agent_id')) {
                                 $order_product->dispatch_agent_id = ! empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
                             }
+                            $order_product->schedule_slot = ! empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
                             
                             $order_product->save();
 
@@ -1093,6 +1094,7 @@ class OrderController extends BaseController
                     # if payment type cash on delivery or payment status is 'Paid'
                     if (( ($order->payment_option_id == 1 || $order->payment_option_id == 38 )) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                         # if vendor selected auto accept
+                        \Log::info('  autoAcceptOrderIfOn');
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
@@ -1142,6 +1144,7 @@ class OrderController extends BaseController
                 if ($request->status_option_id == 2) {
 
                     if ($request->shipping_delivery_type=='D') {
+                        \Log::info('  shipping_delivery_type D');
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
@@ -1317,7 +1320,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $luxury_option_id      = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_restricted         = $checkdeliveryFeeAdded->is_restricted;
-        
+        \Log::info('luxury_option_id ' . $luxury_option_id );
         if ($luxury_option_id == 6) { // only for on_demand type
             
             $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();

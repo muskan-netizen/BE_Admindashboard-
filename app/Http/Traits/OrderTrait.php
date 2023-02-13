@@ -294,6 +294,7 @@ trait OrderTrait
     // place Request To Dispatch for Appointment , OnDemand
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain, $request)
     {
+        \Log::info('placeRequestToDispatchSingleProduct');
         try {
             $order = Order::find($order);
             $customer = User::find($order->user_id);
@@ -394,7 +395,7 @@ trait OrderTrait
                         // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                         $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                     }
-
+                    \Log::info('placeRequestToDispatch quantity');
                     $client = CP::orderBy('id', 'asc')->first();
                     for ($x = 1; $x <= $product->quantity; $x++) {
                         //  send all payment to fist order
