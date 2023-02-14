@@ -260,8 +260,8 @@
 
                             @foreach ($product->vendor_products as $vendor_product)
                                 {{-- @php
-            pr($vendor_product->product->security_amount);
-            @endphp --}}
+                                pr($vendor_product->schedule_slot_name);
+                                @endphp --}}
                                 <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
                                     <div class="product-img col-3 col-md-2">
@@ -570,7 +570,7 @@
                                                              @if($is_service_product_price_from_dispatch_forOnDemand ==1)
                                                                 <p class="m-0 mx-2">{{ $vendor_product->selected_dispatcher_time   }}  </p>
                                                                 
-                                                                <p class="m-0" {{ $vendor_product->schedule_slot_name }}</p>
+                                                                <p class="m-0" > {{$vendor_product->schedule_slot_name}}</p>
                                                                
                                                             @endif
                                                         </div>
