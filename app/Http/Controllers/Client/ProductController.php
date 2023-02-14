@@ -563,6 +563,8 @@ class ProductController extends BaseController
             if (checkColumnExists('products', 'hyper_local_delivery')) {
                 $product->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
             }
+            $product->is_slot_from_dispatch        = ($request->has('is_slot_from_dispatch') && $request->is_slot_from_dispatch == 'on') ? 1 : 0;
+            $product->is_show_dispatcher_agent     = ($request->has('is_show_dispatcher_agent') && $request->is_show_dispatcher_agent == 'on') ? 1 : 0;
             $product->save();
             if($request->has('slot_ids') && $request->slot_ids != ''){
                 $product->syncProductDeliverySlot()->sync($request->slot_ids);

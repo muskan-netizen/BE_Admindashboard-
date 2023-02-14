@@ -429,7 +429,7 @@
                                             <div class="row margin-res">
                                               @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
-                                                {{-- @dd($data->vendor->id) --}}
+                                                {{-- @dd($data) --}}
                                                 <?php /*$imagePath = $imagePath2 = '';
                                                 $mediaCount = count($data->media);
                                                 for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
@@ -455,7 +455,7 @@
                                                                         @endif
                                                                     @endif
                                                                 </h3>
-                                                                <div class="product-description_list border-bottom">
+                                                                <div class="product-description_list">
                                                                     <span class="flag-discount">30% Off</span>
                                                                     <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
                                                                     @if (strlen($data->translation_description) >= 65)
@@ -464,6 +464,18 @@
                                                                         <p>{{ $data->translation_description }}</p>
                                                                     @endif
                                                                     </div>
+                                                                    @if(!empty($data->ProductAttribute))
+                                                                        @foreach ($data->ProductAttribute as $attribute) 
+                                                                            @if(@$attribute && $attribute->key_name == "Location") 
+                                                                                <div class="d-flex align-items-center justify-content-between prod_location pt-2">
+                                                                                    <b class="flex nowrap"><span class="loction ellips"><i class="fa fa-map-marker" aria-hidden="true"></i>   {{$attribute->key_value}}</span></b>
+                                                                                </div>
+                                                                            @endif
+                                                                        @endforeach
+                                                                    @endif
+                                                                    <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
+                                                                        <b>Updated {{ convertDateToHumanReadable($data->updated_at) }} </b>
+                                                                    </div>
                                                                     <div class="product-price-chat-sec">
                                                                         @if($data->inquiry_only == 0)
                                                                             <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
@@ -471,7 +483,7 @@
                                                                         <div class="prod-details">
                                                                             <div class="chat-button">
                                                                                 @if(getAdditionalPreference(['chat_button'])['chat_button'])
-                                                                                    <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$data->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$data->id}}"><i class="fa fa-comments" aria-hidden="true"></i></button>
+                                                                                    <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$data->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$data->id}}" style="margin-right: 5px !important;"><i class="fa fa-comments" aria-hidden="true"></i></button>
                                                                                     
                                                                                 @endif
                                                                                 @if(getAdditionalPreference(['call_button'])['call_button'])
@@ -545,7 +557,7 @@
 <script>
     $(document).ready(function() {
         $('.sortingFilter').val('newly_added');
-        filterProducts();
+        // filterProducts();
     });
     $(document).on("change",".attr_radio", function() {
         
