@@ -1,24 +1,34 @@
 
-<div class="col-md-3">
+<div class="item">
     <div class="product-card-box position-relative al_box_third_template al"  >
         {{-- {{ dd($product)}} --}}
         {{--<div class="add-to-fav 12">
             <input id="fav_pro_one" type="checkbox">
             <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
         </div>--}}
+        {{-- @dd($product['ProductAttribute'][0]->key_value) --}}
         <a class="common-product-box text-center" href="{{ $product['vendor']->slug }}/product/{{ $product['url_slug'] }}">
             <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product['image_url'] }}" alt="" title="">
-                <div class="pref-timing"> </div>
+                {{-- <div class="pref-timing"> </div> --}}
+                <div class="wishlist-icon btn-default" prosku="{{ $product['sku'] }}" remwishlist='<i class="fa fa-heart" aria-hidden="true"></i>' addwishlist='<i class="fa fa-heart-o" aria-hidden="true"></i>'>
+                    @if($product['is_inwishlist_btn'] == 0) 
+                        <i class="fa fa-heart-o" aria-hidden="true"></i>
+                        @else
+                        <i class="fa fa-heart" aria-hidden="true"></i>
+                    @endif
+                </div>
             </div>
             <div class="media-body align-self-start">
                 <div class="inner_spacing">
                     <div class="product-description">
                         <div class="d-flex align-items-center justify-content-between">
-                            <h6 class="card_title ellips" style="width:50%;">{{ $product["title"] }}</h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+                            <h6 class="card_title ellips" style="width:100%;">{{ $product["title"] }}</h6> 
+                            {{-- @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
                             @if($product["averageRating"] >0)
                             <!-- <span class="rating-number">{{ $product["averageRating"] }}</span> -->
                             <span class="d-flex"><strong>AED</strong><h3>{!!$product["price"] ?? ''!!} </h3></span>
-                            @endif @endif @endif </div>
+                            @endif @endif @endif  --}}
+                        </div>
                         <div class="product-description_list">
                             <!-- <span class="flag-discount">30% Off</span> -->
                             <!-- <p>
@@ -31,12 +41,67 @@
                             <span class="rating"><i class="fa fa-star" aria-hidden="true"></i>4.5</span>
                             </p> -->
                         </div>
-                        <!-- <div class="d-flex align-items-center justify-content-between al_clock pt-2">
-                            <b>{{$product["price"] ?? ''}} </b>
-                        </div> -->
+                        @if(!empty($product['ProductAttribute'][0]))
+                            <div class="d-flex align-items-center justify-content-between prod_location pt-2">
+                                <b> <span class="loction ellips"><i class="fa fa-map-marker" aria-hidden="true"></i> {{$product['ProductAttribute'][0]->key_value}}</span></b>
+                            </div>
+                        @endif
+                        <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
+                            <b>Updated {{ convertDateToHumanReadable($product["updated_at"]) }} </b>
+                        </div>
+                        <div class="prod-details">
+                            <div class="d-flex align-items-center justify-content-between al_clock pt-2">
+                                <b>{{$product["price"] ?? ''}} </b>
+                            </div>
+                            <div class="chat-button">
+                                @if(getAdditionalPreference(['chat_button'])['chat_button'])
+                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$product['vendor']->id}}" data-orderid="" data-order_id="" data-product_id="{{$product["id"]}}"><i class="fa fa-comments" aria-hidden="true"></i></a>
+                                    {{-- {{__('Chat')}} --}}
+                                @endif
+                                @if(getAdditionalPreference(['call_button'])['call_button'])
+                                    <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
+                                    {{-- {{__('Call Button')}} --}}
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </a>
     </div>
 </div>
+@section('script')
+<script>
+    // Home Page Wishlist Function
+    $(document).on('click', '.wishlist-icon', function(e){
+        e.preventDefault();
+        var sku = $(this).attr('proSku');
+        var remveFrmWishlist = $(this).attr('remWishlist');
+        var addWishlist = $(this).attr('addWishlist');
+        var _this = $(this);
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: add_to_whishlist_url,
+            data: {
+                "_token": $('meta[name="_token"]').attr('content'),
+                "sku": sku,
+                "variant_id": $('#prod_variant_id').val()
+            },
+            success: function (res) {
+                if (res.status == "success") {
+                    if (_this.hasClass('btn-default')) {
+                        if (res.message.indexOf('added') !== -1) {
+                            _this.html(remveFrmWishlist);
+                        } else {
+                            _this.html(addWishlist);
+                        }
+                    }
+                } else {
+                    location.reload();
+                }
+            }
+        });
+    });
+</script>
+@endsection

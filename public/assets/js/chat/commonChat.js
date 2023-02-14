@@ -5,7 +5,8 @@
     let OrdervendorID = '';
     let order_id = '';
     let vendoridC = '';
-    $(document).on('click','.start_chat',async function(){
+    $(document).on('click','.start_chat',async function(e){
+        e.preventDefault();
         var vendor_order_id = $(this).attr('data-vendor_order_id');
         var vendor_id = $(this).attr('data-vendor_id');
         var order_id = $(this).attr('data-order_id');

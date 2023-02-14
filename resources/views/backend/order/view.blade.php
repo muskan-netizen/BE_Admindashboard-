@@ -159,7 +159,7 @@ $timezone = Auth::user()->timezone;
                                 </div>
                             </div>
 
-                            @if (!in_array($order->luxury_option_id, [6, 8]) && $order->is_long_term !=1 )
+                            @if (!in_array($order->luxury_option_id, [6, 8]) && @$order->is_long_term !=1 )
                             @if (isset($order->vendors) &&
                             empty($order->vendors->first()->dispatch_traking_url) &&
                             $order->vendors->first()->delivery_fee > 0 &&
@@ -391,6 +391,8 @@ $timezone = Auth::user()->timezone;
                                     </tr>
                                 </thead>
                                 @foreach ($order->vendors as $vendor)
+                                @if($vendor->vendor_id == $vendor_id)
+
                                 <tbody>
                                     @php
                                     $sub_total = 0;
@@ -765,6 +767,8 @@ $timezone = Auth::user()->timezone;
                     </tr>
                     @endif
                     </tbody>
+                    @endif
+                    
                     @endforeach
                     </table>
                 </div>
