@@ -213,6 +213,8 @@ $timezone = Auth::user()->timezone;
                                 </div>
                                 @endif
                             </div>
+                            @endif
+                            @endif
                             <div class="row track-order-list">
                                 <div class="col-lg-6">
                                     <!-- <button type="button" class="btn btn-danger waves-effect waves-light">

@@ -350,7 +350,7 @@ $timezone = Auth::user()->timezone;
 </div>
 
 <!-- start cancel order -->
-<div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+{{-- <div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
@@ -363,7 +363,7 @@ $timezone = Auth::user()->timezone;
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 <div class="modal fade driver-rating" id="driver_rating" tabindex="-1" aria-labelledby="driver_ratingLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

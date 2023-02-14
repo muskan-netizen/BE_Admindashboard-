@@ -995,7 +995,7 @@ $(document).ready(function () {
             return false;
         }
         var address = $("input[name='address_id']").val();
-        if ((vendor_type == 'delivery' || vendor_type == 'on_demand') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
+        if ((vendor_type == 'delivery' || vendor_type == 'on_demand' || vendor_type == 'rental') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
             return false;
         }

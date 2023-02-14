@@ -57,9 +57,16 @@
     <div class="product-description border-product pb-0">
         {{-- <h6 class="product-title mt-0">{{__('Extended duration By('.@$product->additional_increments.'hr:'.@$product->additional_increments_min.'min/'.Session::get('currencySymbol').number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",").')')}}:
       </h6> --}}
-      <div class="mt-0">{{__('Duration') }}:
+      <div class="mt-0">
+        {{-- {{__('Duration') }}: --}}
+        {{-- <input style="width: 135px" readonly type="text"  id="incremental_hrs_hidden" class="form-control input-qty-number"  value="{{$product->minimum_duration.' hour '.$product->minimum_duration_min. ' min'}}"> --}}
 
-      <div class="qty-box mb-3">
+        <input style="display: none" readonly  step="{{$product->additional_increments*60+$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="{{$product->additional_increments*60+$product->additional_increments_min}}">
+
+        <input  type="hidden" min="0" name="total_hrs" id="total_hrs" value="{{getMinutes($product->minimum_duration,$product->minimum_duration_min)}}" >
+        <input  type="hidden"  name="first_variant" id="first_variant" value="{{@$product->variant[0]->id}}" >
+
+      {{-- <div class="qty-box mb-3">
           <div class="input-group">
                 <span class="input-group-prepend">
                     <button type="button" class="btn incremental-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
@@ -77,7 +84,7 @@
                     </button>
                 </span>
             </div>
-        </div>
+        </div> --}}
 
         <div class="mt-0">
           <div class="duration">
@@ -120,7 +127,7 @@
     return num.toString().padStart(2, '0');
   }
     function timeConvertCal(hr,min){
-     // //console.log(hr);
+     //console.log(hr);
      // //console.log(min);
       return (parseInt(hr)*parseInt(60)+parseInt(min));
     }
@@ -410,7 +417,7 @@
           if(reminder > 0){
             divide = parseInt(divide) + 1;
           }
-          var extra_t_min = parseInt(180)*parseInt(divide);
+          var extra_t_min = parseInt(default_step)*parseInt(divide);
 
           $('#incremental_hrs').val(extra_t_min);
           var t_min_hr_min = parseInt(extra_t_min)+parseInt(default_minutes);

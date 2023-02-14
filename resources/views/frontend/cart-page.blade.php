@@ -1567,7 +1567,7 @@
                 $product->vendor->order_min_amount > 0 &&
                 $product->product_total_amount + $product->vendor->fixed_fee_amount < $product->vendor->order_min_amount
             ))
-                @if($cart_details->is_recurring_booking != 1)
+                @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
                     @include('frontend.cart.scheduleSlot')
                 @endif
                     <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
