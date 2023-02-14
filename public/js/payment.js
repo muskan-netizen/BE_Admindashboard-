@@ -875,6 +875,7 @@ $(document).ready(function() {
         let subscription_id = $("input[name='subscription_id']");
         let walletElement = $("input[name='wallet_amount']");
         let cabElement = $("#pickup_now");
+        let pending_amount = $("input[name='wallet_amount_pending']");
         let ajaxData = [];
         let data = [];
         
@@ -904,6 +905,10 @@ $(document).ready(function() {
             data.payment_from = 'pickup_delivery';
             data.order_number = order.order_number;
             data.reload_route = order.route;
+        }else if((typeof pending_amount_for_past_order !== 'undefined') && (pending_amount_for_past_order == 1)){
+            total_amount = pending_amount.val();
+            payment_form = 'pending_amount_form';
+            data.order_number = $("#order_number").val();
         }
         data.amount = total_amount;
         data.payment_option_id =18;

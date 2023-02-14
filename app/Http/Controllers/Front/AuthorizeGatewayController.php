@@ -172,6 +172,14 @@ class AuthorizeGatewayController extends FrontController
             Log::info("Return Url");
             Log::info($returnUrl);
             return $returnUrl;
+        }elseif($request->payment_from == 'pending_amount_form'){
+            $order_number = $request->order_number;
+            $order = Order::select('id')->where('order_number', $order_number)->first();
+            Order::where('id', $order->id)->update(['advance_amount' => null]);
+            $message = 'Pending has been submitted successfully';
+            $returnUrl = route('user.orders');
+            return $returnUrl;
+
         }
         Log::info("Ending");
         return Redirect::to(route('order.return.success'));

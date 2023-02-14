@@ -844,7 +844,7 @@ $timezone = Auth::user()->timezone;
                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Pending Amount') }}</label>
                                                                     <span id="advance_cart_total_payable_amount_pending_{{$order->id}}">{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
-                                                                    <button data-id={{$order->id}} data-order={{$order->order_number}} data-amount={{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}  class="btn btn-solid order_placed_btn_pending" type="button">Pay</button>
+                                                                    <button data-id={{$order->id}} data-order={{$order->order_number}} data-amount={{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}  class="btn btn-solid order_placed_btn_pending topup_wallet_btn_for_pending" type="button">Pay</button>
                                                                 </li>
                                                                 @endif
                                                                 {{-- till here --}}
@@ -2071,6 +2071,7 @@ $timezone = Auth::user()->timezone;
 
 <!-- tip after order complete -->
 @include('frontend.modals.tip_after_order')
+@include('frontend.modals.pending-amount')
 
 <!-- end tip order after complete -->
 <!-- repeat order modal -->
@@ -2127,138 +2128,6 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 <!-- end repat order modal -->
-<script type="text/template" id="payment_method_template">
-    <% _.each(payment_options, function(payment_option, k){%>
-        <a class="nav-link <%= payment_option.slug == 'cash_on_delivery' ? 'active': ''%>" id="v-pills-<%= payment_option.slug %>-tab" data-toggle="pill" href="#v-pills-<%= payment_option.slug %>" role="tab" aria-controls="v-pills-wallet" aria-selected="true" data-payment_option_id="<%= payment_option.id %>"><%= payment_option.title %></a>
-    <% }); %>
-</script>
-<script type="text/template" id="payment_method_tab_pane_template">
-    <% if(payment_options == '') { %>
-        <h6>{{__('Payment Options Not Avaialable')}}</h6>
-    <% }else{ %>
-        <div class="modal-body pb-0">
-            <h5 class="text-17 mb-2">{{__('Debit From')}}</h5>
-            <form method="POST" id="cart_payment_form">
-                @csrf
-                @method('POST')
-                <% _.each(payment_options, function(payment_option, k){%>
-                    <div class="" id="" role="tabpanel">
-                        <label class="radio mt-2">
-                            <%= payment_option.title %>
-                            <input type="radio" name="cart_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.id %>" data-payment_option_id="<%= payment_option.id %>">
-                            <span class="checkround"></span>
-                        </label>
-                        <% if(payment_option.slug == 'stripe') { %>
-                            <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
-                                <div class="form-control">
-                                    <label class="mb-0">
-                                        <div id="stripe-card-element"></div>
-                                    </label>
-                                </div>
-                                <span class="error text-danger" id="stripe_card_error"></span>
-                            </div>
-                        <% } %>
-                        <% if(payment_option.slug == 'stripe_fpx') { %>
-                            <div class="col-md-12 mt-3 mb-3 stripe_fpx_element_wrapper option-wrapper d-none">
-                                <label for="fpx-bank-element">
-                                    FPX Bank
-                                </label>
-                                <div class="form-control">
-                                    <div id="fpx-bank-element">
-                                      <!-- A Stripe Element will be inserted here. -->
-                                    </div>
-                                </div>
-                                <span class="error text-danger" id="stripe_fpx_error"></span>
-                            </div>
-                        <% } %>
-
-                        <% if(payment_option.slug == 'stripe_ideal' ) { %>
-                            <div class="col-md-12 mt-3 mb-3 stripe_ideal_element_wrapper option-wrapper d-none">
-                                <label for="ideal-bank-element">
-                                    iDEAL Bank
-                                </label>
-                                <div class="form-control">
-                                    <div id="ideal-bank-element">
-                                      <!-- A Stripe Element will be inserted here. -->
-                                    </div>
-                                </div>
-
-                                <span class="error text-danger"id="error-message"></span>
-                            </div>
-                        <% } %>
-                        <% if(payment_option.slug == 'yoco') { %>
-                            <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
-                                <div class="form-control">
-                                    <div id="yoco-card-frame">
-                                    <!-- Yoco Inline form will be added here -->
-                                    </div>
-                                </div>
-                                <span class="error text-danger" id="yoco_card_error"></span>
-                            </div>
-                        <% } %>
-                        <% if(payment_option.slug == 'checkout') { %>
-                            <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper option-wrapper d-none">
-                                <div class="form-control card-frame">
-                                    <!-- form will be added here -->
-                                </div>
-                                <span class="error text-danger" id="checkout_card_error"></span>
-                            </div>
-                        <% } %>
-
-                        <% if(payment_option.slug == 'payphone') { %>
-                            <div class="col-md-12 mt-3 mb-3">
-                                <div id="pp-button"></div>
-                            </div>
-                        <% } %>
-
-                        <% if(payment_option.slug == 'plugnpay') { %>
-                            <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
-                                <div class="row no-gutters">
-                                    <div class="col-6">
-                                        <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" />
-                                    </div>
-                                    <div class="col-3">
-                                        <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY" />
-                                    </div>
-                                    <div class="col-3">
-                                        <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" />
-                                    </div>
-                                </div>
-
-                                <span class="error text-danger" id="plugnpay_card_error"></span>
-                            </div>
-                        <% } %>
-                    </div>
-                <% }); %>
-                {{-- <div class="" id="" role="tabpanel">
-                    <label class="radio mt-2">
-                        Apple Pay
-                        <input type="radio" name="cart_payment_method" id="radio-paytab_apple_pay" value="100" data-payment_option_id="100">
-                        <span class="checkround"></span>
-                    </label>
-                    <div class="col-md-12 mt-3 mb-3 paytab_apple_pay_element_wrapper option-wrapper d-none">
-                        <button type="button" id="applepay-btn">Pay Now</button>
-                        <span class="error text-danger" id="paytab_apple_pay_error"></span>
-                    </div>
-                </div> --}}
-                <div class="payment_response">
-                    <div class="alert p-0 m-0" role="alert"></div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer d-block text-center pt-0">
-         
-            <div class="row">
-                <div class="col-sm-12 p-0 d-flex flex-fill">
-                    <button type="button" style="width:100%;" class="btn btn-solid ml-1 pending_payment">Pay
-                        <img style="width:5%; display:none;" id="proceed_to_pay_loader" src="{{asset('assets/images/loader.gif')}}"/>
-                    </button>
-                </div>
-            </div>
-        </div>
-    <% } %>
-</script>
-
 
 @endsection
 @section('script')
@@ -2296,6 +2165,8 @@ $timezone = Auth::user()->timezone;
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 @endif
 <script src="{{ asset('js/tip_after_order.js') }}"></script>
+<script src="{{ asset('js/pending_payment.js') }}"></script>
+
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 @endif
@@ -2332,11 +2203,9 @@ $timezone = Auth::user()->timezone;
             $('.wallet_balance').html($('input[name="' + custom_tip_amount + '"]').val());
             var tip_amount = $('input[name="' + custom_tip_amount + '"]').val();
         }
-
         $("#wallet_amount").val(tip_amount);
         $("#cart_tip_amount").val(tip_amount);
         $("#order_number").val(order_number);
-
     });
     var ajaxCall = 'ToCancelPrevReq';
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
@@ -2702,109 +2571,32 @@ $timezone = Auth::user()->timezone;
         });
     });
 
-    $(document).on("click", ".order_placed_btn_pending", async function () {
+
+
+      $(document).delegate(".order_placed_btn_pending", "click", function() {
+
                     var dataId = $(this).attr("data-id");
                     var amount = $(this).attr("data-amount");
                     var order_number = $(this).attr("data-order");
                     $("#order_number").val(order_number);
-
-                    alert(amount);
-           $.ajax({
-                            data: {},
-                            type: "POST",
-                            dataType: 'json',
-                            url: payment_option_list_url,
-                            success: function (response) {
-                                if (response.status == "Success") {
-                                    // $('#v_pills_tab').html('');
-                                    $('#v_pills_tabContent_pending').html('');
-                                    // let payment_method_template = _.template($('#payment_method_template').html());
-                                    // $("#v_pills_tab").append(payment_method_template({ payment_options: response.data }));
-                                    let payment_method_tab_pane_template = _.template($('#payment_method_tab_pane_template').html());
-                                    $("#v_pills_tabContent_pending").append(payment_method_tab_pane_template({ payment_options: response.data }));
-                                    $('#proceed_to_pay_modal').modal('show');
-
-                                    //mohit sir branch code added by sohail
-                                    var advanceCartTotalPayableAmount = $('#advance_cart_total_payable_amount_pending_'+dataId).length;
-                                    if(advanceCartTotalPayableAmount == 1){
-                                        var amtHTML = 'Pending Amount: <span id="total_amt">'+$('#advance_cart_total_payable_amount_pending_'+dataId).html()+'</span>';
-                                        console.log(amtHTML);   
-                                        $('#proceed_to_pay_modal #pay-billLabel').html(amtHTML);
-                                    }else{
-                                        $('#proceed_to_pay_modal #total_amt').html($('#advance_cart_total_payable_amount_pending_'+dataId).html());
-                                    }
-                                    //till here
-                                    if(stripe_publishable_key != ''){
-                                        stripeInitialize();
-                                    }
-                                    if(stripe_fpx_publishable_key != ''){
-                                        stripeFPXInitialize();
-                                    }
-                                    if(stripe_ideal_publishable_key != ''){
-                                        stripeIdealInitialize();
-                                    }
-                                }
-                            },
-                            error: function (error) {
-                                var response = $.parseJSON(error.responseText);
-                                let error_messages = response.message;
-                                $.each(error_messages, function (key, error_message) {
-                                    $('#min_order_validation_error_' + error_message.vendor_id).html(error_message.message).show();
-                                });
-                            }
-                        });
-                        function stripeInitialize() {
-                            stripe = Stripe(stripe_publishable_key);
-                            console.log(stripe);
-                           // alert(stripe);
-                            var elements = stripe.elements();
-                            var style = {
-                                base: { fontSize: '16px', color: '#32325d', borderColor: '#ced4da' },
-                            };
-                            card = elements.create('card', { hidePostalCode: true, style: style });
-                            
-                            card.mount('#stripe-card-element');
-                        }
+                    $('#pending_amount').val(amount);
+          $('#pending_amount_modal').modal('show');
+         var payable_amount = $(this).attr('data-payableamount');
+        //  if(payable_amount > 0)
+        //  {
+        //     $('#topup_wallet').modal('show');
+        //  }
+        var input_name = "select" + order_number;
+        $('.wallet_balance').html(amount);
+         
+        $("#pending_amount").val(amount);
+        $("#wallet_amount_pending").val(amount);
+        $("#order_number").val(order_number);
     });
 
-   $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
-        var method = $(this).attr('id');
-        var code = method.replace('radio-', '');
-        if (code != '' && post_pay_edit_order == 0) {
-            $("#cart_payment_form .option-wrapper").addClass('d-none');
-            $("#cart_payment_form ."+code+"_element_wrapper").removeClass('d-none');
-        } else {
-            $("#cart_payment_form .option-wrapper").addClass('d-none');
-        }
 
-        if (code == 'yoco' && post_pay_edit_order == 0) {
-            // $("#cart_payment_form .yoco_element_wrapper").removeClass('d-none');
-            // Create a new dropin form instance
 
-            var yoco_amount_payable = $("input[name='cart_total_payable_amount']").val();
-            inline = sdk.inline({
-                layout: 'field',
-                amountInCents:  yoco_amount_payable * 100,
-                currency: 'ZAR'
-            });
-            // this ID matches the id of the element we created earlier.
-            inline.mount('#yoco-card-frame');
-        }
-        // else {
-        //     $("#cart_payment_form .yoco_element_wrapper").addClass('d-none');
-        // }
-
-        if (code == 'checkout' && post_pay_edit_order == 0) {
-            // $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
-            Frames.init(checkout_public_key);
-        }
-        // else {
-        //     $("#cart_payment_form .checkout_element_wrapper").addClass('d-none');
-        // }
-    });
-
-  
-
+    
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
