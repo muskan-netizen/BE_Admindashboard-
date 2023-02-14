@@ -1557,6 +1557,7 @@ class CartController extends BaseController
         $cart->total_tax = decimal_format($total_fixed_fee_tax + $total_service_fee_tax + $deliver_fee_charges_tax + $total_markup_fee_tax + $container_charges_tax + $total_taxable_amount);
         $cart->tax_details = $tax_details;
         $cart->total_taxable_amount = decimal_format($total_taxable_amount);
+        
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
@@ -1633,12 +1634,7 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-        $cal_tip_value_total =  $cart->total_tax;
-        $cart->tip = array(
-            ['label' => '5%', 'value' => decimal_format(0.05 * $cal_tip_value_total)],
-            ['label' => '10%', 'value' => decimal_format(0.1 * $cal_tip_value_total)],
-            ['label' => '15%', 'value' => decimal_format(0.15 * $cal_tip_value_total)]
-        );
+      
 
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
         $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
@@ -1679,6 +1675,14 @@ class CartController extends BaseController
             $cart->same_day_delivery_for_schedule =  $preferences->same_day_delivery_for_schedule;
             $cart->off_scheduling_at_cart =  $preferences->off_scheduling_at_cart;
         }
+
+        $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
+        
+        $cart->tip = array(
+            ['label' => '5%', 'value' => decimal_format(0.05 * $total_payable_amount_calc_tip)],
+            ['label' => '10%', 'value' => decimal_format(0.1 * $total_payable_amount_calc_tip)],
+            ['label' => '15%', 'value' => decimal_format(0.15 * $total_payable_amount_calc_tip)]
+        );
         return $cart;
 
 

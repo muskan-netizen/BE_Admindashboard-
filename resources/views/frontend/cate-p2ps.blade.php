@@ -350,6 +350,10 @@
                                                     <div class="form-check-inline d-block">
                                                         <input type="textbox" class="text_field custom-search" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="" data-key="{{$var->title}}">
                                                     </div>
+                                                @elseif( !empty($var->type) && $var->type == 6 )
+                                                    <input type="hidden" name="latitude" id="latitude" value="">
+                                                    <input type="hidden" name="longitude" id="longitude" value="">
+                                                    <input type="text" name="search_location" id="search_location" onkeyup="checkAddressString(this,'add')" placeholder="" class="form-control" value="">
                                                 @else
                                                     <div class="checkbox checkbox-success form-check-inline">
                                                         <input type="checkbox" name="" value="{{$opt->id}}" class="dynamic_checkbox" data-key="{{$var->title}}">
@@ -425,6 +429,7 @@
                                             <div class="row margin-res">
                                               @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
+                                                {{-- @dd($data->vendor->id) --}}
                                                 <?php /*$imagePath = $imagePath2 = '';
                                                 $mediaCount = count($data->media);
                                                 for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
@@ -459,10 +464,23 @@
                                                                         <p>{{ $data->translation_description }}</p>
                                                                     @endif
                                                                     </div>
-                                                                    @if($data->inquiry_only == 0)
-                                                                        <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
-                                                                    @endif
-                                                                
+                                                                    <div class="product-price-chat-sec">
+                                                                        @if($data->inquiry_only == 0)
+                                                                            <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        @endif
+                                                                        <div class="prod-details">
+                                                                            <div class="chat-button">
+                                                                                @if(getAdditionalPreference(['chat_button'])['chat_button'])
+                                                                                    <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$data->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$data->id}}"><i class="fa fa-comments" aria-hidden="true"></i></button>
+                                                                                    
+                                                                                @endif
+                                                                                @if(getAdditionalPreference(['call_button'])['call_button'])
+                                                                                    <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></button>
+                                                                                    
+                                                                                @endif
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                             </div>
                                                         </div>
                                                     </a>
@@ -489,8 +507,31 @@
     </div>
     <input type="hidden" id="vendor_id" value="{{ isset($vendor_id) ? $vendor_id : ''}}">
 </section>
+@php
+      $user_type = 'user';
+        $to_message = 'to_user';
+        $from_message = 'from_user';
+        $chat_type = 'user_to_user';
+        $startChatype = 'user_to_user';
+        $apiPre = 'client';
+        $rePre = 'user/chat/userToUser';
+        $fetchDe = 'fetchRoomByUserIdUserToUser';
+  @endphp
 @endsection
+
 @section('script')
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
 <script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
@@ -559,6 +600,15 @@
         filterProducts();
     });
 
+    // $(document).on('change','#search_location',function(){
+    //     $latitude = $('#latitude').val();
+    //     $longitude = $('#longitude').val();
+    //     alert('longitude >>>>>> ' +longitude);
+    //     alert('latitude >>>>>> ' +latitude);
+    //     alert($(this).val());
+    //     // filterProducts();
+    // });
+
     function filterProducts(page='', limit=''){
         var brands = [];
         var variants = [];
@@ -613,6 +663,10 @@
         });
         var range = $('.rangeSliderPrice').val();
         var order_type = $('.sortingFilter').val();
+        var latitude = $('#latitude').val();
+        console.log(latitude);
+        var longitude = $('#longitude').val();
+        console.log(longitude);
         var ajaxData = {
             "_token": "{{ csrf_token() }}",
             "brands": brands,
@@ -622,7 +676,9 @@
             "range": range,
             "order_type" : order_type,
             "dynamic_options" : dynamic_options,
-            "filter_type" : 1
+            "filter_type" : 1,
+            "latitude" : latitude,
+            "longitude" : longitude
         };
 
         if(limit != ''){
@@ -656,5 +712,62 @@
     }
 
     $('.select2-multiple').select2();
+
+    var autocomplete = {};
+    var autocompletesWraps = [];
+    var count = 1;
+    editCount = 0;
+    $(document).ready(function() {
+        
+        autocompletesWraps.push('def');
+        loadMap(autocompletesWraps);
+    });
+
+    function loadMap(autocompletesWraps) {
+        
+        // console.log(autocompletesWraps);
+        $.each(autocompletesWraps, function(index, name) {
+            const geocoder = new google.maps.Geocoder;
+
+            // if ($('#' + name).length == 0) {
+            //     return;
+            // }
+            //autocomplete[name] = new google.maps.places.Autocomplete(('.form-control')[0], { types: ['geocode'] }); console.log('hello');
+            autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById('search_location'), {
+                types: ['geocode']
+            });
+
+            google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
+                var place = autocomplete[name].getPlace();
+                if (!place.geometry) {
+                    window.alert("Autocomplete's returned place contains no geometry");
+                    return;
+                }
+                geocoder.geocode({
+                    'placeId': place.place_id
+                }, function(results, status) {
+
+                    if (status === google.maps.GeocoderStatus.OK) {
+                        const lat = results[0].geometry.location.lat();
+                        const lng = results[0].geometry.location.lng();
+                        document.getElementById('latitude').value = lat;
+                        document.getElementById('longitude').value = lng;
+                        filterProducts();
+                    }
+
+                });
+            });
+
+        });
+    }
+    function checkAddressString(obj,name)
+    {
+        if($(obj).val() == "")
+        {
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+            filterProducts();
+        }
+    }
 </script>
 @endsection

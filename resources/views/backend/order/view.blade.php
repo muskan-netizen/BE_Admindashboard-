@@ -159,6 +159,16 @@ $timezone = Auth::user()->timezone;
                                         @endIf
                                     </div>
                                 </div>
+                            </div>
+
+                            @if (!in_array($order->luxury_option_id, [6, 8]) && @$order->is_long_term !=1 )
+                            @if (isset($order->vendors) &&
+                            empty($order->vendors->first()->dispatch_traking_url) &&
+                            $order->vendors->first()->delivery_fee > 0 &&
+                            $order->vendors->first()->order_status_option_id >= 2 &&
+                            $order->vendors->first()->shipping_delivery_type == 'D')
+                            <div class='inner-div d-inline-block' style="float: right;">
+                                <form method='POST' action='"+full.destroy_url+"'>
 
                                 @if (!in_array($order->luxury_option_id, [6, 8]) && $order->is_long_term !=1 )
                                 @if (isset($order->vendors) &&

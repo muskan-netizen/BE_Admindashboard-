@@ -274,6 +274,7 @@ $(document).ready( async function () {
             }
         });
     }
+  
     async function vendorType(latitude, longitude, type = "delivery"){
         $.ajax({
             type: "get",
@@ -874,32 +875,35 @@ $(document).ready( async function () {
     $(document).delegate(".confirm_address_btn", "click", function () {
         let latitude = $("#address-latitude").val();
         let longitude = $("#address-longitude").val();
-        bindLatestCoords(latitude, longitude);
-
-        $.ajax({
-            type: "get",
-            dataType: 'json',
-            url: cart_details_url,
-            success: function (response) {
-                if (response.data != "") {
-                    let cartProducts = response.data.products;
-                    if (cartProducts != "") {
-                        $("#remove_cart_modal").modal('show');
-                        $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
-                    } else {
-                        getHomePageBanners(latitude, longitude);
-                        getHomePageCategoryMenu(latitude, longitude);
-                        getHomePage(latitude, longitude);
-                        let selected_address = $("#address-input").val();
-                        $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
-                    }
-                } else {
-                    getHomePageBanners(latitude, longitude);
-                    getHomePageCategoryMenu(latitude, longitude);
-                    getHomePage(latitude, longitude);
-                }
-            }
-        });
+        let address = $("#address-input").val();
+       
+        setSessionLocatin(latitude,longitude,address)
+        //bindLatestCoords(latitude, longitude);
+        
+        // $.ajax({
+        //     type: "get",
+        //     dataType: 'json',
+        //     url: cart_details_url,
+        //     success: async function (response) {
+        //         if (response.data != "") {
+        //             let cartProducts = response.data.products;
+        //             if (cartProducts != "") {
+        //                 $("#remove_cart_modal").modal('show');
+        //                 $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
+        //             } else {
+        //                 getHomePageBanners(latitude, longitude);
+        //                 getHomePageCategoryMenu(latitude, longitude);
+        //                 getHomePage(latitude, longitude);
+        //                 let selected_address = $("#address-input").val();
+        //                 $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
+        //             }
+        //         } else {
+        //             getHomePageBanners(latitude, longitude);
+        //             getHomePageCategoryMenu(latitude, longitude);
+        //             getHomePage(latitude, longitude);
+        //         }
+        //     }
+        // });
     });
 
     $(document).delegate("#remove_cart_button", "click", function () {
@@ -1075,6 +1079,19 @@ $(document).ready( async function () {
 
 
 });
+
+async function setSessionLocatin(latitude, longitude,address){
+    var cartData = (OrderStorage.getStorage('cartData') != '') ? JSON.parse(OrderStorage.getStorage('cartData')) : [];
+    var cartProductCount = OrderStorage.getStorage('cartProductCount');
+    if(cartProductCount > 0){
+        $("#remove_cart_modal").modal('show');
+        $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
+        $(".nav-tabs.vendor_mods").attr("data-mod", type);
+        return false;
+    }
+    let url = `/updateLocation?latitude=${latitude}&&longitude=${longitude}&&address=${address}` ;
+    window.location.href = url;
+}
 
 function addressInputDisplay(locationWrapper, inputWrapper, input) {
     $(inputWrapper).removeClass("d-none").addClass("d-flex");

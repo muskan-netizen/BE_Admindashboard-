@@ -98,7 +98,6 @@ class PostController extends FrontController
      */
     public function store(Request $request)
     {
-        
         try {
             // dd($request->all());
             
@@ -124,19 +123,17 @@ class PostController extends FrontController
             $product = $this->saveProduct($request);
             $fileIds = $this->uploadProductImages($product, $request);
 
-            $productImageSave = array();
-            if (@$fileIds) {
-                foreach ($fileIds as $key => $value) {
-                    $productImageSave[] = [
-                        'product_id' => $product->id,
-                        'media_id' => $value,
-                        'is_default' => 1
-                    ];
-                }
-            }
-            ProductImage::insert($productImageSave);
-
-
+            // $productImageSave = array();
+            // if (@$fileIds) {
+            //     foreach ($fileIds as $key => $value) {
+            //         $productImageSave[] = [
+            //             'product_id' => $product->id,
+            //             'media_id' => $value,
+            //             'is_default' => 1
+            //         ];
+            //     }
+            // }
+            // ProductImage::insert($productImageSave);
 
             if( clientPrefrenceModuleStatus('p2p_check') ) {
                 if( !empty($request->attribute) ) {
@@ -158,6 +155,8 @@ class PostController extends FrontController
                                             $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
                                             $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
                                             $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['latitude'] = null;
+                                            $insert_arr[$insert_count]['longitude'] = null;
                                             $insert_arr[$insert_count]['is_active'] = 1;
                                         }
                                         $insert_count++;
@@ -171,6 +170,8 @@ class PostController extends FrontController
                                             $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
                                             $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
                                             $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+                                            $insert_arr[$insert_count]['latitude'] = $option['latitude'] ?? null;
+                                            $insert_arr[$insert_count]['longitude'] = $option['longitude'] ?? null;
                                             $insert_arr[$insert_count]['is_active'] = 1;
 
                                         }

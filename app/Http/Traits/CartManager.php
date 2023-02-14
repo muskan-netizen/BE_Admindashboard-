@@ -586,7 +586,7 @@ trait cartManager{
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
                     $prod->is_recurring_booking = 0;
-
+                    $prod->schedule_slot_name = $prod->schedule_slot;
                     //if we required any additional price * multiply (Right now its for reccuring)
                     $prod->recurring_date_count = 1;
 
@@ -1096,9 +1096,9 @@ trait cartManager{
                 if( ($prod->scheduled_date_time =='') || ( strtotime($prod->scheduled_date_time) < strtotime($vendorStartDate) ) ){
                     $prod->scheduled_date_time = $getSlotingDate = $vendorStartDate ;
                 }
-                $prod->schedule_slot_name = $prod->schedule_slot;
+               
                 if(  $is_service_product_price_from_dispatch == 1){
-                  
+                 
                     $selected_dispatcher_time = Carbon::parse($prod->scheduled_date_time, 'UTC')->setTimezone( $user_timezone)->format('Y-m-d');
                     $scheduled_date_time = Carbon::parse($prod->scheduled_date_time)->format('Y-m-d');
                     $nowDate             = Carbon::now()->format('Y-m-d');
@@ -1114,7 +1114,7 @@ trait cartManager{
                        
                         $prod->schedule_slot_name =  date('h:i A',strtotime($start_time)).' - '.date('h:i A', strtotime($end_time));
                     }
-                      
+                  
                    
                     $prod->selected_dispatcher_time =$selected_dispatcher_time;
                 }
@@ -1379,7 +1379,7 @@ trait cartManager{
                 // if ($loyalty_amount_saved > 0) {
                 // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
                 // }
-
+            
                 $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
                 if($getAdditionalPreference['is_price_by_role'] == 1){
@@ -1423,7 +1423,7 @@ trait cartManager{
                 $container_charges_tax = $getalltaxes->container_charges_tax??0;
 
             }//End vendor loop
-
+            //pr(  $cartData->toArray());
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
