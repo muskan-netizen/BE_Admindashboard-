@@ -9,7 +9,7 @@ class VendorOrderProductStatus extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'order_id','order_vendor_id', 'order_status_option_id', 'vendor_id', 'product_id', 'order_vendor_product_id'
+        'order_id','order_vendor_id', 'order_status_option_id', 'vendor_id', 'product_id', 'order_vendor_product_id','dispatcher_status_option_id'
     ];
 
     protected $appends = ['status'];

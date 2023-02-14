@@ -78,10 +78,9 @@ class PlugnpayController extends FrontController
     	$responsePay = $this->createPaymentRequest($request->all());
         //\Log::info(json_encode($responsePay));
         $dataResponse = json_decode($responsePay);
-
         if($dataResponse->FinalStatus == 'badcard'){
             $response['status']         = 'Fail';
-            $response['msg']            = 'Invalid Card Details.';
+            $response['msg']            = $dataResponse->MErrMsg;
             $response['payment_from']   = $request->from;
             $response['route']          = '';
             return $response;

@@ -90,6 +90,7 @@ class AzulPaymentController extends FrontController
     public function beforePayment(Request $request)
     {
         $response = [];
+        $number = $this->orderNumber($request);
 
         if ($request->from == 'wallet') {
             $number = $this->orderNumber($request);
@@ -106,50 +107,27 @@ class AzulPaymentController extends FrontController
             ]);
         }
 
-        if ($request->from == 'cart') {
-            $number = $this->orderNumber($request);
-            $request->request->add([
-                'order_number' => $number,
-                'amount' => $request->amount
-            ]);
-        }
-        if ($request->from == 'tip') {
-            $number = $this->orderNumber($request);
-            $request->request->add([
-                'order_number' => $number,
-                'amount' => $request->amount
-            ]);
-        }
-
-        if ($request->from == 'pickup_delivery') {
-            $number = $this->orderNumber($request);
-            $request->request->add([
-                'order_number' => $number,
-                'amount' => $request->amount
-            ]);
-        }
-
         // \Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
         \Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         // dd($responsePay);
-        if ($dataResponse['ok'] === false) {
+        if ($dataResponse['ok'] === false && $this->mode) {
             $response['status'] = 'Fail';
             $response['msg'] = 'Invalid Card Details.';
             $response['payment_from'] = $request->from;
             $response['route'] = '';
             return $response;
         }
-        if (isset($dataResponse['ok']) && $dataResponse['ok'] === true) {
+        if (isset($dataResponse['ok']) && $dataResponse['ok'] === $this->mode) {
             // \Log::info('Done');
 
             if ($request->from == 'tip') {
-                $payment = Payment::where('transaction_id', $dataResponse['data']->CustomOrderId . '_' . $number)->first();
+                $payment = Payment::where('transaction_id', $request->order_number . '_' . $number)->first();
             } else if ($request->from == 'subscription') {
                 $payment = Payment::where('transaction_id', $request->subsid . '_' . $number)->first();
             } else {
-                $payment = Payment::where('transaction_id', $dataResponse['data']->CustomOrderId)->first();
+                $payment = Payment::where('transaction_id', $request->order_number)->first();
             }
 
             // \Log::info(json_encode($request->all()));
@@ -163,7 +141,7 @@ class AzulPaymentController extends FrontController
             } elseif ($payment->type == 'wallet') {
                 return $this->completeOrderWallet($dataResponse, $payment, $request->amount);
             } elseif ($payment->type == 'tip') {
-                return $this->completeOrderTip($dataResponse, $payment, $request->amount);
+                return $this->completeOrderTip($dataResponse, $payment, $request->amount, $request);
             } elseif ($payment->type == 'subscription') {
                 return $this->completeOrderSubs($dataResponse, $payment, $request);
             } elseif ($payment->type == 'pickup_delivery') {
@@ -183,7 +161,7 @@ class AzulPaymentController extends FrontController
     public function completeOrderCart($request, $payment)
     {
         $order = Order::where('order_number', $payment->transaction_id)->first();
-        if (isset($request['ok']) && $request['ok'] == true) {
+        if (isset($request['ok']) && $request['ok'] == $this->mode) {
             $order->payment_status = '1';
             $order->save();
 
@@ -278,7 +256,7 @@ class AzulPaymentController extends FrontController
 
     public function completeOrderWallet($request, $payment, $amount)
     {
-        if (isset($request['ok']) && $request['ok'] === true) {
+        if (isset($request['ok']) && $request['ok'] === $this->mode) {
 
             $data['wallet_amount'] = $amount;
             $data['transaction_id'] = $payment->transaction_id;
@@ -297,11 +275,11 @@ class AzulPaymentController extends FrontController
         }
     }
 
-    public function completeOrderTip($request, $payment, $amount)
+    public function completeOrderTip($request, $payment, $amount, $requestdata)
     {
-        if (isset($request['ok']) && $request['ok'] == true) {
+        if (isset($request['ok']) && $request['ok'] == $this->mode) {
             $data['tip_amount'] = $amount;
-            $data['order_number'] = $payment->transaction_id;
+            $data['order_number'] = $requestdata->order_number;
             $data['transaction_id'] = $payment->transaction_id;
 
             $request = new \Illuminate\Http\Request($data);
@@ -321,7 +299,7 @@ class AzulPaymentController extends FrontController
 
     public function completeOrderSubs($request, $payment, $requestdata)
     {
-        if (isset($request['ok']) && $request['ok'] == true) {
+        if (isset($request['ok']) && $request['ok'] == $this->mode) {
 
             $data['transaction_id'] = $payment->transaction_id;
             $data['payment_option_id'] = 50;
@@ -346,7 +324,7 @@ class AzulPaymentController extends FrontController
 
     public function completePickupDelivery($request, $payment, $requestdata)
     {
-        if (isset($request['ok']) && $request['ok'] == true) {
+        if (isset($request['ok']) && $request['ok'] == $this->mode) {
 
             $data['payment_option_id'] = 50;
             $data['transaction_id'] = $payment->transaction_id;

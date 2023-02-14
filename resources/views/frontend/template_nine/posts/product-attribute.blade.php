@@ -52,7 +52,36 @@
                     @php  $counter++; @endphp
                 @endif
             @endforeach
-        @else
+            @elseif( !empty($var->type) && $var->type == 6 )
+                @foreach($var->option as $key => $opt)
+                    <div class="form-group mb-3 w-100" id="addressInput">
+                        <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                        <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
+                        <div class="input-group">
+                            <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][latitude]" id="latitude" @if(in_array($opt->id, $attribute_value))  
+                            value="{{$attribute_latitude[$opt->id]}}"
+                            @else
+                            value=""
+                            @endif/>
+                            <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][longitude]" id="longitude" @if(in_array($opt->id, $attribute_value))  
+                            value="{{$attribute_longitude[$opt->id]}}"
+                            @else
+                            value=""
+                            @endif/>
+                            <input type="text" name="attribute[{{$var->id}}][option][{{$counter}}][value]" id="add-address" onkeyup="checkAddressString(this,'add')" placeholder="" class="form-control" @if(in_array($opt->id, $attribute_value))  
+                            value="{{$attribute_key_value[$opt->id]}}"
+                            @else
+                            value=""
+                            @endif>
+                        </div>
+                        <span class="invalid-feedback" role="alert">
+                            <strong></strong>
+                        </span>
+                    </div>
+                @endforeach
+            @else
             @foreach($var->option as $key => $opt)
                 <div class="checkbox checkbox-success form-check-inline pr-3">
                     <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
@@ -70,8 +99,54 @@
 
 @endforeach
 
-
 <script>
+var autocomplete = {};
+    var autocompletesWraps = [];
+    var count = 1;
+    editCount = 0;
+    $(document).ready(function() {
+        
+        autocompletesWraps.push('def');
+        loadMap(autocompletesWraps);
+    });
+
+    function loadMap(autocompletesWraps) {
+        
+        // console.log(autocompletesWraps);
+        $.each(autocompletesWraps, function(index, name) {
+            const geocoder = new google.maps.Geocoder;
+            
+            // if ($('#' + name).length == 0) {
+            //     return;
+            // }
+            
+            //autocomplete[name] = new google.maps.places.Autocomplete(('.form-control')[0], { types: ['geocode'] }); console.log('hello');
+            autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById('add-address'), {
+                types: ['geocode']
+            });
+
+            google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
+                var place = autocomplete[name].getPlace();
+                if (!place.geometry) {
+                    window.alert("Autocomplete's returned place contains no geometry");
+                    return;
+                }
+                geocoder.geocode({
+                    'placeId': place.place_id
+                }, function(results, status) {
+
+                    if (status === google.maps.GeocoderStatus.OK) {
+                        const lat = results[0].geometry.location.lat();
+                        const lng = results[0].geometry.location.lng();
+                        document.getElementById('latitude').value = lat;
+                        document.getElementById('longitude').value = lng;
+                    }
+                });
+            });
+
+        });
+    }
+
  $('.select2-multiple').select2();
 </script>
            

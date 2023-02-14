@@ -510,6 +510,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('user/address/{id}', 'Front\AddressController@address')->name('user.address');
 	Route::get('user/checkout', 'Front\UserController@checkout')->name('user.checkout');
 	Route::get('user/profile', 'Front\ProfileController@profile')->name('user.profile');
+	Route::get('user/my-ads', 'Front\ProfileController@getMyAds')->name('user.productList');
+	Route::post('user/update-post-status', 'Front\ProfileController@updatePostStatus')->name('user.updatePostStatus');
+	Route::get('user/notification', 'Front\ProfileController@getNotification')->name('user.notification');
 	Route::get('user/logout', 'Front\CustomerAuthController@logout')->name('user.logout');
 	Route::get('verifyAccountProcess', 'Front\UserController@sendToken')->name('email.send');
 	Route::get('user/editAddress/{id}', 'Front\AddressController@edit')->name('editAddress');

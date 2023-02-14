@@ -39,10 +39,28 @@ if(session()->has('applocale')){
 
                 <div class="col-lg-7 text-right ml-auto al_z_index p-0"  >
                     <ul class="header-dropdown ml-auto">
-
+                        @if(Auth::user())
+                        <li class="search-b">
+                            <a href="{{route('user.notification')}}" > <img  class="img-fluid img-white-s" src="{{asset('images/g4.png')}}"> <img  class="img-fluid img-black-s" src="{{asset('images/g4-white.png')}}">Notifications </a>
+                        </li>
+                        <li class="search-b">
+                            <a href="{{route('userChat.UserToUserChat')}}" > <img  class="img-fluid img-white-s" src="{{asset('images/g3.png')}}"><img  class="img-fluid img-black-s" src="{{asset('images/g3-white.png')}}"> Chats </a>
+                        </li>
+                        @if($client_preference_detail->show_wishlist==1)
+                        <li class="search-b">
+                            <a href="{{route('user.wishlists')}}" > <img  class="img-fluid img-white-s" src="{{asset('images/g2.png')}}"> <img  class="img-fluid img-black-s" src="{{asset('images/g2-white.png')}}">Favourite </a>
+                        </li>
+                        @endif
+                        <li class="search-b">
+                            <a href="{{route('user.productList')}}"> <img  class="img-fluid img-white-s" src="{{asset('images/g5.png')}}"> <img  class="img-fluid img-black-s" src="{{asset('images/g5-white.png')}}">My Ads</a>
+                        </li>
+                        {{-- <li class="search-b">
+                            <a href="{{route('user.searches')}}"> <img  class="img-fluid img-white-s" src="{{asset('images/g1.png')}}"><img  class="img-fluid img-black-s" src="{{asset('images/g1-white.png')}}"> My Searches </a>
+                        </li> --}}
+                        @endif
                         @if($client_preference_detail->header_quick_link == 1)
                         @if( p2p_module_status() )
-                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Sell') }}</span></a></li>
+                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
                         @endif
                         <li class="onhover-dropdown quick-links quick-links">
                             <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
@@ -75,7 +93,7 @@ if(session()->has('applocale')){
                             </ul>
                         </li>
                         @endif
-                        @if(count($languageList) > 1)
+                        {{-- @if(count($languageList) > 1) --}}
                         <li class="onhover-dropdown change-language">
                             <a href="javascript:void(0)">
                                 <!-- <span class="alLanguageSign">{{$applocale}}</span> -->
@@ -93,7 +111,7 @@ if(session()->has('applocale')){
                                 @endforeach
                             </ul>
                         </li>
-                        @endif
+                        {{-- @endif --}}
 
                         @if(count($currencyList) > 1)
                         <li class="onhover-dropdown change-currency">
@@ -154,11 +172,11 @@ if(session()->has('applocale')){
                                     @endif
                                     @endif
                                     @include('layouts.store.search_template')
-                                    @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
+                                    {{-- @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
                                     <div class="icon-nav mr-2 d-none d-lg-block mr-0"> <a class="fav-button mr-0" href="{{route('user.wishlists')}}">
                                         <i class="fa fa-heart" aria-hidden="true"></i>
                                     </a> </div>
-                                    @endif @endif
+                                    @endif @endif --}}
                                     {{-- <div class="icon-nav d-none d-lg-inline-block">
                                         <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}"> @csrf <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}"> </form>
                                         <ul class="d-flex align-items-center m-0">
@@ -352,7 +370,7 @@ if(session()->has('applocale')){
                             </div>
                         </li>
                         <li class="onhover-div pl-0 shake-effect">
-                                                @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
+                                                @if($client_preference_detail) @if($client_preference_detail->cart_enable==1 && $client_preference_detail->p2p_check !=1)
                                                 <a class="btn btn-solid d-flex align-items-center p-0" href="{{route('showCart')}}">
                                                     <span class="mr-1"><i class="fa fa-shopping-cart" aria-hidden="true"></i></span>
 

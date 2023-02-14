@@ -1516,9 +1516,9 @@ class OrderController extends BaseController
                  
                     if(( $AdditionalPreference['is_service_product_price_from_dispatch'] == 1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
                        
-                     
-                        $order_dispatchs = $this->placeRequestToDispatchSingleProductUpdate($request->order_id, $request->vendor_id, $dispatch_domain, $prod,
-                        $is_restricted,$request);
+                        $dispatch_domain['rejectable_order'] = 1;
+                        $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                        //$order_dispatchs = $this->placeRequestToDispatchSingleProductUpdate($request->order_id, $request->vendor_id, $dispatch_domain, $prod,$is_restricted,$request);
                        
                         if ($order_dispatchs && $order_dispatchs == 1) {
                             $OnDemand = 1;
@@ -1531,10 +1531,6 @@ class OrderController extends BaseController
                         //echo $Appointment . 'app';
 
                         if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
-
-
-
-                           
 
 
                             $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);

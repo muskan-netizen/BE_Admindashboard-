@@ -222,7 +222,7 @@ class ProductController extends BaseController
 
         $taxCate = TaxCategory::all();
 
-        $celeb_ids = $related_ids = $upSell_ids = $crossSell_ids = $existOptions = $addOn_ids = $attribute_value = $attribute_key_value = array();
+        $celeb_ids = $related_ids = $upSell_ids = $crossSell_ids = $existOptions = $addOn_ids = $attribute_value = $attribute_key_value = $attribute_latitude = $attribute_longitude = array();
 
         foreach ($product->addOn as $key => $value) {
             $addOn_ids[] = $value->addon_id;
@@ -263,6 +263,12 @@ class ProductController extends BaseController
                 foreach($product->ProductAttribute as $key => $val) {
                     $attribute_value[] = $val->attribute_option_id;
                     $attribute_key_value[$val->attribute_option_id] = $val->key_value;
+                    if(!empty($val->latitude)){
+                        $attribute_latitude[$val->attribute_option_id] = $val->latitude;
+                    }
+                    if (!empty($val->longitude)) {
+                        $attribute_longitude[$val->attribute_option_id] = $val->longitude;
+                    }
                 }
             }
         }
@@ -357,7 +363,7 @@ class ProductController extends BaseController
         //mohit sir branch code added by sohail
         $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();
 
-        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value,  'delivery_slots' => $delivery_slots,  'pincodes' => $pincodes]);
+        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude]);
     }
 
     /**
@@ -424,6 +430,8 @@ class ProductController extends BaseController
                                             $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
                                             $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
                                             $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['latitude'] = null;
+                                            $insert_arr[$insert_count]['longitude'] = null;
                                             $insert_arr[$insert_count]['is_active'] = 1;
                                         }
                                         $insert_count++;
@@ -437,6 +445,8 @@ class ProductController extends BaseController
                                             $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
                                             $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
                                             $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+                                            $insert_arr[$insert_count]['latitude'] = $option['latitude'] ?? null;
+                                            $insert_arr[$insert_count]['longitude'] = $option['longitude'] ?? null;
                                             $insert_arr[$insert_count]['is_active'] = 1;
 
                                         }
@@ -553,6 +563,8 @@ class ProductController extends BaseController
             if (checkColumnExists('products', 'hyper_local_delivery')) {
                 $product->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
             }
+            $product->is_slot_from_dispatch        = ($request->has('is_slot_from_dispatch') && $request->is_slot_from_dispatch == 'on') ? 1 : 0;
+            $product->is_show_dispatcher_agent     = ($request->has('is_show_dispatcher_agent') && $request->is_show_dispatcher_agent == 'on') ? 1 : 0;
             $product->save();
             if($request->has('slot_ids') && $request->slot_ids != ''){
                 $product->syncProductDeliverySlot()->sync($request->slot_ids);

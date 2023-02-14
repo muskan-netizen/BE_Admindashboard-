@@ -81,6 +81,7 @@ async function getDiverPrice(formData){
                OrderSessionStorage.setStorageSingle('dispatcherAgent',JSON.stringify(dispatch_agent));
                $('#driver_sort_by').show();
                await renderAgent();
+              
             } else{
                 Swal.fire({
                     icon: 'error',
@@ -103,13 +104,14 @@ async function getDiverPrice(formData){
 async function renderAgent(filter=0){
     var html = '';
     var AgentData= JSON.parse(OrderSessionStorage.getStorage('dispatcherAgent'));
+    console.log(AgentData);
     var product_variant_id = OrderSessionStorage.getStorage('variant_id');
    
     if(AgentData.length > 0){
         AgentData.forEach(function(data,index) {
             var dirvePrice = data?.product_prices[0]?.price || 0;
             let price = NumberFormatHelper.formatPrice(dirvePrice);
-                html +=`<div class="card dispatcherAgent" data-agent_id="${data?.id}" data-agent_price="${dirvePrice}"  data-agent_rating="${data.rating}" data-product_variant_id=${product_variant_id}>
+                html +=`<div class="card dispatcherAgent" data-agent_id="${data?.id}" data-agent_price="${dirvePrice}"  data-agent_rating="${data.rating}" data-product_variant_id="${product_variant_id}"  data-agent_averageTaskComplete="${data?.averageTaskComplete}">
                    <div class="card-body p-3 bg-light">
                      <div class="d-flex justify-content-between">
                          <div class="userDetails d-flex align-items-center">
@@ -144,6 +146,8 @@ async function renderAgent(filter=0){
     }
 
        $(`#listofdrivers`).html(html);
+       console.log('renderAgent');
+       await sortAgentBox()
 }
 
 $(document).on('change','#driver_sort_by',function(e){
@@ -161,8 +165,6 @@ $(document).on('change','#onDemandBookingdate',function(e){
 async function getGerenalSlot(formData){
     axios.post(`/get_gerenal_slot`, formData)
     .then(async response => {
-     console.log(response.data);
-     console.log(response.data.html);
         if(response.data.status == "Success"){
           var html = response.data.html;
             $('#productPrice_slot').html(html);
@@ -214,14 +216,12 @@ $(document).on('click','.dispatcherAgent',function(e){
       }).then(({value}) => {
         console.log(value);
             if (value === true) {
-                console.log(that);
                 $(`#listofdrivers`).html('');
                 $('#productPriceModel').modal('hide');
                 addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that,dispatcherAgentData);
             } 
       });
    
-    // console.log('variant_id '+ variant_id + " agent_price "+ agent_price + " agent_id " + agent_id+ " vendor_id " + vendor_id + " add_to_cart_url " + add_to_cart_url+ " product_id " + product_id+ " that " + that);
 })
 
 async function sortAgentBox(){
@@ -230,15 +230,20 @@ async function sortAgentBox(){
     $wrap.find('.dispatcherAgent').sort(function(a, b) 
     {
         if($sortBy ==2){
-            console.log('agent_rating');
+            console.log(' sortAgentBox by agent_rating');
             return +b.dataset.agent_rating -
             +a.dataset.agent_rating;
         }else if($sortBy == "low_to_high"){
-            console.log('agent_price');
+            console.log('sortAgentBox by agent_price low_to_high');
             return +a.dataset.agent_price - +b.dataset.agent_price;
         }
-        else if($sortBy == "high_to_low"){
+        else if($sortBy == "high_to_low"){  
+            console.log('sortAgentBox by agent_price high_to_low');
             return +b.dataset.agent_price - +a.dataset.agent_price;
+        }else{
+            console.log('sortAgentBox by averageTaskComplete');
+            return +b.dataset.agent_rating -
+            +a.dataset.agent_rating;
         }
        
     })

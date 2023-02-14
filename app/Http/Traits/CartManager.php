@@ -586,7 +586,7 @@ trait cartManager{
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
                     $prod->is_recurring_booking = 0;
-
+                    $prod->schedule_slot_name = $prod->schedule_slot;
                     //if we required any additional price * multiply (Right now its for reccuring)
                     $prod->recurring_date_count = 1;
 
@@ -1096,9 +1096,9 @@ trait cartManager{
                 if( ($prod->scheduled_date_time =='') || ( strtotime($prod->scheduled_date_time) < strtotime($vendorStartDate) ) ){
                     $prod->scheduled_date_time = $getSlotingDate = $vendorStartDate ;
                 }
-                $prod->schedule_slot_name = $prod->schedule_slot;
+               
                 if(  $is_service_product_price_from_dispatch == 1){
-                  
+                 
                     $selected_dispatcher_time = Carbon::parse($prod->scheduled_date_time, 'UTC')->setTimezone( $user_timezone)->format('Y-m-d');
                     $scheduled_date_time = Carbon::parse($prod->scheduled_date_time)->format('Y-m-d');
                     $nowDate             = Carbon::now()->format('Y-m-d');
@@ -1114,7 +1114,7 @@ trait cartManager{
                        
                         $prod->schedule_slot_name =  date('h:i A',strtotime($start_time)).' - '.date('h:i A', strtotime($end_time));
                     }
-                      
+                  
                    
                     $prod->selected_dispatcher_time =$selected_dispatcher_time;
                 }
@@ -1354,30 +1354,32 @@ trait cartManager{
                         $delivery_status = 0;
                     }
                 }
+                if($is_service_product_price_from_dispatch !=1){ // no need to check slot and web styling 
 
-                if(($vendorData->vendor->show_slot == 0) && ($is_service_product_price_from_dispatch !=1)){
-                    if( ($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty()) ){
-                        $vendorData->is_vendor_closed = 1;
-                        if($delivery_status != 0){
+                    if(($vendorData->vendor->show_slot == 0) ){
+                        if( ($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty()) ){
+                            $vendorData->is_vendor_closed = 1;
+                            if($delivery_status != 0){
+                                $delivery_status = 0;
+                            }
+                        }else{
+                            $vendorData->is_vendor_closed = 0;
+                        }
+                    }
+                 
+                    $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+                    if((isset($set_template)  && $set_template->template_id != 9) ){
+                        if($vendorData->vendor->$action == 0){
+                            $vendorData->vendot_type_not_active = 1;
+                            $vendorData->is_vendor_closed = 1;
                             $delivery_status = 0;
                         }
-                    }else{
-                        $vendorData->is_vendor_closed = 0;
-                    }
-                }
-                //pr();
-                $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-                if(isset($set_template)  && $set_template->template_id != 9){
-                    if($vendorData->vendor->$action == 0){
-                        $vendorData->vendot_type_not_active = 1;
-                        $vendorData->is_vendor_closed = 1;
-                        $delivery_status = 0;
                     }
                 }
                 // if ($loyalty_amount_saved > 0) {
                 // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
                 // }
-
+            
                 $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
                 if($getAdditionalPreference['is_price_by_role'] == 1){
@@ -1421,7 +1423,7 @@ trait cartManager{
                 $container_charges_tax = $getalltaxes->container_charges_tax??0;
 
             }//End vendor loop
-
+            //pr(  $cartData->toArray());
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {

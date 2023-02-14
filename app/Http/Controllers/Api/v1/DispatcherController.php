@@ -14,22 +14,25 @@ class DispatcherController extends Controller
     
     public function categoryProductSyncDispatcher(Request $request)
     {
-      
+        
         if(@$request->order_panel_id){
               
             $dispatcher_service_key_url = @$request->dispatcher_url;
             $dispatcher_service_code    = @$request->dispatcher_code;
             $client_preferences = ClientPreference::first();
-           
+        
             $categories = [];
             if(@$dispatcher_service_key_url && !empty($dispatcher_service_code)){
-                $categories = Category::with(['translation','products','products.variant'])
+                $categories = Category::with(['primary','products.primary','products.variant'])->whereHas('products')
                 // ->chunk(10, function($inspectors) use($client_preferences) {
                 //     $this->sendDataToDispatcher($client_preferences , $inspectors);
                 // });
                 ->get();
+                
                 $categories = $categories->toArray();
+              
             }
+            
         $DatabaseName = DB::connection()->getDatabaseName();
         $this->connectDb();
         SyncToDispatcher::dispatch($request->order_panel_id,$DatabaseName, $categories, $dispatcher_service_key_url,$dispatcher_service_code)->onQueue('sync_dispatcher');
