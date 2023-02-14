@@ -155,7 +155,7 @@ div#attribute_section .col-sm-9 .form-check-inline.w-100 {
 </style>
 @endsection
 @php
-$lastmileShow = array('7','10','11');
+$lastmileShow = array('7','11'); //,'10'
 
 $brandNotShow = array('7','8','12');
 $on_demand_check = array('8','12');
@@ -511,6 +511,17 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                             </div>
 
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Security Amount'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('security_amount', decimal_format($product->security_amount), ['class'=>'form-control', 'id' => 'security_amount', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
+                                {!! Form::number('variant_quantity[]', $product->variant[0]->quantity, ['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+
                         </div>
                         {{-- <div class="row mb-2">
 
@@ -679,12 +690,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
                     @endif
-                    @if( p2p_module_status() )
-                        @if(!empty($productAttributes))
-                        <div id="attribute_section">
-                            @include('layouts.shared.product-attribute')
-                        </div>
-                        @endif
+                @endif
+                @if( p2p_module_status() || is_attribute_enabled())
+                    @if(!empty($productAttributes))
+                    <div id="attribute_section">
+                        @include('layouts.shared.product-attribute')
+                    </div>
                     @endif
                 @endif
             </div>
@@ -879,13 +890,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <input type="checkbox" bid="" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box" data-color="#43bee1" @if($product->age_restriction == 1) checked @endif>
                         </div>
                         @endif
-
-
-
-
-
                     </div>
-
 
                     <div class="row">
                         <div class="col-sm-12 mb-2">
@@ -1626,7 +1631,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 @include('backend.catalog.modals')
 @endsection
 
-@section('script')
+@section('script-bottom')
 
 <link href="{{asset('assets/css/dropzone.css')}}" rel="stylesheet" />
 <script src="{{asset('assets/js/dropzone.js')}}"></script>

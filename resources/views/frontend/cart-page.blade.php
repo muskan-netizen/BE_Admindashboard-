@@ -190,9 +190,6 @@
                         $other_taxes_string = $cart_details->other_taxes_string;
                     @endphp
                     @foreach ($cart_details->products as $product)
-                        {{-- @php
-            dd($product->is_vendor_closed.' -- '.$product->closed_store_order_scheduled);
-            @endphp --}}
                         <div id="thead_{{ $product->vendor->id }}" class="mt-2 px-0">
                             <div class="row">
 
@@ -263,8 +260,8 @@
 
                             @foreach ($product->vendor_products as $vendor_product)
                                 {{-- @php
-            pr($vendor_product);
-            @endphp --}}
+                                pr($vendor_product->schedule_slot_name);
+                                @endphp --}}
                                 <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
                                     <div class="product-img col-3 col-md-2">
@@ -370,6 +367,22 @@
                                                         </div>
 
                                                     </div>
+                                                    @if ($cart_details->pharmacy_check == 1)
+                                                    
+                                                    @if ($vendor_product->product->pharmacy_check == 1)
+                                                        <button type="button"
+                                                            class="float-left btn btn-solid prescription_btn mt-2"
+                                                            data-cart="{{ $vendor_product->cart_id }}"
+                                                            data-product="{{ $vendor_product->product->id }}"
+                                                            data-vendor_id="{{ $vendor_product->vendor_id }}">{{ __('Add Prescription') }}</button>
+                                                        @if ($vendor_product->cart_product_prescription > 0)
+                                                            <h4 class="mt-0 mb-1"
+                                                                style="word-wrap: break-word; line-height:20px">
+                                                                <strong>{{ $vendor_product->cart_product_prescription }}
+                                                                    {{ __('Prescription Added') }}</strong></h4>
+                                                        @endif
+                                                    @endif
+                                                @endif
                                                 </div>
                                             @elseif(($serviceType == 'appointment') || ($is_service_product_price_from_dispatch_forOnDemand ==1))
                                                 <div class="col-10 col-md-4 text-md-center order-md-3">
@@ -408,6 +421,7 @@
                                                     </div>
 
                                                     @if ($cart_details->pharmacy_check == 1)
+                                                    
                                                         @if ($vendor_product->product->pharmacy_check == 1)
                                                             <button type="button"
                                                                 class="float-left btn btn-solid prescription_btn mt-2"
@@ -440,9 +454,9 @@
                                             </div>
 
                                         </div>
-                                        @if ($serviceType == 'rental')
+                                        
+                                        @if($serviceType == 'rental')
                                             <hr class="my-2">
-
                                             <div class="row align-items-md-center alRentalStartDate">
                                                 <div class="col-3">
                                                     <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
@@ -454,9 +468,13 @@
                                                     <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->end_date_time)) }}
                                                     </p>
                                                 </div>
+                                                <div class="col-3">
+                                                    <h6 class="m-0 pl-0" style="font-weight: 600;">{{ __('Security Amount') }}</h6>
+                                                    <p>{{ Session::get('currencySymbol') . decimal_format($vendor_product->product->security_amount) }}</p>
+                                                </div>
                                             </div>
                                         @endif
-
+                                        
                                         @if (count($vendor_product->addon) != 0)
                                             <hr class="my-2">
                                             <div class="row align-items-md-center add_head">
@@ -552,7 +570,7 @@
                                                              @if($is_service_product_price_from_dispatch_forOnDemand ==1)
                                                                 <p class="m-0 mx-2">{{ $vendor_product->selected_dispatcher_time   }}  </p>
                                                                 
-                                                                <p class="m-0" {{ $vendor_product->schedule_slot_name }}</p>
+                                                                <p class="m-0" > {{$vendor_product->schedule_slot_name}}</p>
                                                                
                                                             @endif
                                                         </div>
@@ -625,6 +643,10 @@
                                         @endif
                                         @if( $vendor_product->product->same_day_delivery ==  1 && $vendor_product->product->next_day_delivery ==  1)
                                             @include('frontend.cart.deliverySlotSelection')
+                                        @endif
+
+                                        @if ($vendor_product->product->is_long_term_service == 1)
+                                            @include('frontend.cart.longTermTimeSelection')
                                         @endif
 
                                     </div>
@@ -1102,13 +1124,31 @@
                                         </b>
                                     </div>
                                 </div>
+                            @if ($serviceType == 'rental')
+                                <div class="row">
+                                    <div class="col-6">{{ __('Security Amount') }}</div>
+                                    <div class="col-6 text-right">
+                                        <b>{{ Session::get('currencySymbol') . decimal_format($cart_details->security_amount) }}</b>
+                                    </div>
+                                </div>
                                 <hr class="my-2">
                             @endif
+
                             @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
                                 <div class="row">
                                     
                                     <div class="col-6">{{__('Delivery Slot Fees')}}</div>
                                     <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
+                            @endif
+                            @if ($cart_details->delivery_charges > 0)
+                                <div class="row">
+                                    <div class="col-6">{{ __('Total Delivery Fee') }}</div>
+                                    <div class="col-6 text-right"><b>
+                                            @if ($additionalPreference['is_token_currency_enable'])
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->delivery_charges) }}
+                                            @endif
+                                        </b>
+                                    </div>
                                 </div>
                                 <hr class="my-2">
                             @endif
@@ -1551,12 +1591,23 @@
                                     <input type="hidden" id="edit_order_schedule_slot"
                                         value="{{ $schedule_slots_edit }}">
                                 @endif
-
+                                @if ($serviceType == 'rental')
+                                    <div class="text-sm-left mb-2">
+                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">Agree Term</a>
+                                    </div>
+                                @endif
+                                @php
+                                    $disablePlaceBtn = '';
+                                    if(count($cart_details->user_allAddresses) == 0 || $serviceType == 'rental'){
+                                        $disablePlaceBtn = 'disabled';
+                                    }
+                                @endphp
                                 @if ($additionalPreference['is_token_currency_enable'] == 1)
+                               
                                     @if ($cart_details->wallet_amount_used > 0)
                                         @if ($cart_error_message == '')
                                             <button id="order_placed_btn" class="btn btn-solid d-none" type="button"
-                                                {{ count($cart_details->user_allAddresses) == 0 ? 'disabled' : '' }}>{{ __('Place Order') }}</button>
+                                                {{ $disablePlaceBtn}}>{{ __('Place Order') }}</button>
                                         @else
                                             <div class="alert p-0" role="alert">
                                                 <div class="alert-danger p-1">{{ $cart_error_message }}</div>
@@ -1569,7 +1620,7 @@
                                 @else
                                     @if ($cart_error_message == '')
                                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button"
-                                            {{ count($cart_details->user_allAddresses) == 0 ? 'disabled' : '' }}>{{ __('Place Order') }}</button>
+                                        {{ $disablePlaceBtn}}>{{ __('Place Order') }}</button>
                                     @else
                                         <div class="alert p-0" role="alert">
                                             <div class="alert-danger p-1">{{ $cart_error_message }}</div>
@@ -1679,7 +1730,9 @@
     </div>
 
 @endif
-
+@if ($serviceType == "rental")
+    @include('frontend.cart.rentalConsentFormModal')
+@endif
 
 <script>
     $(document).ready(function() {
@@ -1721,6 +1774,24 @@
                 }
             }]
         });
+        var serviceType = "{{$serviceType}}";
+        if(serviceType == "rental"){
+            $("#order_placed_btn").attr('disabled', true);
+        }
+    });
+
+    $(document).on('click', '.agree_term_btn', function(){
+        $('#consent_form_rental').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+
+    $(document).on('click', '#agree_btn', function(){
+        $('#agree_term_check').prop('checked', true);
+        $('#agree_term_check').attr('disabled', false);
+        $("#order_placed_btn").attr('disabled', false);
+        $('#consent_form_rental').modal('hide');
     });
 
 

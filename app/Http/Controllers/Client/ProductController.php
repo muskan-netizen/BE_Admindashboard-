@@ -222,7 +222,7 @@ class ProductController extends BaseController
 
         $taxCate = TaxCategory::all();
 
-        $celeb_ids = $related_ids = $upSell_ids = $crossSell_ids = $existOptions = $addOn_ids = $attribute_value = $attribute_key_value = array();
+        $celeb_ids = $related_ids = $upSell_ids = $crossSell_ids = $existOptions = $addOn_ids = $attribute_value = $attribute_key_value = $attribute_latitude = $attribute_longitude = array();
 
         foreach ($product->addOn as $key => $value) {
             $addOn_ids[] = $value->addon_id;
@@ -263,6 +263,12 @@ class ProductController extends BaseController
                 foreach($product->ProductAttribute as $key => $val) {
                     $attribute_value[] = $val->attribute_option_id;
                     $attribute_key_value[$val->attribute_option_id] = $val->key_value;
+                    if(!empty($val->latitude)){
+                        $attribute_latitude[$val->attribute_option_id] = $val->latitude;
+                    }
+                    if (!empty($val->longitude)) {
+                        $attribute_longitude[$val->attribute_option_id] = $val->longitude;
+                    }
                 }
             }
         }
@@ -357,7 +363,7 @@ class ProductController extends BaseController
         //mohit sir branch code added by sohail
         $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();
 
-        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value,  'delivery_slots' => $delivery_slots,  'pincodes' => $pincodes]);
+        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude]);
     }
 
     /**
@@ -404,8 +410,7 @@ class ProductController extends BaseController
             foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id') as $k => $val) {
                 $product->{$k} = $val;
             }
-
-            if( clientPrefrenceModuleStatus('p2p_check') ) {
+            if( clientPrefrenceModuleStatus('p2p_check') || is_attribute_enabled() ) {
                 if( !empty($request->attribute) ) {
                     if( checkTableExists('product_attributes') ) {
                         $insert_arr = [];
@@ -425,6 +430,8 @@ class ProductController extends BaseController
                                             $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
                                             $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
                                             $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                            $insert_arr[$insert_count]['latitude'] = null;
+                                            $insert_arr[$insert_count]['longitude'] = null;
                                             $insert_arr[$insert_count]['is_active'] = 1;
                                         }
                                         $insert_count++;
@@ -438,6 +445,8 @@ class ProductController extends BaseController
                                             $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
                                             $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
                                             $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
+                                            $insert_arr[$insert_count]['latitude'] = $option['latitude'] ?? null;
+                                            $insert_arr[$insert_count]['longitude'] = $option['longitude'] ?? null;
                                             $insert_arr[$insert_count]['is_active'] = 1;
 
                                         }
@@ -537,6 +546,8 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
+            
+            $product->security_amount = ($request->has('security_amount')) ? $request->security_amount : null;
             $product->is_recurring_booking        = $request->is_recurring_booking == 'on' ? 1 : 0;
             if(checkColumnExists('products','get_price_from_dispatcher')){
               //pr(($request->has('get_price_from_dispatcher') && $request->get_price_from_dispatcher == 'on') ? 1 : 0);

@@ -160,11 +160,7 @@ class OrderController extends FrontController
             ->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
-                $q->with([
-                    'products',
-                    'products.media.image',
-                    'products.pvariant.media.pimage.image'
-                ]);
+                $q->with(['products', 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
                     $q->with('exchanged_of_order.orderDetail');
                 }
@@ -503,7 +499,8 @@ class OrderController extends FrontController
         foreach (explode(":", $order->total_other_taxes) as $row) {
             $total_other_taxes += (float) $row;
         }
-        $order->total_other_taxes_amount = $total_other_taxes;
+
+        $order->total_other_taxes_amount=$total_other_taxes;
 
         $slot_delivery_fees = 0;
         foreach ($order->products as $product) {
@@ -971,7 +968,7 @@ class OrderController extends FrontController
                 $latitude = Session::get('latitude') ?? '';
                 $longitude = Session::get('longitude') ?? '';
             }
-
+            
             $fixed_fee_amount = $request->total_fixed_fee_amount ?? 0.00;
             DB::beginTransaction();
 
@@ -1209,6 +1206,7 @@ class OrderController extends FrontController
             $total_other_taxes = 0.00;
             $additionalPrice = 0.00;
             $totalAdditionalPrice = 0.00;
+            $security_amount = 0.00;
             $is_long_term_order = 0;
             $deliveryfeeOnCoupon = 0;
 
@@ -1283,10 +1281,10 @@ class OrderController extends FrontController
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
 
-                    if (! empty($vendor_cart_product->slot_price)) {
-
+                    if( !empty($vendor_cart_product->slot_price) ) {
                         $slot_based_price += $vendor_cart_product->slot_price;
                     }
+
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (! empty($latitude) && ! empty($longitude)) {
                             if (($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)) {
@@ -1310,6 +1308,10 @@ class OrderController extends FrontController
                                 }
                             }
                         }
+                    }
+
+                    if($luxury_option->id == 4){
+                        $security_amount += $vendor_cart_product->product->security_amount;
                     }
 
                     if ($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1) {
@@ -1546,9 +1548,11 @@ class OrderController extends FrontController
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
 
+                    if ($luxury_option->id == 4) {
+                        $order_product->security_amount = $vendor_cart_product->product->security_amount;
+                    }
 
                     $order_product->save();
-
 
                     /** for Recurring Service */
                     if(checkColumnExists('cart_products','recurring_booking_type')){
@@ -1724,9 +1728,9 @@ class OrderController extends FrontController
                             'order_vendor_id' => $order_product->vendor_id,
                             'end_date' => $order_product->end_date_time
                         ];
-                        // pr($data);
-                        $res = $this->bookingSlot($data);
-                        // pr($res);
+                        //pr($data);
+                        $res =   $this->bookingSlot($data, $order_product->id, $order->id);
+                        //pr($res);
                     }
                     // pr($order_product);
                     if (! empty($vendor_cart_product->addon)) {
@@ -1775,8 +1779,8 @@ class OrderController extends FrontController
                             $rate = $tax_rate_detail->tax_rate;
                         }
                     }
-                } // End products loop
-
+                } //End products loop
+                
                 $payable_amount += $vendor_total_container_charges;
                 // dump("+Container_charges ".$vendor_total_container_charges."/- ---".$payable_amount);
 
@@ -1945,7 +1949,7 @@ class OrderController extends FrontController
                     $order->tip_amount = $tip_amount;
                 }
             }
-            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
+            $payable_amount = $payable_amount + $tip_amount + $total_other_taxes + $security_amount;
             // ---------------------------------------
             $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
 
@@ -2670,13 +2674,56 @@ class OrderController extends FrontController
     public function checkIfanyProductLastMileon($request)
     {
         $order_dispatchs = 2;
-        $is_place_order_delivery_zero = getAdditionalPreference([
-            'is_place_order_delivery_zero'
-        ])['is_place_order_delivery_zero'];
-        $checkdeliveryFeeAdded = OrderVendor::where([
-            'order_id' => $request->order_id,
-            'vendor_id' => $request->vendor_id
-        ])->first();
+        $AdditionalPreference = getAdditionalPreference(['is_place_order_delivery_zero','is_service_product_price_from_dispatch']);
+        $is_place_order_delivery_zero =  $AdditionalPreference['is_place_order_delivery_zero'];
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $luxury_option_id      = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
+        $is_restricted = $checkdeliveryFeeAdded->is_restricted;
+        if ($luxury_option_id == 6) { // only for on_demand type
+            
+            $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+
+            if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false) {
+                $OnDemand = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                    $dispatch_domain = [
+                        'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
+                        'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
+                        'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
+                        'service_type'     => 'on_demand'
+                    ];
+                 
+                    if(( $AdditionalPreference['is_service_product_price_from_dispatch'] == 1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
+                       
+                        $dispatch_domain['rejectable_order'] = 1;
+                       // $order_dispatchs = $this->placeRequestToDispatchSingleProductUpdate($request->order_id, $request->vendor_id, $dispatch_domain, $prod,$is_restricted,$request);
+                        $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                        if ($order_dispatchs && $order_dispatchs == 1) {
+                            $OnDemand = 1;
+                            return 1;
+                        }
+                    }
+                    else if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+
+                    
+
+                        if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
+
+
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $OnDemand = 1;
+                                return 1;
+                            }
+                        }
+                    }else{ //for long term service
+
+                    }
+
+                }
+            }
+        }
+        
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
@@ -2688,22 +2735,23 @@ class OrderController extends FrontController
             }
         }
 
-        $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-        if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
-            $ondemand = 0;
-            foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-                if (isset($prod->product_dispatcher_tag) && ! empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-                    $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-                    if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0 && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
-                        $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
-                        if ($order_dispatchs && $order_dispatchs == 1) {
-                            $ondemand = 1;
-                            return 1;
-                        }
-                    }
-                }
-            }
-        }
+
+        // $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        // if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
+        //     $ondemand = 0;
+        //     foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+        //         if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+        //             $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        //             if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
+        //                 $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
+        //                 if ($order_dispatchs && $order_dispatchs == 1) {
+        //                     $ondemand = 1;
+        //                     return 1;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         // ///////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();

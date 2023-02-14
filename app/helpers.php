@@ -1053,6 +1053,12 @@ if (!function_exists('stripeDynamicPaymentCredentials')) {
     }
 }
 
+if (!function_exists('convertDateToHumanReadable')) {
+    function convertDateToHumanReadable($date){
+        return Carbon::parse($date)->diffForHumans();
+    }
+}
+
 
 if (!function_exists('OnLAstMileDelivery')) {
     function OnLAstMileDelivery()
@@ -1426,6 +1432,16 @@ if( !function_exists('p2p_module_status') ) {
     function p2p_module_status() {
         $additional_preference = getAdditionalPreference(['is_attribute']);
         if(clientPrefrenceModuleStatus('p2p_check') && $additional_preference['is_attribute']) {
+            return true;
+        }
+        return false;
+    }
+}
+
+if( !function_exists('is_attribute_enabled') ) {
+    function is_attribute_enabled() {
+        $additional_preference = getAdditionalPreference(['is_attribute']);
+        if($additional_preference['is_attribute']) {
             return true;
         }
         return false;

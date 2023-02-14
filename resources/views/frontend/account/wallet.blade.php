@@ -399,17 +399,38 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 
                 <% if(payment_option.slug == 'plugnpay') { %>
                     <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
-                        <div class="row no-gutters">
-                            <div class="col-6">
-                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" required />
-                            </div>
-                            <div class="col-3">
-                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY" required />
-                            </div>
-                            <div class="col-3">
-                                <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" required />
-                            </div>
-                        </div>
+                        <div class="row no-gutters mb-2">
+                                    <div class="col-12">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-name-element" placeholder="Enter card holder name" />
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" />
+                                    </div>
+                                    <div class="col-3">
+                                        <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY" />
+                                    </div>
+                                    <div class="col-3">
+                                        <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" />
+                                    </div>
+                                     <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-addr1-element" placeholder="Enter address"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-addr2-element" placeholder="Enter alternate address (optional)" />
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-zip-element" placeholder="Enter zip code"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-city-element" placeholder="Enter city name"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-state-element" placeholder="Enter state code e.g. NY"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-country-element" placeholder="Enter country code e.g. US"/>
+                                    </div>
+                                </div>
 
                         <span class="error text-danger" id="plugnpay_card_error"></span>
                     </div>
