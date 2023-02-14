@@ -1124,6 +1124,7 @@
                                         </b>
                                     </div>
                                 </div>
+                            @endif
                             @if ($serviceType == 'rental')
                                 <div class="row">
                                     <div class="col-6">{{ __('Security Amount') }}</div>
