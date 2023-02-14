@@ -289,7 +289,6 @@ class WebStylingController extends BaseController{
         $featured_products->slug = preg_replace('/\s+/', '', $request->names[0])??null;
         $featured_products->is_active = $request->has('is_active') && $request->is_active == "on" ? 1 : 0;
         $featured_products->save();
-
         foreach ($request->languages as $key => $value) {
             $home_translation = new CabBookingLayoutTranslation();
             $home_translation->title = $request->names[$key];
@@ -346,10 +345,12 @@ class WebStylingController extends BaseController{
 
      # delete  pickup delivery section
      public function deletePickupSection($domain = '', $id){
-
         DB::beginTransaction();
         try{
         $featured_products =  CabBookingLayout::where('id',$id)->delete();
+        if($featured_products){
+            HomeProduct::where('layout_id',$id)->delete();
+        }
         DB::commit();
         return redirect()->back()->with('success', 'Pickup Styling Deleted Successfully!');
         }
