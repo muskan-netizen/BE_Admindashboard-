@@ -40,6 +40,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         $payment_codes = array(
+            'payway',
             'cod',
             'dpo',
             'wallet',
