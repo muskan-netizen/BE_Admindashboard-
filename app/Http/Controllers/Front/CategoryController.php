@@ -201,7 +201,7 @@ class CategoryController extends FrontController{
 
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
-                // dd($listData[0]->variant);
+                // dd('frontend/cate-'.$page.'s');
                 if(view()->exists('frontend/cate-'.$page.'s')){
                     return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'productAttributes'=> $productAttributes]);
                 }else{
@@ -313,7 +313,7 @@ class CategoryController extends FrontController{
             }
             
             // pr($vendors);
-            $products = Product::with(['vendor', 'media.image', 'category',
+            $products = Product::with(['vendor', 'media.image', 'category', 'ProductAttribute',
                         'translation' => function($q) use($langId){
                           $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                           $q->groupBy('language_id','product_id');
@@ -322,7 +322,7 @@ class CategoryController extends FrontController{
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','id', 'compare_at_price');
                             $q->groupBy('product_id');
                         },'variant.checkIfInCart'])
-                        ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count')
+                        ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count','products.updated_at')
                         ->where('products.is_live', 1)
                         ->where('products.category_id', $category_id);
             if(count($vendors) > 0){
