@@ -252,11 +252,14 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                         </h2>
-                                        <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
+                                        @if(!is_category_p2p($product->category))
+                                            <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
+                                        @endif
                                         <h6 class="sold-by">
                                             <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
                                         </h6>
-                                        @if($client_preference_detail)
+                                        {{-- @dd(is_category_p2p($product->category)) --}}
+                                        @if($client_preference_detail && !is_category_p2p($product->category))
                                             @if($client_preference_detail->rating_check == 1)
                                                 @if($product->averageRating > 0)
                                                     <span class="rating">{{ decimal_format($product->averageRating) }} <i class="fa fa-star text-white p-0"></i></span>
@@ -301,7 +304,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
                                                     <div class="container-badge">
-                                                        <div class="value-badge">{{ $attr_key }} : </div>
+                                                        <div class="value-badge pr-1">{{ $attr_key }} : </div>
                                                         @if( !empty($attr_val) )
                                                             <div class="container-badge-value">
                                                                 @foreach($attr_val as $inn_key => $inn_val)
@@ -309,7 +312,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                                 @if($inn_val['type'] == 2) <!--- for color---->
                                                                     <span style="background-color: {{$inn_val['hexacode']}}; width: 20px;height: 20px;margin-left: 5px;display: inline-block;border: 1px solid #ccc;"></span>
                                                                 @else
-                                                                    <span>{{$inn_val['value']}}</span>
+                                                                    <span> {{$inn_val['value']}}</span>
                                                                 @endif
                                                                 @endforeach
                                                             </div>
@@ -327,11 +330,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
                                                     <?php /*<span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
-                                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}">{{__('Chat')}}</a>
+                                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}"><i class="fa fa-comments" aria-hidden="true"></i></a>
+                                                    {{-- {{__('Chat')}} --}}
                                                 
                                             @endif
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
-                                                <a class="call-icon btn btn-solid" href="tel:">{{__('Call Button')}}</a>
+                                                <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
+                                                {{-- {{__('Call Button')}} --}}
                                             @endif
                                                 </h6>
                                     @endif
@@ -561,6 +566,14 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             </div>
 
                                         </div>
+                                        @else
+                                        <div class="product-buttons">
+                                            @if($is_inwishlist_btn && $is_available)
+                                            <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
+                                                {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
+                                            </button>
+                                            @endif
+                                        </div>
                                         @endif
                                         {{-- @dump($product) --}}
                                         <!-- <div class="border-product al_disc">
@@ -593,7 +606,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                         </section>
                         <div class="row mt-1">
                             <div class="col-md-12">
-                                @if($client_preference_detail && $client_preference_detail->rating_check == 1)
+                                @if($client_preference_detail && $client_preference_detail->rating_check == 1 && !is_category_p2p($product->category))
                                 <section class="tab-product custom-tabs">
                                     <div class="row">
                                         <div class="col-sm-12 col-lg-12">
@@ -668,7 +681,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                     </div>
 
                     {{-- Related Products --}}
-                    @if(!empty($set_template) && !empty($set_template->template_id) && $set_template->template_id == '8')
+                    @if(!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9'))
                     <div class="row">
                         <div class="col-md-12">
                             @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Related Product'])
