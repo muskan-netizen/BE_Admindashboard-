@@ -35,6 +35,6 @@ class PaymentOption extends Model
 
     public function getPath($file)
     {
-        return  public_path(\Storage::disk('local')->url($file));
+        return  \Storage::path($file);
     }
 }
