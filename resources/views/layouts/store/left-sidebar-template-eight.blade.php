@@ -159,13 +159,14 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    </div>
    <!-- End Cab Booking Header From Here -->
    @else
-   <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif" style="display:none;">
+   <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif" @if ($client_preference_detail->business_type != 'super_app') style="display:none;" @endif>
       <div class="container_fluid_al d-block" >
           <div class="row align-items-center justify-content-center position-initial">
               <div class="col-lg-12">
                   <div class="container al_mobile-header d-flex align-items-center justify-content-between position-relative">
                       <div class="al_count_tabs_new_design d-none d-sm-block"  >
                           @if($mod_count > 1)
+                          
                           <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
                               @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                   @php
