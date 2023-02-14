@@ -176,7 +176,7 @@ body.dark.al_body_template_nine .al_count_tabs_new_design span.al_textTabsText {
 .al_body_template_eight .al_custom_head .onhover-dropdown span:before, .al_custom_head.top-header .header-dropdown li a, .al_custom_head.top-header .header-dropdown li span {
     line-height: 20px;
     color: #1D1D1D;
-    font-size: 16px !important;
+    font-size: 14px;
     margin-right:25px;
     font-family: 'Jost' !important;
 }
