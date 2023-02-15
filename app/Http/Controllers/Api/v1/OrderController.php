@@ -3539,7 +3539,7 @@ class OrderController extends BaseController
                             ],[
                         'user_id' => auth()->id(),
                         'order_number'=> $orderData->order_number,
-                        'vendor_id'=> $orderData->vendors->vendor_id,
+                        'vendor_id'=> $orderData->vendors[0]->vendor_id,
                         'order_vendor_id'=> $orderData->vendors[0]->id,
                         'order_id'=> $orderData->id,
                         'message'=> $body_content .', <a href="'.$redirect_URL.'">#'.$orderData->order_number.'</a>'
