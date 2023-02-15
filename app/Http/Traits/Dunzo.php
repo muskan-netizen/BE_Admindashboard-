@@ -61,7 +61,7 @@ trait Dunzo{
     //dd($data);
 
     curl_setopt_array($curl, array(
-    CURLOPT_URL => $this->app_url."/oporder/quote",
+    CURLOPT_URL => $this->app_url."/oporder/service/availability",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => "",
     CURLOPT_MAXREDIRS => 10,

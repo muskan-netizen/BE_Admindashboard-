@@ -16,7 +16,6 @@ Route::get('/debug-sentry', function () {
 	//throw new Exception('My first Sentry error!');
 });
 
-
 Route::group(['middleware' => ['domain']], function () {
 	//easypay test
 	Route::get('testpayment', 'Front\EasypaisaControllertest@testpayment')->name('testpayment');
@@ -163,6 +162,9 @@ Route::group(['middleware' => ['domain']], function () {
 
     //plugnpay
     Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
+    
+    //azulpay
+    Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
 
 	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
 	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
@@ -350,6 +352,9 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
+    // Mtn Momo payment gateway
+
+	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createTocken')->name('mtn.momo.createTocken');
 
 	// Mtn Momo payment gateway
 
@@ -491,6 +496,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//chatNotification to all users from dispacther
 	Route::any('sendNotificationToUserByDispatcher', 'Front\ChatDispatcherNotificationController@sendNotificationToUserByDispatcher')->name('sendNotificationToUserByDispatcher'); // Order Status update Dispatch
 
+    // get recurring booking vendor time slots
+    Route::post('vendor-time-slot', 'Front\CartController@VendorTimeSlot')->name('recurring.booking.vendor.slot');
+	Route::post('get_price_from_dispatcher', 'Front\ProductController@getFreeLincerFromDispatcher')->name('product.get_price_from_dispatcher');
+	Route::post('get_gerenal_slot', 'Front\ProductController@getGerenalSlot')->name('getGerenalSlot');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
@@ -501,6 +510,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('user/address/{id}', 'Front\AddressController@address')->name('user.address');
 	Route::get('user/checkout', 'Front\UserController@checkout')->name('user.checkout');
 	Route::get('user/profile', 'Front\ProfileController@profile')->name('user.profile');
+	Route::get('user/my-ads', 'Front\ProfileController@getMyAds')->name('user.productList');
+	Route::post('user/update-post-status', 'Front\ProfileController@updatePostStatus')->name('user.updatePostStatus');
+	Route::get('user/notification', 'Front\ProfileController@getNotification')->name('user.notification');
 	Route::get('user/logout', 'Front\CustomerAuthController@logout')->name('user.logout');
 	Route::get('verifyAccountProcess', 'Front\UserController@sendToken')->name('email.send');
 	Route::get('user/editAddress/{id}', 'Front\AddressController@edit')->name('editAddress');
@@ -584,7 +596,17 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
 		Route::post('vendor-order-for-cancel-req', 'Front\ReturnOrderController@vendorOrderForCancelReq')->name('order.cancel.req.customer');
 
+		Route::get('get-order-rental-data-in-model', 'Front\ReturnOrderController@getOrderRentalDatainModel')->name('getOrderRentalDataInModel');
+		Route::post('update-rental-product-return', 'Front\ReturnOrderController@updateRentalProductReturn')->name('update.rental.product.return');
 
+		Route::get('get-replace-order-data-in-model', 'Front\ReturnOrderController@getReplaceOrderDatailModel')->name('getReplaceOrderDatailModel');
+		Route::get('get-replace-products', 'Front\ReturnOrderController@getReplaceProducts')->name('get-replace-products');
+		Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
+
+	});
+	// Rental Extend Routes
+	Route::group(['prefix' => 'extend-durartion'], function () {
+		Route::get('get-order-vendor-product-duration-data-in-model', 'Front\ExtendOrderController@getOrderProductDurationDatainModel')->name('getOrderProductDurationDatainModel');
 	});
 	// Return product
 	Route::group(['prefix' => 'looking'], function () {
@@ -616,7 +638,8 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
 	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
 
-	//bidding system
+	//Route::get('azulpay', 'Front\AzulPaymentController@beforePayment')->name('beforePayment');
+    //bidding system
 	Route::get('user/bidRequest', [BidController::class, 'index'])->name('user.bidRequest');
 	Route::POST('user/bidUpdatePdf', [BidController::class, 'uploadPrescription'])->name('bid.update_pdf');
 	Route::get('bidding/make', [BidController::class, 'index'])->name('bid.index');
@@ -628,9 +651,6 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('get/bid/prescription', [BidController::class, 'getPrescription'])->name('getPrescription'); //get bedding prescription
 	Route::get('product-search', [BidController::class, 'search'])->name('searchProduct'); //vendor product search
 	Route::get('bid/add/to/cart/{id}', [CartController::class, 'initCart'])->name('bidding-cart');
-
-
-
 
 	/**
 	 * booking routes

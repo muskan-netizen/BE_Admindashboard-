@@ -286,11 +286,15 @@ pr($products->toArray());
                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                             <th>{{ __('Brand') }}</th>
                                                             <th>{{ __('Quantity') }}</th>
+                                                            <th>{{ __('Rented Product') }}</th>
                                                             <th>{{ __('Price') }}</th>
                                                         @endif
                                                         <th>{{ __('Bar Code') }}</th>
                                                         <th>{{ __('Status') }}</th>
                                                         <th>{{ __('Expiry Date') }}</th>
+                                                        @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                                                            <th>{{ __('Recurring Booking') }}</th>
+                                                        @endif
                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                             <th>{{ __('New') }}</th>
                                                             <th>{{ __('Featured') }}</th>
@@ -775,6 +779,10 @@ pr($products->toArray());
                                   <option value="for_tax">{{__('Tax Category')}}</option>
                                 @if(@$vendor->add_markup_price)
                                   <option value="for_markup">{{__('Markup Price')}}</option>
+                                @endif
+
+                                @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                                    <option value="is_recurring_booking">{{__('Recurring Booking')}}</option>
                                 @endif
                                   <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock')}}</option>
                                   <option value="delete">{{__('Delete')}}</option>
@@ -1421,7 +1429,7 @@ pr($products->toArray());
         });
 
     function dataTableColumn(){
-       var business_type =  "{{$client_preference_detail->business_type}}";
+       var business_type         =  "{{$client_preference_detail->business_type}}";
             if(business_type == 'taxi'){
                 return [
                     {data: 'single_product_check', name: 'single_product_check', orderable: false, searchable: false},
@@ -1429,7 +1437,8 @@ pr($products->toArray());
                     {data: 'product_name', name: 'product_name', orderable: true, searchable: false},
                     {data: 'product_category', name: 'phone_number', orderable: false, searchable: false},
                     {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                    {data: 'action', name: 'action', orderable: false, searchable: false},
+                    {data: 'rental_product_count', name: 'rental_product_count', orderable: false, searchable: false}
                 ];
             }else{
                 return [
@@ -1439,14 +1448,19 @@ pr($products->toArray());
                     {data: 'product_category', name: 'phone_number', orderable: false, searchable: false},
                     {data: 'product_brand', name: 'product_brand', orderable: false, searchable: false},
                     {data: 'product_quantity', name: 'product_quantity', orderable: false, searchable: false},
+                    {data: 'rental_product_count', name: 'rental_product_count', orderable: false, searchable: false},
                     {data: 'product_price', name: 'product_price', orderable: false, searchable: false},
                     {data: 'bar_code', name: 'bar_code', orderable: false, searchable: false},
                     {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
                     {data: 'expiry_date', name: 'expiry_date', orderable: false, searchable: false},
+                    @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                      {data: 'is_recurring_booking', name: 'is_recurring_booking', orderable: false, searchable: false},
+                    @endif
                     {data: 'product_is_new', name: 'product_is_new', orderable: false, searchable: false},
                     {data: 'product_is_featured', name: 'product_is_featured', orderable: false, searchable: false},
                     {data: 'product_last_mile', name: 'product_last_mile', orderable: false, searchable: false},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                    {data: 'action', name: 'action', orderable: false, searchable: false},
+
                 ]
             }
         }

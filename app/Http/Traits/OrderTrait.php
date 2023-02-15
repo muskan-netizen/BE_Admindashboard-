@@ -21,9 +21,8 @@ trait OrderTrait
 {
     use ValidatorTrait, ApiResponser;
 
-    public function ProductVariantStock($order_id)
+    public function ProductVariantStock($order_id, $request='')
     {
-
         $order = Order::with(['vendors.products.pvariant'])->find($order_id);
         if (isset($order->vendors)) {
             foreach ($order->vendors as $vendor) {
@@ -38,6 +37,9 @@ trait OrderTrait
 
                         $ProductVariant->quantity  = $update_quantity;
                         $ProductVariant->save();
+                    }
+                    if(@$request && $request->order_luxury_option_id == 4){
+                        $ProductVariant->increment('rented_product_count', $product->quantity);
                     }
                 }
             }
@@ -56,6 +58,29 @@ trait OrderTrait
             $ProductVariant->save();
         }
        
+        return 1;
+    }
+
+    public function ProductVariantStockIncreaseByOrderId($order_id, $rental = '')
+    {
+        $order = Order::with(['vendors.products.pvariant'])->find($order_id);
+        if( isset($order->vendors )){
+            foreach ($order->vendors as $vendor) {
+                foreach ($vendor->products as $product) {
+                    $ProductVariant = ProductVariant::find($product->variant_id);
+                    if ($ProductVariant) {
+                        $update_quantity  = $ProductVariant->quantity + $product->quantity;
+                        if($update_quantity < 0)
+                        $update_quantity  = 0;
+                        $ProductVariant->quantity  = $update_quantity;
+                        $ProductVariant->save();
+                    }
+                    if(@$rental && $rental == 'rental'){
+                        $ProductVariant->decrement('rented_product_count', $product->quantity);
+                    }
+                }
+            }
+        }
         return 1;
     }
 
@@ -269,9 +294,8 @@ trait OrderTrait
     // place Request To Dispatch for Appointment , OnDemand
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain, $request)
     {
-
+        \Log::info('placeRequestToDispatchSingleProduct');
         try {
-
             $order = Order::find($order);
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
@@ -282,9 +306,9 @@ trait OrderTrait
             $paymentSentAlready = 0;
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
 
-            $order_vendor = OrderVendor::with('products.product')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-
-            foreach ($order_vendor->products as $product) {
+            $order_vendor = OrderVendor::with(['products.product', 'products.order_product_status'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+            
+            foreach( $order_vendor->products as $product){
                 $allocation_type = 'a';
                 $agent = '';
                 if ($order->payment_option_id == 1) {
@@ -311,141 +335,162 @@ trait OrderTrait
                     $scheduleDateTime = $selectedDate . ' ' . $slotTime;
                     $schedule_time =  $scheduleDateTime ?? null;
                 }
+                $rejectable_order = isset($dispatch_domain['rejectable_order'])? $dispatch_domain['rejectable_order'] : 0;
 
                 $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
                 $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
-                Log::info('service_time');
-                Log::info($service_time);
-                $tasks[] = array(
-                    'task_type_id' => $task_type_id,
-                    'latitude'     => $vendor_details->latitude ?? '',
-                    'longitude'    => $vendor_details->longitude ?? '',
-                    'short_name'   => '',
-                    'address'      => $vendor_details->address ?? '',
-                    'post_code'    => '',
-                    'barcode'      => '',
-                    'flat_no'     => null,
-                    'email'       => $vendor_details->email ?? null,
-                    'phone_number' => $vendor_details->phone_no ?? null,
-                    'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ?  $service_time  : null,
-                );
+                
+                if( $rejectable_order ==1){
+                    $service_time = '60';
+                }
                 if ($product->dispatch_agent_id) {
                     $allocation_type = 'm';
                     $agent = $product->dispatch_agent_id;
                 }
-                if ($dispatch_domain['service_type'] == 'on_demand') {
+                $is_assign_warehouse = $dispatch_domain['service_type'] == 'rental' ? 1 : 0;
+                $order__product_status_option_id = 1;
+                if(!empty($product->order_product_status) && $product->order_product_status->order_status_option_id == 3){
+                    $order__product_status_option_id = 0;
+                }
+                if ($order__product_status_option_id > 0 ) {
                     $tasks[] = array(
-                        'task_type_id' => 2,
-                        'latitude' => $cus_address->latitude ?? '',
-                        'longitude' => $cus_address->longitude ?? '',
+                        'task_type_id' => $task_type_id,
+                        'latitude' => $vendor_details->latitude ?? '',
+                        'longitude' => $vendor_details->longitude ?? '',
                         'short_name' => '',
-                        'address' => $cus_address->address ?? '',
-                        'post_code' => $cus_address->pincode ?? '',
+                        'address' => $vendor_details->address ?? '',
+                        'post_code' => '',
                         'barcode' => '',
-                        'flat_no'     => $cus_address->house_number ?? null,
-                        'email'       => $customer->email ?? null,
-                        'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
+                        'flat_no' => null,
+                        'email' => $vendor_details->email ?? null,
+                        'phone_number' => $vendor_details->phone_no ?? null,
+                        'appointment_duration' => $dispatch_domain['service_type'] == 'appointment' ? $service_time : null,
                     );
-                }
+                
+                    if($product->dispatch_agent_id){
+                        $allocation_type = 'm';
+                        $agent = $product->dispatch_agent_id;
+                    }
+                    $service_types = ['on_demand', 'rental'];
+                    if(@in_array($dispatch_domain['service_type'], $service_types))
+                    {
+                        $tasks[] = array(
+                            'task_type_id' => 2,
+                            'latitude' => $cus_address->latitude ?? '',
+                            'longitude' => $cus_address->longitude ?? '',
+                            'short_name' => '',
+                            'address' => $cus_address->address ?? '',
+                            'post_code' => $cus_address->pincode ?? '',
+                            'barcode' => '',
+                            'flat_no' => $cus_address->house_number ?? null,
+                            'email' => $customer->email ?? null,
+                            'phone_number' => ($customer->dial_code . $customer->phone_number) ?? null,
+                        );
+                    }
 
-                if ($customer->dial_code == "971") {
-                    // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
-                    $customerno = "0" . $customer->phone_number;
-                } else {
-                    // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
-                    $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
-                }
-
-                $client = CP::orderBy('id', 'asc')->first();
-                for ($x = 1; $x <= $product->quantity; $x++) {
-                    //  send all payment to fist order
-                    if ($paymentSentAlready == 0) {
-                        $paymentSentAlready = 1;
+                    if ($customer->dial_code == "971") {
+                        // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                        $customerno = "0" . $customer->phone_number;
                     } else {
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
+                        // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                        $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                     }
-                    $dynamic = uniqid($order->id . $vendor . $product->product_id . $x);
+                    \Log::info('placeRequestToDispatch quantity');
+                    $client = CP::orderBy('id', 'asc')->first();
+                    for ($x = 1; $x <= $product->quantity; $x++) {
+                        //  send all payment to fist order
+                        if( $paymentSentAlready == 0){
+                            $paymentSentAlready =1;
+                        }else{
+                            $cash_to_be_collected = 'No';
+                            $payable_amount = 0.00;
+                        }
+                        $dynamic = uniqid($order->id . $vendor . $product->product_id.$x);
 
-                    $call_back_url = route('dispatch-order-product-status-update', $dynamic);
-                    $postdata =  [
-                        'order_number'  =>  $order->order_number,
-                        'customer_name' => $customer->name ?? 'Dummy Customer',
-                        'customer_phone_number' => $customerno ?? rand(111111, 11111),
-                        'customer_dial_code' => $customer->dial_code ?? null,
-                        'customer_email' => $customer->email ?? null,
-                        'recipient_phone' => $customerno ?? rand(111111, 11111),
-                        'recipient_email' => $customer->email ?? null,
-                        'task_description' => "Order From :" . $vendor_details->name,
-                        'allocation_type' => $allocation_type,
-                        'task_type' => $task_type,
-                        'schedule_time' => $schedule_time ?? null,
-                        'cash_to_be_collected' => $payable_amount ?? 0.00,
-                        'barcode' => '',
-                        'order_team_tag' => $team_tag,
-                        'call_back_url' => $call_back_url ?? null,
-                        'task' => $tasks,
-                        'is_restricted' => $order_vendor->is_restricted,
-                        'vendor_id' => $vendor_details->id,
-                        'order_vendor_id' => @$order_vendor->id,
-                        'dbname' => @$client->database_name,
-                        'order_id' => @$order->id,
-                        'customer_id' => @$order->user_id,
-                        'user_icon' => $customer->image,
-                        'agent'     => $agent,
-                        'task_type_id' => $task_type_id, //  for add agent booking in case of appointment
-                        'service_time' =>  $service_time
-                    ];
+                        $call_back_url = route('dispatch-order-product-status-update', $dynamic);
+                        $postdata =  [
+                            'order_number'  =>  $order->order_number,
+                            'customer_name' => $customer->name ?? 'Dummy Customer',
+                            'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                            'customer_dial_code' => $customer->dial_code ?? null,
+                            'customer_email' => $customer->email ?? null,
+                            'recipient_phone' => $customerno ?? rand(111111, 11111),
+                            'recipient_email' => $customer->email ?? null,
+                            'task_description' => "Order From :" . $vendor_details->name,
+                            'allocation_type' => $allocation_type,
+                            'task_type' => $task_type,
+                            'schedule_time' => $schedule_time ?? null,
+                            'cash_to_be_collected' => $payable_amount ?? 0.00,
+                            'barcode' => '',
+                            'order_team_tag' => $team_tag,
+                            'call_back_url' => $call_back_url ?? null,
+                            'task' => $tasks,
+                            'is_restricted' => $order_vendor->is_restricted,
+                            'vendor_id' => $vendor_details->id,
+                            'order_vendor_id' => @$order_vendor->id,
+                            'dbname' => @$client->database_name,
+                            'order_id' => @$order->id,
+                            'customer_id' => @$order->user_id,
+                            'user_icon' => $customer->image,
+                            'agent'     => $agent,
+                            'task_type_id' =>$task_type_id, //  for add agent booking in case of appointment
+                            'service_time' =>  $service_time,
+                            'is_assign_warehouse' => $is_assign_warehouse,
+                            'rejectable_order' =>  $rejectable_order
+                        ];
+                        \Log::info('dispatcher data');
+                        \Log::info($postdata);
+                        if($order_vendor->is_restricted == 1)
+                        {
+                            $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                            $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+                        }
 
 
-                    if ($order_vendor->is_restricted == 1) {
-                        $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
-                        $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
-                    }
-
-
-                    $client = new Client([
-                        'headers' => [
-                            'personaltoken' => $dispatch_domain['service_key'],
-                            'shortcode'     => $dispatch_domain['service_key_code'],
-                            'content-type'  => 'application/json'
-                        ]
-                    ]);
-
-                    $url = $dispatch_domain['service_key_url'];
-                    $res = $client->post(
-                        $url . '/api/task/create',
-                        ['form_params' => ($postdata)]
-                    );
-                    $response = json_decode($res->getBody(), true);
-                    if ($response && $response['task_id'] > 0) {
-                        $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
-
-                        $dispatch_route                                 = new OrderProductDispatchRoute();
-                        $dispatch_route->order_id                       = $request->order_id;
-                        $dispatch_route->order_vendor_id                = $product->order_vendor_id;
-                        $dispatch_route->order_vendor_product_id        = $product->id;
-                        $dispatch_route->web_hook_code                  = $dynamic;
-                        $dispatch_route->dispatch_traking_url           = $dispatch_traking_url;
-                        $dispatch_route->dispatcher_status_option_id    = 1;
-                        $dispatch_route->order_status_option_id         = 1;
-                        $dispatch_route->save();
-
-                        $update = VendorOrderProductDispatcherStatus::updateOrCreate([
-                            'dispatcher_id' => null,
-                            'order_id' =>  $request->order_id,
-                            'dispatcher_status_option_id' => 1,
-                            'vendor_id' =>  $request->vendor_id,
-                            'order_product_route_id' => $dispatch_route->id
+                        $client = new Client([
+                            'headers' => [
+                                'personaltoken' => $dispatch_domain['service_key'],
+                                'shortcode'     => $dispatch_domain['service_key_code'],
+                                'content-type'  => 'application/json'
+                            ]
                         ]);
 
-                        $return_response = 1;
+                        $url = $dispatch_domain['service_key_url'];
+                        $res = $client->post(
+                            $url . '/api/task/create',
+                            ['form_params' => ($postdata)]
+                        );
+                        $response = json_decode($res->getBody(), true);
+                        if ($response && $response['task_id'] > 0) {
+                            $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
+
+                            $dispatch_route                                 = new OrderProductDispatchRoute();
+                            $dispatch_route->order_id                       = $request->order_id ;
+                            $dispatch_route->order_vendor_id                = $product->order_vendor_id ;
+                            $dispatch_route->order_vendor_product_id        = $product->id ;
+                            $dispatch_route->web_hook_code                  = $dynamic;
+                            $dispatch_route->dispatch_traking_url           = $dispatch_traking_url ;
+                            $dispatch_route->dispatcher_status_option_id    = 1 ;
+                            $dispatch_route->order_status_option_id         = 1 ;
+                            $dispatch_route->save();
+
+                            $update = VendorOrderProductDispatcherStatus::updateOrCreate([
+                                'dispatcher_id' => null,
+                                'order_id' =>  $request->order_id,
+                                'dispatcher_status_option_id' => 1,
+                                'vendor_id' =>  $request->vendor_id,
+                                'order_product_route_id' => $dispatch_route->id
+                            ]);
+
+                            $return_response = 1;
+                        }
+
                     }
                 }
             }
             return $return_response;
         } catch (\Exception $e) {
-            //return 2;
+            // dd('ssfsd');
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -454,9 +499,8 @@ trait OrderTrait
     }
 
 
-    public function bookingSlot($request)
+    public function bookingSlot($request, $order_product_id=null, $order_id=null)
     {
-
         $request = (object) $request;
 
         try {
@@ -477,7 +521,9 @@ trait OrderTrait
                 'booking_type' => 'new_booking',
                 'end_date_time' => $end_time,
                 'order_user_id' => $request->order_user_id,
-                'booking_start_end' => $start_end_block_time
+                'booking_start_end' => $start_end_block_time,
+                'order_vendor_product_id' => $order_product_id,
+                'order_id' => $order_id
             ]);
             DB::commit(); //Commit transaction after all the operations
             return 1;
@@ -1203,4 +1249,215 @@ trait OrderTrait
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
+
+     // place Request To Dispatch for Appointment , OnDemand
+     public function placeRequestToDispatchSingleProductUpdate($order, $vendor, $dispatch_domain,$vendorProduct ,$is_restricted ,$request)
+     {
+
+           try {
+ 
+             $order = Order::find($order);
+             $customer = User::find($order->user_id);
+             $cus_address = UserAddress::find($order->address_id);
+             $tasks = array();
+             $task_type = 'now';
+             $schedule_time = '';
+             $return_response = 2;
+             $paymentSentAlready = 0;
+             $is_order_amount_send_to_dispatcher = 0;
+             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+ 
+                $product = $vendorProduct;
+                $allocation_type = 'a';
+                $agent = '';
+
+                 if ($order->payment_option_id == 1 && ($order->is_order_amount_send_to_dispatcher ==0)) {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
+                    $is_order_amount_send_to_dispatcher = 1;
+                  
+                } else {
+                    if(checkColumnExists('orders', 'is_postpay'))
+                    {
+                        if($order->is_postpay==1 && ($order->payment_status == 0)  && ($order->is_order_amount_send_to_dispatcher ==0))
+                        {
+                            $cash_to_be_collected = 'Yes';
+                            $payable_amount = $order->payable_amount;
+                            $is_order_amount_send_to_dispatcher = 1;
+                        }else{
+                            $cash_to_be_collected = 'No';
+                            $payable_amount = 0.00;
+                        }
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }
+ 
+                 $tasks = array();
+                 $meta_data = '';
+ 
+                 $unique = Auth::user()->code;
+                 $team_tag = $unique . "_" . $vendor;
+                 if (!empty($product->scheduled_date_time) && $product->scheduled_date_time > 0) {
+                     $task_type = 'schedule';
+                     $user = Auth::user();
+                     $selectedDate = dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone);
+                     $slot = trim(explode("-", $product->schedule_slot)[0]);
+ 
+                     $slotTime = date('H:i:s', strtotime("$slot"));
+                     $selectedDate = date('Y-m-d', strtotime($selectedDate));
+                     $scheduleDateTime = $selectedDate . ' ' . $slotTime;
+                     $schedule_time =  $scheduleDateTime ?? null;
+                 }
+ 
+                 $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
+                 $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
+
+                 $rejectable_order = isset($dispatch_domain['rejectable_order'])? $dispatch_domain['rejectable_order'] : 0;
+                 
+            
+                 $tasks[] = array(
+                     'task_type_id' => $task_type_id,
+                     'latitude'     => $vendor_details->latitude ?? '',
+                     'longitude'    => $vendor_details->longitude ?? '',
+                     'short_name'   => '',
+                     'address'      => $vendor_details->address ?? '',
+                     'post_code'    => '',
+                     'barcode'      => '',
+                     'flat_no'     => null,
+                     'email'       => $vendor_details->email ?? null,
+                     'phone_number' => $vendor_details->phone_no ?? null,
+                     'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ?  $service_time  : null,
+                 );
+               
+                 if ($product->dispatch_agent_id) {
+                     $allocation_type = 'm';
+                     $agent = $product->dispatch_agent_id;
+                 }
+                 if ($dispatch_domain['service_type'] == 'on_demand') {
+                     $tasks[] = array(
+                         'task_type_id' => 2,
+                         'latitude' => $cus_address->latitude ?? '',
+                         'longitude' => $cus_address->longitude ?? '',
+                         'short_name' => '',
+                         'address' => $cus_address->address ?? '',
+                         'post_code' => $cus_address->pincode ?? '',
+                         'barcode' => '',
+                         'flat_no'     => $cus_address->house_number ?? null,
+                         'email'       => $customer->email ?? null,
+                         'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
+                     );
+                 }
+ 
+                 if ($customer->dial_code == "971") {
+                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                     $customerno = "0" . $customer->phone_number;
+                 } else {
+                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
+                 }
+ 
+                 $client = CP::orderBy('id', 'asc')->first();
+              
+                     //  send all payment to fist order
+                     if ($paymentSentAlready == 0) {
+                         $paymentSentAlready = 1;
+                     } else {
+                         $cash_to_be_collected = 'No';
+                         $payable_amount = 0.00;
+                     }
+                     $dynamic = uniqid($order->id . $vendor . $product->product_id );
+ 
+                     $call_back_url = route('dispatch-order-product-status-update', $dynamic);
+                     $postdata =  [
+                         'order_number'  =>  $order->order_number,
+                         'customer_name' => $customer->name ?? 'Dummy Customer',
+                         'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                         'customer_dial_code' => $customer->dial_code ?? null,
+                         'customer_email' => $customer->email ?? null,
+                         'recipient_phone' => $customerno ?? rand(111111, 11111),
+                         'recipient_email' => $customer->email ?? null,
+                         'task_description' => "Order From :" . $vendor_details->name,
+                         'allocation_type' => $allocation_type,
+                         'task_type' => $task_type,
+                         'schedule_time' => $schedule_time ?? null,
+                         'cash_to_be_collected' => $payable_amount ?? 0.00,
+                         'barcode' => '',
+                         'order_team_tag' => $team_tag,
+                         'call_back_url' => $call_back_url ?? null,
+                         'task' => $tasks,
+                         'is_restricted' => $is_restricted,
+                         'vendor_id' => $vendor_details->id,
+                         'order_vendor_id' => @$order_vendor->id,
+                         'dbname' => @$client->database_name,
+                         'order_id' => @$order->id,
+                         'customer_id' => @$order->user_id,
+                         'user_icon' => $customer->image,
+                         'agent'     => $agent,
+                         'task_type_id' => $task_type_id, //  for add agent booking in case of appointment
+                         'service_time' =>  $service_time,
+                         'rejectable_order' =>  $rejectable_order
+                     ];
+ 
+                     
+                     if ($is_restricted == 1) {
+                         $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                         $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+                     }
+ 
+ 
+                     $client = new Client([
+                         'headers' => [
+                             'personaltoken' => $dispatch_domain['service_key'],
+                             'shortcode'     => $dispatch_domain['service_key_code'],
+                             'content-type'  => 'application/json'
+                         ]
+                     ]);
+ 
+                     $url = $dispatch_domain['service_key_url'];
+                     $res = $client->post(
+                         $url . '/api/task/create',
+                         ['form_params' => ($postdata)]
+                     );
+                     $response = json_decode($res->getBody(), true);
+                     if ($response && $response['task_id'] > 0) {
+                        if( $is_order_amount_send_to_dispatcher ==1){
+                            //$order->update(['is_order_amount_send_to_dispatcher'=>$is_order_amount_send_to_dispatcher]);
+                            $order->is_order_amount_send_to_dispatcher = $is_order_amount_send_to_dispatcher;
+                            $order->save();
+                        }
+                         $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
+ 
+                         $dispatch_route                                 = new OrderProductDispatchRoute();
+                         $dispatch_route->order_id                       = $request->order_id;
+                         $dispatch_route->order_vendor_id                = $product->order_vendor_id;
+                         $dispatch_route->order_vendor_product_id        = $product->id;
+                         $dispatch_route->web_hook_code                  = $dynamic;
+                         $dispatch_route->dispatch_traking_url           = $dispatch_traking_url;
+                         $dispatch_route->dispatcher_status_option_id    = 1;
+                         $dispatch_route->order_status_option_id         = 1;
+                         $dispatch_route->save();
+ 
+                         $update = VendorOrderProductDispatcherStatus::updateOrCreate([
+                             'dispatcher_id' => null,
+                             'order_id' =>  $request->order_id,
+                             'dispatcher_status_option_id' => 1,
+                             'vendor_id' =>  $request->vendor_id,
+                             'order_product_route_id' => $dispatch_route->id
+                         ]);
+ 
+                         $return_response = 1;
+                     }
+                
+            
+             return $return_response;
+         } catch (\Exception $e) {
+             //return 2;
+             return response()->json([
+                 'status' => 'error',
+                 'message' => $e->getMessage()
+             ]);
+         }
+     }
 }

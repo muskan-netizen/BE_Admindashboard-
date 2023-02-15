@@ -15,7 +15,7 @@ class DispatcherStatusOptionSeeder extends Seeder
      */
     public function run()
     {
-        $statuses = ['Created', 'Assigned', 'Started', 'Arrived', 'Completed'];
+        $statuses = ['Created', 'Assigned', 'Started', 'Arrived', 'Completed','Rejected'];
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('dispatcher_status_options')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');

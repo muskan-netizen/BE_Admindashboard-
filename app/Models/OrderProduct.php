@@ -25,7 +25,14 @@ class OrderProduct extends Model{
         return parent::getArrayableAppends();
     }
 
-
+    public function order_product_status()
+    {
+        return $this->hasOne('App\Models\VendorOrderProductStatus', 'order_vendor_product_id');
+    }
+    public function orderProductStatus()
+    {
+        return $this->hasMany('App\Models\VendorOrderProductStatus', 'order_vendor_product_id');
+    }
     public function vendor(){
         return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'order_pre_time', 'auto_reject_time', 'order_min_amount');
     }
@@ -149,5 +156,8 @@ class OrderProduct extends Model{
     }
     public function LongTermService(){
       return $this->hasOne('App\Models\OrderLongTermServices', 'order_product_id', 'id');
+    }
+    public function RecurringService(){
+      return $this->hasMany('App\Models\OrderLongTermServiceSchedule', 'order_vendor_product_id', 'id');
     }
 }

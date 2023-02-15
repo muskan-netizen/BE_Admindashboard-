@@ -18,7 +18,7 @@
                         @if($product["averageRating"] >0)<span class="rating-number">{{ $product["averageRating"] }}</span>
                         @endif @endif @endif </div>
                     <div class="product-description_list border-bottom">
-                        @if($dicountPercentage = productDiscountPercentage($product["price_numeric"], $product["compare_price"]))
+                        @if($dicountPercentage = productDiscountPercentage(@$product["price_numeric"], @$product["compare_price"]))
                             <span class="flag-discount">{{$dicountPercentage}}% Off</span>
                         @endif
                         <p>
@@ -31,10 +31,12 @@
                         <span class="rating"><i class="fa fa-star" aria-hidden="true"></i>4.5</span>
                         </p>
                     </div>
+                    @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                     <div class="d-flex align-items-center justify-content-between al_clock pt-2">
                         <b>{!!$product["price"] ?? ''!!} </b>
                         <del>{!!$product["compare_at_price"] ?? ''!!} </del>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

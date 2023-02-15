@@ -36,10 +36,47 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     background-color: transparent;
     border: 1px solid;
 }
+
+
+.rental_filter_tab {
+    position: absolute;
+    left: 0;
+    width: 100%;
+}
+.rental_filter_tab li.nav-item {
+    width: auto;
+    display: inline-block;
+}
 </style>
 
 <script type="text/template" id="order_page_template">
     <div class="row">
+        {{-- <div class="col-md-12 col-lg-12 mb-4" id="rental_filter_tab" style="display:none;">
+            <div class="tab-product pl-0 pr-2 flex-grow-1">
+                <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="false" data-rel="rental_pending_delivery">
+                            <i class="icofont icofont-man-in-glasses"></i>{{ __('Rental Pending Delivery') }} <sup class="total-items" id="rental-pending-delivery"></sup>
+                        </a>
+                        <div class="material-border"></div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="rental_running_product-tab" data-toggle="tab" href="#rental_running_product" role="tab" aria-selected="false" data-rel="rental_running_product">
+                            <i class="icofont icofont-man-in-glasses"></i>{{ __('Running Product') }} <sup class="total-items" id="rental-running-product"></sup>
+                        </a>
+                        <div class="material-border"></div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="rental_pending_return-tab" data-toggle="tab" href="#rental_pending_return" role="tab" aria-selected="true" data-rel="rental_pending_return">
+                            <i class="icofont icofont-ui-home"></i>{{ __('Rental Pending Returns') }} <sup class="total-items" id="rental-pending-return"></sup>
+                        </a>
+                        <div class="material-border"></div>
+                    </li> 
+                    
+                </ul>
+            </div>
+        </div> --}}
+
         <% _.each(orders, function(order, k){%>
             <% if(order.vendors.length !== 0) { %>
                 <div class="col-xl-6 al_order_sec"  id="full-order-div<%= k %>">
@@ -129,7 +166,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         </div>
                                                     <% } %>
                                                     <% if(order.scheduled_date_time || order.schedule_pickup || order.schedule_dropoff) { %>
+
+                                                        <% if(order.recurring_booking_time) { %>
+                                                            <span class="badge badge-success ml-2">{{__('Recurring Scheduled')}}</span>
+                                                        <% }else{ %>
+
                                                         <span class="badge badge-success ml-2">{{__('Scheduled')}}</span>
+                                                        <% } %>
                                                        <!-- <span class="ml-2"><%= order.scheduled_date_time %></span> -->
                                                     <% } %>
 
@@ -177,6 +220,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                             <div class="col-7 col-sm-6">
                                                 <div class="row no-gutters product_list align-items-center flex-wrap">
                                                     <% _.each(vendor.products, function(product, pr){%>
+
                                                         <div class="col-4 text-center mb-2">
                                                             <div class="list-img" style="height:50px;">
                                                                 <img style="height:50px;" data-placement="right" data-toggle="tooltip" title="<%= product.product_name %>" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
@@ -186,7 +230,29 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
                                                             <label class="items_price">
                                                                 (<%= product.product_name %>)
-                                                                {{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %></label>
+                                                                {{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %>
+                                                                <% if(order.luxury_option_id == 4 && vendor.order_status_option_id == 2) { %>
+                                                                    <div class="accept_reject_div">
+                                                                        <% if(product.order_product_status && product.order_product_status.order_status_option_id && product.order_product_status.order_status_option_id  == 3) { %>
+                                                                            <span class="badge badge-danger">Rejected</span>
+                                                                        <% }else if(product.order_product_status && product.order_product_status.order_status_option_id && product.order_product_status.order_status_option_id  == 2){ %>
+                                                                            <span class="badge badge-success">Accepted</span>
+                                                                        <% }else{ %>
+                                                                            <span class="badge badge-info">Pending</span>
+                                                                        <% } %>
+                                                                    </div>
+                                                                <% } %>
+                                                            </label>
+                                                            <% if(order.luxury_option_id == 4 && vendor.order_status_option_id == 1) { %>
+                                                                <div class="accept_reject_div">
+                                                                    <% if(product.order_product_status && product.order_product_status.order_status_option_id && product.order_product_status.order_status_option_id  == 3) { %>
+                                                                        <span class="badge badge-danger">Rejected</span>
+                                                                    <% }else{ %>
+                                                                        <input type="checkbox" class="mt-1 productIdsCheck_<%= order.id %>" name="product_id[]" value="<%= product.product_id %>" data-order_vendor_product_id="<%= product.id %>" checked />
+                                                                    <button class="btn btn-danger btn-sm updateVendorProdStatus ml-1" data-vendor_product_id="<%= product.product_id %>" data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-order_luxury_option="<%= order.luxury_option_id %>" data-order_vendor_product_id="<%= product.id %>" title="Reject" style="padding: 0px 7px;">x</button>
+                                                                    <% } %>
+                                                                </div>
+                                                            <% } %>
                                                         </div>
                                                     <% }); %>
                                                 </div>
@@ -308,7 +374,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% if(order.vendors[0].exchanged_of_order) { %>
                                                         <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-is_alert = "<%= vendor.isAlert %>" data-alert_message = "<%= vendor.alertMessage %>">{{ __('Exchange Accept') }}</button>
                                                         <% } else { %>
-                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-is_alert = "<%= vendor.isAlert %>" data-alert_message = "<%= vendor.alertMessage %>">{{ __('Accept') }}</button>
+                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-is_alert = "<%= vendor.isAlert %>" data-alert_message = "<%= vendor.alertMessage %>" data-order_luxury_option="<%= order.luxury_option_id %>">{{ __('Accept') }}</button>
                                                     <% } %>
                                                     <!--<button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>-->
                                                 <% } else if(vendor.order_status_option_id == 2) { %>
@@ -330,7 +396,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% if(order.vendors[0].exchanged_of_order) { %>
                                                         <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Exchange Reject') }}</button>
                                                         <% } else { %>
-                                                    <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>
+                                                    <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-order_luxury_option="<%= order.luxury_option_id %>">{{ __('Reject') }}</button>
                                                     <% } %>
                                                     <% } %>
 
@@ -347,7 +413,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Total') }}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat( ( (order.total_amount) +( order.bid_discount)) )) %></span>
                                     </li>
-
+                                    <% if(order.luxury_option_id == 4) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Security Amount') }}</label>
+                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat( ( (order.security_amount)) )) %></span>
+                                        </li>
+                                    <% } %>
                                     <% if(order.bid_discount > 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                                  <label class="m-0">{{ __('Bid Discount') }}</label>
@@ -436,7 +507,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.wallet_amount_used) %></span>
                                     </li>
                                     <% } %>
-                                    
+
                                     <% if(order.total_discount_calculate > 0 || order.total_discount_calculate < 0) { %>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{__('Total Discount')}}</label>
@@ -556,6 +627,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                             </b>
                         </a>
                         @endif
+                        @if ($client_preferences->business_type == 'rental' || $client_preferences->business_type == 'super_app')
+                        <a class="return-btn" href="{{route('return.dispatcher.form')}}">
+                            <b>{{ __("Rental Return Order Form") }} <sup class="total-items">({{$returnFormRequestCount}})</sup>
+                                <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
+                            </b>
+                        </a>
+                        @endif
                     </div>
                 </div>
 
@@ -582,18 +660,50 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     </a>
                     <div class="material-border"></div>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
-                        <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
-                    </a>
-                    <div class="material-border"></div>
-                </li>
+                
+                
+                @if ($client_preferences->business_type == 'rental')
+                    <li class="nav-item">
+                        <a class="nav-link" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="true" data-rel="rental_pending_delivery">
+                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                        </a>
+                        <div class="material-border"></div>
+                        <ul class="nav nav-tabs nav-material rental_filter_tab" id="top-tab" role="tablist" style="display:none;">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="false" data-rel="rental_pending_delivery">
+                                    <i class="icofont icofont-man-in-glasses"></i>{{ __('Rental Pending Delivery') }} <sup class="total-items" id="rental-pending-delivery"></sup>
+                                </a>
+                                <div class="material-border"></div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="rental_running_product-tab" data-toggle="tab" href="#rental_running_product" role="tab" aria-selected="false" data-rel="rental_running_product">
+                                    <i class="icofont icofont-man-in-glasses"></i>{{ __('Running Product') }} <sup class="total-items" id="rental-running-product"></sup>
+                                </a>
+                                <div class="material-border"></div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="rental_pending_return-tab" data-toggle="tab" href="#rental_pending_return" role="tab" aria-selected="true" data-rel="rental_pending_return">
+                                    <i class="icofont icofont-ui-home"></i>{{ __('Rental Pending Returns') }} <sup class="total-items" id="rental-pending-return"></sup>
+                                </a>
+                                <div class="material-border"></div>
+                            </li>
+                        </ul>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
+                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                        </a>
+                        <div class="material-border"></div>
+                    </li> 
+                @endif
                 <li class="nav-item">
                     <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
                         <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
                     </a>
                     <div class="material-border"></div>
                 </li>
+               
             </ul>
         </div>
         <div class="pl-2 pr-2">
@@ -650,7 +760,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             </ul> --}}
 
     </div>
-    <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
+    <div class="tab-content nav-material  order_data_box scroll-style " id="top-tabContent">
         <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
         <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
         <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
@@ -659,6 +769,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 <p>{{ __("You don't have orders right now.") }}</p>
             </div>
         </div>
+        <div class="tab-pane fade position-relative h-100" id="rental_pending_delivery" role="tabpanel" aria-labelledby="rental_pending_delivery-tab"></div>
+        <div class="tab-pane fade position-relative h-100" id="rental_pending_return" role="tabpanel" aria-labelledby="rental_pending_return-tab"></div>
+        <div class="tab-pane fade position-relative h-100" id="rental_running_product" role="tabpanel" aria-labelledby="rental_running_product-tab"></div>
         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
             @php
                 $clientVendorTypes = $vendor_typ_key.'_check';
@@ -753,6 +866,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     }
 
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
+        console.log("fffffffffff");
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
     // var sort_order = $('#sort_order option:selected').val();
@@ -796,6 +910,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                         let order_page_template = _.template($('#order_page_template').html());
                         $("#" + filter_order_status).append(order_page_template(orderData));
+                        if(filter_order_status == 'rental_pending_delivery' || filter_order_status == 'rental_running_product' || filter_order_status == 'rental_pending_return'){
+                            $('.rental_filter_tab').css('display','block');
+                            $('.order_data_box').addClass('mt-4');
+                        }else{
+                            $('.order_data_box').removeClass('mt-4');
+                            $('.rental_filter_tab').css('display','none');
+                        }
                     } else {
                         let no_order_template = _.template($('#no_order_template').html());
                         $("#" + filter_order_status).html(no_order_template({}));
@@ -853,12 +974,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             $(this).remove();
         });
         $(".nav-link").click(function() {
+            console.log("asdf");
             $('#order_list_order').show();
             var rel = $(this).data('rel');
             var url = "{{ route('orders.filter') }}";
             $("#search_via_keyword").val("");
             // $(".tab-pane").html('');
             init(rel, url, '', false);
+            
         });
         // $(function() {
         //     var url = window.location.href;
@@ -886,7 +1009,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         })
 
 
-        function openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id) {
+        function openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id, order_luxury_option_id) {
             var cancelled_by = "{{Auth::user()->id}}";
             // var that = document.getElementById('reject');
             //     var count = that.data("count");
@@ -924,6 +1047,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         status_option_id: status_option_id,
                         order_vendor_id: order_vendor_id,
                         cancelled_by: cancelled_by,
+                        order_luxury_option_id: order_luxury_option_id,
                     },
 
                     success: function(response) {
@@ -973,10 +1097,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         }
 
-
-
-
-
         // update status
         $(document).on("click", ".update-status", function() {
 
@@ -991,13 +1111,22 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var order_id = that.data("order_id");
             var vendor_id = that.data("vendor_id");
             var count = that.data("count");
+            var order_luxury_option_id = that.data("order_luxury_option");
             var alertMessage = "";
+            var productIds = [];
+            $('.productIdsCheck_'+order_id+':checked').each(function(i){
+                productIds[i] = $(this).val();
+            });
+            order_vendor_product_id = [];
+            $('.productIdsCheck_'+order_id+':checked').each(function(i){
+                order_vendor_product_id[i] = $(this).data('order_vendor_product_id');
+            });
             if(status_option_id == 2 && that.data('is_alert'))
             {
                 alertMessage = that.data('alert_message');
             }
             if (status_option_id == 3) {
-                return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id);
+                return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id, order_luxury_option_id);
             } else {
                 Swal.fire({
                   title: "{{__('Are you Sure?')}}",
@@ -1016,6 +1145,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 "_token": "{{ csrf_token() }}",
                                 status_option_id: status_option_id,
                                 order_vendor_id: order_vendor_id,
+                                productIds: productIds,
+                                order_vendor_product_id: order_vendor_product_id,
+                                order_luxury_option_id: order_luxury_option_id
                             },
                             success: function(response) {
 
@@ -1068,6 +1200,64 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     }
                 });
             }
+        });
+
+        // update vendor Product status
+        $(document).on("click", ".updateVendorProdStatus", function(e) {
+            e.preventDefault()
+            let that = $(this);
+            var count = that.data("count");
+            var status_option_id = that.data("status_option_id");
+            var luxury_option = that.data("order_luxury_option");
+            var order_vendor_id = that.data("order_vendor_id");
+            var order_id = that.data("order_id");
+            var vendor_id = that.data("vendor_id");
+            var count = that.data("count");
+            var order_product_id = that.data("vendor_product_id");
+            var order_vendor_product_id = that.data("order_vendor_product_id");
+            var alertMessage = "";
+            
+            Swal.fire({
+                title: "{{__('Are you Sure?')}}",
+                // icon: 'info',
+                text: alertMessage,
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: "{{ route('order.changeVendorProductStatus') }}",
+                        type: "POST",
+                        data: {
+                            order_id: order_id,
+                            vendor_id: vendor_id,
+                            vendor_id: vendor_id,
+                            "_token": "{{ csrf_token() }}",
+                            status_option_id: status_option_id,
+                            order_vendor_id: order_vendor_id,
+                            order_product_id: order_product_id,
+                            order_vendor_product_id: order_vendor_product_id,
+                        },
+                        success: function(response) {
+                            if(response.status=='error'){
+                                Swal.fire({
+                                    icon: 'warning',
+                                    text: response.message,
+                                    showCancelButton: false,
+                                    confirmButtonText: 'Ok',
+                                }) 
+                            }else if(response.status=='success'){
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: response.message,
+                                    showCancelButton: false,
+                                    confirmButtonText: 'Ok',
+                                })
+                            }                            
+                        },
+                    });
+                }
+            });
         });
     });
 </script>

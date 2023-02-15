@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{AppStyling, AppStylingOption,ClientPreference,AppDynamicTutorial, CabBookingLayout, CabBookingLayoutBanner, CabBookingLayoutCategory, CabBookingLayoutTranslation, Category, Client, ClientLanguage, HomePageLabel, Product};
+use App\Models\{AppStyling, AppStylingOption,ClientPreference,AppDynamicTutorial, CabBookingLayout, CabBookingLayoutBanner, CabBookingLayoutCategory, CabBookingLayoutTranslation, Category, Client, ClientLanguage, HomePageLabel, HomeProduct, Product};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\HomePage\WebStylingTrait;
@@ -57,6 +57,12 @@ class AppStylingController extends BaseController
 
 
         $client_preferences = ClientPreference::first();
+        $selected_ids=[];
+        $Selected_products= HomeProduct::get();
+        foreach ($Selected_products as $key => $value) {
+            $selected_ids[] = $value->product_id;
+        
+    }
 
         switch($client_preferences->business_type){
             case "taxi":    # if business type is taxi
@@ -137,7 +143,7 @@ class AppStylingController extends BaseController
         $dynamicTutorials = AppDynamicTutorial::orderBy('sort')->get();
         return view('backend/app_styling/index')->with([
             'single_category_products'=> $single_category_products, 'selected_single_category_products' => $selected_single_category_products,
-            'all_pickup_category'=> $all_pickup_category,'langs' => $langs,'tertiary_color_options' => $tertiary_color_options, 'secondary_color_options' => $secondary_color_options, 'primary_color_options' => $primary_color_options, 'medium_font_options' => $medium_font_options, 'bold_font_options' => $bold_font_options, 'regular_font_options' => $regular_font_options, 'tab_style_options' => $tab_style_options, 'homepage_style_options' => $homepage_style_options, 'signup_tag_line_text' => $signup_tag_line_text, 'dynamicTutorials' => $dynamicTutorials,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts,'select_products'=>$select_products]);
+            'all_pickup_category'=> $all_pickup_category,'langs' => $langs,'tertiary_color_options' => $tertiary_color_options, 'secondary_color_options' => $secondary_color_options, 'primary_color_options' => $primary_color_options, 'medium_font_options' => $medium_font_options, 'bold_font_options' => $bold_font_options, 'regular_font_options' => $regular_font_options, 'tab_style_options' => $tab_style_options, 'homepage_style_options' => $homepage_style_options, 'signup_tag_line_text' => $signup_tag_line_text, 'dynamicTutorials' => $dynamicTutorials,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts,'select_products'=>$select_products,'selected_ids'=>$selected_ids]);
     }         
     /**
      * Store a regular font.
@@ -270,8 +276,6 @@ class AppStylingController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function updateAppStylesNew(Request $request){
-      
-       
         foreach ($request->home_labels as $key => $value) {
            
             $home_translation = CabBookingLayoutTranslation::where('language_id', $request->languages[$key])->where('cab_booking_layout_id', $request->home_labels[$key])->first();
@@ -288,7 +292,11 @@ class AppStylingController extends BaseController
         if(@$request->product_category){
             $this->updateSingleCategoryProductsToDb($request);
         }
-        
+
+        if(@$request->selected_products)
+{
+    $this->updateSelectedProductstoDb($home_translation->cab_booking_layout_id,$request);
+}        
 
         foreach ($request->pickup_labels as $key => $value) {
 

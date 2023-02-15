@@ -9,7 +9,11 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
+<<<<<<< HEAD
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot, ProcessorProduct};
+=======
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot,UserAddress};
+>>>>>>> pre_dev
 
 use Carbon\Carbon;
 use App\Http\Traits\{ProductActionTrait, ProductTrait};
@@ -143,7 +147,7 @@ class ProductController extends FrontController{
             }
             $sets[] = ['variant_types' => $variant_type_id, 'variant_options' => $variant_option_id];
         }
-        if(  in_array($product->category->categoryDetail->type_id ,[8,12]) ){ // onDemand and appointent
+        if(  in_array($product->category->categoryDetail->type_id ,[8,12])  && $product->is_recurring_booking !=1){ // onDemand and appointent
 
             $cartDataGet = $this->getCartOnDemand($request);
             $nlistData = clone $product;
@@ -303,8 +307,13 @@ class ProductController extends FrontController{
                             $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
                             $product_attr[$key]['hexacode'] = optional($value->attributeOption)->hexacode ?? '';
                             $product_attr[$key]['type'] = optional($value->attribute)->type ?? '';
+<<<<<<< HEAD
 
                             if( !empty($value->attribute) && $value->attribute->type != 4) {
+=======
+                            
+                            if( !empty($value->attribute) && $value->attribute->type != 4 && $value->attribute->type != 6) {
+>>>>>>> pre_dev
                                 $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
                             }
                             else {
@@ -341,6 +350,7 @@ class ProductController extends FrontController{
             if($user){
                 $user_vendor =  UserVendor::where('user_id', $user->id)->first();
             }
+<<<<<<< HEAD
 
             // Date Time Comparison
             $cutoff_time            = $product->vendor->cutOff_time??'';
@@ -349,6 +359,10 @@ class ProductController extends FrontController{
 
             $parsed_cutoff_time     = Carbon::parse($cutoff_time);
             $current_time_response  = false;
+=======
+            
+            return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template]);
+>>>>>>> pre_dev
 
             if( $parsed_cutoff_time->gt($current_time) ) {
                 $current_time_response = true;
@@ -537,6 +551,24 @@ class ProductController extends FrontController{
 
     }
 
+    # get product faq
+    public function getFreeLincerFromDispatcher(Request $request){
+       
+       $selecterVariant = ProductVariant::where('id',$request->variant_id)->first();
+       if($selecterVariant){
+            $latitude = '';
+            $longitud = '';
+            $address = UserAddress::find(($request->address_id ?? ''));
+            if($address){
+                $latitude = $address->latitude ;
+                $longitud = $address->longitude ;
+            }
+           $res = $this->getProductPriceFromDispatcher($request->onDemandBookingdate,$selecterVariant->sku, $latitude, $longitud,$request->slot);
+           return response()->json(array('status' => 'Success', 'data' => $res['data']));
+       }
+       return response()->json(array('status' => 'Success', 'data' => []));
+    }
+
     public function getShippingProductDeliverySlots(Request $request){
         if($request->ajax()){
             $product_id = $request->product_id;
@@ -568,6 +600,15 @@ class ProductController extends FrontController{
             $product_delivery_slots_interval = DeliverySlot::where('parent_id', $request->slot_id)->get();
             return view('frontend.shipping-method-slots-interval-ajax')->with(['product_delivery_slots_interval' => $product_delivery_slots_interval]);
         }
+    }
+    public function getGerenalSlot(Request $request){
+        $html  = '';
+        $period = GerenalSlot($request->date, '00:00:00', '24:00:00', $Duration="60");
+        foreach ($period as $Slot){
+            $html .= '<option value="'.$Slot['value'].'">'.$Slot['name'].'</option>';
+        }
+        return response()->json(array('status' => 'Success', 'html' => $html));
+       
     }
 
 }

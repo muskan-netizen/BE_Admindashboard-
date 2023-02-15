@@ -35,10 +35,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('social/info', 'Api\v1\SocialController@getKeys');
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
+        Route::post('get_product_price_from_dispatcher',   'Api\v1\ProductController@getFreeLincerFromDispatcher');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {
 
-         /**Chat resourses */
+        /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
         Route::get('chat/all/{room_id?}', 'Api\v1\ChatController@index');
         Route::get('chat/user/{room_id?}', 'Api\v1\ChatController@VendorUserChat');
@@ -53,7 +54,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('chat/userAgentChatRoom', 'Api\v1\ChatController@userAgentChatRoom');
         Route::post('chat/sendNotificationToUser', 'Api\v1\ChatController@sendNotificationToUser');
 
-        Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+       // Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
         Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
 
 
@@ -62,6 +63,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('get/agents', 'Api\v1\PickupDeliveryController@getAgents');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
+        Route::get('RejectedOrderProduct', 'Api\v1\OrderController@getRejectedOrdersList');
         Route::post('orders/tip-after-order', 'Api\v1\OrderController@tipAfterOrder');
         Route::get('wishlists', 'Api\v1\ProfileController@wishlists');
         Route::get('newsLetter', 'Api\v1\ProfileController@newsLetter');
@@ -132,7 +134,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         //Route::post('get-vendor-transactions', 'Api\v1\VendorController@getOrdersList');
 
         Route::match(['get','post'],'payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
-        //Route::match(['get','post'],'payment/plugnpay','Api\v1\PlugnpayGatewayController@beforePayment');
+      //  Route::match(['get','post'],'payment/plugnpay','Api\v1\PlugnpayGatewayController@beforePayment');
+        
+        //azulpay
+        Route::match(['get','post'],'payment/azulpay','Api\v1\AzulPaymentController@beforePayment');
+        
         //Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
         Route::post('payment/razorpay/pay/{amount}/{order}', 'Api\v1\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
         Route::post('payment/complete/paytab','Api\v1\PaytabController@completePayment');
@@ -249,6 +255,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('bid/accept',   'Api\v1\BiddingController@bidAccept');
         Route::post('bid/placeBid',   'Api\v1\BiddingController@placeBid');
 
+
         // gift Card Order
         Route::group(['prefix' => 'giftCard'], function () {
             Route::get('list', 'Api\v1\GiftcardController@getGiftCard');
@@ -260,6 +267,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-influencer-form/{id}', 'Api\v1\InfluencerController@getInfluencerForm');
             Route::post('save-influencer-form', 'Api\v1\InfluencerController@save');
         });
-
-    });
+     //   Route::post('get_product_price_from_dispatcher',   'Api\v1\ProductController@getFreeLincerFromDispatcher');
+    });  
 });

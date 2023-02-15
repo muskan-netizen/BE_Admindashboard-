@@ -155,7 +155,7 @@ div#attribute_section .col-sm-9 .form-check-inline.w-100 {
 </style>
 @endsection
 @php
-$lastmileShow = array('7','10','11');
+$lastmileShow = array('7','11'); //,'10'
 
 $brandNotShow = array('7','8','12');
 $on_demand_check = array('8','12');
@@ -343,7 +343,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
                         @endif
-
                         @if($product->vendor->need_container_charges == 1)
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Container Charges (Optional)'), ['class' => 'control-label']) !!}
@@ -510,6 +509,17 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     {!! Form::input('number','buffer_time_duration_min', $product->buffer_time_duration_min, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration_min', 'placeholder' => '0', 'onkeypress' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
 
+                            </div>
+
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Security Amount'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('security_amount', decimal_format($product->security_amount), ['class'=>'form-control', 'id' => 'security_amount', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
+                                {!! Form::number('variant_quantity[]', $product->variant[0]->quantity, ['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
 
                         </div>
@@ -680,12 +690,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
                     @endif
-                    @if( p2p_module_status() )
-                        @if(!empty($productAttributes))
-                        <div id="attribute_section">
-                            @include('layouts.shared.product-attribute')
-                        </div>
-                        @endif
+                @endif
+                @if( p2p_module_status() || is_attribute_enabled())
+                    @if(!empty($productAttributes))
+                    <div id="attribute_section">
+                        @include('layouts.shared.product-attribute')
+                    </div>
                     @endif
                 @endif
             </div>
@@ -709,6 +719,13 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 <div class="card-box">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Other Information") }}</h5>
                     <div class="row mb-2">
+
+                        @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Recurring Booking'),['class' => 'control-label']) !!}
+                                <input type="checkbox" id="is_recurring_booking" data-plugin="switchery" name="is_recurring_booking" class="chk_box" data-color="#43bee1" @if($product->is_recurring_booking == 1) checked @endif>
+                            </div>
+                        @endif
                         @if(!in_array($client_preference_detail->business_type,['taxi','laundry']))
                                 @if(Auth::user()->is_superadmin == 1)
                                     <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -751,6 +768,10 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Replaceable'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="replaceable" data-plugin="switchery" name="replaceable" class="chk_box" data-color="#43bee1" @if($product->replaceable == 1) checked @endif>
                         </div>
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Spotlight Deals'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="replaceable" data-plugin="switchery" name="spotlight_deals" class="chk_box" data-color="#43bee1" @if($product->spotlight_deals == 1) checked @endif>
+                        </div>
 
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
@@ -768,6 +789,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Individual Delivery Fee'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="individual_delivery_fee" data-plugin="switchery" name="individual_delivery_fee" class="chk_box" data-color="#43bee1" @if($product->individual_delivery_fee == 1) checked @endif>
                         </div>
+
+
                         <div class="col-md-6 justify-content-between mb-2" id="dispatcher_tags_div">
                             <div class="row">
                                 <div class="col-md-5">
@@ -813,7 +836,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 {!! Form::label('title', __('Choose Slots'),['class' => 'control-label']) !!}
                                 <select class="selectizeInput form-control" id="select_slot" name="slot_ids[]" multiple>
                                     <option value="">Choose Slots</option>
-                                    @foreach ($delivery_slots as $slot)
+                                    @foreach (@$delivery_slots as $slot)
                                         <option value="{{$slot->id}}" @if(in_array($slot->id, $pro_delivery_slot_ids)) selected @endif>{{$slot->title.' ( '.$slot->start_time.'-'.$slot->end_time.' )'}}</option>
                                     @endforeach
                                 </select>
@@ -867,13 +890,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <input type="checkbox" bid="" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box" data-color="#43bee1" @if($product->age_restriction == 1) checked @endif>
                         </div>
                         @endif
-
-
-
-
-
                     </div>
-
 
                     <div class="row">
                         <div class="col-sm-12 mb-2">
@@ -1620,7 +1637,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 @include('backend.catalog.modals')
 @endsection
 
-@section('script')
+@section('script-bottom')
 
 <link href="{{asset('assets/css/dropzone.css')}}" rel="stylesheet" />
 <script src="{{asset('assets/js/dropzone.js')}}"></script>

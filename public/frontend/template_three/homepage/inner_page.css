@@ -89,6 +89,15 @@
     font-size: 12px;
     margin: 0 auto
 }
+.al_body_template_three .add_vendor_product_btn {
+    border: 1px solid var(--theme-deafult);
+    display: block;
+    border-radius: 20px;
+    text-transform: uppercase;
+    width: 60px;
+    font-size: 12px;
+    margin: 0 auto
+}
 
 .al_body_template_three div#header_cart_main_ul_ondemand {
     padding: 10px
@@ -1869,7 +1878,9 @@ article#page-container {
     border-top-right-radius: 5px;
     padding: 5px 0
 }
-
+.progress-order span.badge {
+    font-size: 12px;
+}
 .pulse {
     display: block;
     width: 8px;
@@ -3770,4 +3781,7 @@ a.morelink.less {
 
 .booking-experience .address-form .where-to-go .title.title-36 {
     font-size: 24px;
+}
+.inner_spacing .border-product .product-icon #social-links ul li a {
+    font-size: 20px;
 }

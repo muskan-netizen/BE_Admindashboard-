@@ -42,10 +42,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         font-size: 15px;
     }
 
-    label.rating-star.cancel_order,
-    .rating-star.request_cancel_order {
+    label.rating-star.cancel_order, .rating-star.request_cancel_order, .extend-order {
         position: relative;
-        left: 70px;
+        left: 0px;
         top: 4px;
         background: #a22c7f;
         color: #fff;
@@ -54,11 +53,34 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         padding: 5px 10px 4px 10px;
         text-transform: uppercase;
     }
+    .single-cancel-order {
+        left: 0px !important;
+        top: 0px !important;
+    }
+
+    .rental_return, .rental_stop {
+        position: relative;
+        left: 0px;
+        top: 4px;
+        background: #a22c7f;
+        color: #fff;
+        font-weight: 600;
+        font-size: 10px;
+        padding: 5px 10px 4px 10px;
+        text-transform: uppercase;
+
+    }
 
     .single-cancel-order {
         left: 0px !important;
         top: 0px !important;
     }
+    .service_product h6 {
+    max-width: 120px;
+    display: inline-block;
+    width: 100%;
+    }
+
 </style>
 @endsection
 @section('content')
@@ -167,11 +189,16 @@ $timezone = Auth::user()->timezone;
             </div>
         </div>
         <div class="row my-md-3">
-            <div class="col-lg-3">
-                <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
-                <div class="dashboard-left mb-3">
-                    <div class="collection-mobile-back"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{ __('Back') }}</span></div>
-                    @include('layouts.store/profile-sidebar')
+                <div class="col-lg-3">
+                    <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
+                        <div class="dashboard-left mb-3">
+                            <div class="collection-mobile-back">
+                                <span class="filter-back d-lg-none d-inline-block">
+                                    <i class="fa fa-angle-left" aria-hidden="true"></i>{{ __('Back') }}
+                                </span>
+                            </div>
+                            @include('layouts.store/profile-sidebar')
+                    </div>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -867,1083 +894,43 @@ $timezone = Auth::user()->timezone;
                                                 </div>
                                             </div>
                                             @endif
-                                        </div>
-                                        {{ $activeOrders->appends(['pageType' => 'activeOrders'])->links() }}
-                                    </div>
-                                    <div class="tab-pane fade past-order {{ Request::query('pageType') == 'pastOrders' ? 'active show' : '' }}" id="past_order" role="tabpanel" aria-labelledby="past_order-tab">
-                                        <div class="row">
-                                            @if ($pastOrders->isNotEmpty())
-                                            @foreach ($pastOrders as $key => $order)
-
-                                            <div class="col-12">
-                                                <div class="row no-gutters order_head">
-                                                    <div class="col-md-3 alOrderStatus">
-                                                        <h4>{{ __('Order Number') }}</h4>
-                                                        <span>#{{ $order->order_number }}</span>
-                                                        <?php $is_exchanged_order = 0;  ?>
-
-                                                        @if(@$order->vendors[0]->exchanged_to_order)
-                                                        <h4>{{ __('Exchanged To') }}</h4>
-                                                        <span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span>
-                                                        @endIf
-                                                        @if(@$order->vendors[0]->exchanged_of_order)
-                                                        <?php $is_exchanged_order = 1;  ?>
-                                                        <h4>{{ __('Exchange Of') }}</h4>
-                                                        <span># {{$order->vendors[0]->exchanged_of_order->orderDetail->order_number}}</span>
-
-                                                        @endIf
-                                                    </div>
-                                                    <div class="col-md-3 alOrderStatus">
-                                                        <h4>{{ __('Date & Time') }}</h4>
-                                                        <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
-                                                    </div>
-                                                    <div class="col-md-3 alOrderStatus">
-                                                        <h4>{{ __('Customer Name') }}</h4>
-                                                        <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
-                                                    </div>
-                                                    @if ($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-3">
-                                                        <h4>{{ __('Address') }}</h4>
-                                                        @if($order->luxury_option_id == 3)
-
-                                                        <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                                            @if ( count($order->vendors) > 0)
-                                                            {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
-                                                            @else
-                                                            NA
-                                                            @endif
-                                                        </span>
-                                                        @else
-                                                        <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                                            @if ($order->address)
-                                                            {{ $order->address->house_number ?? false ? $order->address->house_number . ',' : '' }}
-                                                            {{ $order->address->address }},
-                                                            {{ $order->address->street }},
-                                                            {{ $order->address->city }},
-                                                            {{ $order->address->state }},
-                                                            {{ $order->address->country }}
-                                                            {{ $order->address->pincode }}
-                                                            @else
-                                                            NA
-                                                            @endif
-                                                        </span>
-                                                        @endif
-                                                    </div>
-                                                    @endif
-                                                </div>
-                                                <div class="row no-gutters order_data d-none">
-                                                    <div class="col-md-3">#{{ $order->order_number }}
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <a class="text-capitalize">{{ $order->user->name }}</a>
-                                                    </div>
-                                                    @if ($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-3" {{$order->luxury_option_id }}>
-
-                                                        @if($order->luxury_option_id == 3)
-
-                                                        <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                                            @if ( count($order->vendors) > 0)
-                                                            {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
-                                                            @else
-                                                            NA
-                                                            @endif
-                                                        </span>
-                                                        @else
-                                                        <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                                            @if ($order->address)
-                                                            {{ $order->address->house_number ?? false ? $order->address->house_number . ',' : '' }}
-                                                            {{ $order->address->address }},
-                                                            {{ $order->address->street }},
-                                                            {{ $order->address->city }},
-                                                            {{ $order->address->state }},
-                                                            {{ $order->address->country }}
-                                                            {{ $order->address->pincode }}
-                                                            @else
-                                                            NA
-                                                            @endif
-                                                        </span>
-                                                        @endif
-
-                                                    </div>
-                                                    @endif
-                                                </div>
-                                                <div class="row mt-2">
-                                                    <div class="col-md-9 mb-3">
-                                                        @php
-                                                        $subtotal_order_price = $total_order_price = $total_tax_order_price = 0;
-                                                        @endphp
-                                                        @foreach ($order->vendors as $key => $vendor)
-                                                        @php
-                                                        $product_total_count = $product_subtotal_amount = $product_taxable_amount = 0;
-                                                        @endphp
-                                                        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0">
-                                                            <span class="left_arrow pulse"></span>
-                                                            <div class="row">
-                                                                <div class="col-5 col-sm-3">
-                                                                    <h5 class="m-0">
-                                                                        {{ __('Order Status') }}
-                                                                    </h5>
-                                                                    <ul class="status_box mt-1 pl-0">
-                                                                        @if (!empty($vendor->order_status))
-                                                                        <li>
-                                                                            <img src="{{ asset('assets/images/driver_icon.svg') }}" alt="">
-                                                                            <label class="m-0 in-progress">
-                                                                                @if(@$is_exchanged_order)
-                                                                                {{__('Exchange Order')}}
-                                                                                @endif
-                                                                                {{ __(ucfirst($vendor->order_status)) }}</label>
-                                                                        </li>
-                                                                        @endif
-
-
-
-
-                                                                        @if (!empty($vendor->dispatch_traking_url))
-                                                                        <li>
-                                                                            <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
-                                                                            <a class="alOrderDetailsLink" href="{{ route('front.booking.details', $order->order_number) }}" target="_blank">{{ __('Details') }}</a>
-                                                                        </li>
-                                                                        @endif
-                                                                        @if ($vendor->dineInTable)
-                                                                        <li>
-                                                                            <h5 class="mb-1">
-                                                                                {{ __('Dine-in') }}
-                                                                            </h5>
-                                                                            <h6 class="m-0">
-                                                                                {{ $vendor->dineInTableName }}
-                                                                            </h6>
-                                                                            <h6 class="m-0">
-                                                                                Category :
-                                                                                {{ $vendor->dineInTableCategory }}
-                                                                            </h6>
-                                                                            <h6 class="m-0">
-                                                                                Capacity :
-                                                                                {{ $vendor->dineInTableCapacity }}
-                                                                            </h6>
-                                                                        </li>
-                                                                        @endif
-                                                                    </ul>
-                                                                </div>
-                                                                <div class="col-7 col-sm-4 row">
-                                                                    <div class="col-6 col-sm-6">
-                                                                        <ul class="product_list p-0 m-0 text-center">
-                                                                            @php
-                                                                            $returnable = 0;
-                                                                            $replaceable = 0;
-                                                                            @endphp
-                                                                            @foreach ($vendor->products as $product)
-                                                                            @php
-
-                                                                            if(@$product->product->returnable && $product->product->returnable == 1 && @$vendor->is_order_days_for_return){
-                                                                            $returnable = 1;
-                                                                            }
-
-                                                                            if(@$product->product->replaceable && $product->product->replaceable == 1 && @$vendor->is_order_days_for_return){
-                                                                            $replaceable = 1;
-                                                                            }
-                                                                            @endphp
-
-
-
-                                                                            @if ($vendor->vendor_id == $product->vendor_id)
-                                                                            @php
-                                                                            $pro_rating = $product->productRating->rating ?? 0;
-                                                                            @endphp
-                                                                            <li class="text-center mb-0 alOrderImg">
-                                                                                <img src="{{ $product->image_url }}" alt="">
-                                                                                <span class="item_no position-absolute">x{{ $product->quantity }}</span>
-                                                                            </li>
-                                                                            <li>
-                                                                                <label class="items_price">{{ Session::get('currencySymbol') }}{{ $product->price * $clientCurrency->doller_compare }}</label>
-                                                                                <label class="rating-star add_edit_review" data-id="{{ $product->productRating->id ?? 0 }}" data-order_vendor_product_id="{{ $product->id ?? 0 }}">
-                                                                                    <i class="fa fa-star{{ $pro_rating >= 1 ? '' : '-o' }}"></i>
-                                                                                    <i class="fa fa-star{{ $pro_rating >= 2 ? '' : '-o' }}"></i>
-                                                                                    <i class="fa fa-star{{ $pro_rating >= 3 ? '' : '-o' }}"></i>
-                                                                                    <i class="fa fa-star{{ $pro_rating >= 4 ? '' : '-o' }}"></i>
-                                                                                    <i class="fa fa-star{{ $pro_rating >= 5 ? '' : '-o' }}"></i>
-                                                                                </label>
-                                                                                @php
-                                                                                $product_total_price = $product->price * $clientCurrency->doller_compare;
-                                                                                $product_total_count += $product->quantity * $product_total_price;
-                                                                                $product_taxable_amount += $product->taxable_amount;
-                                                                                $total_tax_order_price += $product->taxable_amount;
-                                                                                @endphp
-                                                                                @endif
-                                                                            </li>
-                                                                            @endforeach
-                                                                        </ul>
-                                                                    </div>
-
-                                                                    <div class="col-6 col-sm-6">
-                                                                        @if($order->vendors[0]->dispatch_traking_url!=null && $order->vendors[0]->dispatch_traking_url!="")
-
-                                                                        <ul class="product_list p-0 m-0 text-center">
-                                                                            @php
-                                                                            $driverrating = $order->driver_rating->rating ?? 0;
-                                                                            @endphp
-                                                                            <li class="text-center alOrderTaxi">
-                                                                                {{-- <img src="#" alt=""> --}}
-                                                                                <label class="items_price">{{__('Rate Your Driver')}}</label>
-                                                                                <label class="rating-star add_edit_driver_review" data-id="{{ $order->driver_rating->id ?? 0 }}" data-order_vendor_product_id="{{ $product->id ?? 0 }}">
-                                                                                    <i class="fa fa-star{{ $driverrating >= 1 ? '' : '-o' }}"></i>
-                                                                                    <i class="fa fa-star{{ $driverrating >= 2 ? '' : '-o' }}"></i>
-                                                                                    <i class="fa fa-star{{ $driverrating >= 3 ? '' : '-o' }}"></i>
-                                                                                    <i class="fa fa-star{{ $driverrating >= 4 ? '' : '-o' }}"></i>
-                                                                                    <i class="fa fa-star{{ $driverrating >= 5 ? '' : '-o' }}"></i>
-                                                                                </label>
-                                                                            </li>
-
-                                                                        </ul>
-
-                                                                        @endif
-
-                                                                        @if($order->reports!=null)
-                                                                        <div class="order-past-report text-center">
-                                                                            <a target="_blank" href="{{$order->reports->report['original']}}" download><i class="fa fa-download" aria-hidden="true"></i> Report</a>
-                                                                        </div>
-                                                                        @endif
-                                                                    </div>
-
-                                                                </div>
-                                                                <div class="col-md-5 mt-md-0 mt-sm-2">
-                                                                    <ul class="price_box_bottom m-0 p-0">
-                                                                        <li class="d-flex align-items-center justify-content-between">
-                                                                            <label class="m-0">{{ __('Product Total') }}</label>
-                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($product_total_count
-                                                                                                    *
-                                                                                                    $clientCurrency->doller_compare)}}</span>
-                                                                        </li>
-                                                                        @if ($vendor->discount_amount > 0)
-                                                                        <li class="d-flex align-items-center justify-content-between">
-                                                                            <label class="m-0">{{ __('Coupon Discount') }}</label>
-                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->discount_amount
-                                                                                                        *
-                                                                                                        $clientCurrency->doller_compare)}}</span>
-                                                                        </li>
-                                                                        @endif
-                                                                        @if ($vendor->delivery_fee > 0)
-                                                                        <li class="d-flex align-items-center justify-content-between">
-                                                                            <label class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->delivery_fee
-                                                                                                        *
-                                                                                                        $clientCurrency->doller_compare)}}</span>
-                                                                        </li>
-                                                                        @endif
-                                                                        <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                            <label class="m-0">{{ __('Amount') }}</label>
-                                                                            @php
-                                                                            $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
-                                                                            $subtotal_order_price += $product_subtotal_amount;
-                                                                            @endphp
-                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($product_subtotal_amount
-                                                                                                    *
-                                                                                                    $clientCurrency->doller_compare)}}</span>
-                                                                        </li>
-
-
-
-                                                                        @if(@$vendor->is_exchanged_or_returned && $vendor->is_exchanged_or_returned == 1)
-                                                                        @if($vendor->exchanged_to_order->order_status_option_id == 6)
-                                                                        <button class="btn btn-solid"> {{__('Replaced')}}</button>
-                                                                        @else($vendor->order_status_option_id == 9)
-                                                                        <button class="btn btn-solid"> {{__('Replacement Pending')}} </button>
-                                                                        @endif
-
-                                                                        @elseif($vendor->is_exchanged_or_returned && $vendor->is_exchanged_or_returned == 2)
-                                                                        <button class="btn btn-solid"> {{__('Return Pending')}} </button>
-                                                                        @else
-
-                                                                        @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
-                                                                        @if(@$returnable && $order->vendors[0]->exchanged_of_order == null)
-                                                                        <button class="return-order-product btn btn-solid" data-id="{{ $order->id ?? 0 }}" data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
-                                                                            <td class="text-center" colspan="3">
-                                                                                {{ __('Return') }}
-                                                                        </button>
-                                                                        @endif
-                                                                        @endif
-
-                                                                        @if(@$replaceable && $order->vendors[0]->exchanged_of_order == null)
-                                                                        <button class="replace-order-product btn btn-solid" data-id="{{ $order->id ?? 0 }}" data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
-
-                                                                            {{ __('Replace') }}
-                                                                        </button>
-                                                                        @endif
-
-                                                                        <button class="repeat-order-product btn btn-solid mr-2" data-id="{{ $order->id ?? 0 }}" data-order_vendor_id="{{ $vendor->id ?? 0 }}" data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
-                                                                            <td class="text-center" colspan="3">{{ __('Repeat Order') }}
-                                                                        </button>
-                                                                        @endif
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        @endforeach
-                                                    </div>
-                                                    <div class="col-md-3 mb-3 pl-lg-0">
-                                                        <div class="card-box p-2 mb-0 h-100">
-                                                            <ul class="price_box_bottom m-0 pl-0 pt-1">
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Sub Total') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_amount
-                                                                                        + $order->total_delivery_fee *
-                                                                                        $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @if ($order->wallet_amount_used > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Wallet') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->wallet_amount_used
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->loyalty_amount_saved > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Loyalty Used') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->loyalty_amount_saved
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->taxable_amount > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Tax') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->taxable_amount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->total_service_fee > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Service Fee') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_service_fee
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->tip_amount > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Tip Amount') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->tip_amount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->subscription_discount > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Subscription Discount') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->subscription_discount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->total_discount_calculate > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Discount') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_discount_calculate
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->total_delivery_fee > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Gift Card Amount') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Total Payable') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount-$order->total_discount_calculate
-                                                                                        *
-                                                                                        $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                {{-- mohit sir branch code added by sohail --}}
-                                                                @if (@$order->advance_amount > 0)
-                                                                <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Advance Paid') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{ decimal_format(@$order->advance_amount) }}</span>
-                                                                </li>
-                                                                <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Pending Amount') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
-                                                                </li>
-                                                                @endif
-                                                                {{-- till here --}}
-                                                            </ul>
-
-                                                            @if ($client_preference_detail->tip_after_order == 1 && $order->tip_amount <= 0 && $payments> 0)
-                                                                <hr>
-                                                                <div class="row">
-                                                                    <div class="col-12">
-                                                                        <div class="mb-2">
-                                                                            @if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif
-                                                                        </div>
-                                                                        <div class="tip_radio_controls">
-                                                                            @if ($order->payable_amount > 0)
-                                                                            <input type="radio" class="tip_radio" id="control_01" name="select{{ $order->order_number }}" value="{{ round($order->payable_amount * 0.05, 2) }}">
-                                                                            <label class="tip_label" for="control_01">
-                                                                                <h5 class="m-0" id="tip_5">
-                                                                                    {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.05) }}
-                                                                                </h5>
-                                                                                <p class="m-0">
-                                                                                    5%</p>
-                                                                            </label>
-
-                                                                            <input type="radio" class="tip_radio" id="control_02" name="select{{ $order->order_number }}" value="{{ round($order->payable_amount * 0.1, 2) }}">
-                                                                            <label class="tip_label" for="control_02">
-                                                                                <h5 class="m-0" id="tip_10">
-                                                                                    {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.1) }}
-                                                                                </h5>
-                                                                                <p class="m-0">
-                                                                                    10%</p>
-                                                                            </label>
-
-                                                                            <input type="radio" class="tip_radio" id="control_03" name="select{{ $order->order_number }}" value="{{ round($order->payable_amount * 0.15, 2) }}">
-                                                                            <label class="tip_label" for="control_03">
-                                                                                <h5 class="m-0" id="tip_15">
-                                                                                    {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.15) }}
-                                                                                </h5>
-                                                                                <p class="m-0">
-                                                                                    15%</p>
-                                                                            </label>
-
-                                                                            <input type="radio" class="tip_radio" id="custom_control{{ $order->order_number }}" name="select{{ $order->order_number }}" value="custom">
-                                                                            <label class="tip_label" for="custom_control{{ $order->order_number }}">
-                                                                                <h5 class="m-0">
-                                                                                    {{ __('Custom') }}<br>{{ __('Amount') }}
-                                                                                </h5>
-                                                                            </label>
-                                                                            @else
-                                                                            <input type="hidden" class="tip_radio" id="custom_control{{ $order->order_number }}" name="select{{ $order->order_number }}" value="custom" checked>
-
-                                                                            @endif
-                                                                        </div>
-                                                                        <div class="custom_tip mb-1 @if ($order->payable_amount > 0)  d-none @endif">
-                                                                            <input class="input-number form-control" name="custom_tip_amount{{ $order->order_number }}" id="custom_tip_amount{{ $order->order_number }}" placeholder="{{ __('Enter Custom Amount') }}" type="number" value="" min="0.01" step="0.01">
-                                                                        </div>
-                                                                        <div class="col-md-6 text-md-right text-center">
-                                                                            <button type="button" class="btn btn-solid topup_wallet_btn_tip topup_wallet_btn_for_tip" data-order_number={{ $order->order_number }} data-payableamount={{ $order->payable_amount }}>{{ __('Submit') }}</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <hr class="my-2">
-                                                                @endif
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @endforeach
-                                            @else
-                                            <div class="col-12">
-                                                <div class="no-gutters order_head">
-                                                    <h4 class="text-center">{{ __('No Past Order Found') }}
-                                                    </h4>
-                                                </div>
-                                            </div>
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
+                                                    id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
+                                                    aria-selected="false"><i
+                                                        class="icofont icofont-man-in-glasses"></i>{{ getNomenclatureName($ordertitle, true). __('Rejected/Cancel ')  }}</a>
+                                                <div class="material-border"></div>
+                                            </li>
+                                            @if($show_long_term ==1)
+                                                <li class="nav-item">
+                                                    <a class="nav-link {{ Request::query('pageType') == 'LongTermOrders' ? 'active show' : '' }}"
+                                                        id="long_term_order-tab" data-toggle="tab" href="#long_term_order" role="tab"
+                                                        aria-selected="false"><i
+                                                            class="icofont icofont-man-in-glasses"></i>{{ __('Long Term Serivces') }}</a>
+                                                    <div class="material-border"></div>
+                                                </li>
                                             @endif
-                                        </div>
-                                        {{ $pastOrders->appends(['pageType' => 'pastOrders'])->links() }}
-                                    </div>
-                                    <div class="tab-pane fade return-order {{ Request::query('pageType') == 'returnOrders' ? 'active show' : '' }}" id="return_order" role="tabpanel" aria-labelledby="return_order-tab">
-                                        <div class="row">
-                                            @if ($returnOrders->isNotEmpty())
-                                            @foreach ($returnOrders as $key => $order)
-                                            @if ($order->orderStatusVendor->isNotEmpty())
-                                            <div class="col-12">
-                                                <div class="row no-gutters order_head">
-                                                    <div class="col-md-3 alOrderStatus">
-                                                        <h4>{{ __('Order Number') }}</h4>
-                                                        <span>#{{ $order->order_number }}</span>
-                                                    </div>
-                                                    <div class="col-md-3 alOrderStatus">
-                                                        <h4>{{ __('Date & Time') }}</h4>
-                                                        <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
-                                                    </div>
-                                                    <div class="col-md-3 alOrderStatus">
-                                                        <h4>{{ __('Customer Name') }}</h4>
-                                                        <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
-                                                    </div>
-                                                    @if ($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-3">
-                                                        <h4>{{ __('Address') }}</h4>
-                                                        @if($order->luxury_option_id == 3)
+                                        </ul>
+                                        <div class="tab-content nav-material al" id="top-tabContent">
+                                            @include('frontend.account.orders.active_orders')
+                                            @include('frontend.account.orders.past_orders')
+                                            @include('frontend.account.orders.return_orders')
+                                            @include('frontend.account.orders.rejected_orders')
 
-                                                        <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                                            @if ( count($order->vendors) > 0)
-                                                            {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
-                                                            @else
-                                                            NA
-                                                            @endif
-                                                        </span>
-                                                        @else
-                                                        <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                                            @if ($order->address)
-                                                            {{ $order->address->address }},
-                                                            {{ $order->address->street }},
-                                                            {{ $order->address->city }},
-                                                            {{ $order->address->state }},
-                                                            {{ $order->address->country }}
-                                                            {{ $order->address->pincode }}
-                                                            @else
-                                                            NA
-                                                            @endif
-                                                        </span>
-                                                        @endif
-                                                    </div>
-                                                    @endif
-                                                </div>
-
-                                                <div class="row mt-2">
-                                                    <div class="col-md-9 mb-3">
-                                                        @php
-                                                        $subtotal_order_price = $total_order_price = $total_tax_order_price = 0;
-                                                        @endphp
-                                                        @foreach ($order->vendors as $key => $vendor)
-                                                        @php
-                                                        $product_total_count = $product_subtotal_amount = $product_taxable_amount = 0;
-                                                        @endphp
-                                                        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0">
-                                                            <span class="left_arrow pulse"></span>
-                                                            <div class="row">
-                                                                <div class="col-5 col-sm-3">
-                                                                    <h5 class="m-0"></h5>
-                                                                    <ul class="status_box mt-1 pl-0">
-                                                                        @if ($vendor->dineInTable)
-                                                                        <li>
-                                                                            <h5 class="mb-1">
-                                                                                {{ __('Dine-in') }}
-                                                                            </h5>
-                                                                            <h6 class="m-0">
-                                                                                {{ $vendor->dineInTableName }}
-                                                                            </h6>
-                                                                            <h6 class="m-0">
-                                                                                Category :
-                                                                                {{ $vendor->dineInTableCategory }}
-                                                                            </h6>
-                                                                            <h6 class="m-0">
-                                                                                Capacity :
-                                                                                {{ $vendor->dineInTableCapacity }}
-                                                                            </h6>
-                                                                        </li>
-                                                                        @endif
-                                                                    </ul>
-                                                                </div>
-                                                                <div class="col-7 col-sm-4">
-                                                                    <ul class="product_list p-0 m-0 text-center">
-                                                                        @foreach ($vendor->products as $product)
-                                                                        @if ($vendor->vendor_id == $product->vendor_id)
-                                                                        @php
-                                                                        $pro_rating = $product->productRating->rating ?? 0;
-                                                                        @endphp
-                                                                        <li class="text-center mb-0 alOrderImg">
-                                                                            <img src="{{ $product->image_url }}" alt="">
-                                                                            <span class="item_no position-absolute">x{{ $product->quantity }}</span>
-                                                                        </li>
-                                                                        <li>
-                                                                            <label class="items_price">{{ Session::get('currencySymbol') }}{{ $product->price * $clientCurrency->doller_compare }}</label>
-                                                                            <label class="rating-star add_edit_review" data-id="{{ $product->productRating->id ?? 0 }}" data-order_vendor_product_id="{{ $product->id ?? 0 }}">
-                                                                                <i class="fa fa-star{{ $pro_rating >= 1 ? '' : '-o' }}"></i>
-                                                                                <i class="fa fa-star{{ $pro_rating >= 2 ? '' : '-o' }}"></i>
-                                                                                <i class="fa fa-star{{ $pro_rating >= 3 ? '' : '-o' }}"></i>
-                                                                                <i class="fa fa-star{{ $pro_rating >= 4 ? '' : '-o' }}"></i>
-                                                                                <i class="fa fa-star{{ $pro_rating >= 5 ? '' : '-o' }}"></i>
-                                                                            </label>
-                                                                            {{ __($product->productReturn->status ?? '') }}
-                                                                        </li>
-                                                                        @php
-                                                                        $product_total_price = $product->price * $clientCurrency->doller_compare;
-                                                                        $product_total_count += $product->quantity * $product_total_price;
-                                                                        $product_taxable_amount += $product->taxable_amount;
-                                                                        $total_tax_order_price += $product->taxable_amount;
-                                                                        @endphp
-                                                                        @endif
-                                                                        @endforeach
-                                                                    </ul>
-                                                                </div>
-                                                                <div class="col-md-5 mt-md-0 mt-sm-2">
-                                                                    <ul class="price_box_bottom m-0 p-0">
-                                                                        <li class="d-flex align-items-center justify-content-between">
-                                                                            <label class="m-0">{{ __('Product Total') }}</label>
-                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->subtotal_amount
-                                                                                                        *
-                                                                                                        $clientCurrency->doller_compare)}}</span>
-                                                                        </li>
-                                                                        @if ($vendor->discount_amount > 0)
-                                                                        <li class="d-flex align-items-center justify-content-between">
-                                                                            <label class="m-0">{{ __('Coupon Discount') }}</label>
-                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->discount_amount
-                                                                                                            *
-                                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                        </li>
-                                                                        @endif
-                                                                        @if ($vendor->delivery_fee > 0)
-                                                                        <li class="d-flex align-items-center justify-content-between">
-                                                                            <label class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->delivery_fee
-                                                                                                            *
-                                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                        </li>
-                                                                        @endif
-                                                                        <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                            <label class="m-0">{{ __('Amount') }}</label>
-                                                                            @php
-                                                                            $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
-                                                                            $subtotal_order_price += $product_subtotal_amount;
-                                                                            $total_order_price += $product_subtotal_amount + $total_tax_order_price;
-                                                                            @endphp
-                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount
-                                                                                                        *
-                                                                                                        $clientCurrency->doller_compare)}}</span>
-                                                                        </li>
-
-
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        @endforeach
-                                                    </div>
-                                                    <div class="col-md-3 mb-3 pl-lg-0">
-                                                        <div class="card-box p-2 mb-0 h-100">
-                                                            <ul class="price_box_bottom m-0 pl-0 pt-1">
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ 'Sub Total' }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_amount
-                                                                                            + $order->total_delivery_fee *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @if ($order->wallet_amount_used > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Wallet') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->wallet_amount_used
-                                                                                                *
-                                                                                                $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->loyalty_amount_saved > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Loyalty Used') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->loyalty_amount_saved
-                                                                                                *
-                                                                                                $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->taxable_amount > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Tax') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->taxable_amount
-                                                                                                *
-                                                                                                $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->total_service_fee > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Service Fee') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_service_fee
-                                                                                                *
-                                                                                                $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->tip_amount > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Tip Amount') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->tip_amount
-                                                                                                *
-                                                                                                $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->subscription_discount > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Subscription Discount') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->subscription_discount
-                                                                                                *
-                                                                                                $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ($order->total_delivery_fee > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
-                                                                                                *
-                                                                                                $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
-                                                                <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Gift Card Amount') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
-                                                                                                *
-                                                                                                $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-                                                                @endif
-                                                                <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Total Payable') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                                </li>
-
-                                                                {{-- mohit sir branch code added by sohail --}}
-                                                                @if (@$order->advance_amount > 0)
-                                                                <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Advance Paid') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{ decimal_format(@$order->advance_amount) }}</span>
-                                                                </li>
-                                                                <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{ __('Pending Amount') }}</label>
-                                                                    <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
-                                                                </li>
-                                                                @endif
-                                                                {{-- till here --}}
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            @if($show_long_term ==1)
+                                                @include('frontend.account.longTermOrderTab')
                                             @endif
-                                            @endforeach
-                                            @else
-                                            <div class="col-12">
-                                                <div class="no-gutters order_head">
-                                                    <h4 class="text-center">{{ __('No Return Requests') }}
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                            @endif
+
                                         </div>
-                                        {{ $returnOrders->appends(['pageType' => 'returnOrders'])->links() }}
-                                    </div>
-                                    <div class="tab-pane fade rejected-order {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}" id="rejected_order" role="tabpanel" aria-labelledby="rejected_order-tab">
-                                        <div class="row">
-                                            @if ($rejectedOrders->isNotEmpty())
-                                            @foreach ($rejectedOrders as $key => $order)
-                                            <div class="col-12">
-                                                <div class="row no-gutters order_head">
-                                                    <div class="col-md-3 alOrderStatus">
-                                                        <h4>{{ __('Order Number') }}</h4>
-                                                        <span>#{{ $order->order_number }}</span>
-                                                    </div>
-                                                    <div class="col-md-3 alOrderStatus">
-                                                        <h4>{{ __('Date & Time') }}</h4>
-                                                        <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
-                                                    </div>
-                                                    <div class="col-md-3 alOrderStatus">
-                                                        <h4>{{ __('Customer Name') }}</h4>
-                                                        <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
-                                                    </div>
-                                                    @if ($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-3">
-                                                        <h4>{{ __('Address') }}</h4>
-                                                        @if($order->luxury_option_id == 3)
-
-                                                        <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                                            @if ( count($order->vendors) > 0)
-                                                            {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
-                                                            @else
-                                                            NA
-                                                            @endif
-                                                        </span>
-                                                        @else
-                                                        <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                                            @if ($order->address)
-                                                            {{ $order->address->address }},
-                                                            {{ $order->address->street }},
-                                                            {{ $order->address->city }},
-                                                            {{ $order->address->state }},
-                                                            {{ $order->address->country }}
-                                                            {{ $order->address->pincode }}
-                                                            @else
-                                                            NA
-                                                            @endif
-                                                        </span>
-                                                        @endif
-                                                    </div>
-                                                    @endif
-                                                </div>
-                                                <div class="row no-gutters order_data d-none">
-                                                    <div class="col-md-3">#{{ $order->order_number }}
-                                                    </div>
-                                                    {{-- <div class="col-md-3">{{convertDateTimeInTimeZone($order->created_at, $timezone, 'l, F d, Y, h:i A')}}
-                                                </div> --}}
-                                                <div class="col-md-3">
-                                                    {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <a class="text-capitalize">{{ $order->user->name }}</a>
-                                                </div>
-                                                @if ($client_preference_detail->business_type != 'taxi')
-                                                <div class="col-md-3">
-                                                    <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
-                                                        @if ($order->address)
-                                                        {{ $order->address->address }},
-                                                        {{ $order->address->street }},
-                                                        {{ $order->address->city }},
-                                                        {{ $order->address->state }},
-                                                        {{ $order->address->country }}
-                                                        {{ $order->address->pincode }}
-                                                        @else
-                                                        NA
-                                                        @endif
-                                                    </span>
-                                                </div>
-                                                @endif
-                                            </div>
-                                            <div class="row mt-2">
-                                                <div class="col-md-9 mb-3">
-                                                    @php
-                                                    $subtotal_order_price = $total_order_price = $total_tax_order_price = 0;
-                                                    @endphp
-                                                    @foreach ($order->vendors as $key => $vendor)
-                                                    @php
-                                                    $product_total_count = $product_subtotal_amount = $product_taxable_amount = 0;
-                                                    @endphp
-                                                    <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0">
-                                                        @if ($vendor->delivery_fee > 0 || !empty($order->scheduled_date_time) || $order->luxury_option_id > 0)
-                                                        <div class="progress-order font-12  d-flex align-items-center justify-content-between pr-2">
-                                                            @if ($order->luxury_option_id > 0)
-                                                            @php
-                                                            $luxury_option = \App\Models\LuxuryOption::where('id', $order->luxury_option_id)->first();
-                                                            if ($luxury_option->title == 'takeaway') {
-                                                            $luxury_option_name = getNomenclatureName('Takeaway', Session::get('customerLanguage'), false);
-                                                            } elseif ($luxury_option->title == 'dine_in') {
-                                                            $luxury_option_name = 'Dine-In';
-                                                            } else {
-
-                                                            //$luxury_option_name = 'Delivery';
-                                                            $luxury_option_name = getNomenclatureName($luxury_option->title);
-                                                            }
-                                                            @endphp
-                                                            <span class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }}</span>
-                                                            @endif
-
-                                                            @if ($order->is_gift == '1')
-                                                            <div class="gifted-icon">
-                                                                <img class="p-1 align-middle" src="{{ asset('assets/images/gifts_icon.png') }}" alt="">
-                                                                <span class="align-middle">This
-                                                                    is a gift.</span>
-                                                            </div>
-                                                            @endif
-                                                            <button class="chat-icon btn btn-solid" style="font-size:10px; padding: 0 5px; float: right; margin-top: 5px;">{{__('Chat')}}</button>
-                                                        </div>
-                                                        @endif
-                                                        <span class="left_arrow pulse"></span>
-                                                        <div class="row">
-                                                            <div class="col-5 col-sm-3">
-                                                                <h5 class="m-0">
-                                                                    {{ __('Order Status') }}
-                                                                </h5>
-                                                                <ul class="status_box mt-1 pl-0">
-                                                                    @if (!empty($vendor->order_status) && $vendor->order_status == "accepted")
-                                                                    <li>
-
-                                                                        <label class="m-0 in-progress">{{ __(ucfirst('cancelled')) }} </label>
-                                                                        <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
-                                                                    </li>
-                                                                    @else
-                                                                    <li>
-                                                                        <label class="m-0 in-progress">
-                                                                            @if(@$is_exchanged_order)
-                                                                            {{__('Exchange Order')}}
-                                                                            @endif
-                                                                            {{ __(ucfirst($vendor->order_status)) }} </label>
-                                                                        <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
-                                                                    </li>
-                                                                    @endif
-
-                                                                </ul>
-
-                                                            </div>
-                                                            <div class="col-7 col-sm-4">
-                                                                <ul class="product_list p-0 m-0 text-center">
-                                                                    @foreach ($vendor->products as $product)
-                                                                    @if ($vendor->vendor_id == $product->vendor_id)
-                                                                    <li class="text-center mb-0 alOrderImg">
-                                                                        <img src="{{ $product->image_url }}" alt="">
-                                                                        <span class="item_no position-absolute">x{{ $product->quantity }}</span>
-                                                                    </li>
-                                                                    <li>
-                                                                        <label class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
-                                                                    </li>
-                                                                    @php
-                                                                    $product_total_price = $product->price * $clientCurrency->doller_compare;
-                                                                    $product_total_count += $product->quantity * $product_total_price;
-                                                                    $product_taxable_amount += $product->taxable_amount;
-                                                                    $total_tax_order_price += $product->taxable_amount;
-                                                                    @endphp
-                                                                    @endif
-                                                                    @endforeach
-                                                                </ul>
-                                                            </div>
-                                                            <div class="col-md-5 mt-md-0 mt-sm-2">
-                                                                <ul class="price_box_bottom m-0 p-0">
-                                                                    <li class="d-flex align-items-center justify-content-between">
-                                                                        <label class="m-0">{{ __('Product Total') }}</label>
-                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->subtotal_amount
-                                                                                                    *
-                                                                                                    $clientCurrency->doller_compare)}}</span>
-                                                                    </li>
-                                                                    @if ($vendor->discount_amount > 0)
-                                                                    <li class="d-flex align-items-center justify-content-between">
-                                                                        <label class="m-0">{{ __('Coupon Discount') }}</label>
-                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->discount_amount
-                                                                                                        *
-                                                                                                        $clientCurrency->doller_compare)}}</span>
-                                                                    </li>
-                                                                    @endif
-                                                                    @if ($vendor->delivery_fee > 0)
-                                                                    <li class="d-flex align-items-center justify-content-between">
-                                                                        <label class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->delivery_fee
-                                                                                                        *
-                                                                                                        $clientCurrency->doller_compare)}}</span>
-                                                                    </li>
-                                                                    @endif
-
-
-                                                                    <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                        <label class="m-0">{{ __('Amount') }}</label>
-                                                                        @php
-                                                                        $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
-                                                                        $subtotal_order_price += $product_subtotal_amount;
-                                                                        @endphp
-                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount
-                                                                                                    *
-                                                                                                    $clientCurrency->doller_compare)}}</span>
-                                                                    </li>
-
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    @endforeach
-                                                </div>
-                                                <div class="col-md-3 mb-3 pl-lg-0">
-                                                    <div class="card-box p-2 mb-0 h-100">
-                                                        <ul class="price_box_bottom m-0 pl-0 pt-1">
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Sub Total') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_amount
-                                                                                        *
-                                                                                        $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            @if ($order->wallet_amount_used > 0)
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Wallet') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->wallet_amount_used
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            @endif
-                                                            @if ($order->loyalty_amount_saved > 0)
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Loyalty Used') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->loyalty_amount_saved
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            @endif
-                                                            @if ($order->taxable_amount > 0)
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Tax') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->taxable_amount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            @endif
-                                                            @if ($order->total_service_fee > 0)
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Service Fee') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_service_fee
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            @endif
-                                                            @if ($order->tip_amount > 0)
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Tip Amount') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->tip_amount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            @endif
-                                                            @if ($order->subscription_discount > 0)
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Subscription Discount') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->subscription_discount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            @endif
-                                                            @if ($order->total_discount_calculate > 0)
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Discount') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_discount_calculate
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            @endif
-                                                            @if ($order->total_delivery_fee > 0)
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            @endif
-                                                            @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Gift Card Amount') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
-                                                                                            *
-                                                                                            $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            @endif
-                                                            <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Total Payable') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount
-                                                                                        - $order->total_discount_calculate *
-                                                                                        $clientCurrency->doller_compare)}}</span>
-                                                            </li>
-                                                            {{-- mohit sir branch code added by sohail --}}
-                                                            @if (@$order->advance_amount > 0)
-                                                            <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Advance Paid') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{ decimal_format(@$order->advance_amount) }}</span>
-                                                            </li>
-                                                            <li class="grand_total d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Pending Amount') }}</label>
-                                                                <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
-                                                            </li>
-                                                            @endif
-                                                            {{-- till here --}}
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endforeach
-                                        @else
+                                        {{-- @endforeach
+                                        @else --}}
                                         <div class="col-12">
                                             <div class="no-gutters order_head">
                                                 <h4 class="text-center">{{ __('No Rejected/Cancel Order Found') }}
                                                 </h4>
                                             </div>
                                         </div>
-                                        @endif
+                                        {{-- @endif --}}
                                     </div>
                                     {{ $pastOrders->appends(['pageType' => 'rejectedOrders'])->links() }}
                                 </div>
@@ -2026,6 +1013,96 @@ $timezone = Auth::user()->timezone;
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
+
+                <div id="review-rating-form-modal">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade driver-rating" id="driver_rating" tabindex="-1" aria-labelledby="driver_ratingLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div id="driver-review-rating-form-modal">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade return-order" id="return_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div id="return-order-form-modal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade return-rental-order" id="return_rental_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div id="return-rental-order-form-modal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade extend-order-rental" id="extend_order_rental" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Extend Order Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="extend-rental-order-form-modal"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="extend-btn">Extend</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade replace-order" id="replace_order_model" tabindex="-1" aria-labelledby="return_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div id="replace-order-form-modal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- start cancel order -->
+<div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 <div id="cancel-order-form-modal">
                 </div>
             </div>
@@ -2072,6 +1149,9 @@ $timezone = Auth::user()->timezone;
 <!-- tip after order complete -->
 @include('frontend.modals.tip_after_order')
 @include('frontend.modals.pending-amount')
+
+<!-- tip after order complete -->
+@include('frontend.modals.extend_order_payment')
 
 <!-- end tip order after complete -->
 <!-- repeat order modal -->
@@ -2182,6 +1262,8 @@ $timezone = Auth::user()->timezone;
 <script type="text/javascript" src="{{ asset('js/payment.js') }}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+
 <script type="text/javascript">
     $(document).delegate(".topup_wallet_btn_tip", "click", function() {
         $('#topup_wallet').modal('show');
@@ -2209,7 +1291,8 @@ $timezone = Auth::user()->timezone;
     });
     var ajaxCall = 'ToCancelPrevReq';
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
-    var payment_stripe_url = "{{ route('payment.stripe') }}";
+        var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";    
+   var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
@@ -2357,6 +1440,31 @@ $timezone = Auth::user()->timezone;
         });
     });
 
+    $('body').on('click', '.rental_return', function(event) {
+        event.preventDefault();
+        var order_vendor_product_id = $(this).data('order_vendor_product_id');
+        var attr = $(this).data('type');
+        var type = '';
+        if (typeof attr !== 'undefined' && attr !== false) {
+            var type = attr;
+        }
+        $.get('/return-order/get-order-rental-data-in-model?order_vendor_product_id=' + order_vendor_product_id +'&type=' + type, function(markup) {
+            $('#return_rental_model').modal('show');
+            $('#return-rental-order-form-modal').html(markup);
+        });
+    });
+
+    $('body').on('click', '.extend-order', function(event) {
+        event.preventDefault();
+        var order_vendor_product_id = $(this).data('order_vendor_product_id');
+        var vendor_product_id = $(this).data('vendor_product_id');vendor_end_date_time
+        var vendor_end_date_time = $(this).data('vendor_end_date_time');
+        $.get('/extend-durartion/get-order-vendor-product-duration-data-in-model?order_vendor_product_id=' + order_vendor_product_id +'&vendor_product_id=' + vendor_product_id +'&vendor_end_date_time=' + vendor_end_date_time, function(markup) {
+            $('#extend_order_rental').modal('show');
+            $('#extend-rental-order-form-modal').html(markup);
+        });
+    });
+
     $('body').on('click', '.replace-order-product', function(event) {
         event.preventDefault();
         var id = $(this).data('id');
@@ -2374,7 +1482,6 @@ $timezone = Auth::user()->timezone;
             dataType: 'json',
             url: cart_details_url,
             success: function(response) {
-
                 if (response.data != "") {
                     let cartProducts = response.data.products;
 
@@ -2597,6 +1704,11 @@ $timezone = Auth::user()->timezone;
 
 
     
+    $(document).on('click', '#extend-btn', function(){
+        // alert('click');
+        // $('#extend_order_rental').modal('hide');
+        // $('#proceed_to_pay_modal').modal();
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>

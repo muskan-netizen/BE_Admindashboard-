@@ -2291,7 +2291,7 @@ class VendorController extends BaseController{
                     ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 
                     'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant',
                      'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 
-                     'products.batch_count',DB::raw("'$multipli' as variant_multiplier"))
+                     'products.batch_count','products.is_recurring_booking',DB::raw("'$multipli' as variant_multiplier"))
                     ->where('products.vendor_id', $vid)
                     ->where('products.is_live', 1)->withCount(['variantSet','addOn']);
                     
@@ -2492,21 +2492,22 @@ class VendorController extends BaseController{
 
                 $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
 
-                if ($vendor->vendor_templete_id == 5) {
+                if ($vendor->vendor_templete_id == 5) 
+                {
                     $vid = $vendor->id;
 
-                $vendor_categories = Category::select('id')->whereHas('vendorCategory',function ($q)use($vid){
-                    $q->where('vendor_id',$vid)->where('status', 1);
-                })->whereHas('data',function ($q)use($vid){
-                    $q->where('is_live', 1)->where('vendor_id', $vid);
-                })
-                //->withCount(['data' => function ($q)use($vid){
-                //     $q->where('is_live', 1)->where('vendor_id', $vid);
-                // }])
-                ->with(['translation' => function($q) use($langId){
-                    $q->where('category_translations.language_id', $langId);
-                }])->with(['data' => function ($products)use($order_type,$request,$langId,$userid, $multipli,$variantIds,$vid,$startRange, $endRange,$type){
-                    //product query
+                    $vendor_categories = Category::select('id')->whereHas('vendorCategory',function ($q)use($vid){
+                        $q->where('vendor_id',$vid)->where('status', 1);
+                    })->whereHas('data',function ($q)use($vid){
+                        $q->where('is_live', 1)->where('vendor_id', $vid);
+                    })
+                    //->withCount(['data' => function ($q)use($vid){
+                    //     $q->where('is_live', 1)->where('vendor_id', $vid);
+                    // }])
+                    ->with(['translation' => function($q) use($langId){
+                        $q->where('category_translations.language_id', $langId);
+                    }])->with(['data' => function ($products)use($order_type,$request,$langId,$userid, $multipli,$variantIds,$vid,$startRange, $endRange,$type){
+                        //product query
                         $products->byProductCategoryServiceType($type)->where('is_live', 1)->select('products.*',DB::raw("'$multipli' as variant_multiplier"))->withCount('OrderProduct');
                         
                         $products = $products->with([
@@ -2540,6 +2541,10 @@ class VendorController extends BaseController{
                                 });
                     if (!empty($productIds)) {
                         $products = $products->whereIn('id', $productIds);
+                    }
+
+                    if ($vid > 0) {
+                        $products = $products->where('vendor_id', $vid);
                     }
 
                     if ($request->has('brands') && !empty($request->brands)) {
@@ -2599,8 +2604,8 @@ class VendorController extends BaseController{
                     $listData =     ($vendor_categories->toArray());
                     
                    
-                   
                 } else {
+                    
                     $vendorCategories = VendorCategory::with(['category.translation' => function ($q) use ($langId) {
                         $q->where('category_translations.language_id', $langId);
                     }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
@@ -2690,7 +2695,7 @@ class VendorController extends BaseController{
 
                             $products = $products->orderBy('order_product_count', 'desc');
                         }
-                    $products = $products->where('is_live', 1)->groupBy('products.id')->where('vendor_id', $vendor->id)->paginate($paginate);
+                    $products = $products->where('is_live', 1)->groupBy('products.id')->where('products.vendor_id', $vendor->id)->paginate($paginate);
 
                     if (!empty($products)) {
                         foreach ($products as $key => $product) {
@@ -2832,6 +2837,7 @@ class VendorController extends BaseController{
 
                     $products = $products->orderBy('order_product_count', 'desc');
                 }
+                $products = $products->distinct();
                 $products = $products->paginate($limit, $page);
            
                 $response['products'] = $products ?? [];

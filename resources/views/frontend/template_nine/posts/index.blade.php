@@ -336,10 +336,19 @@ $(document).on('click', '.select-category', function() {
         }
       },
     });
-  })
+  });
+
+  
+    function checkAddressString(obj,name)
+    {
+        if($(obj).val() == "")
+        {
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+        }
+    }
 
 </script>
-
 
 <?php
 // dd(Session::get('toaster'));

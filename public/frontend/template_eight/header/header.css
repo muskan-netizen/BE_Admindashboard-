@@ -1166,10 +1166,10 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
         top: -6px;
     }
     header#al_new_design.site-header.fixed-bar {
-        z-index: 999999999;
+        z-index: 10;
     }
     .top-header.site-topbar.al_custom_head {
-        background-color: #000;
+        background-color: #fff;
         height: 115px;
     }
     header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu {
@@ -1216,3 +1216,12 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
         vertical-align: inherit !important;
     }
 }
+
+/* ====================== 1 / 30 / 2023 ================ */
+.al_body_template_eight.p2p-module .order_detail .alListBtnGroups .btn.btn-solid{padding: 4px 6px !important;font-size: 12px;margin: 0 3px !important;}
+.al_body_template_eight.p2p-module .order_detail label.rating-star.add_edit_review .fa{font-size: 10px;}
+body #myBidModal input.form-control{height: 42px;}
+li.text-center.alOrderTaxi{padding-right: 10px;}
+label.rating-star.add_edit_driver_review{font-size: 10px;}
+ul#header_cart_main_ul_ondemand{position: relative;}
+.alCustomHomeServiceRadio input{    display: none;}
