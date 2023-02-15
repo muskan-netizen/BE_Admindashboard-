@@ -21,3 +21,25 @@ const OrderStorage = {
         return (returnValue) ? returnValue :'';
     }
 }
+
+/**
+ * Store all portal localstorage
+ * @Author Mr Harbans singh
+ */
+
+const OrderSessionStorage = {
+  
+    setStorageSingle(item,value) {
+        sessionStorage.setItem(item,value);
+    },
+    removeStorageAll(){
+        sessionStorage.clear();
+    },
+    removeStorageSingle(item){
+        sessionStorage.removeItem(item);
+    },
+    getStorage(item){
+        var returnValue = sessionStorage.getItem(String(item));
+        return (returnValue) ? returnValue :'';
+    }
+}

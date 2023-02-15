@@ -550,8 +550,14 @@ class UserhomeController extends FrontController
             elseif(isset($set_template)  && $set_template->template_id == 9){
                 $view_page = "home-template-test-nine";
             }
+            $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+            $is_service_product_price_from_dispatch_forOnDemand = 0;
 
-            return view('frontend.'.$view_page)->with(['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData]);
+            if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+                $is_service_product_price_from_dispatch_forOnDemand =1;
+            }
+       
+            return view('frontend.'.$view_page)->with(['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand ]);
 
         } catch (Exception $e) {
             pr($e->getCode());

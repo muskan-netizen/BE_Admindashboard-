@@ -11,9 +11,7 @@ use App\Models\{ProductVariant,CartProduct,UserWishlist};
 class Product extends Model implements Auditable{
       use SoftDeletes;
       use \OwenIt\Auditing\Auditable;
-
-
-    protected $fillable = ['sku', 'title', 'url_slug', 'description', 'body_html', 'vendor_id', 'category_id', 'type_id', 'country_origin_id', 'is_new', 'is_featured', 'is_live', 'is_physical', 'weight', 'weight_unit', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'publish_at', 'inquiry_only','has_variant','averageRating','tags', 'pharmacy_check', 'deleted_at', 'celebrity_id', 'brand_id', 'tax_category_id','need_price_from_dispatcher','mode_of_service','delay_order_hrs','delay_order_min','pickup_delay_order_hrs','pickup_delay_order_min','dropoff_delay_order_hrs','dropoff_delay_order_min','minimum_order_count','batch_count','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id','global_product_id','import_from_inventory','markup_price', 'seats', 'seats_for_booking', 'available_for_pooling'];
+    protected $fillable = ['sku', 'title', 'url_slug', 'description', 'body_html', 'vendor_id', 'category_id', 'type_id', 'country_origin_id', 'is_new', 'is_featured', 'is_live', 'is_physical', 'weight', 'weight_unit', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'publish_at', 'inquiry_only','has_variant','averageRating','tags', 'pharmacy_check', 'deleted_at', 'celebrity_id', 'brand_id', 'tax_category_id','need_price_from_dispatcher','mode_of_service','delay_order_hrs','delay_order_min','pickup_delay_order_hrs','pickup_delay_order_min','dropoff_delay_order_hrs','dropoff_delay_order_min','minimum_order_count','batch_count','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id','global_product_id','import_from_inventory','markup_price', 'seats', 'seats_for_booking', 'available_for_pooling', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery','is_recurring_booking', 'security_amount'];
 
     public function addOn(){
        return $this->hasMany('App\Models\ProductAddon')->select('product_id', 'addon_id');
@@ -32,8 +30,8 @@ class Product extends Model implements Auditable{
     }
 
     public function vendor(){
-      if(checkColumnExists('vendors', 'need_sync_with_order') && checkColumnExists('vendors', 'is_seller')){
-        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code');
+      if(checkColumnExists('vendors', 'need_sync_with_order') && checkColumnExists('vendors', 'is_seller') && checkColumnExists('vendors', 'is_vendor_instant_booking')){
+        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'is_vendor_instant_booking', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time');
       }
       
       return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude',  'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code');
@@ -121,7 +119,7 @@ class Product extends Model implements Auditable{
     }
 
     public function productVariantByRoles(){
-        return $this->hasMany('App\Models\ProductVariantByRole')->select('id', 'role_id','product_id', 'product_variant_id','amount');
+         return $this->hasMany('App\Models\ProductVariantByRole')->select('id', 'role_id','product_id', 'product_variant_id','amount','quantity');
      }
 
     public function variant_list(){
@@ -137,7 +135,7 @@ class Product extends Model implements Auditable{
     }
 
     public function inwishlist(){
-       return $this->hasOne('App\Models\UserWishlist')->select('product_id');
+       return $this->hasOne('App\Models\UserWishlist')->select('product_id', 'user_id');
     }
 
     public function taxCategory()
@@ -472,5 +470,7 @@ class Product extends Model implements Auditable{
         return $this->belongsTo('App\Models\VehicleEmissionType', 'emission_type_id', 'id')->select('id', 'emission_type', 'desc');
     }
 
-
+    public function syncProductDeliverySlot(){
+      return $this->belongsToMany('App\Models\DeliverySlot', 'delivery_slots_product', 'product_id', 'delivery_slot_id')->withTimestamps();
+    }
 }

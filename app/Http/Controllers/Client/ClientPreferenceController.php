@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Models\ProductDeliveryFeeByRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -64,8 +65,8 @@ class ClientPreferenceController extends BaseController{
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-        // dd('ddd');
 
+        $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
                                                 'slots'=>$slots,
@@ -80,7 +81,8 @@ class ClientPreferenceController extends BaseController{
                                                 'vendor_registration_documents' => $vendor_registration_documents,
                                                 'driver_registration_documents' => $driver_registration_documents,
                                                 'file_types_driver' => $file_types_driver,
-                                                'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm
+                                                'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
+                                                'productDeliveryFeeByRole'=> $productDeliveryFeeByRole
                                             ]);
     }
 
@@ -210,6 +212,7 @@ class ClientPreferenceController extends BaseController{
         //     $this->updatePreferenceAdditional($request);
 
             if($request->has('apply_free_del')){
+                // dd($request->all());
                 $this->updateFreeDeliveryForRoles($request->apply_free_del);
             }
             return redirect()->back()->with('success', 'Client settings updated successfully!');
@@ -274,13 +277,16 @@ class ClientPreferenceController extends BaseController{
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        $keyShouldNot = array('last_mile_team','hide_order_address','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key','is_long_term_service','is_long_term_service_switch','is_long_term_service','is_long_term_service_switch', 'is_phone_signup_switch', 'is_phone_signup','is_tax_price_inclusive','is_price_by_role_switch','is_price_by_role', 'is_gst_required_for_vendor_registration', 'is_gst_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration_switch', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration_switch', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module_switch', 'is_seller_module', 'is_cab_pooling_switch', 'is_cab_pooling', 'is_same_day_delivery_switch', 'is_same_day_delivery', 'is_next_day_delivery_switch', 'is_next_day_delivery', 'is_hyper_local_delivery_switch', 'is_hyper_local_delivery', 'is_cod_payment_switch', 'is_cod_payment', 'is_prepaid_payment_switch', 'is_prepaid_payment', 'is_partial_payment_switch', 'is_partial_payment','is_cab_pooling_switch', 'is_cab_pooling' , 'is_attribute_switch', 'is_attribute', 'add_to_cart_btn_switch', 'add_to_cart_btn', 'chat_button', 'chat_button_switch', 'call_button_switch', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url_switch','is_tracking_url','is_tracking_url_sms_switch','is_tracking_sms_url', 'is_postpay_enable_switch', 'is_postpay_enable', 'is_order_edit_enable_switch', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card','is_gift_card_switch','is_place_order_delivery_zero_switch', 'is_place_order_delivery_zero','is_cust_success_signup_email_switch', 'is_cust_success_signup_email','is_influencer_refer_and_earn_switch', 'is_influencer_refer_and_earn','afrTalk_api_key','afrTalk_sender_id','is_order_bid_switch','is_bid_enable','update_order_product_price', 'update_order_product_price_switch');
+        
+        $keyShouldNot = array('last_mile_team','hide_order_address','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key','is_long_term_service','is_long_term_service_switch','is_long_term_service','is_long_term_service_switch', 'is_phone_signup_switch', 'is_phone_signup','is_tax_price_inclusive','is_price_by_role_switch','is_price_by_role', 'is_gst_required_for_vendor_registration', 'is_gst_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration_switch', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration_switch', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module_switch', 'is_seller_module', 'is_cab_pooling_switch', 'is_cab_pooling', 'is_same_day_delivery_switch', 'is_same_day_delivery', 'is_next_day_delivery_switch', 'is_next_day_delivery', 'is_hyper_local_delivery_switch', 'is_hyper_local_delivery', 'is_cod_payment_switch', 'is_cod_payment', 'is_prepaid_payment_switch', 'is_prepaid_payment', 'is_partial_payment_switch', 'is_partial_payment','is_cab_pooling_switch', 'is_cab_pooling' , 'is_attribute_switch', 'is_attribute', 'add_to_cart_btn_switch', 'add_to_cart_btn', 'chat_button', 'chat_button_switch', 'call_button_switch', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url_switch','is_tracking_url','is_tracking_url_sms_switch','is_tracking_sms_url', 'is_postpay_enable_switch', 'is_postpay_enable', 'is_order_edit_enable_switch', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card','is_gift_card_switch','is_place_order_delivery_zero_switch', 'is_place_order_delivery_zero','is_cust_success_signup_email_switch', 'is_cust_success_signup_email','is_influencer_refer_and_earn_switch', 'is_influencer_refer_and_earn','afrTalk_api_key','afrTalk_sender_id','is_order_bid_switch','is_bid_enable','update_order_product_price', 'update_order_product_price_switch', 'is_bid_ride_enable', 'is_bid_ride_enable_switch', 'is_one_push_book_enable', 'is_one_push_book_enable_switch', 'bid_expire_time_limit_seconds', 'is_corporate_user_switch', 'is_corporate_user', 'is_user_kyc_for_registration_switch', 'is_user_kyc_for_registration','is_service_product_price_from_dispatch_switch','is_service_product_price_from_dispatch','is_recurring_booking_switch','is_recurring_booking');
 
+        ///pr($request->all());
         foreach ($request->all() as $key => $value) {
             if(!in_array($key, $keyShouldNot)){
                $preference->{$key} = $value;
             }
         }
+
         // update Client Preference Additional column
         $this->updatePreferenceAdditional($request);
 

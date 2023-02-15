@@ -52,7 +52,9 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                     <div class="col-lg-6">
                         <div class="product-order py-3 pro-scroller">
                             <h3>{{__('Your Order Details')}}</h3>
-
+                            @php
+                                $security_amount = 0.00;
+                            @endphp
                             @foreach($order->vendors as $vendor)
                               <div class="row product-order-detail">
                                     <div class="col-12">
@@ -64,11 +66,11 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                  @endphp
 
                                 @foreach($vendor->products as $product)
-                                {{-- {{dd($product['vendor']->name)}} --}}
                                     @php
 
                                         $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
                                         $additional_price+= $product->incremental_price;
+                                        $security_amount+=$product->security_amount;
                                     @endphp
 
 
@@ -225,6 +227,17 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                     <li>{{__('Total')}}<span>@if( $additionalPreference["is_token_currency_enable"])
                                         {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
+
+                                    @if($order->luxury_option_id == 4)
+                                        <li>{{__('Security Amount')}}<span>{{Session::get('currencySymbol').decimal_format($security_amount)}}</span></li>
+                                    @endif
+
+                                    @if($product->slot_id != '' && $product->delivery_date != '' && $product->slot_price != '')
+
+                                        <li>{{__('Slot Delivery Fees')}} <span>{{Session::get('currencySymbol')}} {{$order->slot_delivery_fees??'0'}}</span></li>
+                                        
+                                    @endif  
+
                                     @if($order->subscription_discount > 0)
                                         <li>{{__('Subscription Discount')}} <span> - @if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}@endif</span></li>

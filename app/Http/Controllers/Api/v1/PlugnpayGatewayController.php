@@ -348,9 +348,4 @@ class PlugnpayGatewayController extends BaseController
         }
 
     }
-
-
-
-
-
 }

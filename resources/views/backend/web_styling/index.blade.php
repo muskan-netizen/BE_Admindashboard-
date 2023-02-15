@@ -422,7 +422,7 @@
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">
 <div class="row" >
     <div class="col-md-9" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <div class="card-box home-options-list">
+        <div class="card-box home-options-list h-100">
             <div class="row mb-2">
                 <div class="col-sm-8">
                     <h4 class="page-title mt-0">{{ __('Home Page')}}</h4>
@@ -542,6 +542,12 @@
                                 <input type="checkbox" name="for_no_product_found_html[{{$key}}]" {{$home_page_label->for_no_product_found_html == 1 ? 'checked' : ''}} >{{__('For No Records')}}
                                 @else
                                 <input type="hidden" name="for_no_product_found_html[{{$key}}]">
+                                @endif
+                                @if($home_page_label->slug == 'banner')
+                                <a class="action-icon " userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+
+                                    <input required type="file" accept="image/*,.pdf,.doc" data-plugins="dropify" name="banner_image[{{$key}}][check]" class="dropify" data-default-file="">
+                                </a>
                                 @endif
 
                                 <div class="mb-0 ml-1">

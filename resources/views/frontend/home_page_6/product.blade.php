@@ -23,9 +23,11 @@
                       </span>
                    </p>
                 </div>
-                <div class="d-flex align-items-center justify-content-between al_clock pt-2">
-                   <b>@if($product['inquiry_only']==0) {!!$product["price"] ?? ''!!} @endif</b>
-                </div>
+                @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
+                  <div class="d-flex align-items-center justify-content-between al_clock pt-2">
+                     <b>@if($product['inquiry_only']==0) {!!$product["price"] ?? ''!!}  @endif</b>
+                  </div>
+                @endif
              </div>
           </div>
        </div>

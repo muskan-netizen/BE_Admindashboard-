@@ -263,7 +263,7 @@ return [
         'ConvertCurrency' => AkibTanjim\Currency\Facades\CurrencyConverter::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Geocoder' => Spatie\Geocoder\Facades\Geocoder::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        // 'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
         'Share' => Jorenvh\Share\ShareFacade::class,

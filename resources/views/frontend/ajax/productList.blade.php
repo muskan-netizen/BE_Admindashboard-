@@ -1,5 +1,10 @@
 @php
-    $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+    $additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch']);
+    $is_service_product_price_from_dispatch_forOnDemand = 0;
+
+    if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+        $is_service_product_price_from_dispatch_forOnDemand =1;
+    }
 @endphp
 
 @if(@$data['filter_type'] && $data['filter_type'] == 1)
@@ -80,14 +85,16 @@
                             </div>
                         </a>
                         <div class="product-price-chat-sec">
-                            @if($data->inquiry_only == 0)
-                            <h4 class="mt-1">
-                            @if( $additionalPreference["is_token_currency_enable"]) 
-                            {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken((decimal_format($data->variant_price * $data->variant_multiplier))) }}
-                            @else
-                            {{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}
-                            @endif
-                            </h4>
+                            @if($is_service_product_price_from_dispatch_forOnDemand !=1)
+                                @if($data->inquiry_only == 0)
+                                    <h4 class="mt-1">
+                                        @if( $additionalPreference["is_token_currency_enable"]) 
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken((decimal_format($data->variant_price * $data->variant_multiplier))) }}
+                                        @else
+                                        {{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}
+                                        @endif
+                                    </h4>
+                                @endif  
                             @endif
                             <div class="prod-details">
                                 <div class="chat-button">

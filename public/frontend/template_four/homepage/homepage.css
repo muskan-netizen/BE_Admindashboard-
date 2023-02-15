@@ -1894,6 +1894,19 @@ span.org_price {
     font-weight: 600;
     text-transform: uppercase
 }
+body .add_vendor_product_btn {
+    border: 1px solid;
+    height: 30px;
+    display: inline-block;
+    line-height: 30px;
+    max-width: 60px;
+    width: 100%;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    min-width: 80px;
+}
 
 .shopping-cart .media-body h6 {
     margin: 0

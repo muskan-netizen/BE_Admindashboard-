@@ -312,6 +312,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('seller', 'Client\SellerController');
         Route::get('seller/catalogs/{id}', 'Client\SellerController@sellerCatalog')->name('seller.catalogs');
 
+        Route::resource('pincode', 'Client\PincodeController');
+        
+        Route::get('pincodeData', 'Client\PincodeController@pincodeData')->name('pincode.pincodeData');
+
+        Route::resource('delivery-slot', 'Client\DeliverySlotController');
+
         Route::get('calender/pickup/data/{id}', 'Client\Laundry\PickupSlotController@returnJson')->name('vendor.calender.pickup'); // Added by Ovi
         Route::post('calender/pickup/slot/{id}', 'Client\Laundry\PickupSlotController@store')->name('vendor.pickup.saveSlot'); // Added by Ovi
         Route::post('calender/pickup/updateSlot/{id}', 'Client\Laundry\PickupSlotController@update')->name('vendor.pickup.updateSlot'); // Added by Ovi
@@ -346,6 +352,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('order-edit/{order_id}/{vendor_id}', 'Client\OrderController@getOrderDetailEdit')->name('order.edit.detail');
         Route::post('order/update/product/price', 'Client\OrderController@updateOrderProductPriceByVendor')->name('update.product.price');
         Route::post('order/updateStatus', 'Client\OrderController@changeStatus')->name('order.changeStatus');
+        Route::post('order/updateVendorProductStatus', 'Client\OrderController@changeVendorProductStatus')->name('order.changeVendorProductStatus');
         Route::post('order/create-dispatch-request', 'Client\OrderController@createDispatchRequest')->name('create.dispatch.request'); # create dispatch request
         Route::resource('customer', 'Client\UserController');
         Route::get('customer/account/{user}/{action}', 'Client\UserController@deleteCustomer')->name('customer.account.action');
@@ -355,6 +362,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('customer/pay-receive', 'Client\UserController@payReceive')->name('customer.pay.receive');
         Route::post('order/updateReport', 'Client\OrderController@uploadReport')->name('order.upload.report');
         Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
+
+        Route::get('rental-return-modal/get-rental-return-product-modal', 'Client\OrderController@getRentalReturnProductModal')->name('get-rental-return-product-modal');
+        Route::post('order/update-product-rental-return-client', 'Client\OrderController@updateProductRentalReturn')->name('update.order.rental.return.client');
 
         Route::put('newUpdate/edit/{id}', 'Client\UserController@newUpdate')->name('customer.new.update');
         Route::put('profile/{id}', 'Client\UserController@updateProfile')->name('client.profile.update');
@@ -472,6 +482,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
         Route::post('cancel-order/request/status/update', 'Client\OrderCancelRequestsController@updateStatus')->name('cancel-order.request.status.update');
 
+
+        Route::get('return/dispatcher_requests', 'Client\RentalProductDispatchReturnController@index')->name('return.dispatcher.form');
+
         /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
         //Route::get('chat/user/{room_id?}', 'Client\ChatController@index')->name("chat.index");
@@ -579,6 +592,14 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('long_term_service/index/{vendor_id}',  'Client\LongTermServiceController@index')->name("long_term_service.index");
         Route::get('long_term_service/edit/{id}',          'Client\LongTermServiceController@edit')->name('long_term_service.edit');
         Route::get('long_term_service/delete/{id}',        'Client\LongTermServiceController@destroy')->name("long_term_service.destroy");
+
+
+        /***
+         *  Mtn momo payment gateway configation
+         */
+
+        Route::post('mtn-mom-api-key', 'Client\PaymentOptionController@MtnmomoApiKey')->name('payoption.mtn_momo_api_key');
+
         Route::post('long_term_service/updateBooking',     'Client\LongTermServiceController@updateBooking')->name("long_term_service.updateBooking");
 
         /**

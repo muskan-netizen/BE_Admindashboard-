@@ -23,7 +23,7 @@
                         <label class="control-label">{{$var->title??null}}</label>
                     </div>
                     <div class="col-sm-9">
-                        
+                        {{-- @dd($var->option) --}}
                         @if( !empty($var->type) && $var->type == 1 )
                             @foreach($var->option as $key => $opt)
                                 <input type="hidden" name="attribute[{{$var->id}}][type]" value="{{$var->type}}">

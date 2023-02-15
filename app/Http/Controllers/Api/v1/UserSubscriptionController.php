@@ -87,7 +87,7 @@ class UserSubscriptionController extends BaseController
             else{
                 return response()->json(["status"=>"Error", "message" => "Invalid Data"]);
             }
-            $code = array('stripe', 'stripe_fpx', 'dpo', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay','ccavenue', 'cashfree','easebuzz','vnpay','paytab','toyyibpay','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet', 'mycash','stripe_ideal','openpay','userede','khalti','plugnpay');
+            $code = array('stripe', 'stripe_fpx','azul', 'dpo', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay','ccavenue', 'cashfree','easebuzz','vnpay','paytab','toyyibpay','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet', 'mycash','stripe_ideal','openpay','userede','khalti','plugnpay');
             $ex_codes = array('cod');
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
             foreach ($payment_options as $k => $payment_option) {
@@ -166,6 +166,7 @@ class UserSubscriptionController extends BaseController
      */
     public function purchaseSubscriptionPlan(Request $request, $slug = '')
     {
+
         try{
             $validator = Validator::make($request->all(), [
                 // 'amount'            => 'required|not_in:0',
@@ -179,7 +180,10 @@ class UserSubscriptionController extends BaseController
             }
             DB::beginTransaction();
             $user = Auth::user();
+
+
             $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
+
             if( ($user) && ($subscription_plan) ){
                 $last_subscription = SubscriptionInvoicesUser::with(['plan', 'features.feature'])
                     ->where('user_id', $user->id)

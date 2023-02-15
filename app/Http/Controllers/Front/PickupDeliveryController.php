@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption, PickDropDriverBid};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -25,7 +25,7 @@ class PickupDeliveryController extends FrontController{
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti','flutterwave','plugnpay');
+        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti','flutterwave','plugnpay','azul');
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -45,7 +45,9 @@ class PickupDeliveryController extends FrontController{
                 $json = json_decode($option->credentials);
                 $option->title = $json->manule_payment_title;
             }
+
             $option->title = __($option->title);
+            $option->slug = strtolower(str_replace(' ', '_', $option->title));
         }
         return $this->successResponse($payment_options, '', 201);
     }
@@ -560,8 +562,8 @@ class PickupDeliveryController extends FrontController{
                 }
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
-            Log::info("Request To Dispatch");
-            Log::info($request_to_dispatch);
+            //Log::info("Request To Dispatch");
+           // Log::info($request_to_dispatch);
 
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);
@@ -854,7 +856,7 @@ class PickupDeliveryController extends FrontController{
         }
     }
 
-     // place Request To Dispatch
+    // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
         try {
             $meta_data = '';
@@ -1137,6 +1139,5 @@ class PickupDeliveryController extends FrontController{
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-
 
 }
