@@ -1463,6 +1463,7 @@ trait cartManager{
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
             $cart->sub_total =  $sub_total??0;
+            $cart->sub_total_inc_tax =  decimal_format($cart->sub_total + $total_taxable_amount);
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
             // dd($cart->toArray());

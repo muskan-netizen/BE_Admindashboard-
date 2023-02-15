@@ -23,7 +23,7 @@
                         {{ $product["vendor_name"] }}
                     </p>
                     <p class="border-bottom pb-1">
-                        <span>{{__('In') . $product["category"]}} </span>
+                        <span>{{__('In ') . $product["category"]}} </span>
                     </p>
                     <div class="d-flex align-items-center justify-content-between al_clock"> 
                         <b>{!!$product["price"] ?? ''!!}</b>

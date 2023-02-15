@@ -2436,6 +2436,22 @@ body.al_body_template_eight.p2p-module .alRentalSinglePageView .single_cart-temp
     width: 87%;
 }
 
+/*-----------  10-02-2023  ------------*/
+body.al_body_template_nine.p2p-module .main-product .prod_location {
+    padding-top: 5px!important;
+}
+body.al_body_template_nine.p2p-module .main-product  .prod_location b {
+    font-size: 15px!important;
+    line-height: 1.3;
+}
+body.al_body_template_nine.p2p-module .main-product  .al_clock{
+    padding-top:10px!important;
+}
+
+
+
+
+
 
 /*--------------dark theme css----------*/
 

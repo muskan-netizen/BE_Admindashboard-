@@ -16,7 +16,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
 <!-- get current page -->
 @php
-@$currentPage = $_GET['page'];
+$currentPage = $_GET['page']??1;
 @endphp
 <!-- get current page end -->
 <!-- section start -->

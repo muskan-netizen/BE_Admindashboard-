@@ -56,12 +56,12 @@ trait WebStylingTrait
     public function updateSelectedProductstoDb($id, $request)
     {
       
-        if (checkTableExists('home_products')) {
+        if (checkColumnExists('home_products','product_id')) {
             $delete = HomeProduct::where('layout_id', $id)->delete();
             foreach($request->selected_products as $products){
             $relatedArray[] = [
                 'slug' => 'selected_products',
-                'products' => $products,
+                'product_id' => $products,
                 'layout_id'=> $id
             ];
         }
