@@ -159,7 +159,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    </div>
    <!-- End Cab Booking Header From Here -->
    @else
-   <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif" style="display:none;">
+   <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif" @if ($client_preference_detail->business_type != 'super_app') style="display:none;" @endif>
       <div class="container_fluid_al d-block" >
           <div class="row align-items-center justify-content-center position-initial">
               <div class="col-lg-12">
