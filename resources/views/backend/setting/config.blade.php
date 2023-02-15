@@ -2592,190 +2592,57 @@
             </form>
         </div>
         {{-- end Free Delivery By Roles form --}}
-    </div>
 
-    <div class="row">
-        {{-- <div class="col-md-12 show-custom-mods">
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <!-- Social Logins title start -->
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __('Edit Order, Instant Booking and Bid & Ride') }} <!-- {{ __('Post Pay & Edit Order') }} --></h4>
+            </div><!-- Social Logins title end -->
 
-                                @foreach ($allRoles as $allRole)
-                                    <div class="form-group mb-2 mt-2">
-                                        <label for="fb_client_id">{{ $allRole->role }}</label>
-                                        <input type="checkbox" data-plugin="switchery" id="is_free_delivery_by_roles"
-                                            class="form-control checkbox_change"
-                                            name="apply_free_del[{{ $allRole->id }}]"
-                                            data-className="is_free_delivery_by_roles_hidden" data-color="#43bee1"
-                                            value="{{ $allRole->id }}">
-                                    </div>
-                                @endforeach
-
-                                <div class="form-group mb-2 mt-2">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="is_same_day_delivery_switch"
-                                            class="mr-2 mb-0">{{ __('Same Day Delivery') }}<small
-                                                class="d-block pr-5">{{ __('Enable to allow customers to same day delivery.') }}</small></label>
-                                        <span> <input type="checkbox" data-plugin="switchery"
-                                                name="is_same_day_delivery_switch" id="is_same_day_delivery_switch"
-                                                class="form-control checkbox_change" data-className="is_same_day_delivery"
-                                                data-color="#43bee1"
-                                                @if (@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) checked='checked' @endif>
-                                        </span>
-                                        <input type="hidden"
-                                            @if (@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) value="1" @else value="0" @endif
-                                            name="is_same_day_delivery" id="is_same_day_delivery" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group mb-2 mt-2">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="is_next_day_delivery_switch"
-                                            class="mr-2 mb-0">{{ __('Next Day Delivery') }}<small
-                                                class="d-block pr-5">{{ __('Enable to allow customers to next day delivery.') }}</small></label>
-                                        <span> <input type="checkbox" data-plugin="switchery"
-                                                name="is_next_day_delivery_switch" id="is_next_day_delivery_switch"
-                                                class="form-control checkbox_change" data-className="is_next_day_delivery"
-                                                data-color="#43bee1"
-                                                @if (@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) checked='checked' @endif>
-                                        </span>
-                                        <input type="hidden"
-                                            @if (@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) value="1" @else value="0" @endif
-                                            name="is_next_day_delivery" id="is_next_day_delivery" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group mb-2 mt-2">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="is_hyper_local_delivery_switch"
-                                            class="mr-2 mb-0">{{ __('Hyper Local Delivery') }}<small
-                                                class="d-block pr-5">{{ __('Enable to allow customers to hyper local delivery.') }}</small></label>
-                                        <span> <input type="checkbox" data-plugin="switchery"
-                                                name="is_hyper_local_delivery_switch"
-                                                id="is_hyper_local_delivery_switch" class="form-control checkbox_change"
-                                                data-className="is_hyper_local_delivery" data-color="#43bee1"
-                                                @if (@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) checked='checked' @endif>
-                                        </span>
-                                        <input type="hidden"
-                                            @if (@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) value="1" @else value="0" @endif
-                                            name="is_hyper_local_delivery" id="is_hyper_local_delivery" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group mb-2 mt-2">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="is_cod_payment_switch"
-                                            class="mr-2 mb-0">{{ __('COD Payment') }}<small
-                                                class="d-block pr-5">{{ __('Enable to allow customers to cod payment.') }}</small></label>
-                                        <span> <input type="checkbox" data-plugin="switchery"
-                                                name="is_cod_payment_switch" id="is_cod_payment_switch"
-                                                class="form-control checkbox_change" data-className="is_cod_payment"
-                                                data-color="#43bee1"
-                                                @if (@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) checked='checked' @endif>
-                                        </span>
-                                        <input type="hidden"
-                                            @if (@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) value="1" @else value="0" @endif
-                                            name="is_cod_payment" id="is_cod_payment" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group mb-2 mt-2">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="is_prepaid_payment_switch"
-                                            class="mr-2 mb-0">{{ __('Prepaid Payment') }}<small
-                                                class="d-block pr-5">{{ __('Enable to allow customers to prepaid payment.') }}</small></label>
-                                        <span> <input type="checkbox" data-plugin="switchery"
-                                                name="is_prepaid_payment_switch" id="is_prepaid_payment_switch"
-                                                class="form-control checkbox_change" data-className="is_prepaid_payment"
-                                                data-color="#43bee1"
-                                                @if (@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) checked='checked' @endif>
-                                        </span>
-                                        <input type="hidden"
-                                            @if (@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) value="1" @else value="0" @endif
-                                            name="is_prepaid_payment" id="is_prepaid_payment" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group mb-2 mt-2">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="is_partial_payment_switch"
-                                            class="mr-2 mb-0">{{ __('Partial Payment') }}<small
-                                                class="d-block pr-5">{{ __('Enable to allow customers to partial payment.') }}</small></label>
-                                        <span> <input type="checkbox" data-plugin="switchery"
-                                                name="is_partial_payment_switch" id="is_partial_payment_switch"
-                                                class="form-control checkbox_change" data-className="is_partial_payment"
-                                                data-color="#43bee1"
-                                                @if (@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) checked='checked' @endif>
-                                        </span>
-                                        <input type="hidden"
-                                            @if (@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) value="1" @else value="0" @endif
-                                            name="is_partial_payment" id="is_partial_payment" />
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div><!-- HubSpot card end -->
-                </form>
-            </div>
-            {{-- end Free Delivery By Roles form --}}
-
-            <div class="col-xl-4 col-lg-4 mb-3">
-                <!-- Social Logins title start -->
-                <div class="page-title-box">
-                    <h4 class="page-title text-uppercase">{{ __('Edit Order, Instant Booking and Bid & Ride') }} <!-- {{ __('Post Pay & Edit Order') }} --></h4>
-                </div><!-- Social Logins title end -->
-
-                <form method="POST" action="{{ route('additional.update') }}">
-                    <input type="hidden" name="crm" id="crm" value="1">
-                    <input type="hidden" name="send_to" id="send_to" value="configure">
-                    @csrf
-                    <!-- HubSpot card start -->
-                    <div class="card-box h-100">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-0 switchery-demo">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <h4 class="header-title text-uppercase mb-0">{{ __('Edit Order') }}<!-- {{ __('Post Pay & Edit Order') }} -->
-                                        </h4>
-                                        <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
-                                        </button>
-                                    </div>
-                                    <p class="sub-header">
-                                        {{ __('Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.') }}
-                                        <!-- {{ __('Post Pay allows customers to pay after placing order. Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.') }} -->
-                                    </p>
-                                    <!-- <label for="" class="mr-3">{{ __('Post Pay Enable') }}</label>
-                                    <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch"
-                                        id="is_postpay_enable_switch" class="form-control checkbox_change"
-                                        data-className="is_postpay_enable" data-color="#43bee1"
-                                        @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) checked='checked' @endif>
-                                    <input type="hidden"
-                                        @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) value="1" @else value="0" @endif
-                                        name="is_postpay_enable" id="is_postpay_enable" /> -->
+            <form method="POST" action="{{ route('additional.update') }}">
+                <input type="hidden" name="crm" id="crm" value="1">
+                <input type="hidden" name="send_to" id="send_to" value="configure">
+                @csrf
+                <!-- HubSpot card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h4 class="header-title text-uppercase mb-0">{{ __('Edit Order') }}<!-- {{ __('Post Pay & Edit Order') }} -->
+                                    </h4>
+                                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                                    </button>
                                 </div>
                                 <p class="sub-header">
-                                    {{ __('Post Pay allows customers to pay after placing order. Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.') }}
+                                    {{ __('Edit order facility allows customer to edit order till timelimit does not exceeded and payment not done.') }}
+                                    <!-- {{ __('Post Pay allows customers to pay after placing order. Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.') }} -->
                                 </p>
-                                <label for="" class="mr-3">{{ __('Post Pay Enable') }}</label>
+                                <!-- <label for="" class="mr-3">{{ __('Post Pay Enable') }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch"
                                     id="is_postpay_enable_switch" class="form-control checkbox_change"
                                     data-className="is_postpay_enable" data-color="#43bee1"
                                     @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) checked='checked' @endif>
-                                <input type="hidden" @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) value="1" @else value="0" @endif
-                                    name="is_postpay_enable" id="is_postpay_enable" />
-                            </div>
-                            <div class="form-group mt-2 switchery-demo">
+                                <input type="hidden"
+                                    @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) value="1" @else value="0" @endif
+                                    name="is_postpay_enable" id="is_postpay_enable" /> -->
+                            </div>  
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-0 d-flex switchery-demo">
                                 <label for="" class="mr-3">{{ __('Edit Order Enable') }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="is_order_edit_enable_switch"
                                     id="is_order_edit_enable_switch" class="form-control checkbox_change"
                                     data-className="is_order_edit_enable" data-color="#43bee1"
                                     @if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) checked='checked' @endif>
-                                <input type="hidden" @if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) value="1" @else value="0" @endif
+                                <input type="hidden"
+                                    @if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_order_edit_enable" id="is_order_edit_enable" />
-                            </div>
-                            <div class="row mt-2" id="edit_order_time_limit_div"
-                                style="display:@if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) @else none @endif;">
+                            </div>  
+                        
+                            <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) @else none @endif;">
                                 <div class="col-8">
-                                    <label for=""
-                                        class="mr-3">{{ __('Disable Order Edit before (Hours)') }}</label>
+                                    <label for="" class="mr-3">{{ __('Disable Order Edit before (Hours)') }}</label>
                                 </div>
                                 <div class="col-4">
                                     <input type="number" name="order_edit_before_hours" id="order_edit_before_hours"
@@ -2783,66 +2650,54 @@
                                         value="{{ old('order_edit_before_hours', @getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'] ?? '') }}">
                                 </div>
                                 <hr/>
+                            </div>
+                        </div>
 
-
-                                <div class="form-group mt-2 switchery-demo">
-                                    <label for="" class="mr-3">{{ __('One Push Button For Booking (Pick & Drop) Enable') }}</label>
-                                    <input type="checkbox" data-plugin="switchery" name="is_one_push_book_enable_switch"
-                                        id="is_one_push_book_enable_switch" class="form-control checkbox_change"
-                                        data-className="is_one_push_book_enable" data-color="#43bee1"
-                                        @if ($getAdditionalPreference['is_one_push_book_enable'] == 1) checked='checked' @endif>
-                                    <input type="hidden"
-                                        @if ($getAdditionalPreference['is_one_push_book_enable'] == 1) value="1" @else value="0" @endif
-                                        name="is_one_push_book_enable" id="is_one_push_book_enable" />
+                        <div class="col-12 mt-2">
+                            <div class="form-group mt-2 d-flex switchery-demo">
+                                <label for="" class="mr-3">{{ __('One Push Button For Booking (Pick & Drop) Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="is_one_push_book_enable_switch"
+                                    id="is_one_push_book_enable_switch" class="form-control checkbox_change"
+                                    data-className="is_one_push_book_enable" data-color="#43bee1"
+                                    @if ($getAdditionalPreference['is_one_push_book_enable'] == 1) checked='checked' @endif>
+                                <input type="hidden"
+                                    @if ($getAdditionalPreference['is_one_push_book_enable'] == 1) value="1" @else value="0" @endif
+                                    name="is_one_push_book_enable" id="is_one_push_book_enable" />
+                            </div>
+                            <!-- <div class="form-group mt-2 switchery-demo">
+                                <label for="" class="mr-3">{{ __('Bid & Ride Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="is_bid_ride_enable_switch"
+                                    id="is_bid_ride_enable_switch" class="form-control checkbox_change"
+                                    data-className="is_bid_ride_enable" data-color="#43bee1"
+                                    @if ($getAdditionalPreference['is_bid_ride_enable'] == 1) checked='checked' @endif>
+                                <input type="hidden"
+                                    @if ($getAdditionalPreference['is_bid_ride_enable'] == 1) value="1" @else value="0" @endif
+                                    name="is_bid_ride_enable" id="is_bid_ride_enable" />
+                            </div> -->
+                            <div class="row mt-2" id="bid_expire_time_limit_div"
+                                style="display:@if ($getAdditionalPreference['is_one_push_book_enable'] == 1 || $getAdditionalPreference['is_bid_ride_enable'] == 1) @else none @endif;">
+                                <div class="col-8">
+                                    <label for=""
+                                        class="mr-3">{{ __('Expire Bid Placed By Driver after (Seconds)') }}</label>
                                 </div>
-                                <!-- <div class="form-group mt-2 switchery-demo">
-                                    <label for="" class="mr-3">{{ __('Bid & Ride Enable') }}</label>
-                                    <input type="checkbox" data-plugin="switchery" name="is_bid_ride_enable_switch"
-                                        id="is_bid_ride_enable_switch" class="form-control checkbox_change"
-                                        data-className="is_bid_ride_enable" data-color="#43bee1"
-                                        @if ($getAdditionalPreference['is_bid_ride_enable'] == 1) checked='checked' @endif>
-                                    <input type="hidden"
-                                        @if ($getAdditionalPreference['is_bid_ride_enable'] == 1) value="1" @else value="0" @endif
-                                        name="is_bid_ride_enable" id="is_bid_ride_enable" />
-                                </div> -->
-                                <div class="row mt-2" id="bid_expire_time_limit_div"
-                                    style="display:@if ($getAdditionalPreference['is_one_push_book_enable'] == 1 || $getAdditionalPreference['is_bid_ride_enable'] == 1) @else none @endif;">
-                                    <div class="col-8">
-                                        <label for=""
-                                            class="mr-3">{{ __('Expire Bid Placed By Driver after (Seconds)') }}</label>
-                                    </div>
-                                    <div class="col-4">
-                                        <input type="number" name="bid_expire_time_limit_seconds"
-                                            id="bid_expire_time_limit_seconds" placeholder="" class="form-control"
-                                            value="{{ old('order_edit_before_hours', $getAdditionalPreference['bid_expire_time_limit_seconds'] ?? '') }}">
-                                    </div>
+                                <div class="col-4">
+                                    <input type="number" name="bid_expire_time_limit_seconds"
+                                        id="bid_expire_time_limit_seconds" placeholder="" class="form-control"
+                                        value="{{ old('order_edit_before_hours', $getAdditionalPreference['bid_expire_time_limit_seconds'] ?? '') }}">
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div><!-- Post Pay Card end -->
+                </div>
+            
             </form>
-        </div>
-        {{-- end Post Pay form --}}
-
+        </div><!-- Post Pay Card end -->
     </div>
 
 
 
-
-
-
-
-        <div class="row">
-            {{-- <div class="col-md-12 show-custom-mods">
-
-         <div class="card-box ">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-               <h4 class="header-title text-uppercase mb-0">{{ __("Custom Mods") }}</h4>
-   <button class="btn btn-info d-block show-custom-mods-btn" type="submit"> {{ __("Show Custom Mods") }} </button>
-</div>
-</div>
-</div> --}}
+    <div class="row">
+            
         <div class="col-md-12">
             <!-- Custom Mods start -->
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -3577,6 +3432,7 @@
             });
 
         }
+
         $('#show-map-modal').on('hide.bs.modal', function() {
             $('#add-customer-modal').removeClass('fadeIn');
 
@@ -3710,18 +3566,21 @@
 
         if (need_inventory_service.length > 0) {
             need_inventory_service[0].onchange = function() {
-                if ($('#need_inventory_service:checked').length != 1) {
+                if ($('#need_inventory_service:checked').length != 1) 
+                {
                     $('.inventoryFields').hide();
                     var is_order_edit_enable = $('#is_order_edit_enable_switch');
 
-                is_order_edit_enable[0].onchange = function() {
-                    if ($('#is_order_edit_enable_switch:checked').length != 1) {
-                        $('#edit_order_time_limit_div').hide();
-                        $('#order_edit_before_hours').val(0);
-                    } else {
-                        $('.inventoryFields').show();
+                    is_order_edit_enable[0].onchange = function() {
+                        if ($('#is_order_edit_enable_switch:checked').length != 1) {
+                            $('#edit_order_time_limit_div').hide();
+                            $('#order_edit_before_hours').val(0);
+                        } else {
+                            $('.inventoryFields').show();
+                        }
                     }
                 }
+            }
         }
 
         var fb_login = $('#fb_login');
@@ -3731,36 +3590,37 @@
                 $('.fb_row').hide();
             } else {
                 $('.fb_row').show();
-            var is_one_push_book_enable = $('#is_one_push_book_enable_switch');
-            var is_bid_ride_enable      = $('#is_bid_ride_enable_switch');
-
-
-            is_one_push_book_enable[0].onchange = function() {
-                if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
-                    $('#bid_expire_time_limit_div').hide();
-                    $('#bid_expire_time_limit_seconds').val(0);
-                } else {
-                    $('#bid_expire_time_limit_div').show();
-                }
-            }
-
-            is_bid_ride_enable[0].onchange = function() {
-                if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
-                    $('#bid_expire_time_limit_div').hide();
-                    $('#bid_expire_time_limit_seconds').val(0);
-                } else {
-                    $('#bid_expire_time_limit_div').show();
-                }
-            }
-
-            var dinein_option = $('#dinein_check');
-            if (dinein_option.length > 0) {
-                dinein_option[0].onchange = function() {
-                    optionsChecked("dinein_check");
-                }
             }
         }
 
+        var is_one_push_book_enable = $('#is_one_push_book_enable_switch');
+        //var is_bid_ride_enable      = $('#is_bid_ride_enable_switch');
+
+
+        is_one_push_book_enable[0].onchange = function() {
+            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
+                $('#bid_expire_time_limit_div').hide();
+                $('#bid_expire_time_limit_seconds').val(0);
+            } else {
+                $('#bid_expire_time_limit_div').show();
+            }
+        }
+
+        /* is_bid_ride_enable[0].onchange = function() {
+            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
+                $('#bid_expire_time_limit_div').hide();
+                $('#bid_expire_time_limit_seconds').val(0);
+            } else {
+                $('#bid_expire_time_limit_div').show();
+            }
+        } */
+
+        var dinein_option = $('#dinein_check');
+        if (dinein_option.length > 0) {
+            dinein_option[0].onchange = function() {
+                optionsChecked("dinein_check");
+            }
+        }
         var twitter_login = $('#twitter_login');
 
         twitter_login[0].onchange = function() {
@@ -3802,9 +3662,9 @@
             }
         }
 
-        var is_postpay_edit = $('#is_order_edit_enable_switch');
+        var is_order_edit_enable_switch = $('#is_order_edit_enable_switch');
 
-        is_postpay_edit[0].onchange = function() {
+        is_order_edit_enable_switch[0].onchange = function() {
             if ($('#is_order_edit_enable_switch:checked').length != 1) {
                 $('#edit_order_time_limit_div').hide();
                 $('#order_edit_before_hours').val(0);
@@ -3855,10 +3715,6 @@
 
         function toggle_smsFields(obj) {
             smsChange();
-            // var id = $(obj).find(':selected').attr('data-id');
-            // $('.sms_fields').css('display','none');
-            // $('#'+id).css('display','flex');
-            // console.log(id);
         }
 
         function smsChange() {
