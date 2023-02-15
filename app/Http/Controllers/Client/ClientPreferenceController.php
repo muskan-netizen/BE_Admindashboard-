@@ -66,6 +66,8 @@ class ClientPreferenceController extends BaseController{
             }
         }
 
+        $accounting     = ThirdPartyAccounting::where('code','xero')->first();
+
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
@@ -82,7 +84,8 @@ class ClientPreferenceController extends BaseController{
                                                 'driver_registration_documents' => $driver_registration_documents,
                                                 'file_types_driver' => $file_types_driver,
                                                 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
-                                                'productDeliveryFeeByRole'=> $productDeliveryFeeByRole
+                                                'productDeliveryFeeByRole'=> $productDeliveryFeeByRole,
+                                                'accounting'=> $accounting
                                             ]);
     }
 
@@ -274,7 +277,7 @@ class ClientPreferenceController extends BaseController{
             $preference->client_code = $code;
         }
         
-        $keyShouldNot = array('last_mile_team','hide_order_address','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key','is_long_term_service','is_long_term_service_switch','is_long_term_service','is_long_term_service_switch', 'is_phone_signup_switch', 'is_phone_signup','is_tax_price_inclusive','is_price_by_role_switch','is_price_by_role', 'is_gst_required_for_vendor_registration', 'is_gst_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration_switch', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration_switch', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module_switch', 'is_seller_module', 'is_cab_pooling_switch', 'is_cab_pooling', 'is_same_day_delivery_switch', 'is_same_day_delivery', 'is_next_day_delivery_switch', 'is_next_day_delivery', 'is_hyper_local_delivery_switch', 'is_hyper_local_delivery', 'is_cod_payment_switch', 'is_cod_payment', 'is_prepaid_payment_switch', 'is_prepaid_payment', 'is_partial_payment_switch', 'is_partial_payment','is_cab_pooling_switch', 'is_cab_pooling' , 'is_attribute_switch', 'is_attribute', 'add_to_cart_btn_switch', 'add_to_cart_btn', 'chat_button', 'chat_button_switch', 'call_button_switch', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url_switch','is_tracking_url','is_tracking_url_sms_switch','is_tracking_sms_url', 'is_postpay_enable_switch', 'is_postpay_enable', 'is_order_edit_enable_switch', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card','is_gift_card_switch','is_place_order_delivery_zero_switch', 'is_place_order_delivery_zero','is_cust_success_signup_email_switch', 'is_cust_success_signup_email','is_influencer_refer_and_earn_switch', 'is_influencer_refer_and_earn','afrTalk_api_key','afrTalk_sender_id','is_order_bid_switch','is_bid_enable','update_order_product_price', 'update_order_product_price_switch', 'is_bid_ride_enable', 'is_bid_ride_enable_switch', 'is_one_push_book_enable', 'is_one_push_book_enable_switch', 'bid_expire_time_limit_seconds', 'is_corporate_user_switch', 'is_corporate_user', 'is_user_kyc_for_registration_switch', 'is_user_kyc_for_registration','is_service_product_price_from_dispatch_switch','is_service_product_price_from_dispatch','is_recurring_booking_switch','is_recurring_booking');
+        $keyShouldNot = array('last_mile_team','hide_order_address','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key','is_long_term_service','is_long_term_service_switch','is_long_term_service','is_long_term_service_switch', 'is_phone_signup_switch', 'is_phone_signup','is_tax_price_inclusive','is_price_by_role_switch','is_price_by_role', 'is_gst_required_for_vendor_registration', 'is_gst_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration_switch', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration_switch', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module_switch', 'is_seller_module', 'is_cab_pooling_switch', 'is_cab_pooling', 'is_same_day_delivery_switch', 'is_same_day_delivery', 'is_next_day_delivery_switch', 'is_next_day_delivery', 'is_hyper_local_delivery_switch', 'is_hyper_local_delivery', 'is_cod_payment_switch', 'is_cod_payment', 'is_prepaid_payment_switch', 'is_prepaid_payment', 'is_partial_payment_switch', 'is_partial_payment','is_cab_pooling_switch', 'is_cab_pooling' , 'is_attribute_switch', 'is_attribute', 'add_to_cart_btn_switch', 'add_to_cart_btn', 'chat_button', 'chat_button_switch', 'call_button_switch', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url_switch','is_tracking_url','is_tracking_url_sms_switch','is_tracking_sms_url', 'is_postpay_enable_switch', 'is_postpay_enable', 'is_order_edit_enable_switch', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card','is_gift_card_switch','is_place_order_delivery_zero_switch', 'is_place_order_delivery_zero','is_cust_success_signup_email_switch', 'is_cust_success_signup_email','is_influencer_refer_and_earn_switch', 'is_influencer_refer_and_earn','afrTalk_api_key','afrTalk_sender_id','is_order_bid_switch','is_bid_enable','update_order_product_price', 'update_order_product_price_switch', 'is_bid_ride_enable', 'is_bid_ride_enable_switch', 'is_one_push_book_enable', 'is_one_push_book_enable_switch', 'bid_expire_time_limit_seconds', 'is_corporate_user_switch', 'is_corporate_user', 'is_user_kyc_for_registration_switch', 'is_user_kyc_for_registration','is_service_product_price_from_dispatch_switch','is_service_product_price_from_dispatch','is_recurring_booking_switch','is_recurring_booking', 'third_party_accounting_config');
 
         ///pr($request->all());
         foreach ($request->all() as $key => $value) {
@@ -340,28 +343,6 @@ class ClientPreferenceController extends BaseController{
                 $preference->sos_ambulance_contact = $request->sos_ambulance_contact;
             }
         }
-
-        /* Xero Configuration */
-        if($request->has('xero_submit'))
-        {
-            if($request->has('xero_status') && $request->xero_status == 'on')
-            {
-                if( ((!$request->has('xero_client_id')) || ($request->xero_client_id == '')) || ((!$request->has('xero_secret_id')) || ($request->xero_secret_id == ''))){
-                    return redirect()->route('configure.customize')->with('error', 'Invalid Xero Configuration Data');
-                }
-            }
-            $json_creds = json_encode(array(
-                        'client_id' => $request->xero_client_id,
-                        'secret_id' => $request->xero_secret_id,
-                    ));
-
-            $update = ThirdPartyAccounting::where('code','xero')->update([
-                'status' => ($request->has('xero_status') && $request->xero_status == 'on') ? 1 : 0,
-                'credentials' => $json_creds
-            ]);
-        }
-
-        // $preference->stripe_connect = ($request->has('stripe_connect') && $request->stripe_connect == 'on') ? 1 : 0;
 
         /* social login update */
         if($request->has('social_login') && $request->social_login == '1'){
@@ -442,7 +423,6 @@ class ClientPreferenceController extends BaseController{
             $preference->subscription_tab_taxi = ($request->has('subscription_tab_taxi') && $request->subscription_tab_taxi == 'on') ? 1 : 0;
             $preference->category_kyc_documents = ($request->has('category_kyc_documents') && $request->category_kyc_documents == 'on') ? 1 : 0;
             $preference->vendor_return_request = ($request->has('vendor_return_request') && $request->vendor_return_request == 'on') ? 1 : 0;
-            $preference->third_party_accounting = ($request->has('third_party_accounting') && $request->third_party_accounting == 'on') ? 1 : 0;
             $preference->hide_order_prepare_time = ($request->has('hide_order_prepare_time') && $request->hide_order_prepare_time == 'on') ? 1 : 0;
             $preference->is_cancel_order_user = ($request->has('is_cancel_order_user') && $request->is_cancel_order_user == 'on') ? 1 : 0;
             $preference->enable_inventory_service = ($request->has('enable_inventory_service') && $request->enable_inventory_service == 'on') ? 1 : 0;
@@ -464,6 +444,27 @@ class ClientPreferenceController extends BaseController{
         if($request->has('distance_to_time_calc_config') && $request->distance_to_time_calc_config == '1'){
             $preference->distance_unit_for_time = (($request->has('distance_unit_for_time')) && ($request->distance_unit_for_time != '')) ? $request->distance_unit_for_time : 'kilometer';
             $preference->distance_to_time_multiplier = (($request->has('distance_to_time_multiplier')) && ($request->distance_to_time_multiplier != '')) ? $request->distance_to_time_multiplier : 2;
+        }
+
+        if($request->has('third_party_accounting_config') && $request->third_party_accounting_config == '1'){
+            
+            $preference->third_party_accounting = ($request->has('third_party_accounting') && $request->third_party_accounting == 'on') ? 1 : 0;
+
+            if($request->has('xero_status') && $request->xero_status == 'on')
+            {
+                if( ((!$request->has('xero_client_id')) || ($request->xero_client_id == '')) || ((!$request->has('xero_secret_id')) || ($request->xero_secret_id == ''))){
+                    return redirect()->route('configure.index')->with('error', 'Invalid Xero Configuration Data');
+                }
+            }
+            $json_creds = json_encode(array(
+                        'client_id' => $request->xero_client_id,
+                        'secret_id' => $request->xero_secret_id,
+                    ));
+
+            $update = ThirdPartyAccounting::where('code','xero')->update([
+                'status' => ($request->has('xero_status') && $request->xero_status == 'on') ? 1 : 0,
+                'credentials' => $json_creds
+            ]);
         }
 
         if($request->has('primary_language')){
