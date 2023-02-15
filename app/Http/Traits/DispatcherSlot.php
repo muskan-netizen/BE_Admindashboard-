@@ -61,14 +61,14 @@ trait DispatcherSlot{
                     ]
                 ]);
               
-                $url = $data['service_key_url'];
-                $res = $client->get($url . '/api/get/agent_detail/'.$data['driver_id']);
+                $url = $data['service_key_url']. '/api/get/agent_detail/'.$data['driver_id'];
+                $res = $client->get($url );
                 $response = json_decode($res->getBody(), true);
-                
-                if ($response && $response['message'] == 'success') {
-                    $agets =count($response['data']['agents']) > 0 ? $response['data']['agents'] : [];
+              //  pr( $response['status']);
+                if ($response && $response['status'] === 200) {
                     return $response['data'];
                 }
+                 pr( $response['status']);
                 return [];
                
         } catch (\Exception $e) {
