@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, Role};
+use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -102,8 +102,12 @@ class ClientPreferenceController extends BaseController{
         $currencies = Currency::where('id', '>', '0')->get();
         $curtableData = array_chunk($currencies->toArray(), 2);
         $primaryCurrency = ClientCurrency::where('is_primary', 1)->first();
-        $want_to_tip_nomenclature=Nomenclature::where('label','Want To Tip')->first();
-        $fixed_fee=Nomenclature::where('label','Fixed Fee')->first();
+        $nomenclatureAllToGet=Nomenclature::get();
+        $want_to_tip_nomenclature=$nomenclatureAllToGet->where('label','Want To Tip')->first();
+        $fixed_fee=$nomenclatureAllToGet->where('label','Fixed Fee')->first();
+        
+        // $want_to_tip_nomenclature=Nomenclature::where('label','Want To Tip')->first();
+        // $fixed_fee=Nomenclature::where('label','Fixed Fee')->first();
         $ClientPreference = ClientPreference::where('client_code', $client->code)
         // ->with('language', 'primarylang', 'domain', 'currency.currency', 'primary.currency')->select('client_code', 'theme_admin', 'distance_unit', 'date_format', 'time_format', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'verify_email', 'verify_phone', 'web_template_id', 'app_template_id', 'primary_color', 'secondary_color', 'reffered_by_amount', 'reffered_to_amount')
         ->first();
@@ -114,7 +118,7 @@ class ClientPreferenceController extends BaseController{
 
         $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
 
-        $nomenclature_value = Nomenclature::first();
+        $nomenclature_value = $nomenclatureAllToGet->first();
         foreach ($preference->currency as $value) {
             $cli_currs[] = $value->currency_id;
         }
@@ -150,7 +154,7 @@ class ClientPreferenceController extends BaseController{
                     ->orderBy('client_languages.is_primary', 'desc')->get();
         $roles = [];
         if(checkColumnExists('roles','is_enable_pricing')){
-            $roles = Role::where('status',1)->get();
+            $roles = RoleOld::where('status',1)->get();
         }
         // dd($preference);
         return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles'));
@@ -234,9 +238,9 @@ class ClientPreferenceController extends BaseController{
         try {
             if($request->has('role_id')){
                 foreach($request->role_id as $key => $_role){
-                    $userRole                    = Role::where('id',$_role)->first();
+                    $userRole                    = RoleOld::where('id',$_role)->first();
                     if(!$userRole){
-                        $userRole                = new Role();
+                        $userRole                = new RoleOld();
                     }
                     $userRole->is_enable_pricing = ($request->has('is_enable_pricing') && isset($request->is_enable_pricing[$_role]) ) ? ( (($request->is_enable_pricing[$_role] == 1) || ($request->is_enable_pricing[$_role] == 'on')) ? 1 : 0) : 0;
                     $userRole->role              = $request->has('role') ? $request->role[$_role] : $userRole->role;

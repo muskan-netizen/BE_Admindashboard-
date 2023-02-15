@@ -48,7 +48,7 @@ border-radius: 6px;width: 130px;display: flex;color: #fff;padding: 5px 0;float: 
         @endif
     </div>
     <div class="row">
-        @if(Auth::user()->is_superadmin == 1)
+        @if(Auth::user()->is_superadmin == 1 || auth()->user()->can('setting-profile-view'))
         <div class="col-md-12 col-xl-7 col-lg-10">
             <div class="card">
                 <div class="card-body">
@@ -68,7 +68,7 @@ border-radius: 6px;width: 130px;display: flex;color: #fff;padding: 5px 0;float: 
                         <div class="row mb-2 d-flex align-items-center">
                             <div class="col-md-3 col-6 positoin-relative text-left">
                                 <label>{{ __("Light Theme Logo") }}</label>
-                                <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" data-plugins="dropify" name="logo" data-default-file="{{$client->logo['image_fit'] . '300/100' . $client->logo['image_path']}}" />
+                                <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" data-plugins="dropify" name="logo" data-default-file="{{@$client->logo['image_fit'] . '300/100' . @$client->logo['image_path']}}" />
                                 <label class="logo-size d-block text-left mt-1">{{ __("Image Size") }} 300x100</label>
                             </div>
                             <div class="col-md-3 col-6 positoin-relative text-left">
