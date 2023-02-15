@@ -446,6 +446,7 @@ class ClientPreferenceController extends BaseController{
             $preference->distance_to_time_multiplier = (($request->has('distance_to_time_multiplier')) && ($request->distance_to_time_multiplier != '')) ? $request->distance_to_time_multiplier : 2;
         }
 
+        // third party accounting and xero configurations
         if($request->has('third_party_accounting_config') && $request->third_party_accounting_config == '1'){
             
             $preference->third_party_accounting = ($request->has('third_party_accounting') && $request->third_party_accounting == 'on') ? 1 : 0;
