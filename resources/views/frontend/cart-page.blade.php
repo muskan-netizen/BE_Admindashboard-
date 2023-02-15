@@ -374,7 +374,7 @@
                                                             class="float-left btn btn-solid prescription_btn mt-2"
                                                             data-cart="{{ $vendor_product->cart_id }}"
                                                             data-product="{{ $vendor_product->product->id }}"
-                                                            data-vendor_id="{{ $vendor_product->vendor_id }}">{{ __('Add Prescription') }}</button>
+                                                            data-vendor_id="{{ $vendor_product->vendor_id }}" data-cart_product_prescription="{{ $vendor_product->cart_product_prescription??0 }}">{{ __('Add Prescription') }}</button>
                                                         @if ($vendor_product->cart_product_prescription > 0)
                                                             <h4 class="mt-0 mb-1"
                                                                 style="word-wrap: break-word; line-height:20px">

@@ -206,12 +206,21 @@
                                             @endif
                                         </li>
 
-                                        @if($order->luxury_option_id == 4 && $vendor->order_status_option_id == 6)
-                                            <li>
-                                                <label class="rating-star extend-order" data-order_vendor_product_id="{{$product->id}}" data-vendor_product_id="{{$product->product_id}}" data-vendor_end_date_time="{{$product->end_date_time}}">
-                                                    {{ __('Extend') }}
-                                                </label>
-                                            </li>
+                                        @if($order->luxury_option_id == 4)
+                                        {{-- @dd($product->productReturn) --}}
+                                            @if(empty($product->productReturn))
+                                                <li>
+                                                    <label class="rating-star extend-order" data-order_vendor_product_id="{{$product->id}}" data-vendor_product_id="{{$product->product_id}}" data-vendor_end_date_time="{{$product->end_date_time}}">
+                                                        {{ __('Extend') }}
+                                                    </label>
+                                                </li>
+                                            @elseif ($product->productReturn->status != 'Completed')
+                                                <li>
+                                                    <label class="rating-star extend-order" data-order_vendor_product_id="{{$product->id}}" data-vendor_product_id="{{$product->product_id}}" data-vendor_end_date_time="{{$product->end_date_time}}">
+                                                        {{ __('Extend') }}
+                                                    </label>
+                                                </li>
+                                            @endif
                                         @endif
                                         @if(@$rental_return)
                                         @if(@$product->productReturn->type && $product->productReturn->type == 1)

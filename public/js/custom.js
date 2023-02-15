@@ -4358,6 +4358,8 @@ $(document).ready(function () {
         var cart = $(this).data("cart");
         var product = $(this).data("product");
         var vendor = $(this).data("vendor_id");
+        var cart_product_prescription = $(this).data("cart_product_prescription");
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
@@ -4377,6 +4379,7 @@ $(document).ready(function () {
             success: function (response) {
                 $("#product_id").val(product);
                 $("#vendor_idd").val(vendor);
+                $("#uploaded_pres_count").val(cart_product_prescription);
 
                 // show-prescription-doc
                 var showPrescriptionDoc = '';
@@ -4398,41 +4401,56 @@ $(document).ready(function () {
         var form = document.getElementById('save_prescription_form');
         var formData = new FormData(form);
         var route_uri = "add/product/prescription";
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('input[name="_token"]').val()
-            }
-        });
-        $.ajax({
-            type: "post",
-            headers: {
-                Accept: "application/json"
-            },
-            url: route_uri,
-            data: formData,
-            contentType: false,
-            processData: false,
-            beforeSend: function () {
-                $(".loader_box").show();
-            },
-            success: function (response) {
-
-                if (response.status == 'success') {
-                    $(".modal .close").click();
-                    location.reload();
-                } else {
-                    $(".show_all_error.invalid-feedback").show();
-                    $(".show_all_error.invalid-feedback").text(response.message);
+        if(checkUploadFileLimit()){
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
                 }
-                return response;
-            },
-            complete: function () {
-                $('.loader_box').hide();
-            }
-        });
+            });
+            $.ajax({
+                type: "post",
+                headers: {
+                    Accept: "application/json"
+                },
+                url: route_uri,
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    $(".loader_box").show();
+                },
+                success: function (response) {
 
+                    if (response.status == 'success') {
+                        $(".modal .close").click();
+                        location.reload();
+                    } else {
+                        $(".show_all_error.invalid-feedback").show();
+                        $(".show_all_error.invalid-feedback").text(response.message);
+                    }
+                    return response;
+                },
+                complete: function () {
+                    $('.loader_box').hide();
+                }
+            });
+        }
     });
+
+    function checkUploadFileLimit(){
+        var limit = 5;
+        var uploaded_prescription_count = $('.uploaded-prescription img').length;
+        var already_uploaded = $('#uploaded_pres_count').val();
+        var total_files = parseInt(uploaded_prescription_count) + parseInt(already_uploaded);
+        if(total_files > limit){
+            $('#save_prescription_form .validate-file-error').text("You can select max "+limit+" file.");
+            $('#prescription_file').val('');
+            return false;
+        }else{
+            $('#save_prescription_form .validate-file-error').text("");
+            return true;
+        }
+    }
 
     //prescription upload for bidding
 

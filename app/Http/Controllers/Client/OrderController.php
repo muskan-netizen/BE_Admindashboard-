@@ -2704,6 +2704,7 @@ class OrderController extends BaseController
             $return = OrderProductDispatchReturnRoute::with(['order', 'orderProduct', 'orderProduct.pvariant', 'orderProduct.product'])->where('id', $request->id)->first();
             if(@$request->status && $request->status == 'Accepted'){
                 $returns = OrderProductDispatchReturnRoute::where('id', $request->id)->update(['dispatcher_status_option_id' => 6]);
+                $update_return_status = OrderReturnRequest::where('order_vendor_product_id', $request->order_vendor_product_id)->update(['status' => 'Completed']);
             }
             
             if (isset($returns)) {

@@ -203,8 +203,8 @@ $timezone = Auth::user()->timezone;
                                 </div>
                                 @endif
                             </div>
-                            @endif
-                            @endif
+                            {{-- @endif
+                            @endif --}}
                             <div class="row track-order-list">
                                 <div class="col-lg-6">
                                     <!-- <button type="button" class="btn btn-danger waves-effect waves-light">
@@ -480,7 +480,7 @@ $timezone = Auth::user()->timezone;
                                             </p>
 
                                             @foreach ($product->prescription as $pres)
-                                            <br><a target="_blank" href="{{ $pres ? @$pres->prescription['proxy_url'] . '74/100' . @$pres->prescription['image_path'] : '' }}">{{ $product->prescription ? 'Prescription' : '' }}</a>
+                                            <br><a target="_blank" href="{{ $pres ? @$pres->prescription['proxy_url'] . '500/500' . @$pres->prescription['image_path'] : '' }}">{{ $product->prescription ? 'Prescription' : '' }}</a>
                                             @endforeach
 
                                             <p class="p-0 m-0">

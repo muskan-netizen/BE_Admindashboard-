@@ -269,15 +269,8 @@ $timezone = Auth::user()->timezone;
                                         </div>
                                         {{-- @endforeach
                                         @else --}}
-                                        <div class="col-12">
-                                            <div class="no-gutters order_head">
-                                                <h4 class="text-center">{{ __('No Rejected/Cancel Order Found') }}
-                                                </h4>
-                                            </div>
-                                        </div>
                                         {{-- @endif --}}
                                     </div>
-                                    {{ $pastOrders->appends(['pageType' => 'rejectedOrders'])->links() }}
                                 </div>
                                 @if($show_long_term ==1)
                                 @include('frontend.account.longTermOrderTab')
