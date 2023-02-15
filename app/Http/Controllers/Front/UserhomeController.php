@@ -837,7 +837,7 @@ class UserhomeController extends FrontController
         foreach ($new_product_details as  $new_product_detail) {
             $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $new_product_detail->media->first() ? ( !empty($new_product_detail->media->first()->image ) ?( $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path']) : $this->loadDefaultImage() ): $this->loadDefaultImage();
             $user_id = Auth::user()->id??'';
             $product_id = $new_product_detail->id;
             $is_inwishlist_btn = 0;
