@@ -774,7 +774,7 @@ class UserhomeController extends FrontController
 
 
         // Homepage data
-        $dashboard_frontend_products = CabBookingLayout::whereIn('slug',['selected_products','featured_products','on_sale','new_products','best_sellers'])->where('type',1)->with('translations',function($q) use ($language_id){
+        $dashboard_frontend_products = CabBookingLayout::whereIn('slug',['selected_products','featured_products','on_sale','new_products','best_sellers','most_popular_products'])->where('type',1)->with('translations',function($q) use ($language_id){
             $q->where(['language_id'=>$language_id]);
         })->select('id','title','slug')->get();
             // dd($dashboard_frontend_products);
@@ -788,10 +788,16 @@ class UserhomeController extends FrontController
             {
                 //get Most Selling Vendors
                 $productsAarray = $this->getMostSellingVendors($preferences, $vendor_ids);
+            }elseif($dashboardProducts->slug == 'most_popular_products'){
+                $popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
+                $productsAarray = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $popular_product_ids);
+
             }else{
                 //get Vendors products data
                 $productsAarray = $this->vendorProductsData($vendor_ids, $language_id, $currency_id,$dashboardProducts->slug, $request->type,$p_dim);
             }
+
+            
             $dashboardProductsData[$titleDashboard] = $productsAarray;
         }
         // End Homepage data
@@ -928,7 +934,6 @@ class UserhomeController extends FrontController
         if( @$additionalPreference['is_long_term_service'] == 1){
             $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type,$p_dim);
         }
-          
         if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type,$p_dim);
             $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
@@ -938,9 +943,6 @@ class UserhomeController extends FrontController
             // dd($single_category_products);
             $selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
             $selected_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $selected_product_ids);
-
-            $popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
-            $popular_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $popular_product_ids);
 
             $top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
             $top_rated_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $top_rated_products_ids);
@@ -1034,7 +1036,7 @@ class UserhomeController extends FrontController
                 'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
                 //'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
-                'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
+                //'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
                 'recent_orders' => $activeOrders,
             ];
             if(count($dashboardProductsData)>0){

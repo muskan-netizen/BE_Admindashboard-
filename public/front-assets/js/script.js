@@ -228,6 +228,7 @@ function  layoutMode(){
         e(".p2p_eccomerce_slider").slick(sliderConfigEight),
         e(".p2p_single_slider").slick(sliderConfig),
         e(".product-4-selected_products").slick(sliderConfig),
+        e(".product-4-most_popular_products").slick(sliderConfig),
 
         e('.suppliers-slider').slick({
             dots: false,
