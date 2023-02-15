@@ -49,5 +49,31 @@ trait DispatcherSlot{
             return [];
         }
     }
-    
+    public function getAgentDetailFromDispatcher($data)
+    {
+      
+        try {
+                $client = new GClient([
+                    'headers' => [
+                        'personaltoken' => $data['service_key'],
+                        'shortcode'     => $data['service_key_code'],
+                        'content-type'  => 'application/json'
+                    ]
+                ]);
+              
+                $url = $data['service_key_url'];
+                $res = $client->get($url . '/api/get/agent_detail/'.$data['driver_id']);
+                $response = json_decode($res->getBody(), true);
+                
+                if ($response && $response['message'] == 'success') {
+                    $agets =count($response['data']['agents']) > 0 ? $response['data']['agents'] : [];
+                    return $response['data'];
+                }
+                return [];
+               
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            return [];
+        }
+    }
 }
