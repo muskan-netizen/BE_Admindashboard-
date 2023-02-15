@@ -252,6 +252,7 @@ class BannerController extends BaseController
             $banner->link = $request->assignTo;
             $banner->redirect_category_id = ($request->assignTo == 'category') ? $request->category_id : NULL;
             $banner->redirect_vendor_id = ($request->assignTo == 'vendor') ? $request->vendor_id : NULL;
+            $banner->link_url = ($request->assignTo == 'url') ? $request->link_url : NULL;
         }
 
         if ($request->hasFile('image')) {    /* upload logo file */

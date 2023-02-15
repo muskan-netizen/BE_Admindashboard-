@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup, TaxCategory, VendorCities};
+use App\Models\{Currency, Banner, MobileBanner, FaqTranslations, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency,Client, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor, Order, VendorOrderStatus,CabBookingLayoutTranslation,ShowSubscriptionPlanOnSignup, TaxCategory, VendorCities, UserWishlist};
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
 use Redirect;
@@ -550,8 +550,7 @@ class UserhomeController extends FrontController
             elseif(isset($set_template)  && $set_template->template_id == 9){
                 $view_page = "home-template-test-nine";
             }
-            //pr($view_page);
-            //pr(Session::get('latitude'));
+
             return view('frontend.'.$view_page)->with(['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData]);
 
         } catch (Exception $e) {
@@ -871,12 +870,42 @@ class UserhomeController extends FrontController
         //         'tag_title' => $new_products_title??0,
         //         'image_url' => $image_url,
         //         'sku' => $new_product_detail->sku,
+        
+        //get Most Selling Vendors
+        //$mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
+        //$on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
+       // $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
+        //$feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
+
+        //$new_products =$this->vendorProductLoop($new_product_details, $p_dim );
+        //$feature_products =$this->vendorProductLoop($feature_product_details, $p_dim );
+        //$on_sale_products =$this->vendorProductLoop($on_sale_product_details, $p_dim );
+
+        // foreach ($new_product_details as  $new_product_detail) {
+        //     $multiply = $new_product_detail->variant->first()->multiplier?? 1;
+        //     $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
+        //     $image_url = $new_product_detail->media->first() ? ( !empty($new_product_detail->media->first()->image ) ?( $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path']) : $this->loadDefaultImage() ): $this->loadDefaultImage();
+        //     $user_id = Auth::user()->id??'';
+        //     $product_id = $new_product_detail->id;
+        //     $is_inwishlist_btn = 0;
+        //     $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
+        //     if(@$userWishlistProd){
+        //         $is_inwishlist_btn = 1;
+        //     }
+        //     $new_products[] = array(
+        //         'tag_title' => $new_products_title??0,
+        //         'image_url' => $image_url,
+        //         'id' => $new_product_detail->id,
+        //         'sku' => $new_product_detail->sku,
+        //         'updated_at' => $new_product_detail->updated_at,
+        //         'is_inwishlist_btn' => $is_inwishlist_btn,
         //         'title' => Str::limit($title, 18, '..'),
         //         'url_slug' => $new_product_detail->url_slug,
         //         'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
         //         'inquiry_only' => $new_product_detail->inquiry_only,
         //         'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
         //         'vendor' => $new_product_detail->vendor,
+        //         'ProductAttribute' => $new_product_detail->ProductAttribute,
         //         'price_numeric' =>@$new_product_detail->variant->first()->price??0 * $multiply,
         //         'compare_price' =>@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,
         //         'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
@@ -887,17 +916,28 @@ class UserhomeController extends FrontController
         // foreach ($feature_product_details as  $feature_product_detail) {
         //     $multiply = $feature_product_detail->variant->first()->multiplier ?? 1;
         //     $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-        //     $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+        //     $image_url = $feature_product_detail->media->first() ? ( !empty($feature_product_detail->media->first()->image ) ?( $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path']) : $this->loadDefaultImage() ): $this->loadDefaultImage();
+        //     $user_id = Auth::user()->id??'';
+        //     $product_id = $feature_product_detail->id;
+        //     $is_inwishlist_btn = 0;
+        //     $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
+        //     if(@$userWishlistProd){
+        //         $is_inwishlist_btn = 1;
+        //     }
         //     $feature_products[] = array(
         //         'tag_title' => $featured_products_title??'0',
         //         'image_url' => $image_url,
+        //         'id' => $feature_product_detail->id,
         //         'sku' => $feature_product_detail->sku,
+        //         'updated_at' => $feature_product_detail->updated_at,
+        //         'is_inwishlist_btn' => $is_inwishlist_btn,
         //         'title' => Str::limit($title, 18, '..'),
         //         'url_slug' => $feature_product_detail->url_slug,
         //         'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
         //         'inquiry_only' => $feature_product_detail->inquiry_only,
         //         'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
         //         'vendor' => $feature_product_detail->vendor,
+        //         'ProductAttribute' => $feature_product_detail->ProductAttribute,
         //         'price_numeric' =>@$feature_product_detail->variant->first()->price??0 * $multiply,
         //         'compare_price' =>@$feature_product_detail->variant->first()->compare_at_price??0 * $multiply,
         //         'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$feature_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply,',')),
@@ -908,17 +948,28 @@ class UserhomeController extends FrontController
         // foreach ($on_sale_product_details as  $on_sale_product_detail) {
         //     $multiply = $on_sale_product_detail->variant->first()->multiplier ?? 1;
         //     $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-        //     $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+        //     $image_url = $on_sale_product_detail->media->first() ? ( !empty($on_sale_product_detail->media->first()->image ) ?( $on_sale_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $on_sale_product_detail->media->first()->image->path['image_path']) : $this->loadDefaultImage() ): $this->loadDefaultImage();
+        //     $user_id = Auth::user()->id??'';
+        //     $product_id = $on_sale_product_detail->id;
+        //     $is_inwishlist_btn = 0;
+        //     $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
+        //     if(@$userWishlistProd){
+        //         $is_inwishlist_btn = 1;
+        //     }
         //     $on_sale_products[] = array(
         //         'tag_title' => $on_sale_title??'0',
         //         'image_url' => $image_url,
+        //         'id' => $on_sale_product_detail->id,
         //         'sku' => $on_sale_product_detail->sku,
+        //         'updated_at' => $on_sale_product_detail->updated_at,
+        //         'is_inwishlist_btn' => $is_inwishlist_btn,
         //         'title' => Str::limit($title, 18, '..'),
         //         'url_slug' => $on_sale_product_detail->url_slug,
         //         'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
         //         'inquiry_only' => $on_sale_product_detail->inquiry_only,
         //         'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
         //         'vendor' => $on_sale_product_detail->vendor,
+        //         'ProductAttribute' => $on_sale_product_detail->ProductAttribute,
         //         'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$on_sale_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
         //         'compare_at_price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
         //         'compare_price' => @$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply,
@@ -1049,6 +1100,43 @@ class UserhomeController extends FrontController
         }
         return $this->successResponse($data);
     }
+    public function vendorProductLoop($ProductArray =[], $p_dim ){
+        $return_products = [];
+
+        foreach ($ProductArray as  $new_product_detail) {
+            $multiply = $new_product_detail->variant->first()->multiplier?? 1;
+            $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
+            $image_url = $new_product_detail->media->first() ? ( !empty($new_product_detail->media->first()->image ) ?( $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path']) : $this->loadDefaultImage() ): $this->loadDefaultImage();
+            $user_id = Auth::user()->id??'';
+            $product_id = $new_product_detail->id;
+            $is_inwishlist_btn = 0;
+            $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
+            if(@$userWishlistProd){
+                $is_inwishlist_btn = 1;
+            }
+            $return_products[] = array(
+                'tag_title' => $new_products_title??0,
+                'image_url' => $image_url,
+                'id' => $new_product_detail->id,
+                'sku' => $new_product_detail->sku,
+                'updated_at' => $new_product_detail->updated_at,
+                'is_inwishlist_btn' => $is_inwishlist_btn,
+                'title' => Str::limit($title, 18, '..'),
+                'url_slug' => $new_product_detail->url_slug,
+                'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
+                'inquiry_only' => $new_product_detail->inquiry_only,
+                'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
+                'vendor' => $new_product_detail->vendor,
+                'ProductAttribute' => $new_product_detail->ProductAttribute,
+                'price_numeric' =>@$new_product_detail->variant->first()->price??0 * $multiply,
+                'compare_price' =>@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,
+                'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
+                'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
+                'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
+            );
+        }
+        return $return_products;
+    }
 
     /**
      * getCities
@@ -1078,7 +1166,9 @@ class UserhomeController extends FrontController
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
-            'vendor',
+            'vendor', 'ProductAttribute' => function ($q) {
+                $q->where('key_name', 'Location');
+            },
             'media' => function ($q) {
                 $q->groupBy('product_id');
             }, 'media.image',
@@ -1108,9 +1198,9 @@ class UserhomeController extends FrontController
         }
 
         if(checkColumnExists('products','is_long_term_service')){
-            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','is_long_term_service');
+            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','updated_at', 'id','is_long_term_service');
         }else{
-            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','updated_at', 'id');
         }
         $pndCategories = Category::where('type_id', 7)->pluck('id');
         // if (is_array($venderIds)) {

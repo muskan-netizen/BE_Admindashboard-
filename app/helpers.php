@@ -1049,6 +1049,12 @@ if (!function_exists('stripeDynamicPaymentCredentials')) {
     }
 }
 
+if (!function_exists('convertDateToHumanReadable')) {
+    function convertDateToHumanReadable($date){
+        return Carbon::parse($date)->diffForHumans();
+    }
+}
+
 
 if (!function_exists('OnLAstMileDelivery')) {
     function OnLAstMileDelivery()

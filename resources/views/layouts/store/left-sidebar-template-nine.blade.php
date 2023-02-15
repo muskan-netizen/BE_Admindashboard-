@@ -162,12 +162,12 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    </div>
    <!-- End Cab Booking Header From Here -->
    @else
-   @if(!p2p_module_status())
+   @if ($client_preference_detail->business_type == 'super_app')
    <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
       <div class="container_fluid_al d-block" >
           <div class="row align-items-center justify-content-center position-initial">
               <div class="col-lg-12">
-                  <div class="container al_mobile-header lign-items-center position-relative">
+                  <div class="container al_mobile-header align-items-center position-relative">
                       <div class="al_count_tabs_new_design"  >
                           @if($mod_count > 1)
                           <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods justify-content-center" id="top-tab" role="tablist">
@@ -287,7 +287,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                   <li class="al_main_category"  >
                      <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}">
                         @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='categoryDetail' || \Request::route()->getName()=='homeTest'))
-                        <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
+                        {{-- <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div> --}}
                         @endif
                         {{$cate['name']}}
                         @if(!empty($cate['children']))
