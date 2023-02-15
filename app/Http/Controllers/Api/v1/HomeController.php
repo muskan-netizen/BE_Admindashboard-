@@ -13,6 +13,7 @@ use ConvertCurrency;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\{ApiResponser,ProductActionTrait};
+use App\Http\Traits\HomePage\HomePageTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +27,7 @@ use DateTimeZone;
 
 class HomeController extends BaseController
 {
-    use ApiResponser,ProductActionTrait;
+    use ApiResponser,ProductActionTrait, HomePageTrait;
 
     private $curLang = 0;
     private $field_status = 2;
@@ -365,6 +366,9 @@ class HomeController extends BaseController
 
 
             foreach ($vendorData as $vendor) {
+                $vendor->vendorrating = $this->vendorRatings($vendor->products);
+                $vendor->vendorNoOfRatings = $this->vendorNoOfRatings($vendor->products);
+                $vendor->promocodes = $this->getVendorWisePromoCodes($vendor->id);
                 unset($vendor->products);
 
                 $vendor->is_vendor_closed = 0;
@@ -800,12 +804,17 @@ class HomeController extends BaseController
 
     public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type)
     {
-        $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([
+        $user = Auth::user();
+        $userid = !empty($user) ? $user->id : 0;
+        $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([ 
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
             'vendor' => function ($q) use ($type) {
                 $q->where($type, 1);
+            },
+            'inwishlist' => function($qry) use($userid){
+                $qry->where('user_id', $userid);
             },
             'media' => function ($q) {
                 $q->groupBy('product_id');
@@ -840,6 +849,7 @@ class HomeController extends BaseController
                 }
             }
         }
+        Log::info($products);
         return $products;
     }
 

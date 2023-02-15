@@ -901,16 +901,14 @@ $(document).ready(function () {
                     $('#search_product_rider_main_div').html('');
                     if(response.data.length != 0){
                         var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
-
-                        var is_cab_pooling_radio = $('input[name="is_cab_pooling_radio"]:checked').val();
                         
                         let products_template = _.template($('#products_template').html());
 
                         let products_rider_template = _.template($('#products_rider_template').html());
                         $("#search_product_main_div").append(products_template(productData));
                         $("#search_product_rider_main_div").append(products_rider_template(productData));
-
-                        if($('input[name="is_cab_pooling_radio"]:checked').val() == 0)
+                        
+                        if($('input[name="is_cab_pooling_radio"]:checked').val() == 0 || $('input[name="is_cab_pooling_radio"]:checked').val() === undefined)
                         {
                             $("#search_product_main_div .double_price_p").hide();
                             $("#search_product_main_div .single_price_p").show();
@@ -1101,7 +1099,7 @@ $(document).ready(function () {
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
 
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
-                        if($('input[name="is_cab_pooling_radio"]:checked').val() == 0)
+                        if($('input[name="is_cab_pooling_radio"]:checked').val() == 0 || $('input[name="is_cab_pooling_radio"]:checked').val() === undefined)
                         {
                             $(".show_no_of_seats_if_pooling").hide();
                         }else{
