@@ -39,7 +39,8 @@ class CartController extends BaseController
 
     public function index(Request $request)
     {
-        try {
+     
+ try {
 
             // if(($request->has('gateway')) && ($request->gateway != '')){
             //     if($request->has('order')){
@@ -77,10 +78,28 @@ class CartController extends BaseController
                 }
             }
             $cart = $cart->first();
+            $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
+            $address_id = ($address) ? $address->id : 0;
+            //pr($_POST);
+            if ($user) {
+              
+                $obj = [
+                    'cart' => $cart,
+                    'currency'=> $user->currency,
+                    'code'=> $request->code,
+                    'type'=> $request->type,
+                    'language'=> $user->language,
+                    'requestType'=>2,
+                    'address_id'=> $address_id,
+                    'schedule_datetime_del'=> $request->schedule_datetime_del,
+                    'type'=> $request->type,
+                ];
+               
+                //$cart, $address_id=0 , $code = 'D',$schedule_datetime_del=''
+                $cartData = $this->getCartsNew($obj,$request);
+                //pr($cartData);
+                //$cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
-            if ($cart) {
-
-                $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
                 {
