@@ -836,7 +836,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 {!! Form::label('title', __('Choose Slots'),['class' => 'control-label']) !!}
                                 <select class="selectizeInput form-control" id="select_slot" name="slot_ids[]" multiple>
                                     <option value="">Choose Slots</option>
-                                    @foreach ($delivery_slots as $slot)
+                                    @foreach (@$delivery_slots as $slot)
                                         <option value="{{$slot->id}}" @if(in_array($slot->id, $pro_delivery_slot_ids)) selected @endif>{{$slot->title.' ( '.$slot->start_time.'-'.$slot->end_time.' )'}}</option>
                                     @endforeach
                                 </select>

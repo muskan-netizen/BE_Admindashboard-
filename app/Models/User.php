@@ -11,9 +11,9 @@ use Yadahan\AuthenticationLog\AuthenticationLogable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Spatie\Permission\Contracts\Role;
 
 class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
@@ -22,13 +22,14 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     use HasWallet;
     use HasWalletFloat;
     use SoftDeletes;
+    use HasRoles;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'description', 'phone_number','dial_code', 'image', 'is_email_verified','email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at', 'is_admin'
+        'name', 'email', 'password', 'description', 'phone_number','dial_code', 'image', 'is_email_verified','email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at', 'is_admin','geo_ids'
     ];
     protected $appends = ['loyalty_name'];
     /**
@@ -175,5 +176,10 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function bidRequests()
     {
         return $this->hasMany(BidRequest::class, 'user_id');
+    }
+
+    public function manager()
+    {
+        return $this->hasOne(Role::class, 'id');
     }
 }

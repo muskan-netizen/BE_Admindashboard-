@@ -47,6 +47,8 @@ class QuickApiController extends Controller
                 if($quotation->status=='200')
                 { 
                     return $quotation->data->per_task_cost;
+                }else{
+                    \Log::info(json_encode($quotation));
                 }
                 return $actualAmount;
             }

@@ -1,9 +1,7 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
 class AddUrlLinkToMobileBannersTable extends Migration
 {
     /**
@@ -17,7 +15,6 @@ class AddUrlLinkToMobileBannersTable extends Migration
             $table->text('link_url')->after('link')->nullable();
         });
     }
-
     /**
      * Reverse the migrations.
      *

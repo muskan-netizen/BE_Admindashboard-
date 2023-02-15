@@ -163,7 +163,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                             </div>
                                                                         @endif
                                                                         
-                                                                    </div>
+                                                                        </div>
 
                                                                 </div>
                                                                

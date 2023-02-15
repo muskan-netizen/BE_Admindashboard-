@@ -55,15 +55,11 @@ class AppStylingController extends BaseController
             $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->get();
         }
 
+        $selected_ids=[];
+        //type = 1 for app products
+        $selected_ids= $this->getHomePageSelectedProducts(1);
 
         $client_preferences = ClientPreference::first();
-        $selected_ids=[];
-        $Selected_products= HomeProduct::get();
-        foreach ($Selected_products as $key => $value) {
-            $selected_ids[] = $value->product_id;
-        
-    }
-
         switch($client_preferences->business_type){
             case "taxi":    # if business type is taxi
             $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
@@ -294,9 +290,10 @@ class AppStylingController extends BaseController
         }
 
         if(@$request->selected_products)
-{
-    $this->updateSelectedProductstoDb($home_translation->cab_booking_layout_id,$request);
-}        
+        {
+            //For Appside type = 1
+            $this->updateSelectedProductstoDb($home_translation->cab_booking_layout_id,$request,1);
+        }        
 
         foreach ($request->pickup_labels as $key => $value) {
 
