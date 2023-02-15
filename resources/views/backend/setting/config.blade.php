@@ -1994,6 +1994,16 @@
                                     @endif
                                 </div>
                             </div>
+                        </div>
+                        {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
+                  <input type="hidden" name='is_hubspot' value='1'> --}}
+                        {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
+                        @php
+                            $allRoles = \App\Models\RoleOld::get();
+                        @endphp
+                        <hr />
+                        {{-- <div class="row hub_row alCustomToggleColor"
+                            style="{{ isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1 ? '' : 'display:none;' }}">
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="mazinhost_sender_id">{{ __('Sender ID') }}</label>
@@ -2007,7 +2017,7 @@
                                     @endif
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- For unifonic_fields -->
                         <div class="row sms_fields mx-0" id="unifonic_fields"
@@ -2568,9 +2578,6 @@
                     {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
                   <input type="hidden" name='is_hubspot' value='1'> --}}
                     {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
-                    @php
-                        $allRoles = \App\Models\Role::get();
-                    @endphp
                     <hr />
                     <div class="row hub_row alCustomToggleColor"
                         style="{{ isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1 ? '' : 'display:none;' }}">
