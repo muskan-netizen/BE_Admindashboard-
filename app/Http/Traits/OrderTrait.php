@@ -294,7 +294,6 @@ trait OrderTrait
     // place Request To Dispatch for Appointment , OnDemand
     public function placeRequestToDispatchSingleProduct($order, $vendor, $dispatch_domain, $request)
     {
-        \Log::info('placeRequestToDispatchSingleProduct');
         try {
             $order = Order::find($order);
             $customer = User::find($order->user_id);
@@ -306,9 +305,10 @@ trait OrderTrait
             $paymentSentAlready = 0;
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
 
-            $order_vendor = OrderVendor::with(['products.product', 'products.order_product_status'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-            
+            $order_vendor = OrderVendor::with(['products.product.categoryName', 'products.order_product_status'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+           
             foreach( $order_vendor->products as $product){
+                
                 $allocation_type = 'a';
                 $agent = '';
                 if ($order->payment_option_id == 1) {
@@ -395,7 +395,11 @@ trait OrderTrait
                         // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                         $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                     }
-                    \Log::info('placeRequestToDispatch quantity');
+                    $orderfromName =  $vendor_details->name;
+                    if($rejectable_order ==1){
+                        $orderfromName =  $customer->name ?? $vendor_details->name;
+                    }
+                    $category_name = isset($product->product->categoryName) ? @$product->product->categoryName->name : 'na' ;
                     $client = CP::orderBy('id', 'asc')->first();
                     for ($x = 1; $x <= $product->quantity; $x++) {
                         //  send all payment to fist order
@@ -416,7 +420,7 @@ trait OrderTrait
                             'customer_email' => $customer->email ?? null,
                             'recipient_phone' => $customerno ?? rand(111111, 11111),
                             'recipient_email' => $customer->email ?? null,
-                            'task_description' => "Order From :" . $vendor_details->name,
+                            'task_description' => "Order From: " . $orderfromName,
                             'allocation_type' => $allocation_type,
                             'task_type' => $task_type,
                             'schedule_time' => $schedule_time ?? null,
@@ -436,7 +440,8 @@ trait OrderTrait
                             'task_type_id' =>$task_type_id, //  for add agent booking in case of appointment
                             'service_time' =>  $service_time,
                             'is_assign_warehouse' => $is_assign_warehouse,
-                            'rejectable_order' =>  $rejectable_order
+                            'rejectable_order' =>  $rejectable_order,
+                            'category_name' =>  $category_name 
                         ];
                         \Log::info('dispatcher data');
                         \Log::info($postdata);
