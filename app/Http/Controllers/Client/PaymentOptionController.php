@@ -676,7 +676,7 @@ class PaymentOptionController extends BaseController
                             if ($request->hasFile('azul_ssl_certificate')) {
                                 $file = $request->file('azul_ssl_certificate');
                                 $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
-                                $path = Storage::disk('config')->put($file_name, file_get_contents($file), 'public');
+                                $path = Storage::disk('local')->put($file_name, file_get_contents($file), 'public');
                                 $azul_ssl_certificate = $file_name;
                             } else {
                                 $azul_ssl_certificate = (! empty($creds) && isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
@@ -685,7 +685,7 @@ class PaymentOptionController extends BaseController
                             if ($request->hasFile('azul_ssl_key')) {
                                 $file = $request->file('azul_ssl_key');
                                 $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
-                                $path = Storage::disk('config')->put($file_name, file_get_contents($file), 'public');
+                                $path = Storage::disk('local')->put($file_name, file_get_contents($file), 'public');
                                 $azul_ssl_key = $file_name;
                             } else {
                                 $azul_ssl_key = (! empty($creds) && isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';

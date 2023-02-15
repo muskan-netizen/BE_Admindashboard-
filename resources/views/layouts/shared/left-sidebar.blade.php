@@ -60,26 +60,28 @@
             </div>
             <p class="text-muted">Admin Head</p>
         </div>
+        
         <div id="sidebar-menu">
             <?php
             $allowed = [];
             if (Auth::user()->is_superadmin == 0) {
-                foreach (Auth::user()->getAllPermissions as $value) {
+                foreach (@Auth::user()->getAllPermissions as $value) {
                     array_push($allowed, $value->permission->slug);
                 }
             } else {
                 array_push($allowed, '99999');
             }
             ?>
+            
             <ul id="side-menu">
-                 @if(count(array_intersect($order_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
+                 @if(@auth()->user()->can('dashboard-view') || Auth::user()->is_superadmin)
                 <li>
                     <a class="menu-title pl-1" href="#">
                         <!-- <span class="icon-orders"></span> -->
                         <span>{{ __('ORDERS') }}</span>
                     </a>
                     <ul class="nav-second-level p-0 mx-2">
-                            @if(in_array('dashboard',$allowed) || Auth::user()->is_superadmin == 1)
+                            @if(@auth()->user()->can('dashboard-view') || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{route('client.dashboard')}}">
                                         <span class="icon-dash"></span>
@@ -87,7 +89,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(in_array('orders',$allowed) || Auth::user()->is_superadmin == 1)
+                            @if(@auth()->user()->can('order-view') || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{route('order.index')}}">
                                         <span class="icon-orders"></span>
@@ -118,7 +120,7 @@
                                     </div>
                                 </li> --}}
                             @endif
-                            @if(in_array('vendors',$allowed) || Auth::user()->is_superadmin == 1)
+                            @if(@auth()->user()->can('vendor-view') || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{route('vendor.index')}}">
                                     <span class="icon-vendor"></span>
@@ -149,7 +151,7 @@
                             @endif
 
 
-                            @if(count(array_intersect($accounting_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
+                            @if(@auth()->user()->can('accounting-view') || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="#sidebaraccounting" data-toggle="collapse">
                                     <span class="icon-accounting"></span>
@@ -157,12 +159,12 @@
                                     </a>
                                     <div class="collapse" id="sidebaraccounting">
                                         <ul class="nav-second-level">
-                                            @if(in_array('accounting_orders',$allowed) || Auth::user()->is_superadmin == 1)
+                                            @if(@auth()->user()->can('accounting-orders') || Auth::user()->is_superadmin == 1)
                                                 <li>
                                                     <a href="{{route('account.orders')}}">{{ __('Orders') }}</a>
                                                 </li>
                                             @endif
-                                            @if(in_array('accounting_loyality',$allowed) || Auth::user()->is_superadmin == 1)
+                                            @if(@auth()->user()->can('accounting-loyalty-cards') || Auth::user()->is_superadmin == 1)
                                                 <li>
 
                                                 @php
@@ -172,17 +174,17 @@
                                                     <a href="{{route('account.loyalty')}}">{{ $loyaltyCardsLabel }}</a>
                                                 </li>
                                             @endif
-                                            @if(in_array('accounting_promo_codes',$allowed) || Auth::user()->is_superadmin == 1)
+                                            @if(@auth()->user()->can('accounting-promo-codes') || Auth::user()->is_superadmin == 1)
                                                 <li>
                                                     <a href="{{route('account.promo.code')}}">{{ __('Promo Codes') }}</a>
                                                 </li>
                                             @endif
-                                            @if(in_array('accounting_taxes',$allowed) || Auth::user()->is_superadmin == 1)
+                                            @if(@auth()->user()->can('accounting-taxes') || Auth::user()->is_superadmin == 1)
                                                 <li>
                                                     <a href="{{route('account.tax')}}">{{ __('Taxes') }}</a>
                                                 </li>
                                             @endif
-                                            @if(in_array('accounting_vendors',$allowed) || Auth::user()->is_superadmin == 1)
+                                            @if(@auth()->user()->can('accounting-vendors') || Auth::user()->is_superadmin == 1)
                                                 <li>
                                                     @php
                                                     $Vendors = getNomenclatureName('Vendors', true);
@@ -191,20 +193,21 @@
                                                     <a href="{{route('account.vendor')}}">{{ __($VendorsTrans) }}</a>
                                                 </li>
                                             @endif
-                                            @if(Auth::user()->is_superadmin == 1)
+                                            @if(@auth()->user()->can('accounting-payout-request') || Auth::user()->is_superadmin == 1)
                                                 <li>
                                                     <a href="{{route('account.vendor.payout.requests')}}">{{ __('Payout Requests') }}</a>
                                                 </li>
+                                            @elseif(@auth()->user()->can('accounting-order-refund') || @auth()->user()->is_superadmin == 1)
                                                 <li>
                                                     <a href="{{route('backend.order.refund')}}">{{ __('Order Refunds') }}</a>
                                                 </li>
                                             @endif
-                                            @if( Auth::user()->is_superadmin == 1 && @$getAdditionalPreference['is_gift_card']==1)
+                                            @if(Auth::user()->is_superadmin == 1 && @$getAdditionalPreference['is_gift_card']==1)
                                                 <li>
                                                     <a href="{{route('account.redeemedcard')}}">{{ __('Gift Cards') }}</a>
                                                 </li>
                                             @endif
-                                            @if( Auth::user()->is_superadmin == 1)
+                                            @if(@auth()->user()->can('accounting-subscription-discount') || Auth::user()->is_superadmin == 1)
                                                 <li>
                                                     <a href="{{route('account.userSubscription')}}">{{ __('Subscription Discount') }}</a>
                                                 </li>
@@ -216,7 +219,7 @@
 
                           
 
-                            @if(Auth::user()->is_superadmin == 1)
+                            @if(@auth()->user()->can('subscription-customer-view') || @auth()->user()->can('subscription-vendor-view') || Auth::user()->is_superadmin == 1)
                             {{-- @if(count(array_intersect($subscription_permissions, $allowed)) || Auth::user()->is_superadmin == 1) --}}
                                 @if($client_preference->subscription_mode == 1)
                                     <li>
@@ -226,12 +229,12 @@
                                         </a>
                                         <div class="collapse" id="sidebarsubscriptions">
                                             <ul class="nav-second-level">
-                                                @if(in_array('subscription_plans_customers',$allowed) || Auth::user()->is_superadmin == 1)
+                                                @if(@auth()->user()->can('subscription-customer-view') || Auth::user()->is_superadmin == 1)
                                                     <li>
                                                         <a href="{{route('subscription.plans.user')}}">{{ __('Customers') }}</a>
                                                     </li>
                                                 @endif
-                                                @if(in_array('subscription_plans_vendors',$allowed) || Auth::user()->is_superadmin == 1)
+                                                @if(@auth()->user()->can('subscription-vendor-view') || Auth::user()->is_superadmin == 1)
                                                     <li>
                                                         <a href="{{route('subscription.plans.vendor')}}">{{ __($VendorsTrans) }}</a>
                                                     </li>
@@ -242,7 +245,7 @@
                                 @endif
                             @endif
                             {{-- @if(in_array('customers',$allowed) || Auth::user()->is_superadmin == 1) --}}
-                            @if(Auth::user()->is_superadmin == 1)
+                            @if(@auth()->user()->can('customers-view') || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{route('customer.index')}}">
                                         <span class="icon-customer-2"></span>
@@ -251,6 +254,7 @@
                                 </li>
                             @endif
 
+                            
                             @if(Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{route('delivery-slot.index')}}">
@@ -260,7 +264,7 @@
                                 </li>
                             @endif
 
-                            @if(Auth::user()->is_superadmin == 1)
+                            @if(@auth()->user()->can('review-view') || @auth()->user()->can('review-product-performance') || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="#sidebarreports" data-toggle="collapse">
                                 <span class="mdibookoutline"><?xml version="1.0" encoding="iso-8859-1"?><!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0) --><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="41.833px" height="41.833px" viewBox="0 0 41.833 41.833" style="enable-background:new 0 0 41.833 41.833;" xml:space="preserve"><g><g><path d="M2.5,31.458h15.792v3.333H15.75c-0.276,0-0.5,0.226-0.5,0.5v3.167c0,0.275,0.224,0.5,0.5,0.5h10.333c0.274,0,0.5-0.225,0.5-0.5v-3.167c0-0.274-0.226-0.5-0.5-0.5h-2.541v-3.333h15.791c1.379,0,2.5-1.122,2.5-2.5V5.375c0-1.378-1.121-2.5-2.5-2.5H2.5c-1.378,0-2.5,1.122-2.5,2.5v23.583C0,30.336,1.122,31.458,2.5,31.458z M16.25,37.958v-0.583h9.333v0.583H16.25z M25.583,36.375H16.25v-0.583h2.542h4.25h2.543L25.583,36.375L25.583,36.375z M22.542,34.792h-3.25v-3.333h3.25V34.792z M39.333,30.458H23.042h-4.25H2.5c-0.827,0-1.5-0.673-1.5-1.5v-1.75h39.833v1.75C40.833,29.786,40.159,30.458,39.333,30.458z M2.5,3.875h36.833c0.826,0,1.5,0.673,1.5,1.5v20.833H1V5.375C1,4.547,1.673,3.875,2.5,3.875z"/><path d="M7.667,25.125c0.138,0,0.276-0.059,0.375-0.169l6.642-7.512l3.457,3.57c0.003,0.004,0.006,0.004,0.009,0.006c0.003,0.004,0.004,0.008,0.006,0.01c0.031,0.029,0.068,0.047,0.103,0.064c0.019,0.012,0.035,0.026,0.055,0.035c0.06,0.023,0.123,0.037,0.187,0.037s0.128-0.014,0.189-0.038c0.02-0.008,0.036-0.024,0.056-0.036c0.035-0.021,0.072-0.037,0.103-0.066c0.003-0.002,0.003-0.006,0.006-0.01c0.003-0.002,0.006-0.002,0.009-0.006l5.24-5.519l4.084,2.119c0.008,0.004,0.019,0.003,0.025,0.006c0.064,0.03,0.135,0.05,0.205,0.05c0.08,0,0.158-0.025,0.23-0.064c0.021-0.012,0.039-0.031,0.063-0.047c0.029-0.022,0.063-0.038,0.088-0.067l6.834-8.125c0.179-0.211,0.148-0.527-0.063-0.705c-0.211-0.177-0.523-0.15-0.703,0.061l-6.574,7.818l-4.064-2.108c-0.01-0.005-0.02-0.004-0.024-0.008c-0.033-0.015-0.065-0.022-0.104-0.029c-0.027-0.006-0.058-0.014-0.086-0.015c-0.031-0.001-0.063,0.006-0.097,0.011c-0.03,0.005-0.063,0.009-0.095,0.021c-0.026,0.01-0.053,0.027-0.075,0.042c-0.031,0.018-0.063,0.036-0.088,0.061c-0.009,0.007-0.019,0.009-0.022,0.017l-5.141,5.414l-3.47-3.583c-0.005-0.005-0.012-0.007-0.017-0.011c-0.005-0.005-0.007-0.011-0.012-0.015c-0.02-0.018-0.045-0.025-0.067-0.039c-0.029-0.019-0.056-0.039-0.088-0.051c-0.03-0.011-0.06-0.014-0.091-0.019c-0.032-0.005-0.062-0.013-0.095-0.013c-0.033,0.001-0.065,0.01-0.097,0.017c-0.03,0.007-0.059,0.01-0.088,0.023c-0.031,0.013-0.057,0.035-0.086,0.054c-0.022,0.015-0.047,0.023-0.067,0.042c-0.005,0.005-0.007,0.012-0.011,0.017c-0.005,0.005-0.011,0.007-0.015,0.012l-7,7.917C7.109,24.5,7.128,24.814,7.335,25C7.432,25.083,7.549,25.125,7.667,25.125z"/></g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg></span>
@@ -268,13 +272,17 @@
                                 </a>
                                 <div class="collapse" id="sidebarreports">
                                     <ul class="nav-second-level">
+                                        @if(@auth()->user()->can('review-view') || Auth::user()->is_superadmin == 1)
                                         <li>
                                             <a href="{{route('review.index')}}">{{ __('Product Reviews') }}</a>
                                         </li>
+                                        @endif
 
+                                        @if(@auth()->user()->can('review-product-performance') || Auth::user()->is_superadmin == 1)
                                         <li>
                                             <a href="{{route('report.productperformance')}}">{{ __("Product Performance Report") }}</a>
                                         </li>
+                                        @endif
                                     </ul>
                                 </div>
                             </li>
@@ -307,21 +315,20 @@
                         </ul>
                 </li>
                 @endif
-                @if(Auth::user()->is_superadmin == 1)
-                {{-- @if(count(array_intersect($setting_permissions, $allowed)) || Auth::user()->is_superadmin == 1) --}}
+                @if(@auth()->user()->can('setting-customize-view') || @auth()->user()->can('configuration-view') || Auth::user()->is_superadmin == 1)
                 <li>
                    <a class="menu-title pl-1" href="#">
-                        <!-- <span class="icon-settings-1-1"></span> -->
                         <span>{{ __('SETTINGS') }}</span>
                     </a>
                     <ul class="nav-second-level p-0 mx-2">
-                        @if(in_array('profile',$allowed) || Auth::user()->is_superadmin == 1)
-                            <li>
-                                <a href="{{route('client.profile')}}">
+                        
+                        @if(@auth()->user()->can('setting-profile-view') || Auth::user()->is_superadmin == 1)
+                        <li>  <a href="{{route('client.profile')}}">
                                     <span class="icon-profile"></span>
                                     <span> {{ __('Profile') }} </span>
                                 </a>
                             </li>
+                            @endif
                             @if(@getAdditionalPreference(['is_influencer_refer_and_earn'])['is_influencer_refer_and_earn'] == 1)
                             <li>
                                 <a href="{{route('influencer-refer-earn.index')}}">
@@ -336,8 +343,8 @@
                                 </a>
                             </li>
                             @endif
-                        @endif
-                        @if(in_array('customize',$allowed) || Auth::user()->is_superadmin == 1)
+                       
+                        @if(@auth()->user()->can('setting-customize-view') || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('configure.customize')}}">
                                     <span class="icon-customzie"></span>
@@ -345,7 +352,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if(count(array_intersect($styling_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
+                        @if(@auth()->user()->can('setting-webstyle-view') || @auth()->user()->can('setting-appstyle-view') || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="#sidebarstyling" data-toggle="collapse">
                                     <span class="icon-styling"></span>
@@ -353,12 +360,12 @@
                                 </a>
                                 <div class="collapse" id="sidebarstyling">
                                     <ul class="nav-second-level">
-                                        @if(in_array('app_styling',$allowed) || Auth::user()->is_superadmin == 1)
+                                        @if(@auth()->user()->can('setting-appstyle-view') || Auth::user()->is_superadmin == 1)
                                             <li>
                                                 <a href="{{route('appStyling.index')}}">{{ __('App Styling') }}</a>
                                             </li>
                                         @endif
-                                        @if(in_array('web_styling',$allowed) || Auth::user()->is_superadmin == 1)
+                                        @if(@auth()->user()->can('setting-webstyle-view') || Auth::user()->is_superadmin == 1)
                                             <li>
                                                 <a href="{{route('webStyling.index')}}">{{ __('Web Styling') }}</a>
                                             </li>
@@ -374,27 +381,27 @@
                             </a>
                             <div class="collapse" id="sidebarcms">
                                 <ul class="nav-second-level">
-                                    @if(in_array('cms_pages',$allowed) || Auth::user()->is_superadmin == 1)
+                                    @if(@auth()->user()->can('cms-pages-view') || Auth::user()->is_superadmin == 1)
                                         <li>
                                             <a href="{{route('cms.pages')}}">{{ __('Pages') }}</a>
                                         </li>
                                     @endif
-                                    @if(in_array('cms_emails',$allowed) || Auth::user()->is_superadmin == 1)
+                                    @if(@auth()->user()->can('cms-email-view') || Auth::user()->is_superadmin == 1)
                                         <li>
                                             <a href="{{route('cms.emails')}}">{{ __('Emails') }}</a>
                                         </li>
                                     @endif
-                                    @if(in_array('cms_notifications',$allowed) || Auth::user()->is_superadmin == 1)
+                                    @if(@auth()->user()->can('cms-notification-view') || Auth::user()->is_superadmin == 1)
                                         <li>
                                             <a href="{{route('cms.notifications')}}">{{ __('Notifications') }}</a>
                                         </li>
                                     @endif
-                                    @if(in_array('cms_sms',$allowed) || Auth::user()->is_superadmin == 1)
+                                    @if(@auth()->user()->can('cms-sms-view') || Auth::user()->is_superadmin == 1)
                                         <li>
                                             <a href="{{route('cms.sms')}}">{{ __('SMS') }}</a>
                                         </li>
                                     @endif
-                                    @if(in_array('reasons',$allowed) || Auth::user()->is_superadmin == 1)
+                                    @if(@auth()->user()->can('cms-reason-view') || Auth::user()->is_superadmin == 1)
                                         <li>
                                             <a href="{{route('reason.index')}}">{{ __('Reasons') }}</a>
                                         </li>
@@ -403,7 +410,7 @@
                             </div>
                         </li>
 
-                        @if(in_array('catalog',$allowed) || Auth::user()->is_superadmin == 1)
+                        @if(@auth()->user()->can('category-view') || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('category.index')}}">
                                     <span class="icon-catalogue"></span>
@@ -411,7 +418,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if(in_array('configurations',$allowed) || Auth::user()->is_superadmin == 1)
+                        @if(@auth()->user()->can('configuration-view') || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('configure.index')}}">
                                     <span class="icon-configuration"></span>
@@ -420,7 +427,7 @@
                             </li>
                         @endif
 
-                        @if(in_array('tax',$allowed) || Auth::user()->is_superadmin == 1)
+                        @if(@auth()->user()->can('tax-view') || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('tax.index')}}">
                                     <span class="icon-tax"></span>
@@ -428,7 +435,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if(in_array('payment',$allowed) || Auth::user()->is_superadmin == 1)
+                        @if(@auth()->user()->can('payment-option-view') || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('payoption.index')}}">
                                     <span class="icon-payment-options"></span>
@@ -438,7 +445,7 @@
                         @endif
 
 
-                        @if(in_array('DeliveryOption',$allowed) || Auth::user()->is_superadmin == 1)
+                        @if(@auth()->user()->can('delivery-option-view') || Auth::user()->is_superadmin == 1)
                             @if($client_preference_detail->business_type != 'taxi')
                                 <li>
                                     <a href="{{route('deliveryoption.index')}}">
@@ -464,7 +471,7 @@
                     </ul>
                 </li>
                 @endif
-                @if(count(array_intersect($marketing_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
+                @if(@auth()->user()->can('banner-option-view') || Auth::user()->is_superadmin == 1)
                 <li>
                     <a class="menu-title pl-1" href="#">
                         <!-- <span class="icon-marketing"></span> -->
@@ -495,7 +502,7 @@
 
 
 
-                        @if(in_array('promocode',$allowed) || Auth::user()->is_superadmin == 1)
+                        @if(@auth()->user()->can('promo-code-view') || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('promocode.index')}}">
                                     <span class="icon-discount-voucher"></span>
@@ -503,7 +510,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if(in_array('loyalty_cards',$allowed) || Auth::user()->is_superadmin == 1)
+                        @if(@auth()->user()->can('loyalty-code-view') || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('loyalty.index')}}">
                                     <span class="icon-loyaltycard"></span>
@@ -515,7 +522,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if(Auth::user()->is_superadmin == 1)
+                        @if(@auth()->user()->can('campaign-code-view') || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{ route('campaign.index')}}">
                                         <span class="icon-celebrity"></span>
@@ -572,7 +579,7 @@
                             @endif
 
                             @if(!empty($client_preference) && $client_preference->enquire_mode == 1)
-                                @if(in_array('inquiries',$allowed) || Auth::user()->is_superadmin == 1)
+                            @if(@auth()->user()->can('inquiry-code-view') || Auth::user()->is_superadmin == 1)
                                     <li>
                                         <a href="{{ route('inquiry.index') }}">
                                             <span class="icon-question"></span>
@@ -581,7 +588,7 @@
                                     </li>
                                 @endif
                             @endif
-                            @if(in_array('tools',$allowed) || Auth::user()->is_superadmin == 1)
+                            @if(@auth()->user()->can('tool-view') || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('tools.index')}}">
                                     <span class="icon-settings-1-1"></span>
@@ -589,7 +596,7 @@
                                 </a>
                             </li>
                             @endif
-                            @if(Auth::user()->is_superadmin == 1)
+                            @if(@auth()->user()->can('database-log-view') || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{route('databaseAuditingLogs')}}">
                                         <span class="icon-tax"></span>

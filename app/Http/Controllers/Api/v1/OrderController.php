@@ -6,7 +6,7 @@ use App\Http\Controllers\AhoyController;
 use DB;
 use Carbon\{Carbon,CarbonPeriod};
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,OrderTrait,CartManager};
+use App\Http\Traits\{ApiResponser,OrderTrait,CartManager,DispatcherSlot};
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
@@ -20,14 +20,14 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid,ProcessorProduct};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, OrderNotificationsLogs, ProcessorProduct};
 
 use App\Models\AutoRejectOrderCron;
 
 use App\Models\{VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
-    use ApiResponser,CartManager,OrderTrait;
+    use ApiResponser,CartManager,OrderTrait,DispatcherSlot;
     /**
      * Display a listing of the resource.
      *
@@ -2118,7 +2118,9 @@ class OrderController extends BaseController
                 break;
         }
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
-        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes'
+        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.product.category.categoryDetail'=>function ($q){
+            $q->select('id','type_id');
+        }
         ])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
@@ -2133,152 +2135,27 @@ class OrderController extends BaseController
             })
             ->paginate($paginate);
         $orders =    $this->orderlistLoop($orders, $user ,$request);
-        // $is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
-        // $is_order_edit_enable = getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
-        // $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
-        // $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-
-        // foreach ($orders as $order) {
-        //     $order_item_count = 0;
-        //     $order->user_name = $user->name;
-        //     $order->user_image = $user->image;
-        //     $order->date_time = dateTimeInUserTimeZone($order->orderDetail->created_at, $user->timezone);
-        //     $order->payment_option_title = __($order->orderDetail->paymentOption->title ?? '');
-        //     $order->order_number = $order->orderDetail->order_number;
-        //     $order->schedule_pickup = date('d/m/Y',strtotime($order->orderDetail->schedule_pickup));
-        //     $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
-        //     $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
-        //     $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-        //     if(checkColumnExists('orders', 'is_postpay')){
-        //         $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
-        //     }
-        //     if(checkColumnExists('orders', 'is_edited')){
-        //         $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
-        //     }
-        //     if(!empty($order->orderDetail->scheduled_date_time) && $is_order_edit_enable == 1 && $order_edit_before_hours > 0 && ($order->orderDetail->payment_option_id==1 || $order->orderDetail->payment_status !=1)){
-        //         if((strtotime($order->orderDetail->scheduled_date_time) - strtotime($editlimit_datetime)) > 0){
-        //             $order->is_editable  = 1;
-        //         }else{
-        //             $order->is_editable  = 0;
-        //         }
-        //     }else{
-        //         $order->is_editable  = 0;
-        //     }
-
-        //     if(!empty($order->orderDetail->editingInCart)){
-        //         $order->is_editable  = 2;
-        //     }
-
-        //     $product_details = [];
-        //     $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->orderDetail->id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
-        //     if ($vendor_order_status) {
-        //         $order_sts = OrderStatusOption::where('id',$order->order_status_option_id)->first();
-        //        // $order->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => __($vendor_order_status->OrderStatusOption->title)]];
-        //        if(@$order->exchanged_to_order->order_status_option_id && $order->exchanged_to_order->order_status_option_id== 6){
-        //         $order->order_status =  ['current_status' => ['id' => 6, 'title' => __("Replaced")]];
-        //         // $order->order_status->current_status->title = "Replaced";
-        //         }else{
-        //             $order->order_status =  ['current_status' => ['id' => $order_sts->id, 'title' => __($order_sts->title)]];
-        //         }
-
-        //     } else {
-        //         $order->current_status = null;
-        //     }
-        //     $return_request_status = 0;
-        //     $returnable = 0;
-        //     $replaceable = 0;
-
-        //     foreach ($order->products as $product) {
-        //         if($this->checkOrderDaysForReturn($order, @$product->product->return_days) && $order->is_exchanged_or_returned==0){
-
-
-        //             if(@$product->product->replaceable && $product->product->replaceable == 1){
-        //                 $replaceable = $product->product->replaceable;
-        //             }
-
-        //             if(@$product->product->returnable && $order->vendor->return_request == 1 && $product->product->returnable == 1){
-        //                 $returnable = $product->product->returnable;
-        //             }
-        //         }
-        //         // dd($product->productReturn->status);
-        //         if(@$product->productReturn &&  $return_request_status== 0 && $order->is_exchanged_or_returned!=1){
-        //             if($product->productReturn->status == 'Accepted'){
-        //                 $return_request_status = 1;
-        //             }
-        //             if($product->productReturn->status == 'Rejected'){
-        //                 $return_request_status = 2;
-        //             }
-        //             if($product->productReturn->status == 'Pending'){
-        //                 $return_request_status = 3;
-        //             }
-        //         }
-        //         $order_item_count += $product->quantity;
-
-        //         $product_details[] = array(
-        //             'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
-        //             'price' => $product->price,
-        //             'qty' => $product->quantity,
-        //             'category_type' => $product->product->category->categoryDetail->type->title ?? '',
-        //             'product_id' => $product->product_id,
-        //             'title' => $product->product_name
-        //         );
-        //     }
-        //     if ($order->delivery_fee > 0) {
-        //         $order_pre_time = ($order->order_pre_time > 0) ? $order->order_pre_time : 0;
-        //         $user_to_vendor_time = ($order->user_to_vendor_time > 0) ? $order->user_to_vendor_time : 0;
-        //         $ETA = $order_pre_time + $user_to_vendor_time;
-        //         $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $order->created_at, $order->orderDetail->scheduled_date_time) : dateTimeInUserTimeZone($order->created_at, $user->timezone);
-        //     }
-        //     if (!empty($order->orderDetail->scheduled_date_time)) {
-        //         $order->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
-        //     }
-        //     $luxury_option_name = '';
-        //     if ($order->orderDetail->luxury_option_id > 0) {
-        //         $luxury_option = LuxuryOption::where('id', $order->orderDetail->luxury_option_id)->first();
-        //         if ($luxury_option->title == 'takeaway') {
-        //             $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-        //         } elseif ($luxury_option->title == 'dine_in') {
-        //             $luxury_option_name = __('Dine-In');
-        //         }elseif ($luxury_option->title == 'on_demand') {
-        //             $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
-        //         } else {
-        //             //$luxury_option_name = __('Delivery');
-        //             $luxury_option_name = getNomenclatureName($luxury_option->title);
-        //         }
-        //     }
-        //     $order->is_long_term  =0;
-        //     if(checkColumnExists('orders','is_long_term')){
-        //         $order->is_long_term  = $order->orderDetail->is_long_term;
-        //     }
-        //     $order->luxury_option_name = $luxury_option_name;
-        //     $order->luxury_option_name = $luxury_option_name;
-        //     $order->product_details = $product_details;
-        //     $order->item_count = $order_item_count;
-        //     $order->return_request_status = $return_request_status;
-
-
-        //     //product returnable and replaceble
-
-        //     $order->returnable = $returnable;
-        //     $order->replaceable = $replaceable;
-
-        //     unset($order->user);
-        //     unset($order->products);
-        //     unset($order->paymentOption);
-        //     unset($order->payment_option_id);
-        //     unset($order->orderDetail);
-        // }
         return $this->successResponse($orders, '', 201);
     }
 
     public function orderlistLoop($orders,   $user ,$request){
-        $additionalPreferences   = @getAdditionalPreference(['is_postpay_enable','is_order_edit_enable','order_edit_before_hours']);
+        $additionalPreferences   =  @getAdditionalPreference(['is_postpay_enable','is_order_edit_enable','order_edit_before_hours']);
         $is_postpay_enable       =  $additionalPreferences['is_postpay_enable'];
         $is_order_edit_enable    =  $additionalPreferences['is_order_edit_enable'];
         $order_edit_before_hours =  $additionalPreferences['order_edit_before_hours'];
         $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-
+        $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+        $dispatch_domain  = [];
+        if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false) {
+            $dispatch_domain = [
+                'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
+                'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
+                'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
+                'service_type'     => 'on_demand'
+            ];
+        }
         foreach ($orders as $order) {
+           
             $order_item_count = 0;
             $order->user_name = $user->name;
             $order->user_image = $user->image;
@@ -2329,6 +2206,16 @@ class OrderController extends BaseController
             $replaceable = 0;
 
             foreach ($order->products as $product) {
+                $dispatch_agent_id = $product->dispatch_agent_id;
+                $dispatcher_traking_url = $product->routes->isNotEmpty() ? ( $product->routes->first() ? $product->routes->first()->dispatch_traking_url : '' ) : '' ;
+                $dispatcher_agent = [];
+                $category_type_id = @$product->product->category->categoryDetail->type_id ?? '';
+                if( ( $category_type_id ==8 && !empty($dispatch_domain) )  && ($dispatch_agent_id && $dispatcher_traking_url ) ){
+                    $dispatch_domain['driver_id'] = $dispatch_agent_id;
+                    $dispatcher_agent = $this->getAgentDetailFromDispatcher($dispatch_domain);
+                   
+                }
+              
                 if($this->checkOrderDaysForReturn($order, @$product->product->return_days) && $order->is_exchanged_or_returned==0){
 
 
@@ -2361,7 +2248,8 @@ class OrderController extends BaseController
                     'category_type' => $product->product->category->categoryDetail->type->title ?? '',
                     'product_id' => $product->product_id,
                     'title' => $product->product_name,
-                    'routes' => $product->routes
+                    'routes' => $product->routes,
+                    'dispatcher_agent' => $dispatcher_agent
                 );
                 
             }
@@ -2426,6 +2314,8 @@ class OrderController extends BaseController
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.orderProductStatus' =>function($q){
             $q->where('order_status_option_id',3); // cancel order product
+        },'products.product.category.categoryDetail'=>function ($q){
+            $q->select('id','type_id');
         }
         ])
             ->whereHas('orderDetail', function ($q1) {
@@ -3633,7 +3523,6 @@ class OrderController extends BaseController
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon','vendor_fcm_server_key')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-
             $notification_content = NotificationTemplate::where('id', 4)->first();
             $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
             if ($notification_content) {
@@ -3643,6 +3532,18 @@ class OrderController extends BaseController
                 $code = $header_code;
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
+
+                 //Order Notifications Logs
+                    OrderNotificationsLogs::updateOrCreate([
+                        'order_vendor_id'=> $orderData->vendors[0]->id
+                            ],[
+                        'user_id' => auth()->id(),
+                        'order_number'=> $orderData->order_number,
+                        'vendor_id'=> $orderData->vendors[0]->vendor_id,
+                        'order_vendor_id'=> $orderData->vendors[0]->id,
+                        'order_id'=> $orderData->id,
+                        'message'=> $body_content .', <a href="'.$redirect_URL.'">#'.$orderData->order_number.'</a>'
+                    ]);
 
                 $data = [
                     "registration_ids" => $devices,

@@ -1655,7 +1655,7 @@ body.al_body_template_nine .product-m .item .media-body{
     }
     section.home-slider-wrapper .cardbanner,
     .al_desktop_banner {
-        height: 210px !important;
+        height: auto !important;
     }
     .al_custom_brand .col-md-3 {
         width: 50%;

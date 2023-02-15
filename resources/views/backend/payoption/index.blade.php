@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}">
+    <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}" enctype="multipart/form-data">
         @csrf
         @method('POST')
         <div class="row align-items-center">

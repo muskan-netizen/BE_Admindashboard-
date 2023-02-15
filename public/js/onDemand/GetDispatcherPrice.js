@@ -29,6 +29,8 @@ $(document).on('click','.view_on_demand_price',function(){
     if ($selectedAddress !='' &&  $selectedAddress !=undefined){
         $("#productPrice_address_id").val($selectedAddress);
         document.getElementById("productPrice_address_id").disabled = true;
+    }else{
+        document.getElementById("productPrice_address_id").disabled = false;
     }
     var todayDate = document.getElementById('productPriceModel_todayDate').value
     var formData ={
