@@ -15,16 +15,19 @@ use App\Models\EstimatedProductCart;
 use App\Models\EstimatedProductAddons;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait};
+use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait, CartManagerV2};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
 use Http\Message\Cookie;
 
+
 class CartController extends FrontController
 {
-    use ApiResponser,CartManager,KwikApi,BiddingCartTrait;
-
+    use ApiResponser,CartManager,KwikApi,BiddingCartTrait,CartManagerV2;
+    
+    
+    
 
     private function randomString()
     {
@@ -37,6 +40,7 @@ class CartController extends FrontController
 
     public function showCart(Request $request, $domain = '')
     {
+       
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
                 $order = Order::where('order_number', $request->order)->first();
@@ -209,8 +213,8 @@ class CartController extends FrontController
             $request->merge([
                 "addonoptID" => $addonsoptAr[$product->id]
             ]);
-            // \Log::info($request->addonID);
-            // \Log::info($request->addonoptID);
+            // //\Log::info($request->addonID);
+            // //\Log::info($request->addonoptID);
 
             $result = $this->postAddToCart($request);
             // echo $result;
@@ -361,7 +365,7 @@ class CartController extends FrontController
                 }
             }
 
-            //\Log::info($request->addon_id);
+            ////\Log::info($request->addon_id);
 
             $addonSets = $addon_ids = $addon_options = array();
 
@@ -372,15 +376,15 @@ class CartController extends FrontController
             if($request->has('addonoptID')){
                 $addon_options = $request->addonoptID;
             }
-            // \Log::info($addonSets);
+            // //\Log::info($addonSets);
             foreach($addon_options as $key => $opt){
                 if(isset($addon_ids[$key])){
                     $addonSets[$addon_ids[$key]][] = $opt;
                 }
             }
 
-            // \Log::info($addon_options);
-            // \Log::info($addonSets);
+            // //\Log::info($addon_options);
+            // //\Log::info($addonSets);
             // die;
 
             foreach($addonSets as $key => $value){
@@ -547,7 +551,7 @@ class CartController extends FrontController
             if($isnew == 1){
                 // dd($cart_product_detail);
                 $cartProduct = CartProduct::create($cart_product_detail);
-                // \Log::info(json_encode($cart_product_detail));11
+                // //\Log::info(json_encode($cart_product_detail));11
 
                 if(!empty($addon_ids) && !empty($addon_options)){
                     $saveAddons = array();
@@ -1414,7 +1418,7 @@ class CartController extends FrontController
                 $vendorData->discount_amount = decimal_format($discount_amount);
                 $vendorData->discount_percent = decimal_format($discount_percent);
                 $vendorData->taxable_amount = decimal_format($taxable_amount);
-                //\Log::info($taxable_amount);
+                ////\Log::info($taxable_amount);
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;
@@ -2133,17 +2137,19 @@ class CartController extends FrontController
 
 
         if ($cart) {
-            $obj = [
-                'cart' => $cart,
-                'code'=> $request->code,
-                'address_id'=> $address_id,
-                'currency'=> $curId,
-                'schedule_datetime_del'=> $schedule_datetime_del,
-                'requestType'=>1,
-                'type'=> $request->type,
-                'language'=> $request->language
-            ];
-            $cart_details = $this->getCartsNew($obj,$request);
+            $cart_details = $this->getCartsNew($cart, $address_id, $request->code, $schedule_datetime_del);
+            //v2 trait
+            // $obj = [
+            //     'cart' => $cart,
+            //     'code'=> $request->code,
+            //     'address_id'=> $address_id,
+            //     'currency'=> $curId,
+            //     'schedule_datetime_del'=> $schedule_datetime_del,
+            //     'requestType'=>1,
+            //     'type'=> $request->type,
+            //     'language'=> $request->language
+            // ];
+            // $cart_details = $this->getCartsNewV2($obj,$request);
         }
 
         $client_preference_detail = ClientPreference::first();
@@ -2364,7 +2370,7 @@ class CartController extends FrontController
                         $option = array_merge($option,$optionDunzo);
                     }
                 }
-                // \Log::info($vendorData->vendor->ahoy_location);
+                // //\Log::info($vendorData->vendor->ahoy_location);
                 if(isset($vendorData->vendor->ahoy_location)){
                     //getAhoy (Masa) Delivery fee changes code
                     $ahoy = new AhoyController();

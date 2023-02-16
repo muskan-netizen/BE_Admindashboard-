@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1;
+namespace App\Http\Controllers\Api\v1\v2;
 
 use DB;
 use Client;
@@ -39,7 +39,8 @@ class CartController extends BaseController
 
     public function index(Request $request)
     {
-        try {
+     
+ try {
 
             // if(($request->has('gateway')) && ($request->gateway != '')){
             //     if($request->has('order')){
@@ -77,10 +78,28 @@ class CartController extends BaseController
                 }
             }
             $cart = $cart->first();
-            $cartData = [];
-            if ($cart) {
+            $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
+            $address_id = ($address) ? $address->id : 0;
+            //pr($_POST);
+            if ($user) {
+              
+                $obj = [
+                    'cart' => $cart,
+                    'currency'=> $user->currency,
+                    'code'=> $request->code,
+                    'type'=> $request->type,
+                    'language'=> $user->language,
+                    'requestType'=>2,
+                    'address_id'=> $address_id,
+                    'schedule_datetime_del'=> $request->schedule_datetime_del,
+                    'type'=> $request->type,
+                ];
+               
+                //$cart, $address_id=0 , $code = 'D',$schedule_datetime_del=''
+                $cartData = $this->getCartsNew($obj,$request);
+                //pr($cartData);
+                //$cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
-                $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
                 {
@@ -368,7 +387,7 @@ class CartController extends BaseController
                 if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
                   
                     $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                    $slot = @$request->dispatcherAgentData['slot'] ?  @$request->dispatcherAgentData['slot'] : Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
+                    $slot = $request->dispatcherAgentData['onDemandBookingdate'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
                     $cart_product_detail['schedule_type'] = 'schedule';
                     $cart_product_detail['scheduled_date_time'] = @$dataTime;
                     $cart_product_detail['schedule_slot'] = @$slot ?? null;
@@ -1303,23 +1322,21 @@ class CartController extends BaseController
                         $delivery_status = 0;
                     }
                 }
-                if($is_service_product_price_from_dispatch !=1){ // no need to check slot and web styling 
-                    if (($vendorData->vendor->show_slot == 0)  ) {
-                        if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
-                            $vendorData->vendor->is_vendor_closed = 1;
-                            if ($delivery_status != 0) {
-                                $delivery_status = 0;
-                            }
-                        } else {
-                            $vendorData->vendor->is_vendor_closed = 0;
-                        }
-                    }
-                    $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-                    if(isset($set_template)  && $set_template->template_id != 9){
-                        if($vendorData->vendor->$action == 0){
-                            $vendorData->is_vendor_closed = 1;
+                if (($vendorData->vendor->show_slot == 0) && ($is_service_product_price_from_dispatch !=1) ) {
+                    if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
+                        $vendorData->vendor->is_vendor_closed = 1;
+                        if ($delivery_status != 0) {
                             $delivery_status = 0;
                         }
+                    } else {
+                        $vendorData->vendor->is_vendor_closed = 0;
+                    }
+                }
+                $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+                if(isset($set_template)  && $set_template->template_id != 9){
+                    if($vendorData->vendor->$action == 0){
+                        $vendorData->is_vendor_closed = 1;
+                        $delivery_status = 0;
                     }
                 }
 
@@ -1557,7 +1574,6 @@ class CartController extends BaseController
         $cart->total_tax = decimal_format($total_fixed_fee_tax + $total_service_fee_tax + $deliver_fee_charges_tax + $total_markup_fee_tax + $container_charges_tax + $total_taxable_amount);
         $cart->tax_details = $tax_details;
         $cart->total_taxable_amount = decimal_format($total_taxable_amount);
-        
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
@@ -1590,7 +1606,7 @@ class CartController extends BaseController
 
 
         // if($is_recurring_booking ==1){
-        //     //\Log::info('order_sub_total--'.$order_sub_total);
+        //     \Log::info('order_sub_total--'.$order_sub_total);
         //    //Subtotal price multiply by no of days
         //    $order_sub_total            = $order_sub_total * $prod->recurring_date_count;
         //    $cart->gross_paybale_amount = $order_sub_total;
@@ -1634,7 +1650,12 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-      
+        $cal_tip_value_total =  $cart->total_tax;
+        $cart->tip = array(
+            ['label' => '5%', 'value' => decimal_format(0.05 * $cal_tip_value_total)],
+            ['label' => '10%', 'value' => decimal_format(0.1 * $cal_tip_value_total)],
+            ['label' => '15%', 'value' => decimal_format(0.15 * $cal_tip_value_total)]
+        );
 
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
         $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
@@ -1675,21 +1696,13 @@ class CartController extends BaseController
             $cart->same_day_delivery_for_schedule =  $preferences->same_day_delivery_for_schedule;
             $cart->off_scheduling_at_cart =  $preferences->off_scheduling_at_cart;
         }
-
-        $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
-        
-        $cart->tip = array(
-            ['label' => '5%', 'value' => decimal_format(0.05 * $total_payable_amount_calc_tip)],
-            ['label' => '10%', 'value' => decimal_format(0.1 * $total_payable_amount_calc_tip)],
-            ['label' => '15%', 'value' => decimal_format(0.15 * $total_payable_amount_calc_tip)]
-        );
         return $cart;
 
 
         }catch(\Exception $ex)
         {
-            //\Log::info('get Cart in api error');
-            //\Log::info($ex->getMessage());
+            \Log::info('get Cart in api error');
+            \Log::info($ex->getMessage());
             return [];
         }
     }
