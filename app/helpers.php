@@ -108,12 +108,12 @@ if (!function_exists('getInToken')) {
 
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
-        if($tokenCurrency == null){
+        if(empty($tokenCurrency)){
             $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
             $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
         }
 
-        return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * ($tokenCurrency ?? 1));
+        return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * (!empty($tokenCurrency) ? $tokenCurrency : 1));
     }
 }
 
@@ -123,11 +123,11 @@ if (!function_exists('getJsToken')) {
         $redis = Redis::connection();
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
-        if($tokenCurrency == null){
+        if(empty($tokenCurrency)){
             $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
             $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
         }
-        return decimal_format($tokenCurrency ?? 1);
+        return decimal_format(!empty($tokenCurrency) ? $tokenCurrency : 1);
     }
 }
 
