@@ -303,6 +303,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         </div>
 
                                         <!--- Processor Details Farmmeat by Sohail -->
+                                        @if(isset($processorProduct))
                                         @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
                                             <div class="border-product al_disc">
                                                 <h6 class="product-title">{{__('Product processor Details')}}</h6>
@@ -316,6 +317,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 <p>{{$product->product_pickup_date}}</p>
                                             </div>
                                         @endif
+                                        @endif
+                                        
 
 
 

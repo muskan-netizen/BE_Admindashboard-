@@ -200,7 +200,7 @@ $timezone = Auth::user()->timezone;
                             @include('layouts.store/profile-sidebar')
                     </div>
                 </div>
-            </div>
+            
             <div class="col-lg-9">
                 <div class="dashboard-right">
                     <div class="dashboard">

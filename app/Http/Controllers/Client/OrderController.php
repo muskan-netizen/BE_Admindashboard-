@@ -2835,15 +2835,6 @@ class OrderController extends BaseController
                     'content-type' => 'application/json'
                 ]
             ]);
-
-            //\Log::info("header", [
-                'personaltoken' => $dispatch_domain->delivery_service_key,
-                'shortcode' => $dispatch_domain->delivery_service_key_code,
-                'content-type' => 'application/json'
-            ]);
-
-            //\Log::info("header", $postdata);
-
             $url = $dispatch_domain->delivery_service_key_url;
 
             $res = $client->post(
