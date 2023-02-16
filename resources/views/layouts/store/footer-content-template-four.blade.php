@@ -217,7 +217,7 @@ if(session()->has('applocale')){
                                 $prevYear = $currYear - 1;
                                 $currYear = substr($currYear, -2);
                             @endphp
-                            <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} @if(isset($company_name)) | {{$company_name->key_value}} @endif| {{__('All rights reserved')}}</p>
+                            <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} @if(isset($company_name)) @if(!empty($company_name->key_value)) | {{$company_name->key_value}}  @endif @endif| {{__('All rights reserved')}}</p>
                         </div>
                     </div>
                 </div>
