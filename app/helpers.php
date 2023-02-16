@@ -112,7 +112,6 @@ if (!function_exists('getInToken')) {
             $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
             $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
         }
-
         return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * (!empty($tokenCurrency) ? $tokenCurrency : 1));
     }
 }
