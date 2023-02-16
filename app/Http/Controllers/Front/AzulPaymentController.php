@@ -107,9 +107,9 @@ class AzulPaymentController extends FrontController
             ]);
         }
 
-        // \Log::info(json_encode($request->all()));
+        // //\Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
-        \Log::info(json_encode($dataResponse));
+        //\Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         // dd($responsePay);
         if ($dataResponse['ok'] === false && $this->mode) {
@@ -120,7 +120,7 @@ class AzulPaymentController extends FrontController
             return $response;
         }
         if (isset($dataResponse['ok']) && $dataResponse['ok'] === $this->mode) {
-            // \Log::info('Done');
+            // //\Log::info('Done');
 
             if ($request->from == 'tip') {
                 $payment = Payment::where('transaction_id', $request->order_number . '_' . $number)->first();
@@ -130,7 +130,7 @@ class AzulPaymentController extends FrontController
                 $payment = Payment::where('transaction_id', $request->order_number)->first();
             }
 
-            // \Log::info(json_encode($request->all()));
+            // //\Log::info(json_encode($request->all()));
             if ($payment) {
                 $payment->viva_order_id = $dataResponse['data']->AzulOrderId;
                 $payment->save();
@@ -148,7 +148,7 @@ class AzulPaymentController extends FrontController
                 return $this->completePickupDelivery($dataResponse, $payment, $request);
             }
         } else {
-            // \Log::info('fail--'.$dataResponse->FinalStatus.'--');
+            // //\Log::info('fail--'.$dataResponse->FinalStatus.'--');
             $returnUrl = route('order.return.success');
             $response['status'] = 'Fail';
             $response['msg'] = 'Failed.';

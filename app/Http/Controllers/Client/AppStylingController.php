@@ -316,11 +316,11 @@ class AppStylingController extends BaseController
 
             if(isset($request->categories[$key]) && !empty($request->categories[$key])){
                 $is_cat =  $request->categories[$key]['check'];
-            //    Log::info($is_cat);
+            //   // Log::info($is_cat);
             }
             else{
                 $is_cat =  0;
-            //    Log::info($is_cat);
+            //   // Log::info($is_cat);
             }
 
             if(isset($request->banner_image[$key]) && !empty($request->banner_image[$key])){

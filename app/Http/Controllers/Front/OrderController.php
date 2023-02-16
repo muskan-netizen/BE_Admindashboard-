@@ -2364,7 +2364,7 @@ class OrderController extends FrontController
                 $data['registration_ids'] = $vendorAppUserDevices;
 
                 $result = sendFcmCurlRequest($data);
-                // Log::info($result);
+                //// Log::info($result);
             }
         }
     }
@@ -2482,25 +2482,25 @@ class OrderController extends FrontController
             $user = User::find($user_id);
         }
         foreach ($order_vendors as $ov) {
-            // Log::info($ov);
-            // Log::info($ov->order_id);
+            //// Log::info($ov);
+            //// Log::info($ov->order_id);
             $request = $ov;
 
             DB::beginTransaction();
             // try {
 
             $request->order_id = $ov->order_id;
-            // Log::info($ov->order_id);
-            // Log::info($request->order_id);
+            //// Log::info($ov->order_id);
+            //// Log::info($request->order_id);
             $request->vendor_id = $ov->vendor_id;
             $request->order_vendor_id = $ov->id;
             $request->status_option_id = 2;
             // $timezone = Auth::user()->timezone;
-            // Log::info(Auth::user());
+            //// Log::info(Auth::user());
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)
                 ->where('order_status_option_id', $request->status_option_id)
                 ->first();
-            // Log::info($vendor_order_status_check);
+            //// Log::info($vendor_order_status_check);
             if (! $vendor_order_status_check) {
                 $vendor_order_status = new VendorOrderStatus();
                 $vendor_order_status->order_id = $request->order_id;

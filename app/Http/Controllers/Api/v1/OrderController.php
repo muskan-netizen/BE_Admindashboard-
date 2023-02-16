@@ -486,8 +486,8 @@ class OrderController extends BaseController
                                             $order_vendor->user_to_vendor_time = intval($delivery_duration);
                                         }
                                         else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
-                                           // Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
-                                           // Log::info($order_vendor->order_pre_time);
+                                           //// Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
+                                           //// Log::info($order_vendor->order_pre_time);
                                            //$OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
                                             if($order_vendor->order_pre_time)
                                             $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
@@ -1173,7 +1173,7 @@ class OrderController extends BaseController
             }
             // } catch(\Exception $e){
             // DB::rollback();
-            // Log::info($e->getMessage());
+            //// Log::info($e->getMessage());
             // }
         }
     }
@@ -1189,7 +1189,7 @@ class OrderController extends BaseController
         $checkOrder = Order::findOrFail($request->order_id);
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
                 $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
-                // \Log::info($order_ship);
+                // //\Log::info($order_ship);
             }
             if ($order_ship->object_id){
                     $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])->update([
@@ -1552,7 +1552,7 @@ class OrderController extends BaseController
                 $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
             }
 
-           // Log::info($postdata);
+           //// Log::info($postdata);
             $client = new GCLIENT([
                 'headers' => [
                     'personaltoken' => $dispatch_domain->delivery_service_key,
@@ -2043,7 +2043,7 @@ class OrderController extends BaseController
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
-                Log::info("send order mail error".$e->getmessage());
+               // Log::info("send order mail error".$e->getmessage());
 
             }
         }
@@ -2644,8 +2644,8 @@ class OrderController extends BaseController
                     $response = Http::get($new_dispatch_traking_url);
   
                 } catch (\Exception $ex) {
-                    \Log::info('Error:');
-                    \Log::info(json_encode($ex->getMessage()));
+                    //\Log::info('Error:');
+                    //\Log::info(json_encode($ex->getMessage()));
                 }
 
 
@@ -2674,7 +2674,7 @@ class OrderController extends BaseController
            // $order['user_document_value'] =  $user_docs;
 
 
-        //    Log::info('order'.json_encode($order));
+        //   // Log::info('order'.json_encode($order));
             if(auth()->user()->is_admin){
                 $order['total_amount'] = $order->total_amount  - $total_markup_Price;
                 $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
@@ -3568,17 +3568,17 @@ class OrderController extends BaseController
         // Individual Vendor App User Token
         $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
-        // Log::info('vendorAppUserDevices');
-        // Log::info($vendorAppUserDevices);
-        // Log::info('vendor_fcm_server_key');
-        // Log::info($client_preferences->vendor_fcm_server_key);
+        //// Log::info('vendorAppUserDevices');
+        //// Log::info($vendorAppUserDevices);
+        //// Log::info('vendor_fcm_server_key');
+        //// Log::info($client_preferences->vendor_fcm_server_key);
         if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
             $from = $client_preferences->vendor_fcm_server_key;
             $data['registration_ids'] = $vendorAppUserDevices;
 
             $result = sendFcmCurlRequest($data,$from );
-            // Log::info('Vendor order notification');
-            // Log::info($result);
+            //// Log::info('Vendor order notification');
+            //// Log::info($result);
         }
     }
 
@@ -3764,8 +3764,8 @@ class OrderController extends BaseController
                 try {
                     $response = Http::get($order->ordervendor->dispatch_traking_url);
                 } catch (\Exception $ex) {
-                    \Log::info('Error:');
-                    \Log::info(json_encode($ex->getMessage()));
+                    //\Log::info('Error:');
+                    //\Log::info(json_encode($ex->getMessage()));
                 }
 
                 if (isset($response) && $response->status() == 200) {

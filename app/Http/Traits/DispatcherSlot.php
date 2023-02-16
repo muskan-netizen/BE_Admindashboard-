@@ -45,7 +45,7 @@ trait DispatcherSlot{
                 }
                
         } catch (\Exception $e) {
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
             return [];
         }
     }
@@ -72,7 +72,7 @@ trait DispatcherSlot{
                 return [];
                
         } catch (\Exception $e) {
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
             return [];
         }
     }

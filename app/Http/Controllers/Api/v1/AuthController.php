@@ -1463,8 +1463,8 @@ class AuthController extends BaseController
                 return $this->errorResponse('Something went wrong. Please try again.', 422);
             }
         } catch (\Exception $e) {
-            Log::info($e);
-            Log::info($e->getMessage());
+           // Log::info($e);
+           // Log::info($e->getMessage());
             return $this->errorResponse($e->getMessage(), 422);
         }
     }

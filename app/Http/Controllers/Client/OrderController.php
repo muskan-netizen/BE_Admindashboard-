@@ -1323,7 +1323,7 @@ class OrderController extends BaseController
 
         if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
-            //\Log::info($order_ship);
+            ////\Log::info($order_ship);
         }
         if ($order_ship->object_id) {
             $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])->update([
@@ -1576,7 +1576,7 @@ class OrderController extends BaseController
         //         }
         //     }
         // }
-        // \Log::info('getDispatchLaundryDomain');
+        // //\Log::info('getDispatchLaundryDomain');
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
 
@@ -1610,7 +1610,7 @@ class OrderController extends BaseController
                             }
 
 
-                            //\Log::info('placeRequestToDispatchLaundry');
+                            ////\Log::info('placeRequestToDispatchLaundry');
                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
                         }
 
@@ -1777,7 +1777,7 @@ class OrderController extends BaseController
                             }
 
 
-                            //\Log::info('placeRequestToDispatchLaundry');
+                            ////\Log::info('placeRequestToDispatchLaundry');
                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
                         }
 
@@ -2084,7 +2084,7 @@ class OrderController extends BaseController
         }
             return 2;
         } catch (\Exception $e) {
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
             return 2;
             // return response()->json([
             //     'status' => 'error',
@@ -2231,7 +2231,7 @@ class OrderController extends BaseController
     // place Request To Dispatch for Laundry
     public function placeRequestToDispatchLaundry($order, $vendor, $dispatch_domain, $team_tag, $colm)
     {
-        // \Log::info('placeRequestToDispatchLaundry -- 1');
+        // //\Log::info('placeRequestToDispatchLaundry -- 1');
 
         try {
             $order = Order::find($order);
@@ -2370,7 +2370,7 @@ class OrderController extends BaseController
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image
             ];
-            //\Log::info(json_encode($postdata));
+            ////\Log::info(json_encode($postdata));
             // if($order_vendor->is_restricted == 1)
             // {
             //     $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -2387,7 +2387,7 @@ class OrderController extends BaseController
             ]);
 
             $url = $dispatch_domain->laundry_service_key_url;
-            // \Log::info('domain --'.$url);
+            // //\Log::info('domain --'.$url);
 
             $res = $client->post(
                 $url . '/api/task/create',
@@ -2836,13 +2836,13 @@ class OrderController extends BaseController
                 ]
             ]);
 
-            \Log::info("header", [
+            //\Log::info("header", [
                 'personaltoken' => $dispatch_domain->delivery_service_key,
                 'shortcode' => $dispatch_domain->delivery_service_key_code,
                 'content-type' => 'application/json'
             ]);
 
-            \Log::info("header", $postdata);
+            //\Log::info("header", $postdata);
 
             $url = $dispatch_domain->delivery_service_key_url;
 
@@ -2851,7 +2851,7 @@ class OrderController extends BaseController
                 ['form_params' => ($postdata)]
             );
             $response = json_decode($res->getBody(), true);
-            \Log::info("asdfasdfasd". $res->getBody());
+            //\Log::info("asdfasdfasd". $res->getBody());
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
@@ -2874,7 +2874,7 @@ class OrderController extends BaseController
             }
             return 2;
         } catch (\Exception $e) {
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
             return 2;
             // return response()->json([
             //     'status' => 'error',
@@ -3199,9 +3199,9 @@ class OrderController extends BaseController
 
         // Product decrement successfully
         if ($request->getStatusCode() == 200) {
-            Log::info('Product decrement successfully');
+           // Log::info('Product decrement successfully');
         } else {
-            Log::info('Product not decrement successfully');
+           // Log::info('Product not decrement successfully');
         }
     }
     function testObserver()

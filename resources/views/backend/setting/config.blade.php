@@ -2742,16 +2742,19 @@
 
                             <div class="form-group mb-0" id="xero_config_div" style="@if (isset($preference) && $preference->third_party_accounting == 1) '' @else display:none; @endif">
                                 <hr/>
+                                @php
+                                    $accounting_status = (isset($accounting) && !empty($accounting)) ? $accounting->status : 0;
+                                    $creds = (isset($accounting) && !empty($accounting)) ? json_decode($accounting->credentials) : [];
+                                @endphp
+                                
                                 <div class="row">
                                     <div class="col-12">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="xero_enable_switch" class="mr-3">{{ __("Xero Configuration") }} <br/><small>{{__('View and update your Xero Keys')}}</small></label>
-                                        <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if((isset($accounting) && $accounting->status == '1')) checked='checked' @endif>
+                                        <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if(($accounting_status == '1')) checked='checked' @endif>
                                     </div>
-                                        @php
-                                        $creds = json_decode($accounting->credentials);
-                                        @endphp
-                                        <div class="mt-2 xeroFields" @if($accounting->status != 1) style="display:none" @endif>
+                                        
+                                        <div class="mt-2 xeroFields" @if( $accounting_status != 1) style="display:none" @endif>
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="form-group mb-2">
