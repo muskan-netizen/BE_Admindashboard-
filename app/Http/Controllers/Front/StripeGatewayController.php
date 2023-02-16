@@ -225,7 +225,6 @@ class StripeGatewayController extends FrontController
             }
             $this->generateResponse($intent, $parameters);
         } catch (\Stripe\Exception\ApiErrorException $e) {
-            dd("errer");
             # Display error on client
             echo json_encode([
                 'error' => $e->getMessage(),
