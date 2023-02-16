@@ -236,7 +236,7 @@ trait cartManager{
                 }
             }
 
-            // \Log::info($vendorData);
+            // //\Log::info($vendorData);
             $service_charges_tax_rate = 0;
             if($vendorData->vendor->service_charges_tax_id!=null){
                 if(isset($taxRates[$vendorData->vendor->service_charges_tax_id])){

@@ -494,8 +494,17 @@
                                 @endif
 
                                 @if($home_page_label->slug == 'selected_products')
-                                <a class="action-icon openProductsModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
-                                    <i class="mdi mdi-pencil"></i>
+                                <a class="action-icon" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <div class="col pl-1">
+                                        <select class="form-control select2-multiple" id='product' name="selected_products[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
+                                            <option value="">{{ __("Select Product") }}</option>
+                                            @if(@$select_products)
+                                                @foreach($select_products as $product)
+                                                    <option value="{{$product->id}}" @if(in_array($product->id, $selected_ids)) selected @endif>{{$product->title}}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                        </div>
                                 </a>
                                 @endif
 

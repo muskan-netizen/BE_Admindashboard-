@@ -91,7 +91,7 @@ trait WhatsappApi{
             }
         }
         catch(\Exception $e) {
-            \Log::info('catch');
+            //\Log::info('catch');
             \Log::info($e->getMessage());
         }
     }
@@ -152,10 +152,10 @@ trait WhatsappApi{
             $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
         }
         catch(\Exception $e) {
-            Log::info('### Order Accept Event ###');
-            Log::info($e->getLine());
-            Log::info($e->getMessage());
-            Log::info('### Order Accept Event ###');
+           // Log::info('### Order Accept Event ###');
+           // Log::info($e->getLine());
+           // Log::info($e->getMessage());
+           // Log::info('### Order Accept Event ###');
         }
      }
 
@@ -185,10 +185,10 @@ trait WhatsappApi{
             $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
         }
         catch(\Exception $e) {
-            Log::info('### Order Cancel Event ###');
-            Log::info($e->getLine());
-            Log::info($e->getMessage());
-            Log::info('### Order Cancel Event ###');
+           // Log::info('### Order Cancel Event ###');
+           // Log::info($e->getLine());
+           // Log::info($e->getMessage());
+           // Log::info('### Order Cancel Event ###');
         }
      }
 
@@ -196,7 +196,7 @@ trait WhatsappApi{
       * When order in to processong state
       */
      function processingOrderEvent($order_data, $image_url) {
-        Log::info('processing');
+       // Log::info('processing');
         try {
             $header = [
                 "type"=> "image",
@@ -216,15 +216,15 @@ trait WhatsappApi{
                 'message' => $message ?? null
             ];
             $template = $this->createTemplate($data);
-            Log::info($template);
-            Log::info(json_encode($template));
+           // Log::info($template);
+           // Log::info(json_encode($template));
             $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
         }
         catch(\Exception $e) {
-            Log::info('### Order Processing Event ###');
-            Log::info($e->getLine());
-            Log::info($e->getMessage());
-            Log::info('### Order Processing Event ###');
+           // Log::info('### Order Processing Event ###');
+           // Log::info($e->getLine());
+           // Log::info($e->getMessage());
+           // Log::info('### Order Processing Event ###');
         }
      }
 
@@ -254,10 +254,10 @@ trait WhatsappApi{
             $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
         }
         catch(\Exception $e) {
-            Log::info('### Order Out For Delivery Event ###');
-            Log::info($e->getLine());
-            Log::info($e->getMessage());
-            Log::info('### Order Out For Delivery Event ###');
+           // Log::info('### Order Out For Delivery Event ###');
+           // Log::info($e->getLine());
+           // Log::info($e->getMessage());
+           // Log::info('### Order Out For Delivery Event ###');
         }
      }
 
@@ -287,10 +287,10 @@ trait WhatsappApi{
             $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
         }
         catch(\Exception $e) {
-            Log::info('### Order Delivered Event ###');
-            Log::info($e->getLine());
-            Log::info($e->getMessage());
-            Log::info('### Order Delivered Event ###');
+           // Log::info('### Order Delivered Event ###');
+           // Log::info($e->getLine());
+           // Log::info($e->getMessage());
+           // Log::info('### Order Delivered Event ###');
         }
       }
 
@@ -335,13 +335,13 @@ trait WhatsappApi{
 
             $result = curl_exec($ch);
             if (curl_errno($ch)) {
-                Log::info(curl_error($ch));
+               // Log::info(curl_error($ch));
             }
             curl_close($ch);
         }
         catch(\Exception $e) {
-            Log::info('curl error');
-            Log::info($e->getMessage());
+           // Log::info('curl error');
+           // Log::info($e->getMessage());
         }
      }
 }

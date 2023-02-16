@@ -66,7 +66,8 @@ use App\Models\ {
     OrderLongTermServices,
     OrderLongTermServicesAddon,
     OrderLongTermServiceSchedule,
-    Bid
+    Bid,
+    OrderNotificationsLogs
 };
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
@@ -1506,8 +1507,8 @@ class OrderController extends FrontController
                     $order_product->product_variant_sets = $product_variant_sets;
                     if (! empty($vendor_cart_product->product->title)) {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->title;
-                    } elseif (empty($vendor_cart_product->product->title) && ! empty($vendor_cart_product->product->translation)) {
-                        $vendor_cart_product->product->title = $vendor_cart_product->product->translation[0]->title;
+                    } elseif (empty($vendor_cart_product->product->title)  && !empty($vendor_cart_product->product->translation)) {
+                        $vendor_cart_product->product->title = @$vendor_cart_product->product->translation[0]->title;
                     } else {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->sku;
                     }
@@ -1808,11 +1809,7 @@ class OrderController extends FrontController
                     } else {
                         // ----Percent amount----------
                         $percentage_amount = ($vendor_payable_amount * $vendor_cart_product->coupon->promo->amount / 100);
-                        $total_discount += $percentage_amount;
-                        $vendor_payable_amount -= $percentage_amount;
-                        $vendor_discount_amount += $percentage_amount;
                     }
-                    // add delivery fee in coupon if coupon has free delicery
                     if ($vendor_cart_product->coupon->promo->allow_free_delivery == 1) {
                         $vendor_discount_amount = $vendor_discount_amount + $delivery_fee;
                         $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
@@ -2327,7 +2324,6 @@ class OrderController extends FrontController
         if (! empty($devices) && ! empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
         }
-
         $notification_content = NotificationTemplate::where('id', 4)->first();
         if ($notification_content) {
             $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
@@ -2368,7 +2364,7 @@ class OrderController extends FrontController
                 $data['registration_ids'] = $vendorAppUserDevices;
 
                 $result = sendFcmCurlRequest($data);
-                // Log::info($result);
+                //// Log::info($result);
             }
         }
     }
@@ -2486,25 +2482,25 @@ class OrderController extends FrontController
             $user = User::find($user_id);
         }
         foreach ($order_vendors as $ov) {
-            // Log::info($ov);
-            // Log::info($ov->order_id);
+            //// Log::info($ov);
+            //// Log::info($ov->order_id);
             $request = $ov;
 
             DB::beginTransaction();
             // try {
 
             $request->order_id = $ov->order_id;
-            // Log::info($ov->order_id);
-            // Log::info($request->order_id);
+            //// Log::info($ov->order_id);
+            //// Log::info($request->order_id);
             $request->vendor_id = $ov->vendor_id;
             $request->order_vendor_id = $ov->id;
             $request->status_option_id = 2;
             // $timezone = Auth::user()->timezone;
-            // Log::info(Auth::user());
+            //// Log::info(Auth::user());
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)
                 ->where('order_status_option_id', $request->status_option_id)
                 ->first();
-            // Log::info($vendor_order_status_check);
+            //// Log::info($vendor_order_status_check);
             if (! $vendor_order_status_check) {
                 $vendor_order_status = new VendorOrderStatus();
                 $vendor_order_status->order_id = $request->order_id;

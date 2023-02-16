@@ -11,9 +11,9 @@ use Yadahan\AuthenticationLog\AuthenticationLogable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Spatie\Permission\Contracts\Role;
 
 class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
@@ -22,6 +22,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     use HasWallet;
     use HasWalletFloat;
     use SoftDeletes;
+    use HasRoles;
     /**
      * The attributes that are mass assignable.
      *
@@ -175,5 +176,10 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function bidRequests()
     {
         return $this->hasMany(BidRequest::class, 'user_id');
+    }
+
+    public function manager()
+    {
+        return $this->hasOne(Role::class, 'id');
     }
 }

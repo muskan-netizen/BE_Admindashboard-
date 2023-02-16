@@ -88,7 +88,7 @@ class MobbexGatewayController extends BaseController
         // Notify Mobbex that information has been received
         // header( 'HTTP/1.0 200 OK' );
         // flush();
-        // Log::info($request->all());
+        //// Log::info($request->all());
 
         $data = $request->data;
         if($data['result'] == 'true'){

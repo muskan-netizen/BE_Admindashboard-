@@ -1038,6 +1038,7 @@ $(document).ready(function () {
             var slot = $("#slot").val();
             var checkSlot  = $('#checkSlot').val();
         }
+
         var now = new Date().toISOString();
         if (task_type == 'schedule') {
             if(slot){

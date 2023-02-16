@@ -148,7 +148,7 @@ class PlugnpayGatewayController extends BaseController
             }
 
         }else{
-            //\Log::info('fail--'.$dataResponse->FinalStatus.'--');
+            ////\Log::info('fail--'.$dataResponse->FinalStatus.'--');
             $returnUrl = route('order.return.success');
             $response['status'] = 'Fail';
             $response['msg'] = 'Failed.';

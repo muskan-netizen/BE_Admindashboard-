@@ -821,10 +821,10 @@ class TempCartController extends FrontController
      */
     public function sendEditedOrderPushNotification($user_ids, $orderData)
     {
-        Log::info("sendEditedOrderPushNotification");
+       // Log::info("sendEditedOrderPushNotification");
 
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-        //    Log::info($devices);
+        //   // Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $notification_content = NotificationTemplate::where('id', 12)->first();

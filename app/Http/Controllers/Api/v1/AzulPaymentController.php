@@ -136,9 +136,9 @@ class AzulPaymentController extends BaseController
                 'come_from' => 'app'
             ]);
         }
-        // \Log::info(json_encode($request->all()));
+        // //\Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
-        \Log::info(json_encode($dataResponse));
+        //\Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         // dd($dataResponse);
         if ($dataResponse['ok'] === false && $this->mode) {
@@ -149,7 +149,7 @@ class AzulPaymentController extends BaseController
         }
 
         if (isset($dataResponse['ok']) && $dataResponse['ok'] === $this->mode) {
-            // \Log::info('Done');
+            // //\Log::info('Done');
 
             if ($request->action == 'tip') {
                 $payment = Payment::where('transaction_id', $request->order_number . '_' . $number)->first();
@@ -158,7 +158,7 @@ class AzulPaymentController extends BaseController
             } else {
                 $payment = Payment::where('transaction_id', $request->order_number)->first();
             }
-            // \Log::info(json_encode($request->all()));
+            // //\Log::info(json_encode($request->all()));
             if (! empty($payment)) {
                 $payment->viva_order_id = $dataResponse['data']->AzulOrderId;
                 $payment->save();
@@ -176,7 +176,7 @@ class AzulPaymentController extends BaseController
                 return $this->completePickupDelivery($dataResponse, $payment, $request, $request->come_from);
             }
         } else {
-            // \Log::info('fail--'.$dataResponse->FinalStatus.'--');
+            // //\Log::info('fail--'.$dataResponse->FinalStatus.'--');
             $response['status'] = 'Fail';
             $response['msg'] = $dataResponse['message'];
             $response['payment_from'] = $request->action;

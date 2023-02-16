@@ -563,7 +563,7 @@ class PickupDeliveryController extends FrontController{
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
             //Log::info("Request To Dispatch");
-           // Log::info($request_to_dispatch);
+           //// Log::info($request_to_dispatch);
 
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);
@@ -874,7 +874,7 @@ class PickupDeliveryController extends FrontController{
                     $payable_amount = 0.00;
 
                 }
-            //    Log::info($cash_to_be_collected);
+            //   // Log::info($cash_to_be_collected);
                 $unique = $customer->code;
                 $team_tag = $unique."_".$vendor;
                 $dynamic = uniqid($order->id.$vendor);

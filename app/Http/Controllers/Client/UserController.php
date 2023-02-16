@@ -9,7 +9,7 @@ use DataTables;
 use Carbon\Carbon;
 use App\Models\Vendor;
 use App\Models\UserVendor;
-use App\Models\Permissions;
+use App\Models\PermissionsOld;
 use Illuminate\Http\Request;
 use App\Models\UserPermissions;
 use App\Models\Timezone;
@@ -29,7 +29,8 @@ use App\Http\Traits\ApiResponser;
 use App\Models\UserDevice;
 use Session;
 use DB;
-use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency};
+use Spatie\Permission\Models\Role;
+use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, RoleOld, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency, ServiceArea};
 
 class UserController extends BaseController
 {
@@ -50,7 +51,7 @@ class UserController extends BaseController
 
     public function index()
     {
-        $roles = Role::all();
+        $roles = RoleOld::all();
         $countries = Country::all();
         $active_users = User::where('status', 1)->where('is_superadmin', '!=', 1)->count();
         $inactive_users = User::where('status', 3)->count();
@@ -71,6 +72,7 @@ class UserController extends BaseController
         $csvCustomers = CsvCustomerImport::all();
         return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries, 'csvCustomers' => $csvCustomers, 'user_registration_documents' => $user_registration_documents]);
     }
+    
     public function getFilterData(Request $request)
     {
 
@@ -120,7 +122,8 @@ class UserController extends BaseController
                 if (!empty($users->is_admin) && $users->is_admin == 1) {
                     return 'Vendor';
                 } else {
-                    return 'Customer';
+                    return 'Customer'.((count($users->getRoleNames())>0)?
+                    ' ('.$users->getRoleNames()[0].')':'');
                 }
             })
             ->addColumn('login_type', function ($users) {
@@ -373,7 +376,10 @@ class UserController extends BaseController
     public function newEdit($domain = '', $id)
     {
         $subadmin = User::find($id);
-        $permissions = Permissions::where('status', 1)->whereNotin('id', [4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 22, 23, 24, 25])->get();
+        $geoIds = explode(',',$subadmin->geo_ids);
+        // dd($geoIds);
+        $userRole = @$subadmin->roles[0]->id;
+        $permissions = PermissionsOld::where('status', 1)->whereNotin('id', [4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 22, 23, 24, 25])->get();
         $user_permissions = UserPermissions::where('user_id', $id)->get();
         $vendor_permissions = UserVendor::where('user_id', $id)->pluck('vendor_id')->toArray();
         $user_docs = UserDocs::where('user_id', $id)->get();
@@ -385,10 +391,12 @@ class UserController extends BaseController
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-        $roles = Role::where('status', 1)
-            // ->where('is_enable_pricing',1)
-            ->get();
-        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions, 'user_docs' => $user_docs, 'user_registration_documents' => $user_registration_documents, 'active_orders' => $active_orders, 'completed_orders' => $completed_orders, 'clientCurrency' => $clientCurrency, 'fixedFee' => $fixedFee, 'getAdditionalPreference' => $getAdditionalPreference, 'roles' => $roles]);
+        $roles = RoleOld::where('status', 1)->get();
+        $rolesNew = Role::where('id','>','0')->get();
+        $serviceArea = ServiceArea::all();
+        // dd($serviceArea);
+
+        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions, 'user_docs' => $user_docs, 'user_registration_documents' => $user_registration_documents, 'active_orders' => $active_orders, 'completed_orders' => $completed_orders, 'clientCurrency' => $clientCurrency, 'fixedFee' => $fixedFee, 'getAdditionalPreference' => $getAdditionalPreference, 'roles' => $roles,'rolesNew'=>$rolesNew,'userRole'=>$userRole,'serviceArea'=>$serviceArea,'geoIds'=>$geoIds]);
     }
     public function getUserOrders($id, $order_type)
     {
@@ -429,7 +437,14 @@ class UserController extends BaseController
             'is_email_verified' => ($request->has('is_email_verified') && $request->is_email_verified == 'on') ? 1 : 0,
             'is_phone_verified' => ($request->has('is_phone_verified') && $request->is_phone_verified == 'on') ? 1 : 0
         ];
+        $data['geo_ids'] = ((@$request->geo_ids)?implode(',',$request->geo_ids):'');
         $client = $user->update($data);
+
+        //Assign user to role for permission
+        if(@$request->input('role')){
+            DB::table('model_has_roles')->where('model_id',$id)->delete();
+            $user->assignRole($request->input('role'));
+        }
         //for updating permissions
         $removepermissions = UserPermissions::where('user_id', $id)->delete();
         if ($request->permissions) {
@@ -472,7 +487,7 @@ class UserController extends BaseController
     public function profile()
     {
         $countries = Country::all();
-        $client = Client::where('code', Auth::user()->code)->first();
+        $client = Client::first();
         $tzlist = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
 
         $tzlist = Timezone::whereIn('timezone', $tzlist)->get();

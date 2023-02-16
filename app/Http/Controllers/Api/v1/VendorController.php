@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption, VendorAdditionalInfo};
+use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, PermissionsOld, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption, VendorAdditionalInfo};
 use Log;
 class VendorController extends BaseController{
     use ApiResponser;
@@ -1423,7 +1423,7 @@ class VendorController extends BaseController{
             $vendor->slug = Str::slug($request->name, "-");
             $vendor->is_seller = $request->vendor_type??0;
             $vendor->save();
-            $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+            $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
             if ($vendor_registration_documents->count() > 0) {
                 foreach ($vendor_registration_documents as $vendor_registration_document) {
                     $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);

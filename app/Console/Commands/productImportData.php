@@ -58,7 +58,7 @@ class productImportData extends Command{
      */
     public function handle(){
         try {
-            \Log::info("Chat Cron Starting...");
+            //\Log::info("Chat Cron Starting...");
             $this->info('Chat Cron Starting...');
             $clients = Client::orderBy('id','ASC')->get();
             foreach ($clients as $client) {
@@ -144,7 +144,7 @@ class productImportData extends Command{
                                     $request_data->status = 2;
                                     $request_data->save();
                                 }catch(Exception $ex){
-                                    \Log::info("Error ".$ex->getMessage());
+                                    //\Log::info("Error ".$ex->getMessage());
                                     $this->error('Error '.$ex->getMessage());
                                     $request_data->status = 3;
                                     $request_data->status = json_encode([$ex->getMessage()]);;
@@ -154,7 +154,7 @@ class productImportData extends Command{
                         });
                     }
                     
-            //    Log::info('End command:productImportData !'.time());
+            //   // Log::info('End command:productImportData !'.time());
             }catch(Exception $ex){
                 $this->info($ex->getMessage());
                 continue;

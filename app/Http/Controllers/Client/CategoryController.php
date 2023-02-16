@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty, Role, CategoryRole, Attribute};
+use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty, RoleOld, CategoryRole, Attribute};
 use GuzzleHttp\Client as GCLIENT;
 
 class CategoryController extends BaseController
@@ -219,7 +219,7 @@ class CategoryController extends BaseController
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
         if($getAdditionalPreference['is_price_by_role'] == 1){
-            $roles = Role::get();
+            $roles = RoleOld::get();
             if($roles != null){
                 foreach($roles as $role){
                     $category_role = CategoryRole::where('category_id', $id)->where('role_id', $role->id)->first();
@@ -268,10 +268,18 @@ class CategoryController extends BaseController
         $validation  = Validator::make($request->all(), $rules)->validate();
         $category = Category::where('id', $id)->first();
         $save = $this->save($request, $category, 'true');
+
+        $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
+            ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
+            ->where('client_languages.client_code', Auth::user()->code)
+            ->where('client_languages.is_active', 1)
+            ->orderBy('client_languages.is_primary', 'desc')->get();
+        $languageId = $request->cat_lang['language_id']??$langs->first()->langId;
         if ($save > 0) {
-            if (!empty($request->cat_lang['language_id'])) {
-                $languageId = $request->cat_lang['language_id'];
+            if (!empty($languageId)) {
+                // $languageId = $request->cat_lang['language_id'];
                 $trans = Category_translation::where('category_id', $save)->where('language_id', $languageId)->first();
+               
                 if (!$trans) {
                     $trans = new Category_translation();
                     $trans->category_id = $save;
@@ -281,8 +289,6 @@ class CategoryController extends BaseController
                 $trans->meta_title = $request->cat_lang['meta_title'];
                 $trans->meta_description = $request->cat_lang['meta_description'];
                 $trans->meta_keywords = $request->cat_lang['meta_keywords'];
-                $trans->save();
-                    $trans->save();
                 $trans->save();
             }
             $hs = new CategoryHistory();
