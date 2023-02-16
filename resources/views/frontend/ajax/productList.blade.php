@@ -75,9 +75,11 @@
                                     @endif
                                 @endforeach
                             @endif
+                            @if( p2p_module_status() ) 
                             <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
                                 <b>Updated {{ convertDateToHumanReadable($data->updated_at) }} </b>
                             </div>
+                            @endif
                         </a>
                         <div class="product-price-chat-sec">
                             @if($data->inquiry_only == 0)
@@ -133,5 +135,8 @@
             })
         }
     })
+
+
+
 </script>
 @endsection

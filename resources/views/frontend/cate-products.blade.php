@@ -20,7 +20,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
 <section class="section-b-space ratio_asos">
     <div class="collection-wrapper">
-        <div class="container">
+        <div class="container" id="divFirst">
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
@@ -284,7 +284,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                         </div>
                                     </div>
                                     <div class="displayProducts main_category" id="category_products_filter">
-                                        <div class="col-12 custom_filtter mt-2">
+                                        <div class="col-12 custom_filtter mt-2 filter_three_mobile">
                                         <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
                                                 <option value="featured">{{_('Featured')}}</option>
@@ -487,5 +487,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
             },
         });
     }
+    $(".page-link").on("click" ,function(){
+        document.getElementById("divFirst").scrollIntoView();
+
+});
 </script>
 @endsection
