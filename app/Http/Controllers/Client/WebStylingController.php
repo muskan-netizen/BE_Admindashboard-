@@ -81,7 +81,7 @@ class WebStylingController extends BaseController{
        //type = 0 for Web products
        $selected_ids= $this->getHomePageSelectedProducts(0);
        $select_products= $this->getProducts([],'all');
-        $bottom_name = ClientPreferenceAdditional::where(['client_code'=>$user->code,'key_name'=>'bottom_name'])->first();
+        $bottom_name = ClientPreferenceAdditional::where('key_name','bottom_name')->first();
         
         return view('backend/web_styling/index')->with(['products' => $products, 'selectedProducts' => $selectedProducts, 'categories' => $categories, 'clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId,'orderDeliveryIcons'=>$orderDeliveryIcons, 'single_category_products'=> $single_category_products, 'selected_single_category_products' => $selected_single_category_products,'selected_ids'=>$selected_ids,'select_products'=> $select_products,'bottom_name'=>($bottom_name->key_value??'')]);
     }
