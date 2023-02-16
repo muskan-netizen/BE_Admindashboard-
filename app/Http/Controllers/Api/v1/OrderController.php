@@ -1096,7 +1096,7 @@ class OrderController extends BaseController
                     # if payment type cash on delivery or payment status is 'Paid'
                     if (( ($order->payment_option_id == 1 || $order->payment_option_id == 38 )) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                         # if vendor selected auto accept
-                        \Log::info('  autoAcceptOrderIfOn');
+                    
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
@@ -1146,7 +1146,6 @@ class OrderController extends BaseController
                 if ($request->status_option_id == 2) {
 
                     if ($request->shipping_delivery_type=='D') {
-                        \Log::info('  shipping_delivery_type D');
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
@@ -1322,13 +1321,13 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $luxury_option_id      = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_restricted         = $checkdeliveryFeeAdded->is_restricted;
-        \Log::info('luxury_option_id ' . $luxury_option_id );
+    
         if ($luxury_option_id == 6) { // only for on_demand type
             
             $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
            
             if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false) {
-                \Log::info('dispatch_domain_OnDemand in one ' );
+          
                 $OnDemand = 0;
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                     $dispatch_domain = [
@@ -1341,8 +1340,7 @@ class OrderController extends BaseController
                     if(( $AdditionalPreference['is_service_product_price_from_dispatch'] == 1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
                        
                         $dispatch_domain['rejectable_order'] = 1;
-                        \Log::info('dispatch_domain_OnDemand dispatchre data ' );
-                        \Log::info($dispatch_domain );
+                        
                         $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
                         if ($order_dispatchs && $order_dispatchs == 1) {
                             $OnDemand = 1;
@@ -3539,7 +3537,7 @@ class OrderController extends BaseController
                             ],[
                         'user_id' => auth()->id(),
                         'order_number'=> $orderData->order_number,
-                        'vendor_id'=> $orderData->vendors->vendor_id,
+                        'vendor_id'=> $orderData->vendors[0]->vendor_id,
                         'order_vendor_id'=> $orderData->vendors[0]->id,
                         'order_id'=> $orderData->id,
                         'message'=> $body_content .', <a href="'.$redirect_URL.'">#'.$orderData->order_number.'</a>'
