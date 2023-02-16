@@ -556,7 +556,7 @@ class UserhomeController extends FrontController
             if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
                 $is_service_product_price_from_dispatch_forOnDemand =1;
             }
-       
+            
             return view('frontend.'.$view_page)->with(['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand ]);
 
         } catch (Exception $e) {
@@ -1242,6 +1242,7 @@ class UserhomeController extends FrontController
 
     public function vendorProductsData($venderIds, $langId, $currency = 'USD', $where = '', $type,$p_dim)
     {
+        $user_id = Auth::user() ? Auth::user()->id: '';
         $productsAarray = array();
         $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
@@ -1250,6 +1251,9 @@ class UserhomeController extends FrontController
             'vendor',
             'media' => function ($q) {
                 $q->groupBy('product_id');
+            },
+            'inwishlist' => function ($q) use ($user_id){
+                $q->where('user_id', $user_id);
             }, 'media.image',
             'translation' => function ($q) use ($langId) {
                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
@@ -1277,9 +1281,9 @@ class UserhomeController extends FrontController
         }
 
         if(checkColumnExists('products','is_long_term_service')){
-            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','is_long_term_service');
+            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','is_long_term_service', 'updated_at');
         }else{
-            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only', 'updated_at');
         }
         $pndCategories = Category::where('type_id', 7)->pluck('id');
         if ($pndCategories) {
@@ -1308,11 +1312,17 @@ class UserhomeController extends FrontController
         foreach ($products as  $new_product_detail) {
             $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $new_product_detail->media->first() ? ( !empty($new_product_detail->media->first()->image) ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage() ): $this->loadDefaultImage();
+            $user_id = Auth::user()->id??'';
+            $product_id = $new_product_detail->id;
+            $is_inwishlist_btn = !empty($new_product_detail->inwishlist) ? 1 : 0;
             $productsAarray[] = array(
+                'id' => $new_product_detail->id,
                 'tag_title' => $new_products_title??0,
                 'image_url' => $image_url,
                 'sku' => $new_product_detail->sku,
+                'updated_at' => $new_product_detail->updated_at,
+                'is_inwishlist_btn' => $is_inwishlist_btn,
                 'title' => Str::limit($title, 18, '..'),
                 'url_slug' => $new_product_detail->url_slug,
                 'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),

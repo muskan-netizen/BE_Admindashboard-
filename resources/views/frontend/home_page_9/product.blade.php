@@ -6,7 +6,7 @@
             <input id="fav_pro_one" type="checkbox">
             <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
         </div>--}}
-        {{-- @dd($product['ProductAttribute'][0]->key_value) --}}
+        {{-- @dd($product) --}}
         <a class="common-product-box text-center" href="{{ $product['vendor']->slug }}/product/{{ $product['url_slug'] }}">
             <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product['image_url'] }}" alt="" title="">
                 {{-- <div class="pref-timing"> </div> --}}
@@ -51,7 +51,7 @@
                         </div>
                         <div class="prod-details">
                             <div class="d-flex align-items-center justify-content-between al_clock pt-2">
-                                <b>{{$product["price"] ?? ''}} </b>
+                                <b>{!!$product["price"] ?? ''!!} </b>
                             </div>
                             <div class="chat-button">
                                 @if(getAdditionalPreference(['chat_button'])['chat_button'])
