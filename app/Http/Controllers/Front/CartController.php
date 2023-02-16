@@ -2138,19 +2138,19 @@ class CartController extends FrontController
 
 
         if ($cart) {
-            $cart_details = $this->getCartsNew($cart, $address_id, $request->code, $schedule_datetime_del);
+            //$cart_details = $this->getCartsNew($cart, $address_id, $request->code, $schedule_datetime_del);
             //v2 trait
-            // $obj = [
-            //     'cart' => $cart,
-            //     'code'=> $request->code,
-            //     'address_id'=> $address_id,
-            //     'currency'=> $curId,
-            //     'schedule_datetime_del'=> $schedule_datetime_del,
-            //     'requestType'=>1,
-            //     'type'=> $request->type,
-            //     'language'=> $request->language
-            // ];
-            // $cart_details = $this->getCartsNewV2($obj,$request);
+            $obj = [
+                 'cart' => $cart,
+                 'code'=> $request->code,
+                 'address_id'=> $address_id,
+                 'currency'=> $curId,
+                 'schedule_datetime_del'=> $schedule_datetime_del,
+                 'requestType'=>1,
+                 'type'=> $request->type,
+                 'language'=> $request->language
+            ];
+            $cart_details = $this->getCartsNewV2($obj,$request);
         }
 
         $client_preference_detail = ClientPreference::first();

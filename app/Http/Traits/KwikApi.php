@@ -74,7 +74,7 @@ trait KwikApi{
         $end_url = '/vendor_login';
         $ch = curl_init();
 
-        $data = ["domain_name"=> $this->api_domain,
+        $data = ["domain_name"=> !empty($this->api_domain) ? $this->api_domain : '',
             "email"=> $this->api_email,
             "password"=> $this->api_pass,
             "api_login"=> 1];
@@ -116,10 +116,10 @@ public function getPriceEstimation($dataRec)
       $end_url = '/send_payment_for_task';
       $data = [      
         "custom_field_template"=> "pricing-template",
-        "access_token"=> $this->access_token,
-        "domain_name"=> $this->api_domain,
+        "access_token"=> !empty($this->access_token) ? $this->access_token : '',
+        "domain_name"=> !empty($this->api_domain) ? $this->api_domain : '',
         "timezone"=> -330,  //For IST : -330
-        "vendor_id"=> $this->vendor_id,
+        "vendor_id"=> !empty($this->vendor_id) ? $this->vendor_id : '',
         "sareaId"=> 3,
         "is_multiple_tasks"=> 1,
         "layout_type"=> 0,
@@ -184,9 +184,9 @@ public function createKwikOrder($dataRec)
 {
     $end_url = '/create_task_via_vendor';
     $data = [
-        "domain_name"=> $this->api_domain,
-        "access_token"=> $this->access_token,
-        "vendor_id"=> $this->vendor_id,
+        "domain_name"=> !empty($this->api_domain) ? $this->api_domain : '',
+        "access_token"=> !empty($this->access_token) ? $this->access_token : '',
+        "vendor_id"=> !empty($this->vendor_id) ? $this->vendor_id : '',
         "sareaId"=> 3,
         "is_multiple_tasks"=> 1,
         "timezone"=> 60,
@@ -253,9 +253,9 @@ public function createKwikOrder($dataRec)
     $end_url = '/cancel_vendor_task';
     
     $data = [      
-        "domain_name"=> $this->api_domain,
-        "access_token"=> $this->access_token,
-        "vendor_id"=> $this->vendor_id,
+        "domain_name"=> !empty($this->api_domain) ? $this->api_domain : '',
+        "access_token"=> !empty($this->access_token) ? $this->access_token : '',
+        "vendor_id"=> !empty($this->vendor_id) ? $this->vendor_id : '',
         "job_id"=> $dataRec->pickups[0]->job_id, //fetch this id from order cancel
         "job_status"=> 9 // for cancel order
         ];

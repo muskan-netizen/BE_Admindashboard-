@@ -21,6 +21,7 @@ use App\Models\UserAddress;
 use App\Models\Vendor;
 use App\Models\VendorDineinTable;
 use App\Models\VendorMinAmount;
+use App\Models\AddonOption;
 use Auth, Log;
 use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
@@ -50,40 +51,6 @@ trait CartManagerV2{
     $this->is_service_product_price_from_dispatch =0;
 
   }
-
-
-
-  public function getCartProductsNewV2(Request $request)
-    {
-        $this->configV2();
-        Session()->forget('vendorType');
-        Session()->put('vendorType', $request->type);
-        $cart_details = [];
-        $user = $this->user;
-        if ($user) {
-            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
-        } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
-        }
-
-        if ($cart) {
-            $cart_details = $this->getCarts($cart);
-        }
-
-        if ($cart_details && !empty($cart_details)) {
-              return json_encode([
-                'data' => $cart_details,
-            ]);
-        }
-
-
-        return json_encode([
-            'message' => "No product found in cart",
-            'data' => $cart_details,
-        ]);
-    }
-
-
 
 
 
@@ -348,6 +315,7 @@ trait CartManagerV2{
         $giftCardUsed = 0;
         $giftCardAmount = 0;
         $security_amount = 0.00;
+        $is_recurring_booking = 0;
 
         $this->is_service_product_price_from_dispatch =0;
         $action = (session()->has('vendorType')) ? session()->get('vendorType') : 'delivery';
@@ -360,7 +328,7 @@ trait CartManagerV2{
         if($user){
             $user_timezone =  $user->timezone ?? $user_timezone  ;
             //Get User Address Details
-            $address = $this->getUserAddress($user->id,$address_id);
+            $address = $this->getUserAddressV2($user->id,$address_id);
         }
         /* Getting User Lat Long */
         $latitude = ($address) ? $address->latitude : '';
@@ -1315,28 +1283,29 @@ trait CartManagerV2{
 
                 $subtotal_amount = $payable_amount;
 
-                // if($PromoFreeDeliver != 1){
                 $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
-                //}
-                //$payable_amount = $payable_amount + $deliver_charge;
-                //Start applying service fee on vendor products total
 
 
-
-                $vendor_service_fee_percentage_amount = 0;
-                if($vendorData->vendor->service_fee_percent > 0){
-                    $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
-                    $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
-                    $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
+                //vendor service fee fixed/percent
+                $vendor_service_fee_percentage_amount = $vendor_fixed_service_charge_amount = 0;
+                if($vendorData->vendor->fixed_service_charge == 1){
+                    $vendor_fixed_service_charge_amount = $vendorData->vendor->service_charge_amount;
+                    $payable_amount = $payable_amount + $vendor_fixed_service_charge_amount;
+                }else{
+                    if($vendorData->vendor->service_fee_percent > 0){
+                        $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
+                        $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
+                        $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
+                    }
                 }
 
                 //end applying service fee on vendor products total
-                $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount + $vendor_fixed_service_charge_amount;
 
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
+                $vendorData->fixed_service_charge_amount = decimal_format($vendor_fixed_service_charge_amount);
                 $vendorData->delivery_fee_charges = decimal_format($delivery_fee_charges);
-                //$vendorData->delivery_fee_charges_static = decimal_format($delivery_fee_charges_static);;
 
                 $vendorData->payable_amount = decimal_format($payable_amount);
                 $vendorData->discount_amount = decimal_format($discount_amount);

@@ -10,7 +10,7 @@ use App\Models\Country;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,ProductTrait,CartManager};
+use App\Http\Traits\{ApiResponser,ProductTrait,CartManager, CartManagerV2};
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +33,7 @@ use Log;
 
 class CartController extends BaseController
 {
-    use ApiResponser,ProductTrait,CartManager;
+    use ApiResponser,ProductTrait, CartManager, CartManagerV2;
 
     private $field_status = 2;
 
@@ -96,7 +96,7 @@ class CartController extends BaseController
                 ];
                
                 //$cart, $address_id=0 , $code = 'D',$schedule_datetime_del=''
-                $cartData = $this->getCartsNew($obj,$request);
+                $cartData = $this->getCartsNewV2($obj,$request);
                 //pr($cartData);
                 //$cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
