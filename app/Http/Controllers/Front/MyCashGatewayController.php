@@ -191,8 +191,8 @@ class MyCashGatewayController extends FrontController
             'password' => $this->password,
             'mobile_number' => $user->dial_code . $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
         );
-        // \Log::info($request->all());
-        // \Log::info($data);
+        // //\Log::info($request->all());
+        // //\Log::info($data);
 
         $curl = curl_init();
         curl_setopt_array($curl, [
@@ -245,7 +245,7 @@ class MyCashGatewayController extends FrontController
             return $this->successResponse('', __('OTP has been sent to your mobile number'), 200);
         }
         else{
-            Log::info($err);
+           // Log::info($err);
             return $this->errorResponse('Server Error', 400);
         }
     }

@@ -443,8 +443,7 @@ trait OrderTrait
                             'rejectable_order' =>  $rejectable_order,
                             'category_name' =>  $category_name 
                         ];
-                        \Log::info('dispatcher data');
-                        \Log::info($postdata);
+                      
                         if($order_vendor->is_restricted == 1)
                         {
                             $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -1032,7 +1031,7 @@ trait OrderTrait
         $tracking_url = get_tiny_url($tracking_url);
 
         $keyData = ['{user_name}' => $user['name'] ?? '', '{order_number}' => $order['order_number'] ?? '', '{track_url}' => $tracking_url ?? '', '{order_status}' => $order_status ?? ''];
-        //\Log::info($keyData);
+        ////\Log::info($keyData);
 
         $checkSeeder = SmsTemplate::where('slug', 'order-tracking-url')->count();
         if ($checkSeeder > 0) {
@@ -1041,7 +1040,7 @@ trait OrderTrait
             if (!empty($prefer['sms_provider'])) {
 
                 $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-                //\Log::info($send);
+                ////\Log::info($send);
             }
         }
     }
@@ -1069,7 +1068,7 @@ trait OrderTrait
 
 
         $keyData = ['{otp_code}' => $phoneCode ?? ''];
-        // \Log::info($keyData);
+        // //\Log::info($keyData);
 
         $checkSeeder = SmsTemplate::where('slug', 'otp-sms-tracking-url')->count();
         if ($checkSeeder > 0) {
@@ -1078,7 +1077,7 @@ trait OrderTrait
             if (!empty($prefer['sms_provider'])) {
 
                 $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-                //\Log::info($send);
+                ////\Log::info($send);
             }
         }
     }
@@ -1239,7 +1238,7 @@ trait OrderTrait
                 $cart = Cart::where('unique_identifier', session()->get('_token'))->where('order_id', $orderid)->first();
             endif;
             if (!empty($cart)) :
-                Log::info($cart);
+               // Log::info($cart);
                 CartProduct::where('cart_id', $cart->id)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 Cart::where('id', $cart->id)->delete();

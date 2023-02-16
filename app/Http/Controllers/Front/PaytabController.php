@@ -37,8 +37,8 @@ class PaytabController extends FrontController
     }
     public function callback(Request $request, $domain="")
     {
-        Log::info("Paytab Callback url");
-        Log::info($request->all());
+       // Log::info("Paytab Callback url");
+       // Log::info($request->all());
     } 
     public function returnBack(Request $request, $domain="")
     {
@@ -218,8 +218,8 @@ class PaytabController extends FrontController
     }
     public function after_app_payment(Request $request)
     {
-        Log::info('Paytab info');
-        Log::info($request->all());
+       // Log::info('Paytab info');
+       // Log::info($request->all());
         $user = User::where('auth_token', $request->auth_token)->first();
         Auth::login($user);
         $returnUrl = $this->sucessPayment($request);

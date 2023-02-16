@@ -486,8 +486,8 @@ class OrderController extends BaseController
                                             $order_vendor->user_to_vendor_time = intval($delivery_duration);
                                         }
                                         else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
-                                           // Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
-                                           // Log::info($order_vendor->order_pre_time);
+                                           //// Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
+                                           //// Log::info($order_vendor->order_pre_time);
                                            //$OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
                                             if($order_vendor->order_pre_time)
                                             $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
@@ -1096,7 +1096,7 @@ class OrderController extends BaseController
                     # if payment type cash on delivery or payment status is 'Paid'
                     if (( ($order->payment_option_id == 1 || $order->payment_option_id == 38 )) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                         # if vendor selected auto accept
-                        \Log::info('  autoAcceptOrderIfOn');
+                    
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
@@ -1146,7 +1146,6 @@ class OrderController extends BaseController
                 if ($request->status_option_id == 2) {
 
                     if ($request->shipping_delivery_type=='D') {
-                        \Log::info('  shipping_delivery_type D');
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
@@ -1174,7 +1173,7 @@ class OrderController extends BaseController
             }
             // } catch(\Exception $e){
             // DB::rollback();
-            // Log::info($e->getMessage());
+            //// Log::info($e->getMessage());
             // }
         }
     }
@@ -1190,7 +1189,7 @@ class OrderController extends BaseController
         $checkOrder = Order::findOrFail($request->order_id);
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
                 $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
-                // \Log::info($order_ship);
+                // //\Log::info($order_ship);
             }
             if ($order_ship->object_id){
                     $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])->update([
@@ -1322,13 +1321,13 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $luxury_option_id      = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_restricted         = $checkdeliveryFeeAdded->is_restricted;
-        \Log::info('luxury_option_id ' . $luxury_option_id );
+    
         if ($luxury_option_id == 6) { // only for on_demand type
             
             $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
            
             if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false) {
-                \Log::info('dispatch_domain_OnDemand in one ' );
+          
                 $OnDemand = 0;
                 foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                     $dispatch_domain = [
@@ -1341,8 +1340,7 @@ class OrderController extends BaseController
                     if(( $AdditionalPreference['is_service_product_price_from_dispatch'] == 1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
                        
                         $dispatch_domain['rejectable_order'] = 1;
-                        \Log::info('dispatch_domain_OnDemand dispatchre data ' );
-                        \Log::info($dispatch_domain );
+                        
                         $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
                         if ($order_dispatchs && $order_dispatchs == 1) {
                             $OnDemand = 1;
@@ -1554,7 +1552,7 @@ class OrderController extends BaseController
                 $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
             }
 
-           // Log::info($postdata);
+           //// Log::info($postdata);
             $client = new GCLIENT([
                 'headers' => [
                     'personaltoken' => $dispatch_domain->delivery_service_key,
@@ -2045,7 +2043,7 @@ class OrderController extends BaseController
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
-                Log::info("send order mail error".$e->getmessage());
+               // Log::info("send order mail error".$e->getmessage());
 
             }
         }
@@ -2646,8 +2644,8 @@ class OrderController extends BaseController
                     $response = Http::get($new_dispatch_traking_url);
   
                 } catch (\Exception $ex) {
-                    \Log::info('Error:');
-                    \Log::info(json_encode($ex->getMessage()));
+                    //\Log::info('Error:');
+                    //\Log::info(json_encode($ex->getMessage()));
                 }
 
 
@@ -2676,7 +2674,7 @@ class OrderController extends BaseController
            // $order['user_document_value'] =  $user_docs;
 
 
-        //    Log::info('order'.json_encode($order));
+        //   // Log::info('order'.json_encode($order));
             if(auth()->user()->is_admin){
                 $order['total_amount'] = $order->total_amount  - $total_markup_Price;
                 $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
@@ -3570,17 +3568,17 @@ class OrderController extends BaseController
         // Individual Vendor App User Token
         $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
-        // Log::info('vendorAppUserDevices');
-        // Log::info($vendorAppUserDevices);
-        // Log::info('vendor_fcm_server_key');
-        // Log::info($client_preferences->vendor_fcm_server_key);
+        //// Log::info('vendorAppUserDevices');
+        //// Log::info($vendorAppUserDevices);
+        //// Log::info('vendor_fcm_server_key');
+        //// Log::info($client_preferences->vendor_fcm_server_key);
         if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
             $from = $client_preferences->vendor_fcm_server_key;
             $data['registration_ids'] = $vendorAppUserDevices;
 
             $result = sendFcmCurlRequest($data,$from );
-            // Log::info('Vendor order notification');
-            // Log::info($result);
+            //// Log::info('Vendor order notification');
+            //// Log::info($result);
         }
     }
 
@@ -3766,8 +3764,8 @@ class OrderController extends BaseController
                 try {
                     $response = Http::get($order->ordervendor->dispatch_traking_url);
                 } catch (\Exception $ex) {
-                    \Log::info('Error:');
-                    \Log::info(json_encode($ex->getMessage()));
+                    //\Log::info('Error:');
+                    //\Log::info(json_encode($ex->getMessage()));
                 }
 
                 if (isset($response) && $response->status() == 200) {

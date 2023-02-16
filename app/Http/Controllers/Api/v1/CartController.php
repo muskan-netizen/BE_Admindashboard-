@@ -1590,7 +1590,7 @@ class CartController extends BaseController
 
 
         // if($is_recurring_booking ==1){
-        //     \Log::info('order_sub_total--'.$order_sub_total);
+        //     //\Log::info('order_sub_total--'.$order_sub_total);
         //    //Subtotal price multiply by no of days
         //    $order_sub_total            = $order_sub_total * $prod->recurring_date_count;
         //    $cart->gross_paybale_amount = $order_sub_total;
@@ -1688,8 +1688,8 @@ class CartController extends BaseController
 
         }catch(\Exception $ex)
         {
-            \Log::info('get Cart in api error');
-            \Log::info($ex->getMessage());
+            //\Log::info('get Cart in api error');
+            //\Log::info($ex->getMessage());
             return [];
         }
     }

@@ -14,7 +14,7 @@ trait InfluencerTrait
         if($user_id == 0){
             $user_id = Auth::user()->id;
         }
-        \Log::info("asdfads");
+        //\Log::info("asdfads");
         $folder = str_pad($user_id, 8, '0', STR_PAD_LEFT);
         $folder = 'client_' . $folder;
         $adhar_front = '';

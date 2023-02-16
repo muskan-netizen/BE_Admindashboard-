@@ -126,7 +126,7 @@ class MpesaController extends Controller
 
    public function createPayLink(Request $request)
    {
-    // \Log::info($request->all());
+    // //\Log::info($request->all());
     $number =  $this->orderNumber($request);
     $user = auth()->user();
     $this->credentials();

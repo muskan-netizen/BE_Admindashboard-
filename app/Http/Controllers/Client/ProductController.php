@@ -1305,7 +1305,7 @@ class ProductController extends BaseController
                                 
                                 $retResponse['tags'] = $response['tags'];
                             }
-            //                Log::info($response);
+            //               // Log::info($response);
                 }
                 return $retResponse;
             }
@@ -1334,11 +1334,11 @@ class ProductController extends BaseController
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }
-            //                Log::info($response);
+            //               // Log::info($response);
                 }
             }
             catch(\Exception $e){
-                // Log::info($e->getMessage());
+                //// Log::info($e->getMessage());
             }
     }
     # check if last mile delivery on

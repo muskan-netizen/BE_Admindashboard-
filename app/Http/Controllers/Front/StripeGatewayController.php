@@ -602,7 +602,7 @@ class StripeGatewayController extends FrontController
             //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
             // }
         } catch (\Exception $ex) {
-            Log::info($ex->getMessage());
+          Log::info($e->getMessage());
             return $this->errorResponse('Server Error', $ex->getCode());
         }
     }
@@ -811,7 +811,7 @@ class StripeGatewayController extends FrontController
             return $this->successResponse($payment_intent->client_secret);
         }
         catch (\Exception $ex) {
-            Log::info($ex->getMessage());
+          Log::info($e->getMessage());
             return $this->errorResponse('Server Error', $ex->getCode());
         }
     }
@@ -944,7 +944,7 @@ class StripeGatewayController extends FrontController
             return $this->successResponse($payment_intent);
         }
         catch (\Exception $ex) {
-            Log::info($ex->getMessage());
+          Log::info($e->getMessage());
             return $this->errorResponse('Server Error', $ex->getCode());
         }
     }
@@ -1100,7 +1100,7 @@ class StripeGatewayController extends FrontController
             return $this->successResponse($payment_intent);
         }
         catch (\Exception $ex) {
-            Log::info($ex->getMessage());
+          Log::info($e->getMessage());
             return $this->errorResponse('Server Error', $ex->getCode());
         }
     }
@@ -1199,7 +1199,7 @@ class StripeGatewayController extends FrontController
 
         $payload = @file_get_contents('php://input');
         $event = null;
-        // \Log::info($payload);
+        // //\Log::info($payload);
         try {
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
@@ -1216,7 +1216,7 @@ class StripeGatewayController extends FrontController
         switch ($event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
+                // //\Log::info($paymentIntent);
 
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
@@ -1332,10 +1332,10 @@ class StripeGatewayController extends FrontController
             
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
+                // //\Log::info($paymentIntent);
 
                 $meta = $paymentIntent->metadata;
-                // \Log::info($meta);
+                // //\Log::info($meta);
                 $user_id = $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){
@@ -1383,7 +1383,7 @@ class StripeGatewayController extends FrontController
 
         $payload = @file_get_contents('php://input');
         $event = null;
-        // \Log::info($payload);
+        // //\Log::info($payload);
         try {
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
@@ -1400,7 +1400,7 @@ class StripeGatewayController extends FrontController
         switch ($event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
+                // //\Log::info($paymentIntent);
 
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
@@ -1492,10 +1492,10 @@ class StripeGatewayController extends FrontController
             
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
+                // //\Log::info($paymentIntent);
 
                 $meta = $paymentIntent->metadata;
-                // \Log::info($meta);
+                // //\Log::info($meta);
                 $user_id = $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){
@@ -1594,7 +1594,7 @@ class StripeGatewayController extends FrontController
         switch ($event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
+                // //\Log::info($paymentIntent);
 
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
@@ -1677,10 +1677,10 @@ class StripeGatewayController extends FrontController
             
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
+                // //\Log::info($paymentIntent);
 
                 $meta = $paymentIntent->metadata;
-                // \Log::info($meta);
+                // //\Log::info($meta);
                 $user_id = $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){
@@ -1729,8 +1729,8 @@ class StripeGatewayController extends FrontController
 
         $payload = @file_get_contents('php://input');
 
-        // \Log::info('in webhook');
-        // \Log::info(json_encode($payload));
+        // //\Log::info('in webhook');
+        // //\Log::info(json_encode($payload));
         $event = null;
         try {
             $event = \Stripe\Event::constructFrom(
@@ -1746,7 +1746,7 @@ class StripeGatewayController extends FrontController
         switch ($event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
+                // //\Log::info($paymentIntent);
 
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
@@ -1829,10 +1829,10 @@ class StripeGatewayController extends FrontController
             
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
+                // //\Log::info($paymentIntent);
 
                 $meta = $paymentIntent->metadata;
-                // \Log::info($meta);
+                // //\Log::info($meta);
                 $user_id = $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){
@@ -1916,7 +1916,7 @@ class StripeGatewayController extends FrontController
     public function paymentWebViewStripeIdeal(Request $request, $domain='')
     {
         // try{
-            //\Log::info(json_encode($request->all()));
+            ////\Log::info(json_encode($request->all()));
             $auth_token = $request->auth_token;
             $user = User::where('auth_token', $auth_token)->first();
             Auth::login($user);
@@ -1943,7 +1943,7 @@ class StripeGatewayController extends FrontController
 
     public function webViewResponseStripeIdeal(Request $request)
     {
-            \Log::info(json_encode($request->all()));
+            //\Log::info(json_encode($request->all()));
         if($request->has('payment_intent')){
             $url = 'payment/gateway/returnResponse?status=0&gateway=stripe_ideal&action='.$request->payment_form;
             if($request->has('redirect_status') && ($request->redirect_status == 'succeeded')){
