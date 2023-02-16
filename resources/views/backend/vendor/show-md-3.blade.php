@@ -109,6 +109,8 @@
         </div>
     </div>
 </div> -->
+
+{{-- @if(auth()->user()->can('vendor-setting') || auth()->user()->is_superadmin) --}}
 @php
     $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
 @endphp
@@ -738,7 +740,7 @@
     }
 </style>
 
-
+@if(auth()->user()->can('vendor-add-users') || auth()->user()->is_superadmin)
  <div class="card-box">
     <h4 class="header-title mb-0 mt-2 d-inline-block align-middle">{{ __('Users') }}</h4>
     <h4 class="header-title mb-0 float-right"><a class="btn addUsersBtn" dataid="0" href="javascript:void(0);"><i class="mdi mdi-plus-circle mr-1" ></i> {{ __("Add Users") }}
@@ -769,7 +771,7 @@
         @endforeach
     </div>
 </div>
-
+@endif
 <div id="manageSocialMedia" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg social_manage">
         <div class="modal-content">

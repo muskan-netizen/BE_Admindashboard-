@@ -1994,6 +1994,16 @@
                                     @endif
                                 </div>
                             </div>
+                        </div>
+                        {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
+                  <input type="hidden" name='is_hubspot' value='1'> --}}
+                        {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
+                        @php
+                            $allRoles = \App\Models\RoleOld::get();
+                        @endphp
+                        <hr />
+                        {{-- <div class="row hub_row alCustomToggleColor"
+                            style="{{ isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1 ? '' : 'display:none;' }}">
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="mazinhost_sender_id">{{ __('Sender ID') }}</label>
@@ -2007,7 +2017,7 @@
                                     @endif
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- For unifonic_fields -->
                         <div class="row sms_fields mx-0" id="unifonic_fields"
@@ -2568,9 +2578,6 @@
                     {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
                   <input type="hidden" name='is_hubspot' value='1'> --}}
                     {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
-                    @php
-                        $allRoles = \App\Models\Role::get();
-                    @endphp
                     <hr />
                     <div class="row hub_row alCustomToggleColor"
                         style="{{ isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1 ? '' : 'display:none;' }}">
@@ -2692,6 +2699,84 @@
             
             </form>
         </div><!-- Post Pay Card end -->
+    </div>
+
+
+
+    <div class="row">
+        {{-- Third party Accounting --}}
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">Third party Accounting</h4>
+            </div>
+
+            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                @csrf
+                <input type="hidden" name="third_party_accounting_config" id="third_party_accounting_config" value="1">
+                <!-- HubSpot card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head text-uppercase">
+                                        <span>{{ __('Third party Accounting') }}</span>
+                                    </h5>
+
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                                <p class="sub-header">
+                                    {{ __('Enable to use third party Accounting.') }}
+                                </p>
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                    <label for="third_party_accounting" class="mr-2 mb-0">{{ __('Third party Accounting') }}</label>
+                                    <span> <input type="checkbox" data-plugin="switchery"
+                                            name="third_party_accounting" id="third_party_accounting"
+                                            class="form-control" data-color="#43bee1"
+                                            @if (isset($preference) && $preference->third_party_accounting == '1') checked='checked' @endif>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-0" id="xero_config_div" style="@if (isset($preference) && $preference->third_party_accounting == 1) '' @else display:none; @endif">
+                                <hr/>
+                                <div class="row">
+                                    <div class="col-12">
+                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                        <label for="xero_enable_switch" class="mr-3">{{ __("Xero Configuration") }} <br/><small>{{__('View and update your Xero Keys')}}</small></label>
+                                        <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if((isset($accounting) && $accounting->status == '1')) checked='checked' @endif>
+                                    </div>
+                                        @php
+                                        $creds = json_decode($accounting->credentials);
+                                        @endphp
+                                        <div class="mt-2 xeroFields" @if($accounting->status != 1) style="display:none" @endif>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group mb-2">
+                                                    <label for="xero_client_id">{{ __("Client ID") }}</label>
+                                                    <input type="text" name="xero_client_id" id="xero_client_id" placeholder="" class="form-control" value="{{ old('xero_client_id', $creds->client_id ?? '')}}">
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-group mb-2">
+                                                    <label for="xero_secret_id">{{ __("Secret ID") }}</label>
+                                                    <input type="text" name="xero_secret_id" id="xero_secret_id" placeholder="" class="form-control" value="{{ old('xero_secret_id', $creds->secret_id ?? '')}}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div><!-- HubSpot card end -->
+            </form>
+        </div>
+        {{-- ends here Third party Accounting form --}}
     </div>
 
 
@@ -3691,6 +3776,33 @@
         if (delivery_option > 0) {
             delivery_option[0].onchange = function() {
                 optionsChecked("delivery_check");
+            }
+        }
+
+        var third_party_accounting = $('#third_party_accounting');
+
+        third_party_accounting[0].onchange = function() {
+            if ($('#third_party_accounting:checked').length != 1) {
+                $('#xero_config_div').hide();
+                if($('#xero_enable_switch').is(':checked')==1){
+                    $('#xero_enable_switch').trigger("click");
+                }
+            } else {
+                $('#xero_config_div').show();
+            }
+        }
+
+        var xero_enable_switch = $('#xero_enable_switch');
+        if(xero_enable_switch.length > 0){
+            xero_enable_switch[0].onchange = function() {
+
+                if ($('#xero_enable_switch:checked').length != 1) 
+                {
+                    $("#xero_client_id").val('');$("#xero_secret_id").val('');
+                    $('.xeroFields').hide();
+                } else {
+                    $('.xeroFields').show();
+                }
             }
         }
 

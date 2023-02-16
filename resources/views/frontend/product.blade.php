@@ -1258,7 +1258,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
 
     
     $(document).ready(function(){
-        var cutOff_time = "{{$current_time_response}}";
+        var cutOff_time = "{{@$current_time_response}}";
         var date_var;
         
         if( cutOff_time == 1) {

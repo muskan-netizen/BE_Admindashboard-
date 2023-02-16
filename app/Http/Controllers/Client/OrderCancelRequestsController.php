@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Http\Controllers\AhoyController;
 use DB;
 use Log;
 use Auth;
@@ -15,6 +16,10 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
+use App\Http\Controllers\DunzoController;
+use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\Front\QuickApiController;
+use App\Http\Controllers\ShiprocketController;
 use App\Models\{AutoRejectOrderCron, Order, OrderStatusOption, OrderCancelRequest, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, VendorOrderDispatcherStatus, Tax, Transaction, User};
 use App\Http\Traits\ReturnExchangeTrait;
 
@@ -276,6 +281,30 @@ class OrderCancelRequestsController extends BaseController
             $cancel_req->updated_by = $user->id;
             $cancel_req->vendor_reject_reason = $vendor_reject_reason;
             $cancel_req->update();
+
+            //Need to cancel order from delivery panel
+            if ($currentOrderStatus->shipping_delivery_type == 'DU') {
+                //Cancel Dunzo place order request for Dunzo
+                $ship = new DunzoController();
+               $res = $ship->cancelOrderRequestDunzo($currentOrderStatus->web_hook_code);
+        }elseif($currentOrderStatus->shipping_delivery_type=='L'){
+            //Cancel Shipping place order request for Lalamove
+            $lala = new LalaMovesController();
+            $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
+        }elseif ($currentOrderStatus->shipping_delivery_type == 'K') {
+            //Cancel Shipping place order request for KwikApi
+            $lala = new QuickApiController();
+            $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
+        }elseif($currentOrderStatus->shipping_delivery_type=='SR'){
+            //Cancel Shipping place order request for Shiprocket
+            $ship = new ShiprocketController();
+            $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
+        }elseif($currentOrderStatus->shipping_delivery_type=='M'){
+            //Create Shipping place order request for Ahoy
+            $ship = new AhoyController();
+            $order_ship = $ship->cancelOrderRequestAhoy($currentOrderStatus->web_hook_code);
+        }
+
             DB::commit();
             $this->sendCancelOrderRequestStatusNotification($currentOrderStatus, $status);
             return $this->successResponse('', __('Request has been ' . $msg . ' Successfully.'));
