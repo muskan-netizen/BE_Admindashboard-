@@ -871,7 +871,7 @@ $timezone = Auth::user()->timezone;
                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Pending Amount') }}</label>
                                                                     <span id="advance_cart_total_payable_amount_pending_{{$order->id}}">{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
-                                                                    <button data-id={{$order->id}} data-order={{$order->order_number}} data-amount={{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}  class="btn btn-solid order_placed_btn_pending topup_wallet_btn_for_pending" type="button">Pay</button>
+                                                                    <button data-id={{$order->id}} data-order={{$order->order_number}} data-amount={{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}  class="btn btn-solid order_placed_btn_pending btn_for_pending" type="button">Pay</button>
                                                                 </li>
                                                                 @endif
                                                                 {{-- till here --}}
@@ -1680,26 +1680,20 @@ $timezone = Auth::user()->timezone;
 
 
 
-      $(document).delegate(".order_placed_btn_pending", "click", function() {
-
-                    var dataId = $(this).attr("data-id");
-                    var amount = $(this).attr("data-amount");
-                    var order_number = $(this).attr("data-order");
-                    $("#order_number").val(order_number);
-                    $('#pending_amount').val(amount);
-          $('#pending_amount_modal').modal('show');
-         var payable_amount = $(this).attr('data-payableamount');
-        //  if(payable_amount > 0)
-        //  {
-        //     $('#topup_wallet').modal('show');
-        //  }
+$(document).delegate(".order_placed_btn_pending", "click", function() {
+        var dataId = $(this).attr("data-id");
+        var amount = $(this).attr("data-amount");
+        var order_number = $(this).attr("data-order");
+        $("#order_number").val(order_number);
+        $('#pending_amount').val(amount);
+        $('#pending_amount_modal').modal('show');
+        var payable_amount = $(this).attr('data-payableamount');
         var input_name = "select" + order_number;
         $('.wallet_balance').html(amount);
-         
         $("#pending_amount").val(amount);
-        $("#wallet_amount_pending").val(amount);
+        $("#amount_pending").val(amount);
         $("#order_number").val(order_number);
-    });
+});
 
 
 

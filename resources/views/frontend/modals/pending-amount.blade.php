@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header border-bottom">
-          <h5 class="modal-title text-17 mb-0 mt-0" id="topup_walletLabel">{{__('Tip Amount')}}</h5>
+          <h5 class="modal-title text-17 mb-0 mt-0" id="topup_walletLabel">Pending Amount</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -17,20 +17,20 @@
 
               <div class="form-group">
 
-                  <input class="form-control" name="wallet_amount_pending" id="wallet_amount_pending" type="hidden" placeholder="Enter Amount">
+                  <input class="form-control" name="amount_pending" id="amount_pending" type="hidden" placeholder="Enter Amount">
                   <input class="form-control" name="tip_for_past_order" id="tip_for_past_order" type="hidden" value="1">
                   <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
                   <input type="hidden" name="order_number" id="order_number" value="0">
-                  <span class="error-msg" id="wallet_amount_error_pending"></span>
+                  <span class="error-msg" id="amount_error_pending"></span>
               </div>
                <hr class="mt-0 mb-1" />
               <div class="payment_response">
                   <div class="alert p-0 m-0" role="alert"></div>
               </div>
               <h5 class="text-17 mb-2">{{__('Debit From')}}</h5>
-              <div class="form-group" id="wallet_payment_methods_pending">
+              <div class="form-group" id="payment_methods_pending">
               </div>
-              <span class="error-msg" id="wallet_payment_methods_error_pending"></span>
+              <span class="error-msg" id="payment_methods_error_pending"></span>
           </div>
           <div class="modal-footer d-block text-center">
               <div class="row">

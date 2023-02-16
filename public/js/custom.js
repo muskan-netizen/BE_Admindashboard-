@@ -1299,7 +1299,7 @@ $(document).ready(function () {
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
-        let pending_amount = $("input[name='wallet_amount_pending']");
+        let pending_amount = $("input[name='amount_pending']");
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
         // let payment_option_id = paymentAjaxData.payment_option_id;
@@ -5570,113 +5570,7 @@ function numberWithCommas(x) {
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
 
-//pending payment 
-$(document).on("click", ".pending_payment", function () {
-    var wallet_amount = $('#wallet_amount').val();
-    let total_amount = $("input[name='cart_total_payable_amount']").val();
-    let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
-    if(payment_option_id == undefined){
-        success_error_alert('error', 'Please select payment option', ".payment_response");
-        return false;
-    }
 
-    if(payment_option_id == 49){
-        cno = $('#plugnpay-card-element').val();
-        dt = $('#plugnpay-date-element').val();
-        cv = $('#plugnpay-cvv-element').val();
-        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
-        {
-            success_error_alert('error', 'Please Fill Details', ".payment_response");
-            return false;
-        }
-    }
-    // $(".topup_wallet_confirm").attr("disabled", true);
-    // $('#topup_wallet').modal('hide');
-    walletPaymentOPtions(payment_option_id);
-
-});
-
-
-
-$(document).delegate(".topup_wallet_btn_for_pending", "click", function () {
-    // var order_number = $(this).data('order_number');
-    // var tip_radio = $("input:radio.tip_radio:checked").val();
-    // var custom_tip = $('#custom_tip_amount'+order_number).val();
-    // if(tip_radio == 'custom')
-    // {
-    //     if(custom_tip <= 0 )
-    //     {
-    //         // swal('Waring!','Tip must be greater than 0','warning');
-    //         // return false;
-    //     }
-    // }
-    $.ajax({
-        data: {},
-        type: "POST",
-        async: false,
-        dataType: 'json',
-        url: wallet_payment_options_url,
-        success: function (response) {
-            if (response.status == "Success") {
-                $('#wallet_payment_methods_pending').html('');
-                let payment_method_template = _.template($('#payment_method_template').html());
-                $("#wallet_payment_methods_pending").append(payment_method_template({ payment_options: response.data }));
-                if (response.data == '') {
-                    $("#pending_amount_modal .topup_wallet_confirm_pending").hide();
-                } else {
-                    if(stripe_publishable_key != ''){
-                        stripeInitialize();
-                    }
-                    if(stripe_fpx_publishable_key != ''){
-                        stripeFPXInitialize();
-                    }
-                    if(stripe_ideal_publishable_key != ''){
-                        stripeIdealInitialize();
-                    }
-
-                }
-            }
-        },
-        error: function (error) {
-            var response = $.parseJSON(error.responseText);
-            let error_messages = response.message;
-        }
-    });
-});
-
-
-$(document).on("click", ".topup_wallet_confirm_pending", function () {
-    var wallet_amount = $('#wallet_amount_pending').val();
-    let payment_option_id = $('#wallet_payment_methods_pending input[name="wallet_payment_method"]:checked').data('payment_option_id');
-    if ((wallet_amount == undefined || wallet_amount <= 0) && (amount_required_error_msg != undefined)) {
-        $('#wallet_amount_error_pending').html(amount_required_error_msg);
-        return false;
-    } else {
-        $('#wallet_amount_error_pending').html('');
-    }
-
-    if(payment_option_id == 49){
-        cno = $('#plugnpay-card-element').val();
-        dt = $('#plugnpay-date-element').val();
-        cv = $('#plugnpay-cvv-element').val();
-        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
-        {
-            success_error_alert('error', 'Please Fill Details', ".payment_response");
-            return false;
-        }
-    }
-
-    if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
-        $('#wallet_payment_methods_error_pending').html(payment_method_required_error_msg);
-        return false;
-    } else {
-        $('#wallet_payment_methods_error_pending').html('');
-    }
-    // $(".topup_wallet_confirm_pending").attr("disabled", true);
-    // $('#topup_wallet').modal('hide');
-    walletPaymentOPtions(payment_option_id);
-
-});
 
 
 
