@@ -288,6 +288,12 @@
                                         </span>
                                         @endif
                                     </div>
+                                    <div class="form-group mt-2 mb-0">
+                                        <label for="whatsapp_url">Footer Bottom Name</label>
+                                        <input type="hidden" name="bottom_name" value="bottom_name">
+                                        <input type="text" name="bottom_value" id="bottom_value" placeholder="" class="form-control" value="{{old('bottom_value',$bottom_name)}}">
+                                      
+                                    </div>
                                 </div>
                             </div>
                         </div>

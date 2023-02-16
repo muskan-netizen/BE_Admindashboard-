@@ -81,8 +81,9 @@ class WebStylingController extends BaseController{
        //type = 0 for Web products
        $selected_ids= $this->getHomePageSelectedProducts(0);
        $select_products= $this->getProducts([],'all');
-
-        return view('backend/web_styling/index')->with(['products' => $products, 'selectedProducts' => $selectedProducts, 'categories' => $categories, 'clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId,'orderDeliveryIcons'=>$orderDeliveryIcons, 'single_category_products'=> $single_category_products, 'selected_single_category_products' => $selected_single_category_products,'selected_ids'=>$selected_ids,'select_products'=> $select_products]);
+        $bottom_name = ClientPreferenceAdditional::where(['client_code'=>$user->code,'key_name'=>'bottom_name'])->first();
+        
+        return view('backend/web_styling/index')->with(['products' => $products, 'selectedProducts' => $selectedProducts, 'categories' => $categories, 'clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId,'orderDeliveryIcons'=>$orderDeliveryIcons, 'single_category_products'=> $single_category_products, 'selected_single_category_products' => $selected_single_category_products,'selected_ids'=>$selected_ids,'select_products'=> $select_products,'bottom_name'=>($bottom_name->key_value??'')]);
     }
 
 
@@ -93,7 +94,7 @@ class WebStylingController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function updateWebStyles(Request $request){
-        // dd($request->all());
+        //  dd($request->all());
         if($request->has('home_labels')){
             foreach ($request->home_labels as $key => $value) {
                 $home_translation = HomePageLabelTranslation::where('language_id', $request->languages[$key])->where('home_page_label_id', $request->home_labels[$key])->first();
@@ -694,7 +695,12 @@ class WebStylingController extends BaseController{
         $client->contact_email =  $request->contact_email ;
         if($request->has('whatsapp_url'))
         $client->whatsapp_url =  $request->whatsapp_url;
-
+        if($request->has('bottom_value')){
+            ClientPreferenceAdditional::updateOrCreate(['key_name'=>$request->bottom_name,'client_code'=>$user->code],[
+                'key_name'=>$request->bottom_name,
+                'key_value'=>$request->bottom_value
+            ]);
+        }
         $client->save();
         return redirect()->back()->with('success', 'Contact Us Updated successfully!');
     }
