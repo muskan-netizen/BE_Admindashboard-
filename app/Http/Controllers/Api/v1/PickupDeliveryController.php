@@ -85,7 +85,7 @@ class PickupDeliveryController extends BaseController{
 
                     if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
                     {
-                        Log::info($request->no_seats_for_pooling);
+                       // Log::info($request->no_seats_for_pooling);
                         $products = $products->where('products.available_for_pooling', 1);
                         if(isset($request->no_seats_for_pooling))
                         {
@@ -1287,7 +1287,7 @@ class PickupDeliveryController extends BaseController{
 
 
             if(!empty($order_vendor->web_hook_code)){
-                Log::info("web hook found");
+               // Log::info("web hook found");
                 $request_to_dispatch = $this->updateOrderRequestToDispatch($request, $order, $vendor_id);
             }
             DB::commit();
@@ -1562,7 +1562,7 @@ class PickupDeliveryController extends BaseController{
                     'task_type'   => $request->task_type,
                     'agent_id'    => $request->agent_id,
                 ];
-                Log::info($postdata);
+               // Log::info($postdata);
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                     'content-type' => 'application/json']

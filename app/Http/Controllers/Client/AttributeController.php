@@ -518,10 +518,10 @@ class AttributeController extends BaseController
             }
         }
         catch(\Exception $e) {
-            \Log::info('######### Attribute Update Error #########');
-            \Log::info($e->getLine());
+            //\Log::info('######### Attribute Update Error #########');
+            //\Log::info($e->getLine());
             \Log::info($e->getMessage());
-            \Log::info('######### Attribute Update Error End #########');
+            //\Log::info('######### Attribute Update Error End #########');
             return response()->json(array('success' => false));
         }
     }

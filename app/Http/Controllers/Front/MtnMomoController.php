@@ -154,7 +154,7 @@ class MtnMomoController extends FrontController
             $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
             curl_close($curl);
-            Log::info('access_token'.json_encode($status));
+           // Log::info('access_token'.json_encode($status));
             if($status == 200){
                 $result = json_decode($response,true);
 
@@ -272,12 +272,12 @@ class MtnMomoController extends FrontController
             $payment_status = $result['status'];
             if($payment_status == 'SUCCESSFUL'){
                 $transactionId = $result['financialTransactionId'];
-                Log::info('payment'.json_encode($result));
+               // Log::info('payment'.json_encode($result));
                 return self::sucessPayment($data,$transactionId);
             }
         }
 
-        Log::info('status'.json_encode($status));
+       // Log::info('status'.json_encode($status));
 
 
     }

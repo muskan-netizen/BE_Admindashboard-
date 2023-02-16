@@ -62,7 +62,7 @@ class DispatcherController extends Controller
 
     //         $response = Http::withHeaders($headers)->post($url, $postData);
     //         $statusCode = $response->getStatusCode();
-    //         \Log::info(json_encode($response));
+    //         //\Log::info(json_encode($response));
     //         if($statusCode == 200) {
     //             return true;
     //         }

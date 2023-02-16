@@ -180,7 +180,7 @@ trait PlugnpaypaymentManager
          * transaction status. All the documented plugnpay fields should be
          * valid in pnp_transation_array.
          */
-        \Log::info(json_encode($pnp_transaction_array));
+        //\Log::info(json_encode($pnp_transaction_array));
         return json_encode($pnp_transaction_array);
     }
     // public function createPaymentRequest($data)
@@ -275,7 +275,7 @@ trait PlugnpaypaymentManager
 
     // $response = curl_exec($curl);
     // curl_close($curl);
-    // Log::info($response);
+    //// Log::info($response);
     // return json_decode($response);
     // }
 }

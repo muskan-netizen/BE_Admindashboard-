@@ -2749,7 +2749,7 @@
                                         <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if((isset($accounting) && $accounting->status == '1')) checked='checked' @endif>
                                     </div>
                                         @php
-                                        $creds = json_decode($accounting->credentials);
+                                        $creds = (isset($accounting) && !empty($accounting)) ? json_decode($accounting->credentials) : [];
                                         @endphp
                                         <div class="mt-2 xeroFields" @if($accounting->status != 1) style="display:none" @endif>
                                         <div class="row">

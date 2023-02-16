@@ -146,7 +146,7 @@ class InventoryController extends Controller
         try{
 
             if(@$request->products && is_array($request->products)){
-                \Log::info($request->all());
+                //\Log::info($request->all());
                 DB::beginTransaction();
                 $order_vendor_id = $request->order_vendor_id;
                 $synced_product = [];

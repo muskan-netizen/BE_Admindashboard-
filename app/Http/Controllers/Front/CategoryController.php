@@ -561,7 +561,7 @@ class CategoryController extends FrontController{
             }
             // Dynamic search fields
             if($getAdditionalPreference['is_attribute']) {
-                // \Log::info(json_encode($request->dynamic_options));
+                // //\Log::info(json_encode($request->dynamic_options));
                 if( !empty($request->dynamic_options) ) {
                     foreach($request->dynamic_options as $key => $val) {
                         foreach($val as $inn_key => $inn_val) {
