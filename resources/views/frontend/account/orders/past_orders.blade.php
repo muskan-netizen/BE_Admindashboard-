@@ -26,8 +26,8 @@
                     <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                 </div>
                 <div class="col-md-3 alOrderStatus">
-                    <h4>{{ __('Customer Name') }}</h4>
-                    <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
+                    <h4>{{ __('Vendor Name') }}</h4>
+                    <span><a class="text-capitalize">{{ $order->vendors[0]->vendor->name }}</a></span>
                 </div>
                 @if ($client_preference_detail->business_type != 'taxi')
                 <div class="col-md-3">
@@ -222,7 +222,17 @@
                                                 </li>
                                             @endif
                                         @endif
-                                        @if(@$rental_return)
+                                        @php
+                                            if(@$product && @$product->end_date_time){
+                                                $product_end_date = $product->end_date_time;
+                                                $todayDate = \Carbon\Carbon::now('Asia/Kolkata');
+                                                $show_return_btn = false;
+                                                if ($todayDate >= $product_end_date){
+                                                    $show_return_btn = true;
+                                                }
+                                            }
+                                        @endphp
+                                        @if(@$rental_return && $show_return_btn)
                                         @if(@$product->productReturn->type && $product->productReturn->type == 1)
                                         <li>
                                         {{__('Return')}} {{$product->productReturn->status}}

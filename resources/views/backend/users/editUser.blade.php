@@ -148,7 +148,22 @@
                                     </div>
                                 @endif
                             @endif
-
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    {!! Form::label('title', __('Email Verified'),['class' => 'control-label']) !!}
+                                    <div>
+                                        <input type="checkbox" data-plugin="switchery" name="is_email_verified" class="form-control email_verify_add" @if($subadmin->is_email_verified == 1) checked @endif>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    {!! Form::label('title', __('Phone Verified'),['class' => 'control-label']) !!}
+                                    <div>
+                                        <input type="checkbox" data-plugin="switchery" name="is_phone_verified" class="form-control phone_verify_add" @if($subadmin->is_phone_verified == 1) checked @endif>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
 

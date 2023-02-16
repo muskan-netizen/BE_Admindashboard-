@@ -303,7 +303,7 @@ class ProductController extends FrontController{
                             $product_attr[$key]['hexacode'] = optional($value->attributeOption)->hexacode ?? '';
                             $product_attr[$key]['type'] = optional($value->attribute)->type ?? '';
                             
-                            if( !empty($value->attribute) && $value->attribute->type != 4 && $value->attribute->type != 6) {
+                            if( !empty($value->attribute) && $value->attribute->type != 4 && $value->attribute->type != 6 && $value->attribute->type != 7) {
                                 $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
                             }
                             else {
