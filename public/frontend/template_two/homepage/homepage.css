@@ -442,7 +442,7 @@ body[dir=rtl] .slick-prev {
     }
 }
 .al_body_template_two .margin-res .product-image img {
-    padding: 20px;
+    padding: 0;
     height: auto !important;
 }
 .al_body_template_two .margin-res{margin-top: 10px;}
