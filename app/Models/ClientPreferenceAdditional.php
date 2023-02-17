@@ -8,6 +8,7 @@ class ClientPreferenceAdditional extends Model
 {
   protected $table = 'client_preference_additional';
     protected $fillable = [
+      'client_id',
       'client_code',
       'key_name',
       'key_value',

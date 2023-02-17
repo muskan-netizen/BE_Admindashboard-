@@ -706,6 +706,7 @@ class UserhomeController extends FrontController
         /**
          * put a limit to get vendors.
          */
+        $long_term_vendors = $vendors;
         $vendors = $vendors->where('status', 1)
                     ->inRandomOrder()
                     ->limit(10)->get();
@@ -863,9 +864,11 @@ class UserhomeController extends FrontController
                 'compare_price' =>@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,
                 'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
                 'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
-                'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
+                'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug,
+                'category_type' => $new_product_detail->category->categoryDetail->type_id ?? 0
             );
         }
+        
         foreach ($feature_product_details as  $feature_product_detail) {
             $multiply = $feature_product_detail->variant->first()->multiplier ?? 1;
             $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
@@ -894,7 +897,8 @@ class UserhomeController extends FrontController
                 'price_numeric' =>@$feature_product_detail->variant->first()->price??0 * $multiply,
                 'compare_price' =>@$feature_product_detail->variant->first()->compare_at_price??0 * $multiply,
                 'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$feature_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply,',')),
-                'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
+                'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug,
+                'category_type' => $new_product_detail->category->categoryDetail->type_id ?? 0
             );
         }
         
@@ -928,15 +932,17 @@ class UserhomeController extends FrontController
                 'compare_price' => @$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply,
                 'price_numeric' =>@$on_sale_product_detail->variant->first()->price??0 * $multiply,
                 'category' => (!empty($on_sale_product_detail->category) && !empty($on_sale_product_detail->category->categoryDetail) 
-                && !empty($on_sale_product_detail->category->categoryDetail->translation)) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
+                && !empty($on_sale_product_detail->category->categoryDetail->translation)) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??'',
+                'category_type' => $new_product_detail->category->categoryDetail->type_id ?? 0
             );
         }
+        // dd($on_sale_products);
         $top_rated_products = '';
 
          //get long term service 
         $long_term_service_products =[];
         if( @$additionalPreference['is_long_term_service'] == 1){
-            $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type,$p_dim);
+            $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $language_id, $currency_id,'', $request->type,$p_dim);
         }
           
         if($this->checkTemplateForAction(8)){
@@ -1023,6 +1029,7 @@ class UserhomeController extends FrontController
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
             'active_orders' => $activeOrders,
+            'long_term_service' => $long_term_service_products,
             
         ];
        
