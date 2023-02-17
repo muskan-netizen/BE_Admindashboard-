@@ -1409,7 +1409,7 @@ trait CartManagerV2{
                 $taxChargeable['total_markup_charges'] = $total_markup_charges;
                 $taxChargeable['total_container_charges'] = $total_container_charges;
 
-                $getalltaxes = $this->getAllOthertaxes($vendorData,$taxChargeable,$taxCharges);
+                $getalltaxes = $this->getAllOthertaxesV2($vendorData, $taxChargeable, $taxCharges);
 
                 $taxCharges['deliver_fee_charges'] = $getalltaxes->deliver_fee_charges??0;
                 $taxCharges['total_service_fee'] = $getalltaxes->total_service_fee??0;
@@ -1608,7 +1608,7 @@ trait CartManagerV2{
                 $cart->without_category_kyc = 1;
             }
 
-            $other_taxes=array_sum($taxCharges);
+            $other_taxes = array_sum($taxCharges);
             $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'].',product_tax_fee:'.$total_taxable_amount;;
 
 
@@ -1721,11 +1721,11 @@ trait CartManagerV2{
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
-            $cart->sub_total =  $sub_total??0;
+            $sub_total = $sub_total??0 ;
+            $cart->sub_total =  $sub_total - $cart->bid_total_discount;
             $cart->sub_total_inc_tax =  decimal_format($cart->sub_total + $total_taxable_amount);
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
-            // pr($cart->toArray());
             $cart->products = $cartData->toArray();
         }
         return $cart;
