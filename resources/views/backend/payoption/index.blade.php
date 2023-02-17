@@ -1235,7 +1235,6 @@
 										@if($opt->status == 1) required @endif>
 								</div>
 							</div>
-
 							<div class="col-12">
 								<div class="form-group mb-2">
 									<label for="azul_ssl_certificate" class="mr-3">{{ __("SSL
