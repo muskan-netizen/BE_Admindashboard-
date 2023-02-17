@@ -165,6 +165,25 @@ $(document).ready(function () {
         }
 
     });
+    
+    // PlugPay payment
+
+    $(document).on("click", "#paywithazulpay",function() {
+
+        cno = $('#azul-card-element').val();
+        dt  = $('#azul-date-element').val();
+        cv  = $('#azul-cvv-element').val();
+        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+        {
+            success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+            return false;
+        }else{
+            $("#pickup_now, #pickup_later").trigger('click');
+            $('#paywithazulpay').prop('disabled',true);
+        }
+
+    });
+    
     $(document).on("click", ".right-top",function() {
         var payment_option_id = $(".select_cab_payment_method:checked").val();
         if(payment_option_id == 49){
@@ -174,6 +193,15 @@ $(document).ready(function () {
            $('#plugnpay-card-element').val('');
            $('#plugnpay-date-element').val('');
            $('#plugnpay-cvv-element').val('');
+        }
+        
+          if(payment_option_id == 50){
+           $("#azul_card_error").empty();
+           $("#proceed_to_azulpay_loader").hide();
+           $('#paywithazulpay').prop('disabled',false);
+           $('#azul-card-element').val('');
+           $('#azul-date-element').val('');
+           $('#azul-cvv-element').val('');
         }
     });
 
@@ -199,6 +227,25 @@ $(document).ready(function () {
                 $("#proceed_to_pay_loader").show();
             }
         }
+        
+         if(payid == 50){
+            cno = $('#azul-card-element').val();
+            dt  = $('#azul-date-element').val();
+            cv  = $('#azul-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                $('#azulpaymethod').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $("#proceed_to_azulpay_loader").hide();
+                $('#paywithazulpay').prop('disabled',false);
+                return false;
+            }else{
+                $("#proceed_to_azulpay_loader").show();
+            }
+        }
+        
 
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
@@ -339,6 +386,10 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 49){
                         paymentViaplugnpay(reload_route,'',response.data);
+                    }
+                     else if(payment_option_id == 50){
+                        
+                        paymentViazulpay(reload_route,'',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{

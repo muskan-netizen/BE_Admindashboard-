@@ -401,6 +401,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
         var ajaxCall = 'ToCancelPrevReq';
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
+         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";    
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
         var create_payphone_url = "{{route('payphone.createHash')}}";
         var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
