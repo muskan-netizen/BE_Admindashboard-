@@ -368,10 +368,16 @@
 
                                                     </div>
                                                     @if ($cart_details->pharmacy_check == 1)
+                                                    @php
+                                                        $class = '';
+                                                        if($vendor_product->product->validate_pharmacy_check == 1){
+                                                            $class = 'validate_prescription';
+                                                        }
+                                                    @endphp
                                                     
                                                     @if ($vendor_product->product->pharmacy_check == 1)
                                                         <button type="button"
-                                                            class="float-left btn btn-solid prescription_btn mt-2"
+                                                            class="float-left btn btn-solid prescription_btn mt-2 {{$class}}"
                                                             data-cart="{{ $vendor_product->cart_id }}"
                                                             data-product="{{ $vendor_product->product->id }}"
                                                             data-vendor_id="{{ $vendor_product->vendor_id }}" data-cart_product_prescription="{{ $vendor_product->cart_product_prescription??0 }}">{{ __('Add Prescription') }}</button>

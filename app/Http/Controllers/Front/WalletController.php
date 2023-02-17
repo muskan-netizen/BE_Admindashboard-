@@ -111,8 +111,10 @@ class WalletController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function paymentOptions(Request $request, $domain = ''){
-        $ex_codes = ['cod','offline_manual'];
-        $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereNotIn('code', $ex_codes)->where('status', 1)->get();
+        $ex_codes = ['offline_manual'];
+        $code = array('cod','stripe', 'dpo','azul', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti','mtn_momo','plugnpay');
+
+        $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->whereNotIn('code', $ex_codes)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {
             if( (!empty($payment_option->credentials)) ){
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));

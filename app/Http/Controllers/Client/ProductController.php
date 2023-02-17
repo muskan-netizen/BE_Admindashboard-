@@ -477,6 +477,7 @@ class ProductController extends BaseController
             $product->is_featured               = ($request->has('is_featured') && $request->is_featured == 'on') ? 1 : 0;
             $product->is_physical               = ($request->has('is_physical') && $request->is_physical == 'on') ? 1 : 0;
             $product->pharmacy_check            = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
+            $product->validate_pharmacy_check            = ($request->has('validate_prescription_check') && $request->validate_prescription_check == 'on') ? 1 : 0;
             $product->individual_delivery_fee   = ($request->has('individual_delivery_fee') && $request->individual_delivery_fee == 'on') ? 1 : 0;
             $product->returnable        = ($request->has('returnable') && $request->returnable == 'on') ? 1 : 0;
             $product->spotlight_deals        = ($request->has('spotlight_deals') && $request->spotlight_deals == 'on') ? 1 : 0;

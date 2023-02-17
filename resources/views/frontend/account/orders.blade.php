@@ -486,8 +486,7 @@ $timezone = Auth::user()->timezone;
 <!-- tip after order complete -->
 @include('frontend.modals.tip_after_order')
 
-<!-- tip after order complete -->
-@include('frontend.modals.extend_order_payment')
+
 
 <!-- end tip order after complete -->
 <!-- repeat order modal -->
@@ -535,6 +534,10 @@ $timezone = Auth::user()->timezone;
 
 @endsection
 @section('script')
+
+<!-- tip after order complete -->
+@include('frontend.modals.extend_order_payment')
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -633,6 +636,7 @@ $timezone = Auth::user()->timezone;
     var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
     var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
     var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
+    var payment_option_list_url = "{{route('payment.option.list')}}";
     var payment_yoco_url = "{{ route('payment.yocoPurchase') }}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var payment_paylink_url = "{{ route('payment.paylinkPurchase') }}";
@@ -994,8 +998,53 @@ $timezone = Auth::user()->timezone;
     });
 
     $(document).on('click', '#extend-btn', function(){
-        // alert('click');
-        // $('#extend_order_rental').modal('hide');
+        $.ajax({
+            data: {},
+            type: "POST",
+            dataType: 'json',
+            url: payment_option_list_url,
+            success: function (response) {
+                console.log(response);
+                if (response.status == "Success") {
+                    // console.log(response.data);
+                    $('#v_pills_tab').html('');
+                    $('#v_pills_tabContent').html('');
+                    let payment_method_template = _.template($('#payment_method_template').html());
+                    $("#v_pills_tab").append(payment_method_template({ payment_options: response.data }));
+                    let payment_method_tab_pane_template = _.template($('#payment_method_tab_pane_template').html());
+                    
+                    $("#v_pills_tabContent").append(payment_method_tab_pane_template({ payment_options: response.data }));
+                    $('#extend_order_rental').modal('hide');
+                    $('#proceed_to_pay_modal').modal('show');
+
+                    //mohit sir branch code added by sohail
+                    var advanceCartTotalPayableAmount = $('#advance_cart_total_payable_amount').length;
+                    if(advanceCartTotalPayableAmount == 1){
+                        var amtHTML = 'Advanced Token Amount: <span id="total_amt">'+$('#advance_cart_total_payable_amount').html()+'</span>';
+                        $('#proceed_to_pay_modal #pay-billLabel').html(amtHTML);
+                    }else{
+                        $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
+                    }
+                    //till here
+                    if(stripe_publishable_key != ''){
+                        stripeInitialize();
+                    }
+                    if(stripe_fpx_publishable_key != ''){
+                        stripeFPXInitialize();
+                    }
+                    if(stripe_ideal_publishable_key != ''){
+                        stripeIdealInitialize();
+                    }
+                }
+            },
+            error: function (error) {
+                var response = $.parseJSON(error.responseText);
+                let error_messages = response.message;
+                $.each(error_messages, function (key, error_message) {
+                    $('#min_order_validation_error_' + error_message.vendor_id).html(error_message.message).show();
+                });
+            }
+        });
         // $('#proceed_to_pay_modal').modal();
     });
 </script>

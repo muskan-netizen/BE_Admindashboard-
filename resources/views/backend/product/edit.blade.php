@@ -751,6 +751,10 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Requires Prescription'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="pharmacy_check" data-plugin="switchery" name="pharmacy_check" class="chk_box" data-color="#43bee1" @if($product->pharmacy_check == 1) checked @endif>
                         </div>
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Validate Prescription'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="validate_prescription_check" data-plugin="switchery" name="validate_prescription_check" class="chk_box" data-color="#43bee1" @if($product->validate_pharmacy_check == 1) checked @endif>
+                        </div>
                         @endif
                         @if($configData->enquire_mode == 1)
                         <div class="col-md-6 d-flex justify-content-between mb-2">

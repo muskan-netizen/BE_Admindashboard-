@@ -940,25 +940,21 @@ $(document).ready(function () {
             return false;
         }
 
-        if($('.al_body_template_nine .shoping_cart .prescription_btn').length > 0)
-        {
-            $( ".prescription_btn" ).each(function() {
-                var cart_product_prescription = $(this).data('cart_product_prescription');
-                if(cart_product_prescription == 0){
-                    $(this).addClass('has_error');
-                }
-            });
-            if($(".prescription_btn").hasClass('has_error')){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'kindly select a prescription!',
-                    //footer: '<a href="">Why do I have this issue?</a>'
-                })
-                return false;
+        $( ".validate_prescription" ).each(function() {
+            var cart_product_prescription = $(this).data('cart_product_prescription');
+            if(cart_product_prescription == 0){
+                $(this).addClass('has_error');
             }
+        });
+        if($(".prescription_btn").hasClass('has_error')){
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'kindly select a prescription!',
+                //footer: '<a href="">Why do I have this issue?</a>'
+            })
+            return false;
         }
-
 
         var delivery_type = 'D';
         var other_taxes_string='';

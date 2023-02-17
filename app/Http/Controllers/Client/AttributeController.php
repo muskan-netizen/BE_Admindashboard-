@@ -136,7 +136,7 @@ class AttributeController extends BaseController
                 ->where('status', 1)
                 ->orderBy('parent_id', 'asc')
                 ->orderBy('position', 'asc')
-                ->whereIn('type_id', ['1', '3', '6', '13'])
+                ->whereIn('type_id', ['1', '3', '6', '13', '10'])
                 ->where('id', '>', 1)
                 ->whereNull('vendor_id')
                 ->get();
