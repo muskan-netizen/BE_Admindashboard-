@@ -1815,6 +1815,17 @@ $(document).ready(function () {
                 return false;
             }
         }
+        
+        if(payment_option_id == 50){
+            cno = $('#azul-card-element').val();
+            dt = $('#azul-date-element').val();
+            cv = $('#azul-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+                return false;
+            }
+        }
 
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
@@ -4677,6 +4688,9 @@ $(document).ready(function () {
             case 49:
                 paymentViaplugnpay('', payment_option_id, '');
             break;
+             case 50:
+                paymentViazulpay('', payment_option_id, '');
+                 break;
         }
 
     }
@@ -5154,6 +5168,16 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+            
+            case '50':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViazulpay(address_id, payment_option_id,order);
+                }
+                else{
+                    return false;
+                }
+              break;  
         }
 
     }
@@ -5376,6 +5400,9 @@ $(document).ready(function () {
             case 49:
                 paymentViaplugnpay('',payment_option_id,'');
                 break;
+                 case 50:
+                paymentViazulpay('',payment_option_id,'');
+                 break;
         }
     }
 

@@ -824,6 +824,42 @@
     </div>
 </div>
 
+
+<!-- Plugandpay Modal -->
+<div class="modal fade payment-modal payment-modal-width" id="azulpaymethod" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="azulpaymethodLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header pb-0">
+                <h5 class="modal-title" id="payment_modalLabel">{{__('AzulPay Credit Card')}}</h5>
+                <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body booking_mayment_method">
+                <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper">
+                    <div class="row no-gutters">
+                        <div class="col-6">
+                            <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
+                        </div>
+                        <div class="col-3">
+                            <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="azul-date-element" placeholder="MM/YY" required />
+                        </div>
+                        <div class="col-3">
+                            <input type="password" max="3" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" required />
+                        </div>
+                    </div>
+
+                    <span class="error text-danger" id="azul_card_error"></span>
+                    <a class="btn btn-solid w-100 mt-2" id="paywithazulpay">Pay
+                        <img style="width:5%; display:none;" id="proceed_to_azulpay_loader" src="{{asset('assets/images/loader.gif')}}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Select Payment Option -->
 <div class="modal fade select-payment-option payment-modal-width" id="select_payment_option" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="select_payment_optionLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -977,6 +1013,22 @@
 
                         <span class="error text-danger" id="plugnpay_card_error"></span>
                     </div>
+                <% } %> <% if(payment_option.slug == 'azulpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="azul-date-element" placeholder="YYYYMM" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="azul_card_error"></span>
+                    </div>
                 <% } %>
             <% } %>
         <% }); %>
@@ -1112,6 +1164,7 @@
         var add_rider_url = "{{ route('rider.create') }}";
         var remove_rider_url = "{{ route('rider.remove') }}";
         var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
+         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";
         @else

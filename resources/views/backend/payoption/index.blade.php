@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}">
+    <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}"  enctype="multipart/form-data">
         @csrf
         @method('POST')
         <div class="row align-items-center">
@@ -110,6 +110,17 @@
                 $openpay_private_key = (isset($creds->openpay_private_key)) ? $creds->openpay_private_key : '';
                 $openpay_public_key = (isset($creds->openpay_public_key)) ? $creds->openpay_public_key : '';
                 $openpay_verification_key = (isset($creds->openpay_verification_key)) ? $creds->openpay_verification_key : '';
+                
+                // azulpay
+                $azul_main_url = (isset($creds->azul_main_url)) ? $creds->azul_main_url : '';
+                $azul_alternate_url = (isset($creds->azul_alternate_url)) ? $creds->azul_alternate_url : '';
+                $azul_test_url = (isset($creds->azul_test_url)) ? $creds->azul_test_url : '';
+                $azul_ecommerce_url = (isset($creds->azul_ecommerce_url)) ? $creds->azul_ecommerce_url : '';
+                $azul_merchant_id = (isset($creds->azul_merchant_id)) ? $creds->azul_merchant_id : '';
+                $azul_auth_header_one = (isset($creds->azul_auth_header_one)) ? $creds->azul_auth_header_one : '';
+                $azul_auth_header_two = (isset($creds->azul_auth_header_two)) ? $creds->azul_auth_header_two : '';
+                $azul_ssl_certificate = (isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
+                $azul_ssl_key = (isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
 
                 $company_token = (isset($creds->company_token)) ? $creds->company_token : '';
                 $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
@@ -1157,6 +1168,95 @@
                                 </div>
                             </div>
                         </div>
+                    					@endif @if ( (strtolower($opt->code) == 'azul') )
+					<div class="mt-2" id="azul_fields_wrapper" @if($opt->
+						status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_main_url" class="mr-3">{{ __("Main Url") }}</label>
+									<input type="text" name="azul_main_url" id="azul_main_url"
+										class="form-control" value="{{$azul_main_url}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_alternate_url" class="mr-3">{{ __("Alternate
+										Url") }}</label> <input type="text" name="azul_alternate_url"
+										id="azul_alternate_url" class="form-control"
+										value="{{$azul_alternate_url}}" @if($opt->status == 1)
+									required @endif>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_test_url" class="mr-3">{{ __("Test Url") }}</label>
+									<input type="text" name="azul_test_url" id="azul_test_url"
+										class="form-control" value="{{$azul_test_url}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_ecommerce_url" class="mr-3">{{ __("E-Commerce
+										Url") }}</label> <input type="text" name="azul_ecommerce_url"
+										id="azul_ecommerce_url" class="form-control"
+										value="{{$azul_ecommerce_url}}" @if($opt->status == 1)
+									required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_merchant_id" class="mr-3">{{ __("Merchant ID")
+										}}</label> <input type="text" name="azul_merchant_id"
+										id="azul_merchant_id" class="form-control"
+										value="{{$azul_merchant_id}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_auth_header_one" class="mr-3">{{ __("Auth
+										Header 1") }}</label> <input type="text"
+										name="azul_auth_header_one" id="azul_auth_header_one"
+										class="form-control" value="{{$azul_auth_header_one}}"
+										@if($opt->status == 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_auth_header_two" class="mr-3">{{ __("Auth
+										Header 2") }}</label> <input type="text"
+										name="azul_auth_header_two" id="azul_auth_header_two"
+										class="form-control" value="{{$azul_auth_header_two}}"
+										@if($opt->status == 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_ssl_certificate" class="mr-3">{{ __("SSL
+										Certificate") }}</label> <input type="file"
+										name="azul_ssl_certificate" id="azul_ssl_certificate"
+										class="form-control" @if($azul_ssl_certificate==
+										'') required @endif>
+									<p class="font-weight-bold">{{@$azul_ssl_certificate}}</p>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_ssl_key" class="mr-3">{{ __("SSL Key") }}</label>
+									<input type="file" name="azul_ssl_key" id="azul_ssl_key"
+										class="form-control" @if($azul_ssl_key== '') required @endif>
+									<p class="font-weight-bold">{{@$azul_ssl_key}}</p>
+								</div>
+							</div>
+
+						</div>
+					</div>
                     @endif
 
                 </div>
