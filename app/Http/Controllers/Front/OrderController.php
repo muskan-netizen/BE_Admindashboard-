@@ -50,7 +50,8 @@ use App\Models\ {
     DispatcherStatusOption,
     ReturnReason,
     OrderDeliveryStatusIcon,
-    UserGiftCard
+    UserGiftCard,
+    OrderFiles  
 };
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -2096,7 +2097,9 @@ class OrderController extends FrontController
 
 
             $order->save();
-
+            if(checkColumnExists('order_files','id')){
+                OrderFiles::where('cart_id',$cart->id)->update(['order_id'=>$order->id,'cart_id'=>'']);
+            }
           
             // $this->sendOrderNotification($user->id, $vendor_ids);
 

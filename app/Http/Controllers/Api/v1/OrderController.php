@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, OrderNotificationsLogs, ProcessorProduct};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, OrderNotificationsLogs, ProcessorProduct,OrderFiles};
 
 use App\Models\AutoRejectOrderCron;
 
@@ -1007,7 +1007,9 @@ class OrderController extends BaseController
                     }
 
                     $order->save();
-
+                    if(checkColumnExists('order_files','id')){
+                        OrderFiles::where('cart_id',$cart->id)->update(['order_id'=>$order->id,'cart_id'=>'']);
+                    }
             
 
                     // pr($res);
@@ -2102,6 +2104,11 @@ class OrderController extends BaseController
         $type = $request->has('type') ? $request->type : 'active';
         $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
         switch ($type) {
+            case 'pending': // which order not assign yet indriver
+            $orders->whereHas('products.order_product_status', function ($q1) {
+                        $q1->where('order_status_option_id',1)->whereNotIn('order_status_option_id', [2, 3]); // cancel order product
+                    });
+                break;
             case 'active':
                 $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
                 break;
@@ -2376,14 +2383,17 @@ class OrderController extends BaseController
                     'vendors.tempCart.cartProducts.addon.option' => function ($qry) use ($language_id) {
                         $qry->where('language_id', $language_id);
                     }
-                ])
-                    ->where(function ($q1) {
-                        $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
-                        $q1->orWhere(function ($q2) {
-                            $q2->whereIn('payment_option_id', [1,38]);
-                        });
-                    })
-                    ->where('id', $order_id)->select('*', 'id as total_discount_calculate')->first();
+                ]);
+                if(checkColumnExists('order_files','id')){
+                    $order = $order->with(['OrderFiles']);
+                }
+                $order = $order->where(function ($q1) {
+                            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+                            $q1->orWhere(function ($q2) {
+                                $q2->whereIn('payment_option_id', [1,38]);
+                            });
+                        })
+                        ->where('id', $order_id)->select('*', 'id as total_discount_calculate')->first();
             } else {
                 $order = Order::with(
                     [
@@ -2414,8 +2424,11 @@ class OrderController extends BaseController
                             $qry->where('language_id', $language_id);
                         }
                     ]
-                )
-                    ->where(function ($q1) {
+                );
+                if(checkColumnExists('order_files','id')){
+                    $order = $order->with(['OrderFiles']);
+                }
+                $order = $order->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
                         $q1->orWhere(function ($q2) {
                             $q2->whereIn('payment_option_id', [1,38]);
