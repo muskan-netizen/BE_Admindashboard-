@@ -1,7 +1,7 @@
 @php
 $translation_name = ((!empty($product->translation->first()))?$product->translation->first()->title:$product->sku);
 $breadcrumb = '<li class="breadcrumb-item align-items-center active" aria-current="page">'.(strlen($translation_name) > 26 ? substr($translation_name,0,22)."..." : $translation_name).'</li>';
-$translation_name = $category_name =  ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
+$translation_name = ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
 $breadcrumb = '<li class="breadcrumb-item align-items-center"><a href="'.route("categoryDetail",$category->slug).'">'.$translation_name.'</a></li>'.$breadcrumb;
 $subParent = $category->allParentsAccount;
 do{
