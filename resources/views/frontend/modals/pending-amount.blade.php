@@ -1,8 +1,8 @@
-<div class="modal fade" id="topup_wallet" tabindex="-1" aria-labelledby="topup_walletLabel" aria-hidden="true">
+<div class="modal fade" id="pending_amount_modal" tabindex="-1" aria-labelledby="topup_walletLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header border-bottom">
-          <h5 class="modal-title text-17 mb-0 mt-0" id="topup_walletLabel">{{__('Tip Amount')}}</h5>
+          <h5 class="modal-title text-17 mb-0 mt-0" id="topup_walletLabel">Pending Amount</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -17,25 +17,25 @@
 
               <div class="form-group">
 
-                  <input class="form-control" name="pending_amount" id="pending_amount" type="hidden" placeholder="Enter Amount">
+                  <input class="form-control" name="amount_pending" id="amount_pending" type="hidden" placeholder="Enter Amount">
                   <input class="form-control" name="tip_for_past_order" id="tip_for_past_order" type="hidden" value="1">
                   <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
                   <input type="hidden" name="order_number" id="order_number" value="0">
-                  <span class="error-msg" id="wallet_amount_error"></span>
+                  <span class="error-msg" id="amount_error_pending"></span>
               </div>
                <hr class="mt-0 mb-1" />
               <div class="payment_response">
                   <div class="alert p-0 m-0" role="alert"></div>
               </div>
               <h5 class="text-17 mb-2">{{__('Debit From')}}</h5>
-              <div class="form-group" id="wallet_payment_methods">
+              <div class="form-group" id="payment_methods_pending">
               </div>
-              <span class="error-msg" id="wallet_payment_methods_error"></span>
+              <span class="error-msg" id="payment_methods_error_pending"></span>
           </div>
           <div class="modal-footer d-block text-center">
               <div class="row">
                   <div class="col-sm-12 p-0 d-flex justify-space-around">
-                      <button type="button" class="btn btn-block btn-solid mr-1 mt-2 topup_wallet_confirm">{{__('Submit')}}</button>
+                      <button type="button" class="btn btn-block btn-solid mr-1 mt-2 topup_wallet_confirm_pending">{{__('Submit')}}</button>
                       <button type="button" class="btn btn-block btn-solid ml-1 mt-2" data-dismiss="modal">{{__('Cancel')}}</button>
                   </div>
               </div>
@@ -129,24 +129,6 @@
                         </div>
 
                         <span class="error text-danger" id="plugnpay_card_error"></span>
-                    </div>
-                <% } %>
-
- <% if(payment_option.slug == 'azulpay') { %>
-                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
-                        <div class="row no-gutters">
-                            <div class="col-6">
-                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
-                            </div>
-                            <div class="col-3">
-                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="azul-date-element" placeholder="YYYYMM" required />
-                            </div>
-                            <div class="col-3">
-                                <input type="password" max="4" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" required />
-                            </div>
-                        </div>
-
-                        <span class="error text-danger" id="azul_card_error"></span>
                     </div>
                 <% } %>
 

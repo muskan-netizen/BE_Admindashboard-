@@ -125,14 +125,14 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                                     </div>
                                 </div>
                                 @endif
-                                
+
                                     @if(!empty($listData))
                                     @foreach($listData as $key => $result)
                                     @if(@$result['title'])
                                     <div class="row margin-res">
                                     <div class="col-md-12 col-12 mt-3">
                                         <!-- <div class="product-box scale-effect mt-0">
-                                            
+
                                             <div class="product-detail"> -->
                                                 <div class="inner_spacing search-heading">
                                                         <h3>{{__($result['title'])}}</h3>
@@ -197,11 +197,11 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
         var latitude = "{{ $vendorLatLong[0][0] ?? 0 }}";
         var longitude = "{{ $vendorLatLong[0][1] ?? 0 }}";
         var latlng = new google.maps.LatLng(latitude, longitude);
-        var prev_infowindow =false; 
+        var prev_infowindow =false;
 
         map = new google.maps.Map(document.getElementById('vendor-map'), {
             center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-            zoom: 12
+            zoom: 1
         });
 
         var url = window.location.origin;
