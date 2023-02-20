@@ -106,6 +106,9 @@ class StripeGatewayController extends FrontController
             }
             elseif($payment_form == 'giftCard'){
                 $parameters['gift_card_id'] = $json_obj->gift_card_id;
+            }elseif($payment_form == 'pending_amount_form'){
+                $parameters['order_number'] = $json_obj->order_number;
+
             }
             
             if (isset($json_obj->payment_method_id) && !isset($json_obj->payment_intent_id)) {
@@ -207,6 +210,10 @@ class StripeGatewayController extends FrontController
                    
                     $postdata['metadata']['senderData'] =!empty($sendor) ? json_encode($sendor) : '';
                     $parameters['senderData'] = !empty($sendor) ? json_encode($sendor) : '';
+                }elseif($payment_form =="pending_amount_form"){
+                    $postdata['description'] = 'Pending amount';
+                    $order_number = $json_obj->order_number;
+                    $postdata['metadata']['order_number'] = $order_number;
                 }
                  $intent = \Stripe\PaymentIntent::create($postdata);
             }
@@ -388,6 +395,15 @@ class StripeGatewayController extends FrontController
                 /// $subscriptionController->purchaseGiftCard($request, '', $gift_card_id);
                 $message = __('Your giftCard has been activated successfully.');
                 $returnUrl = route('giftCard.index');
+            }elseif($payment_form == 'pending_amount_form'){
+                
+                $order_number = $parameters['order_number'];
+               
+                $order = Order::select('id')->where('order_number', $order_number)->first();
+                Order::where('id', $order->id)->update(['advance_amount' => null]);
+
+                $message = 'Pending has been submitted successfully';
+                $returnUrl = route('user.orders');
             }
             Session::put('success', $message);
             // return redirect($returnUrl);

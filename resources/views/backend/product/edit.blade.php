@@ -413,7 +413,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                         @foreach ($roles as $key => $_role)
                                             @if( $_role['role'] === 'Corporate_user')
                                                 <div class="col-12">
-                                                    
+
                                                     <div class="field_wrapper">
                                                         @foreach ($product->productVariantByRoles as $role)
                                                             @if($role->role_id == 3)
@@ -1375,6 +1375,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             id="pickup_location_longitude_home" />
                         </div>
                     </div>
+                    <div class="row vendor-enable-row" style="display:{{ @$processorProduct->is_processor_enable == 0 ? 'flex;' : 'none;' }}">
+                        <div class="col-md-6 mb-2" >
+                            {!! Form::label('title', __('Product Pickup Date'),['class' => 'control-label']) !!}
+                            <input class="form-control date-datepicker flatpickr-input" id="product-pickup-date" required name="product_pickup_date" type="text" value="{{ (@$product->product_pickup_date) ? $product->product_pickup_date : '' }}">
+                        </div>
+                    </div>
                 </div>
                 {{-- till here --}}
 
@@ -1652,7 +1658,10 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
     $(document).on("click", ".is-processor-enable", function() {
         $('.processor-enable-row').hide();
         if($(this).val() == 1){
+            $('.vendor-enable-row').hide();
             $('.processor-enable-row').show();
+        }else{
+            $('.vendor-enable-row').show();
         }
     });
     function checkAddressString(obj,name)
@@ -2064,7 +2073,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
         $(this).closest('tr').remove();
     });
 
-    $('#processor-date').flatpickr({
+    $('#processor-date,#product-pickup-date').flatpickr({
         enableTime: false,
         startDate: new Date(),
         minDate: new Date(),
@@ -2432,18 +2441,18 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             var maxField = 10; //Input fields increment limitation
             var addButton = $('.add_button'); //Add button selector
             var wrapper = $('.field_wrapper'); //Input field wrapper
-            var fieldHTML = '<div class="row corporate-row"><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" id="corporate_user_price" onkeyup="isNumberKey(event)" placeholder="Corporate User Price"  name="corporate_user_price[]" value=""></div></div><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="Quantity" name="minimum_order_count_corporate_user[]" value=""></div></div><div class="col-md-2"><a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a></div></div>'; //New input field html 
+            var fieldHTML = '<div class="row corporate-row"><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" id="corporate_user_price" onkeyup="isNumberKey(event)" placeholder="Corporate User Price"  name="corporate_user_price[]" value=""></div></div><div class="col-md-5"><div class="form-group"><input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="Quantity" name="minimum_order_count_corporate_user[]" value=""></div></div><div class="col-md-2"><a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a></div></div>'; //New input field html
             var x = $("div.corporate-row").length; //Initial field counter is 1
-            
+
             //Once add button is clicked
             $(addButton).click(function(){
                 //Check maximum number of input fields
-                if(x < maxField){ 
+                if(x < maxField){
                     x++; //Increment field counter
                     $(wrapper).append(fieldHTML); //Add field html
                 }
             });
-            
+
             //Once remove button is clicked
             $(wrapper).on('click', '.remove_button', function(e){
                 e.preventDefault();
