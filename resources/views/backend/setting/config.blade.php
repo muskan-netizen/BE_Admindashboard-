@@ -2671,7 +2671,7 @@
                                     @if ($getAdditionalPreference['is_one_push_book_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_one_push_book_enable" id="is_one_push_book_enable" />
                             </div>
-                            <!-- <div class="form-group mt-2 switchery-demo">
+                            <div class="form-group mt-2 switchery-demo">
                                 <label for="" class="mr-3">{{ __('Bid & Ride Enable') }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="is_bid_ride_enable_switch"
                                     id="is_bid_ride_enable_switch" class="form-control checkbox_change"
@@ -2680,7 +2680,7 @@
                                 <input type="hidden"
                                     @if ($getAdditionalPreference['is_bid_ride_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_bid_ride_enable" id="is_bid_ride_enable" />
-                            </div> -->
+                            </div>
                             <div class="row mt-2" id="bid_expire_time_limit_div"
                                 style="display:@if ($getAdditionalPreference['is_one_push_book_enable'] == 1 || $getAdditionalPreference['is_bid_ride_enable'] == 1) @else none @endif;">
                                 <div class="col-8">
@@ -3682,7 +3682,7 @@
         }
 
         var is_one_push_book_enable = $('#is_one_push_book_enable_switch');
-        //var is_bid_ride_enable      = $('#is_bid_ride_enable_switch');
+        var is_bid_ride_enable      = $('#is_bid_ride_enable_switch');
 
 
         is_one_push_book_enable[0].onchange = function() {
@@ -3694,14 +3694,14 @@
             }
         }
 
-        /* is_bid_ride_enable[0].onchange = function() {
+        is_bid_ride_enable[0].onchange = function() {
             if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
                 $('#bid_expire_time_limit_div').hide();
                 $('#bid_expire_time_limit_seconds').val(0);
             } else {
                 $('#bid_expire_time_limit_div').show();
             }
-        } */
+        }
 
         var dinein_option = $('#dinein_check');
         if (dinein_option.length > 0) {

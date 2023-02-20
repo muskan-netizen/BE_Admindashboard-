@@ -100,9 +100,10 @@ class PickupDeliveryController extends BaseController{
                     $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
                     $product->toll_fee   = $tags_price['toll_fee']??0;
                     $product->tags_price = $tags_price['delivery_fee']??0;
-
                     $product->distance = decimal_format($tags_price['distance']);
                     $product->duration = decimal_format($tags_price['duration']);
+                    $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
+                    $product->max_tags_price = decimal_format($tags_price['max_delivery_fee']);
 
                     $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
                     if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
@@ -244,9 +245,9 @@ class PickupDeliveryController extends BaseController{
                     );
                     $response = json_decode($res->getBody(), true);
                     if($response && $response['message'] == 'success'){
-                        return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00, 'distance' => isset($response['total_distance']) ? $response['total_distance'] : 0, 'duration' => isset($response['total_duration']) ? $response['total_duration'] :0);
+                        return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00, 'distance' => isset($response['total_distance']) ? $response['total_distance'] : 0, 'duration' => isset($response['total_duration']) ? $response['total_duration'] :0, 'min_delivery_fee' => isset($response['total_minimum']) ? $response['total_minimum'] : 0, 'max_delivery_fee' => isset($response['total_maximum']) ? $response['total_maximum'] : 0);
                     }else{
-                        return array('delivery_fee' => 0, 'toll_fee' => 0, 'distance' => 0, 'duration' => 0);
+                        return array('delivery_fee' => 0, 'toll_fee' => 0, 'distance' => 0, 'duration' => 0, 'min_delivery_fee' => 0, 'max_delivery_fee' => 0);
                     }
 
                 }
@@ -719,7 +720,7 @@ class PickupDeliveryController extends BaseController{
                             'recipient_phone' => $request->phone_number ?? $customerno,
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
-                            'allocation_type' => 'a',
+                            'allocation_type' => (isset($request->agent_id) && !empty($request->agent_id)) ? 'm' : 'a',
                             'task_type' => $request->task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
@@ -746,6 +747,7 @@ class PickupDeliveryController extends BaseController{
                             'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                             'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
                             'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
+                            'agent' => $request->agent_id ?? null
                         ];
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
@@ -1600,23 +1602,6 @@ class PickupDeliveryController extends BaseController{
             }
     }
 
-    //-----function to get bids related to ride request/instant booking-----
-    public function getBidsRelatedToOrderRide(Request $request)
-    {
-        try
-        {
-            $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
-            $order_bid_id = $request->order_id;
-            $task_type    = $request->task_type;
-            $biddata      = PickDropDriverBid::where('order_bid_id', $order_bid_id)->where('task_type', $task_type)->where('expired_at', '>', now()->format('Y-m-d H:i:s'))->where('status', 0)->get();
-            return $this->successResponse(['biddata' => $biddata, 'bid_expire_time_limit_seconds' => $getAdditionalPreference['bid_expire_time_limit_seconds']], "Request sent to customer successfully", 200);
-        }
-        catch (\Exception $e) {
-            \Log::error($e->getMessage());
-            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
-        }
-    }
-
 
     //-----function to decline bids related to bid & ride/instant booking-----
     public function declineBidsRelatedToOrderRide(Request $request)
@@ -1626,6 +1611,148 @@ class PickupDeliveryController extends BaseController{
             $bid_id       = $request->bid_id;
             $update       = PickDropDriverBid::where('id', $bid_id)->update(['status' => 2]);
             return $this->successResponse($update, "Request declined successfully", 200);
+        }
+        catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+
+
+
+
+    // bid & Ride request from user
+    public function createBidRideRequest(Request $request)
+    {
+        DB::beginTransaction();
+        try 
+        {
+            $vendor = Vendor::where('id', $request->vendor_id)->first();
+            $product = Product::where('id', $request->product_id)->first();
+            if(!$vendor || !$product){
+                return response()->json(['error' => __('No record found.')], 404);
+            }
+
+            $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
+            $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
+            
+
+            $UserBidRideRequest                         = new UserBidRideRequest();
+            $UserBidRideRequest->user_id                = Auth::user()->id;
+            $UserBidRideRequest->product_id             = $request->product_id;
+            $UserBidRideRequest->vendor_id              = $request->vendor_id;
+            $UserBidRideRequest->tasks                  = json_encode($request->tasks);
+            $UserBidRideRequest->requested_price        = $request->requested_price;
+            $UserBidRideRequest->web_hook_code          = uniqid(Auth::user()->id.$request->vendor_id);
+            $UserBidRideRequest->expired_at             = Carbon::now()->addSeconds($expiryseconds)->format('Y-m-d H:i:s');
+            $UserBidRideRequest->save();
+            
+            $request_to_dispatch = $this->placeRequestForDriverBidsToDispatch($request, $product, $UserBidRideRequest);
+            if($UserBidRideRequest){
+                DB::commit();
+                return response()->json(['data' => $UserBidRideRequest, 'message' => "Request created, Please wait a while till someone respond to your request."], 200);
+            }else{
+                DB::rollback();
+                return response()->json(['message' => "Error, Something went wrong."], 400);
+            }
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+            return response()->json(['message' => "Error, Something went wrong."], 400);
+        }
+    }
+
+
+    // place Request To Dispatch
+    public function placeRequestForDriverBidsToDispatch($request, $product, $UserBidRideRequest){
+        try 
+        {
+            $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
+            $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
+
+            $dispatch_domain = $this->checkIfPickupDeliveryOn();
+            $customer = Auth::user();
+            if($dispatch_domain && $dispatch_domain != false && !empty($UserBidRideRequest)) 
+            {
+                $unique = Auth::user()->code;
+                $client_do = Client::orderBy('id', 'asc')->first();
+
+                if(!empty($client_do->custom_domain)){
+                    $domain = $client_do->custom_domain;
+                }else{
+                    $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
+                }
+                
+                $call_back_url = "https://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
+                
+                $postdata =  [
+                            'tasks'                   => $request->tasks,
+                            'call_back_url'           => $call_back_url??null,
+                            'agent_tag'               => $product->tags ?? '',
+                            'bid_id'                  => $UserBidRideRequest->id,
+                            'db_name'                 => $client_do->database_name,
+                            'client_code'             => $client_do->code,
+                            'requested_price'         => $UserBidRideRequest->requested_price,
+                            'expired_at'              => $UserBidRideRequest->expired_at,
+                            'expire_seconds'          => $expiryseconds,
+                            'customer_name'           => $customer->name,
+                            'customer_image'          => $customer->image['proxy_url'].'100/100'.$customer->image['image_path'],
+                            'minimum_requested_price' => $request->min_requested_price,
+                            'maximum_requested_price' => $request->max_requested_price,
+                        ];
+
+
+                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                                                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                                                    'content-type' => 'application/json']
+                                                        ]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $res = $client->post(
+                    $url.'/api/bidriderequest/notifications',
+                    ['form_params' => (
+                            $postdata
+                        )]
+                );
+                $response = json_decode($res->getBody(), true);
+                return $response;
+            }
+        }
+        catch(\Exception $e)
+        {
+            $data = [];
+            $data['status'] = 400;
+            $data['message'] =  $e->getMessage();
+            return $data;
+        }
+    }
+
+    //-----function to get bids related to ride request/instant booking-----
+    public function getBidsRelatedToOrderRide(Request $request)
+    {
+        try
+        {
+            $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
+            $order_bid_id = $request->order_id;
+            $task_type    = $request->task_type;
+            $biddata      = PickDropDriverBid::where('order_bid_id', $order_bid_id)->where('task_type', $task_type)->where('expired_at', '>', now()->format('Y-m-d H:i:s'))->where('status', 0)->get();
+            return $this->successResponse(['biddata' => $biddata, 'bid_expire_time_limit_seconds' => $getAdditionalPreference['bid_expire_time_limit_seconds']], 200);
+        }
+        catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+    //-----function to accept bids related to bid & ride/instant booking-----
+    public function acceptBidsRelatedToBidRideOrderRide(Request $request)
+    {
+        try
+        {
+            $bid_id       = $request->bid_id;
+            $update       = PickDropDriverBid::where('id', $bid_id)->update(['status' => 1]);
+            return $this->successResponse($update, "Request accepted successfully", 200);
         }
         catch (\Exception $e) {
             \Log::error($e->getMessage());
