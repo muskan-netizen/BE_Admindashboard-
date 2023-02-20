@@ -102,6 +102,15 @@ class VendorController extends BaseController
                 }
                 return $show_slot_option;
             })
+            ->addColumn('manager', function ($row) use ($users) {
+                $select = '<select name="manager_id" id="select_manager" data-id="'.$row->id.'" class="form-control select_manager"><option>Select Manager</option>';
+                foreach($users as $item){
+                    $selected = (($item->id==$row->refference_id)?'Selected':'');
+                    $select .= '<option value="'.$item->id.'" '.$selected.'>'.$item->name.'</option>';
+                }
+                $select .= '</select>';
+                return $select;
+            })
             ->addColumn('show_slot_label', function ($row) {
                 if($row->show_slot == 1){
                     $show_slot_label ="success";

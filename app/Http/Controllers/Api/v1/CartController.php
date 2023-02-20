@@ -25,7 +25,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
 
-use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct};
+use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct,OrderFiles};
 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
@@ -62,18 +62,18 @@ class CartController extends BaseController
             // }
             $user = Auth::user();
             if (!$user->id) {
-                if(checkColumnExists('carts','order_id'))
+                if(checkColumnExists('order_files','id'))
                 {
-                    $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
+                    $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder','OrderFiles']);
                 }else{
-                    $cart = Cart::where('unique_identifier', $user->system_user);
+                    $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
                 }
             } else {
-                if(checkColumnExists('carts','order_id'))
+                if(checkColumnExists('order_files','id'))
                 {
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
+                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder','OrderFiles']);
                 }else{
-                    $cart = Cart::where('user_id', $user->id);
+                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
                 }
             }
             $cart = $cart->first();
@@ -2276,5 +2276,43 @@ class CartController extends BaseController
         ]);
 
     }
+
+     # upload image/pdf for order 
+    public function uploadOrderFile(Request $request)
+    {
+     
+        // $validator = Validator::make($request->all(), [
+        //     'files.*' => 'mimes:jpeg,bmp,png,gif,svg,pdf',
+        //     'cart_id' => 'required'
+        // ]);
+        //try {
+           // pr($request->all());
+            $OrderFiles =  OrderFiles::SaveFiles($request);
+        //    foreach ($request->instructions_files as $instructions_file) {
+        //         $file = $request->file('instructions_file');
+        //         $file_url = Storage::disk('s3')->put('orderFile', $instructions_file,'public');
+             
+        //         $OrderFile = new OrderFiles();
+        //         $OrderFile->cart_id =$request->cart_id;
+        //         $OrderFile->file =$file_url;
+        //         $OrderFile->save();
+        //     }
+            $OrderFiles =  OrderFiles::where('cart_id',$request->cart_id)->get();
+            return response()->json(['status'=>'Success', 'message'=>'Success','data'=>$OrderFiles]);
+        // } catch (\Exception $e) {
+        //     $data = [];
+        //     $data['status'] = 400;
+        //     $data['message'] =  $e->getMessage();
+        //     return $data;
+        // }
+ 
+    }
+
+     # REMOVE image/pdf for order 
+     public function RemoveOrderFile(Request $request)
+     {
+        $OrderFiles =  OrderFiles::where('id',$request->order_file_id)->delete();
+        return response()->json(['status'=>'Success', 'message'=>'Success']);
+     }
 
 }
