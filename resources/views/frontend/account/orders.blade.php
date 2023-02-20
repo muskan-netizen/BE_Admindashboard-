@@ -347,6 +347,7 @@ $timezone = Auth::user()->timezone;
     </div>
     </div>
 </section>
+
 <div class="modal fade product-rating" id="product_rating" tabindex="-1" aria-labelledby="product_ratingLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -544,6 +545,7 @@ $timezone = Auth::user()->timezone;
 
 <!-- tip after order complete -->
 @include('frontend.modals.tip_after_order')
+@include('frontend.modals.pending-amount')
 
 <!-- tip after order complete -->
 @include('frontend.modals.extend_order_payment')
@@ -569,6 +571,19 @@ $timezone = Auth::user()->timezone;
         </div>
     </div>
 </div>
+<div class="modal fade" id="proceed_to_pay_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="pay-billLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="pay-billLabel">{{__('Total Amount')}}: <span id="total_amt"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="v_pills_tabContent_pending"></div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade remove-cart-modal" id="repeat_cart_modal1" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
     <div class="modal-dialog modal-dialog-centered">
@@ -591,9 +606,9 @@ $timezone = Auth::user()->timezone;
 </div>
 <!-- end repat order modal -->
 
-
 @endsection
 @section('script')
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -627,6 +642,8 @@ $timezone = Auth::user()->timezone;
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 @endif
 <script src="{{ asset('js/tip_after_order.js') }}"></script>
+<script src="{{ asset('js/pending_payment.js') }}"></script>
+
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 @endif
@@ -639,7 +656,7 @@ $timezone = Auth::user()->timezone;
 @if(in_array('khalti',$client_payment_options))
 <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
 @endif
-<script src="{{ asset('js/payment.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/payment.js') }}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
@@ -665,11 +682,9 @@ $timezone = Auth::user()->timezone;
             $('.wallet_balance').html($('input[name="' + custom_tip_amount + '"]').val());
             var tip_amount = $('input[name="' + custom_tip_amount + '"]').val();
         }
-
         $("#wallet_amount").val(tip_amount);
         $("#cart_tip_amount").val(tip_amount);
         $("#order_number").val(order_number);
-
     });
     var ajaxCall = 'ToCancelPrevReq';
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
@@ -714,6 +729,14 @@ $timezone = Auth::user()->timezone;
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".order_response";
+    var payment_option_list_url = "{{route('payment.option.list')}}";
+
+     @if(!empty($client_preference_detail->is_postpay_enable))
+        var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
+    @else
+        var post_pay_edit_order = 0;
+    @endif
+
 </script>
 
 <script type="text/javascript">
@@ -1052,6 +1075,26 @@ $timezone = Auth::user()->timezone;
         });
     });
 
+
+
+$(document).delegate(".order_placed_btn_pending", "click", function() {
+        var dataId = $(this).attr("data-id");
+        var amount = $(this).attr("data-amount");
+        var order_number = $(this).attr("data-order");
+        $("#order_number").val(order_number);
+        $('#pending_amount').val(amount);
+        $('#pending_amount_modal').modal('show');
+        var payable_amount = $(this).attr('data-payableamount');
+        var input_name = "select" + order_number;
+        $('.wallet_balance').html(amount);
+        $("#pending_amount").val(amount);
+        $("#amount_pending").val(amount);
+        $("#order_number").val(order_number);
+});
+
+
+
+    
     $(document).on('click', '#extend-btn', function(){
         // alert('click');
         // $('#extend_order_rental').modal('hide');

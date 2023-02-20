@@ -114,7 +114,7 @@ if(session()->has('applocale')){
                             <span class="alAccount">{{__('My Account')}}</span>
                             <ul class="onhover-show-div">
                                 @if(Auth::user())
-                                    @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                                @if(@auth()->user()->can('dashboard-view') || Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
                                         <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
                                     </li>

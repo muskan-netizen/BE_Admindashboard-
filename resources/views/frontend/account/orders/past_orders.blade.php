@@ -205,7 +205,7 @@
                                             @endphp
                                             @endif
                                         </li>
-                                        @if($product->schedule_slot)
+                                        @if($product->schedule_slot && $product->schedule_slot_name)
                                         <li>
                                             <label class="schedule_slot"><span>Slots: {{ $product->schedule_slot_name }}</span></label>
                                         </li>

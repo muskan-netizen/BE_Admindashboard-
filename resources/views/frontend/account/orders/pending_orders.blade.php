@@ -247,7 +247,7 @@
                                             <label
                                                 class="items_price">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol') . decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                         </li>
-                                        @if($product->schedule_slot)
+                                        @if($product->schedule_slot && $product->schedule_slot_name)
                                         <li>
                                             <label class="schedule_slot"><span>Slots: {{ $product->schedule_slot_name }}</span></label>
                                         </li>

@@ -1563,7 +1563,7 @@ class OrderController extends FrontController
                     $total_amount += $vendor_cart_product->quantity * $variant_price;
                     
                     if( @$quantity_role_price['quantity_price'] != 0 && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1)) {
-                        
+
                         $quantity_price = $quantity_role_price['quantity_price'];
                         $total_amount += $vendor_cart_product->quantity * $quantity_role_price['amount'];
                         $variant_price = $quantity_role_price['amount'];
