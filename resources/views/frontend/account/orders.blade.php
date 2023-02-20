@@ -1,16 +1,31 @@
 @switch($client_preference_detail->business_type)
 @case('taxi')
-<?php $ordertitle = 'Rides'; ?>
-<?php $hidereturn = 1; ?>
+<?php $ordertitle = 'Rides';
+ $hidereturn = 1;  ?>
 @break
 @default
-<?php $ordertitle = 'Orders'; ?>
-<?php $hidereturn = 0; ?>
+<?php $ordertitle = 'Orders'; 
+ $hidereturn = 0;
+?>
+
 @endswitch
 @php
-$show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)?1:0;
+$orderTitles = [
+    'Active' => "Active",
+    'Past' => "Past",
+    'Rejected/Cancel' => "Rejected/Cancel"
+];
+
 $clientData = \App\Models\Client::select('socket_url')->first();
-$additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
+
+if($additionalPreference['is_service_product_price_from_dispatch'] == 1){
+    $hidereturn = 1; 
+    $orderTitles = [
+        'Active' => "Confirmed ",
+        'Past'   =>  "Done ",
+        'Rejected/Cancel' => " Declined "
+    ];
+}
 @endphp
 @extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
@@ -58,6 +73,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         top: 0px !important;
     }
 
+    .schedule_slot {
+        left: 0px !important;
+        top: 0px !important;
+    }
+
     .rental_return, .rental_stop {
         position: relative;
         left: 0px;
@@ -80,6 +100,27 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     display: inline-block;
     width: 100%;
     }
+
+
+    .order_vender_product{
+        position: relative;
+    }
+    .order_vender_product li label {
+    padding-left: 80px!important;
+    display: block!important;
+    width: 170px!important;
+    text-align: left;
+}
+.order_vender_product li:first-child {
+    position: absolute!important;
+    top: 0!important;
+    left: 0!important;
+}
+.order_vender_product li .schedule_slot span {
+    font-size: 10px;
+    line-height: 1;
+    color: var(--theme-deafult);
+}
 
 </style>
 @endsection
@@ -216,18 +257,26 @@ $timezone = Auth::user()->timezone;
                                 <div class="row" id="orders_wrapper">
                                     <div class="col-sm-12 col-lg-12 tab-product al_custom_ordertabs mt-md-3 p-0">
                                         <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                                            @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::query('pageType') == 'pendingOrders' ? 'active show' : '' }} " id="pending-orders-tab" data-toggle="tab" href="#pending-orders" role="tab"
+                                                    aria-selected="true"><i
+                                                        class="icofont icofont-ui-home"></i>{{ __('Pending ' . getNomenclatureName($ordertitle, true)) }}</a>
+                                                <div class="material-border"></div>
+                                            </li>
+                                            @endif
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
                                                     id="active-orders-tab" data-toggle="tab" href="#active-orders" role="tab"
                                                     aria-selected="true"><i
-                                                        class="icofont icofont-ui-home"></i>{{ __('Active ' . getNomenclatureName($ordertitle, true)) }}</a>
+                                                        class="icofont icofont-ui-home"></i>{{ __($orderTitles['Active'] . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') == 'pastOrders' ? 'active show' : '' }}"
                                                     id="past_order-tab" data-toggle="tab" href="#past_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Past ' . getNomenclatureName($ordertitle, true)) }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ __($orderTitles['Past']  . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if (isset($hidereturn) && $hidereturn != 1)
@@ -243,7 +292,7 @@ $timezone = Auth::user()->timezone;
                                                 <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ getNomenclatureName($ordertitle, true). __('Rejected/Cancel ')  }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ __($orderTitles['Rejected/Cancel']).getNomenclatureName($ordertitle, true)  }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if($show_long_term ==1)
@@ -257,6 +306,9 @@ $timezone = Auth::user()->timezone;
                                             @endif
                                         </ul>
                                         <div class="tab-content nav-material al" id="top-tabContent">
+                                            @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
+                                             @include('frontend.account.orders.pending_orders')
+                                            @endif
                                             @include('frontend.account.orders.active_orders')
                                             @include('frontend.account.orders.past_orders')
                                             @include('frontend.account.orders.return_orders')
@@ -269,15 +321,15 @@ $timezone = Auth::user()->timezone;
                                         </div>
                                         {{-- @endforeach
                                         @else --}}
-                                        <div class="col-12">
+                                        {{-- <div class="col-12">
                                             <div class="no-gutters order_head">
                                                 <h4 class="text-center">{{ __('No Rejected/Cancel Order Found') }}
                                                 </h4>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         {{-- @endif --}}
                                     </div>
-                                    {{ $pastOrders->appends(['pageType' => 'rejectedOrders'])->links() }}
+                                   
                                 </div>
                                 @if($show_long_term ==1)
                                 @include('frontend.account.longTermOrderTab')

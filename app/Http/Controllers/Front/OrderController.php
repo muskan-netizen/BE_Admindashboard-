@@ -51,7 +51,7 @@ use App\Models\ {
     ReturnReason,
     OrderDeliveryStatusIcon,
     UserGiftCard,
-    OrderFiles  
+    OrderFiles 
 };
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -93,16 +93,16 @@ class OrderController extends FrontController
     public function orders(Request $request, $domain = '')
     {
         $iconsArray = [];
-        $user = Auth::user();
+        $user = Auth::user();   
         if (empty($user->timezone)) {
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
         }
         $currency_id = Session::get('customerCurrency');
 
-        $langId = Session::get('customerLanguage');
+        $langId = Session::get('customerLanguage');       
         $navCategories = $this->categoryNav($langId);
-
+        $additionalPreference =getAdditionalPreference(['is_long_term_service','is_token_currency_enable','token_currency','is_postpay_enable'  ,'is_order_edit_enable' ,'order_edit_before_hours','is_service_product_price_from_dispatch']);
         $dispatcher_icons = OrderDeliveryStatusIcon::select('image', 'image_url')->get();
         foreach ($dispatcher_icons as $icon) {
             $imgUrl = asset($icon->image);
@@ -110,7 +110,7 @@ class OrderController extends FrontController
                 $imgUrl = $icon->image_url['proxy_url'] . '40/40' . $icon->image_url['image_path'];
             }
             $iconsArray[] = $imgUrl;
-        }
+        }   
         // dd($iconsArray);
         $checkLongTerm = checkColumnExists('orders', 'is_long_term');
         $pastOrders = Order::with([
@@ -161,8 +161,14 @@ class OrderController extends FrontController
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
         $activeOrders = Order::with([
-            'vendors' => function ($q) {
-                $q->with(['products', 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
+            'vendors' => function ($q) use($additionalPreference) {
+                $q->with(['products'=> function ($Pq) use ( $additionalPreference) {
+                    if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                        $Pq->whereHas('order_product_status', function ($q1) {
+                            $q1->where('dispatcher_status_option_id',2)->whereNotIn('dispatcher_status_option_id', [1,5,3]); // cancel order product
+                        });
+                    }
+                }, 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
                     $q->with('exchanged_of_order.orderDetail');
                 }
@@ -227,6 +233,7 @@ class OrderController extends FrontController
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
 
                 foreach ($vendor->products as $product) {
+                    $product = $this->gettimeSlotName($product);
                     if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
                     } elseif ($product->media->isNotEmpty() && ! is_null($product->media->first()->image)) {
@@ -275,6 +282,7 @@ class OrderController extends FrontController
                     ->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
                 foreach ($vendor->products as $product) {
+                    $product = $this->gettimeSlotName($product);
                     // dd($product->product->return_days);
                     // $vendor->is_order_days_for_return = 1;
                     if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
@@ -325,6 +333,7 @@ class OrderController extends FrontController
         foreach ($returnOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 foreach ($vendor->products as $product) {
+                    $product = $this->gettimeSlotName($product);
                     if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
                     } elseif ($product->media->isNotEmpty()) {
@@ -409,17 +418,11 @@ class OrderController extends FrontController
 
         $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
         if (! empty($client_preferences)) {
-            $client_preferences->is_postpay_enable = getAdditionalPreference([
-                'is_postpay_enable'
-            ])['is_postpay_enable'];
-            $client_preferences->is_order_edit_enable = getAdditionalPreference([
-                'is_order_edit_enable'
-            ])['is_order_edit_enable'];
-            $client_preferences->order_edit_before_hours = getAdditionalPreference([
-                'order_edit_before_hours'
-            ])['order_edit_before_hours'];
+            $client_preferences->is_postpay_enable =  $additionalPreference['is_postpay_enable'];
+            $client_preferences->is_order_edit_enable = $additionalPreference['is_order_edit_enable'];
+            $client_preferences->order_edit_before_hours = $additionalPreference['order_edit_before_hours'];
             $client_preferences->editlimit_datetime = Carbon::now()->addHours($client_preferences->order_edit_before_hours)->toDateTimeString();
-        }
+        }     
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
         if (checkColumnExists('return_reasons', 'type')) {
             $cancellation_reason = ReturnReason::where([
@@ -431,21 +434,28 @@ class OrderController extends FrontController
                 'status' => 'Active'
             ])->get();
         }
-
+   
         // dd($activeOrders->toArray());
 
         $longTermOrder = [];
         /**
          * get user long term orders
          */
-        if (getAdditionalPreference([
-            'is_long_term_service'
-        ])['is_long_term_service'] == 1 && checkColumnExists('products', 'is_long_term_service'))
+        $show_long_term =0;
+        if ($additionalPreference['is_long_term_service'] == 1 && checkColumnExists('products', 'is_long_term_service')){
+            $show_long_term =1;
             $longTermOrder = $this->getUserLongTermService($user, $langId, $currency_id);
-        // dd($longTermOrder->toArray());
+        }
+            
+        
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-
+        $pendingOrder = [];
+        if ($additionalPreference['is_service_product_price_from_dispatch'] == 1){
+            $pendingOrder = $this->pendingOrder( $request,$user,$langId,$iconsArray);
+        }
+      
+        
         return view('frontend.account.orders')->with([
             'payments' => $payments,
             'rejectedOrders' => $rejectedOrders,
@@ -458,10 +468,128 @@ class OrderController extends FrontController
             'clientPreference' => $client_preferences,
             'fixedFee' => $fixedFee,
             'longTermOrder' => $longTermOrder,
-            'is_postpay_enable' => getAdditionalPreference([
-                'is_postpay_enable'
-            ])['is_postpay_enable']
+            'additionalPreference' => $additionalPreference,
+            'pendingOrder' => $pendingOrder,
+            'show_long_term' =>$show_long_term
         ]);
+    }
+    
+    /**
+     * pendingOrder which dont have driver assign yet
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function pendingOrder(Request $request,$user,$langId,$iconsArray){
+        $Orders = Order::with([
+            'vendors' => function ($q) {
+                $q->with(['products'=> function ($Pq) {
+                    $Pq->whereHas('order_product_status', function ($q1) {
+                        $q1->where('dispatcher_status_option_id',1)->whereNotIn('dispatcher_status_option_id', [2, 3]); // cancel order product
+                    });
+                }, 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
+                if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
+                    $q->with('exchanged_of_order.orderDetail');
+                }
+            },
+            'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                $qry->where('language_id', $langId);
+            },
+            'vendors.dineInTable.category',
+            'user',
+            'address',
+            'reqCancelOrder'
+        ]);
+
+        $Orders->whereHas('vendors.products.order_product_status', function ($q1) {
+            $q1->where('dispatcher_status_option_id',1)->whereNotIn('dispatcher_status_option_id', [2, 3]); // cancel order product
+        })
+            ->where(function ($q1) {
+            $q1->where('payment_status', 1)
+                ->whereNotIn('payment_option_id', [
+                1,
+                38
+            ]);
+            $q1->orWhere(function ($q2) {
+                $q2->whereIn('payment_option_id', [
+                    1,
+                    38
+                ])
+                    ->orWhere(function ($q3) {
+                    $q3->where('is_postpay', 1)
+                        -> // 1 for order is post paid
+                    whereNotIn('payment_option_id', [
+                        1,
+                        38
+                    ]);
+                });
+            });
+        })
+            ->where('orders.user_id', $user->id);
+        
+        $Orders = $Orders->orderBy('orders.id', 'DESC')
+            ->select('*', 'id as total_discount_calculate')
+            ->paginate(10);
+
+        foreach ($Orders as $order) {
+        
+            foreach ($order->vendors as $vendor) {
+
+                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                    ->where('vendor_id', $vendor->vendor_id)
+                    ->orderBy('id', 'DESC')
+                    ->first();
+
+                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+
+                foreach ($vendor->products as $product) { 
+                 //   pr($product->toArray());
+                 $product = $this->gettimeSlotName($product);
+                    if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                        $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                    } elseif ($product->media->isNotEmpty() && ! is_null($product->media->first()->image)) {
+                        $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                    } else {
+                        $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                    }
+                }
+                if ($vendor->delivery_fee > 0) {
+                    $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
+                    $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
+                    $ETA = $order_pre_time + $user_to_vendor_time;
+                    
+                    $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
+                }
+                if ($vendor->dineInTable) {
+                    $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                    $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                    $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
+                }
+
+                $vendor->vendor_dispatcher_status = VendorOrderDispatcherStatus::whereNotIn('dispatcher_status_option_id', [
+                    2
+                ])->select('*', 'dispatcher_status_option_id as status_data')->where('order_id', $order->id);
+                if (isset($vendor->vendor->id))
+                    $vendor->vendor_dispatcher_status = $vendor->vendor_dispatcher_status->where('vendor_id', $vendor->vendor->id);
+
+                $vendor->vendor_dispatcher_status = $vendor->vendor_dispatcher_status->get();
+                $vendor->vendor_dispatcher_status_count = 6;
+                $vendor->dispatcher_status_icons = $iconsArray;
+            }
+        }
+        return $Orders;
+    }
+    public function gettimeSlotName($product){
+        $product->schedule_slot_name = '';
+        if($product->schedule_slot!=''){
+            $nowDate     = Carbon::now()->format('Y-m-d');
+            $D_slot     = explode('-', $product->schedule_slot);
+            $start_time = $nowDate.' ' .( @$D_slot[0] ?? '00:00');
+            $end_time   = $nowDate.' ' .(@$D_slot[1] ?? '01:00');
+           
+            $product->schedule_slot_name =  date('h:i A',strtotime($start_time)).' - '.date('h:i A', strtotime($end_time));
+        }
+        return $product;
     }
 
     public function getOrderSuccessPage(Request $request)

@@ -1074,7 +1074,7 @@
                                             id="specific_instructions"
                                             value="{{ $cart_details->specific_instructions ?? '' }}"
                                             name="specific_instructions">
-                                             @if($getAdditionalPreference['is_file_cart_instructions']) 
+                                             {{-- @if($getAdditionalPreference['is_file_cart_instructions']) 
                                                 <div class="Instructions_file">
                                                         <label>{{ __('Instructions file') }}</label>
                                                         <div class="instructions_image">
@@ -1082,7 +1082,7 @@
                                                         </div>
                                                         <label class="logo-size text-right w-100">{{ __("image") }} 1000X1000</label>
                                                 </div>
-                                            @endif
+                                            @endif --}}
                                     </div>
                                 </div>
                                 @if (isset($cart_details->gift_card_id) && (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))

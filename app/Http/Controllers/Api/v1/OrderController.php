@@ -2105,8 +2105,9 @@ class OrderController extends BaseController
         $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
         switch ($type) {
             case 'pending': // which order not assign yet indriver
+        
             $orders->whereHas('products.order_product_status', function ($q1) {
-                        $q1->where('order_status_option_id',1)->whereNotIn('order_status_option_id', [2, 3]); // cancel order product
+                        $q1->where('dispatcher_status_option_id',1)->whereNotIn('dispatcher_status_option_id', [2, 3]); // cancel order product
                     });
                 break;
             case 'active':
@@ -2123,7 +2124,7 @@ class OrderController extends BaseController
                 break;
         }
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
-        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.product.category.categoryDetail'=>function ($q){
+        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.category.categoryDetail'=>function ($q){
             $q->select('id','type_id');
         }
         ])
@@ -2254,7 +2255,9 @@ class OrderController extends BaseController
                     'product_id' => $product->product_id,
                     'title' => $product->product_name,
                     'routes' => $product->routes,
-                    'dispatcher_agent' => $dispatcher_agent
+                    'dispatcher_agent' => $dispatcher_agent,
+                    'scheduled_date_time' => dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone),
+                    'schedule_slot' => $product->schedule_slot
                 );
                 
             }
