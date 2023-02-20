@@ -101,7 +101,7 @@ $(document).delegate(".btn_for_pending", "click", function () {
 
 
 $(document).on("click", ".topup_wallet_confirm_pending", function () {
-    var wallet_amount = $('#wallet_amount_pending').val();
+    var wallet_amount = $('#amount_pending').val();
     let payment_option_id = $('#payment_methods_pending input[name="wallet_payment_method"]:checked').data('payment_option_id');
     if ((wallet_amount == undefined || wallet_amount <= 0) && (amount_required_error_msg != undefined)) {
         $('#amount_error_pending').html(amount_required_error_msg);

@@ -607,6 +607,8 @@
                         <li class="grand_total d-flex align-items-center justify-content-between">
                             <label class="m-0">{{ __('Pending Amount') }}</label>
                             <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
+                          <button data-id={{$order->id}} data-order={{$order->order_number}} data-amount={{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}  class="btn btn-solid order_placed_btn_pending btn_for_pending" type="button">Pay</button>
+
                         </li>
                         @endif
                         {{-- till here --}}
