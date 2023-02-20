@@ -1685,7 +1685,7 @@ class PickupDeliveryController extends BaseController{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
                 
-                $call_back_url = "http://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
+                $call_back_url = "https://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
                 
                 $postdata =  [
                             'tasks'                   => $request->tasks,
