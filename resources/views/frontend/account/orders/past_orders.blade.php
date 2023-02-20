@@ -205,6 +205,11 @@
                                             @endphp
                                             @endif
                                         </li>
+                                        @if($product->schedule_slot && $product->schedule_slot_name)
+                                        <li>
+                                            <label class="schedule_slot"><span>Slots: {{ $product->schedule_slot_name }}</span></label>
+                                        </li>
+                                        @endif
 
                                         @if($order->luxury_option_id == 4 && $vendor->order_status_option_id == 6)
                                             <li>
