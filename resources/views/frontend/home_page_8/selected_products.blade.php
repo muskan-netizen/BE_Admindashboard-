@@ -1,4 +1,4 @@
-<div class="col-md-3">
+<div class="col">
     <div class="deals-product product-card-box position-relative text-center al_custom_vendors_sec"  >
         <a class="suppliers-box d-block" href="{{ $product["vendor"]->slug }}/product/{{ $product["url_slug"] }}">
             <div class="suppliers-img-outer position-relative ">
@@ -12,4 +12,4 @@
             </div>
         </a>
     </div>
-</div>
+</div>  

@@ -2597,6 +2597,21 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
 .al_body_template_eight .top-header .header-dropdown li.onhover-dropdown, .cutom_add_wishlist{
     padding:5px 15px 0 0 !important;
 }
+
+
+
+
+
+.product-4-selected_products .slick-slide > div {
+    margin: 0!important;
+}
+.product-4-selected_products .slick-slide > div .col{
+    padding: 0!important;
+}
+.al_body_template_eight  .product-m .al_clock b{
+    font-size: 15px!important;
+}
+
 /*----------laptop view----------*/
 
 @media(max-width:1440px) {
