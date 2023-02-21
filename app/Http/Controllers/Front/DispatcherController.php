@@ -10,7 +10,7 @@ use Auth;
 use Session;
 use DB;
 use App\Http\Traits\{ApiResponser,OrderTrait};
-use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid,VendorOrderProductStatus};
+use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid,VendorOrderProductStatus,UserBidRideRequest};
 
 class DispatcherController extends FrontController
 {
@@ -1065,35 +1065,68 @@ class DispatcherController extends FrontController
     /******************    ---- pickup delivery Driver Bid/pricing update -----   ******************/
     public function dispatchDriverBidUpdate(Request $request, $domain = '', $web_hook_code)
     {
-        //dd($web_hook_code);
         try {
+            $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
             DB::beginTransaction();
             $order_bid_id = 0;
             if($request->task_type == 'Instant_Booking'){
                 $checkiftokenExist = OrderVendor::where('web_hook_code', $web_hook_code)->first();
                 $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->order_id : 0;
             }else{
-                $checkiftokenExist = OrderVendor::where('web_hook_code', $web_hook_code)->first();
-                $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->order_id : 0;
+                $checkiftokenExist = UserBidRideRequest::where('web_hook_code', $web_hook_code)->first();
+                $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->id : 0;
             }
 
-            if($order_bid_id > 0){
-                $PickDropDriverBid = [
-                    'order_bid_id'                    => $order_bid_id,
-                    'status'                          => 0,
-                    'tasks'                           => isset($request->tasks) ? json_encode($request->tasks) : '',
-                    'driver_id'                       => $request->driver_id,
-                    'driver_name'                     => $request->driver_name,
-                    'driver_image'                    => $request->driver_image,
-                    'bid_price'                       => $request->bid_price,
-                    'task_type'                       => $request->task_type,
-                    'expired_at'                      => Carbon::now()->addSeconds(3000)->format('Y-m-d H:i:s')
-                ];
-                
-                $PickDropDriverBid = PickDropDriverBid::create($PickDropDriverBid);
+            $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
+            $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
 
-                DB::commit();
-                return $this->successResponse($PickDropDriverBid, __('Request Created Successfully.'), 200);
+            if($order_bid_id > 0){
+                $ifbidexists = PickDropDriverBid::where('order_bid_id', $order_bid_id)->where('driver_id', $request->driver_id)->count();
+                if($ifbidexists == 0){
+                    $PickDropDriverBid = [
+                        'order_bid_id'                    => $order_bid_id,
+                        'status'                          => 0,
+                        'tasks'                           => isset($request->tasks) ? json_encode($request->tasks) : '',
+                        'driver_id'                       => $request->driver_id,
+                        'driver_name'                     => $request->driver_name,
+                        'driver_image'                    => $request->driver_image,
+                        'bid_price'                       => isset($request->bid_price) ? $request->bid_price : 0,
+                        'task_type'                       => $request->task_type,
+                        'expired_at'                      => Carbon::now()->addSeconds($expiryseconds)->format('Y-m-d H:i:s')
+                    ];
+                    
+                    $PickDropDriverBid = PickDropDriverBid::create($PickDropDriverBid);
+
+                    //-------------driver bid received notification
+                    $title     = $request->task_type;
+                    $body      = "";
+                    $devices   = UserDevice::whereNotNull('device_token')->where('user_id', $checkiftokenExist->user_id)->pluck('device_token');
+                    $data      = [
+                        "registration_ids" => $devices,
+                        "notification" => [
+                            'title'              => $title,
+                            'body'               => $body,
+                            'sound'              => "default",
+                            "icon"               => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                            'click_action'       => '',
+                            "android_channel_id" => "sound-channel-id"
+                        ],
+                        "data" => [
+                            'title' => $title,
+                            'body'  => $body,
+                            'data'  => '',
+                            'type'  => ""
+                        ],
+                        "priority" => "high"
+                    ];
+
+                    $result=sendFcmCurlRequest($data);
+    
+                    DB::commit();
+                    return $this->successResponse($PickDropDriverBid, __('Request Placed, You will be notified once the customer respond.'), 200);
+                }else{
+                    return $this->successResponse([], __('Duplicate Entry, Request has already been placed. You will be notified once the customer respond.'), 200);
+                }
 
             }else{
                 DB::rollback();
@@ -1111,15 +1144,14 @@ class DispatcherController extends FrontController
     /******************    ---- pickup delivery Driver Bid/pricing status -----   ******************/
     public function dispatchDriverBidStatus(Request $request, $domain = '', $web_hook_code)
     {
-        //dd($web_hook_code);
         try {
             $order_bid_id = 0;
             if($request->task_type == 'Instant_Booking'){
                 $checkiftokenExist = OrderVendor::where('web_hook_code', $web_hook_code)->first();
                 $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->order_id : 0;
             }else{
-                $checkiftokenExist = OrderVendor::where('web_hook_code', $web_hook_code)->first();
-                $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->order_id : 0;
+                $checkiftokenExist = UserBidRideRequest::where('web_hook_code', $web_hook_code)->first();
+                $order_bid_id = !empty($checkiftokenExist) ? $checkiftokenExist->id : 0;
             }
 
             if($order_bid_id > 0){
@@ -1148,6 +1180,7 @@ class DispatcherController extends FrontController
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
+
         }
     }
     /******************    ---- cancel order vendor product  -----   ******************/

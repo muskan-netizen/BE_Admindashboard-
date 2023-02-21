@@ -39,6 +39,12 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-order-service-status-update/{id?}', 'Front\DispatcherController@dispatchOrderServiceProductStatusUpdate')->name('dispatch-order-service-status-update'); // Order Status update Dispatch
 	Route::post('dispatch/driver/bids/update/{id?}', 'Front\DispatcherController@dispatchDriverBidUpdate')->name('dispatch-driver-bids'); // instant booking and Bid and Ride pickup delivery update from dispatch
 	Route::post('dispatch/driver/bids/status/{id?}', 'Front\DispatcherController@dispatchDriverBidStatus')->name('dispatch-driver-bids-status'); // instant booking and Bid and Ride Bid Status pickup delivery update from dispatch
+	
+	//------routes for receive bids in bid and ride from agent (dispatcher)
+	Route::post('dispatch/driver/bids/update/{id?}', 'Front\DispatcherController@dispatchDriverBidUpdate')->name('dispatch-driver-bids'); // instant booking / Bid and Ride pickup delivery update from dispatch
+	Route::post('dispatch/driver/bids/status/{id?}', 'Front\DispatcherController@dispatchDriverBidStatus')->name('dispatch-driver-bids-status'); // instant booking / Bid and Ride Bid Status pickup delivery update from dispatch
+	
+	
 	Route::get('testsms', 'Front\FrontController@testsms');
 
 	Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
