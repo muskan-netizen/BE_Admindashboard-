@@ -422,7 +422,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                 <input type="text" min="16" max="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter card Number" required />
                             </div>
                             <div class="col-3">
-                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="YYYYMM" required />
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
                             </div>
                             <div class="col-3">
                                 <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" required />
