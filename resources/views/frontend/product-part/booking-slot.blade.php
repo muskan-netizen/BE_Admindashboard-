@@ -57,34 +57,27 @@
     <div class="product-description border-product pb-0">
         {{-- <h6 class="product-title mt-0">{{__('Extended duration By('.@$product->additional_increments.'hr:'.@$product->additional_increments_min.'min/'.Session::get('currencySymbol').number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",").')')}}:
       </h6> --}}
-      <div class="mt-0">
-        {{-- {{__('Duration') }}: --}}
-        {{-- <input style="width: 135px" readonly type="text"  id="incremental_hrs_hidden" class="form-control input-qty-number"  value="{{$product->minimum_duration.' hour '.$product->minimum_duration_min. ' min'}}"> --}}
-
-        <input style="display: none" readonly  step="{{$product->additional_increments*60+$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="{{$product->additional_increments*60+$product->additional_increments_min}}">
-
-        <input  type="hidden" min="0" name="total_hrs" id="total_hrs" value="{{getMinutes($product->minimum_duration,$product->minimum_duration_min)}}" >
-        <input  type="hidden"  name="first_variant" id="first_variant" value="{{@$product->variant[0]->id}}" >
-
-      {{-- <div class="qty-box mb-3">
-          <div class="input-group">
-                <span class="input-group-prepend">
-                    <button type="button" class="btn incremental-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
-                    </button>
-                </span>
-                <input style="display: none" readonly  step="{{$product->additional_increments*60+$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="{{$product->additional_increments*60+$product->additional_increments_min}}">
-
-                <input  type="hidden" min="0" name="total_hrs" id="total_hrs" value="{{getMinutes($product->minimum_duration,$product->minimum_duration_min)}}" >
-
-                <input style="width: 135px" readonly type="text"  id="incremental_hrs_hidden" class="form-control input-qty-number"  value="{{$product->minimum_duration.' hour '.$product->minimum_duration_min. ' min'}}">
-                <input  type="hidden"  name="first_variant" id="first_variant" value="{{@$product->variant[0]->id}}" >
-                <span class="input-group-prepend quant-plus">
-                    <button type="button" class="btn incremental-right-plus" data-type="plus" data-field="">
-                        <i class="ti-angle-right"></i>
-                    </button>
-                </span>
-            </div>
-        </div> --}}
+      <div class="mt-0">{{__('Duration') }}:
+      
+        <div class="qty-box mb-3">
+            <div class="input-group">
+                  {{-- <span class="input-group-prepend">
+                      <button type="button" class="btn incremental-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
+                      </button>
+                  </span> --}}
+                  <input style="display: none" readonly  step="{{$product->additional_increments*60+$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="{{$product->additional_increments*60+$product->additional_increments_min}}">
+  
+                  <input  type="hidden" min="0" name="total_hrs" id="total_hrs" value="{{getMinutes($product->minimum_duration,$product->minimum_duration_min)}}" >
+  
+                  <input style="width: 135px" readonly type="text"  id="incremental_hrs_hidden" class="form-control input-qty-number"  value="{{$product->minimum_duration.' hour '.$product->minimum_duration_min. ' min'}}">
+                  <input  type="hidden"  name="first_variant" id="first_variant" value="{{@$product->variant[0]->id}}" >
+                  {{-- <span class="input-group-prepend quant-plus">
+                      <button type="button" class="btn incremental-right-plus" data-type="plus" data-field="">
+                          <i class="ti-angle-right"></i>
+                      </button>
+                  </span> --}}
+              </div>
+          </div>
 
         <div class="mt-0">
           <div class="duration">
@@ -407,7 +400,8 @@
         }
         function calculateExtraTimeforproduct(selectedStartDate,selectedEndDate){
           var total_sel_min = diff_minutes(selectedStartDate,selectedEndDate);
-          //console.log(parseInt(total_sel_min));
+          console.log("asdfasdfasdf");
+          // console.log(parseInt(default_minutes));
           //console.log(parseFloat(total_sel_min) - Number(default_minutes));
           var remaining = parseFloat(total_sel_min) - Number(default_minutes);
           //default_step
@@ -421,6 +415,20 @@
 
           $('#incremental_hrs').val(extra_t_min);
           var t_min_hr_min = parseInt(extra_t_min)+parseInt(default_minutes);
+          if(t_min_hr_min< default_minutes){
+            t_min_hr_min = default_minutes;
+            // $checkoutInput = $('#blocktime2');
+            // $checkinInput = $('#blocktime');
+            
+            
+            // var checkOutPicker = $checkoutInput.data('daterangepicker');
+            // var checkInPicker = $checkinInput.data('daterangepicker');
+            //   $checkoutInput.val(moment().add(default_minutes,'minutes').format("M/DD/YY hh:mm A"));
+            //   $checkinInput.val(moment().add(default_minutes,'minutes').format("M/DD/YY hh:mm A"));
+            //   checkOutPicker.setEndDate(moment().add(default_minutes,'minutes').format("M/DD/YY hh:mm A"));
+            //   checkInPicker.setEndDate(moment().add(default_minutes,'minutes').format("M/DD/YY hh:mm A"));
+              
+          }
 
           $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(t_min_hr_min));
           $('#total_hrs').val(parseInt(t_min_hr_min));
