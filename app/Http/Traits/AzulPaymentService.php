@@ -56,11 +56,15 @@ trait AzulPaymentService
     public function payWithCard($card)
     {
         $phone_number = auth()->user()->phone_number;
+        
+        $exp = explode('/',$card['dt']);
+        $expiry = $exp[1].$exp[0];
+        
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
             'Store' => $this->MERCHANT_ID,
             'CardNumber' => $card['cno'],
-            'Expiration' => $card['dt'],
+            'Expiration' => $expiry,
             'CVC' => $card['cv'],
             'PosInputMode' => $this->POST_INPUT_MODE,
             'TrxType' => 'Sale',
