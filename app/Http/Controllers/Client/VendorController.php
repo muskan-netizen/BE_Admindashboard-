@@ -134,17 +134,15 @@ class VendorController extends BaseController
                 return $offers ;
             })
             ->addIndexColumn()
+            ->rawColumns(['checkbox','offers','show_slot_label','show_slot_option','add_category_option','show_url','destroy_url','manager'])
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
-                    $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                        if (Str::contains(Str::lower($row['name']), Str::lower($request->get('search')))){
-                            return true;
-                        }
-                        return false;
+                    $search = $request->get('search');
+                    $instance->where(function ($query) use ($search) {
+                        $query->where('name', 'LIKE', '%' . $search . '%');
                     });
                 }
-            })
-            ->rawColumns(['checkbox','offers','show_slot_label','show_slot_option','add_category_option','show_url','destroy_url','manager'])
+            }, true)
             ->make(true);
     }
 
