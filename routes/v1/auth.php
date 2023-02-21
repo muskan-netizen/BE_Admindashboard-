@@ -267,6 +267,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-influencer-form/{id}', 'Api\v1\InfluencerController@getInfluencerForm');
             Route::post('save-influencer-form', 'Api\v1\InfluencerController@save');
         });
-     //   Route::post('get_product_price_from_dispatcher',   'Api\v1\ProductController@getFreeLincerFromDispatcher');
+     
+        
+        //-------routes for bid and ride------------------------------------
+        Route::post('create/user/bid_ride_request', 'Api\v1\PickupDeliveryController@createBidRideRequest');
+        Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
+        Route::post('accept-ride-bid-request', 'Api\v1\PickupDeliveryController@acceptBidsRelatedToBidRideOrderRide');
+        Route::post('decline-ride-bid', 'Api\v1\PickupDeliveryController@declineBidsRelatedToOrderRide');
     });  
 });

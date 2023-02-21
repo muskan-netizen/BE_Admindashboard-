@@ -48,7 +48,7 @@ trait ProductTrait{
                 $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                 $q2->where('apt.language_id', $langId);
             },
-            'category.categoryDetail.allParentsAccount','ServicePeriod', 'productVariantByRoles',            
+            'category.categoryDetail.allParentsAccount','ServicePeriod', 'productVariantByRoles',
         ];
 
         if( checkTableExists('product_attributes') ) {

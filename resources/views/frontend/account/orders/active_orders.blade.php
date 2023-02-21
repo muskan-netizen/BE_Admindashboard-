@@ -189,17 +189,7 @@
                                 }
                                 ?>
 
-                                {{-- <h6 class="m-0">
-                                                        @if ($clientPreference->business_type == 'laundry')
-                                                                <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                {{ __('Cancel Order') }}
-                                </label>
-                                @else
-                                <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                    {{ __('Cancel Orders') }}
-                                </label>
-                                @endif
-                                </h6> --}}
+                               
                                 @endif
 
                                 @if ($vendor->dineInTable)
@@ -239,6 +229,11 @@
                                 <li>
                                     <label class="items_price">{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                 </li>
+                                @if($product->schedule_slot && $product->schedule_slot_name)
+                                <li>
+                                    <label class="schedule_slot"><span>Slots: {{ $product->schedule_slot_name }}</span></label>
+                                </li>
+                                @endif
                                 @if(@$product->order_product_status->order_status_option_id == 2 && $order->luxury_option_id == 4 && $vendor->order_status_option_id==2)
                                     @if(@$product->Routes[0] && $product->Routes[0]['dispatch_traking_url'] != '')
                                         <li>
@@ -613,6 +608,8 @@
                         <li class="grand_total d-flex align-items-center justify-content-between">
                             <label class="m-0">{{ __('Pending Amount') }}</label>
                             <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
+                          <button data-id={{$order->id}} data-order={{$order->order_number}} data-amount={{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}  class="btn btn-solid order_placed_btn_pending btn_for_pending" type="button">Pay</button>
+
                         </li>
                         @endif
                         {{-- till here --}}

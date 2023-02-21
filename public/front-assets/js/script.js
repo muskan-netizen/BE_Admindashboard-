@@ -40,7 +40,7 @@ function  layoutMode(){
         ],
     };
     var sliderConfigEight10 = {
-        rows: 2,
+        rows: 1,
 		dots: false,
 		arrows: true,
 		infinite: true,

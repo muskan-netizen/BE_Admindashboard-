@@ -9,7 +9,7 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot,UserAddress};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot,UserAddress,ProcessorProduct};
 
 use Carbon\Carbon;
 use App\Http\Traits\{ProductActionTrait, ProductTrait};
@@ -31,7 +31,7 @@ class ProductController extends FrontController{
      */
     public function index(Request $request, $domain = '',$vendor,$url_slug){
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-        
+
         $user = Auth::user();
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
@@ -50,6 +50,7 @@ class ProductController extends FrontController{
                 $q->where('slug',$vendor);
             })->firstOrFail();
         $product_in_cart = CartProduct::where(["product_id" => $product->id]);
+        $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();
         if ($user) {
              $product_in_cart = $product_in_cart->whereHas('cart', function($query) use($user){
                 $query->where(['user_id' => $user->id]);
@@ -75,7 +76,7 @@ class ProductController extends FrontController{
 
         $p_id = $product->id;
         $product =  $this->getProduct($p_id,$vendor,$url_slug,$user,$langId);
-       
+
         if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
         }
@@ -244,7 +245,7 @@ class ProductController extends FrontController{
                 $product_page = "product";
             }
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
-            
+
             $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles']);
             if( !empty($product->category->category_id) ) {
                 $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
@@ -352,8 +353,7 @@ class ProductController extends FrontController{
             if( $parsed_cutoff_time->gt($current_time) ) {
                 $current_time_response = true;
             }
-            
-            return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response]);
+            return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct]);
         }
    }
 
@@ -576,14 +576,14 @@ class ProductController extends FrontController{
                 })->get();
             }else{
                 $product_delivery_slots = $product_delivery_slots->get();
-            }            
+            }
             return view('frontend.shipping-method-slots-ajax')->with(['product_delivery_slots' => $product_delivery_slots]);
         }
     }
 
     public function getShippingSlotsInterval(Request $request){
         if($request->ajax()){
-            $product_delivery_slots_interval = DeliverySlot::where('parent_id', $request->slot_id)->get();            
+            $product_delivery_slots_interval = DeliverySlot::where('parent_id', $request->slot_id)->get();
             return view('frontend.shipping-method-slots-interval-ajax')->with(['product_delivery_slots_interval' => $product_delivery_slots_interval]);
         }
     }

@@ -2859,9 +2859,7 @@ class OrderController extends BaseController
                     'content-type' => 'application/json'
                 ]
             ]);
-
             //\Log::info("header", $postdata);
-
             $url = $dispatch_domain->delivery_service_key_url;
 
             $res = $client->post(
@@ -3229,7 +3227,6 @@ class OrderController extends BaseController
         $order_vendor->save();
         dd($order_vendor);
     }
-
 
 
 }
