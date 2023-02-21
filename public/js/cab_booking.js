@@ -173,9 +173,10 @@ $(document).ready(function () {
         cno = $('#azul-card-element').val();
         dt  = $('#azul-date-element').val();
         cv  = $('#azul-cvv-element').val();
-        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == '') || creditCardValidation() == false)
         {
-            success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+           // success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+             $('#paywithazulpay').prop('disabled',false);
             return false;
         }else{
             $("#pickup_now, #pickup_later").trigger('click');
@@ -195,7 +196,7 @@ $(document).ready(function () {
            $('#plugnpay-cvv-element').val('');
         }
         
-          if(payment_option_id == 50){
+         if(payment_option_id == 50){
            $("#azul_card_error").empty();
            $("#proceed_to_azulpay_loader").hide();
            $('#paywithazulpay').prop('disabled',false);
@@ -210,7 +211,6 @@ $(document).ready(function () {
 
         var payid = $(this).attr('data-payment_method');
         if(payid == 49){
-
             cno = $('#plugnpay-card-element').val();
             dt  = $('#plugnpay-date-element').val();
             cv  = $('#plugnpay-cvv-element').val();
@@ -232,7 +232,7 @@ $(document).ready(function () {
             cno = $('#azul-card-element').val();
             dt  = $('#azul-date-element').val();
             cv  = $('#azul-cvv-element').val();
-            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == '') || creditCardValidation() == false)
             {
                 $('#azulpaymethod').modal({
                     backdrop: 'static',
@@ -242,8 +242,8 @@ $(document).ready(function () {
                 $('#paywithazulpay').prop('disabled',false);
                 return false;
             }else{
-                $("#proceed_to_azulpay_loader").show();
-            }
+				$("#proceed_to_azulpay_loader").show();
+			}
         }
         
 
@@ -324,7 +324,7 @@ $(document).ready(function () {
 
         var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
         var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
-        $.ajax({
+     $.ajax({
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,

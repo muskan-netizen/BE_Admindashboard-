@@ -3274,6 +3274,7 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 { name: 'amount', value: total_amount },
             );
         }
+        if(creditCardValidation()){
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -3323,6 +3324,7 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 }
             }
         });
+        }
     }
     
    window.creditCardValidation =  function creditCardValidation(){
