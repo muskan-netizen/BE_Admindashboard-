@@ -1,108 +1,222 @@
-<body>
-<div align="center">
-    <form id="frmContact" action="" method="post"
-        onSubmit="return validate();">
+<?php
 
-        <div class="field-row">
-            <label>Card Number</label> <span id="card-number-info" class="info"></span>
-            <br /> 
-            <input type="text" id="card-number" class="input_box">
-        </div>
-        <div class="field-row">
-            <div class="contact-row column-right">
-                <label>Expiry Month / Year</label> 
-                <span id="userEmail-info" class="info"></span>
-                <br /> 
-                <select name="expiryMonth" id="expiryMonth" class="select_box">
-                <?php
-                for ($i = date("m"); $i <= 12; $i ++) {
-                    $monthValue = $i;
-                    if (strlen($i) < 2) {
-                        $monthValue = "0" . $monthValue;
-                    }
-                    ?>
-                <option value="<?php echo $monthValue; ?>"><?php echo $i; ?></option>
-                <?php
-                }
-                ?>
-                </select> <select name="expiryMonth" id="expiryMonth"
-                    class="select_box">
-            <?php
-            for ($i = date("Y"); $i <= 2030; $i ++) {
-                $yearValue = substr($i, 2);
-                ?>
-            <option value="<?php echo $yearValue; ?>"><?php echo $i; ?></option>
-            <?php
-            }
-            ?>
-            </select>
-            </div>
-            <div class="contact-row cvv-box">
-                <label>CVV</label> <span id="cvv-info" class="info"></span><br />
-                <input type="text" name="cvv" id="cvv"
-                    class="input_box cvv-input">
-            </div>
-            
-        </div>
-        <div>
-	<div class="field-row">
-            <label style="padding-top: 20px;">Card Holder Name</label> <span
-                id="card-holder-name-info" class="info"></span><br /> <input
-                type="text" id="card-holder-name" class="input_box" />
-			</div>
-        </div>
-        <div>
-            <input type="submit" value="Submit" class="btnAction" />
-        </div>
-        <div id="error-message"></div>
+namespace Database\Seeders;
 
-    </form>
-</div>
-</body>
+use Illuminate\Database\Seeder;
+use App\Models\HomePageLabel;
+use Carbon\Carbon;
+use DB;
+use Log;
+class HomePageLabelSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-<script>
-function validate(){
-	var valid = true;	 
-    $(".demoInputBox").css('background-color','');
-    var message = "";
+        $already = HomePageLabel::where('slug', 'vendors')->count();
 
-    var cvvRegex = /^[0-9]{3,3}$/;
-    
-    var cardNumber = $("#azul-card-element").val();
-    var cvv = $("#azul-cvv-element").val();
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Vendors',
+            'slug' => 'vendors',
+            'order_by' => 1,
+        ]);
 
-    if(cardNumber == "" || cvv == "") {
-    	   message  += "<div>All Fields are Required.</div>";  
-    	  
-    	   if(cardNumber == "") {
-    		   $("#azul-card-element").css('background-color','#FFFFDF');
-    	   }
-    	   if (cvv == "") {
-    		   $("#azul-cvv-element").css('background-color','#FFFFDF');
-    	   }
-       valid = false;
+
+        $already = HomePageLabel::where('slug', 'featured_products')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Featured Products',
+            'slug' => 'featured_products',
+            'order_by' => 2,
+        ]);
+
+
+
+        $already = HomePageLabel::where('slug', 'new_products')->count();
+
+        if($already == 0){
+        //   // Log::info($already);
+            $home_page = HomePageLabel::insertGetId([
+                'title' => 'New Products',
+                'slug' => 'new_products',
+                'order_by' => 3,
+            ]);
+        }
+
+
+        $already = HomePageLabel::where('slug', 'on_sale')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'On Sale',
+            'slug' => 'on_sale',
+            'order_by' => 4,
+        ]);
+
+
+
+        $already = HomePageLabel::where('slug', 'best_sellers')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Best Sellers',
+            'slug' => 'best_sellers',
+            'order_by' => 5,
+        ]);
+
+        $already = HomePageLabel::where('slug', 'brands')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Brands',
+            'slug' => 'brands',
+            'order_by' => 6,
+        ]);
+
+        $already = HomePageLabel::where('slug', 'pickup_delivery')->count();
+
+        if($already == 0){
+             $home_page = HomePageLabel::insertGetId([
+                'id' => 7,
+                'title' => 'Pickup Delivery',
+                'slug' => 'pickup_delivery',
+                'order_by' => 7,
+                'is_active' => 0
+            ]);
+
+        }
+
+        $already = HomePageLabel::where('slug', 'dynamic_page')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Dynamic HTML',
+            'slug' => 'dynamic_page',
+            'order_by' => 8,
+        ]);
+
+
+        $already = HomePageLabel::where('slug', 'trending_vendors')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Trending Vendors',
+            'slug' => 'trending_vendors',
+            'order_by' => 9,
+        ]);
+
+        $already = HomePageLabel::where('slug', 'recent_orders')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Recent Orders',
+            'slug' => 'recent_orders',
+            'order_by' => 10,
+        ]);
+
+        $already = HomePageLabel::where('slug', 'cities')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Cities',
+            'slug' => 'cities',
+            'order_by' => 11,
+        ]);
+        
+        $already = HomePageLabel::where('slug', 'long_term_service')->count();
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Long Term Service',
+            'slug' => 'long_term_service',
+            'order_by' => 12,
+        ]);
+
+        $already = HomePageLabel::where('slug', 'recently_viewed')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title'      => 'Recently Viewed',
+            'slug'       => 'recently_viewed',
+            'order_by'   => 12,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $already = HomePageLabel::where('slug', 'spotlight_deals')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title'      => 'Spotlight Deals',
+            'slug'       => 'spotlight_deals',
+            'order_by'   => 13,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $already = HomePageLabel::where('slug', 'top_rated')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title'      => 'Top Rated',
+            'slug'       => 'top_rated',
+            'order_by'   => 14,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $already = HomePageLabel::where('slug', 'nav_categories')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title'      => 'NavCategories',
+            'slug'       => 'nav_categories',
+            'order_by'   => 15,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $already = HomePageLabel::where('slug', 'single_category_products')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Single Category Products',
+                'slug'       => 'single_category_products',
+                'order_by'   => 16,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+
+        $already = HomePageLabel::where('slug', 'selected_products')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Selected Products',
+                'slug'       => 'selected_products',
+                'order_by'   => 16,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+
+        $already = HomePageLabel::where('slug', 'most_popular_products')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Most Popular Products',
+                'slug'       => 'most_popular_products',
+                'order_by'   => 17,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+        $already = HomePageLabel::where('slug', 'banner')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Banner',
+                'slug'       => 'banner',
+                'order_by'   => 18,
+                'created_at' => Carbon::now(),
+            ]);
+        }
+        
     }
-    
-    if(cardNumber != "") {
-        	$('#azul-card-element').validateCreditCard(function(result){
-            if(!(result.valid)){
-                	message  += "<div>Card Number is Invalid</div>";    
-            		$("#card-number").css('background-color','#FFFFDF');
-            		valid = false;
-            }
-        });
-    }
-    
-    if (cvv != "" && !cvvRegex.test(cvv)) {
-        message  += "<div>CVV is Invalid</div>";    
-        $("#azul-cvv-element").css('background-color','#FFFFDF');
-    		valid = false;
-    }
-    
-    if(message != "") {
-        $("#azul_card_error").show();
-        $("#azul_card_error").html(message);
-    }
-    return valid;
 }
-</script>
