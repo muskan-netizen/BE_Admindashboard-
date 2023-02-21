@@ -763,11 +763,15 @@ $(document).ready(function () {
 
     $(document).on("click","#submit_product_rider_button",function(){
         let product_id = $('input[name="rider_product_id"]:checked').val();
-        let rider_id = 0;
-        let rider_type = $('input[name="is_for_friend"]:checked').val();
-        if(rider_type == 1 || rider_type == "1")
-        {
-            rider_id = $('input[name="rider_id"]:checked').val();
+        if(product_id === undefined){
+            alert("Please choose one "+category_name+" to process next");
+        }else{
+            let rider_id = 0;
+            let rider_type = $('input[name="is_for_friend"]:checked').val();
+            if(rider_type == 1 || rider_type == "1")
+            {
+                rider_id = $('input[name="rider_id"]:checked').val();
+            }
         }
         getVehicleDetail(product_id,rider_id);
 
@@ -921,7 +925,9 @@ $(document).ready(function () {
                         if(is_friend == undefined || is_friend == '0')
                         {
                             $("#search_product_main_div").show();
+                            $("#search_product_rider_main_div").hide();
                         }else{
+                            $("#search_product_main_div").hide();
                             $("#search_product_rider_main_div").show();
                         }
                     }else{

@@ -85,6 +85,7 @@
         "stripe/stripe-php": "^7.100",
         "symfony/psr-http-message-bridge": "^2.1",
         "twilio/sdk": "^6.13",
+        "vonage/client": "2.3",
         "webpatser/laravel-uuid": "^4.0",
         "xeroapi/xero-php-oauth2": "^2.12",
         "yadahan/laravel-authentication-log": "^1.5",

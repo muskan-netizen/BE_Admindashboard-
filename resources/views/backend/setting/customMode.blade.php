@@ -296,7 +296,6 @@
     </div>
 </div> -->
 
-@if (isset($preference) && $preference->business_type == 'taxi')
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="book_for_friend"
@@ -308,7 +307,7 @@
         </span>
     </div>
 </div>
-@endif
+
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
     <label for="is_static_dropoff"
