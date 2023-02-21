@@ -209,7 +209,7 @@ class BidController extends FrontController
              $userIds= $vendorIds;
         }
 
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $userIds)->pluck('device_token')->toArray();
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', [$userIds])->pluck('device_token')->toArray();
         if (!empty($devices)) 
         {
             $from = '';
