@@ -148,9 +148,9 @@
 				<div class="carousel-inner">
 
 					@foreach($banners as $key => $banner)
-						@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+						@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
 						<div class="carousel-item @if($key == 0) active @endif">
-						<a class="banner-img-outer" href="{{$url??'#'}}">
+						<a class="banner-img-outer" href="{{$url??'#'}}" target="_blank">
 							<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/400' . $banner->image['image_path']}}">
 						</a>
 						</div>

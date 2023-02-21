@@ -1815,6 +1815,18 @@ $(document).ready(function () {
                 return false;
             }
         }
+        
+        if(payment_option_id == 50){
+            cno = $('#azul-card-element').val();
+            dt = $('#azul-date-element').val();
+            cv = $('#azul-cvv-element').val();
+            $("#azul_card_error").html();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+                return false;
+            }
+        }
 
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
@@ -1839,9 +1851,9 @@ $(document).ready(function () {
         // return false;
         if (payment_option_id == 1 || payment_option_id == 38 || post_pay_edit_order == 1) {
             placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string,total_amount);
-        } else{
-            cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
-        }
+        }else{
+			cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
+		}
     });
 
 
@@ -4677,6 +4689,9 @@ $(document).ready(function () {
             case 49:
                 paymentViaplugnpay('', payment_option_id, '');
             break;
+             case 50:
+                paymentViazulpay('', payment_option_id, '');
+                 break;
         }
 
     }
@@ -5154,6 +5169,20 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+            
+            case '50':
+				if(creditCardValidation()){
+	                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+	                if (order != '') {
+	                    paymentViazulpay(address_id, payment_option_id,order);
+	                }
+	                else{
+	                    return false;
+	                }
+                }else{
+					         $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+				}
+              break;  
         }
 
     }
@@ -5376,6 +5405,9 @@ $(document).ready(function () {
             case 49:
                 paymentViaplugnpay('',payment_option_id,'');
                 break;
+                 case 50:
+                paymentViazulpay('',payment_option_id,'');
+                 break;
         }
     }
 
@@ -5388,3 +5420,82 @@ function numberWithCommas(x) {
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
 
+function creditCardValidation(cn,cv,ex){
+	var valid = true;	 
+    $(".demoInputBox").css('background-color','');
+    var message = "";
+
+    var cvvRegex = /^[0-9]{3,3}$/;
+    
+    var cardNumber = cn;
+    var cvv = cv;
+    
+     var expiry =ex;
+expiry = expiry.split('/');
+
+
+var today, someday;
+var exMonth=expiry[0];
+var exYear=expiry[1];
+today = new Date();
+someday = new Date();
+someday.setFullYear(exYear, exMonth, 1);
+
+	
+
+    if(cardNumber == "" || cvv == "" || expiry == '') {
+    	   message  += "<div>All Fields are Required.</div>";  
+    	  
+    	   if(cardNumber == "") {
+    		   $("#azul-card-element").css('background-color','#FFFFDF');
+    	   }
+    	   if (cvv == "") {
+    		   $("#azul-cvv-element").css('background-color','#FFFFDF');
+    	   }
+    	     if (expiry == "") {
+    		   $("#azul-date-element").css('background-color','#FFFFDF');
+    	   }
+       valid = false;
+    }
+    
+    if(cardNumber != "") {
+        	$('#azul-card-element').validateCreditCard(function(result){
+            if(!(result.valid)){
+                	message  += "<div>Card Number is Invalid</div>";    
+            		$("#card-number").css('background-color','#FFFFDF');
+            		valid = false;
+            }
+        });
+    }
+    
+    if (cvv != "" && !cvvRegex.test(cvv)) {
+        message  += "<div>CVV is Invalid</div>";    
+        $("#azul-cvv-element").css('background-color','#FFFFDF');
+    		valid = false;
+    }
+    
+    
+    if (expiry != "") {
+      
+        
+        if (someday < today) {
+	    message  += "<div>Expiry date is Invalid</div>";    
+        $("#azul-date-element").css('background-color','#FFFFDF');
+            		valid = false;
+
+	}
+        
+    }
+    
+    if(message != "") {
+        $("#azul_card_error").show();
+        $("#azul_card_error").html(message);
+         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+		 $(document).find(".proceed_to_pay").prop().prop('disabled',false);
+    }else{
+        $("#azul_card_error").html('');
+		 $(document).find('.topup_wallet_confirm').prop('disabled',true);
+		 $(document).find(".proceed_to_pay").prop('disabled',true);
+	}
+    return valid;
+}

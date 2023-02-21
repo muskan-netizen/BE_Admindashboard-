@@ -358,7 +358,33 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                         <span class="error text-danger" id="plugnpay_card_error"></span>
                     </div>
                 <% } %>
+<% if(payment_option.slug == 'azulpay') { %>
 
+                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
+
+                        <div class="row no-gutters">
+
+                            <div class="col-6">
+
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
+
+                            </div>
+
+                            <div class="col-3">
+
+                               <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="azul-date-element" placeholder="YYYYMM" required />
+
+                           </div>
+                            <div class="col-3">
+
+                               <input type="password" max="4" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" required />
+
+                           </div>
+
+                       </div>
+                      <span class="error text-danger" id="azul_card_error"></span>
+                   </div>
+               <% } %>
 
             <% } %>
         <% }); %>
@@ -435,7 +461,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
-
+	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();
