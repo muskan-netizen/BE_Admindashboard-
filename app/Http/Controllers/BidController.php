@@ -238,7 +238,7 @@ class BidController extends FrontController
                     ],
                     "data" => [
                         'title' => $title,
-                        'body'  => $notification_content->content,
+                        'body'  => $notification_content->content??$title,
                         'data' => $prescriptionData,
                         'prescription_id' => $prescriptionData->id,
                         'type' => "bid_request_created"
