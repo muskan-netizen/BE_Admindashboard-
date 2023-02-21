@@ -395,7 +395,11 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                                 $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                                 ?>
                                                                     <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"> <span class="color_name ellipsis">{{$optn->title}}</span>
+                                                                        @if($variant->type == 2)
                                                                     <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
+                                                                        @else
+                                                                        <span class="color_var radio_var" style="padding:8px; border: 1px dotted #CCC; background:#fff;"></span>
+                                                                        @endif
                                                                     <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                     <span class="checkround"></span>
                                                                 </label>
@@ -1342,6 +1346,10 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
             $(".color_var").removeClass("var-active");
             $(this).toggleClass("var-active");
             });
+        $(".radio_var").click(function () {
+            $(".radio_var").removeClass("radio-active");
+            $(this).toggleClass("radio-active");
+        });
     });
 </script>
 

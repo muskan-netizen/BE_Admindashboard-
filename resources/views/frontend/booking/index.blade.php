@@ -968,7 +968,7 @@
                             <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
                         </div>
                         <div class="col-3">
-                            <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="azul-date-element" placeholder="MM/YY" required />
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
                         </div>
                         <div class="col-3">
                             <input type="password" max="3" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" required />
@@ -1242,6 +1242,7 @@
 @endsection
 
 @section('script')
+<script src="{{asset('js/credit-card-validator.js')}}"></script>
     <script src="{{ asset('assets/js/intlTelInput.js') }}"></script>
     <script src="{{ asset('js/pick_drop.js') }}"></script>
     <script type="text/javascript">
@@ -1481,7 +1482,15 @@
             }
 
         });
-
+    function addSlashes (element) {	
+        let ele = document.getElementById(element.id);
+        ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
+        if(ele.length < 4 && ele.length > 0){
+            let finalVal = ele.match(/.{1,2}/g).join('/');
+    
+            document.getElementById(element.id).value = finalVal;
+        }
+    }
 
     </script>
 @endsection

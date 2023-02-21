@@ -611,6 +611,7 @@ $timezone = Auth::user()->timezone;
 <!-- tip after order complete -->
 @include('frontend.modals.extend_order_payment')
 
+<script src="{{asset('js/credit-card-validator.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -1148,6 +1149,18 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
         });
         // $('#proceed_to_pay_modal').modal();
     });
+    
+    function addSlashes (element) {
+	
+    let ele = document.getElementById(element.id);
+    ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
+    if(ele.length < 4 && ele.length > 0){
+        let finalVal = ele.match(/.{1,2}/g).join('/');
+
+        document.getElementById(element.id).value = finalVal;
+    }
+}
+    
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>

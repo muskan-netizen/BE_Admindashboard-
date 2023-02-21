@@ -174,9 +174,10 @@ $(document).ready(function () {
         cno = $('#azul-card-element').val();
         dt  = $('#azul-date-element').val();
         cv  = $('#azul-cvv-element').val();
-        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == '') || creditCardValidation() == false)
         {
-            success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+           // success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+             $('#paywithazulpay').prop('disabled',false);
             return false;
         }else{
             $("#pickup_now, #pickup_later").trigger('click');
@@ -217,7 +218,6 @@ $(document).ready(function () {
 
         var payid = $(this).attr('data-payment_method');
         if(payid == 49){
-
             cno = $('#plugnpay-card-element').val();
             dt  = $('#plugnpay-date-element').val();
             cv  = $('#plugnpay-cvv-element').val();
@@ -238,7 +238,7 @@ $(document).ready(function () {
             cno = $('#azul-card-element').val();
             dt  = $('#azul-date-element').val();
             cv  = $('#azul-cvv-element').val();
-            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == '') || creditCardValidation() == false)
             {
                 $('#azulpaymethod').modal({
                     backdrop: 'static',
@@ -248,8 +248,8 @@ $(document).ready(function () {
                 $('#paywithazulpay').prop('disabled',false);
                 return false;
             }else{
-                $("#proceed_to_azulpay_loader").show();
-            }
+				$("#proceed_to_azulpay_loader").show();
+			}
         }
         
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);

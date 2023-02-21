@@ -219,6 +219,4 @@ class HomePageLabelSeeder extends Seeder
         }
         
     }
-    return valid;
 }
-</script>
