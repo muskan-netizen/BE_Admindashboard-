@@ -39,56 +39,8 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array(
-            'cod',
-            'dpo',
-            'wallet',
-            'azul',
-            'layalty-points',
-            'paypal',
-            'stripe',
-            'stripe_fpx',
-            'paystack',
-            'payfast',
-            'mobbex',
-            'yoco',
-            'paylink',
-            'razorpay',
-            'gcash',
-            'simplify',
-            'square',
-            'ozow',
-            'pagarme',
-            'checkout',
-            'authorize_net',
-            'kongapay',
-            'ccavenue',
-            'easypaisa',
-            'cashfree',
-            'viva_wallet',
-            'easebuzz',
-            'toyyibpay',
-            'paytab',
-            'vnpay',
-            'mvodafone',
-            'flutterwave',
-            'payphone',
-            'braintree',
-            'windcave',
-            'paytech',
-            'stripe_oxxo',
-            'offline_manual',
-            'mycash',
-            'stripe_ideal',
-            'userede',
-            'openpay',
-            'upay',
-            'conekta',
-            'telr',
-            'khalti',
-            'mtn_momo',
-            'plugnpay'
-        );
+
+        $payment_codes = array('cod','azul', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo','plugnpay');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
         $payout_codes = array(
@@ -361,7 +313,50 @@ class PaymentOptionController extends BaseController
                                 'api_key' => $request->ozow_api_key
                             ));
                             break;
-
+                            
+                        case 'azul':
+                            $creds = ! empty($json_creds) ? json_decode($json_creds) : '';
+                            $validatedData = $request->validate([
+                                'azul_main_url' => 'required',
+                                'azul_alternate_url' => 'required',
+                                'azul_ecommerce_url' => 'required',
+                                'azul_merchant_id' => 'required',
+                                'azul_auth_header_one' => 'required',
+                                'azul_auth_header_two' => 'required',
+                                'azul_test_url' => 'required'
+                                // 'azul_ssl_certificate' => 'required',
+                                // 'azul_ssl_key' => 'required'
+                            ]);
+                            if ($request->hasFile('azul_ssl_certificate')) {
+                                $file = $request->file('azul_ssl_certificate');
+                                $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
+                                $path = Storage::disk('local')->put($file_name, file_get_contents($file), 'public');
+                                $azul_ssl_certificate = $file_name;
+                            } else {
+                                $azul_ssl_certificate = (! empty($creds) && isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
+                            }
+                            
+                            if ($request->hasFile('azul_ssl_key')) {
+                                $file = $request->file('azul_ssl_key');
+                                $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
+                                $path = Storage::disk('local')->put($file_name, file_get_contents($file), 'public');
+                                $azul_ssl_key = $file_name;
+                            } else {
+                                $azul_ssl_key = (! empty($creds) && isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
+                            }
+                            
+                            $json_creds = json_encode(array(
+                                'azul_main_url' => $request->azul_main_url,
+                                'azul_alternate_url' => $request->azul_alternate_url,
+                                'azul_ecommerce_url' => $request->azul_ecommerce_url,
+                                'azul_test_url' => $request->azul_test_url,
+                                'azul_merchant_id' => $request->azul_merchant_id,
+                                'azul_auth_header_one' => $request->azul_auth_header_one,
+                                'azul_auth_header_two' => $request->azul_auth_header_two,
+                                'azul_ssl_certificate' => $azul_ssl_certificate,
+                                'azul_ssl_key' => $azul_ssl_key
+                            ));
+                            break;
                         case 'pagarme':
                             $validatedData = $request->validate([
                                 'pagarme_api_key' => 'required',

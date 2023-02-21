@@ -132,7 +132,8 @@
                     </div>
                 <% } %>
 
- <% if(payment_option.slug == 'azulpay') { %>
+
+                <% if(payment_option.slug == 'azulpay') { %>
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
                         <div class="row no-gutters">
                             <div class="col-6">

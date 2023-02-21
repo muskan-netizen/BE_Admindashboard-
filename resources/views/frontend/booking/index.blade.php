@@ -951,7 +951,6 @@
 </div>
 
 
-
 <!-- Plugandpay Modal -->
 <div class="modal fade payment-modal payment-modal-width" id="azulpaymethod" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="azulpaymethodLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -1139,6 +1138,22 @@
                         </div>
 
                         <span class="error text-danger" id="plugnpay_card_error"></span>
+                    </div>
+                <% } %> <% if(payment_option.slug == 'azulpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="azul-date-element" placeholder="YYYYMM" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="azul_card_error"></span>
                     </div>
                 <% } %>
                 <% if(payment_option.slug == 'azulpay') { %>

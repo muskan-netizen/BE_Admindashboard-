@@ -185,7 +185,6 @@ $(document).ready(function () {
 
     });
     
-    
     $(document).on("click", ".right-top",function() {
         var payment_option_id = $(".select_cab_payment_method:checked").val();
         if(payment_option_id == 49){

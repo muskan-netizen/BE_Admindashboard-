@@ -454,12 +454,30 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                     </div>
                 <% } %>
 
+ <% if(payment_option.slug == 'azulpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="text" min="16" max="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter card Number" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="YYYYMM" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="azul_card_error"></span>
+                    </div>
+                <% } %>
             <% } %>
         <% }); %>
     <% } %>
 </script>
 @endsection
 @section('script')
+<script src="{{asset('js/credit-card-validator.js')}}"></script>
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
@@ -533,7 +551,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
-    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 
 
     var inline='';
@@ -746,4 +764,20 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script src="{{asset('js/payment.js')}}"></script>
+
+<script>
+
+function addSlashes (element) {
+	
+    let ele = document.getElementById(element.id);
+    ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
+    if(ele.length < 4 && ele.length > 0){
+        let finalVal = ele.match(/.{1,2}/g).join('/');
+
+        document.getElementById(element.id).value = finalVal;
+    }
+}
+
+</script>
+
 @endsection

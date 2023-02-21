@@ -180,7 +180,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get', 'post'], 'payment/simplify/page', 'Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
 	Route::post('payment/simplify', 'Front\SimplifyController@createPayment')->name('payment.simplify.createPayment');
 
-
+	//azulpay
+	Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
 	//Square
 	Route::match(['get', 'post'], 'payment/square/page', 'Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square', 'Front\SquareController@createPayment')->name('payment.square.createPayment');
