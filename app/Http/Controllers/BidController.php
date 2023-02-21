@@ -224,6 +224,7 @@ class BidController extends FrontController
                 $title = $notification_content->subject;
             }else{
                 $title = "Bid accepted by User";
+                $body_content = "Bid accepted";
             }
                 $data = [
                     "registration_ids" => $devices,
