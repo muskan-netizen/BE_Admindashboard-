@@ -553,7 +553,6 @@ class CartController extends FrontController
             }
 
             if($isnew == 1){
-                // dd($cart_product_detail);
                 $cartProduct = CartProduct::create($cart_product_detail);
                 // //\Log::info(json_encode($cart_product_detail));11
 
