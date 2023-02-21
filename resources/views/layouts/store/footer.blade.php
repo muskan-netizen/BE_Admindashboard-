@@ -392,22 +392,22 @@ if($showSubscriptionPlanPopUp == 1){
     var userLatitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var userLongitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
 
-    if(!userLatitude){
+    if(!userLatitude || userLongitude ==0 || userLongitude==''){
         @if(!empty($client_preference_detail->Default_latitude))
-        userLatitude = "{{$client_preference_detail->Default_latitude}}";
+            userLatitude = "{{$client_preference_detail->Default_latitude}}";
         @endif
     }
     if(!userLatitude ){
         userLatitude = "30.7333";
     }
 
-    if(!userLongitude){
+    if(!userLongitude || userLongitude ==0 || userLongitude==''){
         @if(!empty($client_preference_detail->Default_longitude))
              userLongitude = "{{$client_preference_detail->Default_longitude}}";
         @endif
     }
-    if(!userLatitude ){
-        userLatitude = "76.7794";
+    if(!userLongitude ){
+        userLongitude = "76.7794";
     }
 
     @if(Session::has('selectedAddress'))

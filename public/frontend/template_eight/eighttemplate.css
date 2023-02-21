@@ -2568,6 +2568,35 @@ body.al_body_template_eight .p2p-full-width {
 .al_body_template_eight .best-seller-full {max-width: 98% !important;}
 .al_body_template_eight .best-seller-eccomerce{max-width: 98% !important;}
 
+
+
+
+/*=====   20-02-2023  css chnages    =======*/
+.al_body_template_eight .al_new_ipad_view .search_bar  .shake-effect {
+    display: none!important;
+}
+body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span{
+    padding: 20px 10px 10px;
+}
+.cutom_add_wishlist .fav-button i{
+    font-size: 18px!important;
+}
+.cutom_add_wishlist .fav-button  span{
+    display: block;
+    color: inherit;
+    font-size: 15px;
+    text-transform: capitalize;
+    color: #000;
+    line-height: 20px!important;
+    padding-top: 0px;
+}
+.cutom_add_wishlist .fav-button {
+    text-align: center;
+    display: block;
+}
+.al_body_template_eight .top-header .header-dropdown li.onhover-dropdown, .cutom_add_wishlist{
+    padding:5px 15px 0 0 !important;
+}
 /*----------laptop view----------*/
 
 @media(max-width:1440px) {

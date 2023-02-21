@@ -433,7 +433,9 @@ class UserController extends BaseController
             'status'        => $request->status,
             'role_id'       => $request->has('role_id') ? $request->get('role_id') : $user->role_id,
             'is_admin'      => $request->is_admin,
-            'is_superadmin' => 0
+            'is_superadmin' => 0,
+            'is_email_verified' => ($request->has('is_email_verified') && $request->is_email_verified == 'on') ? 1 : 0,
+            'is_phone_verified' => ($request->has('is_phone_verified') && $request->is_phone_verified == 'on') ? 1 : 0
         ];
         $data['geo_ids'] = ((@$request->geo_ids)?implode(',',$request->geo_ids):'');
         $client = $user->update($data);

@@ -582,14 +582,15 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <span class="error text-danger" id="plugnpay_card_error"></span>
                             </div>
                         <% } %>
-                         <% if(payment_option.slug == 'azulpay') { %>
+                      
+                <% if(payment_option.slug == 'azulpay') { %>
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
                         <div class="row no-gutters">
                             <div class="col-6">
                                 <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
                             </div>
                             <div class="col-3">
-                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="azul-date-element" placeholder="YYYYMM" required />
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
                             </div>
                             <div class="col-3">
                                 <input type="password" max="4" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" required />
@@ -863,14 +864,15 @@ $client_preferences = \App\Models\ClientPreference::first();
                         <div class="col-sm-12 position-relative" id="imageInput">
                             <input type="hidden" id="vendor_idd" name="vendor_idd" value="" />
                             <input type="hidden" id="product_id" name="product_id" value="" />
-                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" class="dropify uploaded-prescription-img" multiple />
+                            <input type="hidden" id="uploaded_pres_count" name="uploaded_pres_count" value="" />
+                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" id="prescription_file" class="dropify uploaded-prescription-img" multiple />
                             <!-- <img id="uploaded-prescription" style="margin-top: 9px;display:none;" src="#"/> -->
                             <div class="uploaded-prescription"></div>
                             <p class="text-muted text-center mt-2 mb-0">{{__('Uploaded Prescription(s)')}}</p>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
-
+                            <span class="validate-file-error text-danger"></span>
                         </div>
 
                     </div>
@@ -930,9 +932,9 @@ $client_preferences = \App\Models\ClientPreference::first();
 @endsection
 
 @section('script')
-
 <script type="text/javascript" src="{{asset('assets/libs/jquery-clock-timepicker/jquery-clock-timepicker.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/cart_custom.js')}}"></script>
+<script src="{{asset('js/credit-card-validator.js')}}"></script>
 <script type="text/javascript">
     function handler(e) {
         $('.standard').clockTimePicker();
@@ -1033,9 +1035,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
     var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
     var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-        var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
-    
-    
+    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 </script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
@@ -1854,4 +1854,18 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @endsection
 @section('script-bottom-js')
 <script defer type="text/javascript"  src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
+<script>
+
+function addSlashes (element) {
+	
+    let ele = document.getElementById(element.id);
+    ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
+    if(ele.length < 4 && ele.length > 0){
+        let finalVal = ele.match(/.{1,2}/g).join('/');
+
+        document.getElementById(element.id).value = finalVal;
+    }
+}
+
+</script>
 @endsection

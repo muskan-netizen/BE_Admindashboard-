@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}" enctype="multipart/form-data">
+    <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}"  enctype="multipart/form-data">
         @csrf
         @method('POST')
         <div class="row align-items-center">
@@ -110,7 +110,7 @@
                 $openpay_private_key = (isset($creds->openpay_private_key)) ? $creds->openpay_private_key : '';
                 $openpay_public_key = (isset($creds->openpay_public_key)) ? $creds->openpay_public_key : '';
                 $openpay_verification_key = (isset($creds->openpay_verification_key)) ? $creds->openpay_verification_key : '';
-
+                
                 // azulpay
                 $azul_main_url = (isset($creds->azul_main_url)) ? $creds->azul_main_url : '';
                 $azul_alternate_url = (isset($creds->azul_alternate_url)) ? $creds->azul_alternate_url : '';
@@ -1528,7 +1528,7 @@
 										Certificate") }}</label> <input type="file"
 										name="azul_ssl_certificate" id="azul_ssl_certificate"
 										class="form-control" @if($azul_ssl_certificate==
-										'') required @endif>
+										'' && ($opt->status == 1)) required @endif>
 									<p class="font-weight-bold">{{@$azul_ssl_certificate}}</p>
 								</div>
 							</div>
@@ -1537,7 +1537,7 @@
 								<div class="form-group mb-2">
 									<label for="azul_ssl_key" class="mr-3">{{ __("SSL Key") }}</label>
 									<input type="file" name="azul_ssl_key" id="azul_ssl_key"
-										class="form-control" @if($azul_ssl_key== '') required @endif>
+										class="form-control" @if($azul_ssl_key== '' && ($opt->status == 1)) required @endif>
 									<p class="font-weight-bold">{{@$azul_ssl_key}}</p>
 								</div>
 							</div>
