@@ -1528,7 +1528,7 @@
 										Certificate") }}</label> <input type="file"
 										name="azul_ssl_certificate" id="azul_ssl_certificate"
 										class="form-control" @if($azul_ssl_certificate==
-										'') required @endif>
+										'' && ($opt->status == 1)) required @endif>
 									<p class="font-weight-bold">{{@$azul_ssl_certificate}}</p>
 								</div>
 							</div>
@@ -1537,7 +1537,7 @@
 								<div class="form-group mb-2">
 									<label for="azul_ssl_key" class="mr-3">{{ __("SSL Key") }}</label>
 									<input type="file" name="azul_ssl_key" id="azul_ssl_key"
-										class="form-control" @if($azul_ssl_key== '') required @endif>
+										class="form-control" @if($azul_ssl_key== '' && ($opt->status == 1)) required @endif>
 									<p class="font-weight-bold">{{@$azul_ssl_key}}</p>
 								</div>
 							</div>
