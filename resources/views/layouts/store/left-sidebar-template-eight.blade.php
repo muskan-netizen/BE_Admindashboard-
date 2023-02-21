@@ -166,6 +166,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                   <div class="container al_mobile-header d-flex align-items-center justify-content-between position-relative">
                       <div class="al_count_tabs_new_design d-none d-sm-block"  >
                           @if($mod_count > 1)
+                          
                           <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
                               @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                   @php
@@ -264,7 +265,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                           @endif
                       </div>
       
-                      <div class="al_new_ipad_view ipad-view"  >
+                      <div class="al_new_ipad_view ipad-view d-none"  >
                           <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                               @if( (Session::get('preferences')))
                               @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )

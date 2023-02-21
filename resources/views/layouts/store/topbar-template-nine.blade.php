@@ -93,7 +93,7 @@ if(session()->has('applocale')){
                             </ul>
                         </li>
                         @endif
-                        @if(count($languageList) > 1)
+                        {{-- @if(count($languageList) > 1) --}}
                         <li class="onhover-dropdown change-language">
                             <a href="javascript:void(0)">
                                 <!-- <span class="alLanguageSign">{{$applocale}}</span> -->
@@ -111,7 +111,7 @@ if(session()->has('applocale')){
                                 @endforeach
                             </ul>
                         </li>
-                        @endif
+                        {{-- @endif --}}
 
                         @if(count($currencyList) > 1)
                         <li class="onhover-dropdown change-currency">

@@ -807,27 +807,28 @@ $timezone = Auth::user()->timezone;
                 @endif
 
                 <p class="mb-2"><span class="fw-semibold me-2">{{ __('Address') }}:</span>
-                    {{ $order->address ? $order->address->house_number . ',' : '' }}
-                    {{ $order->address ? $order->address->address : '' }}
-
+                    @if (!is_null($order->address) && !empty($order->address->address))
+                    {{ $order->address ? $order->address->house_number."," : ''}} {{ $order->address ? $order->address->address : ''}}
+                    @elseif ($order->vendors->first()->vendor->laundry && (!$order->vendors->first()->vendor->pick_drop))
+                   {{ $order->vendors->first()->vendor->address ?? ''}}
+                    @endif
                 </p>
                 @if (isset($order->address) && !empty($order->address->street))
                     <p class="mb-2"><span class="fw-semibold me-2">{{ __('Street') }}:</span>
                         {{ $order->address ? $order->address->street : '' }}
                     </p>
                 @endif
-                <p class="mb-2"><span class="fw-semibold me-2">{{ __('City') }}:</span>
-                    {{ $order->address ? $order->address->city : '' }}
-                </p>
+                @if(!is_null($order->address) && !empty($order->address->city))
+                <p class="mb-2"><span class="fw-semibold me-2">{{__('City')}}:</span> {{ $order->address ? $order->address->city : ''}}</p>
+                @endif
                 @if (isset($order->address) && !empty($order->address->state))
                     <p class="mb-2"><span class="fw-semibold me-2">{{ __('State') }}:</span>
                         {{ $order->address ? $order->address->state : '' }}
                     </p>
                 @endif
-                <p class="mb-0"><span
-                        class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>
-                    {{ $order->address ? $order->address->pincode : '' }}
-                </p>
+                @if(!is_null($order->address) && !empty($order->address->pincode))
+                <p class="mb-0"><span class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
+                @endif
             </div>
             @if (isset($driver_data->name))
                 <div class="col-lg-6 card-body">
