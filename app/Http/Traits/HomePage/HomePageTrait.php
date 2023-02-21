@@ -289,9 +289,10 @@ trait HomePageTrait
      public function vendorNoOfRatings($vendorProducts)
      {
          $vendor_rating = 0;
+         $product_rating = 0;
+         $product_count = 0;
          if($vendorProducts->isNotEmpty()){
-             $product_rating = 0;
-             $product_count = 0;
+            
              foreach($vendorProducts as $product){
                  if($product->averageRating > 0){
                      $product_count++;

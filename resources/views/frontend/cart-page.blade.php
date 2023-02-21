@@ -1080,6 +1080,15 @@
                                             id="specific_instructions"
                                             value="{{ $cart_details->specific_instructions ?? '' }}"
                                             name="specific_instructions">
+                                             {{-- @if($getAdditionalPreference['is_file_cart_instructions']) 
+                                                <div class="Instructions_file">
+                                                        <label>{{ __('Instructions file') }}</label>
+                                                        <div class="instructions_image">
+                                                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="instructionsFile[]" class="dropify instructions_image" multiple />
+                                                        </div>
+                                                        <label class="logo-size text-right w-100">{{ __("image") }} 1000X1000</label>
+                                                </div>
+                                            @endif --}}
                                     </div>
                                 </div>
                                 @if (isset($cart_details->gift_card_id) && (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
@@ -1143,7 +1152,7 @@
 
                             @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
                                 <div class="row">
-                                    
+
                                     <div class="col-6">{{__('Delivery Slot Fees')}}</div>
                                     <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
                             @endif
@@ -1491,7 +1500,7 @@
                                 <hr class="my-2">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="total_amt m-0"> {{ __('Advanced Token Amount') }}</p>
+                                        <p class="total_amt m-0"> {{ __('Deposit Required') }}</p>
                                     </div>
                                     <div class="col-6 text-right">
                                         @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
@@ -1532,7 +1541,7 @@
                                 <hr class="my-2">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="total_amt m-0"> {{ __('Pending Amount') }}</p>
+                                        <p class="total_amt m-0"> {{ __('Outstanding Amount') }}</p>
                                     </div>
                                     <div class="col-6 text-right">
                                         @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
@@ -1743,6 +1752,20 @@
 
 <script>
     $(document).ready(function() {
+         $('.dropify').dropify({
+            messages: {
+                'default': "Drag and drop a file here or click",
+                'replace': "Drag and drop or click to replace",
+                'remove':  "Remove",
+                'error':   "Ooops, something wrong happended."
+            }
+        });
+
+        $('.dropify-clear').click(function(e){
+            e.preventDefault();
+            $(".instructions_image").empty();
+
+        });
         @if(!empty($r_schedule_datetime))
             var schedule_datetime = "{{ $r_schedule_datetime }}";
             $("#schedule_datetime").val(schedule_datetime);
@@ -1808,4 +1831,3 @@
     <script defer type="text/javascript" src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
 
 @endsection
-4

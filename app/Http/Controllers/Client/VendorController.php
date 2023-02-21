@@ -102,6 +102,15 @@ class VendorController extends BaseController
                 }
                 return $show_slot_option;
             })
+            ->addColumn('manager', function ($row) use ($users) {
+                $select = '<select name="manager_id" id="select_manager" data-id="'.$row->id.'" class="form-control select_manager"><option>Select Manager</option>';
+                foreach($users as $item){
+                    $selected = (($item->id==$row->refference_id)?'Selected':'');
+                    $select .= '<option value="'.$item->id.'" '.$selected.'>'.$item->name.'</option>';
+                }
+                $select .= '</select>';
+                return $select;
+            })
             ->addColumn('show_slot_label', function ($row) {
                 if($row->show_slot == 1){
                     $show_slot_label ="success";
@@ -127,14 +136,12 @@ class VendorController extends BaseController
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
-                    $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                        if (Str::contains(Str::lower($row['name']), Str::lower($request->get('search')))){
-                            return true;
-                        }
-                        return false;
+                    $search = $request->get('search');
+                    $instance->where(function ($query) use ($search) {
+                        $query->where('name', 'LIKE', '%' . $search . '%');
                     });
                 }
-            })
+            }, true)
             ->rawColumns(['checkbox','offers','show_slot_label','show_slot_option','add_category_option','show_url','destroy_url','manager'])
             ->make(true);
     }

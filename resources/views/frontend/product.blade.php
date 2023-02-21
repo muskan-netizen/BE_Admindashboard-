@@ -302,6 +302,25 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 $product->translation[0]->body_html : ''!!}
                                         </div>
 
+                                        <!--- Processor Details Farmmeat by Sohail -->
+                                        @if(isset($processorProduct))
+                                        @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
+                                            <div class="border-product al_disc">
+                                                <h6 class="product-title">{{__('Product processor Details')}}</h6>
+                                                <p>{{$processorProduct->name}}</p>
+                                                <p>{{$processorProduct->date}}</p>
+                                                <p>{{$processorProduct->address}}</p>
+                                            </div>
+                                        @elseif (!empty($product) && $processorProduct->is_processor_enable == 0)
+                                            <div class="border-product al_disc">
+                                                <h6 class="product-title">{{__('Product Vendor Details')}}</h6>
+                                                <p>{{$product->product_pickup_date}}</p>
+                                            </div>
+                                        @endif
+                                        @endif
+                                        
+
+
 
                                         @if( is_category_p2p($product->category) || is_attribute_enabled())
 
@@ -376,7 +395,11 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                                 $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                                 ?>
                                                                     <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"> <span class="color_name ellipsis">{{$optn->title}}</span>
+                                                                        @if($variant->type == 2)
                                                                     <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
+                                                                        @else
+                                                                        <span class="color_var radio_var" style="padding:8px; border: 1px dotted #CCC; background:#fff;"></span>
+                                                                        @endif
                                                                     <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                     <span class="checkround"></span>
                                                                 </label>
@@ -495,13 +518,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <div class="border-product">
                                                 <h6 class="product-title">{{ __('Bulk Order')}}</h6>
                                                 <div id="bulk-order-table">
-                                                    
+
                                                     @foreach ($product->productVariantByRoles as $key => $data)
                                                         @if($data->role_id == 3)
                                                             <h6 bulk_id="{{$data->id}}" class="header-title productAddonSet mb-1">{{__('Greater than or equal to quantity ').$data->quantity.' ( price '.Session::get('currencySymbol').''.$data->amount.' )'}}
                                                             </h6>
                                                         @endif
-                                                    @endforeach 
+                                                    @endforeach
                                                     {{-- @foreach($product->addOn as $row => $addon)
                                                         <div class="addon-product">
                                                             <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
@@ -571,7 +594,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 </table>--}}
                                             </div>
                                         @endif
-                                        
+
                                         @if($product->same_day_delivery == 1 && $product->next_day_delivery == 1 && $product->hyper_local_delivery == 1)
                                         <div class="enterPincodeMsg desktop-pin-message">
                                             <strong> Enter correct Pincode for hassle free timely delivery.</strong>
@@ -582,7 +605,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     <input type="number" class="form-control" name="pincode" id="pincode" value="" placeholder="Enter Pincode" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6" autocomplete="off" data-vendor-id="{{$product->vendor->id??''}}"/>
                                                     <span class="pincode-err text-danger" style="font-size: 14px;"></span>
                                                 </div>
-                                            </div>                                            
+                                            </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <input class="flatpickr flatpickr-input form-control" type="text" placeholder="Select Date.." data-id="minDate" name="date_input" id="date_input" readonly="readonly" disabled>
@@ -1072,7 +1095,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var rePre = `<?php echo $rePre; ?>`;
     var fetchDe = `<?php echo $fetchDe; ?>`;
 </script>
-<div class="modal fade" id="delivery_form" tabindex="-1" aria-labelledby="delivery_formLabel" aria-hidden="true">    
+<div class="modal fade" id="delivery_form" tabindex="-1" aria-labelledby="delivery_formLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom">
@@ -1082,7 +1105,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 </button>
             </div>
             <div class="modal-body" id="delivery_option">
-                
+
             </div>
         </div>
     </div>
@@ -1256,19 +1279,19 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         $('#delivery_form').modal('hide');
     });
 
-    
+
     $(document).ready(function(){
         var cutOff_time = "{{@$current_time_response}}";
         var date_var;
-        
+
         if( cutOff_time == 1) {
             date_var = new Date();
         } else {
             date_var = new Date();
             date_var.setDate(date_var.getDate()+1);
         }
-        
-        $('.flatpickr').flatpickr({ 
+
+        $('.flatpickr').flatpickr({
             enableTime: false,
             startDate: date_var,
             minDate: date_var,
@@ -1323,6 +1346,10 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
             $(".color_var").removeClass("var-active");
             $(this).toggleClass("var-active");
             });
+        $(".radio_var").click(function () {
+            $(".radio_var").removeClass("radio-active");
+            $(this).toggleClass("radio-active");
+        });
     });
 </script>
 

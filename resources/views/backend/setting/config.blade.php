@@ -2474,7 +2474,7 @@
     </div>
 
     @php
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch']);
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration']);
     @endphp
     <div class="row">
         {{-- hubspot form --}}
@@ -2671,7 +2671,7 @@
                                     @if ($getAdditionalPreference['is_one_push_book_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_one_push_book_enable" id="is_one_push_book_enable" />
                             </div>
-                            <!-- <div class="form-group mt-2 switchery-demo">
+                            <div class="form-group mt-2 switchery-demo">
                                 <label for="" class="mr-3">{{ __('Bid & Ride Enable') }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="is_bid_ride_enable_switch"
                                     id="is_bid_ride_enable_switch" class="form-control checkbox_change"
@@ -2680,7 +2680,7 @@
                                 <input type="hidden"
                                     @if ($getAdditionalPreference['is_bid_ride_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_bid_ride_enable" id="is_bid_ride_enable" />
-                            </div> -->
+                            </div>
                             <div class="row mt-2" id="bid_expire_time_limit_div"
                                 style="display:@if ($getAdditionalPreference['is_one_push_book_enable'] == 1 || $getAdditionalPreference['is_bid_ride_enable'] == 1) @else none @endif;">
                                 <div class="col-8">
@@ -2800,14 +2800,7 @@
                         <div class="row align-items-start">
                           @include('backend.setting.customMode')
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="is_user_kyc_for_registration_switch" class="mr-2 mb-0">{{ __('Enable to save kyc details for user registration') }}<small class="d-block pr-5">{{ __('Enable to save kyc details for user registration.') }}</small></label>
-                                <span> <input type="checkbox" data-plugin="switchery" name="is_user_kyc_for_registration_switch" id="is_user_kyc_for_registration_switch" class="form-control checkbox_change" data-className="is_user_kyc_for_registration" data-color="#43bee1" @if (@getAdditionalPreference(['is_user_kyc_for_registration'])['is_user_kyc_for_registration'] == '1') checked='checked' @endif>
-                                </span>
-                                <input type="hidden" @if (@getAdditionalPreference(['is_user_kyc_for_registration'])['is_user_kyc_for_registration'] == 1) value="1" @else value="0" @endif name="is_user_kyc_for_registration" id="is_user_kyc_for_registration" />
-                            </div>
-                        </div>
+                       
 
                     </div>
                 </div>
@@ -3682,7 +3675,7 @@
         }
 
         var is_one_push_book_enable = $('#is_one_push_book_enable_switch');
-        //var is_bid_ride_enable      = $('#is_bid_ride_enable_switch');
+        var is_bid_ride_enable      = $('#is_bid_ride_enable_switch');
 
 
         is_one_push_book_enable[0].onchange = function() {
@@ -3694,14 +3687,14 @@
             }
         }
 
-        /* is_bid_ride_enable[0].onchange = function() {
+        is_bid_ride_enable[0].onchange = function() {
             if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
                 $('#bid_expire_time_limit_div').hide();
                 $('#bid_expire_time_limit_seconds').val(0);
             } else {
                 $('#bid_expire_time_limit_div').show();
             }
-        } */
+        }
 
         var dinein_option = $('#dinein_check');
         if (dinein_option.length > 0) {

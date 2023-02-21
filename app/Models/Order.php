@@ -146,4 +146,8 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\Cart', 'order_id', 'id');
     }
+    public function OrderFiles()
+    {
+        return $this->hasMany('App\Models\OrderFiles'); //, 'order_id', 'id'
+    }
 }

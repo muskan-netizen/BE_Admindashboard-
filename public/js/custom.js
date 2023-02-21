@@ -1313,13 +1313,13 @@ $(document).ready(function () {
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
+        let pending_amount = $("input[name='amount_pending']");
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
         // let payment_option_id = paymentAjaxData.payment_option_id;
 
         paymentAjaxData.payment_method_id = result.paymentMethod.id;
         // paymentAjaxData.payment_option_id = payment_option_id;
-
         if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
             total_amount = cartElement.val();
@@ -1345,10 +1345,16 @@ $(document).ready(function () {
             paymentAjaxData.send_card_to_email  = $("input[name='send_card_to_email']").val();
             paymentAjaxData.send_card_to_address    = $("input[name='send_card_to_address']").val();
             paymentAjaxData.send_card_is_delivery   = $("#send_card_is_delivery").val();
+           
+        } 
+      
+        if((typeof pending_amount_for_past_order !== 'undefined') && (pending_amount_for_past_order == 1)){
+            total_amount = pending_amount.val();
+            payment_form = 'pending_amount_form';
+            paymentAjaxData.order_number = $("#order_number").val();
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
-
         if (result.error) {
             swal.fire({
                 icon: 'error',
@@ -1372,6 +1378,7 @@ $(document).ready(function () {
                 // Handle server response (see Step 4)
                 result.json().then(function(json) {
                     handleServerResponse(json);
+                    console.log(paymentAjaxData);
                 })
             });
         }
@@ -1860,6 +1867,18 @@ $(document).ready(function () {
                 return false;
             }
         }
+        
+        if(payment_option_id == 50){
+            cno = $('#azul-card-element').val();
+            dt = $('#azul-date-element').val();
+            cv = $('#azul-cvv-element').val();
+            $("#azul_card_error").html();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+                return false;
+            }
+        }
 
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
@@ -1884,9 +1903,9 @@ $(document).ready(function () {
         // return false;
         if (payment_option_id == 1 || payment_option_id == 38 || post_pay_edit_order == 1) {
             placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string,total_amount);
-        } else{
-            cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
-        }
+        }else{
+			cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
+		}
     });
 
 
@@ -2396,7 +2415,7 @@ $(document).ready(function () {
                         }
 
                     }
-                    $.each($('.vendor_schedule_slot'), function() { 
+                    $.each($('.vendor_schedule_slot'), function() {
                         if($(this).val()!=''){
                             $responst = checkSlotAvailability(this);
                         }
@@ -3012,7 +3031,7 @@ $(document).ready(function () {
             });
             return false;
         }
-    
+
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
             if(product_id == OrderStorage.getStorage('cartFirstProductId')  ){
@@ -4688,6 +4707,7 @@ $(document).ready(function () {
             case 4:
                 stripe.createSource(card).then(function(result) {
                     if (result.error) {
+                        alert("as");
                         $('#stripe_card_error').html(result.error.message);
                         $("#subscription_confirm_btn").attr("disabled", false);
                     } else {
@@ -4887,6 +4907,9 @@ $(document).ready(function () {
                 paymentViazulpay('', payment_option_id, '');
                  break;
             break;
+             case 50:
+                paymentViazulpay('', payment_option_id, '');
+                 break;
         }
 
     }
@@ -5372,13 +5395,27 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+            
+            case '50':
+				if(creditCardValidation()){
+	                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+	                if (order != '') {
+	                    paymentViazulpay(address_id, payment_option_id,order);
+	                }
+	                else{
+	                    return false;
+	                }
+                }else{
+					         $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+				}
+              break;  
         }
 
     }
 
 
     function walletPaymentOPtions(payment_option_id)
-    {
+    {  
         switch (payment_option_id) {
             case 3:
                     paymentViaPaypal('', payment_option_id);
@@ -5593,11 +5630,10 @@ $(document).ready(function () {
                 break;
             case 49:
                 paymentViaplugnpay('',payment_option_id,'');
-                 break;
-             case 50:
+                break;
+            case 50:
                 paymentViazulpay('',payment_option_id,'');
-                 break;
-            break;
+                break;
         }
     }
 
@@ -5609,7 +5645,3 @@ function numberWithCommas(x) {
 }
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
-
-
-
-
