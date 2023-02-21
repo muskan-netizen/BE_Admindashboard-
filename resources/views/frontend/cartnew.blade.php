@@ -863,14 +863,15 @@ $client_preferences = \App\Models\ClientPreference::first();
                         <div class="col-sm-12 position-relative" id="imageInput">
                             <input type="hidden" id="vendor_idd" name="vendor_idd" value="" />
                             <input type="hidden" id="product_id" name="product_id" value="" />
-                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" class="dropify uploaded-prescription-img" multiple />
+                            <input type="hidden" id="uploaded_pres_count" name="uploaded_pres_count" value="" />
+                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" id="prescription_file" class="dropify uploaded-prescription-img" multiple />
                             <!-- <img id="uploaded-prescription" style="margin-top: 9px;display:none;" src="#"/> -->
                             <div class="uploaded-prescription"></div>
                             <p class="text-muted text-center mt-2 mb-0">{{__('Uploaded Prescription(s)')}}</p>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
-
+                            <span class="validate-file-error text-danger"></span>
                         </div>
 
                     </div>

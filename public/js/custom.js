@@ -934,13 +934,27 @@ $(document).ready(function () {
     }
     $(document).on("click", "#order_placed_btn", async function () {
 
-
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
             return false;
         }
 
+        $( ".validate_prescription" ).each(function() {
+            var cart_product_prescription = $(this).data('cart_product_prescription');
+            if(cart_product_prescription == 0){
+                $(this).addClass('has_error');
+            }
+        });
+        if($(".prescription_btn").hasClass('has_error')){
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'kindly select a prescription!',
+                //footer: '<a href="">Why do I have this issue?</a>'
+            })
+            return false;
+        }
 
         var delivery_type = 'D';
         var other_taxes_string='';
@@ -995,7 +1009,7 @@ $(document).ready(function () {
             return false;
         }
         var address = $("input[name='address_id']").val();
-        if ((vendor_type == 'delivery' || vendor_type == 'on_demand') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
+        if ((vendor_type == 'delivery' || vendor_type == 'on_demand' || vendor_type == 'rental') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
             return false;
         }
@@ -2920,6 +2934,22 @@ $(document).ready(function () {
         var end_date =  $('#end_time').val();
         var incremental_hrs =  $('#incremental_hrs').val();
         var total_booking_time =  $('#total_hrs').val();
+        var data_service_day = '';
+        var data_service_date = '';
+        var data_service_start_time = '';
+        var data_total_booking_time = '';
+        if(typeof(service_day) != "undefined" && service_day !== null) {
+            var data_service_day = service_day;
+        }
+        if(typeof(service_date) != "undefined" && service_date !== null) {
+            var data_service_date = service_date;
+        }
+        if(typeof(service_start_time) != "undefined" && service_start_time !== null) {
+            var data_service_start_time = service_start_time;
+        }
+        if(typeof(total_booking_time) != "undefined" && total_booking_time !== null) {
+            var data_total_booking_time = total_booking_time;
+        }
         $("#single_vendor_order_modal_text").html(modelText);
         $("#single_vendor_remove_cart_btn").attr({
             'data-product_id': product_id,
@@ -2931,10 +2961,10 @@ $(document).ready(function () {
             'data-end_time':end_date,
             'data-incremental_hrs':incremental_hrs,
             'data-service_period':service_period,
-            'data-service_day':service_day,
-            'data-service_date':service_date,
-            'data-service_start_time':service_start_time,
-            'data-total_hrs':total_booking_time
+            'data-service_day':data_service_day,
+            'data-service_date':data_service_date,
+            'data-service_start_time':data_service_start_time,
+            'data-total_hrs':data_total_booking_time,
         });
         $("#single_vendor_order_modal").modal('show');
     }
@@ -2943,6 +2973,7 @@ $(document).ready(function () {
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
         var addLongTerm = 0;
+        var addRecurringBooking = 0;
         vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
 
         if (Product_quantity <= 0) {
@@ -3100,8 +3131,7 @@ $(document).ready(function () {
                 var service_day             =  $('#service_day').val();
                 var service_date            =  $('#service_date').val();
                 var service_start_time      =  $('#service_start_time').val();
-        
-
+                
                 if (((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) || (OrderStorage.getStorage('cartProductCount') > 0 &&  addLongTerm ==1 ) ) {
                     var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
                     if(OrderStorage.getStorage('LongTermServiceAdded') == 1 || addLongTerm ==1 ){
@@ -4366,6 +4396,8 @@ $(document).ready(function () {
         var cart = $(this).data("cart");
         var product = $(this).data("product");
         var vendor = $(this).data("vendor_id");
+        var cart_product_prescription = $(this).data("cart_product_prescription");
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
@@ -4385,6 +4417,7 @@ $(document).ready(function () {
             success: function (response) {
                 $("#product_id").val(product);
                 $("#vendor_idd").val(vendor);
+                $("#uploaded_pres_count").val(cart_product_prescription);
 
                 // show-prescription-doc
                 var showPrescriptionDoc = '';
@@ -4406,41 +4439,56 @@ $(document).ready(function () {
         var form = document.getElementById('save_prescription_form');
         var formData = new FormData(form);
         var route_uri = "add/product/prescription";
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('input[name="_token"]').val()
-            }
-        });
-        $.ajax({
-            type: "post",
-            headers: {
-                Accept: "application/json"
-            },
-            url: route_uri,
-            data: formData,
-            contentType: false,
-            processData: false,
-            beforeSend: function () {
-                $(".loader_box").show();
-            },
-            success: function (response) {
-
-                if (response.status == 'success') {
-                    $(".modal .close").click();
-                    location.reload();
-                } else {
-                    $(".show_all_error.invalid-feedback").show();
-                    $(".show_all_error.invalid-feedback").text(response.message);
+        if(checkUploadFileLimit()){
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
                 }
-                return response;
-            },
-            complete: function () {
-                $('.loader_box').hide();
-            }
-        });
+            });
+            $.ajax({
+                type: "post",
+                headers: {
+                    Accept: "application/json"
+                },
+                url: route_uri,
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    $(".loader_box").show();
+                },
+                success: function (response) {
 
+                    if (response.status == 'success') {
+                        $(".modal .close").click();
+                        location.reload();
+                    } else {
+                        $(".show_all_error.invalid-feedback").show();
+                        $(".show_all_error.invalid-feedback").text(response.message);
+                    }
+                    return response;
+                },
+                complete: function () {
+                    $('.loader_box').hide();
+                }
+            });
+        }
     });
+
+    function checkUploadFileLimit(){
+        var limit = 5;
+        var uploaded_prescription_count = $('.uploaded-prescription img').length;
+        var already_uploaded = $('#uploaded_pres_count').val();
+        var total_files = parseInt(uploaded_prescription_count) + parseInt(already_uploaded);
+        if(total_files > limit){
+            $('#save_prescription_form .validate-file-error').text("You can select max "+limit+" file.");
+            $('#prescription_file').val('');
+            return false;
+        }else{
+            $('#save_prescription_form .validate-file-error').text("");
+            return true;
+        }
+    }
 
     //prescription upload for bidding
 

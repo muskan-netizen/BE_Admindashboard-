@@ -368,13 +368,19 @@
 
                                                     </div>
                                                     @if ($cart_details->pharmacy_check == 1)
+                                                    @php
+                                                        $class = '';
+                                                        if($vendor_product->product->validate_pharmacy_check == 1){
+                                                            $class = 'validate_prescription';
+                                                        }
+                                                    @endphp
                                                     
                                                     @if ($vendor_product->product->pharmacy_check == 1)
                                                         <button type="button"
-                                                            class="float-left btn btn-solid prescription_btn mt-2"
+                                                            class="float-left btn btn-solid prescription_btn mt-2 {{$class}}"
                                                             data-cart="{{ $vendor_product->cart_id }}"
                                                             data-product="{{ $vendor_product->product->id }}"
-                                                            data-vendor_id="{{ $vendor_product->vendor_id }}">{{ __('Add Prescription') }}</button>
+                                                            data-vendor_id="{{ $vendor_product->vendor_id }}" data-cart_product_prescription="{{ $vendor_product->cart_product_prescription??0 }}">{{ __('Add Prescription') }}</button>
                                                         @if ($vendor_product->cart_product_prescription > 0)
                                                             <h4 class="mt-0 mb-1"
                                                                 style="word-wrap: break-word; line-height:20px">
@@ -1586,7 +1592,7 @@
                 $product->vendor->order_min_amount > 0 &&
                 $product->product_total_amount + $product->vendor->fixed_fee_amount < $product->vendor->order_min_amount
             ))
-                @if($cart_details->is_recurring_booking != 1)
+                @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
                     @include('frontend.cart.scheduleSlot')
                 @endif
                     <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">

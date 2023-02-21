@@ -1081,7 +1081,6 @@ class OrderController extends BaseController
                             $order_dispatch = $this->checkIfIsProductRecurringLastMileon($request);
                         }
                         else{
-
                             $order_dispatch = $this->checkIfanyProductLastMileon($request);
                         }
                         if ($order_dispatch && $order_dispatch == 1){
@@ -1543,6 +1542,28 @@ class OrderController extends BaseController
 
                     }
 
+                }
+            }
+        }
+
+        if ($luxury_option_id == 4) { // only for rental type
+            $dispatch_domain = $this->getDispatchDomain();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                    if ($prod->product->category->categoryDetail->type_id == 10) {
+                        $dispatch_domain = [
+                            'service_key'      => $dispatch_domain->delivery_service_key,
+                            'service_key_code' => $dispatch_domain->delivery_service_key_code,
+                            'service_key_url'  => $dispatch_domain->delivery_service_key_url,
+                            'service_type'     => 'rental'
+                        ];
+                        
+                        $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                        if ($order_dispatchs && $order_dispatchs == 1) {
+                            // $OnDemand = 1;
+                            return 1;
+                        }
+                    }
                 }
             }
         }
@@ -2616,7 +2637,7 @@ class OrderController extends BaseController
     {
         DB::beginTransaction();
         try {
-            $return = OrderReturnRequest::find($request->id);
+            $return = OrderReturnRequest::with('order')->find($request->id);
             // dd($return->created_at);
             $returns = OrderReturnRequest::where('id', $request->id)->update(['status' => $request->status ?? null, 'reason_by_vendor' => $request->reason_by_vendor ?? null]);
             if (isset($returns) && $return->type == 1) {
@@ -2624,8 +2645,10 @@ class OrderController extends BaseController
                     $user = User::find($return->return_by);
                     $wallet = $user->wallet;
                     $order_product = OrderProduct::find($return->order_vendor_product_id);
-                    $credit_amount = $order_product->price + $order_product->taxable_amount;
-                    $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
+                    if(!empty($return->order) && $return->order->luxury_option_id != 4){
+                        $credit_amount = $order_product->price + $order_product->taxable_amount;
+                        $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
+                    }
                     $dispatch_domain = $this->getDispatchDomain();
                     $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
                     $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain, $order_details);
@@ -2681,6 +2704,7 @@ class OrderController extends BaseController
             $return = OrderProductDispatchReturnRoute::with(['order', 'orderProduct', 'orderProduct.pvariant', 'orderProduct.product'])->where('id', $request->id)->first();
             if(@$request->status && $request->status == 'Accepted'){
                 $returns = OrderProductDispatchReturnRoute::where('id', $request->id)->update(['dispatcher_status_option_id' => 6]);
+                $update_return_status = OrderReturnRequest::where('order_vendor_product_id', $request->order_vendor_product_id)->update(['status' => 'Completed']);
             }
             
             if (isset($returns)) {
