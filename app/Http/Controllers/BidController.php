@@ -256,7 +256,7 @@ class BidController extends FrontController
     public function sendBidPushNotificationUser($userIds)
     {
    
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $userIds)->pluck('device_token')->toArray();
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', [$userIds])->pluck('device_token')->toArray();
 
         if (!empty($devices)) 
         {
