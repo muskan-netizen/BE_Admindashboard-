@@ -1388,7 +1388,7 @@
     <script src="{{ asset('js/cab_booking.js') }}"></script>
     <script>
         var category_id = "{{ $category->id ?? '' }}";
-
+        var category_name = "{{ $category->translation[0]->name ?? '' }}";
         var routeset = "{{ route('pickup-delivery-route', ':category_id') }}";
 
         var autocomplete_urls = routeset.replace(":category_id", category_id);
