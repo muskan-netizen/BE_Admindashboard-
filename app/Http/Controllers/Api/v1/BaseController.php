@@ -63,7 +63,12 @@ class BaseController extends Controller{
             elseif($client_preference->sms_provider == 7) //for Vonage gateway
             {
             $crendentials = json_decode($client_preference->sms_credentials);
-            $send = $this->vonage_sms($to, $body, $crendentials);
+            $send = $this->vonage_sms($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 8) //for SMS partner gateway France
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_partner_gateway($to,$body,$crendentials);
             }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
