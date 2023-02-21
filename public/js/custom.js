@@ -1867,6 +1867,18 @@ $(document).ready(function () {
                 return false;
             }
         }
+        
+        if(payment_option_id == 50){
+            cno = $('#azul-card-element').val();
+            dt = $('#azul-date-element').val();
+            cv = $('#azul-cvv-element').val();
+            $("#azul_card_error").html();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+                return false;
+            }
+        }
 
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
@@ -1891,9 +1903,9 @@ $(document).ready(function () {
         // return false;
         if (payment_option_id == 1 || payment_option_id == 38 || post_pay_edit_order == 1) {
             placeOrder(address_id, payment_option_id, '', tip, delivery_type, other_taxes_string,total_amount);
-        } else{
-            cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
-        }
+        }else{
+			cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
+		}
     });
 
 
@@ -4895,6 +4907,9 @@ $(document).ready(function () {
                 paymentViazulpay('', payment_option_id, '');
                  break;
             break;
+             case 50:
+                paymentViazulpay('', payment_option_id, '');
+                 break;
         }
 
     }
@@ -5380,6 +5395,20 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+            
+            case '50':
+				if(creditCardValidation()){
+	                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+	                if (order != '') {
+	                    paymentViazulpay(address_id, payment_option_id,order);
+	                }
+	                else{
+	                    return false;
+	                }
+                }else{
+					         $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+				}
+              break;  
         }
 
     }
@@ -5601,11 +5630,10 @@ $(document).ready(function () {
                 break;
             case 49:
                 paymentViaplugnpay('',payment_option_id,'');
-                 break;
-             case 50:
+                break;
+            case 50:
                 paymentViazulpay('',payment_option_id,'');
-                 break;
-            break;
+                break;
         }
     }
 
@@ -5617,8 +5645,3 @@ function numberWithCommas(x) {
 }
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
-
-
-
-
-

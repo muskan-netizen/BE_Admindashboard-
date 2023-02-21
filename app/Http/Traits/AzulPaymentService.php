@@ -56,11 +56,15 @@ trait AzulPaymentService
     public function payWithCard($card)
     {
         $phone_number = auth()->user()->phone_number;
+        
+        $exp = explode('/',$card['dt']);
+        $expiry = $exp[1].$exp[0];
+        
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
             'Store' => $this->MERCHANT_ID,
             'CardNumber' => $card['cno'],
-            'Expiration' => $card['dt'],
+            'Expiration' => $expiry,
             'CVC' => $card['cv'],
             'PosInputMode' => $this->POST_INPUT_MODE,
             'TrxType' => 'Sale',
@@ -81,7 +85,7 @@ trait AzulPaymentService
         ];
         $response = $this->sendRequest($request);
         if ($response['code'] != 200) {
-           // Log::info([
+            Log::info([
                 'error http payWithCard',
                 'order_id: ' . json_encode($response['message'])
             ]);
@@ -93,7 +97,7 @@ trait AzulPaymentService
         }
 
         if ($response['data']->ResponseCode !== $this->AZUL_OK_RESPONSE_CODE) {
-           // Log::info([
+          Log::info([
                 'error on payWithCard',
                 'order_id: ' . json_encode($response['data'])
             ]);
@@ -105,7 +109,7 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-           // Log::info([
+           Log::info([
                 'error on payWithCard',
                 'order_id: ' . json_encode($response['data'])
             ]);
@@ -116,7 +120,7 @@ trait AzulPaymentService
             ];
         }
 
-       // Log::info([
+        Log::info([
             'payWithCard OK',
             json_encode($response['data'])
         ]);
@@ -192,7 +196,7 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-           // Log::info([
+           Log::info([
                 'error on azul AzulPaymentService.payWithDatavault',
                 'order_id: ' . json_encode($response['data'])
             ]);
@@ -301,7 +305,7 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-           // Log::info([
+            Log::info([
                 'error on refundTransaction',
                 'order_id: ' . json_encode($response['data'])
             ]);
