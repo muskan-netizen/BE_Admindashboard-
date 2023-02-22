@@ -264,7 +264,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                           @endif
                       </div>
       
-                     {{-- <div class="al_new_ipad_view ipad-view d-none"  >
+                      {{-- <div class="al_new_ipad_view ipad-view d-none"  >
                           <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                               @if( (Session::get('preferences')))
                               @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
@@ -463,7 +463,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                   </li>
                                                   <li class="onhover-div mobile-cart">
                                                       <a href="{{ route('showCart') }}" style="position: relative"> <i class="ti-shopping-cart"></i> <span
-                                                              class="cart_qty_cls" style="display:none"></span> </a>{{-- <span class="cart_qty_cls" style="display:none"></span> --}}
+                                                              class="cart_qty_cls" style="display:none"></span> </a>
+                                                              
                                                       <ul class="show-div shopping-cart"> </ul>
                                                   </li>
                                               </ul>
@@ -473,8 +474,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
       
                               </div>
                           </div>
-                      </div>
-                  </div> --}}
+                      </div> --}}
+                  </div> 
               </div>
           </div>
       </div>
