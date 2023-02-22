@@ -33,10 +33,10 @@ class PaymentOptionController extends BaseController{
             $code = array('paypal','azul', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
         }
         elseif($page == 'pickup_delivery'){
-            $code = array('cod', 'dpo','azul', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay');
+            $code = array('cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay');
         }
         else{
-            $code = array('cod', 'paypal', 'azul','paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
+            $code = array('cod','azul', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
         }
         //mohit sir branch code added by sohail
         $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
@@ -88,12 +88,9 @@ class PaymentOptionController extends BaseController{
             $request->currencyId = $request->header('currency');
 
             $function = 'postPaymentVia_'.$gateway;
-            //dd($function);
             if(method_exists($this, $function)) {
-
                 if(!empty($request->action)){
                     $response = $this->$function($request); // call related gateway for payment processing
-
                     return $response;
                 }
             }
@@ -104,6 +101,11 @@ class PaymentOptionController extends BaseController{
             return $this->errorResponse("Invalid Gateway Request", 400);
         }
     }
+    
+    public function postPaymentVia_azul(Request $request){
+             $gateway = new AzulPaymentController();
+               return $gateway->beforePayment($request);
+  }
 
     public function postPaymentVia_dpo(Request $request){
         $gateway = new DpoController();
@@ -282,13 +284,6 @@ class PaymentOptionController extends BaseController{
         $gateway = new PlugnpayGatewayController();
 
         return $gateway->PlugPayPurchase($request);
-    }
-    
-    public function postPaymentVia_azul(Request $request){
-        
-        $gateway = new AzulPaymentController();
-        
-        return $gateway->beforePayment($request);
     }
 
     public function postPaymentVia_paypal(Request $request){
