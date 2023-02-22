@@ -15,7 +15,7 @@ use App\Models\EstimatedProductCart;
 use App\Models\EstimatedProductAddons;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait};
+use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait, CartManagerV2};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
@@ -24,7 +24,8 @@ use Http\Message\Cookie;
 
 class CartController extends FrontController
 {
-    use ApiResponser,CartManager,KwikApi,BiddingCartTrait;
+
+    use ApiResponser,CartManager,KwikApi,BiddingCartTrait,CartManagerV2;
     
     
     
@@ -2140,7 +2141,19 @@ class CartController extends FrontController
 
 
         if ($cart) {
-            $cart_details = $this->getCartsNew($cart, $address_id, $request->code, $schedule_datetime_del);
+            //$cart_details = $this->getCartsNew($cart, $address_id, $request->code, $schedule_datetime_del);
+            //v2 trait
+            $obj = [
+                 'cart' => $cart,
+                 'code'=> $request->code,
+                 'address_id'=> $address_id,
+                 'currency'=> $curId,
+                 'schedule_datetime_del'=> $schedule_datetime_del,
+                 'requestType'=>1,
+                 'type'=> $request->type,
+                 'language'=> $request->language
+            ];
+            $cart_details = $this->getCartsNewV2($obj,$request);
         }
 
         $client_preference_detail = ClientPreference::first();
