@@ -88,12 +88,9 @@ class PaymentOptionController extends BaseController{
             $request->currencyId = $request->header('currency');
 
             $function = 'postPaymentVia_'.$gateway;
-            //dd($function);
             if(method_exists($this, $function)) {
-
                 if(!empty($request->action)){
                     $response = $this->$function($request); // call related gateway for payment processing
-
                     return $response;
                 }
             }
@@ -287,13 +284,6 @@ class PaymentOptionController extends BaseController{
         $gateway = new PlugnpayGatewayController();
 
         return $gateway->PlugPayPurchase($request);
-    }
-    
-    public function postPaymentVia_azul(Request $request){
-        
-        $gateway = new AzulPaymentController();
-        
-        return $gateway->beforePayment($request);
     }
 
     public function postPaymentVia_paypal(Request $request){
