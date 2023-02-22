@@ -28,6 +28,7 @@
                         <option value="4">{{ __("Textbox") }}</option>
                         <option value="5">{{ __("Checkbox") }}</option>
                         <option value="6">{{ __("Location") }}</option>
+                        <option value="7">{{ __("DatePicker") }}</option>
                     </select>
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>

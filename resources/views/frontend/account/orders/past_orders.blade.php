@@ -26,8 +26,8 @@
                     <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                 </div>
                 <div class="col-md-3 alOrderStatus">
-                    <h4>{{ __('Customer Name') }}</h4>
-                    <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
+                    <h4>{{ __('Vendor Name') }}</h4>
+                    <span><a class="text-capitalize">{{ $order->vendors[0]->vendor->name }}</a></span>
                 </div>
                 @if ($client_preference_detail->business_type != 'taxi')
                 <div class="col-md-3">
@@ -205,15 +205,39 @@
                                             @endphp
                                             @endif
                                         </li>
-
-                                        @if($order->luxury_option_id == 4 && $vendor->order_status_option_id == 6)
-                                            <li>
-                                                <label class="rating-star extend-order" data-order_vendor_product_id="{{$product->id}}" data-vendor_product_id="{{$product->product_id}}" data-vendor_end_date_time="{{$product->end_date_time}}">
-                                                    {{ __('Extend') }}
-                                                </label>
-                                            </li>
+                                        @if($product->schedule_slot && $product->schedule_slot_name)
+                                        <li>
+                                            <label class="schedule_slot"><span>Slots: {{ $product->schedule_slot_name }}</span></label>
+                                        </li>
                                         @endif
-                                        @if(@$rental_return)
+
+                                        @if($order->luxury_option_id == 4)
+                                        {{-- @dd($product->productReturn) --}}
+                                            @if(empty($product->productReturn))
+                                                <li>
+                                                    <label class="rating-star extend-order" data-order_vendor_product_id="{{$product->id}}" data-vendor_product_id="{{$product->product_id}}" data-vendor_end_date_time="{{$product->end_date_time}}">
+                                                        {{ __('Extend') }}
+                                                    </label>
+                                                </li>
+                                            @elseif ($product->productReturn->status != 'Completed')
+                                                <li>
+                                                    <label class="rating-star extend-order" data-order_vendor_product_id="{{$product->id}}" data-vendor_product_id="{{$product->product_id}}" data-vendor_end_date_time="{{$product->end_date_time}}">
+                                                        {{ __('Extend') }}
+                                                    </label>
+                                                </li>
+                                            @endif
+                                        @endif
+                                        @php
+                                            if(@$product && @$product->end_date_time){
+                                                $product_end_date = $product->end_date_time;
+                                                $todayDate = \Carbon\Carbon::now('Asia/Kolkata');
+                                                $show_return_btn = false;
+                                                if ($todayDate >= $product_end_date){
+                                                    $show_return_btn = true;
+                                                }
+                                            }
+                                        @endphp
+                                        @if(@$rental_return && $show_return_btn)
                                         @if(@$product->productReturn->type && $product->productReturn->type == 1)
                                         <li>
                                         {{__('Return')}} {{$product->productReturn->status}}

@@ -1128,77 +1128,87 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             if (status_option_id == 3) {
                 return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id, order_luxury_option_id);
             } else {
-                Swal.fire({
-                  title: "{{__('Are you Sure?')}}",
-                  // icon: 'info',
-                  text: alertMessage,
-                  showCancelButton: true,
-                  confirmButtonText: 'Ok',
-                }).then((result) => {
-                    if (result.value) {
-                        $.ajax({
-                            url: "{{ route('order.changeStatus') }}",
-                            type: "POST",
-                            data: {
-                                order_id: order_id,
-                                vendor_id: vendor_id,
-                                "_token": "{{ csrf_token() }}",
-                                status_option_id: status_option_id,
-                                order_vendor_id: order_vendor_id,
-                                productIds: productIds,
-                                order_vendor_product_id: order_vendor_product_id,
-                                order_luxury_option_id: order_luxury_option_id
-                            },
-                            success: function(response) {
+                if(productIds.length === 0 && order_luxury_option_id == 4 && status_option_id == 2){
+                    Swal.fire({ 
+                    title: "{{__('Error')}}",
+                    icon: 'warning',
+                    text: "Please select atleast one product",
+                    showCancelButton: true,
+                    confirmButtonText: 'Ok',
+                    });
+                }else{
+                    Swal.fire({
+                    title: "{{__('Are you Sure?')}}",
+                    // icon: 'info',
+                    text: alertMessage,
+                    showCancelButton: true,
+                    confirmButtonText: 'Ok',
+                    }).then((result) => {
+                        if (result.value) {
+                            $.ajax({
+                                url: "{{ route('order.changeStatus') }}",
+                                type: "POST",
+                                data: {
+                                    order_id: order_id,
+                                    vendor_id: vendor_id,
+                                    "_token": "{{ csrf_token() }}",
+                                    status_option_id: status_option_id,
+                                    order_vendor_id: order_vendor_id,
+                                    productIds: productIds,
+                                    order_vendor_product_id: order_vendor_product_id,
+                                    order_luxury_option_id: order_luxury_option_id
+                                },
+                                success: function(response) {
 
-                                if(response.status=='error'){
-                                    if (count == 0) {
-                                        $(full_div).slideUp(1000, function() {
-                                            $(this).remove();
-                                        });
+                                    if(response.status=='error'){
+                                        if (count == 0) {
+                                            $(full_div).slideUp(1000, function() {
+                                                $(this).remove();
+                                            });
 
-                                    } else {
-                                        $(single_div).slideUp(1000, function() {
-                                            $(this).remove();
-                                        });
+                                        } else {
+                                            $(single_div).slideUp(1000, function() {
+                                                $(this).remove();
+                                            });
 
-                                    }
-                                    $.NotificationApp.send('{{__("Error")}}', response.message, "top-right", "#ff0808", "error");
-                                    return 0;
-                                }
-
-                                if (status_option_id == 4 || status_option_id == 5) {
-                                    if (status_option_id == 4){
-                                        if((luxury_option == 2) || (luxury_option == 3)){
-                                            var next_status = "{{ __('Order Prepared') }}";
-                                        }else{
-                                            var next_status = "{{ __('Out For Delivery') }}";
                                         }
-                                    }else{
-                                        var next_status = "{{ __('Delivered') }}";
+                                        $.NotificationApp.send('{{__("Error")}}', response.message, "top-right", "#ff0808", "error");
+                                        return 0;
                                     }
-                                    that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
-                                    return false;
-                                } else {
 
-                                    if (count == 0) {
-                                        $(full_div).slideUp(1000, function() {
-                                            $(this).remove();
-                                        });
-
+                                    if (status_option_id == 4 || status_option_id == 5) {
+                                        if (status_option_id == 4){
+                                            if((luxury_option == 2) || (luxury_option == 3)){
+                                                var next_status = "{{ __('Order Prepared') }}";
+                                            }else{
+                                                var next_status = "{{ __('Out For Delivery') }}";
+                                            }
+                                        }else{
+                                            var next_status = "{{ __('Delivered') }}";
+                                        }
+                                        that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
+                                        return false;
                                     } else {
-                                        $(single_div).slideUp(1000, function() {
-                                            $(this).remove();
-                                        });
 
+                                        if (count == 0) {
+                                            $(full_div).slideUp(1000, function() {
+                                                $(this).remove();
+                                            });
+
+                                        } else {
+                                            $(single_div).slideUp(1000, function() {
+                                                $(this).remove();
+                                            });
+
+                                        }
                                     }
-                                }
-                                if (status_option_id == 2)
-                                    $.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
-                            },
-                        });
-                    }
-                });
+                                    if (status_option_id == 2)
+                                        $.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
+                                },
+                            });
+                        }
+                    });       
+                }
             }
         });
 

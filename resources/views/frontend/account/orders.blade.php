@@ -1,16 +1,31 @@
 @switch($client_preference_detail->business_type)
 @case('taxi')
-<?php $ordertitle = 'Rides'; ?>
-<?php $hidereturn = 1; ?>
+<?php $ordertitle = 'Rides';
+ $hidereturn = 1;  ?>
 @break
 @default
-<?php $ordertitle = 'Orders'; ?>
-<?php $hidereturn = 0; ?>
+<?php $ordertitle = 'Orders'; 
+ $hidereturn = 0;
+?>
+
 @endswitch
 @php
-$show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)?1:0;
+$orderTitles = [
+    'Active' => "Active",
+    'Past' => "Past",
+    'Rejected/Cancel' => "Rejected/Cancel"
+];
+
 $clientData = \App\Models\Client::select('socket_url')->first();
-$additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
+
+if($additionalPreference['is_service_product_price_from_dispatch'] == 1){
+    $hidereturn = 1; 
+    $orderTitles = [
+        'Active' => "Confirmed ",
+        'Past'   =>  "Done ",
+        'Rejected/Cancel' => " Declined "
+    ];
+}
 @endphp
 @extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
@@ -58,6 +73,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         top: 0px !important;
     }
 
+    .schedule_slot {
+        left: 0px !important;
+        top: 0px !important;
+    }
+
     .rental_return, .rental_stop {
         position: relative;
         left: 0px;
@@ -80,6 +100,27 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     display: inline-block;
     width: 100%;
     }
+
+
+    .order_vender_product{
+        position: relative;
+    }
+    .order_vender_product li label {
+    padding-left: 80px!important;
+    display: block!important;
+    width: 170px!important;
+    text-align: left;
+}
+.order_vender_product li:first-child {
+    position: absolute!important;
+    top: 0!important;
+    left: 0!important;
+}
+.order_vender_product li .schedule_slot span {
+    font-size: 10px;
+    line-height: 1;
+    color: var(--theme-deafult);
+}
 
 </style>
 @endsection
@@ -216,18 +257,26 @@ $timezone = Auth::user()->timezone;
                                 <div class="row" id="orders_wrapper">
                                     <div class="col-sm-12 col-lg-12 tab-product al_custom_ordertabs mt-md-3 p-0">
                                         <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                                            @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::query('pageType') == 'pendingOrders' ? 'active show' : '' }} " id="pending-orders-tab" data-toggle="tab" href="#pending-orders" role="tab"
+                                                    aria-selected="true"><i
+                                                        class="icofont icofont-ui-home"></i>{{ __('Pending ' . getNomenclatureName($ordertitle, true)) }}</a>
+                                                <div class="material-border"></div>
+                                            </li>
+                                            @endif
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
                                                     id="active-orders-tab" data-toggle="tab" href="#active-orders" role="tab"
                                                     aria-selected="true"><i
-                                                        class="icofont icofont-ui-home"></i>{{ __('Active ' . getNomenclatureName($ordertitle, true)) }}</a>
+                                                        class="icofont icofont-ui-home"></i>{{ __($orderTitles['Active'] . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') == 'pastOrders' ? 'active show' : '' }}"
                                                     id="past_order-tab" data-toggle="tab" href="#past_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Past ' . getNomenclatureName($ordertitle, true)) }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ __($orderTitles['Past']  . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if (isset($hidereturn) && $hidereturn != 1)
@@ -243,7 +292,7 @@ $timezone = Auth::user()->timezone;
                                                 <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ getNomenclatureName($ordertitle, true). __('Rejected/Cancel ')  }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ __($orderTitles['Rejected/Cancel']).getNomenclatureName($ordertitle, true)  }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if($show_long_term ==1)
@@ -257,6 +306,9 @@ $timezone = Auth::user()->timezone;
                                             @endif
                                         </ul>
                                         <div class="tab-content nav-material al" id="top-tabContent">
+                                            @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
+                                             @include('frontend.account.orders.pending_orders')
+                                            @endif
                                             @include('frontend.account.orders.active_orders')
                                             @include('frontend.account.orders.past_orders')
                                             @include('frontend.account.orders.return_orders')
@@ -269,15 +321,15 @@ $timezone = Auth::user()->timezone;
                                         </div>
                                         {{-- @endforeach
                                         @else --}}
-                                        <div class="col-12">
+                                        {{-- <div class="col-12">
                                             <div class="no-gutters order_head">
                                                 <h4 class="text-center">{{ __('No Rejected/Cancel Order Found') }}
                                                 </h4>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         {{-- @endif --}}
                                     </div>
-                                    {{ $pastOrders->appends(['pageType' => 'rejectedOrders'])->links() }}
+                                   
                                 </div>
                                 @if($show_long_term ==1)
                                 @include('frontend.account.longTermOrderTab')
@@ -295,6 +347,7 @@ $timezone = Auth::user()->timezone;
     </div>
     </div>
 </section>
+
 <div class="modal fade product-rating" id="product_rating" tabindex="-1" aria-labelledby="product_ratingLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -350,7 +403,7 @@ $timezone = Auth::user()->timezone;
 </div>
 
 <!-- start cancel order -->
-<div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+{{-- <div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
@@ -363,7 +416,7 @@ $timezone = Auth::user()->timezone;
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 <div class="modal fade driver-rating" id="driver_rating" tabindex="-1" aria-labelledby="driver_ratingLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -492,9 +545,9 @@ $timezone = Auth::user()->timezone;
 
 <!-- tip after order complete -->
 @include('frontend.modals.tip_after_order')
+@include('frontend.modals.pending-amount')
 
-<!-- tip after order complete -->
-@include('frontend.modals.extend_order_payment')
+
 
 <!-- end tip order after complete -->
 <!-- repeat order modal -->
@@ -514,6 +567,19 @@ $timezone = Auth::user()->timezone;
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
                 <button type="button" class="btn btn-solid" id="repeat_cart_button" data-cart_id="">{{__('Remove')}}</button>
             </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="proceed_to_pay_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="pay-billLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="pay-billLabel">{{__('Total Amount')}}: <span id="total_amt"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="v_pills_tabContent_pending"></div>
         </div>
     </div>
 </div>
@@ -539,9 +605,13 @@ $timezone = Auth::user()->timezone;
 </div>
 <!-- end repat order modal -->
 
-
 @endsection
 @section('script')
+
+<!-- tip after order complete -->
+@include('frontend.modals.extend_order_payment')
+
+<script src="{{asset('js/credit-card-validator.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -575,6 +645,8 @@ $timezone = Auth::user()->timezone;
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 @endif
 <script src="{{ asset('js/tip_after_order.js') }}"></script>
+<script src="{{ asset('js/pending_payment.js') }}"></script>
+
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 @endif
@@ -587,7 +659,7 @@ $timezone = Auth::user()->timezone;
 @if(in_array('khalti',$client_payment_options))
 <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
 @endif
-<script src="{{ asset('js/payment.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/payment.js') }}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
@@ -613,11 +685,9 @@ $timezone = Auth::user()->timezone;
             $('.wallet_balance').html($('input[name="' + custom_tip_amount + '"]').val());
             var tip_amount = $('input[name="' + custom_tip_amount + '"]').val();
         }
-
         $("#wallet_amount").val(tip_amount);
         $("#cart_tip_amount").val(tip_amount);
         $("#order_number").val(order_number);
-
     });
     var ajaxCall = 'ToCancelPrevReq';
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
@@ -640,6 +710,7 @@ $timezone = Auth::user()->timezone;
     var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
     var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
     var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
+    var payment_option_list_url = "{{route('payment.option.list')}}";
     var payment_yoco_url = "{{ route('payment.yocoPurchase') }}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var payment_paylink_url = "{{ route('payment.paylinkPurchase') }}";
@@ -662,6 +733,14 @@ $timezone = Auth::user()->timezone;
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".order_response";
+    var payment_option_list_url = "{{route('payment.option.list')}}";
+
+     @if(!empty($client_preference_detail->is_postpay_enable))
+        var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
+    @else
+        var post_pay_edit_order = 0;
+    @endif
+
 </script>
 
 <script type="text/javascript">
@@ -1000,11 +1079,88 @@ $timezone = Auth::user()->timezone;
         });
     });
 
+
+
+$(document).delegate(".order_placed_btn_pending", "click", function() {
+        var dataId = $(this).attr("data-id");
+        var amount = $(this).attr("data-amount");
+        var order_number = $(this).attr("data-order");
+        $("#order_number").val(order_number);
+        $('#pending_amount').val(amount);
+        $('#pending_amount_modal').modal('show');
+        var payable_amount = $(this).attr('data-payableamount');
+        var input_name = "select" + order_number;
+        $('.wallet_balance').html(amount);
+        $("#pending_amount").val(amount);
+        $("#amount_pending").val(amount);
+        $("#order_number").val(order_number);
+});
+
+
+
+    
     $(document).on('click', '#extend-btn', function(){
-        // alert('click');
-        // $('#extend_order_rental').modal('hide');
+        $.ajax({
+            data: {},
+            type: "POST",
+            dataType: 'json',
+            url: payment_option_list_url,
+            success: function (response) {
+                console.log(response);
+                if (response.status == "Success") {
+                    // console.log(response.data);
+                    $('#v_pills_tab').html('');
+                    $('#v_pills_tabContent').html('');
+                    let payment_method_template = _.template($('#payment_method_template').html());
+                    $("#v_pills_tab").append(payment_method_template({ payment_options: response.data }));
+                    let payment_method_tab_pane_template = _.template($('#payment_method_tab_pane_template').html());
+                    
+                    $("#v_pills_tabContent").append(payment_method_tab_pane_template({ payment_options: response.data }));
+                    $('#extend_order_rental').modal('hide');
+                    $('#proceed_to_pay_modal').modal('show');
+
+                    //mohit sir branch code added by sohail
+                    var advanceCartTotalPayableAmount = $('#advance_cart_total_payable_amount').length;
+                    if(advanceCartTotalPayableAmount == 1){
+                        var amtHTML = 'Advanced Token Amount: <span id="total_amt">'+$('#advance_cart_total_payable_amount').html()+'</span>';
+                        $('#proceed_to_pay_modal #pay-billLabel').html(amtHTML);
+                    }else{
+                        $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
+                    }
+                    //till here
+                    if(stripe_publishable_key != ''){
+                        stripeInitialize();
+                    }
+                    if(stripe_fpx_publishable_key != ''){
+                        stripeFPXInitialize();
+                    }
+                    if(stripe_ideal_publishable_key != ''){
+                        stripeIdealInitialize();
+                    }
+                }
+            },
+            error: function (error) {
+                var response = $.parseJSON(error.responseText);
+                let error_messages = response.message;
+                $.each(error_messages, function (key, error_message) {
+                    $('#min_order_validation_error_' + error_message.vendor_id).html(error_message.message).show();
+                });
+            }
+        });
         // $('#proceed_to_pay_modal').modal();
     });
+    
+    function addSlashes (element) {
+	
+    let ele = document.getElementById(element.id);
+    ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
+    if(ele.length < 4 && ele.length > 0){
+        let finalVal = ele.match(/.{1,2}/g).join('/');
+
+        document.getElementById(element.id).value = finalVal;
+    }
+}
+    
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>

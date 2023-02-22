@@ -164,4 +164,65 @@ trait smsManager{
         }
     }
 
+    public function vonage_sms($to, $message, $crendentials)
+    {
+        try{
+            $basic  = new \Vonage\Client\Credentials\Basic($crendentials->api_key, $crendentials->secret_key);
+            $client = new \Vonage\Client($basic);
+            $response = $client->sms()->send(
+                new \Vonage\SMS\Message\SMS($to, BRAND_NAME, $message)
+            );
+            
+            $resmessage = $response->current();
+            
+            if ($resmessage->getStatus() == 0) {
+                Log::info("Vonage The message was sent successfully");
+                return "The message was sent successfully\n";
+            } else {
+                return "The message failed with status: " . $resmessage->getStatus() . "\n";
+            }
+        }catch(\Exception $e) {
+            return response()->json(['data' => $e->getMessage()]);
+        }
+    }
+
+
+    public function sms_partner_gateway($to, $message, $crendentials)
+    {
+        try{
+            $fields = array(
+                "apiKey"=>$crendentials->api_key,
+                "phoneNumbers"=>$to,
+                "message"=>$message,
+                "sender" => $crendentials->sender_id,
+                'gamme' => 1
+            );
+
+            $api_url = "http://api.smspartner.fr/v1/send";
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $api_url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+            if (!empty($fields))
+            {
+                curl_setopt($curl, CURLOPT_POST, true);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($fields));
+            }
+
+            $result = curl_exec($curl);
+            Log::info("SMS Partner");
+            Log::info($result);
+            if ($result === false)
+            return curl_error($curl);
+            else
+                curl_close($curl);
+
+            return $result;
+            
+           
+        }catch(\Exception $e) {
+            return response()->json(['data' => $e->getMessage()]);
+        }
+    }
+
 }

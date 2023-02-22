@@ -15,7 +15,7 @@ use App\Http\Traits\{ValidatorTrait, ApiResponser};
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
-use App\Models\{Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, OrderProductPrescription, CartProductPrescription};
+use App\Models\{Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, OrderProductPrescription, CartProductPrescription,VendorOrderProductStatus};
 
 trait OrderTrait
 {
@@ -490,6 +490,15 @@ trait OrderTrait
                         }
 
                     }
+                    $update = VendorOrderProductStatus::updateOrCreate([
+                        'order_id' =>    $order_vendor->order_id,
+                        'dispatcher_status_option_id' => 1,
+                        'order_status_option_id' =>  2,
+                        'order_vendor_id' =>    $order_vendor->id,
+                        'order_vendor_product_id' =>  $product->id,
+                    ]);
+               
+                    
                 }
             }
             return $return_response;

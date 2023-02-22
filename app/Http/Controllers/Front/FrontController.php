@@ -67,6 +67,16 @@ class FrontController extends Controller
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
             }
+            elseif($client_preference->sms_provider == 7) //for Vonage gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->vonage_sms($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 8) //for SMS partner gateway France
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_partner_gateway($to,$body,$crendentials);
+            }
             else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
@@ -88,6 +98,7 @@ class FrontController extends Controller
 	}
     protected function sendSmsNew($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
+            $smsbody = $body['body']??'';
             $body = $body['body']??'';
             $template_id = $body['template_id']??'';
             $client_preference =  getClientPreferenceDetail();
@@ -127,6 +138,16 @@ class FrontController extends Controller
             {
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 7) //for Vonage gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->vonage_sms($to,$smsbody,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 8) //for SMS partner gateway France
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->sms_partner_gateway($to,$smsbody,$crendentials);
             }
             else{
                 if(!empty($sms_secret) && !empty($sms_from)){

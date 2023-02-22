@@ -147,6 +147,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('payment/sdk_complete/{gateway?}','Api\v1\PaymentOptionController@sdkResponsePayment');
         Route::post('payment/sdk_failed/{gateway?}','Api\v1\PaymentOptionController@sdkFailedPayment');
 
+        //azulpay
+        Route::match(['get','post'],'payment/azulpay','Api\v1\AzulPaymentController@beforePayment');
         Route::post('payment/place/order', 'Api\v1\PaymentOptionController@postPlaceOrder');
         Route::get('user/loyalty/info', 'Api\v1\LoyaltyController@index');
         Route::post('add/vendorTable/cart','Api\v1\CartController@addVendorTableToCart');
@@ -267,6 +269,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-influencer-form/{id}', 'Api\v1\InfluencerController@getInfluencerForm');
             Route::post('save-influencer-form', 'Api\v1\InfluencerController@save');
         });
-     //   Route::post('get_product_price_from_dispatcher',   'Api\v1\ProductController@getFreeLincerFromDispatcher');
+     
+        
+        //-------routes for bid and ride------------------------------------
+        Route::post('create/user/bid_ride_request', 'Api\v1\PickupDeliveryController@createBidRideRequest');
+        Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
+        Route::post('accept-ride-bid-request', 'Api\v1\PickupDeliveryController@acceptBidsRelatedToBidRideOrderRide');
+        Route::post('decline-ride-bid', 'Api\v1\PickupDeliveryController@declineBidsRelatedToOrderRide');
     });  
 });

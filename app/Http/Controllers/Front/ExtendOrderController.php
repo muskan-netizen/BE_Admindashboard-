@@ -12,7 +12,6 @@ class ExtendOrderController extends Controller
     {
         try {
             $product = Product::with('variant')->where('id', $request->vendor_product_id)->first();
-            
             if (isset($product)) {
                 if ($request->ajax()) {
                     return \Response::json(\View::make('frontend.modals.extend-product-order-rental', array('product' => $product, 'request' => $request->all()))->render());

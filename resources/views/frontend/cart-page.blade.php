@@ -368,13 +368,19 @@
 
                                                     </div>
                                                     @if ($cart_details->pharmacy_check == 1)
+                                                    @php
+                                                        $class = '';
+                                                        if($vendor_product->product->validate_pharmacy_check == 1){
+                                                            $class = 'validate_prescription';
+                                                        }
+                                                    @endphp
                                                     
                                                     @if ($vendor_product->product->pharmacy_check == 1)
                                                         <button type="button"
-                                                            class="float-left btn btn-solid prescription_btn mt-2"
+                                                            class="float-left btn btn-solid prescription_btn mt-2 {{$class}}"
                                                             data-cart="{{ $vendor_product->cart_id }}"
                                                             data-product="{{ $vendor_product->product->id }}"
-                                                            data-vendor_id="{{ $vendor_product->vendor_id }}">{{ __('Add Prescription') }}</button>
+                                                            data-vendor_id="{{ $vendor_product->vendor_id }}" data-cart_product_prescription="{{ $vendor_product->cart_product_prescription??0 }}">{{ __('Add Prescription') }}</button>
                                                         @if ($vendor_product->cart_product_prescription > 0)
                                                             <h4 class="mt-0 mb-1"
                                                                 style="word-wrap: break-word; line-height:20px">
@@ -1074,6 +1080,15 @@
                                             id="specific_instructions"
                                             value="{{ $cart_details->specific_instructions ?? '' }}"
                                             name="specific_instructions">
+                                             {{-- @if($getAdditionalPreference['is_file_cart_instructions']) 
+                                                <div class="Instructions_file">
+                                                        <label>{{ __('Instructions file') }}</label>
+                                                        <div class="instructions_image">
+                                                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="instructionsFile[]" class="dropify instructions_image" multiple />
+                                                        </div>
+                                                        <label class="logo-size text-right w-100">{{ __("image") }} 1000X1000</label>
+                                                </div>
+                                            @endif --}}
                                     </div>
                                 </div>
                                 @if (isset($cart_details->gift_card_id) && (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
@@ -1137,7 +1152,7 @@
 
                             @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
                                 <div class="row">
-                                    
+
                                     <div class="col-6">{{__('Delivery Slot Fees')}}</div>
                                     <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
                             @endif
@@ -1485,7 +1500,7 @@
                                 <hr class="my-2">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="total_amt m-0"> {{ __('Advanced Token Amount') }}</p>
+                                        <p class="total_amt m-0"> {{ __('Deposit Required') }}</p>
                                     </div>
                                     <div class="col-6 text-right">
                                         @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
@@ -1526,7 +1541,7 @@
                                 <hr class="my-2">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="total_amt m-0"> {{ __('Pending Amount') }}</p>
+                                        <p class="total_amt m-0"> {{ __('Outstanding Amount') }}</p>
                                     </div>
                                     <div class="col-6 text-right">
                                         @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
@@ -1577,7 +1592,7 @@
                 $product->vendor->order_min_amount > 0 &&
                 $product->product_total_amount + $product->vendor->fixed_fee_amount < $product->vendor->order_min_amount
             ))
-                @if($cart_details->is_recurring_booking != 1)
+                @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
                     @include('frontend.cart.scheduleSlot')
                 @endif
                     <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
@@ -1737,6 +1752,20 @@
 
 <script>
     $(document).ready(function() {
+         $('.dropify').dropify({
+            messages: {
+                'default': "Drag and drop a file here or click",
+                'replace': "Drag and drop or click to replace",
+                'remove':  "Remove",
+                'error':   "Ooops, something wrong happended."
+            }
+        });
+
+        $('.dropify-clear').click(function(e){
+            e.preventDefault();
+            $(".instructions_image").empty();
+
+        });
         @if(!empty($r_schedule_datetime))
             var schedule_datetime = "{{ $r_schedule_datetime }}";
             $("#schedule_datetime").val(schedule_datetime);
@@ -1802,4 +1831,3 @@
     <script defer type="text/javascript" src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
 
 @endsection
-4

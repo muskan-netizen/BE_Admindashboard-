@@ -296,7 +296,6 @@
     </div>
 </div> -->
 
-@if (isset($preference) && $preference->business_type == 'taxi')
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="book_for_friend"
@@ -308,7 +307,7 @@
         </span>
     </div>
 </div>
-@endif
+
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
     <label for="is_static_dropoff"
@@ -680,10 +679,35 @@
 </div>
 
 <div class="col-md-4">
-<div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-   <label for="is_cust_success_signup_email_switch" class="mr-2 mb-0">{{__('Customer Successfull Signup Email')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
-  <span> <input type="checkbox" data-plugin="switchery" name="is_cust_success_signup_email_switch" id="is_cust_success_signup_email_switch" class="form-control checkbox_change" data-className="is_cust_success_signup_email"  data-color="#43bee1" @if( @getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == '1') checked='checked' @endif>
-   </span>
-   <input type="hidden"  @if(@getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == 1) value="1" @else value="0" @endif  name="is_cust_success_signup_email"  id="is_cust_success_signup_email"/>
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+    <label for="is_cust_success_signup_email_switch" class="mr-2 mb-0">{{__('Customer Successfull Signup Email')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
+    <span> <input type="checkbox" data-plugin="switchery" name="is_cust_success_signup_email_switch" id="is_cust_success_signup_email_switch" class="form-control checkbox_change" data-className="is_cust_success_signup_email"  data-color="#43bee1" @if( @getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == '1') checked='checked' @endif>
+    </span>
+    <input type="hidden"  @if(@getAdditionalPreference(['is_cust_success_signup_email'])['is_cust_success_signup_email'] == 1) value="1" @else value="0" @endif  name="is_cust_success_signup_email"  id="is_cust_success_signup_email"/>
+    </div>
 </div>
+
+ <div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_user_kyc_for_registration_switch" class="mr-2 mb-0">{{ __('Enable to save kyc details for user registration') }}<small class="d-block pr-5">{{ __('Enable to save kyc details for user registration.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_user_kyc_for_registration_switch" id="is_user_kyc_for_registration_switch" class="form-control checkbox_change" data-className="is_user_kyc_for_registration" data-color="#43bee1" @if ($getAdditionalPreference['is_user_kyc_for_registration'] == '1') checked='checked' @endif>
+        </span>
+        <input type="hidden" @if ($getAdditionalPreference['is_user_kyc_for_registration'] == 1) value="1" @else value="0" @endif name="is_user_kyc_for_registration" id="is_user_kyc_for_registration" />
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_file_cart_instructions_switch"
+            class="mr-2 mb-0">{{ __('Upload file In instructions') }}<small
+                class="d-block pr-5">{{ __("Enable to show price by role on edit's vendor screen.") }}</small></label>
+        <span>
+            <input type="checkbox" data-plugin="switchery" name="is_file_cart_instructions_switch"
+                id="is_file_cart_instructions_switch" class="form-control checkbox_change"
+                data-className="is_file_cart_instructions" data-color="#43bee1"
+                @if ($getAdditionalPreference['is_file_cart_instructions'] == '1') checked='checked' @endif>
+            <input type="hidden"
+                @if ($getAdditionalPreference['is_file_cart_instructions'] == 1) value="1" @else value="0" @endif
+                name="is_file_cart_instructions" id="is_file_cart_instructions" />
+        </span>
+    </div>
 </div>
