@@ -452,6 +452,10 @@ class CartController extends FrontController
                 'service_date'        => $request->has('service_date') ? $request->service_date : null,
                 'service_period'      => $request->has('service_period') ? $request->service_period : null,
                 'service_start_date'  => @$service_start_date,
+
+                'slot_id'  => $request->has('sele_slot_id') ? $request->sele_slot_id : null,
+                'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
+                'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
             ];
              //Check if 
             if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
@@ -549,7 +553,6 @@ class CartController extends FrontController
             }
 
             if($isnew == 1){
-                // dd($cart_product_detail);
                 $cartProduct = CartProduct::create($cart_product_detail);
                 // //\Log::info(json_encode($cart_product_detail));11
 
