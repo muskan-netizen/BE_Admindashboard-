@@ -264,7 +264,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                           @endif
                       </div>
       
-                      <div class="al_new_ipad_view ipad-view"  >
+                     {{-- <div class="al_new_ipad_view ipad-view d-none"  >
                           <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                               @if( (Session::get('preferences')))
                               @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
@@ -474,7 +474,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                               </div>
                           </div>
                       </div>
-                  </div>
+                  </div> --}}
               </div>
           </div>
       </div>
