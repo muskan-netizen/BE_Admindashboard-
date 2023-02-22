@@ -366,7 +366,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
 
                             <div class="col-6">
 
-                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter Card Number" required />
 
                             </div>
 
