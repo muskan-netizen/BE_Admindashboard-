@@ -213,7 +213,6 @@ trait AzulPaymentService
      */
     public function voidTransaction($azul_order_id)
     {
-        // // Log::info('on voidTransaction', 'params: '.$azul_order_id);
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
             'Store' => $this->MERCHANT_ID,
@@ -403,8 +402,6 @@ trait AzulPaymentService
         // "Content-Type: application/json"
         // )
         // ));
-
-        // // Log::info('AzulPaymentService.sendRequest' . json_encode($req));
 
         // $result = curl_exec($curl);
 
