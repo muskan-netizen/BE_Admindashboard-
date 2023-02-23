@@ -312,6 +312,7 @@ class HomeController extends BaseController
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
             $allVendorData = clone $vendorData;
+            $long_term_vendors = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
@@ -544,7 +545,7 @@ class HomeController extends BaseController
             $long_term_service_products =[];
             if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
                 $requestFrom='app';
-                $long_term_service_products = $this->longTermServiceProducts($venderIds, $langId, $clientCurrency,'', $type,'', $requestFrom);
+                $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $langId, $clientCurrency,'', $type,'', $requestFrom);
             }
             $homeData['long_term_service'] = $long_term_service_products;
             \Log::info($homeData['categories']);

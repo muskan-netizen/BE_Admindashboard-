@@ -552,6 +552,7 @@ class HomeController extends BaseController{
         /**
          * put a limit to get vendors.
          */
+        $long_term_vendors = $vendors;
         $vendors = $vendors->where('status', 1)
                     ->inRandomOrder()
                     ->limit(10)->get();
@@ -754,7 +755,7 @@ class HomeController extends BaseController{
          //get long term service 
          $long_term_service_products =[];
          if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
-             $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type,$p_dim);
+             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $language_id, $currency_id,'', $request->type,$p_dim);
          }
           
         if($this->checkTemplateForAction(8)){
