@@ -568,7 +568,7 @@ $(document).ready(function () {
 
         });
         setTimeout(function(){
-            $(".pac-container").appendTo(".booking-experience #destination_location_add_temp");
+            //$(".pac-container").appendTo(".booking-experience #destination_location_add_temp");
         }, 300);
       }
     }
