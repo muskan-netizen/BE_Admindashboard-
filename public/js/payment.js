@@ -3399,12 +3399,20 @@ someday.setFullYear(exYear, exMonth, 1);
         $("#azul_card_error").html(message);
          $(document).find('.topup_wallet_confirm').prop('disabled',false);
 		$("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+		$(".subscription_confirm_btn").attr("disabled", false);
     }else{
         $("#azul_card_error").html('');
 		 $(document).find('.topup_wallet_confirm').prop('disabled',true);
 		 $(document).find(".proceed_to_pay").prop('disabled',true);
+		 $(".subscription_confirm_btn").attr("disabled", true);
 	}
     return valid;
 }
 
+});
+
+$(document).on("keyup","#azul-card-element",function () {
+    if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+       this.value = this.value.replace(/[^0-9\.]/g, '');
+    }
 });

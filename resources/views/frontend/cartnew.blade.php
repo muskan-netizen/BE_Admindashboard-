@@ -567,7 +567,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
                         <div class="row no-gutters">
                             <div class="col-6">
-                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
+                                <input type="text" maxlength="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter Card Number" required />
                             </div>
                             <div class="col-3">
                                 <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
