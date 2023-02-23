@@ -63,7 +63,9 @@ function  layoutMode(){
         slidesToShow: 10,
         slidesToScroll: 1,
         responsive: [
+            {breakpoint: 1700,settings: {slidesToShow: 7,slidesToScroll: 2,infinite: true}},
             {breakpoint: 1367,settings: {slidesToShow: 6,slidesToScroll: 2,infinite: true}},
+            {breakpoint: 1100,settings: {slidesToShow: 5,slidesToScroll: 2,infinite: true}},
             {breakpoint: 991,settings: {slidesToShow: 4,slidesToScroll: 1}},
             {breakpoint: 767,settings: {slidesToShow: 3,slidesToScroll: 1}},
             {breakpoint: 576,settings: {slidesToShow: 2,slidesToScroll: 1}},
