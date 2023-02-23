@@ -394,6 +394,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
 @endsection
 
 @section('script')
+<script src="{{asset('js/credit-card-validator.js')}}"></script>
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
