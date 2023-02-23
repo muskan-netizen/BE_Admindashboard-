@@ -705,12 +705,12 @@
 				</div>
 				<div class="row">
 					<div class=" col-12 al_custom_categories">
-						<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="Popular_Brands col-12 d-flex flex-wrap align-items-center justify-content-center">
+						<div class="Popular_Brands render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							<!-- <div class=" col-12 d-flex flex-wrap align-items-center justify-content-center"> -->
 								@foreach ( $homePageLabel->nav_categories as $category )
 									@include('frontend.home_page_8.category')
 								@endforeach
-							</div>
+							<!-- </div> -->
 						</div>
 					</div>
 				</div>
