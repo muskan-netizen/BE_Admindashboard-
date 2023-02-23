@@ -129,9 +129,7 @@ class UserhomeController extends FrontController
     {
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-
-             if($dispatch_domain->business_type == 'taxi'){
-
+             if($dispatch_domain->business_type == 'taxi'){                 
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $endpoint =$url . "/api/send-documents";
                  $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
