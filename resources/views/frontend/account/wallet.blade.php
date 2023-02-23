@@ -727,12 +727,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 
 <script>
 
-$(document).on("keyup","#azul-card-element",function () {
-    if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
-       this.value = this.value.replace(/[^0-9\.]/g, '');
-    }
-});
-
 function addSlashes (element) {
 	
     let ele = document.getElementById(element.id);

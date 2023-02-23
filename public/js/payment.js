@@ -3408,3 +3408,9 @@ someday.setFullYear(exYear, exMonth, 1);
 }
 
 });
+
+$(document).on("keyup","#azul-card-element",function () {
+    if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+       this.value = this.value.replace(/[^0-9\.]/g, '');
+    }
+});
