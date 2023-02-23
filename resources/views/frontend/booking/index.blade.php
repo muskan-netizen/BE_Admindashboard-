@@ -839,7 +839,7 @@
                 <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper">
                     <div class="row no-gutters">
                         <div class="col-6">
-                            <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
+                            <input type="text" maxlength="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
                         </div>
                         <div class="col-3">
                                 <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
@@ -1338,6 +1338,12 @@
             }
 
         });
+        
+  $(document).on("keyup","#azul-card-element",function () {
+    if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+       this.value = this.value.replace(/[^0-9\.]/g, '');
+    }
+});
     function addSlashes (element) {	
         let ele = document.getElementById(element.id);
         ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.

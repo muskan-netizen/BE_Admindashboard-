@@ -419,7 +419,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
                         <div class="row no-gutters">
                             <div class="col-6">
-                                <input type="text" min="16" max="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" required />
+                                <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" required />
                             </div>
                             <div class="col-3">
                                 <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
@@ -727,6 +727,12 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 
 <script>
 
+$(document).on("keyup","#azul-card-element",function () {
+    if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+       this.value = this.value.replace(/[^0-9\.]/g, '');
+    }
+});
+
 function addSlashes (element) {
 	
     let ele = document.getElementById(element.id);
@@ -737,7 +743,6 @@ function addSlashes (element) {
         document.getElementById(element.id).value = finalVal;
     }
 }
-
 </script>
 
 @endsection

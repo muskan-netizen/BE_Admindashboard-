@@ -754,7 +754,11 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
             }
         });
     });
-    
+    $(document).on("keyup","#azul-card-element",function () {
+    if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+       this.value = this.value.replace(/[^0-9\.]/g, '');
+    }
+});
     function addSlashes (element) {
 	
     let ele = document.getElementById(element.id);
