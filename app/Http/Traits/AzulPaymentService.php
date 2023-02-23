@@ -144,7 +144,6 @@ trait AzulPaymentService
      */
     public function payWithDatavault($amount, $order_id, UserDataVault $datavault)
     {
-        // // Log::info('AzulPaymentService.payWithDatavault', 'order_id: '.$order_id);
         $order = Order::find($order_id);
 
         if (is_null($order)) {
@@ -179,7 +178,6 @@ trait AzulPaymentService
         $response = $this->sendRequest($request);
 
         if ($response['code'] != 200) {
-            // // Log::info('error http AzulPaymentService.payWithDatavault', 'order_id: '.$order_id.' '.json_encode($response['message']));
             return [
                 'message' => $response['message'],
                 'ok' => false
@@ -187,7 +185,6 @@ trait AzulPaymentService
         }
 
         if ($response['data']->ResponseCode !== $this->AZUL_OK_RESPONSE_CODE) {
-            // // Log::info('error on azul AzulPaymentService.payWithDatavault', 'order_id: '.$order_id.' '.json_encode($response['data']));
             return [
                 'message' => $response['data']->ErrorDescription,
                 'ok' => false
@@ -195,16 +192,11 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-            Log::info([
-                'error on azul AzulPaymentService.payWithDatavault',
-                'order_id: ' . json_encode($response['data'])
-            ]);
             return [
                 'message' => $response['data']->ResponseMessage,
                 'ok' => false
             ];
         }
-        // // Log::info('AzulPaymentService.payWithDatavault ok', 'request: '.json_encode($request).' response: '.json_encode($response['data']));
 
         return [
             'message' => 'ok',
@@ -231,7 +223,6 @@ trait AzulPaymentService
         $response = $this->sendRequest($request, '?processvoid');
 
         if ($response['code'] != 200) {
-            // Log::info('error http voidTransaction', json_encode($response));
             return [
                 'message' => $response['message'],
                 'ok' => false
@@ -239,14 +230,11 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-            // Log::info('error on voidTransaction', json_encode($response['data']));
             return [
                 'message' => $response['data']->ResponseMessage . ' ' . $response['data']->ErrorDescription,
                 'ok' => false
             ];
         }
-
-        // Log::info('voidTransaction ok', 'request: ' . json_encode($request) . ' response: ' . json_encode($response['data']));
 
         return [
             'message' => 'ok',
@@ -264,7 +252,6 @@ trait AzulPaymentService
     public function refundTransaction($azul_order_id, $amount, $order_id, $order_date)
     {
         $phone_number = auth()->user()->phone_number;
-        // Log::info('on refundTransaction', "$azul_order_id, $amount, $order_id, $order_date");
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
             'Store' => $this->MERCHANT_ID,
@@ -296,7 +283,6 @@ trait AzulPaymentService
 
         $response = $this->sendRequest($request);
         if ($response['code'] != 200) {
-            // Log::info('error http refundTransaction', json_encode($response));
             return [
                 'message' => $response['message'],
                 'ok' => false
@@ -304,17 +290,11 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-            Log::info([
-                'error on refundTransaction',
-                'order_id: ' . json_encode($response['data'])
-            ]);
             return [
                 'message' => $response['data']->ResponseMessage,
                 'ok' => false
             ];
         }
-
-        // Log::info('refundTransaction ok', 'request: ' . json_encode($request) . ' response: ' . json_encode($response['data']));
 
         return [
             'message' => 'ok',
@@ -334,7 +314,6 @@ trait AzulPaymentService
      */
     public function confirmTransaction($azul_order_id, $amount, $itbis = ""): array
     {
-        // Log::info('on confirmTransaction', 'params: ' . $azul_order_id . ', ' . $amount . ' ,' . $itbis);
         $itbis = (int) $amount * 0.18;
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
@@ -347,7 +326,6 @@ trait AzulPaymentService
         $response = $this->sendRequest($request, '?processpost');
 
         if ($response['code'] != 200) {
-            // Log::info('error http confirmTransaction', json_encode($response));
             return [
                 'message' => $response['message'],
                 'ok' => false
@@ -355,13 +333,11 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-            // Log::info('error on confirmTransaction', json_encode($response['data']));
             return [
                 'message' => $response['data']->ResponseMessage,
                 'ok' => false
             ];
         }
-        // Log::info('confirmTransaction ok', 'request: ' . json_encode($request) . ' response: ' . json_encode($response['data']));
 
         return [
             'message' => 'ok',
@@ -470,7 +446,6 @@ trait AzulPaymentService
      */
     public function saveCardToDatavault($user_id, $card_number, $expiration_date, $cvc): array
     {
-        // // Log::info('on saveCardToDatavault', 'try to save card');
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
             'Store' => $this->MERCHANT_ID,
@@ -483,7 +458,6 @@ trait AzulPaymentService
         $response = $this->sendRequest($request, '?ProcessDatavault');
 
         if ($response['code'] != 200) {
-            // // Log::info('error http saveCardToDatavault', json_encode($response['message']));
             return [
                 'message' => $response['message'],
                 'ok' => false
@@ -491,7 +465,6 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-            // // Log::info('error on azul saveCardToDatavault', json_encode($response['data']));
             return [
                 'message' => $response['data']->ErrorDescription,
                 'ok' => false
@@ -505,8 +478,6 @@ trait AzulPaymentService
             'brand' => $response['data']->Brand,
             'card_hint' => $response['data']->CardNumber
         ]);
-
-        // // Log::info('saveCardToDatavault ok!', 'datavault_id '.$datavault->id.' full_response '.json_encode($response['data']));
 
         return [
             'ok' => true,
@@ -531,7 +502,6 @@ trait AzulPaymentService
      */
     public function deleteDatavault(UserDataVault $datavault): array
     {
-        // Log::info('on deleteDatavault', 'datavault_id: ' . $datavault->id);
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
             'Store' => $this->MERCHANT_ID,
@@ -542,7 +512,6 @@ trait AzulPaymentService
         $response = $this->sendRequest($request, '?ProcessDatavault');
 
         if ($response['code'] != 200) {
-            // Log::info('error http deleteDatavault', json_encode($response['message']));
             return [
                 'message' => $response['message'],
                 'ok' => false
@@ -550,7 +519,6 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-            // Log::info('error on azul deleteDatavault', json_encode($response['data']));
             return [
                 'message' => $response['data']->ErrorDescription,
                 'ok' => false
@@ -558,8 +526,6 @@ trait AzulPaymentService
         }
 
         $datavault->delete();
-
-        // Log::info('deleteDatavault ok!', 'request: ' . json_encode($request) . ' response: ' . json_encode($response['data']));
 
         return [
             'message' => 'ok',
@@ -590,7 +556,6 @@ trait AzulPaymentService
      */
     public function verifyTransaction($order_id)
     {
-        // Log::info('on verifyTransaction', 'order_id: ' . $order_id);
         $request = [
             'Channel' => $this->PAYMENT_CHANNEL,
             'Store' => $this->MERCHANT_ID,
@@ -600,7 +565,6 @@ trait AzulPaymentService
         $response = $this->sendRequest($request);
 
         if ($response['code'] != 200) {
-            // Log::info('error http verifyTransaction', json_encode($response));
             return [
                 'message' => $response['message'],
                 'ok' => false
@@ -608,13 +572,11 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-            // Log::info('error on verifyTransaction', json_encode($response['data']));
             return [
                 'message' => $response['data']->ResponseMessage,
                 'ok' => false
             ];
         }
-        // Log::info('verifyTransaction ok', 'order_id: ' . $order_id);
 
         return [
             'message' => 'ok',

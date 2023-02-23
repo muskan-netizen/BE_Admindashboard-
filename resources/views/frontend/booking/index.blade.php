@@ -1339,11 +1339,6 @@
 
         });
         
-  $(document).on("keyup","#azul-card-element",function () {
-    if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
-       this.value = this.value.replace(/[^0-9\.]/g, '');
-    }
-});
     function addSlashes (element) {	
         let ele = document.getElementById(element.id);
         ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
