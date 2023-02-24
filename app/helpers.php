@@ -17,13 +17,14 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
-
+if (!function_exists('setUserCode')) {
 function setUserCode(){
     $userCode = session()->has('userCode');
     if(!$userCode){
         $user = ClientData::first();
         session()->put('userCode', $user->code);
     }
+}
 }
 
 // Returns the values of the additional preferences.
@@ -1491,7 +1492,7 @@ if( !function_exists('is_category_p2p') ) {
 //     }
 // }
 
-if( !function_exists('productDiscountPercentage()') ) {
+if( !function_exists('productDiscountPercentage') ) {
     function productDiscountPercentage($product_price = 0, $product_compare_price)
     {
         if($product_compare_price > 0) {

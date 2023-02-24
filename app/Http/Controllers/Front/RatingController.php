@@ -91,7 +91,6 @@ class RatingController extends FrontController{
                     $ratings = OrderDriverRating::updateOrCreate([
                         'order_id' => $order_details->order_id,                 
                         'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??$request->hidden_review]);
-                    
                     $split_trcking_url = explode('/',$checkdriverdetail->dispatch_traking_url);
                     $driverclientcode = $split_trcking_url[count($split_trcking_url)-2];
                     $unique_order_code = $split_trcking_url[count($split_trcking_url)-1];

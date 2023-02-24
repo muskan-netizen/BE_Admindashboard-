@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 
-use App\Models\{Product, ClientCurrency, ClientPreference, LoyaltyCard,OrderProductRating};
+use App\Models\{Product, ClientCurrency, ClientPreference, LoyaltyCard,OrderProductRating,OrderDriverRating, Vendor};
 
 class ReviewController extends BaseController
 {
@@ -58,6 +58,27 @@ class ReviewController extends BaseController
 
     }
 
+    public function getVendorRating(Request $request){
+        try {
+            //dd($request->all());
+            $rating_details = Vendor::where('id',$request->id)->first();
+            if(isset($rating_details)){
+
+                if ($request->ajax()) {
+                 return \Response::json(\View::make('frontend.modals.vendor_rating', array('rating'=>  $rating_details->admin_rating,'vendor_id' => $request->id ,'rating_details' => $rating_details))->render());
+                }
+
+                return $this->successResponse($rating_details,'Rating Details.');
+            }
+            return \Response::json(\View::make('frontend.modals.vendor_rating', array('rating'=> 0 ,'vendor_id' => $request->id ,'rating_details' => '10'))->render());
+
+            return $this->errorResponse('Invalid rating', 404);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
     /**
      * Show the form for creating a new country resource.
      *
@@ -66,6 +87,21 @@ class ReviewController extends BaseController
     public function create(Request $request)
     {
     }
+
+    public function update_vendor_rating(Request $request){
+        try{
+           $ratings= Vendor::where('id', $request->vendor_id)->update(['admin_rating' => $request->rating]);
+           
+           if(isset($ratings)) {
+            return 'Success';
+        }
+        return $this->errorResponse('Invalid order', 200);
+        
+        } catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(), 400);
+        }
+            }
+        
 
     /**
      * Store a newly created country resource in storage.
