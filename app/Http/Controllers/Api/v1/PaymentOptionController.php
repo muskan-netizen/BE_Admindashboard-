@@ -88,12 +88,9 @@ class PaymentOptionController extends BaseController{
             $request->currencyId = $request->header('currency');
 
             $function = 'postPaymentVia_'.$gateway;
-            //dd($function);
             if(method_exists($this, $function)) {
-
                 if(!empty($request->action)){
                     $response = $this->$function($request); // call related gateway for payment processing
-
                     return $response;
                 }
             }

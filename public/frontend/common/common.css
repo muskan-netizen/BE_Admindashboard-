@@ -5863,3 +5863,7 @@ ul.productVariants li.row.otherSize .checkround{opacity: 0;}
 
 .size-box ul.productVariants li.row.otherSize label .var-active{border: 2px solid#4c4a4a !important;}
 .size-box ul.productVariants li.row.otherSize label .radio-active{border: 2px solid#4c4a4a !important;background:#000 !important;}
+
+.pac-container{
+    z-index: 9999 !important;
+}
