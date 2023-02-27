@@ -112,8 +112,9 @@ trait KwikApi{
 //Price estimation Api
 public function getPriceEstimation($dataRec)
 {
-      $this->configDetails();
-      $end_url = '/send_payment_for_task';
+    $check = $this->configDetails();
+    if($check){
+        $end_url = '/send_payment_for_task';
       $data = [      
         "custom_field_template"=> "pricing-template",
         "access_token"=> $this->access_token,
@@ -176,6 +177,9 @@ public function getPriceEstimation($dataRec)
       curl_close($ch);
       $result = json_decode($result);
       return $result;
+    }
+    $result = (object) array('status' => 400);
+    return $result;
 }
 
 

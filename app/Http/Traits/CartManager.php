@@ -549,12 +549,13 @@ trait cartManager{
                 $bid_vendor_discount = 0;
 
                 /* Getting in Vendor product loop and setting product values*/
-                $vendorTotalDeliveryFee = 0;
+                
                 $previousdeliveryfee = 0;
-                $if_previousdeliveryfee_added = 0;
+                
                 $deliveryfeeOnCoupon = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-
+                    $if_previousdeliveryfee_added = 0;
+                    $vendorTotalDeliveryFee = 0;
                     $prod->product->ServicePeriods = [];
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
@@ -864,11 +865,12 @@ trait cartManager{
                                     $if_previousdeliveryfee_added = 1;
                                 }
                             }
-                            $deliveryCharges_real = $vendorTotalDeliveryFee;
+                            Log:info("vendorTotalDeliveryFee".$vendorTotalDeliveryFee);
+                            $deliveryCharges_real = $deliveryCharges_real + $vendorTotalDeliveryFee;
 
-                            if (isset($deliveryCharges_real) && !empty($deliveryCharges_real)) {
+                            if (isset($vendorTotalDeliveryFee) && !empty($vendorTotalDeliveryFee)) {
                                 $dtype = explode('_', $code);
-                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id], ['delivery_fee' => $deliveryCharges_real,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id], ['delivery_fee' => $vendorTotalDeliveryFee,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
                             }
                         }//End Check last time stone
                     }
@@ -1001,7 +1003,7 @@ trait cartManager{
                             if($vendorData->coupon->promo->allow_free_delivery ==1   ){
                                 $PromoFreeDeliver = 1;
                               // $coupon_amount_used = $coupon_amount_used ;
-                                $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
+                                $coupon_amount_used = $coupon_amount_used +  $vendorTotalDeliveryFee;
                                 $payable_amount = $payable_amount;
                                 $deliveryfeeOnCoupon = 1;
                             }
@@ -1020,7 +1022,7 @@ trait cartManager{
                     }
                 }
 
-                $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $deliveryCharges_real : 0;
+                $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $vendorTotalDeliveryFee : 0;
                 if($user){
                     // calculate subscription discount On admin and vendor
                     $vendor_subs_disc_percent       = isset($vendorData->vendor->subscription_discount_percent) ? $vendorData->vendor->subscription_discount_percent : 0;
