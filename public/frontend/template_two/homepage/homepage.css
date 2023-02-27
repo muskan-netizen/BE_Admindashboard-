@@ -246,6 +246,13 @@ body .category-head {
         overflow: hidden;
         white-space: nowrap;
     }
+    .al_body_template_two  .cab-banner-area.alTaxiBannerStart {
+        height: 60vh!important;
+        display: flex!important;
+        align-items: center!important;
+        background-position: left!important;
+        margin-top: 60px;
+    }
 }
 
 
@@ -388,6 +395,10 @@ body[dir=rtl] .slick-prev {
 
 .p-64 {
     padding: 64px !important;
+    margin-bottom: 30px;
+}
+.py-64 {
+    padding: 64px 20px!important;
     margin-bottom: 30px;
 }
 
