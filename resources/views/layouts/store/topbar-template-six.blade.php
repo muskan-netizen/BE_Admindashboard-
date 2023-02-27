@@ -186,7 +186,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                   <ul class="p-0 m-0 d-flex align-items-center ml-auto">
                      <!-- alUserIcon start -->
                      @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
-                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
+                        <li class="add_post pr-3"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span> {{__('Add Post')}}</span></a></li>
                     @endif
                      <li class="alUserIcon onhover-dropdown">
                         <a href="#">
