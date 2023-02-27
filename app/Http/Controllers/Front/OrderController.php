@@ -1750,7 +1750,7 @@ class OrderController extends FrontController
 
             $ex_gateways = [4, 5, 7, 8, 9, 10, 12, 13, 15, 17, 18, 19, 20, 21, 23, 24, 25, 26, 28, 29, 30, 31, 32, 34, 35, 36, 37, 39, 40, 41, 42, 43, 44, 45, 47]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal
 
-            if (!in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay == 1)) {
+            if (!in_array($request->payment_option_id, $ex_gateways)) {
 
                 //Send Email to customer
                 $this->sendSuccessEmail($request, $order);
@@ -2837,33 +2837,77 @@ class OrderController extends FrontController
     public function checkIfLastMileDeliveryOn()
     {
         $preference = ClientPreference::first();
-        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)) {
-            return $preference;
-        } else {
-            return false;
+        
+        if($preference->business_type == 'taxi'){
+            if ($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
+                return $preference;
+                else
+                    return false;
+        }elseif($preference->business_type == 'laundry'){
+            if ($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
+                return $preference;
+                else
+                    return false;
+        } else{
+            if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+                return $preference;
+                else
+                    return false;
         }
+        
     }
 
     public function driverDocuments()
-    {
+    { 
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-            $url = $dispatch_domain->delivery_service_key_url;
-            $endpoint = $url . "/api/send-documents";
-            // $dispatch_domain->delivery_service_key_code = '649a9a';
-            // $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
-            $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
-
-            $response = $client->post($endpoint);
-            $response = json_decode($response->getBody(), true);
-
-            return json_encode($response['data']);
+            if($dispatch_domain->business_type == 'taxi'){
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $endpoint =$url . "/api/send-documents";
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+                
+                $response = $client->post($endpoint);
+                $response = json_decode($response->getBody(), true);
+                $response['api_data'] = [
+                    'url'=>$url,
+                    'token'=>$dispatch_domain->pickup_delivery_service_key,
+                    'code' => $dispatch_domain->pickup_delivery_service_key_code
+                ];
+            } elseif($dispatch_domain->business_type == 'laundry'){
+                $url = $dispatch_domain->laundry_service_key_url;
+                $endpoint =$url . "/api/send-documents";
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key, 'shortcode' => $dispatch_domain->laundry_service_key_code]]);
+                
+                $response = $client->post($endpoint);
+                $response = json_decode($response->getBody(), true);
+                $response['api_data'] = [
+                    'url'=>$url,
+                    'token'=>$dispatch_domain->laundry_service_key,
+                    'code' => $dispatch_domain->laundry_service_key_code
+                ];
+            } else{
+                
+                $url = $dispatch_domain->delivery_service_key_url;
+                $endpoint =$url . "/api/send-documents";
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
+                
+                $response = $client->post($endpoint);
+                $response = json_decode($response->getBody(), true);
+                $response['api_data'] = [
+                                            'url'=>$url,
+                                            'token'=>$dispatch_domain->delivery_service_key,
+                                            'code' => $dispatch_domain->delivery_service_key_code
+                                        ];
+                
+            }
+            return json_encode($response);
         } catch (\Exception $e) {
             $data = [];
             $data['status'] = 400;
             $data['message'] =  $e->getMessage();
             return $data;
         }
+        
     }
 
     public function driverSignup(Request $request)
@@ -2886,7 +2930,9 @@ class OrderController extends FrontController
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
 
-                $data = json_decode($this->driverDocuments());
+                $driver_documents = json_decode($this->driverDocuments());
+                $data= $driver_documents->data;
+                $api = $driver_documents->api_data;
                 $driver_registration_documents = $data->documents;
                 $rules_array = [
                     'name' => 'required',
@@ -2939,8 +2985,8 @@ class OrderController extends FrontController
                 }
                 // $dispatch_domain->delivery_service_key_code = '649a9a';
                 //  $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
-                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
-                $url = $dispatch_domain->delivery_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' =>$api->token, 'shortcode' => $api->code]]);
+                $url = $api->url;
                 $key1 = 0;
                 $key2 = 0;
                 $filedata = [];

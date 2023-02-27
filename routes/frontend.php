@@ -46,7 +46,7 @@ Route::group(['middleware' => ['domain']], function () {
     Route::get('vendor-notification', 'Front\DispatcherController@test');
 	Route::get('test/email1', 'Front\FrontController@sendmailtest');
 	Route::get('test/email', function () {
-		$send_mail = 'test@yopmail.com';
+		$send_mail = 'inderwadhs@gmail.com';
 		// App\Jobs\SendRefferalCodeEmailJob::dispatch($send_mail);
 		// dispatch(new App\Jobs\SendRefferalCodeEmailJob($send_mail));
 		$details = [
@@ -55,8 +55,8 @@ Route::group(['middleware' => ['domain']], function () {
 		];
 
 		try {
-				\Mail::to('sandeep.kumar@codebrewinnovations.com')->send(new \App\Mail\MyTestMail($details));
-				dd('send mail successfully !!');
+				$resp = \Mail::to('noreply@qdelo.com')->send(new \App\Mail\MyTestMail($details));
+				dd('send mail successfully !!--'.$resp);
 			}catch(\Exception $e) {
 					return response()->json(['data' => $e->getMessage()]);
 			}
@@ -165,7 +165,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/simplify/page','Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
 	Route::post('payment/simplify','Front\SimplifyController@createPayment')->name('payment.simplify.createPayment');
 
-
+	//azulpay
+	Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
 	//Square
 	Route::match(['get','post'],'payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square','Front\SquareController@createPayment')->name('payment.square.createPayment');
