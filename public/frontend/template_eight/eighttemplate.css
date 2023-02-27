@@ -2693,6 +2693,35 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
     height: auto!important;
     object-fit: contain!important;
 }
+.dark .cutom_add_wishlist .fav-button span{
+    color:#fff;
+}
+
+/* body.al_body_template_eight ul.exzoom_img_ul.img-sidebar img {
+    min-height: auto;
+    object-fit: contain;
+    height: auto;
+} */
+/* body.al_body_template_eight ul.exzoom_img_ul {
+    padding-top: 100%;
+}
+body.al_body_template_eight ul.exzoom_img_ul.img-sidebar img {
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+} */
+.al_body_template_eight img.blur-up.brand-logo.lazyloaded {
+    padding: 0 10px!important;
+}
+.dark .cutom_add_wishlist .fav-button  i {
+    color: var(--theme-deafult );
+}
 
 /*----------laptop view----------*/
 
