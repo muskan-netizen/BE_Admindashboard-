@@ -12,11 +12,11 @@
                 
  @endphp
 
- <section class="cab-banner-area alTaxiBannerStart"
+ <section class="test cab-banner-area alTaxiBannerStart"
      style="background:url({{ $img }});background-size: cover;background-repeat: no-repeat;background-position: center;">
-     <div class="container p-64">
+     <div class="container-fluid p-64 py-64">
          <div class="row">
-             <div class="col-md-8 col-lg-6">
+             <div class="col-md-8 col-lg-7 col-xl-5">
                  <div class="card-box mb-0">
                      <h2>{{ $homePageLabel->translations->first() ? $homePageLabel->translations->first()->title : '' }}
                      </h2>
