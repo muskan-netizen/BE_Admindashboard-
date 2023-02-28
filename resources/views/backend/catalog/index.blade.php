@@ -678,24 +678,21 @@
     $('#addBrandForm').submit(function() {
     	var gR = $("#cateSelectBox :checked");
     	var	valid = 0;
-    	var flag = false;
-    	$(this).find('input[type=text], select').each(function(){
-            if($.trim($(this).val()) != "") valid+=1;
+    	var flag = true;
+    	$(this).find('input[type=text]').each(function(){
+            if($.trim($(this).val()) != "") valid=1;
         });
-        console.log(valid);
         if(valid==0){
           	$("#brand-title-error").css("color","red");
           	$("#brand-title-error").html("Please enter at least one title");
-          } else {
-           	flag = true;
+          	flag = false;
           }
         
           if(gR.length==0){
           	$("#cat-error").css("color","red");
           	$("#cat-error").html("Please select at least one category");
-          } else {
-           	flag = true;
-          }
+          		flag = false;
+          } 
     	return flag;
    });
    	$(document).on('change', "#cateSelectBox",function() {
@@ -708,11 +705,11 @@
         }
 	});
     
-    $(document).on('keyup', 'input[type=text], select',function() {
+    $(document).on('keyup', 'input[type=text]',function() {
         	var	valid = 0;
     
         $(this).each(function(){
-            if($.trim($(this).val()) != "") valid+=1;
+            if($.trim($(this).val()) != "") valid=1;
         });
         
          if(valid>0){
