@@ -38,451 +38,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 }
 </style>
 
-<script type="text/template" id="order_page_template">
-    <div class="row">
-        <% _.each(orders, function(order, k){%>
-            <% if(order.vendors.length !== 0) { %>
-                <div class="col-xl-6 al_order_sec"  id="full-order-div<%= k %>">
-                    <div class="row no-gutters order_head mb-2">
-                        <div class="col-md-3 alOrderStatus"><h4>{{ __("Order ID") }}</h4>
-                        <span>#<%= order.order_number %> </span>
 
-                        <% if(order.vendors[0].exchanged_of_order && order.vendors[0].exchanged_of_order.order_detail) { %>
-                            <h4>{{ __("Exchange of Order") }}</h4>
-                            <a href="<%= order.vendors[0].exchanged_of_order.vendor_detail_url %>" > <span>#<%= order.vendors[0].exchanged_of_order.order_detail.order_number %></span></a>
-                                            <% } %>
-                        <% if(order.vendors[0].exchanged_to_order && order.vendors[0].exchanged_to_order.order_detail) { %>
-                            <h4>{{ __("Exchanged to Order") }}</h4>
-                            <a href="<%= order.vendors[0].exchanged_to_order.vendor_detail_url %>" >  <span>#<%= order.vendors[0].exchanged_to_order.order_detail.order_number %></span></a>
-                                            <% } %>
-                                            </div>
-                        <div class="col-md-3 alOrderStatus"><h4>{{ __("Date & Time") }}</h4>
-                        <span><%= order.created_date %></span>
-                        </div>
-                        <div class="col-md-3 alOrderStatus"><h4>{{ __("Customer") }}</h4>
-                        <span><%= order.user.name %></span>
-                        </div>
-                        @if( (Auth::user()->is_superadmin) ||  ($client_preference_detail->hide_order_address ==0) )
-                        <div class="col-md-3"><h4>{{ __("Address") }}</h4>
-                        <% if(order.address !== null) { %>
-                            <div class="col-md-12 pl-0 ellips">
-                                <span class="mb-0 " data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
-                                    <%= order.address.house_number?order.address.house_number+',' : ''  %> <%= order.address.address %>
-                                </p>
-                            </div>
-                            <% } %>
-                        </div>
-                        @endif
-                    </div>
-
-                    <!-- <div class="row no-gutters order_data mb-lg-2">
-                        <div class="col-md-3"><h6 class="m-0">#<%= order.order_number %> </h6></div>
-
-                        <div class="col-md-3"><%= order.created_date %></div>
-                        <div class="col-md-3">
-                            <a class="text-capitalize" href="#"><%= order.user.name %></a>
-                        </div>
-                        @if( (Auth::user()->is_superadmin) ||  ($client_preference_detail->hide_order_address ==0) )
-                            <% if(order.address !== null) { %>
-                            <div class="col-md-3">
-                                <p class="ellipsis mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
-                                    <%= order.address.house_number?order.address.house_number+',' : ''  %> <%= order.address.address %>
-                                </p>
-                            </div>
-                            <% } %>
-                        @endif
-                    </div> -->
-                    <div class="row">
-                        <div class="col-md-9">
-                            <% _.each(order.vendors, function(vendor, ve){%>
-                                <div class="row  <%= ve ==0 ? 'mt-0' : 'mt-2'%>" id="single-order-div<%= k %><%= ve %>">
-                                    <div class="col-12 order-hover-btn">
-
-
-
-                                       <div class="order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
-                                        <ul class="alBtnsOnOrders d-flex justify-content-end">
-                                            @if( (!Auth::user()->is_superadmin) && ($clientData->socket_url) )
-                                            <li>
-                                                <a data-toggle="tooltip" data-placement="top" title="Start Chat" class="start_chat btn-info" data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-                                                  </svg></a>
-                                            </li>
-                                            @endif
-                                        </ul>
-
-                                        <a href="<%= vendor.vendor_detail_url %>" class="row">
-                                            <% if(order.scheduled_date_time || (order.luxury_option_name != '')) { %>
-                                            <div class="col-sm-12">
-                                                <div class="progress-order font-12  d-flex align-items-center justify-content-between pr-2">
-                                                    <% if(order.luxury_option_name != '') { %>
-
-                                                        <span class="badge badge-info ml-2 my-1 badge_<%= order.luxury_option_id %>"><%= order.luxury_option_name %></span>
-                                                    <% } %>
-                                                    <% if(vendor.order_status == 'Accepted' && vendor.accepted_by != null) { %>
-                                                       <span class="ml-2 text-info"><%= vendor.order_status %> by <%= vendor.accepted_by.name %></span>
-                                                    <% } %>
-                                                    <% if(order.is_gift == '1') { %>
-                                                        <div class="gifted-icon">
-                                                            <img class="p-1 align-middle" src="{{ asset('assets/images/gifts_icon.png') }}" alt="">
-                                                            <span class="align-middle">This is a gift.</span>
-                                                        </div>
-                                                    <% } %>
-                                                    <% if(order.scheduled_date_time || order.schedule_pickup || order.schedule_dropoff) { %>
-                                                        <span class="badge badge-success ml-2">{{__('Scheduled')}}</span>
-                                                       <!-- <span class="ml-2"><%= order.scheduled_date_time %></span> -->
-                                                    <% } %>
-
-
-                                                    <% if(((vendor.delivery_fee > 0) || (order.scheduled_date_time) || order.schedule_pickup)){ %>
-                                                        <% if(vendor.order_status != 'Rejected'){%>
-                                                            @if($client_preferences->scheduling_with_slots == 1 && $client_preferences->business_type == 'laundry')
-                                                            <span class="ml-2 text-right">Slots: Pickup:  <%= order.scheduled_slot %> | Dropoff: <%= order.dropoff_scheduled_slot %>
-                                                            </span>
-                                                        @else
-                                                                <% if(order.scheduled_slot == null){ %>
-                                                                    <% if(order.scheduled_date_time){ %>
-                                                                        <span class="ml-2">{{__('Order scheduled for')}} <%= order.scheduled_date_time %></span>
-                                                                    <% } else { %>
-                                                                        <span class="ml-2">{{__('Expected Delivery by')}} <%= vendor.ETA %></span>
-                                                                    <% } %>
-                                                                <% }else{ %>
-                                                                    <span class="ml-2">{{__('Order scheduled for')}} <%= order.scheduled_date_time %>, {{__('Slot')}} : <%= order.scheduled_slot %></span>
-                                                                <% } %>
-                                                        @endif
-                                                        <% } else if(vendor.order_status == 'Rejected' && vendor.cancelled_by != null){%>
-                                                            <span class="ml-2 text-danger"><%= vendor.order_status %> by <%= vendor.cancelled_by.name %></span>
-                                                        <% }%>
-
-                                                    <% } %>
-
-                                                </div>
-
-
-
-
-                                            </div>
-                                            <% } %>
-                                            <span class="left_arrow pulse">
-                                            </span>
-                                            <div class="col-5 col-sm-3">
-                                                <h5 class="m-0"><%= vendor.vendor_name %></h5>
-                                                <ul class="status_box mt-1 pl-0">
-                                                    <li>
-                                                        <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
-                                                        <label class="m-0 in-progress"><%= vendor.order_status %></label>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div class="col-7 col-sm-6">
-                                                <div class="row no-gutters product_list align-items-center flex-wrap">
-                                                    <% _.each(vendor.products, function(product, pr){%>
-                                                        <div class="col-4 text-center mb-2">
-                                                            <div class="list-img" style="height:50px;">
-                                                                <img style="height:50px;" data-placement="right" data-toggle="tooltip" title="<%= product.product_name %>" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
-                                                                <span class="item_no position-absolute">x<%= product.quantity %></span>
-
-                                                            </div>
-                                                            <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
-                                                            <label class="items_price">
-                                                                (<%= product.product_name %>)
-                                                                {{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %></label>
-                                                        </div>
-                                                    <% }); %>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 mt-md-0 mt-sm-2">
-                                                <ul class="price_box_bottom m-0 p-0">
-
-                                                    <% if(vendor.subtotal_amount > 0 || vendor.subtotal_amount < 0) { %>
-                                                    <li class="d-flex align-items-center justify-content-between">
-                                                        <label class="m-0">{{ __('Total') }}</label>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat ((vendor.subtotal_amount) +(vendor.bid_discount) ) ) %></span>
-                                                    </li>
-                                                    <% } %>
-                                                     <% if(vendor.bid_discount > 0) { %>
-                                                    <li class="d-flex align-items-center justify-content-between">
-                                                        <label class="m-0">{{ __('Bid Discount') }}</label>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.bid_discount) %></span>
-                                                    </li>
-                                                    <% } %>
-                                                    <% if(vendor.additional_price > 0 ) { %>
-                                                        <li class="d-flex align-items-center justify-content-between">
-                                                            <label class="m-0">{{ __('Additional Price') }}</label>
-                                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.additional_price) %></span>
-
-                                                        </li>
-                                                        <% } %>
-                                                    <% if(vendor.discount_amount > 0 || vendor.discount_amount < 0) { %>
-                                                    <li class="d-flex align-items-center justify-content-between">
-                                                        <label class="m-0">{{ __('Promocode') }}</label>
-                                                        <span>-{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.discount_amount) %></span>
-                                                    </li>
-                                                    <% } %>
-
-                                                    <% if(vendor.total_container_charges > 0 || vendor.total_container_charges < 0) { %>
-                                                        <li class="d-flex align-items-center justify-content-between">
-                                                            <label class="m-0">{{ __('Container Charges') }}</label>
-                                                            <% if(vendor.total_container_charges !== null) { %>
-                                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.total_container_charges) %></span>
-                                                            <% }else { %>
-                                                                <span>{{$clientCurrency->currency->symbol}} 0.00</span>
-                                                            <% } %>
-                                                        </li>
-                                                        <% } %>
-                                                    <% if(vendor.taxable_amount > 0 || vendor.taxable_amount < 0) { %>
-                                                        <li class="d-flex align-items-center justify-content-between">
-                                                            <label class="m-0">{{ __('Tax') }}</label>
-                                                            <% if(vendor.taxable_amount !== null) { %>
-                                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.taxable_amount) %></span>
-                                                            <% }else { %>
-                                                                <span>{{$clientCurrency->currency->symbol}} 0.00</span>
-                                                            <% } %>
-                                                        </li>
-                                                        <% } %>
-
-                                                        <% if(vendor.toll_amount > 0 || vendor.toll_amount < 0) { %>
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Toll Fee') }}</label>
-                                                                <% if(vendor.toll_amount !== null) { %>
-                                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.toll_amount) %></span>
-                                                                <% }else { %>
-                                                                    <span>{{$clientCurrency->currency->symbol}} 0.00</span>
-                                                                <% } %>
-                                                            </li>
-                                                        <% } %>
-                                                        <% if(vendor.service_fee_percentage_amount > 0 || vendor.service_fee_percentage_amount < 0) { %>
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __('Service Fee') }}</label>
-                                                                <% if(vendor.service_fee_percentage_amount !== null) { %>
-                                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.service_fee_percentage_amount) %></span>
-                                                                <% }else { %>
-                                                                    <span>{{$clientCurrency->currency->symbol}} 0.00</span>
-                                                                <% } %>
-                                                            </li>
-                                                        <% } %>
-
-                                                        <% if(vendor.fixed_fee > 0 || vendor.fixed_fee < 0) { %>
-                                                            <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{ __($fixedFee) }}</label>
-                                                                <% if(vendor.fixed_fee !== null) { %>
-                                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.fixed_fee) %></span>
-                                                                <% }else { %>
-                                                                    <span>{{$clientCurrency->currency->symbol}} 0.00</span>
-                                                                <% } %>
-                                                            </li>
-                                                            <% } %>
-                                                    <% if(vendor.delivery_fee > 0 || vendor.delivery_fee < 0) { %>
-                                                    <li class="d-flex align-items-center justify-content-between">
-                                                        <label class="m-0">{{ __('Delivery') }}</label>
-                                                        <% if(vendor.delivery_fee !== null) { %>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.delivery_fee) %></span>
-                                                        <% }else { %>
-                                                            <span>{{$clientCurrency->currency->symbol}} 0.00</span>
-                                                        <% } %>
-                                                    </li>
-                                                    <% } %>
-                                                    <li class="grand_total d-flex align-items-center justify-content-between">
-                                                        <label class="m-0">{{ __('Amount') }}</label>
-                                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)+parseFloat(vendor.additional_price)) %></span> --}}
-                                                        <%
-                                                        if(vendor.delivery_fee == '' || vendor.delivery_fee == null){
-                                                            vendor.delivery_fee = 0;
-                                                        }
-                                                        %>
-
-
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(vendor.subtotal_amount) - parseFloat(vendor.discount_amount) ) + parseFloat(vendor.total_container_charges) + parseFloat(vendor.taxable_amount) + parseFloat(vendor.service_fee_percentage_amount) + parseFloat(order.fixed_fee_amount) + parseFloat(vendor.delivery_fee ) +parseFloat(vendor.additional_price) + parseFloat(vendor.additional_price) + parseFloat(vendor.toll_amount)) %></span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-
-
-
-                                        </a>
-                                        <div id="update-single-status" class="my-2">
-
-
-                                            {{-- <a class=start_chat data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>">Start Chat</a> --}}
-                                                <% if(vendor.order_status_option_id == 1) { %>
-                                                    <% if(order.vendors[0].exchanged_of_order) { %>
-                                                        <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-is_alert = "<%= vendor.isAlert %>" data-alert_message = "<%= vendor.alertMessage %>">{{ __('Exchange Accept') }}</button>
-                                                        <% } else { %>
-                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-is_alert = "<%= vendor.isAlert %>" data-alert_message = "<%= vendor.alertMessage %>">{{ __('Accept') }}</button>
-                                                    <% } %>
-                                                    <!--<button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>-->
-                                                <% } else if(vendor.order_status_option_id == 2) { %>
-                                                    <button class="update-status btn-warning" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="4" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-order_luxury_option="<%= order.luxury_option_id %>">{{ __('Processing') }}</button>
-                                                <% } else if(vendor.order_status_option_id == 4) { %>
-                                                        <button class="update-status btn-success" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="5" data-order_vendor_id="<%= vendor.order_vendor_id %>">
-                                                            <% if( (order.luxury_option_id == 2) || (order.luxury_option_id == 3) ){ %>
-                                                                {{ __('Order Prepared') }}
-                                                            <% }else{ %>
-                                                                {{ __('Out For Delivery') }}
-                                                            <% } %>
-                                                        </button>
-                                                <% } else if(vendor.order_status_option_id == 5) { %>
-                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="6" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Delivered') }}</button>
-                                                <% } else { %>
-
-                                                <% } %>
-                                                <% if((vendor.order_status_option_id == 1) || ((vendor.order_status_option_id != 6) && (vendor.order_status_option_id != 3) && (vendor.order_status_option_id != 9))) { %>
-                                                    <% if(order.vendors[0].exchanged_of_order) { %>
-                                                        <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Exchange Reject') }}</button>
-                                                        <% } else { %>
-                                                    <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>
-                                                    <% } %>
-                                                    <% } %>
-
-                                            </div>
-                                    </div>
-                                    </div>
-                                </div>
-                            <% }); %>
-                        </div>
-                        <div class="col-md-3 pl-0">
-                            <div class="card-box p-2 mb-0 w-100 h-100">
-                                <ul class="price_box_bottom m-0 pl-0 pt-1">
-                                    <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">{{ __('Total') }}</label>
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat( ( (order.total_amount) +( order.bid_discount)) )) %></span>
-                                    </li>
-
-                                    <% if(order.bid_discount > 0) { %>
-                                        <li class="d-flex align-items-center justify-content-between">
-                                                 <label class="m-0">{{ __('Bid Discount') }}</label>
-                                                 <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.bid_discount) %></span>
-                                         </li>
-                                      <% } %>
-
-                                    <% if(order.additional_price > 0 || order.additional_price < 0) { %>
-                                        <li class="d-flex align-items-center justify-content-between">
-                                                 <label class="m-0">{{ __('Tax') }}</label>
-                                                 <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.additional_price) %></span>
-                                         </li>
-                                    <% } %>
-
-                                    <% if(order.total_other_taxes_amount > 0 || order.total_other_taxes_amount < 0) { %>
-                                       <li class="d-flex align-items-center justify-content-between">
-                                                <label class="m-0">{{ __('Tax') }}</label>
-                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_other_taxes_amount) %></span>
-                                        </li>
-                                     <% }else { %>
-
-                                    <% if(order.taxable_amount > 0 || order.taxable_amount < 0) { %>
-                                    <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">{{ __('Tax') }}</label>
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.taxable_amount) %></span>
-                                    </li>
-                                    <% } } %>
-
-                                    <% if(order.total_toll_amount > 0 || order.total_toll_amount < 0) { %>
-                                        <li class="d-flex align-items-center justify-content-between">
-                                            <label class="m-0">{{ __('Toll Fee') }}</label>
-                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_toll_amount) %></span>
-                                        </li>
-                                    <% } %>
-                                    <% if(order.total_service_fee > 0 || order.total_service_fee < 0) { %>
-                                        <li class="d-flex align-items-center justify-content-between">
-                                            <label class="m-0">{{ __('Service Fee') }}</label>
-                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_service_fee) %></span>
-                                        </li>
-                                    <% } %>
-
-                                    <% if(order.fixed_fee_amount > 0 || order.fixed_fee_amount < 0) { %>
-                                        <li class="d-flex align-items-center justify-content-between">
-                                            <label class="m-0">{{ __($fixedFee) }}</label>
-                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.fixed_fee_amount) %></span>
-                                        </li>
-                                        <% } %>
-                                    <% if(order.total_delivery_fee > 0 || order.total_delivery_fee < 0) { %>
-                                    <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">{{__('Delivery Fee')}}</label>
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_delivery_fee) %></span>
-                                    </li>
-                                    <% } %>
-                                    <% if(order.giftCardUsed == 1 ) { %>
-                                        <li class="d-flex align-items-center justify-content-between">
-                                                 <label class="m-0">{{ __('gift card') }}</label>
-                                                 <span>-{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.gift_card_amount) %></span>
-                                         </li>
-                                    <% } %>
-                                    <% if(order.total_container_charges > 0 || order.total_container_charges < 0) { %>
-                                        <li class="d-flex align-items-center justify-content-between">
-                                            <label class="m-0">{{ __('Total Container Charges') }}</label>
-                                            <% if(order.total_container_charges !== null) { %>
-                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_container_charges) %></span>
-                                            <% }else { %>
-                                                <span>{{$clientCurrency->currency->symbol}} 0.00</span>
-                                            <% } %>
-                                        </li>
-                                        <% } %>
-                                    <% if(order.tip_amount > 0 || order.tip_amount < 0) { %>
-                                        <li class="d-flex align-items-center justify-content-between">
-                                            <label class="m-0">{{__('Tip Amount')}}</label>
-                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.tip_amount) %></span>
-                                        </li>
-                                        <% } %>
-                                    <% if(order.loyalty_amount_saved > 0 || order.loyalty_amount_saved < 0) { %>
-                                    <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">{{ __('Loyalty Used') }}</label>
-                                        <span>-{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.loyalty_amount_saved) %></span>
-                                    </li>
-                                    <% } %>
-
-                                    <% if(order.wallet_amount_used > 0 || order.wallet_amount_used < 0) { %>
-                                    <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">{{__('Wallet Amount Used')}}</label>
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.wallet_amount_used) %></span>
-                                    </li>
-                                    <% } %>
-                                    
-                                    <% if(order.total_discount_calculate > 0 || order.total_discount_calculate < 0) { %>
-                                    <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">{{__('Total Discount')}}</label>
-                                        <span>-{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_discount_calculate) %></span>
-                                    </li>
-                                    <% } %>
-                                    <li class="grand_total d-flex align-items-center justify-content-between">
-                                        <label class="m-0">{{ __('Payable') }} </label>
-                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount)+parseFloat(order.fixed_fee_amount))%></span> --}}
-
-                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(order.total_amount) - parseFloat(order.total_discount_calculate) ) + parseFloat(order.total_container_charges) + parseFloat(order.taxable_amount) + parseFloat(order.total_service_fee) + parseFloat(order.fixed_fee_amount) + parseFloat(order.total_delivery_fee ) + parseFloat(order.additional_price )) %></span> --}}
-
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount))%></span>
-                                    </li>
-
-                                    {{-- mohit sir branch code added by sohail --}}
-                                    <% if(order.advance_amount > 0) { %>
-                                        <li class="grand_total d-flex align-items-center justify-content-between">
-                                            <label class="m-0">{{ __('Advance Paid') }} </label>
-                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.advance_amount))%></span>
-                                        </li>
-                                        <li class="grand_total d-flex align-items-center justify-content-between">
-                                            <label class="m-0">{{ __('Pending Amount') }} </label>
-                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount) - parseFloat(order.advance_amount))%></span>
-                                        </li>
-                                    <% } %>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <% } %>
-        <% }); %>
-    </div>
-    <% if(next_page_url) { %>
-        <div class="row mt-4 mb-4">
-            <div class="col-md-4 offset-md-4 text-center">
-                <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="<%= next_page_url%>" data-rel="<%= filter_order_status %>">
-                    <span class="ladda-label">{{ __('Load More') }}</span>
-                    <span class="ladda-spinner"></span>
-                    <div class="ladda-progress" style="width: 0px;"></div>
-                </button>
-            </div>
-        </div>
-    <% } %>
-</script>
 <div class="container-fluid order-page">
     <div class="row ">
         <div class="col-md-12">
@@ -651,13 +207,18 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
     </div>
     <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
-        <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-        <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+        <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab">
+            <div id="pending_orders_row" class="row"></div>
+            <div class="row mt-4 mb-4" id="pending_orders_pagination"></div>
+        </div>
+        <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab">
+            <div id="active_orders_row" class="row"></div>
+            <div class="row mt-4 mb-4" id="active_orders_pagination"></div>
+        </div>
         <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
-            <div class="error-msg mt-3">
-                <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-                <p>{{ __("You don't have orders right now.") }}</p>
-            </div>
+            <div id="orders_history_row" class="row"></div>
+            <div class="row mt-4 mb-4" id="orders_history_pagination"></div>
+           
         </div>
         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
             @php
@@ -775,31 +336,61 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 date_filter: date_filter,
                 // sort_order: sort_order
             },
-            success: function(response) {
+            success: async function(response) {
                 // reload after 10 sec
 
-                $('#order_list_order').hide();
+                //$('#order_list_order').hide();
+                //$('.order_data').html(response);
+                console.log(filter_order_status);
                 if (response.status == 'Success') {
-                    if (!isOnload) {
-                        $(".tab-pane").html('');
-                    }
-                    if (response.data.orders.data.length != 0) {
-                        // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                        //             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                        //          } };
+                     await $(`#${filter_order_status}_row`).append(response.data.html);
+                    var next = response.data.next_page_url;
+                    var pagination = `<div class="col-md-4 offset-md-4 text-center">
+                            <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="${next}" data-rel="${filter_order_status}">
+                                <span class="ladda-label">{{ __('Load More') }}</span>
+                                <span class="ladda-spinner"></span>
+                                <div class="ladda-progress" style="width: 0px;"></div>
+                            </button>
+                        </div>`;
+                        if(next!=''){
+                            await $(`#${filter_order_status}_pagination`).html('');
 
-                        var orderData = _.extend({ Helper: NumberFormatHelper },{
-                                                                orders: response.data.orders.data,
-                                                                next_page_url: response.data.orders.next_page_url,
-                                                                filter_order_status: filter_order_status
-                                                            });
+                            await $(`#${filter_order_status}_pagination`).html(pagination);
+                        } else{
+                            await $(`#${filter_order_status}_pagination`).html('');
+                        }
 
-                        let order_page_template = _.template($('#order_page_template').html());
-                        $("#" + filter_order_status).append(order_page_template(orderData));
-                    } else {
-                        let no_order_template = _.template($('#no_order_template').html());
-                        $("#" + filter_order_status).html(no_order_template({}));
-                    }
+                        
+                
+                } else {
+                    await $(`#${filter_order_status}_row`).append('');
+                    await $(`#${filter_order_status}_pagination`).html('');
+                }
+               
+               
+                   
+
+                // if (response.status == 'Success') {
+                //     if (!isOnload) {
+                //         $(".tab-pane").html('');
+                //     }
+                //     if (response.data.orders.data.length != 0) {
+                //         // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
+                //         //             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                //         //          } };
+
+                //         var orderData = _.extend({ Helper: NumberFormatHelper },{
+                //                                                 orders: response.data.orders.data,
+                //                                                 next_page_url: response.data.orders.next_page_url,
+                //                                                 filter_order_status: filter_order_status
+                //                                             });
+
+                //         let order_page_template = _.template($('#order_page_template').html());
+                //         $("#" + filter_order_status).append(order_page_template(orderData));
+                //     } else {
+                //         let no_order_template = _.template($('#no_order_template').html());
+                //         $("#" + filter_order_status).html(no_order_template({}));
+                //     }
                     $("#active-orders").html("(" + response.data.active_orders + ")");
                     $("#pending-orders").html("(" + response.data.pending_orders + ")");
                     $("#history-orders").html("(" + response.data.orders_history + ")");
@@ -827,10 +418,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     if(response.data.appointment_orders !== undefined){
                         $("#appointment-orders").html("(" + response.data.appointment_orders + ")");
                     }
-                 }
+                    (response.data.p2p_orders != undefined) ? $("#p2p-orders").html("(" + response.data.p2p_orders + ")") : '';
+                //  }
 
             },
             error: function(data) {
+                console.log(data);
             },
         });
     }

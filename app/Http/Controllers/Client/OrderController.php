@@ -417,7 +417,7 @@ class OrderController extends BaseController
         if ($lux_id > 0) {
             $orders = $orders->where('luxury_option_id', $lux_id);
         }
-        $orders = $orders->paginate(30);
+        $orders = $orders->paginate(20);
 
         // Pending orders count
         $pending_orders = $pending_orders->with('vendors', function ($query) use ($user) {
@@ -587,13 +587,32 @@ class OrderController extends BaseController
         }
         $admincurrency = ClientCurrency::getAdminCurrencySymbol();
 
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+
+        $langId = Session::get('customerLanguage');
+        $fixedFee = $this->fixedFee($langId);
         $response['orders'] = $orders;
         $response['pending_orders'] = $pending_orders;
         $response['active_orders'] = $active_orders;
         $response['orders_history'] = $orders_history;
         $response['admin_currency'] = $admincurrency;
-
-        return $this->successResponse($response, '', 201);
+        $filter_order_status = $request->filter_order_status;
+        $response2['next_page_url'] = @$orders->toArray()['next_page_url'];
+        $response2['active_orders'] = $active_orders??0;
+        $response2['orders_history'] = $orders_history??0;
+        $response2['pending_orders'] = $pending_orders??0;
+        $response2['delivery_orders'] = $delivery_orders??0;
+        $response2['dine_in_orders'] = $dine_in_orders??0;
+        $response2['takeaway_orders'] = $takeaway_orders??0;
+        $response2['rental_orders'] = $rental_orders??0;
+        $response2['pick_drop_orders'] = $pick_drop_orders??0;
+        $response2['on_demand_orders'] = $on_demand_orders??0;
+        $response2['laundry_orders'] = $laundry_orders??0;
+        $response2['appointment_orders'] = $appointment_orders??0;
+        $response2['p2p_orders'] = $p2p_orders??0;
+        $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee))->render();
+       
+        return $this->successResponse($response2, '', 201);
     }
 
     public function uploadReport(Request $request)
