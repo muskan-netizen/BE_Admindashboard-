@@ -120,6 +120,7 @@ public function getPriceEstimation($dataRec)
         "domain_name"=> $this->api_domain,
         "timezone"=> -330,  //For IST : -330
         "vendor_id"=> $this->vendor_id,
+        "sareaId"=> 3,
         "is_multiple_tasks"=> 1,
         "layout_type"=> 0,
         "pickup_custom_field_template"=> "pricing-template",
@@ -187,6 +188,7 @@ public function createKwikOrder($dataRec)
         "access_token"=> $this->access_token,
         "vendor_id"=> $this->vendor_id,
         "is_multiple_tasks"=> 1,
+        "sareaId"=> 3,
         "timezone"=> 60,
         "has_pickup"=> 1,
         "has_delivery"=> 1,

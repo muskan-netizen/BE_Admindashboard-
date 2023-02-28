@@ -201,7 +201,7 @@ class CategoryController extends FrontController{
 
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
-                // dd($listData[0]->variant);
+                // dd('frontend/cate-'.$page.'s');
                 if(view()->exists('frontend/cate-'.$page.'s')){
                     return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'productAttributes'=> $productAttributes]);
                 }else{

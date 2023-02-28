@@ -221,7 +221,7 @@ class DunzoController extends Controller
     {
 		$this->configuration();
 		if($this->status){
-            $data =array('order_uuid',$order_id,'update_type'=>'Cancel');
+            $data =array('order_uuid'=>$order_id,'update_type'=>'Cancel');
 			return $cancel_order= $this->cancelOrder($data);
 		}
     }
