@@ -304,14 +304,17 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     var vendor_id = $('#vendor_select_box option:selected').val();
     // var sort_order = $('#sort_order option:selected').val();
     var order_type = $('.tabs_radio:checked').val();
+    
         ajaxCall = $.ajax({
             url: url,
             type: "POST",
             dataType: "JSON",
             // async: false,
             beforeSend: function(){
+                spinnerJS.showSpinner();
                 if(ajaxCall !=  'ToCancelPrevReq' && ajaxCall.readyState < 4){
                     ajaxCall.abort();
+                    spinnerJS.hideSpinner();
                 }
             },
             data: {
@@ -380,7 +383,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         
                 
                 } 
-               
+                await spinnerJS.hideSpinner();
                
                    
 

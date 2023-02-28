@@ -24,9 +24,9 @@ document.onreadystatechange = function () {
     var state = document.readyState
     if (state == 'interactive') {
         spinnerJS.showSpinner();
-        spinnerJS.showSpinnerCustom();
+        //spinnerJS.showSpinnerCustom();
     } else if (state == 'complete') {
         spinnerJS.hideSpinner();
-        spinnerJS.hideSpinnerCustom();
+       // spinnerJS.hideSpinnerCustom();
     }
 }
