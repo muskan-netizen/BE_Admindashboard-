@@ -341,57 +341,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                 //$('#order_list_order').hide();
                 //$('.order_data').html(response);
-                console.log(filter_order_status);
-                if (response.status == 'Success') {
-                     await $(`#${filter_order_status}_row`).append(response.data.html);
-                    var next = response.data.next_page_url;
-                    var pagination = `<div class="col-md-4 offset-md-4 text-center">
-                            <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="${next}" data-rel="${filter_order_status}">
-                                <span class="ladda-label">{{ __('Load More') }}</span>
-                                <span class="ladda-spinner"></span>
-                                <div class="ladda-progress" style="width: 0px;"></div>
-                            </button>
-                        </div>`;
-                        if(next!=''){
-                            await $(`#${filter_order_status}_pagination`).html('');
-
-                            await $(`#${filter_order_status}_pagination`).html(pagination);
-                        } else{
-                            await $(`#${filter_order_status}_pagination`).html('');
-                        }
-
-                        
-                
-                } else {
-                    await $(`#${filter_order_status}_row`).append('');
-                    await $(`#${filter_order_status}_pagination`).html('');
-                }
-               
-               
-                   
-
-                // if (response.status == 'Success') {
-                //     if (!isOnload) {
-                //         $(".tab-pane").html('');
-                //     }
-                //     if (response.data.orders.data.length != 0) {
-                //         // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                //         //             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                //         //          } };
-
-                //         var orderData = _.extend({ Helper: NumberFormatHelper },{
-                //                                                 orders: response.data.orders.data,
-                //                                                 next_page_url: response.data.orders.next_page_url,
-                //                                                 filter_order_status: filter_order_status
-                //                                             });
-
-                //         let order_page_template = _.template($('#order_page_template').html());
-                //         $("#" + filter_order_status).append(order_page_template(orderData));
-                //     } else {
-                //         let no_order_template = _.template($('#no_order_template').html());
-                //         $("#" + filter_order_status).html(no_order_template({}));
-                //     }
-                    $("#active-orders").html("(" + response.data.active_orders + ")");
+               // console.log(filter_order_status);
+               $("#active-orders").html("(" + response.data.active_orders + ")");
                     $("#pending-orders").html("(" + response.data.pending_orders + ")");
                     $("#history-orders").html("(" + response.data.orders_history + ")");
                     if(response.data.delivery_orders !== undefined){
@@ -419,6 +370,56 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         $("#appointment-orders").html("(" + response.data.appointment_orders + ")");
                     }
                     (response.data.p2p_orders != undefined) ? $("#p2p-orders").html("(" + response.data.p2p_orders + ")") : '';
+
+                await $(`#${filter_order_status}_row`).html('');
+                await $(`#${filter_order_status}_pagination`).html('');
+                if (response.status == 'Success') {
+                     await $(`#${filter_order_status}_row`).append(response.data.html);
+                    var next = response.data.next_page_url;
+                    var pagination = `<div class="col-md-4 offset-md-4 text-center">
+                            <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="${next}" data-rel="${filter_order_status}">
+                                <span class="ladda-label">{{ __('Load More') }}</span>
+                                <span class="ladda-spinner"></span>
+                                <div class="ladda-progress" style="width: 0px;"></div>
+                            </button>
+                        </div>`;
+                        if(next!=null){
+                            await $(`#${filter_order_status}_pagination`).html('');
+
+                            await $(`#${filter_order_status}_pagination`).html(pagination);
+                        } else{
+                            await $(`#${filter_order_status}_pagination`).html('');
+                        }
+
+                        
+                
+                } 
+               
+               
+                   
+
+                // if (response.status == 'Success') {
+                //     if (!isOnload) {
+                //         $(".tab-pane").html('');
+                //     }
+                //     if (response.data.orders.data.length != 0) {
+                //         // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
+                //         //             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                //         //          } };
+
+                //         var orderData = _.extend({ Helper: NumberFormatHelper },{
+                //                                                 orders: response.data.orders.data,
+                //                                                 next_page_url: response.data.orders.next_page_url,
+                //                                                 filter_order_status: filter_order_status
+                //                                             });
+
+                //         let order_page_template = _.template($('#order_page_template').html());
+                //         $("#" + filter_order_status).append(order_page_template(orderData));
+                //     } else {
+                //         let no_order_template = _.template($('#no_order_template').html());
+                //         $("#" + filter_order_status).html(no_order_template({}));
+                //     }
+                   
                 //  }
 
             },
