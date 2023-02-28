@@ -249,6 +249,11 @@ function initDataTable(table, status) {
                                 markup+="<span class='badge bg-soft-warning text-warning'>"+full.offers[i]+"</span>";
                             }
                         }
+                        if(full.instant_booking_level!='')
+                        {
+                            markup+="<br/><span class='badge bg-success text-white'>"+full.instant_booking_level+"</span>";
+                        }
+
                         return markup;
                     }},
                     {data: 'add_category_option', class:'text-center', name: 'add_category_option', orderable: false, searchable: false},
