@@ -435,7 +435,7 @@ trait cartManager{
             $total_deliver_charges = 0 ;
             $total_markup_charges = 0;
             $total_quantity = 0;
-            $deliveryCharges_real = $bid_total_discount = 0;
+            $bid_total_discount = 0;
             $deliveryCharges_real = 0;
             $is_long_term_service = 0;
             $container_charges_tax = 0;
@@ -551,11 +551,12 @@ trait cartManager{
                 /* Getting in Vendor product loop and setting product values*/
                 
                 $previousdeliveryfee = 0;
-                
+                $if_previousdeliveryfee_added = 0;
+                $vendorTotalDeliveryFee = 0;
+
                 $deliveryfeeOnCoupon = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-                    $if_previousdeliveryfee_added = 0;
-                    $vendorTotalDeliveryFee = 0;
+                    
                     $prod->product->ServicePeriods = [];
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
@@ -865,7 +866,7 @@ trait cartManager{
                                     $if_previousdeliveryfee_added = 1;
                                 }
                             }
-                            Log:info("vendorTotalDeliveryFee".$vendorTotalDeliveryFee);
+                           
                             $deliveryCharges_real = $deliveryCharges_real + $vendorTotalDeliveryFee;
 
                             if (isset($vendorTotalDeliveryFee) && !empty($vendorTotalDeliveryFee)) {
