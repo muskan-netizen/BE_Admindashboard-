@@ -60,6 +60,8 @@ class VendorController extends BaseController
      */
     public function getFilterData(Request $request){
         $client_preference = (object)Session::get('preferences');
+        $getAdditionalPreference = getAdditionalPreference(['is_one_push_book_enable']);
+    
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->where('is_seller', 0)->orderBy('id', 'desc');
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
@@ -119,6 +121,7 @@ class VendorController extends BaseController
                 }else{
                     $show_slot_label = "Closed";
                 }
+                
                 return $show_slot_label ;
             })
             ->addColumn('offers', function ($row) use ($client_preference) {
@@ -132,6 +135,14 @@ class VendorController extends BaseController
                     }
                 }
                 return $offers ;
+            })
+            ->addColumn('instant_booking_level', function ($row) use ($getAdditionalPreference) {
+                if(checkColumnExists('vendors', 'is_vendor_instant_booking')){
+                    if($getAdditionalPreference['is_one_push_book_enable'] == 1 && $row->is_vendor_instant_booking == 1){
+                        return __("Instant Booking");
+                    }
+                }
+                return '';
             })
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
@@ -938,6 +949,7 @@ class VendorController extends BaseController
     public function VendorProductFilter(Request $request,$domain='',$vendor_id)
     {
         $ordring = 'asc';
+        $getAdditionalPreference = getAdditionalPreference(['is_one_push_book_enable']);
         if(!empty($request->order)){
             $ordring = $request->order[0]['dir'] ?? 'asc';
         }
@@ -945,10 +957,10 @@ class VendorController extends BaseController
         /**
          * is_live and not a long term service check in byProductWhereCheck this scope
          *  */
-        $product = Product::where('is_long_term_service',0)->with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
+        $product = Product::where('is_long_term_service',0)->with(['media.image', 'primary', 'category.cat', 'brand', 'vendor', 'variant' => function ($v) {
 
             $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
-        }])->select('products.id', 'products.sku', 'products.vendor_id','products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id','products.is_recurring_booking')
+        }])->select('products.id', 'products.sku', 'products.vendor_id','products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id','products.is_recurring_booking', 'products.is_product_instant_booking')
         ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
         ->orderBy('product_translations.title', $ordring)
 
@@ -976,7 +988,7 @@ class VendorController extends BaseController
                 }
 
                 return $image;
-            })->addColumn('product_is_live', function ($product) use ($request) {
+            })->addColumn('product_is_live', function ($product) use ($request, $getAdditionalPreference) {
                 if($product->is_live == 0 ){
                     $live_status = __('Draft');
                 }elseif($product->is_live == 1 ){
@@ -984,9 +996,14 @@ class VendorController extends BaseController
                 }else{
                     $live_status = __('Blocked');
                 }
+                
+                if(checkColumnExists('vendors', 'is_vendor_instant_booking') && checkColumnExists('products', 'is_product_instant_booking')){
+                    if($getAdditionalPreference['is_one_push_book_enable'] == 1 && $product->is_product_instant_booking == 1 && $product->vendor->is_vendor_instant_booking == 1){
+                        $live_status.= "<br/><span class='badge bg-success text-white'>".__('Instant Booking')."</span>";
+                    }
+                }
                 return $live_status;
             })
-
             ->addColumn('action', function ($product) use ($request) {
                 $edit_url = route('product.edit', $product->id);
                 $delete_url = route('product.destroy', $product->id);
@@ -1089,7 +1106,7 @@ class VendorController extends BaseController
 
             });
 
-            $columg_arr = ['single_product_check', 'product_image', 'product_name' ];
+            $columg_arr = ['single_product_check', 'product_image', 'product_name', 'product_is_live'];
             if($need_sync_with_order != 1){
                 array_push($columg_arr, 'action');
             }
