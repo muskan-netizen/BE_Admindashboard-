@@ -166,6 +166,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('update-driver-rating', 'Api\v1\RatingController@updateDriverRating');
             Route::get('get-driver-rating', 'Api\v1\RatingController@getDriverRating');
             // Route::post('driver-agent-rating', 'Api\v1\RatingController@driverAgentRating');
+            Route::post('get-multi-driver-rating', 'Api\v1\RatingController@getAgentRatingQues');
         });
         Route::post('upload-file', 'Api\v1\RatingController@uploadFile');
          // Return order
