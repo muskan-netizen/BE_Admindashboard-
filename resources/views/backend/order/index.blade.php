@@ -129,7 +129,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     </div>
     </script>
 <div class="col-12">
-    <div class="row">
+    <div class="row order-list-spinner">
         <div class="tab-product pl-2 pr-2 flex-grow-1">
             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                 <li class="nav-item">
@@ -207,6 +207,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
     </div>
     <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
+          <div class="spinner-order-loader">
+            <div class="nb-spinner-order"></div>
+    </div>
         <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab">
             <div id="pending_orders_row" class="row"></div>
             <div class="row mt-4 mb-4" id="pending_orders_pagination"></div>
@@ -338,7 +341,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             },
             success: async function(response) {
                 // reload after 10 sec
-
+                 $('.order_data_box').removeClass('show-nb-spinner-main');
                 //$('#order_list_order').hide();
                 //$('.order_data').html(response);
                 console.log(filter_order_status);
@@ -362,7 +365,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                         
                 
-                } else {
+                } else {                
                     await $(`#${filter_order_status}_row`).append('');
                     await $(`#${filter_order_status}_pagination`).html('');
                 }
