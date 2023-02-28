@@ -24,6 +24,9 @@ class Vendor extends Model implements Auditable{
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
     }
 
+    public function long_term_products(){
+        return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_long_term_service',1);
+    }
     public function productsLive(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_live','1');
     }

@@ -330,6 +330,9 @@ $pages = \App\Models\Page::with([
                                     </ul>
 
                                     <ul class="header-dropdown ml-auto d-lg-block d-none">
+                                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
+                                    @endif
                                         @if($client_preference_detail->header_quick_link == 1)
 
                                         <li class="onhover-dropdown quick-links quick-links pr-2 mr-2">

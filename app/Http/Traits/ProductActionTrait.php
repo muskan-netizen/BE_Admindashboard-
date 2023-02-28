@@ -223,9 +223,12 @@ trait ProductActionTrait{
        
     }
 
-     public function longTermServiceProducts($venderIds, $langId, $currency = '', $where = '', $type,$p_dim ='260/100',$requestFrom='web' )
+     public function longTermServiceProducts($long_term_vendors, $langId, $currency = '', $where = '', $type,$p_dim ='260/100',$requestFrom='web' )
     {
-       
+        $venderIds = $long_term_vendors->where('status', 1)
+        ->whereHas('long_term_products')
+        ->inRandomOrder()
+        ->limit(10)->get()->pluck('id');
         $products = Product::byLongTermProductCategoryServiceType($type)->byProductLongTerm()->with([
             'vendor','LongTermProducts.product',
             'media' => function ($q) {
