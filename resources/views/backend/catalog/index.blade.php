@@ -673,6 +673,57 @@
         $('#add_facilty_modal').modal('show');
         $('#add_facilty_modal #standard-modalLabel').html('Add Vendor Tags');
     });
+    
+    
+    $('#addBrandForm').submit(function() {
+    	var gR = $("#cateSelectBox :checked");
+    	var	valid = 0;
+    	var flag = false;
+    	$(this).find('input[type=text], select').each(function(){
+            if($.trim($(this).val()) != "") valid+=1;
+        });
+        console.log(valid);
+        if(valid==0){
+          	$("#brand-title-error").css("color","red");
+          	$("#brand-title-error").html("Please enter at least one title");
+          } else {
+           	flag = true;
+          }
+        
+          if(gR.length==0){
+          	$("#cat-error").css("color","red");
+          	$("#cat-error").html("Please select at least one category");
+          } else {
+           	flag = true;
+          }
+    	return flag;
+   });
+   	$(document).on('change', "#cateSelectBox",function() {
+        var none = $("#cateSelectBox :checked");
+        if (none.length > 0) {
+            $("#cat-error").html('');
+        }else{
+        	$("#cat-error").css("color","red");
+          	$("#cat-error").html("Please select at least one category");
+        }
+	});
+    
+    $(document).on('keyup', 'input[type=text], select',function() {
+        	var	valid = 0;
+    
+        $(this).each(function(){
+            if($.trim($(this).val()) != "") valid+=1;
+        });
+        
+         if(valid>0){
+          	$("#brand-title-error").html("");
+          } else {
+           	$("#brand-title-error").css("color","red");
+          	$("#brand-title-error").html("Please enter at least one title");
+          }
+	});
+    
+    
 </script>
 
 @endsection

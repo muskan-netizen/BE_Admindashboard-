@@ -29,6 +29,7 @@
                         <strong></strong>
                     </span>
                 </div>
+                <div id="cat-error"></div>
             </div>
 
         </div>
@@ -61,6 +62,7 @@
                     </tr>
                 </table>
             </div>
+            <div id="brand-title-error"></div>
         </div>
     </div>
 </div>
