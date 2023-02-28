@@ -607,7 +607,7 @@
                                         <td></td>
                                         @else
                                         <td>{{ __('Errors') }}</td>
-                                        <td class="position-relative text-center">
+                                        <td class="position-relative text-center alTooltipHover">
                                             <i class="mdi mdi-exclamation-thick"></i>
                                             <ul class="tooltip_error">
                                                 <?php $error_csv = json_decode($csv->error); ?>
