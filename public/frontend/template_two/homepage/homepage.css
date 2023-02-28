@@ -477,6 +477,9 @@ body[dir=rtl] .slick-prev {
         box-shadow: 5px 5px 5px 5px #bbb4b46e;
         border-radius: 10px;
     }
+    body.al_body_template_two .cab-footer button{
+        font-size: 11px!important;
+    }
 }
 .al_body_template_two .margin-res .product-image img {
     padding: 20px;
