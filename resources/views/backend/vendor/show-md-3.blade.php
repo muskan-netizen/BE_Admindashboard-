@@ -126,6 +126,7 @@
                     </div>
                 </div>
                 <div class="row mb-2">
+                   
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12">
                         <div class="form-group" id="order_pre_timeInput">
@@ -196,7 +197,7 @@
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-                    
+               
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}

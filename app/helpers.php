@@ -64,7 +64,7 @@ if (!function_exists('getAdditionalPreference')) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
             }
             $emp = array_diff($key, array_keys($dbreturn));
-            $emptyArr = array_fill_keys($emp, '');
+            $emptyArr = array_fill_keys($emp, 0);
             $return = array_merge($emptyArr, $dbreturn);
         }
         return $return;

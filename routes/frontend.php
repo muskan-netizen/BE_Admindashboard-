@@ -53,7 +53,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('fcm', 'Front\CustomerAuthController@fcm');
 	Route::get('send-notification', 'Front\CustomerAuthController@sendNotification');
 	Route::get('vendor-notification', 'Front\DispatcherController@test');
-	Route::get('test/email1', 'Front\FrontController@sendmailtest');
+	Route::get('test/email1/{to?}', 'Front\FrontController@sendmailtest');
 	Route::get('test/email', function () {
 		$send_mail = 'test@yopmail.com';
 		// App\Jobs\SendRefferalCodeEmailJob::dispatch($send_mail);

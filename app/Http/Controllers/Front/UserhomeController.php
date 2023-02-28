@@ -1062,38 +1062,26 @@ class UserhomeController extends FrontController
 
 
         /** Respose data */
-        // dd($dashboardProductsData);
         $data = [
             'brands' => $brands,
             'vendors' => $vendors,
-            //'new_products' => $new_products,
             'homePageLabels' => $home_page_labels,
-            //'feature_products' => $feature_products,
-           // 'on_sale_products' => $on_sale_products,
             'trending_vendors' => $trendingVendors,
             'active_orders' => $activeOrders,
-            // 'dashboardProductsData'=>$dashboardProductsData
-            
         ];
        
         if($request->has('noTinJson') && $request->noTinJson == 1){
             $data = [
                 'brands' => $brands,
                 'vendors' => $vendors,
-            //    'new_products' => $new_products,
                 'top_rated'       => $top_rated_products ?? '',
                 'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
-              //  'featured_products' => $feature_products,
-              //  'on_sale' => $on_sale_products,
                 'cities' => $this->cities,
                 'long_term_service' => $long_term_service_products,
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
-               // 'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
-                //'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
-                //'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
                 'recent_orders' => $activeOrders,
             ];
             if(count($dashboardProductsData)>0){
@@ -1308,7 +1296,7 @@ class UserhomeController extends FrontController
                 }
             }
         }
-
+        $additionalPreference = @getAdditionalPreference(['is_token_currency_enable']);
         foreach ($products as  $new_product_detail) {
             $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
@@ -1331,8 +1319,8 @@ class UserhomeController extends FrontController
                 'vendor' => $new_product_detail->vendor,
                 'price_numeric' =>@$new_product_detail->variant->first()->price??0 * $multiply,
                 'compare_price' =>@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,
-                'compare_at_price' =>@getAdditionalPreference(['is_token_currency_enable']) ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
-                'price' => @getAdditionalPreference(['is_token_currency_enable']) ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
+                'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
+                'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
         }
