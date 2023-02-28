@@ -3463,6 +3463,9 @@ body.al_body_template_one .main-fillter .side_fillter .irs{width:90%;}
         font-size: 9px;
         bottom: -20px
     }
+    .p-64 {
+        padding: 24px !important;
+    }
 }
 
 .jet-taxi-banner {
@@ -5269,6 +5272,18 @@ body.al_body_template_one .al_custom_brand .brand-ing {
 body.al_body_template_one .brand-box img {
     object-fit: cover;
 }
+
+.dark .collection-collapse-block .collection-collapse-block-content .collection-brand-filter .collection-filter-checkbox label:after {
+    border-radius: .25rem;
+    background-image: url(https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/7O2Sd1Tm2hLsZpSd2YcioX3teCYeifOqjdYpnA3v.svg)!important;
+}
+body.al_body_template_one.dark .brand-box img{
+    background-color:#fff;
+}
+body.dark .al_new_wrapper_design .main-top-heading p span {
+    color: #fff!important;
+}
+
 
 body.al_body_template_one .blur-up {
     -webkit-filter: blur(0px) !important;

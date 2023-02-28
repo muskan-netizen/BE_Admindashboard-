@@ -1031,7 +1031,7 @@ body.al_body_template_two {
         padding-top: 10px;
     }
     body .menu-navigation.al .navigation-tab-item .nav-link {
-        color: #777 !important;
+        color: #fff !important;
     }
     body .menu-navigation.al .navigation-tab-item .nav-link.active {
         color: var(--theme-deafult);
