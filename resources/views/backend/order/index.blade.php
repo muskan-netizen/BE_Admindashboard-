@@ -174,7 +174,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <label class="tabs_label" for="{{$VendorTypesName}}_tab">
                             <h5 class="m-0">{{$NomenclatureName}}</h5>
                             {{-- <p class="m-0">5%</p> --}}
-                            <span class="ml-1" id="{{$VendorTypesName}}-orders">({{ $$vendorTypeOrders ?? 0 }})</span>
+                            <span class="ml-1" id="{{$VendorTypesName}}-orders">({{ $OrderFilterData[$vendorTypeOrders] ?? 0 }})</span>
                         </label>
                     @endif
                     @php
@@ -183,33 +183,16 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 @endforeach
             </div>
         </div>
-                {{-- <li class="nav-item">
-                    <a class="nav-link active" id="all_luxury_tab" data-toggle="tab" href="#all_luxury_tab" role="tab" aria-controls="profile" aria-selected="false">{{__('All')}}</a>
-                </li> --}}
-                {{-- @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-                    @php
-                        $clientVendorTypes = $vendor_typ_key.'_check';
-                        $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-                        $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
-                        $vendorTypeOrders = $VendorTypesName.'_orders';
-                    @endphp
-
-                    @if($client_preference_detail->$clientVendorTypes == 1)
-                    <li class="nav-item">
-                        <a class="nav-link" id="{{$VendorTypesName}}_tab" data-toggle="tab" href="#{{$VendorTypesName}}_orders" role="tab" aria-selected="false" data-rel="{{$VendorTypesName}}_orders">{{$NomenclatureName}}
-
-                        </a>
-                    </li>
-                    @endif
-                @endforeach
-                <div class="navigation-tab-overlay_alnew_design"></div>
-            </ul> --}}
 
     </div>
     <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
         <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab">
-            <div id="pending_orders_row" class="row"></div>
-            <div class="row mt-4 mb-4" id="pending_orders_pagination"></div>
+            <div id="pending_orders_row" class="row">
+                {!! $OrderFilterData['html'] !!}
+            </div>
+            <div class="row mt-4 mb-4" id="pending_orders_pagination">
+                {!! $OrderFilterData['pagination'] !!}
+            </div>
         </div>
         <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab">
             <div id="active_orders_row" class="row"></div>
@@ -375,18 +358,18 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 await $(`#${filter_order_status}_pagination`).html('');
                 if (response.status == 'Success') {
                      await $(`#${filter_order_status}_row`).append(response.data.html);
-                    var next = response.data.next_page_url;
-                    var pagination = `<div class="col-md-4 offset-md-4 text-center">
-                            <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="${next}" data-rel="${filter_order_status}">
-                                <span class="ladda-label">{{ __('Load More') }}</span>
-                                <span class="ladda-spinner"></span>
-                                <div class="ladda-progress" style="width: 0px;"></div>
-                            </button>
-                        </div>`;
-                        if(next!=null){
+                        //var next = response.data.next_page_url;
+                    // var pagination = `<div class="col-md-4 offset-md-4 text-center">
+                    //         <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="${next}" data-rel="${filter_order_status}">
+                    //             <span class="ladda-label">{{ __('Load More') }}</span>
+                    //             <span class="ladda-spinner"></span>
+                    //             <div class="ladda-progress" style="width: 0px;"></div>
+                    //         </button>
+                    //     </div>`;
+                        if(response.data.pagination!=null && response.data.pagination != ''){
                             await $(`#${filter_order_status}_pagination`).html('');
 
-                            await $(`#${filter_order_status}_pagination`).html(pagination);
+                            await $(`#${filter_order_status}_pagination`).html(response.data.pagination);
                         } else{
                             await $(`#${filter_order_status}_pagination`).html('');
                         }
@@ -430,9 +413,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     }
     $(document).ready(function() {
 
-        setTimeout(function() {
-            $("#pending_order-tab").trigger('click');
-        }, 1500);
+        // setTimeout(function() {
+        //     $("#pending_order-tab").trigger('click');
+        // }, 1500);
 
         setInterval(function() {
             // autoloaddashboad();

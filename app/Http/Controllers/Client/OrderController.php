@@ -37,7 +37,7 @@ class OrderController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request )
     {
         $user = Auth::user();
         // $orders = Order::with(['vendors.products','orderStatusVendor', 'address','user'])->orderBy('id', 'DESC');
@@ -175,11 +175,15 @@ class OrderController extends BaseController
         $fixedFee = $this->fixedFee($langId);
         $accounting = ThirdPartyAccounting::where('status', 1)->get();
         $del_order_count = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id', 6)->count();
-        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences'));
+        $request->merge(['response'=>2,'filter_order_status'=>'pending_orders']);
+        $OrderFilterData = $this->postOrderFilter($request);
+       // pr($OrderFilterData['pagination'] );
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData'));
     }
 
     public function postOrderFilter(Request $request, $domain = '')
     {
+      
         $response = [];
         $user = Auth::user();
         $preferences = ClientPreference::first();
@@ -330,35 +334,6 @@ class OrderController extends BaseController
                         });
                     break;
 
-                    // /* luxury option orders */
-                    // case 'delivery_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 1);
-                    //     break;
-
-                    // case 'dine_in_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 2);
-                    //     break;
-
-                    // case 'takeaway_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 3);
-                    //     break;
-
-                    // case 'rental_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 4);
-                    //     break;
-
-                    // case 'pick_drop_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 5);
-                    //     break;
-
-                    // case 'on_demand_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 6);
-                    //     break;
-
-                    // case 'laundry_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 7);
-                    //     break;
-                    // /* luxury option orders */
             }
         }
         $orders = $orders->whereHas('vendors')->where(function ($q1) {
@@ -456,48 +431,6 @@ class OrderController extends BaseController
         })->whereHas('vendors', function ($query) use ($order_status_optionsd) {
             $query->whereIn('order_status_option_id', $order_status_optionsd);
         })->count();
-
-        // // Delivery orders count
-        // if(isset($delivery_orders)){
-        //     $delivery_orders = $delivery_orders->where('luxury_option_id', 1)->count();
-        //     $response['delivery_orders'] = $delivery_orders;
-        // }
-
-        // // Dine in orders count
-        // if(isset($dine_in_orders)){
-        //     $dine_in_orders = $dine_in_orders->where('luxury_option_id', 2)->count();
-        //     $response['dine_in_orders'] = $dine_in_orders;
-        // }
-
-        // // Takeaway orders count
-        // if(isset($takeaway_orders)){
-        //     $takeaway_orders = $takeaway_orders->where('luxury_option_id', 3)->count();
-        //     $response['takeaway_orders'] = $takeaway_orders;
-        // }
-
-        // // Rental orders count
-        // if(isset($rental_orders)){
-        //     $rental_orders = $rental_orders->where('luxury_option_id', 4)->count();
-        //     $response['rental_orders'] = $rental_orders;
-        // }
-
-        // // Pick drop orders count
-        // if(isset($pick_drop_orders)){
-        //     $pick_drop_orders = $pick_drop_orders->where('luxury_option_id', 5)->count();
-        //     $response['pick_drop_orders'] = $pick_drop_orders;
-        // }
-
-        // // On demand orders count
-        // if(isset($on_demand_orders)){
-        //     $on_demand_orders = $on_demand_orders->where('luxury_option_id', 6)->count();
-        //     $response['on_demand_orders'] = $on_demand_orders;
-        // }
-
-        // // Laundry orders count
-        // if(isset($laundry_orders)){
-        //     $laundry_orders = $laundry_orders->where('luxury_option_id', 7)->count();
-        //     $response['laundry_orders'] = $laundry_orders;
-        // }
 
 
         foreach ($orders as $key => $order) {
@@ -610,8 +543,24 @@ class OrderController extends BaseController
         $response2['laundry_orders'] = $laundry_orders??0;
         $response2['appointment_orders'] = $appointment_orders??0;
         $response2['p2p_orders'] = $p2p_orders??0;
-        $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee))->render();
+        $response2['pagination'] ='';
        
+        if(!empty($response2['next_page_url'])){
+            $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']); 
+            $pagination = '<div class="col-md-4 offset-md-4 text-center">
+                            <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="'.$nextPageUrl.'" data-rel="'.$filter_order_status.'">
+                                <span class="ladda-label">'. __('Load More').'</span>
+                                <span class="ladda-spinner"></span>
+                                <div class="ladda-progress" style="width: 0px;"></div>
+                            </button>
+                        </div>';
+            $response2['pagination'] = $pagination;
+        }
+        
+        $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee))->render();
+        if($request->response ==2){
+            return $response2;
+        }
         return $this->successResponse($response2, '', 201);
     }
 

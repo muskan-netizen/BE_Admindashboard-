@@ -125,7 +125,7 @@
                                                             @endif
                                                         @elseif($vendor->order_status == 'Rejected' && $vendor->cancelled_by != null)
                                                             <span class="ml-2 text-danger">{{ $vendor->order_status }} by
-                                                                {{ $vendor->cancelled_by->name }}</span>
+                                                                {{ @$vendor->cancelled_by->name }}</span>
                                                         @endif
                                                     @endif
 
@@ -348,7 +348,7 @@
                                                     data-count="{{ $ve }}"
                                                     data-order_id="{{ $order->id }}"
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="3"
-                                                    data-order_vendor_id="{{ $vendor . order_vendor_id }}">{{ __('Exchange Reject') }}</button>
+                                                    data-order_vendor_id="{{ $vendor->order_vendor_id }}">{{ __('Exchange Reject') }}</button>
                                             @else
                                                 <button class="update-status btn-danger" id="reject"
                                                     data-full_div="#full-order-div{{ $k }}"
