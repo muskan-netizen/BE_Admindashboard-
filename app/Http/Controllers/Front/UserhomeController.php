@@ -553,7 +553,7 @@ class UserhomeController extends FrontController
             elseif(isset($set_template)  && $set_template->template_id == 9){
                 $view_page = "home-template-test-nine";
             }
-            // dd($homePageData);
+            // dd($view_page);
             //pr($set_template->toArray());exit();
             //pr(Session::get('latitude'));
             return view('frontend.'.$view_page)->with(['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData]);
@@ -704,6 +704,7 @@ class UserhomeController extends FrontController
         /**
          * put a limit to get vendors.
          */
+        $long_term_vendors = $vendors;
         $vendors = $vendors->where('status', 1)
                     ->inRandomOrder()
                     ->limit(10)->get();
@@ -937,7 +938,7 @@ class UserhomeController extends FrontController
          //get long term service 
         $long_term_service_products =[];
         if( @$additionalPreference['is_long_term_service'] == 1){
-            $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type,$p_dim);
+            $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $language_id, $currency_id,'', $request->type,$p_dim);
         }
           
         if($this->checkTemplateForAction(8)){
@@ -1024,6 +1025,7 @@ class UserhomeController extends FrontController
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
             'active_orders' => $activeOrders,
+            'long_term_service' => $long_term_service_products,
             
         ];
        

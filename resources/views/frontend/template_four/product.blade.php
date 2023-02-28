@@ -874,7 +874,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
         $(".radio_var").click(function () {
             $(".radio_var").removeClass("radio-active");
             $(this).toggleClass("radio-active");
-            });
+        });
     });
 </script>
 
