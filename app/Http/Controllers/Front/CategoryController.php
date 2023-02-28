@@ -132,9 +132,8 @@ class CategoryController extends FrontController{
                  //   pr($variantSets);
         $redirect_to = $category->type->redirect_to;
         
-        $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds);
-     
-      //  pr($listData);
+        $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds,false);
+        $maxPrice = $this->listData($langId, $category->id, $redirect_to,$vendorIds,true);
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
         $productAttributes = '';        
@@ -162,7 +161,7 @@ class CategoryController extends FrontController{
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
 
-                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'], 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
+                return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'], 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
 
@@ -188,22 +187,19 @@ class CategoryController extends FrontController{
                 if ($request->session()->has('skip_addons')) {
                    // pr($cartDataGet['period']->toArray());
                     $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
-                    return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
+                    return view('frontend.ondemand.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
                 }
                 $request->session()->put('skip_addons', '1');
                 $new_url = $request->path()."?step=2";
                 return redirect($new_url);
-            }
-
+            }            
             $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
-            return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
+            return view('frontend.ondemand.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }else{
-
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
-                // dd($listData[0]->variant);
                 if(view()->exists('frontend/cate-'.$page.'s')){
-                    return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'productAttributes'=> $productAttributes]);
+                    return view('frontend/cate-'.$page.'s')->with(['maxPrice'=>$maxPrice,'listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'productAttributes'=> $productAttributes]);
                 }else{
                 
                     abort(404);
@@ -224,7 +220,7 @@ class CategoryController extends FrontController{
     }
 
    
-    public function listData($langId, $category_id, $type = '',$vendorIds = array()){
+    public function listData($langId, $category_id, $type = '',$vendorIds = array(),$is_max = false){
         //pr($category_id);
 
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
@@ -328,8 +324,8 @@ class CategoryController extends FrontController{
             if(count($vendors) > 0){
                 $products = $products->whereIn('products.vendor_id', $vendors);
             }
+            $maxPrice = 0;
             $products = $products->paginate($pagiNate);
-              //pr($products);
             if(!empty($products)){
                 foreach ($products as $key => $value) {
                     $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
@@ -338,12 +334,18 @@ class CategoryController extends FrontController{
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
                     $value->variant_compare_at_price = (!empty($value->variant->first())) ? $value->variant->first()->compare_at_price : 0;
                     $value->image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-                    // foreach ($value->variant as $k => $v) {
+                   
+                    if($value->variant_price > $maxPrice){
+                        $maxPrice = $value->variant_price;
+                    }// foreach ($value->variant as $k => $v) {
                     //     $value->variant[$k]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     // }
                 }
             }
             $listData = $products;
+            if($is_max){
+                $listData = $maxPrice;
+            }
             return $listData;
         }
     }

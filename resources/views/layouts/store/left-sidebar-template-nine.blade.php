@@ -41,10 +41,11 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             </div>
             <div class="col-sm-9 col-md-10 top-header bg-transparent">
                <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
-                  @if ($client_preference_detail->header_quick_link == 1)
                   @if( p2p_module_status() )
                      <li><a href="{{route('posts.index', ['fullPage'=>1])}}">{{ __('Add Post') }}</a></li>
                   @endif
+                  @if ($client_preference_detail->header_quick_link == 1)
+                  
                   <li class="onhover-dropdown quick-links quick-links">
                      <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                      <ul class="onhover-show-div">

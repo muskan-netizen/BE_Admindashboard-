@@ -449,12 +449,14 @@ class OrderController extends BaseController
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
 
-            $total_other_taxes = 0.00;
-            foreach (explode(":", $order->total_other_taxes) as $row) {
-                $total_other_taxes += (float)$row;
+            $order->total_other_taxes_amount  = 0.00;
+           // foreach (explode(":", $order->total_other_taxes) as $row) {
+             //   $total_other_taxes += (float)$row;
+            //}
+            if(!empty($order->total_other_taxes)){
+                $order->total_other_taxes_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
             }
-            $order->total_other_taxes_amount = $total_other_taxes;
-
+            
             foreach ($order->vendors as $vendor) {
                 $vendor->isAlert = false;
                 $vendor->alertMessage = "";
@@ -501,11 +503,11 @@ class OrderController extends BaseController
             if ($order->luxury_option_id > 0) {
                 $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
                 if ($luxury_option->title == 'takeaway') {
-                    $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
+                    $luxury_option_name = getNomenclatureName('Takeaway', $langId, false);
                 } elseif ($luxury_option->title == 'dine_in') {
-                    $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
+                    $luxury_option_name = getNomenclatureName('Dine-In', $langId, false);
                 } elseif ($luxury_option->title == 'on_demand') {
-                    $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
+                    $luxury_option_name = getNomenclatureName('Services', $langId, false);
                 } else {
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
