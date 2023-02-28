@@ -111,7 +111,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                 </div>
                             </div>
                         </div>--}}
-                        <section class="buy_details">
+                        <section class="buy_details test">
                             <div class="row">
                                 @if((!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9')))
                                 <div class="col-md-1 pl-0">

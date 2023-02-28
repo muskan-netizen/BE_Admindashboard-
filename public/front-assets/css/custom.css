@@ -3735,7 +3735,7 @@ header .homepage-address h2 {
     background-color: #eee;
     border-radius: 50px;
     overflow: hidden;
-    border: 5px solid #eee !important;
+    /* border: 5px solid #eee !important; */
     display: flex;
     position: relative;
     flex: none
@@ -7817,11 +7817,11 @@ body .img-outer-box {
 }
 
 .vendors .slick-next {
-    right: -30px
+    right: -50px
 }
 
 .vendors .slick-prev {
-    left: -30px
+    left: -50px
 }
 
 .vendors .slick-next:before,

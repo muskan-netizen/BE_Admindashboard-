@@ -1,0 +1,170 @@
+ul.header-dropdown li span{
+    font-size: 12px;
+}
+.navigation-tab {
+    border-radius: 40px;
+    background: none !important;
+    border: none !important;
+}
+.navigation-tab .nav-link.active {
+    color: #fff !important;
+    background-color: var(--theme-deafult) !important;
+    border-radius: 40px;
+}
+.navigation-tab-item .nav-link{
+    font-size: 12px;
+}
+.site-topbar .location-bar span,
+.top-header .header-dropdown li,
+.top-header .header-dropdown li a,
+.top-header .header-dropdown li span {
+    font-size: 12px!important;
+    line-height: 22px
+}
+.search_form button.btn svg {
+    width: 16px;
+}
+.search_bar.menu-right .icon-nav{text-align: center;}
+.search_bar.menu-right .icon-nav a svg {
+    width: 16px;
+}
+.search_bar.menu-right .icon-nav a span {
+    font-size: 12px;
+    color: #000;
+    font-weight: 400;
+    text-transform: capitalize;
+}
+.search_bar.menu-right .icon-nav a span {
+    font-size: 12px;
+    color: #000;
+    font-weight: 400;
+    text-transform: capitalize;
+}
+.vendor-design_new {
+    position: absolute;
+    top: 240px;
+    left: 0%;
+    z-index: 1;
+    width:100%;
+}
+.product-banner-img{
+    position: relative;
+}
+.vender-icon img {
+    width: 150px;
+    height: 150px;
+    object-fit: fill;
+}
+.vendor-description .vendor-reviwes{
+    width: auto;
+    display: inline-block;
+    right: -56px !important;
+    top: 11px !important;
+}
+.vendor-description .profile_address h3{
+    font-weight: 500;
+    font-size: 25px;color:#fff;padding-right:10px;
+}
+.vendor-info li a{
+    color:#fff;
+}
+.vendor-info i{color:#fff;}
+.profile_address ul.vendor-info li.d-block.vendor-location a span{color:#000;}
+.price_head p{
+    opacity: inherit;
+}
+.vendor-design_new .vendor-stories {
+    display: inline-block;
+}
+.vendor-design_new .profile_address {
+    display: inline-block;
+}
+.vendor-design_new .vender-icon {
+    display: inline-block;
+}
+.product-description p span{
+    margin-bottom: 0px !important;
+}
+.scrolling_section .price_head h5 {
+    margin-bottom: 4px;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+.price_head .rating-text-box{
+    border-radius: 4px;
+}
+.rating-text-box span{
+    font-size: 10px;
+}
+.price_head .member_no span{
+    font-size: 12px;
+    line-height: 17px !important;
+    display: inline-block;
+}
+.rating-text-box .fa.fa-star{font-size: 10px;}
+.category-head{
+    font-weight: 600;
+    font-size: 20px;padding-bottom: 12px;
+}
+.right-card-title{
+    font-weight: 600;
+    font-size: 20px;color:#222;
+}
+.search_form input.form-control{
+    font-size: 14px;
+}
+.categories-product-list .text-right select#order_type {
+    border: 1px solid#ddd;
+    color: #000;
+    font-weight: 400;
+    border-radius: 4px;
+}
+.breadcrumb-section.bg-transparent .breadcrumb li:first-child:before {
+    content: inherit;
+}
+.al_body_template_one section.section-b-space.alSingleProducts.product_ddetails_page h2{
+    padding: 0px;
+}
+.vendor-info li{color:#fff;}
+span.org_price.ml-1.font-14{
+    font-weight: 500;
+    opacity: 0.5;
+}
+.homeHeader .outter-fillter-data div#category_products_filter a.product-box.scale-effect{
+    height: auto !important;
+}
+.displayProducts .inner_spacing h3 label b {
+    font-weight: 500;
+    color: #000;
+}
+.displayProducts .inner_spacing h3 {
+    padding: 6px 0px;
+}
+.displayProducts .inner_spacing h3 label b {
+    font-weight: 500;
+    color: #000;
+}
+.displayProducts .inner_spacing h3 {
+    padding: 6px 0px;
+}
+.product-description_list span.flag-discount {
+    color: #63aa11;
+    font-size: 13px;
+}
+.product-description_list span.flag-discount:after{content: inherit;}
+.product-description_list h6 {
+    font-size: 12px;
+    font-weight: 300;
+}
+.product-description_list p {font-size: 12px;}
+.inner_spacing h4{color:#000;}
+.al_body_template_one .main-fillter .side_fillter{border:none;}
+.custom_filtter select{
+    border: 1px solid#ddd;
+    color: #000;
+    font-weight: 400;
+    border-radius: 4px;
+}
+.al_body_template_one .common-banner img {
+    border-radius: 10px;
+}

@@ -282,7 +282,7 @@ $preference = $client_preference_detail;
 @if(count($banners))
 
 <section class="home-slider-wrapper py-sm-3 ">
-   <div class="container-fluid p-0">
+   <div class="container">
       <div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
          <div class="carousel-inner">
             @foreach($banners as $key => $banner)
