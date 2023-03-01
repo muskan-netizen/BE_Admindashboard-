@@ -206,7 +206,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                 </div>
                                 <div class="displayCategories">
                                     <div class="categories-wrapper-grid">
-                                        <div class="row margin-res">
+                                        <div class="row margin-res categories_img">
                                         @if($listData->isNotEmpty())
                                             @foreach($listData as $key => $cate)
                                             <div class="col-md-3 col-6 col-grid-box mt-3">

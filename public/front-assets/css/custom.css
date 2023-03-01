@@ -1,6 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Alata&family=Jost:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Alata&family=Jost:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 :root {
     --alBodyTemplateThreeFont: 'Jost', sans-serif;
+} */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap');
+:root{
+    font-family: 'Poppins', sans-serif;
 }
 
 ul.exzoom_img_ul {
@@ -31,7 +36,8 @@ strong,
 div,
 section,
 a {
-    font-family: var(--alBodyTemplateThreeFont) !important;
+    font-family: 'Poppins', sans-serif;
+
 }
 
 html {
@@ -3729,7 +3735,7 @@ header .homepage-address h2 {
     background-color: #eee;
     border-radius: 50px;
     overflow: hidden;
-    border: 5px solid #eee !important;
+    /* border: 5px solid #eee !important; */
     display: flex;
     position: relative;
     flex: none
@@ -7817,24 +7823,24 @@ body .img-outer-box {
 }
 
 .vendors .slick-next {
-    right: -30px
+    right: -50px
 }
 
 .vendors .slick-prev {
-    left: -30px
+    left: -50px
 }
 
 .vendors .slick-next:before,
 .vendors .slick-prev:before {
     content: "";
-    background-image: url(https://img.icons8.com/ios/50/000000/expand-arrow--v2.png);
+    background-image: url(https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/9j7dQOukAVKlzSYotQpFu0TAcYJgldazCaIIUMFc.png);
     font-size: 0;
     height: 20px;
     width: 20px;
     left: 0;
     position: absolute;
     -webkit-transform: rotate(90deg);
-    transform: rotate(90deg);
+    transform: rotate(266deg);
     z-index: 1;
     top: 0;
     background-size: 20px;
@@ -7846,7 +7852,7 @@ body .img-outer-box {
 }
 
 .vendors .slick-next:before {
-    transform: rotate(-90deg)
+    transform: rotate(88deg)
 }
 
 .vendors .no-arrow .slick-next,
