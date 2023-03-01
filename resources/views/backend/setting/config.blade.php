@@ -2536,7 +2536,7 @@
     </div>
 
     @php
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration', 'square_enable_status', 'square_sandbox_enable_status', 'square_application_id', 'square_access_token']);
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration', 'square_enable_status', 'square_credentials']);
     @endphp
     <div class="row">
         {{-- hubspot form --}}
@@ -2876,26 +2876,31 @@
                                         <label for="square_enable_status_switch" class="mr-3">{{ __("Enable") }} <br/></label>
                                         <input type="checkbox" data-plugin="switchery" name="square_enable_status" id="square_enable_status_switch" class="form-control" data-color="#43bee1" @if($getAdditionalPreference['square_enable_status'] == 1) checked @endif>
                                     </div>
-                                        
+                                    @php
+                                        $square_credentials = json_decode($getAdditionalPreference['square_credentials']);
+                                        $square_sandbox_enable_status = isset($square_credentials['square_sandbox_enable_status']) ? $square_credentials['square_sandbox_enable_status'] : '';
+                                        $square_application_id = isset($square_credentials['square_application_id']) ? $square_credentials['square_application_id'] : '';
+                                        $square_access_token = isset($square_credentials['square_access_token']) ? $square_credentials['square_access_token'] : '';
+                                    @endphp
                                         <div class="mt-2 squareFields" @if($getAdditionalPreference['square_enable_status'] != 1) style="display:none;" @endif>
                                             <div class="row">
                                                 <div class="col-12">
                                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                                         <label for="square_sandbox_enable_status_switch" class="mr-3">{{ __("Sandbox") }} <br/><small>{{__('Update Sandbox Application ID and Access Token')}}</small></label>
-                                                        <input type="checkbox" data-plugin="switchery" name="square_sandbox_enable_status" id="square_sandbox_enable_status_switch" class="form-control" data-color="#43bee1" @if($getAdditionalPreference['square_sandbox_enable_status'] == 1) checked @endif>
+                                                        <input type="checkbox" data-plugin="switchery" name="square_sandbox_enable_status" id="square_sandbox_enable_status_switch" class="form-control" data-color="#43bee1" @if($square_sandbox_enable_status == 1) checked @endif>
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
                                                         <label for="square_application_id">{{ __("Application ID") }}</label>
-                                                        <input type="text" name="square_application_id" id="square_application_id" placeholder="" class="form-control" value="{{ old('square_application_id', ($getAdditionalPreference['square_application_id']!=0) ? $getAdditionalPreference['square_application_id'] : '')}}">
+                                                        <input type="text" name="square_application_id" id="square_application_id" placeholder="" class="form-control" value="{{ old('square_application_id', $square_application_id)}}">
                                                     </div>
                                                 </div>
                                             
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
                                                         <label for="square_access_token">{{ __("Access Token") }}</label>
-                                                        <input type="text" name="square_access_token" id="square_access_token" placeholder="" class="form-control" value="{{ old('square_access_token', ($getAdditionalPreference['square_access_token']!=0) ? $getAdditionalPreference['square_access_token'] : '')}}">
+                                                        <input type="text" name="square_access_token" id="square_access_token" placeholder="" class="form-control" value="{{ old('square_access_token', $square_access_token)}}">
                                                     </div>
                                                 </div>
                                             </div>
