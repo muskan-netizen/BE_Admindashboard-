@@ -1501,11 +1501,9 @@ class CartController extends BaseController
         if($cart->other_taxes>0){
             $cart->total_payable_amount = $cart->total_payable_amount + $cart->other_taxes;
         }
-        //Log::info("total_payable_amount 2".$cart->total_payable_amount);
         if($cart->total_fixed_fee_amount){
             $cart->total_payable_amount = $cart->total_payable_amount +$cart->total_fixed_fee_amount;
         }
-        //Log::info("total_payable_amount 3".$cart->total_payable_amount);
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
