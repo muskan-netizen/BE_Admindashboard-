@@ -360,7 +360,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     }
                     (response.data.p2p_orders != undefined) ? $("#p2p-orders").html("(" + response.data.p2p_orders + ")") : '';
 
-                await $(`#${filter_order_status}_row`).html('');
+                //await $(`#${filter_order_status}_row`).html('');
                 await $(`#${filter_order_status}_pagination`).html('');
                 if (response.status == 'Success') {
                      await $(`#${filter_order_status}_row`).append(response.data.html);
