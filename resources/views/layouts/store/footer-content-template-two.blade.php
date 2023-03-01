@@ -29,7 +29,7 @@ if(session()->has('applocale')){
         <section class="section-b-space light-layout py-xl-4 pt-4 pb-0">
             <div class="container">
                 <div class="row footer-theme partition-f">
-                    <div class="col-lg-2 d-flex align-items-center justify-content-center justify-content-md-start">
+                    <div class="col-lg-2 d-flex  justify-content justify-content-md-start">
                         <div class="footer-logo mb-0">
                             <a href="{{ route('userHome') }}">
                                 @isset($urlImg)<img class="logo-image" src="{{$urlImg}}" style="height:50px;">@endisset
