@@ -52,7 +52,7 @@ class AppStylingController extends BaseController
         }
         $tab_style = AppStyling::where('name', 'Tab Bar Style')->first();
         if ($tab_style) {
-            $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->get();
+            $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->where('image','!=','bar_three.png')->get();
         }
 
 
