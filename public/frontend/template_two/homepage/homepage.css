@@ -439,7 +439,6 @@ body[dir=rtl] .slick-prev {
         padding:44px 20px!important;    
     }
 }
-
 @media (max-width:576px) {
     html,
     body {

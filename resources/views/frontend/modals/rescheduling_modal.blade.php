@@ -12,7 +12,7 @@
                                 $luxury_option_name = 'Dine-In';
                             } else {        
                                 //$luxury_option_name = 'Delivery';
-                                $luxury_option_name = $this->getNomenclatureName($luxury_option->title);
+                                $luxury_option_name = getNomenclatureName($luxury_option->title);
                             }
                         @endphp
                         <span
