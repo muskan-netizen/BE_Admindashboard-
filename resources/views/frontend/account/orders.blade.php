@@ -815,7 +815,8 @@ $timezone = Auth::user()->timezone;
         event.preventDefault();
         var id = $(this).data('id');
         var order_vendor_product_id = $(this).data('order_vendor_product_id');
-        $.get('/rating/get-driver-rating?id=' + id + '&order_vendor_product_id=' + order_vendor_product_id,
+        var dispatch_traking_url = $(this).data('dispatch_traking_url');
+        $.get(`/rating/get-driver-rating?id=${id}&order_vendor_product_id=${order_vendor_product_id}&dispatch_traking_url=${dispatch_traking_url}`,
             function(markup) {
                 $('#driver_rating').modal('show');
                 $('#driver-review-rating-form-modal').html(markup);

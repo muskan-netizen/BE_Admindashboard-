@@ -277,7 +277,7 @@
                                         <li class="text-center alOrderTaxi">
                                             {{-- <img src="#" alt=""> --}}
                                             <label class="items_price">{{__('Rate Your Driver')}}</label>
-                                            <label class="rating-star add_edit_driver_review" data-id="{{ $order->driver_rating->id ?? 0 }}" data-order_vendor_product_id="{{ $product->id ?? 0 }}">
+                                            <label class="rating-star add_edit_driver_review" data-id="{{ $order->driver_rating->id ?? 0 }}"  data-dispatch_traking_url="{{ $order->vendors[0]->dispatch_traking_url}}" data-order_vendor_product_id="{{ $product->id ?? 0 }}">
                                                 <i class="fa fa-star{{ $driverrating >= 1 ? '' : '-o' }}"></i>
                                                 <i class="fa fa-star{{ $driverrating >= 2 ? '' : '-o' }}"></i>
                                                 <i class="fa fa-star{{ $driverrating >= 3 ? '' : '-o' }}"></i>
