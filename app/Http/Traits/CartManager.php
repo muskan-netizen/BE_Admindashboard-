@@ -1053,6 +1053,11 @@ trait cartManager{
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
+                
+                if($vendorData->vendor->service_charge_amount > 0){
+                    $vendor_service_fee_percentage_amount =  $vendorData->vendor->service_charge_amount ;
+                    $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
+                }
 
                 //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
