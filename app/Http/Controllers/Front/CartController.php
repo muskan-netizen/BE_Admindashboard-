@@ -1647,7 +1647,7 @@ class CartController extends FrontController
             $cart->slotsCnt = count((array)$slots);
             $cart->pickupSlotsCnt = count((array)$pickupSlots);
             $cart->dropoffSlotsCnt = count((array)$dropoffSlots);
-            $cart->total_service_fee = decimal_format($vendorData->vendor->service_charge_amount);
+            $cart->total_service_fee = decimal_format($total_service_fee);
             $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
             $cart->gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
@@ -1715,7 +1715,6 @@ class CartController extends FrontController
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
-      dd($cart); die;
         return $cart;
     }
 
