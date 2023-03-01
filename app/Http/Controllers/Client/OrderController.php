@@ -42,24 +42,7 @@ class OrderController extends BaseController
         $client_preferences = ClientPreference::first();
         $EnabledLuxuryOptions = $this->geteEnabledLuxuryOptions($client_preferences);
         $user = Auth::user();
-        // $orders = Order::with(['vendors.products','orderStatusVendor', 'address','user'])->orderBy('id', 'DESC');
-        // if (Auth::user()->is_superadmin == 0) {
-        //     $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
-        //         $query->where('user_id', Auth::user()->id);
-        //     });
-        // }
-        // $orders = $orders->get();
-        // foreach ($orders as $order) {
-        //     $order->address = $order->address ? $order->address['address'] : '';
-        //     $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, H:i A');
-        //     foreach ($order->vendors as $vendor) {
-        //         $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
-        //         $vendor->order_status = $vendor_order_status ? $vendor_order_status->OrderStatusOption->title : '';
-        //         foreach ($vendor->products as $product) {
-        //             $product->image_path  = $product->media->first() ? $product->media->first()->image->path : '';
-        //         }
-        //     }
-        // }
+     
         $return_requests = OrderReturnRequest::where('status', 'Pending');
         $rescheduleOrderCount = RescheduleOrder::count();
         if ($user->is_superadmin == 0) {
@@ -565,7 +548,14 @@ class OrderController extends BaseController
         $response2['pagination'] ='';
        
         if(!empty($response2['next_page_url'])){
-            $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']); 
+           // $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']); 
+            $url_components = parse_url($response2['next_page_url']);
+            parse_str($url_components['query'], $params);
+            $page_num = $params['page'];
+         
+           // $page = $request->has('page') ? $request->page : 1;
+            $nextPageUrl = route('orders.filter').'?page='.$page_num;
+           // pr( $nextPageUrl);
             $pagination = '<div class="col-md-4 offset-md-4 text-center">
                             <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="'.$nextPageUrl.'" data-rel="'.$filter_order_status.'">
                                 <span class="ladda-label">'. __('Load More').'</span>
