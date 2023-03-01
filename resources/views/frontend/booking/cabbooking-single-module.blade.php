@@ -12,7 +12,7 @@
                 
  @endphp
 
- <section class="cab-banner-area alTaxiBannerStart"
+ <section class="test cab-banner-area alTaxiBannerStart"
      style="background:url({{ $img }});background-size: cover;background-repeat: no-repeat;background-position: center;">
      <div class="container-fluid  p-64 py-64">
          <div class="row">
