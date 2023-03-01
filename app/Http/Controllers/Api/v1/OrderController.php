@@ -1946,8 +1946,9 @@ class OrderController extends BaseController
             $order_item_count = 0;
             $order->user_name = $user->name;
             $order->user_image = $user->image;
+            $total_total_payable = $order->orderDetail->total_amount + $order->orderDetail->wallet_amount_used + $order->orderDetail->loyalty_amount_saved + $order->orderDetail->taxable_amount + $order->orderDetail->total_delivery_fee + $order->orderDetail->tip_amount + $order->orderDetail->total_service_fee - $order->orderDetail->total_discount;
             $order->date_time = dateTimeInUserTimeZone($order->orderDetail->created_at, $user->timezone);
-            $order->payment_option_title = __($order->orderDetail->paymentOption->title ?? '');
+            $order->payment_option_title = ($order->orderDetail->wallet_amount_used >= ceil($total_total_payable)) ? __("Wallet") : __($order->orderDetail->paymentOption->title ?? '');
             $order->order_number = $order->orderDetail->order_number;
             $order->schedule_pickup = date('d/m/Y',strtotime($order->orderDetail->schedule_pickup));
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
