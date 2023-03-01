@@ -465,11 +465,11 @@ class OrderController extends FrontController
                         $cartDetails = $this->getCart($cart);
                     }
 
-                    $luxuryoptiondata = LuxuryOption::where('id', $order->luxury_option_id)->first();
+                    $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
 
                     $email_template_content = $email_template->content;
                     //     if ($vendor_id == "") {
-                    $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryoption' => (!empty($luxuryoptiondata)) ? $luxuryoptiondata->title : 'Delivery'])->render();
+                    $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     //     } else {
                     //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     // }
@@ -1755,6 +1755,7 @@ class OrderController extends FrontController
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
                 //Send Email to customer
+                $request->request->add(['type' => $action]);
                 $this->sendSuccessEmail($request, $order);
                 //Send Email to Vendor
                 foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
