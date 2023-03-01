@@ -39,6 +39,8 @@ class OrderController extends BaseController
      */
     public function index(Request $request )
     {
+        $client_preferences = ClientPreference::first();
+        $EnabledLuxuryOptions = $this->geteEnabledLuxuryOptions($client_preferences);
         $user = Auth::user();
         // $orders = Order::with(['vendors.products','orderStatusVendor', 'address','user'])->orderBy('id', 'DESC');
         // if (Auth::user()->is_superadmin == 0) {
@@ -77,7 +79,7 @@ class OrderController extends BaseController
         $cancel_order_requests = $cancel_order_requests->count();
 
         // Pending counts
-        $pending_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use ($user) {
+        $pending_order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->whereHas('vendors', function ($query) use ($user) {
             $query->where('order_status_option_id', 1);
             if ($user->is_superadmin == 0) {
                 $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
@@ -105,7 +107,7 @@ class OrderController extends BaseController
         })->count();
 
         // past orders count
-        $past_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use ($user) {
+        $past_order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->whereHas('vendors', function ($query) use ($user) {
             $query->whereIn('order_status_option_id', [6, 3]);
             if ($user->is_superadmin == 0) {
                 $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
@@ -133,7 +135,7 @@ class OrderController extends BaseController
         })->count();
 
         // active orders count
-        $active_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use ($user) {
+        $active_order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->whereHas('vendors', function ($query) use ($user) {
             $query->whereIn('order_status_option_id', [2, 4, 5]);
             if ($user->is_superadmin == 0) {
                 $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
@@ -170,7 +172,7 @@ class OrderController extends BaseController
         }
         $vendors = $vendors->get();
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-        $client_preferences = ClientPreference::first();
+       
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
         $accounting = ThirdPartyAccounting::where('status', 1)->get();
@@ -180,6 +182,20 @@ class OrderController extends BaseController
        // pr($OrderFilterData['pagination'] );
         return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData'));
     }
+   public function geteEnabledLuxuryOptions($clientPreference){
+    $LuxuryOptions = [];
+   // $enabled_vendor_types = [];
+        foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+            $clientVendorTypes = $vendor_typ_key.'_check';
+                if($clientPreference->$clientVendorTypes == 1){
+                    $vendor_type_name = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
+                   // $enabled_vendor_types[] = $vendor_type_name;
+                    $LuxuryOptions[] = config('constants.VendorTypesLuxuryOptions.'.$vendor_typ_key);
+                }
+        }
+        return $LuxuryOptions;
+       // pr($LuxuryOptions);
+   }
 
     public function postOrderFilter(Request $request, $domain = '')
     {
@@ -187,12 +203,13 @@ class OrderController extends BaseController
         $response = [];
         $user = Auth::user();
         $preferences = ClientPreference::first();
+        $EnabledLuxuryOptions = $this->geteEnabledLuxuryOptions($preferences);
         $client_timezone = DB::table('clients')->first('timezone');
         $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $HasGiftCard = 0;
-        $orders = Order::with(['vendors.products' => function ($q) {
+        $orders = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with(['vendors.products' => function ($q) {
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
         if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
@@ -205,7 +222,7 @@ class OrderController extends BaseController
             });
         }
 
-        $order_count = Order::with('vendors')->where(function ($q1) {
+        $order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->where(function ($q1) {
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
