@@ -2435,6 +2435,32 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
     min-height: 56px
 }
 
+/*===========  start one template 01-03-2023 =============*/
+
+body.dark .location-search i, body.dark .current-location {
+    color: rgb(207, 212, 218);
+}
+body.dark .location-search i, body.dark .current-location {
+    color: rgb(207, 212, 218);
+}
+body.dark .select-location:hover {
+    background-color: rgba(247, 247, 247, 0.11);
+}
+body.dark div#booking-map .gm-style div[aria-label="Map"] {
+    filter: grayscale(100%) invert(100%) contrast(50%) !important;
+}
+body.dark .location-search .form-control::placeholder{
+    color: rgb(207, 212, 218);
+}
+body.dark .booking-experienceNew {
+    background-color: rgb(35, 35, 35);
+}
+body.dark .location-search .form-control {
+    background-color: rgb(43, 43, 43);
+}
+/*===========  end start one template 01-03-2023 =============*/
+
+
 @media (min-width: 1024px) {
     .ds {
         position: absolute;
@@ -4861,9 +4887,63 @@ body.al_body_template_one .top-banner-wrapper {
         align-items: center!important;
         background-position: left!important;
     }
+
+    /*===========  start one mobile header for template 01-03-2023 =============*/
+    body.al_body_template_one .top-header.site-topbar.al_template_one .row {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+    }
+    body.al_body_template_one .top-header.site-topbar.al_template_one .col-sm-6 {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+    body.al_body_template_one .top-header .header-dropdown .mobile-account {
+        bottom: 0px;
+        top: auto;
+        right: 5px;
+        color: rgb(0, 0, 0) !important;
+    }
+    body.al_body_template_one.dark .top-header .header-dropdown li {
+        color: rgb(207, 212, 218) !important;
+    }
+    body.al_body_template_one.dark .top-header .header-dropdown li span {
+        color: rgb(207, 212, 218) !important;
+    }
+    body.al_body_template_one.dark .onhover-dropdown::before {
+        color: rgb(207, 212, 218) !important;
+    }
+    .al_body_template_one a.navbar-brand.mr-sm-3.d-block.d-sm-none, .al_body_template_one .menu-navigation .container.d-sm-none.d-block {
+        display: block !important;
+    }
+    body.al_body_template_one .top-header .header-dropdown li span, body.al_body_template_one .icon-ic_currency::before {
+        font-size: 10px !important;
+        color: rgb(0, 0, 0) !important;
+    }
+    body.dark .menu-navigation.al .navigation-tab-item .nav-link {
+        color: rgb(207, 212, 218) !important;
+    }
+    body.al_body_template_one .onhover-dropdown::before {
+        color: rgb(0, 0, 0) !important;
+    }
+    body.al_body_template_one.dark .icon-ic_currency::before {
+        color: rgb(207, 212, 218) !important;
+    }
+    .top-header .header-dropdown li a{
+        color: rgb(0, 0, 0) !important;
+    }
+    body.al_body_template_one.dark .top-header .header-dropdown li a{
+        color:rgb(207, 212, 218) !important;
+    }
+    /*===========  end one mobile header for template 01-03-2023 =============*/
 }
 
 @media (max-width:576px) {
+    body.al_body_template_one .top-header.site-topbar.al_template_one .row {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
     .menu-navigation {
         overflow: visible;
     }
