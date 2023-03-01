@@ -20,4 +20,9 @@ class PaymentOption extends Model
     {
     	return self::select('credentials', 'test_mode')->where('code', $code)->where('status', 1)->first();
     }
+    
+    public function getPath($file)
+    {
+        return  \Storage::path($file);
+    }
 }
