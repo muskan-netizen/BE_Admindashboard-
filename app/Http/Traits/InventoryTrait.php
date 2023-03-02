@@ -278,7 +278,7 @@ trait InventoryTrait
                     $order_side_product_id = $products->id;
 
                     # then find out the variant of product
-                    $product_variant = $val['productVariant'];
+                    $product_variant = $val['product_variant'];
                     $order_side_product_varaint = '';
 
                     if (!empty($product_variant)) {
@@ -286,20 +286,20 @@ trait InventoryTrait
                     }
 
                     # then find out the variant type id 
-                    $variant = $val['variantDetail'];
+                    $variant = $val['variant_detail'];
 
                     if (!empty($variant)) {
                         $order_side_varaint = \DB::table('variants')->where(['title' => $variant['title']])->first();
 
                         # then find out the variant option id
-                        $variant_option = $val['optionData'];
+                        $variant_option = $val['option_data'];
                         $order_side_variant_option =  \DB::table('variant_options')->where(['title' => $variant_option['title']])->first();
-                        $order_side_variant_option_id = $order_side_variant_option['id'];
+                        $order_side_variant_option_id = $order_side_variant_option->id;
 
                         \DB::table('product_variant_sets')->insert([
                             'product_id' => $order_side_product_id,
-                            'product_variant_id' => $order_side_product_varaint['id'] ?? null,
-                            'variant_type_id' => $order_side_varaint['id'] ?? null,
+                            'product_variant_id' => $order_side_product_varaint->id ?? null,
+                            'variant_type_id' => $order_side_varaint->id ?? null,
                             'variant_option_id' => $order_side_variant_option_id ?? null,
                         ]);
                     }
@@ -323,8 +323,8 @@ trait InventoryTrait
                     "is_core"       => $addon_sets['is_core'],
                     "vendor_id"     => $addon_sets['vendor_id']
                 ];
-                $order_addon_sets = \DB::table('addon_sets')->updateOrInsert(['vendor_id' => $addon_sets['vendor_id'], 'title' => $addon_sets->title], $order_addons);
-                $addon_sets = \DB::table('addon_sets')->where(['vendor_id' => $addon_sets['vendor_id'], 'title' => $addon_sets->title])->first();
+                $order_addon_sets = \DB::table('addon_sets')->updateOrInsert(['vendor_id' => $addon_sets['vendor_id'], 'title' => $addon_sets['title']], $order_addons);
+                $addon_sets = \DB::table('addon_sets')->where(['vendor_id' => $addon_sets['vendor_id'], 'title' => $addon_sets['title']])->first();
                 $product_addon_set = \DB::table('product_addons')->updateOrInsert([
                     'product_id' => $order_product_id,
                     'addon_id' => $addon_sets->id,

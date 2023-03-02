@@ -39,6 +39,9 @@ if(session()->has('applocale')){
 
                 <div class="col-lg-6 text-right ml-auto al_z_index p-0"  >
                     <ul class="header-dropdown ml-auto">
+                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
+                    @endif
                         @if($client_preference_detail->header_quick_link == 1)
                         <li class="onhover-dropdown quick-links quick-links">
                             <a href="javascript:void(0)"><i class="fa fa-link" aria-hidden="true"></i></a>

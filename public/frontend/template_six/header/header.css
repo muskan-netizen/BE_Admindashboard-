@@ -215,6 +215,15 @@ body.al_body_template_six.homeHeader {
     height: 90px;
 }
 
+li.add_post a span svg {
+    width: 20px;
+}
+
+li.add_post a span {
+    color: #fff;
+    font-size: 14px;
+}
+
 .homeHeader .site-header .rightHead ul li a svg path,
 .homeHeader .site-header .rightHead ul li a svg {
     fill: #fff;

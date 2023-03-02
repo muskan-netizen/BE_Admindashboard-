@@ -365,13 +365,13 @@ ul li {margin: 0 0 10px;color: #6c757d;}
 
                             <div class="col-6">
 
-                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter card Number" required />
+                                <input type="text" maxlength="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter Card Number" required />
 
                             </div>
 
                             <div class="col-3">
 
-                               <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="azul-date-element" placeholder="YYYYMM" required />
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
 
                            </div>
                             <div class="col-3">
@@ -393,6 +393,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
 @endsection
 
 @section('script')
+<script src="{{asset('js/credit-card-validator.js')}}"></script>
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
@@ -512,7 +513,16 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
+<script>
+function addSlashes (element) {	
+    let ele = document.getElementById(element.id);
+    ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
+    if(ele.length < 4 && ele.length > 0){
+        let finalVal = ele.match(/.{1,2}/g).join('/');
 
-
+        document.getElementById(element.id).value = finalVal;
+    }
+}
+</script>
 
 @endsection
