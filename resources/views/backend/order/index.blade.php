@@ -269,6 +269,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     });
     $("#range-datepicker").flatpickr({
         mode: "range",
+        dateFormat: "d M Y", //change format also 
+
         onClose: function(selectedDates, dateStr, instance) {
             //initDataTable();
             var typ=  $("a.nav-link.active").data('rel');

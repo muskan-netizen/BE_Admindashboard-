@@ -32,12 +32,14 @@ class OrderController extends BaseController
 
     use ApiResponser;
     use \App\Http\Traits\OrderTrait;
-
+    public $from_date;
+    public $to_date;
+    public $setWeekDate;
     function __construct()
     {
         $this->from_date = Carbon::now()->startOfDay()->subDays(7);
         $this->to_date = Carbon::now()->endOfDay();
-        $this->setWeekDate = $this->from_date.' to '.$this->to_date;
+        $this->setWeekDate =  $this->from_date->format('d M Y') . ' to '. $this->to_date->format('d M Y');
     }
 
 
@@ -242,9 +244,10 @@ class OrderController extends BaseController
         if (!empty($request->get('date_filter'))) {
             $date_date_filter = explode(' to ', $request->get('date_filter'));
             $to_date = (!empty($date_date_filter[1])) ? $date_date_filter[1] : $date_date_filter[0];
-            $from_date = $date_date_filter[0];
-
+            $from_date = date("Y-m-d", strtotime($date_date_filter[0]));  
+            $to_date = date("Y-m-d", strtotime($to_date));  
             $orders->between($from_date . " 00:00:00", $to_date . " 23:59:59");
+            
 
             //order_count
             $order_count->between($from_date . " 00:00:00", $to_date . " 23:59:59");
