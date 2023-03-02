@@ -12,12 +12,19 @@
 @endsection
 @section('content')
 @php
-$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch']);
+$is_service_product_price_from_dispatch_forOnDemand = 0;
+
+if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+    $is_service_product_price_from_dispatch_forOnDemand =1;
+}
+
 @endphp
 <!-- get current page -->
 @php
 $currentPage = $_GET['page']??1;
 @endphp
+
 <!-- get current page end -->
 <!-- section start -->
 <section class="section-b-space ratio_asos al_vendor_product_page">
@@ -61,7 +68,7 @@ $currentPage = $_GET['page']??1;
                                                         <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
                                                     @endif
                                                     @endif
-                                                    @if(isset($socialMediaUrls) && count($socialMediaUrls)>0)
+                                                    @if(!empty($socialMediaUrls))
                                                         <a class="open-social-medialinks" data-toggle="tooltip" title="Social Media Links" href="javascript:void(0)"><i class="fa fa-globe"></i></a>
                                                     @endif
                                                 </div>
@@ -94,15 +101,15 @@ $currentPage = $_GET['page']??1;
                     </div>
                 </div>
             </div>
-            @if(1)
             <div class="row mb-3 homepageSix mt-4">
                 <div class="collection-filter col-md-3 main-fillter">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <aside class="side_fillter">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
-                        @if(!empty($brands) && count($brands) > 0)
+                      
+                        @if(count($brands) > 0)
                         <div class="collection-collapse-block open mb-2">
-                            <h3 class="collapse-block-title">brand</h3>
+                            <h3 class="collapse-block-title">brand</h3>                            
                             <div class="collection-collapse-block-content pb-0">
                                 <div class="collection-brand-filter">
                                     @foreach($brands as $key => $val)
@@ -117,11 +124,9 @@ $currentPage = $_GET['page']??1;
                             </div>
                         </div>
                         @endif
-                        @if(!empty($variantSets) && count($variantSets) > 0)
+                                                @if(count($variantSets) > 0)
                         @foreach($variantSets as $key => $sets)
-                        
-                        <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
-                            @php
+                        @php
                             
                             $slug = '';
                             if(!empty($sets->variantDetail) && !empty($sets->variantDetail->varcategory) && !empty($sets->variantDetail->varcategory->cate) && !empty($sets->variantDetail->varcategory->cate->slug)) {
@@ -129,6 +134,8 @@ $currentPage = $_GET['page']??1;
                             }
                             @endphp
                             @if($slug)
+                        <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
+                            
                             <h3 class="collapse-block-title"> {{$slug . $sets->title}}</h3>
                             <div class="collection-collapse-block-content">
                                 <div class="collection-brand-filter">
@@ -155,8 +162,9 @@ $currentPage = $_GET['page']??1;
                                     @endif
                                 </div>
                             </div>
-                            @endif
+                           
                         </div>
+                         @endif
                         @endforeach
                         @endif
                         @if($show_range == 1)
@@ -217,9 +225,11 @@ $currentPage = $_GET['page']??1;
                                                             <p class="pb-1">In {{$new['category_name']}}</p>
                                                             <div class="d-flex align-items-center justify-content-between">
                                                                 <b>
-                                                                    @if($new['inquiry_only'] == 0)
-                                                                        <?php $multiply = $new['variant_multiplier']; ?>
-                                                                        {{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                    @if($is_service_product_price_from_dispatch_forOnDemand !=1)
+                                                                        @if($new['inquiry_only'] == 0)
+                                                                            <?php $multiply = $new['variant_multiplier']; ?>
+                                                                            {{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                        @endif
                                                                     @endif
                                                                 </b>
 
@@ -357,8 +367,10 @@ $currentPage = $_GET['page']??1;
 
 
                                                                     <div class="d-flex align-items-center justify-content-between">
-                                                                        @if($data['inquiry_only'] == 0)
-                                                                            <h4 class="mt-0">{{$additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        @if($is_service_product_price_from_dispatch_forOnDemand !=1)
+                                                                            @if($data['inquiry_only'] == 0)
+                                                                                <h4 class="mt-0">{{$additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                            @endif
                                                                         @endif
                                                                       <!--   @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)
@@ -390,7 +402,6 @@ $currentPage = $_GET['page']??1;
                     </div>
                 </div>
             </div>
-            @endif
         </div>
     </div>
     <div class="modal fade" id="social-media-links-modal" data-backdrop="static" data-keyboard="false"
@@ -543,8 +554,6 @@ $currentPage = $_GET['page']??1;
         $('.sortingFilter').val('newly_added');
         filterProducts();
         });
+
 </script>
-
-
-
 @endsection
