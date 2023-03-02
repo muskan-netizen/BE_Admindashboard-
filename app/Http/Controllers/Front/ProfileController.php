@@ -112,11 +112,13 @@ class ProfileController extends FrontController
         
         if($user->phone_number!=$request->phone_number){
             $validator = Validator::make($request->all(), [
+                'email' => 'required|email|unique:users',
                 'name' => 'required|string|min:3|max:80',
                 'phone_number' => 'required|unique:users'
             ]);
         }else{
             $validator = Validator::make($request->all(), [
+                'email' => 'required',
                 'name' => 'required|string|min:3|max:80',
                 'phone_number' => 'required'
             ]);
@@ -136,6 +138,7 @@ class ProfileController extends FrontController
                 $user->image = Storage::disk('s3')->put($this->folderName, $file,'public');
             }
             $user->name = $request->name;
+            $user->email = $request->email;
             $user->timezone = $request->timezone;
             $user->dial_code = $request->dialCode;
             $user->description = $request->description;

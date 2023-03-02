@@ -1097,9 +1097,9 @@ span.alPriceValue, span.alPriceValue i {
             return false;
         });
 
-        // $(document).ready(function(){
-        //     vendorProductsSearchResults();
-        // });
+        $(document).ready(function(){
+            vendorProductsSearchResults();
+        });
 
         $(document).delegate(".product_tag_filter", "change", function() {
             vendorProductsSearchResults();
