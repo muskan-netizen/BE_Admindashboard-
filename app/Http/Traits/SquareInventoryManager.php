@@ -1,17 +1,6 @@
 <?php
 namespace App\Http\Traits;
 use Square\SquareClient;
-use Square\Environment;
-use Square\LocationsApi;
-use Square\Exceptions\ApiException;
-use Square\Http\ApiResponse;
-use Square\Models\ListLocationsResponse;
-use Square\Models\CreateCustomerRequest;
-use Square\Models\CreatePaymentRequest;
-use Square\Models\Payment;
-use Square\Models\Money;
-
-use App\Models\PaymentOption;
 use Ramsey\Uuid\Uuid;
 use Auth, Log;
 trait SquareInventoryManager{
@@ -19,74 +8,180 @@ trait SquareInventoryManager{
   private $application_id;
   private $access_token;
   private $location_id;
-  private $location_id;
-  public function __construct()
-  {
-    $getAdditionalPreference = getAdditionalPreference(['square_enable_status', 'square_credentials']);
-    $square_credentials = json_decode($getAdditionalPreference['square_credentials'], true);
-    $square_sandbox_enable_status = isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : '';
-    $square_application_id = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
-    $square_access_token = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
-    $this->application_id = $creds_arr->application_id??''; 
-    $this->access_token = $creds_arr->api_access_token??'';
-    $this->location_id = $creds_arr->location_id??'';
-  }
+  private $sandbox_enable_status;
 
   public function init()
   {
-    $square_creds = PaymentOption::select('test_mode')->where('code', 'square')->where('status', 1)->first();
-    return new SquareClient([
+    $getAdditionalPreference     = getAdditionalPreference(['square_enable_status', 'square_credentials']);
+    $square_credentials          = json_decode($getAdditionalPreference['square_credentials'], true);
+    $this->sandbox_enable_status = (int) isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : 0;
+    $this->application_id        = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
+    $this->access_token          = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
+    $this->location_id           = isset($square_credentials['location_id']) ? $square_credentials['location_id'] : '';
+    $config = [
         'accessToken' => $this->access_token,
-        'environment' => $square_creds->test_mode ? Environment::SANDBOX : Environment::PRODUCTION,
-      ]);
+        'environment' => ($this->sandbox_enable_status == 1) ? 'sandbox' : 'production',
+    ];
+    return new SquareClient($config);
   }
 
-  public function getLocation()
+  public function createNewProductInSquare()
   {
     try{
+      //init square client
       $client = $this->init();
-      $location = $client->getLocationsApi()->retrieveLocation($this->location_id)->getResult()->getLocation();
-      return $location;
+
+      //---setting variant price and currency
+      $price_money = new \Square\Models\Money();
+      $price_money->setAmount(300);
+      $price_money->setCurrency('USD');
+
+      $item_variation_data = new \Square\Models\CatalogItemVariation();
+      $item_variation_data->setItemId('#coffee');
+      $item_variation_data->setName('Small');
+      $item_variation_data->setSku('small_coffee');
+      $item_variation_data->setPricingType('FIXED_PRICING');
+      $item_variation_data->setPriceMoney($price_money);
+
+      $catalog_object1 = new \Square\Models\CatalogObject('ITEM_VARIATION', '#small_coffee');
+      $catalog_object1->setItemVariationData($item_variation_data);
+
+      $price_money1 = new \Square\Models\Money();
+      $price_money1->setAmount(350);
+      $price_money1->setCurrency('USD');
+
+      $item_variation_data1 = new \Square\Models\CatalogItemVariation();
+      $item_variation_data1->setItemId('#coffee');
+      $item_variation_data1->setName('Large');
+      $item_variation_data1->setSku('large_coffee');
+      $item_variation_data1->setPricingType('FIXED_PRICING');
+      $item_variation_data1->setPriceMoney($price_money1);
+
+      $catalog_object2 = new \Square\Models\CatalogObject('ITEM_VARIATION', '#large_coffee');
+      $catalog_object2->setItemVariationData($item_variation_data1);
+
+      $variations = [$catalog_object1, $catalog_object2];
+      $item_data = new \Square\Models\CatalogItem();
+      $item_data->setName('Coffee');
+      //$item_data->setCategory('coffeeeee');
+      $item_data->setVariations($variations);
+      $item_data->setProductType('REGULAR');
+
+      $catalog_object = new \Square\Models\CatalogObject('ITEM', '#coffee');
+      $catalog_object->setItemData($item_data);
+
+      $tax_data = new \Square\Models\CatalogTax();
+      $tax_data->setName('Drink Tax');
+      $tax_data->setCalculationPhase('TAX_SUBTOTAL_PHASE');
+      $tax_data->setInclusionType('ADDITIVE');
+      $tax_data->setPercentage('7.5');
+
+      $catalog_object3 = new \Square\Models\CatalogObject('TAX', '#sales_tax');
+      $catalog_object3->setTaxData($tax_data);
+
+      $objects = [$catalog_object, $catalog_object3];
+      $catalog_object_batch = new \Square\Models\CatalogObjectBatch($objects);
+
+      $batches = [$catalog_object_batch];
+      $uniqueid = Uuid::uuid4();
+      Log::info($uniqueid);
+      $body = new \Square\Models\BatchUpsertCatalogObjectsRequest($uniqueid, $batches);
+
+      $api_response = $client->getCatalogApi()->batchUpsertCatalogObjects($body);
+
+      if ($api_response->isSuccess()) {
+          $result = $api_response->getResult();
+          echo '<pre/>';print_r($result);die;
+          return $result;
+      } else {
+          $errors = $api_response->getErrors();
+          //pr($errors);
+          return $errors;
+      }
+
     } catch (ApiException $e) {
       dd("Recieved error while calling Square: " . $e->getMessage());
     } 
   }
-  public function createSquarePayment($data)
+
+
+
+  public function updateNewProductInSquare()
   {
-    $client = $this->init();
-    $amount_money = new \Square\Models\Money();
-    $amount_money->setAmount($data['amount']);
-    $amount_money->setCurrency($data['currency']);
+    try{
+      //init square client
+      $client = $this->init();
 
-    // $app_fee_money = new \Square\Models\Money();
-    // $app_fee_money->setAmount(0);
-    // $app_fee_money->setCurrency('USD');
+      //---setting variant price and currency
+      $price_money = new \Square\Models\Money();
+      $price_money->setAmount(300);
+      $price_money->setCurrency('USD');
 
-    $body = new \Square\Models\CreatePaymentRequest(
-        $data['source_id'],
-        Uuid::uuid4(),
-        $amount_money
-    );
-    // $body->setAppFeeMoney($app_fee_money);
-    $body->setReferenceId($data['reference']);
-    $body->setLocationId($data['location_id']);
-    $body->setAutocomplete(true);
-    $body->setNote($data['description']);
+      $item_variation_data = new \Square\Models\CatalogItemVariation();
+      $item_variation_data->setItemId('#coffee');
+      $item_variation_data->setName('Small');
+      $item_variation_data->setSku('small_coffee');
+      $item_variation_data->setPricingType('FIXED_PRICING');
+      $item_variation_data->setPriceMoney($price_money);
 
-    $api_response = $client->getPaymentsApi()->createPayment($body);
-    $payment_id = null;
-    if ($api_response->isSuccess()) {
-        $result = $api_response->getResult();
-        if($result->getPayment()->getStatus() == "COMPLETED")
-        {
-          $payment_id = $result->getPayment()->getId();
-          return $payment_id;
-        }
-    } else {
-        $errors = $api_response->getErrors();
-    }
-   // Log::info("Payment ID");
-   // Log::info($payment_id);
-    return $payment_id;
+      $catalog_object1 = new \Square\Models\CatalogObject('ITEM_VARIATION', '#small_coffee');
+      $catalog_object1->setItemVariationData($item_variation_data);
+
+      $price_money1 = new \Square\Models\Money();
+      $price_money1->setAmount(350);
+      $price_money1->setCurrency('USD');
+
+      $item_variation_data1 = new \Square\Models\CatalogItemVariation();
+      $item_variation_data1->setItemId('#coffee');
+      $item_variation_data1->setName('Large');
+      $item_variation_data1->setSku('large_coffee');
+      $item_variation_data1->setPricingType('FIXED_PRICING');
+      $item_variation_data1->setPriceMoney($price_money1);
+
+      $catalog_object2 = new \Square\Models\CatalogObject('ITEM_VARIATION', '#large_coffee');
+      $catalog_object2->setItemVariationData($item_variation_data1);
+
+      $variations = [$catalog_object1, $catalog_object2];
+      $item_data = new \Square\Models\CatalogItem();
+      $item_data->setName('Coffee');
+      $item_data->setVariations($variations);
+      $item_data->setProductType('REGULAR');
+
+      $catalog_object = new \Square\Models\CatalogObject('ITEM', '#coffee');
+      $catalog_object->setItemData($item_data);
+
+      $tax_data = new \Square\Models\CatalogTax();
+      $tax_data->setName('Drink Tax');
+      $tax_data->setCalculationPhase('TAX_SUBTOTAL_PHASE');
+      $tax_data->setInclusionType('ADDITIVE');
+      $tax_data->setPercentage('7.5');
+
+      $catalog_object3 = new \Square\Models\CatalogObject('TAX', '#sales_tax');
+      $catalog_object3->setTaxData($tax_data);
+
+      $objects = [$catalog_object, $catalog_object3];
+      $catalog_object_batch = new \Square\Models\CatalogObjectBatch($objects);
+
+      $batches = [$catalog_object_batch];
+      $uniqueid = Uuid::uuid4();
+      Log::info($uniqueid);
+      $body = new \Square\Models\BatchUpsertCatalogObjectsRequest($uniqueid, $batches);
+
+      $api_response = $client->getCatalogApi()->batchUpsertCatalogObjects($body);
+
+      if ($api_response->isSuccess()) {
+          $result = $api_response->getResult();
+          echo '<pre/>';print_r($result);die;
+          return $result;
+      } else {
+          $errors = $api_response->getErrors();
+          //pr($errors);
+          return $errors;
+      }
+
+    } catch (ApiException $e) {
+      dd("Recieved error while calling Square: " . $e->getMessage());
+    } 
   }
+  
 }

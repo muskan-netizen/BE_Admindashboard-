@@ -17,6 +17,10 @@ Route::get('/debug-sentry', function () {
 });
 
 Route::group(['middleware' => ['domain']], function () {
+	//square inventory test api
+	//create new object/product with variants
+	Route::get('squareProductCreate', 'Front\OrderController@squareProductCreate')->name('squareProductCreate');
+	Route::get('squareProductUpdate', 'Front\OrderController@squareProductUpdate')->name('squareProductUpdate');
 	//easypay test
 	Route::get('testpayment', 'Front\EasypaisaControllertest@testpayment')->name('testpayment');
 	Route::get('response', 'Front\EasypaisaControllertest@response')->name('response_payment');
