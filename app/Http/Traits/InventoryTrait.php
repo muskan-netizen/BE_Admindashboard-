@@ -141,7 +141,7 @@ trait InventoryTrait
                 'meta_keyword'  => $product_translation['meta_keyword'],
                 'meta_description' => $product_translation['meta_description'],
                 'product_id'    => $order_product_id,
-                'language_id'   => $product_translation['language_id'],
+                'language_id'   => @$product_translation['language_id'] ?? 1,
             ];
             $product_translation_import = \DB::table('product_translations')->updateOrInsert(['product_id' => $order_product_id], $product_trans);
         }
@@ -190,7 +190,7 @@ trait InventoryTrait
                         \DB::table('variant_translations')->insertGetId([
                             'title' => $vaiant_translation['title'],
                             'variant_id' => $order_side_variant_id,
-                            'language_id' => $vaiant_translation['language_id'],
+                            'language_id' => @$vaiant_translation['language_id'] ?? 1,
                             'created_at' => Carbon::now(),
                             'updated_at' => Carbon::now(),
                         ]);
