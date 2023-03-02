@@ -198,16 +198,16 @@ span.org_price.ml-1.font-14 {
     padding: 6px 0px;
 }
 
-.displayProducts .inner_spacing h3 label b {
+.al_body_template_one .displayProducts .inner_spacing h3 label b {
     font-weight: 500;
     color: #000;
 }
 
-.displayProducts .inner_spacing h3 {
+.al_body_template_one .displayProducts .inner_spacing h3 {
     padding: 6px 0px;
 }
 
-.product-description_list span.flag-discount {
+.al_body_template_one .product-description_list span.flag-discount {
     color: #63aa11;
     font-size: 13px;
     font-weight: 500;
