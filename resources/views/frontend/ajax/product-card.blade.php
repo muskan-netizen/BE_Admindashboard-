@@ -40,7 +40,7 @@
                                                                     @if (strlen($data->translation_description) >= 65)
                                                                         <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
                                                                     @else
-                                                                        <p>{{ $data->translation_description }}</p>
+                                                                        <p>{{ @$data->translation_description }}</p>
                                                                     @endif
                                                                     </div>
                                                                     @if($data->inquiry_only == 0)
