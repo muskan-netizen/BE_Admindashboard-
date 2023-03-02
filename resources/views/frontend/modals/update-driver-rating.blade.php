@@ -2,7 +2,7 @@
 .rating_question_item .form-group {
     flex-direction: row-reverse;
     display: flex;
-    width: 50px;
+    width: auto;
     justify-content: center;
     align-items: center;
 }
@@ -11,12 +11,145 @@
     text-transform: capitalize;
     font-weight: 600;
 }
+.rating_question_item .rating-form input[type='radio']+label:before{
+    right: unset;
+    left: 0;
+    font-size: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.rating_question_item .rating-form input[type='radio']+label:after{
+    right: unset;
+    left: 17px;
+    font-size: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.rating_question_item  .rating-form .form-item{
+    width:140px;
+}
+.rating_question_item .form-group label:hover i {
+    color: gold;
+}
+.rating_question_item .rating-form .form-item{
+    justify-content: flex-start!important;
+    display: flex;
+}
+.rating_question_item .rating-form label .fa{
+    font-size: 20px;
+    line-height: 20px;
+}
+.rating_question_item  .rating-form .form-group {
+    margin: 0;
+}
+.radio_cta {
+    width: 160px;
+    text-align: left;
+    display: flex!important;
+    flex-wrap: wrap;
+}
 
+.radio_cta > .form-group {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+.radio_cta .form-group label {
+    position: relative;
+    display: inline-block;
+    padding-left: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #000;
+    min-width:65px;
+}
+.radio_cta .form-group label:before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 1px solid #000;
+    background: transparent;
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 10px;
+    transform: translateY(-50%);
+    border-radius: 3px;
+}
+.rating_question_item > label {
+    width: 60%;
+    color: #000;
+    font-weight: 500;
+    text-transform: capitalize;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.radio_cta .form-group label:after {
+    content: '';
+    width: 10px;
+    height: 6px;
+    border-left: 2px solid #000;
+    border-bottom: 2px solid #000;
+    display: inline-block;
+    position: absolute;
+    left: 3px;
+    top: 6px;
+    transform: rotate(-45deg);
+    opacity: 0;
+}
+.radio_cta .form-group input{
+    position: absolute;
+    top: 0;
+    left:0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    z-index: 1;
+    cursor: pointer;
+    font-size: 0;
+}
+.radio_cta .form-group  input:checked ~  label:after{
+    opacity: 1;
+    border-color: #fff;
+}
+.radio_cta .form-group  input:checked ~  label:before{
+    background-color: var(--theme-deafult);
+    border: var(--theme-deafult);
+}
+.driver_title{
+    padding-bottom:15px; 
+}
+.ratting_textarrea label{
+    color: #000;
+    font-weight: 500;
+    text-transform: capitalize;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.ratting_textarrea textarea {
+    resize: none;
+    background: #f5f5f5;
+    border: 1px solid #f5f5f5;
+    height: 120px;
+    color: #000;
+    padding: 10px;
+    margin-top: 10px;
+}
+.al_body_template_one  .ratting_textarrea button {
+    width: 100%!important;
+    display: block!important;
+    max-width: 100%!important;
+    letter-spacing: 0;
+    font-size: 14px!important;
+}
 </style>
 
 
 
-<h4>Rate your Driver</h4>
+<div class="driver_title">
+    <h4>Rate your Driver</h4>
+</div>
 <form id="review-driver-form" class="theme-form" action="javascript:void(0)" method="post">
     @csrf
     <input type="hidden" name="order_vendor_product_id" value="{{$order_vendor_product_id}}">
@@ -27,15 +160,15 @@
 
     <textarea class="form-control" maxlength="500" name="hidden_review" hidden>{{$rating_details->review??''}}</textarea>
     @if(!empty($dispatch_rating_ques))
-    <div id="rating_question" class="form-row">
+    <div id="rating_question" class="form-row ">
      
             @foreach($dispatch_rating_ques as $question)
             <div class="col-md-12 mb-3 p-0" id="{{$question['id']}}Input">
-                <div class="row w-100 align-items-center justify-content-between m-0 rating_question_item">
-                    <label for=""><b>{{$question['title'] ? $question['title']  : ''}}</b></label>
+                <div class="row w-100  justify-content-between m-0 rating_question_item">
+                    <label for="">{{$question['title'] ? $question['title']  : ''}}</label>
                      <input type="hidden" name="question_id[]" value="{{ $question['id'] }}">
                     @if(($question['type']) == 5)
-                        <div class="d-flex justify-space-between">
+                        <div class="d-flex justify-space-between radio_cta">
                             @foreach($question['option'] as $key => $option)
                             @php
                             $selected = (isset($question['order_quetions']) && !empty($question['order_quetions'])) ? $question['order_quetions']['option_id'] : '';
@@ -59,7 +192,7 @@
         @foreach($dispatch_rating_types as $rating_type)
         <div class="col-md-12 mb-3 p-0" id="{{$rating_type['id']}}Input">
             <div class="row w-100 align-items-center justify-content-between m-0 rating_question_item">
-                <label for=""><b>{{$rating_type['title'] ? $rating_type['title']  : ''}}</b></label>
+                <label for="">{{$rating_type['title'] ? $rating_type['title']  : ''}}</label>
                  <input type="hidden" name="rating_type_id[]" value="{{ $rating_type['id'] }}">
                  @php
                  $dispatch_rating = (isset($rating_type['order_rating']) && !empty($rating_type['order_rating'])) ? $rating_type['order_rating']['rating'] : 0;
@@ -127,7 +260,7 @@
     @endif
     
 
-    <div class="form-row">
+    <div class="form-row ratting_textarrea">
 
         <div class="col-md-12 mb-3">
             <label for="review">{{__('Review')}}</label>
@@ -172,7 +305,7 @@ $(document).ready(function (e) {
 
 $.ajaxSetup({
 headers: {
-'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+'X-CSRF-TOKEN': $('meta[name="  -token"]').attr('content')
 }
 });
 
