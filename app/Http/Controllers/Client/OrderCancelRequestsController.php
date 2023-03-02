@@ -307,10 +307,11 @@ class OrderCancelRequestsController extends BaseController
 
             DB::commit();
             $this->sendCancelOrderRequestStatusNotification($currentOrderStatus, $status);
-            return $this->successResponse('', __('Request has been ' . $msg . ' Successfully.'));
-        } catch (\Exception $ex) {
+            return $this->successResponse(__('Request has been '.$msg.' Successfully.'),200);
+        }
+        catch(\Exception $ex){
             DB::rollback();
-            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+            return $this->errorResponse($ex->getMessage(), 400);
         }
     }
 

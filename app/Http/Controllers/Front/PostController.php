@@ -297,8 +297,6 @@ class PostController extends FrontController
             }
             $product->save();
             
-
-            
             if ($product->id > 0) {
                 $datatrans[] = [
                     'title' => $request->product_name??null,

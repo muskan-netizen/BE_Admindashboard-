@@ -391,6 +391,9 @@ class OrderController extends FrontController
                     ->orderBy('id', 'DESC')
                     ->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                if($vendor->cancelled_by == $user->id){
+                    $vendor->order_status = OrderVendor::CANCEL_STATUS;
+                }
                 foreach ($vendor->products as $product) {
                     if (isset($product->pvariant->media)) {
                         if ($product->pvariant->media->isNotEmpty()) {
