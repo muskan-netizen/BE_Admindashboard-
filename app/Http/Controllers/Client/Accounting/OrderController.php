@@ -104,7 +104,7 @@ class OrderController extends Controller{
                 return number_format($vendor_orders->admin_commission_percentage_amount, 2);
             })
             ->addColumn('order_status', function($vendor_orders) {
-                return $vendor_orders->OrderStatusOption->title;
+                return $vendor_orders->OrderStatusOption ? ($vendor_orders->OrderStatusOption->title ?? 'N/A') : "N/A";
             })
             ->addColumn('vendor_name',function($vendor_orders){
                 return $vendor_orders->vendor ? __($vendor_orders->vendor->name) : '';
