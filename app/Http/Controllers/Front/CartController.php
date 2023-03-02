@@ -1361,9 +1361,6 @@ class CartController extends FrontController
                         }
                     }
                 }
-                dd($vendorData->vendor->fixed_service_charge);
-                pr($vendorData->vendor->fixed_service_charge);
-                
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');
@@ -1420,7 +1417,7 @@ class CartController extends FrontController
                  
 
                 //end applying service fee on vendor products total
-                $total_service_fee += $vendorData->vendor->service_charge_amount;
+                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;;
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
                 $vendorData->delivery_fee_charges = decimal_format($delivery_fee_charges);
