@@ -288,3 +288,9 @@ width: 100%;
 .al_body_template_one .outer-categories .filter_brand aside.side_fillter .collection-collapse-block:last-child {
     border-bottom: none !important;
 }
+body.al_body_template_one ul.exzoom_img_ul img{
+    height: auto;
+}
+body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded{
+    height: auto;
+}
