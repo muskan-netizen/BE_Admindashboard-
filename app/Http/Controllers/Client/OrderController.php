@@ -58,7 +58,7 @@ class OrderController extends BaseController
         //         }
         //     }
         // }
-        $return_requests = OrderReturnRequest::where('status', 'Pending');
+        $return_requests = OrderReturnRequest::where('status', 'Pending')->where('type',1);
         $rescheduleOrderCount = RescheduleOrder::count();
         if ($user->is_superadmin == 0) {
             $return_requests = $return_requests->whereHas('order.vendors.vendor.permissionToUser', function ($query) use ($user) {
