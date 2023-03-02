@@ -611,12 +611,12 @@ class UserhomeController extends FrontController
         $on_sale_products = [];
         $long_term_service_products = [];
         $recently_viewed = [];
-        //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-        $p_dim = '260/180';
+        $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+        $p_dim = '260/260';
         if (isset($set_template)  && $set_template->template_id == 3){
-            $p_dim = '300/350';
+            $p_dim = '300/300';
         }elseif(isset($set_template)  && $set_template->template_id == 2){
-            $p_dim = '260/180';
+            $p_dim = '260/260';
         }
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');

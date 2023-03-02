@@ -928,7 +928,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                                 <!--<span class="rating-number">2.0</span>-->
                                             </div>
                                             <p><%= product.vendor_name %></p>
-                                            <p class="border-bottom pb-1">In <%= product.category_name %></p>
+                                            <p class="border-bottom pb-1 d-none">In <%= product.category_name %></p>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <b><% if(product.inquiry_only == 0) { %>
                                                     {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.variant_price) %>
@@ -980,7 +980,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                             </div>
                                             <!-- <h3 class="m-0"><%= product.translation_title %></h3> -->
                                             <p><%= product.vendor_name %></p>
-                                            <p class="border-bottom pb-1">In <%= product.category_name %></p>
+                                            <p class="border-bottom pb-1 d-none">In <%= product.category_name %></p>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <b><% if(product.inquiry_only == 0) { %>
                                                     {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.variant_price) %>

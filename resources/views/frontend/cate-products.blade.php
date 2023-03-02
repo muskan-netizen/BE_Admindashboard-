@@ -63,7 +63,8 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                         </ul> -->
                     <aside class="side_fillter mt-2">
                     <!-- side-bar colleps block stat -->
-                    <div class="collection-filter-block bg-transparent p-0 m-0">
+                    <div class="collection-filter-block bg-transparent p-0 m-0 brand-left">
+                        @if( count($category->brands) > 0 || count($variantSets) > 0 )
                         <!-- <div class="collection-mobile-back">
                             <span class="filter-back d-lg-none d-inline-block">
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
@@ -283,7 +284,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                     </div>
                                     <div class="displayProducts main_category" id="category_products_filter">
                                         <div class="col-12 custom_filtter mt-2">
-                                        <select name="order_type" id='order_type' class="sortingFilter p-1">
+                                        <select name="order_type" id='order_type' class="sortingFilter p-1 mb-0">
                                                 <option value="">{{__('Sort By')}}</option>
                                                 <option value="featured">{{_('Featured')}}</option>
                                                 <option value="a_to_z">{{_('A to Z')}}</option>
