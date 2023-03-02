@@ -128,7 +128,7 @@ li.userDetailsJobDone.d-block span.text-right {
   
         <!-- Modal body -->
         <div class="modal-body">
-          <div class="col text-right pl-0 address_list" >
+          <div class="col text-right pl-0 address_lista" >
               <select name="productPrice_address_id" id='productPrice_address_id'  class="address_list-child  select-2  p-1 w-100 mb-2">
                 <option value="">{{ __('Select Address') }}</option>
                   @foreach ($address as $addres)

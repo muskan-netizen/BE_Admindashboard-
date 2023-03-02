@@ -554,6 +554,19 @@ $currentPage = $_GET['page']??1;
         $('.sortingFilter').val('newly_added');
         filterProducts();
         });
+
+
+$(document).ready(function(){
+        let currentPage = '{{$_GET["page"]??"1"}}';
+        if(currentPage){
+            $('.page-link').each(function(){
+                if($(this).text()==currentPage){
+                    $(this).prev().addClass('active');
+                    break;
+                }
+            })
+        }
+})
 </script>
 
 

@@ -129,9 +129,7 @@ class UserhomeController extends FrontController
     {
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-
-             if($dispatch_domain->business_type == 'taxi'){
-
+             if($dispatch_domain->business_type == 'taxi'){                 
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $endpoint =$url . "/api/send-documents";
                  $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
@@ -484,7 +482,14 @@ class UserhomeController extends FrontController
             // if (count($home_page_labels) == 0)
             //     $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
             $request->request->add(['type'=>Session::get('vendorType')??'delivery','noTinJson'=>1] );
-            $homePageData = $this->postHomePageData($request);
+            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+
+            $CabBookingLayout = CabBookingLayout::web()->where('is_active', 1);
+            $home_page_pickup_labels   = clone $CabBookingLayout;
+            $for_no_product_found_html = clone $CabBookingLayout;
+            $enable_layout             = clone $CabBookingLayout;
+            $enable_layout = $enable_layout->orderBy('order_by','asc')->pluck('slug')->toArray();
+            $homePageData = $this->postHomePageData($request, $set_template,$enable_layout);
 
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData, $navCategories) {
                 if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
@@ -500,14 +505,14 @@ class UserhomeController extends FrontController
             if ($only_cab_booking == 1)
                 return Redirect::route('categoryDetail', 'cabservice');
 
-            $home_page_pickup_labels = CabBookingLayout::with('translations')->web();
-           
-            $home_page_pickup_labels = $home_page_pickup_labels->where('is_active', 1)->where('for_no_product_found_html',0)->orderBy('order_by')->get();
+            
 
-            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+            $home_page_pickup_labels  = $home_page_pickup_labels->with('translations')->where('for_no_product_found_html',0)->orderBy('order_by')->get();
 
-            $for_no_product_found_html = CabBookingLayout::with('translations')->web()->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
-            $enable_layout = CabBookingLayout::where('is_active',1)->web()->orderBy('order_by','asc')->pluck('slug')->toArray();
+         
+
+            $for_no_product_found_html = $for_no_product_found_html->with('translations')->where('for_no_product_found_html',1)->orderBy('order_by')->get();
+            
             $categories = [];
             if(isset($set_template)  && ($set_template->template_id == 8 || $set_template->template_id == 9)){
                 $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
@@ -596,7 +601,7 @@ class UserhomeController extends FrontController
      * @param  mixed $request
      * @return void
      */
-    public function postHomePageData(Request $request)
+    public function postHomePageData(Request $request,$set_template,$enable_layout)
     {
         $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service']);
         $vendor_ids = [];
@@ -605,7 +610,7 @@ class UserhomeController extends FrontController
         $on_sale_products = [];
         $long_term_service_products = [];
         $recently_viewed = [];
-        $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+        //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
         $p_dim = '260/180';
         if (isset($set_template)  && $set_template->template_id == 3){
             $p_dim = '300/350';
@@ -631,27 +636,25 @@ class UserhomeController extends FrontController
         $language_id = Session::get('customerLanguage');
 
         $currency_id = $this->setCurrencyInSesion();
+        $CabBookingLayoutTranslation =CabBookingLayoutTranslation::where('language_id',$language_id);
+        $featured_products_title =  $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','featured_products');})->value('title');
 
-        $featured_products_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','featured_products');})->value('title');
+        $vendors_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','vendors');})->value('title');
 
-        $vendors_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','vendors');})->value('title');
+        $new_products_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','new_products');})->value('title');
 
-        $new_products_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','new_products');})->value('title');
+        $on_sale_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','on_sale');})->value('title');
 
-        $on_sale_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','on_sale');})->value('title');
+        $brands_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','brands');})->value('title');
 
-        $brands_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','brands');})->value('title');
+        $best_sellers_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','best_sellers');})->value('title');
 
-        $best_sellers_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','best_sellers');})->value('title');
+        $trending_vendors_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','trending');})->value('title');
 
-        $trending_vendors_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','trending');})->value('title');
+        $recent_orders_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
 
-        $recent_orders_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
-
-        $selected_products_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','selected_products');})->value('title');
-
-
-        $enable_layout = CabBookingLayout::where('is_active',1)->web()->pluck('slug')->toArray();
+        $selected_products_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','selected_products');})->value('title');
+        //$enable_layout = CabBookingLayout::where('is_active',1)->web()->pluck('slug')->toArray();
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
             $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
@@ -665,16 +668,16 @@ class UserhomeController extends FrontController
             $brands = [];
         }
 
-        $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
-                ->where('id', '>', '1')
-                // ->where('is_core', 1)
-                ->whereNotIn('type_id', [4, 5])
-                ->where(function ($q) {
-                    $q->whereNull('vendor_id');
-                })->orderBy('position', 'asc')
-                ->orderBy('id', 'asc')
-                ->where('status', 1)
-                ->orderBy('parent_id', 'asc')->get();
+        // $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+        //         ->where('id', '>', '1')
+        //         // ->where('is_core', 1)
+        //         ->whereNotIn('type_id', [4, 5])
+        //         ->where(function ($q) {
+        //             $q->whereNull('vendor_id');
+        //         })->orderBy('position', 'asc')
+        //         ->orderBy('id', 'asc')
+        //         ->where('status', 1)
+        //         ->orderBy('parent_id', 'asc')->get();
 
 
         Session::forget('vendorType');
@@ -708,6 +711,7 @@ class UserhomeController extends FrontController
         /**
          * put a limit to get vendors.
          */
+        $long_term_vendors = $vendors;
         $vendors = $vendors->where('status', 1)
                     ->inRandomOrder()
                     ->limit(10)->get();
@@ -989,7 +993,7 @@ class UserhomeController extends FrontController
          //get long term service 
         $long_term_service_products =[];
         if( @$additionalPreference['is_long_term_service'] == 1){
-            $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type,$p_dim);
+            $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $language_id, $currency_id,'', $request->type,$p_dim);
         }
         if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type,$p_dim);
@@ -1062,17 +1066,13 @@ class UserhomeController extends FrontController
 
 
         /** Respose data */
-        // dd($dashboardProductsData);
         $data = [
             'brands' => $brands,
             'vendors' => $vendors,
-            //'new_products' => $new_products,
             'homePageLabels' => $home_page_labels,
-            //'feature_products' => $feature_products,
-           // 'on_sale_products' => $on_sale_products,
             'trending_vendors' => $trendingVendors,
             'active_orders' => $activeOrders,
-            // 'dashboardProductsData'=>$dashboardProductsData
+            'long_term_service' => $long_term_service_products,
             
         ];
        
@@ -1080,20 +1080,14 @@ class UserhomeController extends FrontController
             $data = [
                 'brands' => $brands,
                 'vendors' => $vendors,
-            //    'new_products' => $new_products,
                 'top_rated'       => $top_rated_products ?? '',
                 'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
-              //  'featured_products' => $feature_products,
-              //  'on_sale' => $on_sale_products,
                 'cities' => $this->cities,
                 'long_term_service' => $long_term_service_products,
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
-               // 'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
-                //'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
-                //'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
                 'recent_orders' => $activeOrders,
             ];
             if(count($dashboardProductsData)>0){
@@ -1308,7 +1302,7 @@ class UserhomeController extends FrontController
                 }
             }
         }
-
+        $additionalPreference = @getAdditionalPreference(['is_token_currency_enable']);
         foreach ($products as  $new_product_detail) {
             $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
@@ -1331,8 +1325,8 @@ class UserhomeController extends FrontController
                 'vendor' => $new_product_detail->vendor,
                 'price_numeric' =>@$new_product_detail->variant->first()->price??0 * $multiply,
                 'compare_price' =>@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,
-                'compare_at_price' =>@getAdditionalPreference(['is_token_currency_enable']) ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
-                'price' => @getAdditionalPreference(['is_token_currency_enable']) ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
+                'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
+                'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
         }

@@ -2201,7 +2201,7 @@ class OrderController extends BaseController
                 $order->order_status =  ['current_status' => ['id' => 6, 'title' => __("Replaced")]];
                 // $order->order_status->current_status->title = "Replaced";
                 }else{
-                    $order->order_status =  ['current_status' => ['id' => $order_sts->id, 'title' => __($order_sts->title)]];
+                    $order->order_status =  ['current_status' => ['id' => @$order_sts->id ?? '', 'title' => __(@$order_sts->title)]];
                 }
 
             } else {

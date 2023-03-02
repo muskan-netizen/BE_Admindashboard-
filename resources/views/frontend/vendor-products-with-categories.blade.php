@@ -41,7 +41,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
     <!-- section start -->
     <section class="section-b-space ratio_asos alProductCategories">
         <div class="collection-wrapper">
-            <div class="container">
+            <div class="container-fluid p-0">
                 <div class="row">
                     <div class="col-12">
                         <div class="product-banner-img">
@@ -54,8 +54,11 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                 </div>
                     {{-- <div class="row">
                         <div class="col-12"> --}}
+                        <div class="vendor-design_new">
+                            <div class="container">
+                            <div class="row align-items-center">
                         <div class="col-12 product-bottom-bar vendor-description pb-2">
-                            <div class="vendor-details-left d-sm-flex align-items-center">
+                            <div class="row vendor-details-left align-items-center">
                                 <div class="vender-icon mr-sm-3">
                                     <div class="vendor-stories">
                                         <div class="circle-wrapper"></div>
@@ -63,7 +66,12 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                             <img id="vendorStoriesImg" src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-sm avatar-lg" alt="profile-image">
                                         </a>
                                     </div>
-                                    <div class="vendor-reviwes">
+                                   
+                                    <!-- <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image"> -->
+                                </div>
+                                <div class="ml-sm-1 position-relative profile_address">
+                                            <h3>{{ $vendor->name }}</h3>
+                                            <div class="vendor-reviwes">
                                         @if ($vendor->vendorRating > 0)
                                             <div class="rating-text-box ml-sm-auto">
                                                 <span>{{ $vendor->vendorRating }}</span>
@@ -75,10 +83,6 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                 <div class="reviews-text">Delivery Reviews</div>
                                             </div> --}}
                                     </div>
-                                    <!-- <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image"> -->
-                                </div>
-                                <div class="ml-sm-1 position-relative profile_address">
-                                            <h3>{{ $vendor->name }}</h3>
                                             @if (!empty($vendor->desc))
                                                 <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
                                                     {{ substr($vendor->desc, 0, 80) . '...' }}</h4>
@@ -158,6 +162,10 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                             </div>
 
                         </div>
+                        </div>
+                        </div>
+                        </div>
+
                         {{-- </div>
                     </div> --}}
             </div>
@@ -188,7 +196,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-5 text-right pl-0">
+                                        <div class="col-5 text-right pl-0 pr-0">
                                             <!-- <span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span> -->
                                             <select name="order_type" id='order_type' class="product_tag_filter p-1">
                                                 <option value="featured">{{ __('Featured') }}</option>

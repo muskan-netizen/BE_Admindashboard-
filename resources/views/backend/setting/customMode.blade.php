@@ -1,3 +1,4 @@
+
 @if ($client_preference_detail->business_type != 'taxi')
 @if ($client_preference_detail->business_type != 'laundry')
     <div class="col-md-4">
@@ -677,6 +678,14 @@
    <input type="hidden"  @if(@getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'] == 1) value="1" @else value="0" @endif  name="is_place_order_delivery_zero"  id="is_place_order_delivery_zero"/>
 </div>
 </div>
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+    <label for="is_service_product_price_from_dispatch_switch" class="mr-2 mb-0">{{__('Freelancer Mod for Service Booking')}}<small class="d-block pr-5">{{__("To view list of agents on booking")}}</small></label>
+      <span> <input type="checkbox" data-plugin="switchery" name="is_service_product_price_from_dispatch_switch" id="is_service_product_price_from_dispatch_switch" class="form-control checkbox_change" data-className="is_service_product_price_from_dispatch"  data-color="#43bee1" @if(   $getAdditionalPreference ['is_service_product_price_from_dispatch'] == '1') checked='checked' @endif>
+       </span>
+       <input type="hidden"  @if(   $getAdditionalPreference['is_service_product_price_from_dispatch'] == '1')  value="1" @else value="0" @endif  name="is_service_product_price_from_dispatch"  id="is_service_product_price_from_dispatch"/>
+    </div>
+</div>
 
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
@@ -709,5 +718,12 @@
                 @if ($getAdditionalPreference['is_file_cart_instructions'] == 1) value="1" @else value="0" @endif
                 name="is_file_cart_instructions" id="is_file_cart_instructions" />
         </span>
+</div>
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_influencer_refer_and_earn_switch" class="mr-2 mb-0">{{__('Influencer Module')}}<small class="d-block pr-5">{{__("Enable to allow influencer module.")}}</small></label>
+    <span> <input type="checkbox" data-plugin="switchery" name="is_influencer_refer_and_earn_switch" id="is_influencer_refer_and_earn_switch" class="form-control checkbox_change" data-className="is_influencer_refer_and_earn" data-color="#43bee1" @if(@getAdditionalPreference(['is_influencer_refer_and_earn'])['is_influencer_refer_and_earn'] == 1) checked='checked'  @endif>
+        </span>
+        <input type="hidden"  @if(@getAdditionalPreference(['is_influencer_refer_and_earn'])['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif  name="is_influencer_refer_and_earn"  id="is_influencer_refer_and_earn"/>
     </div>
 </div>

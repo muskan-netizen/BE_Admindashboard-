@@ -189,6 +189,7 @@ public function createKwikOrder($dataRec)
         "vendor_id"=> !empty($this->vendor_id) ? $this->vendor_id : '',
         "sareaId"=> 3,
         "is_multiple_tasks"=> 1,
+        "sareaId"=> 3,
         "timezone"=> 60,
         "has_pickup"=> 1,
         "has_delivery"=> 1,

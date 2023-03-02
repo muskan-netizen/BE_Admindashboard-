@@ -28,6 +28,7 @@ class DbChooserApi
 
         $database_name = 'royoorders';
         $clientCode = '';
+  
         if (!array_key_exists("code", $header)){
             return response()->json(['error' => 'Invalid Code', 'message' => 'Invalid Code'], 401);
         }

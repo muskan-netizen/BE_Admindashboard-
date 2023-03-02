@@ -40,7 +40,7 @@ return [
     'on_demand'    => 'on_demandicon',         // Services that are available any time you want to use it. 
     'laundry'      => 'laundryicon',            // Laundry related products are mentioned in this flow.
     'appointment'  => 'appointmenticon',        // appointment related products are mentioned in this flow.
-    'p2p'          => 'P2P',
+    'p2p'          => 'p2picon',
 
   ],
   /**  
@@ -64,6 +64,7 @@ return [
     'on_demand'    => '6', // Services that are available any time you want to use it. 
     'laundry'      => '7',            // Laundry related products are mentioned in this flow.
     'appointment'  => '8',  
+    'p2p'  => '9',
   ],
   'Period' =>[
     'days'     => 'Daily',
