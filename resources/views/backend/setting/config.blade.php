@@ -6,7 +6,7 @@
 
 
     @php
-        $sms_crendential = json_decode($preference->sms_credentials);
+        $sms_crendential = json_decode($preference->sms_credentials, true);
     @endphp
 
     <div class="container-fluid custom-toggle al">
@@ -2806,7 +2806,7 @@
                                 <hr/>
                                 @php
                                     $accounting_status = (isset($accounting) && !empty($accounting)) ? $accounting->status : 0;
-                                    $creds = (isset($accounting) && !empty($accounting)) ? json_decode($accounting->credentials) : [];
+                                    $creds = (isset($accounting) && !empty($accounting)) ? json_decode($accounting->credentials, true) : [];
                                 @endphp
                                 
                                 <div class="row">
@@ -2844,7 +2844,7 @@
         {{-- ends here Third party Accounting form --}}
 
         {{-- starts square POS integration --}}
-        <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="col-xl-4 col-lg-4 h-100">
             <div class="page-title-box">
                 <h4 class="page-title text-uppercase">Square POS integration</h4>
             </div>
@@ -2874,33 +2874,41 @@
                                     <div class="col-12">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="square_enable_status_switch" class="mr-3">{{ __("Enable") }} <br/></label>
-                                        <input type="checkbox" data-plugin="switchery" name="square_enable_status" id="square_enable_status_switch" class="form-control" data-color="#43bee1" @if($getAdditionalPreference['square_enable_status'] == 1) checked @endif>
+                                        <input type="checkbox" data-plugin="switchery" name="square_enable_status_switch" id="square_enable_status_switch" class="form-control checkbox_change" data-className="square_enable_status" data-color="#43bee1" @if($getAdditionalPreference['square_enable_status'] == 1) checked @endif>
+                                        <input type="hidden" @if($getAdditionalPreference['square_enable_status'] == 1) value="1" @else value="0" @endif name="square_enable_status" id="square_enable_status" />
                                     </div>
                                     @php
-                                        $square_credentials = json_decode($getAdditionalPreference['square_credentials']);
-                                        $square_sandbox_enable_status = isset($square_credentials['square_sandbox_enable_status']) ? $square_credentials['square_sandbox_enable_status'] : '';
-                                        $square_application_id = isset($square_credentials['square_application_id']) ? $square_credentials['square_application_id'] : '';
-                                        $square_access_token = isset($square_credentials['square_access_token']) ? $square_credentials['square_access_token'] : '';
+                                        $square_credentials = json_decode($getAdditionalPreference['square_credentials'], true);
+                                        $square_sandbox_enable_status = isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : '';
+                                        $square_application_id = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
+                                        $square_access_token = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
+                                        $square_location_id = isset($square_credentials['location_id']) ? $square_credentials['location_id'] : '';
                                     @endphp
                                         <div class="mt-2 squareFields" @if($getAdditionalPreference['square_enable_status'] != 1) style="display:none;" @endif>
                                             <div class="row">
                                                 <div class="col-12">
                                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                                         <label for="square_sandbox_enable_status_switch" class="mr-3">{{ __("Sandbox") }} <br/><small>{{__('Update Sandbox Application ID and Access Token')}}</small></label>
-                                                        <input type="checkbox" data-plugin="switchery" name="square_sandbox_enable_status" id="square_sandbox_enable_status_switch" class="form-control" data-color="#43bee1" @if($square_sandbox_enable_status == 1) checked @endif>
+                                                        <input type="checkbox" data-plugin="switchery" name="square_sandbox_enable_status_switch" id="square_sandbox_enable_status_switch" class="form-control checkbox_change" data-className="square_sandbox_enable_status" data-color="#43bee1" @if($square_sandbox_enable_status == 1) checked @endif>
+                                                        <input type="hidden" @if($square_sandbox_enable_status == 1) value="1" @else value="0" @endif name="square_sandbox_enable_status" id="square_sandbox_enable_status" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label for="square_location_id">{{ __("Location ID") }}</label>
+                                                        <input type="text" name="square_location_id" id="square_location_id" placeholder="" class="form-control" value="{{ old('square_location_id', $square_location_id)}}" autocomplete="off">
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
                                                         <label for="square_application_id">{{ __("Application ID") }}</label>
-                                                        <input type="text" name="square_application_id" id="square_application_id" placeholder="" class="form-control" value="{{ old('square_application_id', $square_application_id)}}">
+                                                        <input type="text" name="square_application_id" id="square_application_id" placeholder="" class="form-control" value="{{ old('square_application_id', $square_application_id)}}" autocomplete="off">
                                                     </div>
                                                 </div>
-                                            
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
                                                         <label for="square_access_token">{{ __("Access Token") }}</label>
-                                                        <input type="text" name="square_access_token" id="square_access_token" placeholder="" class="form-control" value="{{ old('square_access_token', $square_access_token)}}">
+                                                        <input type="password" name="square_access_token" id="square_access_token" placeholder="" class="form-control" value="{{ old('square_access_token', $square_access_token)}}" autocomplete="off">
                                                     </div>
                                                 </div>
                                             </div>

@@ -19,10 +19,14 @@ trait SquareInventoryManager{
   private $application_id;
   private $access_token;
   private $location_id;
+  private $location_id;
   public function __construct()
   {
-    $square_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'square')->where('status', 1)->first();
-    $creds_arr = json_decode($square_creds->credentials);
+    $getAdditionalPreference = getAdditionalPreference(['square_enable_status', 'square_credentials']);
+    $square_credentials = json_decode($getAdditionalPreference['square_credentials'], true);
+    $square_sandbox_enable_status = isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : '';
+    $square_application_id = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
+    $square_access_token = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
     $this->application_id = $creds_arr->application_id??''; 
     $this->access_token = $creds_arr->api_access_token??'';
     $this->location_id = $creds_arr->location_id??'';
