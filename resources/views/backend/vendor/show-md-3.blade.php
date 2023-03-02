@@ -479,7 +479,7 @@ body .rating-form .btn-reset {
 </div>
 <button class="add_edit_driver_review">rating</button>
 <input type="hidden" value="{{$vendor->id}}" id="vendor_id">
-<div class="modal fade driver-rating" id="driver_rating" tabindex="-1" aria-labelledby="driver_ratingLabel"
+<div class="modal fade driver-rating driver_rating_vendor" id="driver_rating" tabindex="-1" aria-labelledby="driver_ratingLabel"
 aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
