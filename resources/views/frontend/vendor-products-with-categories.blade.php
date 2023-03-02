@@ -62,7 +62,7 @@ span.alPriceValue, span.alPriceValue i {
                                             <h3>{{ $vendor->name }}</h3>
                                             <div class="vendor-reviwes">
                                         @if ($vendor->vendorRating > 0)
-                                            <div class="rating-text-box ml-sm-auto">
+                                            <div class="rating-text-box ml-sm-auto p-1">
                                                 <span>{{ $vendor->vendorRating }}</span>
                                                 <i class="fa fa-star" aria-hidden="true"></i>
                                             </div>
@@ -85,7 +85,9 @@ span.alPriceValue, span.alPriceValue i {
                                                             <span class="copied_txt" id="show_copy_msg_on_click_copy">{{ __('Copy') }}</span>
                                                             <span class="copied_txt" id="show_copy_msg_on_click_copied" style="display:none;">{{ __('Copied') }}</span>
                                                         </a>
-                                                        <span id="p1" style="display:none;">{{url()->current()}}</span>
+                                                        <span id="p1" style="display:none;">{{url()->current()}}
+                                                        
+                                                        </span>
                                                     </li>
 
                                                 {{-- <li class="d-block food-items">
@@ -111,7 +113,8 @@ span.alPriceValue, span.alPriceValue i {
                                                         </li>
                                                     @endif
                                                 @endif
-                                                @if(!empty($socialMediaUrls))
+                                                
+                                                @if(isset($socialMediaUrls) && count($socialMediaUrls)>0)
                                                     <li class="d-block vendor-instagram">
                                                         <i class="fa fa-globe"></i> <a class="open-social-medialinks" href="javascript:void(0)">Social Media Links</a>
                                                     </li>

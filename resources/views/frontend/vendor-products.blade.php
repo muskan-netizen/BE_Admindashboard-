@@ -61,7 +61,7 @@ $currentPage = $_GET['page']??1;
                                                         <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
                                                     @endif
                                                     @endif
-                                                    @if(!empty($socialMediaUrls))
+                                                    @if(isset($socialMediaUrls) && count($socialMediaUrls)>0)
                                                         <a class="open-social-medialinks" data-toggle="tooltip" title="Social Media Links" href="javascript:void(0)"><i class="fa fa-globe"></i></a>
                                                     @endif
                                                 </div>

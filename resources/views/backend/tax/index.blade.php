@@ -10,11 +10,11 @@
             <div class="col-md-4 page-title-box float-left">
                 <h4 class="page-title">{{ __("Tax") }}</h4>
             </div>
-            <div class="col-md-4 mt-5 float-right">
-                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <div class="col-md-4 mt-5">
+                <div class="form-group mb-3 alCustomToggleColor">
+                    {{-- <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor"> --}}
                     <label for="is_tax_price_inclusive" class="mr-2 mb-0">{{__('Price Inclusive of Tax')}}</label>
-                <span> <input type="checkbox" data-plugin="switchery" name="is_tax_price_inclusive" id="is_tax_price_inclusive" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_tax_price_inclusive == '1')) checked='checked' @endif>
-                    </span>
+                 <input type="checkbox" data-plugin="switchery" name="is_tax_price_inclusive" id="is_tax_price_inclusive" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_tax_price_inclusive == '1')) checked='checked' @endif>
                 </div>
             </div>
         </div>
