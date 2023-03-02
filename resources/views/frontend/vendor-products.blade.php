@@ -101,15 +101,15 @@ $currentPage = $_GET['page']??1;
                     </div>
                 </div>
             </div>
+            @if(1)
             <div class="row mb-3 homepageSix mt-4">
                 <div class="collection-filter col-md-3 main-fillter">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <aside class="side_fillter">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
-                      
-                        @if(count($brands) > 0)
+                        @if(!empty($brands) && count($brands) > 0)
                         <div class="collection-collapse-block open mb-2">
-                            <h3 class="collapse-block-title">brand</h3>                            
+                            <h3 class="collapse-block-title">brand</h3>
                             <div class="collection-collapse-block-content pb-0">
                                 <div class="collection-brand-filter">
                                     @foreach($brands as $key => $val)
@@ -124,9 +124,9 @@ $currentPage = $_GET['page']??1;
                             </div>
                         </div>
                         @endif
-                                                @if(count($variantSets) > 0)
+                        @if(!empty($variantSets) && count($variantSets) > 0)
                         @foreach($variantSets as $key => $sets)
-                        @php
+                         @php
                             
                             $slug = '';
                             if(!empty($sets->variantDetail) && !empty($sets->variantDetail->varcategory) && !empty($sets->variantDetail->varcategory->cate) && !empty($sets->variantDetail->varcategory->cate->slug)) {
@@ -135,7 +135,7 @@ $currentPage = $_GET['page']??1;
                             @endphp
                             @if($slug)
                         <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
-                            
+                           
                             <h3 class="collapse-block-title"> {{$slug . $sets->title}}</h3>
                             <div class="collection-collapse-block-content">
                                 <div class="collection-brand-filter">
@@ -162,7 +162,6 @@ $currentPage = $_GET['page']??1;
                                     @endif
                                 </div>
                             </div>
-                           
                         </div>
                          @endif
                         @endforeach
@@ -402,6 +401,7 @@ $currentPage = $_GET['page']??1;
                     </div>
                 </div>
             </div>
+            @endif
         </div>
     </div>
     <div class="modal fade" id="social-media-links-modal" data-backdrop="static" data-keyboard="false"
@@ -555,5 +555,20 @@ $currentPage = $_GET['page']??1;
         filterProducts();
         });
 
+
+// $(document).ready(function(){
+//         let currentPage = '{{$_GET["page"]??"1"}}';
+//         if(currentPage){
+//             $('.page-link').each(function(){
+//                 if($(this).text()==currentPage){
+//                     $(this).prev().addClass('active');
+//                     break;
+//                 }
+//             })
+//         }
+// })
 </script>
+
+
+
 @endsection
