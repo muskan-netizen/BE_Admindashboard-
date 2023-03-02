@@ -83,10 +83,13 @@ class RatingController extends BaseController{
             if($request->has('dispatch_traking_url') && !empty($request->dispatch_traking_url)){
               
                 $postdata = $request->postdata;
+                
                
                 $this->setDriverRatingDispatcher($postdata , $request->dispatch_traking_url);
-               
-               // return $this->successResponse([],'Rating Submitted.');
+                $ratings = OrderDriverRating::updateOrCreate([
+                    'order_id' => $request->order_id,
+                    'user_id' => Auth::id()],['rating' => $request->Average_rating,'review' => $request->review]);
+               return $this->successResponse([],'Rating Submitted.');
             }
             
             //return $request->all();
@@ -250,15 +253,13 @@ class RatingController extends BaseController{
     */
     public function getDriverRating(Request $request){
         try {
-            //dd($request->all());
             if($request->has('dispatch_traking_url') && !empty($request->dispatch_traking_url)){
-                $traking_url = 'http://192.168.102.65:8001/order/tracking/745e3f/YUCmbs';
-                $rating_response = $this->getRatingQuestingDispatcher($traking_url); //$request->dispatch_traking_url / change dynamic url
+                $rating_response = $this->getRatingQuestingDispatcher($request->dispatch_traking_url); 
+                $rating_details = OrderDriverRating::where('id',$request->id)->first();
+                $rating_response['rating_details'] =   $rating_details;
                 return $this->successResponse($rating_response,'Rating Details.');
-                // $dispatch_rating_ques =  @$rating_response['attribute'] ?? [];
-                // $dispatch_rating_types = @$rating_response['ratingType'] ?? [];
             }
-            $rating_details = OrderDriverRating::where('id',$request->id)->first();
+        
             if(isset($rating_details)){
                 return $this->successResponse($rating_details,'Rating Details.');
             }
