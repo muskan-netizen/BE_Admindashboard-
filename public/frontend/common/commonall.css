@@ -165,6 +165,7 @@ span.org_price.ml-1.font-14{
     font-weight: 400;
     border-radius: 4px;
 }
+
 .al_body_template_one .common-banner img {
     border-radius: 10px;
 }
@@ -293,4 +294,13 @@ body.al_body_template_one ul.exzoom_img_ul img{
 }
 body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded{
     height: auto;
+}
+
+
+/*==========  Dark theme 02-03-2023 ============*/
+body.dark .custom_filtter select{
+    color: #cfd4da
+}
+body.dark .displayProducts .inner_spacing h3 label b{
+    color: #cfd4da
 }

@@ -341,6 +341,23 @@ body.al_body_template_two {
     display: inline-block;
 }
 
+
+/*==========  start Dark the header css 02-03-20223 ==========*/
+    body.dark .search_bar  svg g {
+        fill: #cfd4da;
+    }
+    body.dark .search_bar.menu-right .icon-nav a span{
+        color: #cfd4da;
+    }
+    body.dark  .pixelstrap li a:hover .nav-cate-img {
+        background-color: #fff;
+    }
+
+
+/*==========  end Dark the header css 02-03-20223 ==========*/
+
+
+
 @media (max-width:1400px) {
     .main-menu.al_template_one_menu .container {
         max-width: 100%;
@@ -1022,7 +1039,7 @@ body.al_body_template_two {
     .al_body_template_one .site-topbar .location-bar h2:after {
         right: 20px !important;
     }
-    .navigation-tab .nav-link.active {
+    body.dark .navigation-tab .nav-link.active {
         background: transparent !important;
     }
     .navigation-tab {
