@@ -32,7 +32,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
     @if($client_preference_detail->business_type == 'taxi')
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row align-items-center">
                 <div class="col-sm-3 col-md-2">
                     <a class="navbar-brand mr-0"  href="{{ route('userHome') }}"><img id="theme-logo" class="logo-image" style="height:60px" alt="" src="{{ $urlImg }}"></a>

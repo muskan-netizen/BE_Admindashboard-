@@ -32,32 +32,27 @@ class OrderController extends BaseController
 
     use ApiResponser;
     use \App\Http\Traits\OrderTrait;
+    public $from_date;
+    public $to_date;
+    public $setWeekDate;
+    function __construct()
+    {
+        $this->from_date = Carbon::now()->startOfDay()->subDays(7);
+        $this->to_date = Carbon::now()->endOfDay();
+        $this->setWeekDate =  $this->from_date->format('d M Y') . ' to '. $this->to_date->format('d M Y');
+    }
+
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request )
     {
+        $client_preferences = ClientPreference::first();
+        $EnabledLuxuryOptions = $this->geteEnabledLuxuryOptions($client_preferences);
         $user = Auth::user();
-        // $orders = Order::with(['vendors.products','orderStatusVendor', 'address','user'])->orderBy('id', 'DESC');
-        // if (Auth::user()->is_superadmin == 0) {
-        //     $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
-        //         $query->where('user_id', Auth::user()->id);
-        //     });
-        // }
-        // $orders = $orders->get();
-        // foreach ($orders as $order) {
-        //     $order->address = $order->address ? $order->address['address'] : '';
-        //     $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, H:i A');
-        //     foreach ($order->vendors as $vendor) {
-        //         $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
-        //         $vendor->order_status = $vendor_order_status ? $vendor_order_status->OrderStatusOption->title : '';
-        //         foreach ($vendor->products as $product) {
-        //             $product->image_path  = $product->media->first() ? $product->media->first()->image->path : '';
-        //         }
-        //     }
-        // }
         $return_requests = OrderReturnRequest::where('status', 'Pending');
         $rescheduleOrderCount = RescheduleOrder::count();
         if ($user->is_superadmin == 0) {
@@ -77,7 +72,7 @@ class OrderController extends BaseController
         $cancel_order_requests = $cancel_order_requests->count();
 
         // Pending counts
-        $pending_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use ($user) {
+        $pending_order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->whereHas('vendors', function ($query) use ($user) {
             $query->where('order_status_option_id', 1);
             if ($user->is_superadmin == 0) {
                 $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
@@ -102,10 +97,13 @@ class OrderController extends BaseController
                         }
                     });
             });
-        })->count();
+        });
+        
+        $pending_order_count = $pending_order_count->between($this->from_date, $this->to_date)->count();
+
 
         // past orders count
-        $past_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use ($user) {
+        $past_order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->whereHas('vendors', function ($query) use ($user) {
             $query->whereIn('order_status_option_id', [6, 3]);
             if ($user->is_superadmin == 0) {
                 $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
@@ -130,10 +128,11 @@ class OrderController extends BaseController
                     }
                 });
             });
-        })->count();
+        });
+        $past_order_count = $past_order_count->between($this->from_date, $this->to_date)->count();
 
         // active orders count
-        $active_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use ($user) {
+        $active_order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->whereHas('vendors', function ($query) use ($user) {
             $query->whereIn('order_status_option_id', [2, 4, 5]);
             if ($user->is_superadmin == 0) {
                 $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
@@ -159,7 +158,8 @@ class OrderController extends BaseController
                     }
                 });
             });
-        })->count();
+        });
+        $active_order_count = $active_order_count->between($this->from_date, $this->to_date)->count();
 
         // all vendors
         $vendors = Vendor::where('status', '!=', '2')->orderBy('id', 'desc');
@@ -170,25 +170,45 @@ class OrderController extends BaseController
         }
         $vendors = $vendors->get();
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-        $client_preferences = ClientPreference::first();
+       
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
         $accounting = ThirdPartyAccounting::where('status', 1)->get();
         $del_order_count = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id', 6)->count();
-        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences'));
+        $request->merge(['response'=>2,'filter_order_status'=>'pending_orders']);
+        $OrderFilterData = $this->postOrderFilter($request);
+        $setWeekDate = $this->setWeekDate;
+       // pr($OrderFilterData['pagination'] );
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData','setWeekDate'));
     }
+   public function geteEnabledLuxuryOptions($clientPreference){
+    $LuxuryOptions = [];
+   // $enabled_vendor_types = [];
+        foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+            $clientVendorTypes = $vendor_typ_key.'_check';
+                if($clientPreference->$clientVendorTypes == 1){
+                    $vendor_type_name = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
+                   // $enabled_vendor_types[] = $vendor_type_name;
+                    $LuxuryOptions[] = config('constants.VendorTypesLuxuryOptions.'.$vendor_typ_key);
+                }
+        }
+        return $LuxuryOptions;
+       // pr($LuxuryOptions);
+   }
 
     public function postOrderFilter(Request $request, $domain = '')
     {
+      
         $response = [];
         $user = Auth::user();
         $preferences = ClientPreference::first();
+        $EnabledLuxuryOptions = $this->geteEnabledLuxuryOptions($preferences);
         $client_timezone = DB::table('clients')->first('timezone');
         $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $HasGiftCard = 0;
-        $orders = Order::with(['vendors.products' => function ($q) {
+        $orders = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with(['vendors.products' => function ($q) {
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
         if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
@@ -201,7 +221,7 @@ class OrderController extends BaseController
             });
         }
 
-        $order_count = Order::with('vendors')->where(function ($q1) {
+        $order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->where(function ($q1) {
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
             $q1->orWhere(function ($q2) {
@@ -224,13 +244,19 @@ class OrderController extends BaseController
         if (!empty($request->get('date_filter'))) {
             $date_date_filter = explode(' to ', $request->get('date_filter'));
             $to_date = (!empty($date_date_filter[1])) ? $date_date_filter[1] : $date_date_filter[0];
-            $from_date = $date_date_filter[0];
-
+            $from_date = date("Y-m-d", strtotime($date_date_filter[0]));  
+            $to_date = date("Y-m-d", strtotime($to_date));  
             $orders->between($from_date . " 00:00:00", $to_date . " 23:59:59");
+            
 
             //order_count
             $order_count->between($from_date . " 00:00:00", $to_date . " 23:59:59");
+        }else{
+            $orders->between($this->from_date, $this->to_date);
+            //order_count
+            $order_count->between($this->from_date, $this->to_date);
         }
+
         //get by vendor
         if (!empty($request->get('vendor_id'))) {
             $order_count->whereHas('vendors', function ($query)  use ($request) {
@@ -262,6 +288,7 @@ class OrderController extends BaseController
                     ->orWhere('country', 'like', '%' . $request->search_keyword . '%');
             })->orWhere('order_number', 'like', '%' . $request->search_keyword . '%');
         }
+        // dd(count($order_count->get()));
         $pending_orders = clone $order_count;
         $active_orders = clone $order_count;
         $orders_history = clone $order_count;
@@ -330,35 +357,6 @@ class OrderController extends BaseController
                         });
                     break;
 
-                    // /* luxury option orders */
-                    // case 'delivery_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 1);
-                    //     break;
-
-                    // case 'dine_in_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 2);
-                    //     break;
-
-                    // case 'takeaway_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 3);
-                    //     break;
-
-                    // case 'rental_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 4);
-                    //     break;
-
-                    // case 'pick_drop_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 5);
-                    //     break;
-
-                    // case 'on_demand_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 6);
-                    //     break;
-
-                    // case 'laundry_orders':
-                    //     $orders = $filter_orders->where('luxury_option_id', 7);
-                    //     break;
-                    // /* luxury option orders */
             }
         }
         $orders = $orders->whereHas('vendors')->where(function ($q1) {
@@ -417,7 +415,7 @@ class OrderController extends BaseController
         if ($lux_id > 0) {
             $orders = $orders->where('luxury_option_id', $lux_id);
         }
-        $orders = $orders->paginate(30);
+        $orders = $orders->paginate(20);
 
         // Pending orders count
         $pending_orders = $pending_orders->with('vendors', function ($query) use ($user) {
@@ -457,48 +455,6 @@ class OrderController extends BaseController
             $query->whereIn('order_status_option_id', $order_status_optionsd);
         })->count();
 
-        // // Delivery orders count
-        // if(isset($delivery_orders)){
-        //     $delivery_orders = $delivery_orders->where('luxury_option_id', 1)->count();
-        //     $response['delivery_orders'] = $delivery_orders;
-        // }
-
-        // // Dine in orders count
-        // if(isset($dine_in_orders)){
-        //     $dine_in_orders = $dine_in_orders->where('luxury_option_id', 2)->count();
-        //     $response['dine_in_orders'] = $dine_in_orders;
-        // }
-
-        // // Takeaway orders count
-        // if(isset($takeaway_orders)){
-        //     $takeaway_orders = $takeaway_orders->where('luxury_option_id', 3)->count();
-        //     $response['takeaway_orders'] = $takeaway_orders;
-        // }
-
-        // // Rental orders count
-        // if(isset($rental_orders)){
-        //     $rental_orders = $rental_orders->where('luxury_option_id', 4)->count();
-        //     $response['rental_orders'] = $rental_orders;
-        // }
-
-        // // Pick drop orders count
-        // if(isset($pick_drop_orders)){
-        //     $pick_drop_orders = $pick_drop_orders->where('luxury_option_id', 5)->count();
-        //     $response['pick_drop_orders'] = $pick_drop_orders;
-        // }
-
-        // // On demand orders count
-        // if(isset($on_demand_orders)){
-        //     $on_demand_orders = $on_demand_orders->where('luxury_option_id', 6)->count();
-        //     $response['on_demand_orders'] = $on_demand_orders;
-        // }
-
-        // // Laundry orders count
-        // if(isset($laundry_orders)){
-        //     $laundry_orders = $laundry_orders->where('luxury_option_id', 7)->count();
-        //     $response['laundry_orders'] = $laundry_orders;
-        // }
-
 
         foreach ($orders as $key => $order) {
 
@@ -516,12 +472,14 @@ class OrderController extends BaseController
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
 
-            $total_other_taxes = 0.00;
-            foreach (explode(":", $order->total_other_taxes) as $row) {
-                $total_other_taxes += (float)$row;
+            $order->total_other_taxes_amount  = 0.00;
+           // foreach (explode(":", $order->total_other_taxes) as $row) {
+             //   $total_other_taxes += (float)$row;
+            //}
+            if(!empty($order->total_other_taxes)){
+                $order->total_other_taxes_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
             }
-            $order->total_other_taxes_amount = $total_other_taxes;
-
+            
             foreach ($order->vendors as $vendor) {
                 $vendor->isAlert = false;
                 $vendor->alertMessage = "";
@@ -568,11 +526,11 @@ class OrderController extends BaseController
             if ($order->luxury_option_id > 0) {
                 $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
                 if ($luxury_option->title == 'takeaway') {
-                    $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
+                    $luxury_option_name = getNomenclatureName('Takeaway', $langId, false);
                 } elseif ($luxury_option->title == 'dine_in') {
-                    $luxury_option_name = $this->getNomenclatureName('Dine-In', $langId, false);
+                    $luxury_option_name = getNomenclatureName('Dine-In', $langId, false);
                 } elseif ($luxury_option->title == 'on_demand') {
-                    $luxury_option_name = $this->getNomenclatureName('Services', $langId, false);
+                    $luxury_option_name = getNomenclatureName('Services', $langId, false);
                 } else {
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
@@ -587,13 +545,52 @@ class OrderController extends BaseController
         }
         $admincurrency = ClientCurrency::getAdminCurrencySymbol();
 
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+    
+        $langId = Session::get('customerLanguage');
+        $fixedFee = $this->fixedFee($langId);
         $response['orders'] = $orders;
-        $response['pending_orders'] = $pending_orders;
-        $response['active_orders'] = $active_orders;
-        $response['orders_history'] = $orders_history;
         $response['admin_currency'] = $admincurrency;
-
-        return $this->successResponse($response, '', 201);
+        $filter_order_status = $request->filter_order_status;
+        $response2['next_page_url'] = @$orders->toArray()['next_page_url'];
+        $response2['active_orders'] = $active_orders??0;
+        $response2['orders_history'] = $orders_history??0;
+        $response2['pending_orders'] = $pending_orders??0;
+        $response2['delivery_orders'] = $delivery_orders??0;
+        $response2['dine_in_orders'] = $dine_in_orders??0;
+        $response2['takeaway_orders'] = $takeaway_orders??0;
+        $response2['rental_orders'] = $rental_orders??0;
+        $response2['pick_drop_orders'] = $pick_drop_orders??0;
+        $response2['on_demand_orders'] = $on_demand_orders??0;
+        $response2['laundry_orders'] = $laundry_orders??0;
+        $response2['appointment_orders'] = $appointment_orders??0;
+        $response2['p2p_orders'] = $p2p_orders??0;
+        $response2['pagination'] ='';
+       
+        if(!empty($response2['next_page_url'])){
+           // $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']); 
+            $url_components = parse_url($response2['next_page_url']);
+            parse_str($url_components['query'], $params);
+            $page_num = $params['page'];
+         
+           // $page = $request->has('page') ? $request->page : 1;
+            $nextPageUrl = route('orders.filter').'?page='.$page_num;
+           // pr( $nextPageUrl);
+            $pagination = '<div class="col-md-4 offset-md-4 text-center">
+                            <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="'.$nextPageUrl.'" data-rel="'.$filter_order_status.'">
+                                <span class="ladda-label">'. __('Load More').'</span>
+                                <span class="ladda-spinner"></span>
+                                <div class="ladda-progress" style="width: 0px;"></div>
+                            </button>
+                        </div>';
+            $response2['pagination'] = $pagination;
+        }
+        $response2['count_resp'] = count($orders);
+        $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee))->render();
+        if($request->response ==2){
+            return $response2;
+        }
+        return $this->successResponse($response2, '', 201);
     }
 
     public function uploadReport(Request $request)

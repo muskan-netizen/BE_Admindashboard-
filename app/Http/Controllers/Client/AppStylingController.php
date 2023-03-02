@@ -52,7 +52,7 @@ class AppStylingController extends BaseController
         }
         $tab_style = AppStyling::where('name', 'Tab Bar Style')->first();
         if ($tab_style) {
-            $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->get();
+            $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->where('image','!=','bar_three.png')->get();
         }
 
 
@@ -63,12 +63,12 @@ class AppStylingController extends BaseController
             $selected_ids[] = $value->product_id;
         
     }
-
+        $AppStylingOption = AppStylingOption::whereNotIn('template_id',[1,2]);
         switch($client_preferences->business_type){
             case "taxi":    # if business type is taxi
             $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
             if ($homepage_style) {
-                $homepage_style_options = AppStylingOption::where('image', 'home_six.png')->where('app_styling_id', $homepage_style->id)->get();
+                $homepage_style_options =  $AppStylingOption->where('image', 'home_six.png')->where('app_styling_id', $homepage_style->id)->get();
                 $home_page_labels = HomePageLabel::whereIn('slug',['dynamic_page','pickup_delivery'])->with('translations')->orderBy('order_by');
                 $cab_booking_layouts = CabBookingLayout::whereIn('slug',['dynamic_page','pickup_delivery'])->with('translations');
             }
@@ -76,7 +76,7 @@ class AppStylingController extends BaseController
             case "food_grocery_ecommerce":    # if business type is taxi
             $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
             if ($homepage_style) {
-                $homepage_style_options = AppStylingOption::where('image','!=', 'home_six.png')->where('app_styling_id', $homepage_style->id)->get();
+                $homepage_style_options = $AppStylingOption->where('image','!=', 'home_six.png')->where('app_styling_id', $homepage_style->id)->get();
             }
             $home_page_labels = HomePageLabel::whereNotin('slug',['pickup_delivery'])->with('translations')->orderBy('order_by');
             $cab_booking_layouts = CabBookingLayout::whereNotin('slug',['pickup_delivery'])->with('translations');
@@ -84,7 +84,7 @@ class AppStylingController extends BaseController
             default:
             $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
             if ($homepage_style) {
-                $homepage_style_options = AppStylingOption::where('app_styling_id', $homepage_style->id)->get();
+                $homepage_style_options = $AppStylingOption->where('app_styling_id', $homepage_style->id)->get();
             }
             $home_page_labels = HomePageLabel::with('translations')->orderBy('order_by');
             $cab_booking_layouts = CabBookingLayout::with('translations');

@@ -131,8 +131,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                         </div>
                     </div>
                 </aside>
-           
-            @endif
+           @endif
             @php $show_new_Products = 0; @endphp
                     @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
@@ -401,9 +400,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
         type: 'double',
         grid: false,
         min: 0,
-        max: 50000,
+        max: {{ $maxPrice??50000 }},
         from: 0,
-        to: 50000,
+        to: {{ $maxPrice??50000 }},
         prefix: " "
     });
     var ajaxCall = 'ToCancelPrevReq';

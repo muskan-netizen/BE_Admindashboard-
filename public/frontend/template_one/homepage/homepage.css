@@ -4904,6 +4904,12 @@ body.al_body_template_one .top-banner-wrapper {
         font-size: 18px;
         line-height: 24px;
     }
+    .al_body_template_two  .cab-banner-area.alTaxiBannerStart {
+        height: 50vh!important;
+        display: flex!important;
+        align-items: center!important;
+        background-position: left!important;
+    }
 }
 
 @media (max-width:576px) {
