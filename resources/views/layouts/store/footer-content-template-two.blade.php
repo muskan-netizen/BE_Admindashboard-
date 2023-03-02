@@ -10,6 +10,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $paymentMethod = \App\Models\PaymentMethod::where('is_show',1)->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
+$company_name = \App\Models\ClientPreferenceAdditional::where('key_name','bottom_name')->first();
 @endphp
 @php
 $applocale = 'en';
@@ -29,7 +30,7 @@ if(session()->has('applocale')){
         <section class="section-b-space light-layout py-xl-4 pt-4 pb-0">
             <div class="container">
                 <div class="row footer-theme partition-f">
-                    <div class="col-lg-2 d-flex align-items-center justify-content-center justify-content-md-start">
+                    <div class="col-lg-2 d-flex  justify-content justify-content-md-start">
                         <div class="footer-logo mb-0">
                             <a href="{{ route('userHome') }}">
                                 @isset($urlImg)<img class="logo-image" src="{{$urlImg}}" style="height:50px;">@endisset
@@ -202,8 +203,7 @@ if(session()->has('applocale')){
                             $prevYear = $currYear - 1;
                             $currYear = substr($currYear, -2);
                             @endphp
-                            <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} | {{__('All rights reserved')}}</p>
-                        </div>
+                            <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} @if(isset($company_name)) @if(!empty($company_name->key_value)) | {{$company_name->key_value}}  @endif @endif| {{__('All rights reserved')}}</p>
                     </div>
                     @if($client_preference_detail->show_payment_icons == 1)
                     <div class="col-xl-6 col-md-6 col-sm-12">

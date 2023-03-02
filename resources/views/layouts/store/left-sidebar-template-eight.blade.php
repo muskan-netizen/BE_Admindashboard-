@@ -166,6 +166,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                   <div class="container al_mobile-header d-flex align-items-center justify-content-between position-relative">
                       <div class="al_count_tabs_new_design d-none d-sm-block"  >
                           @if($mod_count > 1)
+                          
                           <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
                               @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                   @php
@@ -287,7 +288,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                   <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}"> @csrf <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}"> </form>
                                   <ul class="d-flex align-items-center m-0">
                                       
-                                      <li class="onhover-div pl-0 shake-effect">
+                                      <li class="onhover-div pl-0 shake-effect ">
                                           @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
                                           <a class="btn btn-solid d-flex align-items-center p-0" href="{{route('showCart')}}">
                                               <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>

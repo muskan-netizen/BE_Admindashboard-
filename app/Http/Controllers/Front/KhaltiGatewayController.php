@@ -229,7 +229,7 @@ class KhaltiGatewayController extends FrontController
             $plaseOrderForPickup = new PickupDeliveryController();
             $pickupDeliveryResponse = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
             $responseData = $this->successResponse($pickupDeliveryResponse, '', 200)->getData();
-            \Log::info(json_encode($responseData));
+            //\Log::info(json_encode($responseData));
             $returnUrl = route('front.booking.details', $request['data']['order_id']);
             $response['status'] = 'Success';
             $response['payment_from'] = 'pickup_delivery';
@@ -363,7 +363,7 @@ class KhaltiGatewayController extends FrontController
                     $plaseOrderForPickup = new PickupDeliveryController();
                     $pickupDeliveryResponse = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
                     $response = $this->successResponse($pickupDeliveryResponse, '', 200)->getData();
-                    \Log::info(json_encode($response));
+                    //\Log::info(json_encode($response));
                 }
                 return $this->successResponse($transactionId, __('Order placed successfully'));
             } else {
@@ -383,7 +383,7 @@ class KhaltiGatewayController extends FrontController
                 return $this->errorResponse(__('Payment Failed'), 400);
             }
         } catch (\Exception $ex) {
-            Log::info($ex->getMessage());
+          Log::info($e->getMessage());
             return $this->errorResponse(__('Server Error'), 400);
         }
     }

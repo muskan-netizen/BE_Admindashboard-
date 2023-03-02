@@ -2,7 +2,7 @@
 
 namespace App\Http\Traits\HomePage;
 
-use App\Models\{Category, HomeProduct, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory, VendorCities};
+use App\Models\{Category, HomeProduct, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory, VendorCities, PromoCodeDetail, Promocode};
 use Carbon\Carbon;
 use Session, DB;
 use Illuminate\Support\Str;
@@ -283,6 +283,32 @@ trait HomePageTrait
              }
          }
          return number_format($vendor_rating, 1, '.', '');
+     }
+
+     /* Get vendor rating from its products rating */
+     public function vendorNoOfRatings($vendorProducts)
+     {
+         $vendor_rating = 0;
+         $product_rating = 0;
+         $product_count = 0;
+         if($vendorProducts->isNotEmpty()){
+            
+             foreach($vendorProducts as $product){
+                 if($product->averageRating > 0){
+                     $product_count++;
+                 }
+             }
+         }
+         return $product_count;
+     }
+
+     public function getVendorWisePromoCodes($vendor_id){
+        $now = Carbon::now()->toDateTimeString();
+        $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
+        $result2 = Promocode::whereIn('id', $vendor_promo_code_details->toArray())->where('restriction_on', 1)->whereHas('details', function($q) use($vendor_id){
+            $q->where('refrence_id', $vendor_id);
+        })->where('restriction_on', 1)->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
+        return $result2;
      }
 
      public function vendorProducts_v2($venderIds, $langId, $currency = 'USD', $where = '', $type)

@@ -304,7 +304,7 @@
 
         @if($opt)
         <div class="col-md-6 mb-3">
-            <form method="POST" id="payment_option_form" action="{{route('shippo.updateAll')}}" class="h-100">
+            <form method="POST" id="payment_option_form" action="{{route('shipoption.updateAll')}}" class="h-100">
                 @csrf
                 @method('POST')
                 <div class="card-box h-100">

@@ -263,9 +263,9 @@
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
 				@foreach($banners as $key => $banner)
-				@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+				@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
 				<div class="carousel-item @if($key == 0) active @endif">
-					<a class="banner-img-outer" href="{{$url??'#'}}">
+					<a class="banner-img-outer" href="{{$url??'#'}}"  target="_blank">
 						<link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1170/500' . $banner->image['image_path']}}" />
 						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1170/500' . $banner->image['image_path']}}">
 					</a>
@@ -699,18 +699,18 @@
 		{{--  && (count($homePageData['nav_categories']) != 0) --}}
 		@elseif(!empty($homePageLabel->nav_categories) && $homePageLabel->slug == 'nav_categories' && (count($homePageLabel->nav_categories) != 0))
 		<section class="popular-brands left-shape_ position-relative bg-light-gray">
-			<div class="container">
+			<div class="container  p2p-full-width ">
 				<div class="al_top_heading text-center d-flex align-items-center">
 					<h2 class="col h2-heading text-center">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
 				</div>
 				<div class="row">
 					<div class=" col-12 al_custom_categories">
-						<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="col-12 d-flex align-items-center justify-content-center">
+						<div class="Popular_Brands render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							<!-- <div class=" col-12 d-flex flex-wrap align-items-center justify-content-center"> -->
 								@foreach ( $homePageLabel->nav_categories as $category )
 									@include('frontend.home_page_8.category')
 								@endforeach
-							</div>
+							<!-- </div> -->
 						</div>
 					</div>
 				</div>
@@ -756,9 +756,9 @@
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 			<div class="top-heading d-flex justify-content-between">
-				<h2 class="col h2-heading mb-3"> @php
-					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
-					@endphp </h2>
+			<h2 class="col h2-heading mb-3"> @php
+				echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+				@endphp </h2>
 					<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
 			</div>
 			<div class="row">
@@ -777,7 +777,7 @@
 		</section>
 		@elseif($homePageLabel->slug == 'selected_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
-			<div class="container">
+			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="col h2-heading mb-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
@@ -787,11 +787,11 @@
 				<div class="row">
 					<div class="col-12">
 						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="row">
+							<!-- <div class="row"> -->
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
 								@include('frontend.home_page_8.selected_products')
 								@endforeach
-							</div>
+							<!-- </div> -->
 						</div>
 					</div>
 				</div>

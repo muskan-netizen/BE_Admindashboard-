@@ -12,8 +12,7 @@ class ProductVariant extends Model
 {
 	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min','role_id'];
 
-  protected $appends = ['actual_price', 'new_price'];
-
+    protected $appends = ['actual_price', 'new_price'];
 
 	public function getImageAttribute($value)
     {
@@ -72,7 +71,7 @@ class ProductVariant extends Model
     }
     public function product()
     {
-        return $this->belongsTo('App\Models\Product', 'product_id', 'id')->select('id', 'sku', 'title', 'averageRating', 'inquiry_only', 'vendor_id', 'has_inventory', 'sell_when_out_of_stock', 'batch_count', 'minimum_order_count','markup_price','minimum_duration_min','minimum_duration','additional_increments','buffer_time_duration','is_fix_check_in_time','check_in_time','additional_increments_min','buffer_time_duration_min');
+        return $this->belongsTo('App\Models\Product', 'product_id', 'id')->select('id', 'sku', 'title', 'averageRating', 'inquiry_only', 'vendor_id', 'has_inventory', 'sell_when_out_of_stock', 'batch_count', 'minimum_order_count','markup_price','minimum_duration_min','minimum_duration','additional_increments','buffer_time_duration','is_fix_check_in_time','check_in_time','additional_increments_min','buffer_time_duration_min', 'replaceable', 'return_days', 'returnable');
     }
     public function wishlist(){
        return $this->hasOne('App\Models\UserWishlist', 'product_id', 'product_id')->select('product_id', 'user_id');
@@ -80,6 +79,7 @@ class ProductVariant extends Model
 
     public function productVariantByRole(){
         if(auth()->user() !=null){
+
             return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', Auth::user()->role_id);
         }else{
             return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', 1);
@@ -129,6 +129,7 @@ class ProductVariant extends Model
 
         //  price based on role
         if(auth()->user() !=null){
+
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
             if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
                 return $this->productVariantByRole->amount;
@@ -161,21 +162,22 @@ class ProductVariant extends Model
            if(auth()->user() !=null && auth()->user()->is_admin == 1){
             $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor->vendor_id)->first();
             if($userVendor){
-                return $value;
+                return decimal_format($value);
             }
         }
         if($checkMarkup){
-            return $value + $this->markup_price??0;
+            return decimal_format($value + $this->markup_price??0);
         }
 
+        
         //  price based on role
         if(auth()->user() !=null){
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
             if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
-                return $this->productVariantByRole->amount;
+                return decimal_format($this->productVariantByRole->amount);
             }
         }
-        return $value;
+        return decimal_format($value);
 
     }
 
@@ -186,7 +188,7 @@ class ProductVariant extends Model
         $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
         //if vendor price add with markup price
            if($checkMarkup){
-                return $value;
+                return decimal_format($value);
             }
 
             return 0;

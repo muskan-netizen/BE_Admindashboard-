@@ -17,6 +17,7 @@ class CategoryController extends BaseController
     private $field_status = 2;
     use ApiResponser;
     /**     * Get Company ShortCode     *     */
+    
     public function categoryData(Request $request, $cid = 0)
     {
         try {
@@ -534,6 +535,66 @@ class CategoryController extends BaseController
                 }
             }
             return $this->successResponse($products);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+
+    public function getCategoryAllData(Request $request, $cid = 0)
+    {
+        try {
+            if ($cid == 0) {
+                return response()->json(['error' => 'No record found.'], 404);
+            }
+            $user = Auth::user();
+            $langId = $user->language;
+            $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude);
+            
+            $category = Category::with([
+                'tags', 'type'  => function($q) {
+                    $q->select('id', 'title as redirect_to');
+                }, 
+                'categoryMobileBanner' => function($q) {
+                    $q->where('link', '=', 'category')->where('status', 1);
+                },
+                'products'  => function ($q) use ($langId) {
+                        $q->with(['media' => function($q){
+                            $q->groupBy('product_id');
+                        }, 'media.image',
+                        'translation' => function($q) use($langId){
+                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                        },
+                        'variant' => function($q) use($langId){
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                            $q->groupBy('product_id');
+                        },
+                    ]);
+                },
+                'products'  => function ($q) use ($langId) {
+                        $q->with(['media' => function($q){
+                            $q->groupBy('product_id');
+                        }, 'media.image',
+                        'translation' => function($q) use($langId){
+                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                        },
+                        'variant' => function($q) use($langId){
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                            $q->groupBy('product_id');
+                        },
+                    ]);
+                }
+                ,
+                'vendorCategory.vendor'  => function ($q) use ($ses_vendors) {
+                    $q->whereIn('id', $ses_vendors);
+                },
+                'translation' => function ($q) use ($langId) {
+                    $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                        ->where('category_translations.language_id', $langId);
+                }
+            ])->select('id', 'status', 'icon', 'image', 'slug', 'type_id', 'can_add_products')->where('status', 1)->where('parent_id', $cid)->get();
+            
+            return $this->successResponse($category);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }

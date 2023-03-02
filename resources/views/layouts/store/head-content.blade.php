@@ -20,6 +20,7 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/spinner.css')}}">
 <link href="{{ asset('assets/libs/datetimepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
 @endif
 
 @if(isset($set_template)  && $set_template->template_id == 1)
@@ -104,7 +105,7 @@
 	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/homepage/inner_page.css')}}">
 	@endif
 @endif
-
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/commonall.css')}}">
 
 
 @yield('css-links')

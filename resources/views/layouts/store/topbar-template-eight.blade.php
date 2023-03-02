@@ -117,7 +117,7 @@ if(session()->has('applocale')){
                             <span class="alAccount">{{__('My Account')}}</span>
                             <ul class="onhover-show-div">
                                 @if(Auth::user())
-                                    @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                                @if(@auth()->user()->can('dashboard-view') || Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
                                         <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
                                     </li>
@@ -349,6 +349,7 @@ if(session()->has('applocale')){
                               </div>
                           </div>
                       </div>
+
                         <li class="onhover-div pl-0 shake-effect">
                                                 @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
                                                 <a class="btn btn-solid d-flex align-items-center p-0" href="{{route('showCart')}}">
@@ -440,6 +441,7 @@ if(session()->has('applocale')){
     </div>--}}
 </div>
 <div class="al_mobile_menu al_new_mobile_header">
+
                 <div class="al_new_cart">
                     @if($client_preference_detail->cart_enable == 1)
                     <div class="onhover-dropdown_al onhover-div mobile-cart">

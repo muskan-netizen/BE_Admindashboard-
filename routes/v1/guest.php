@@ -3,7 +3,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
     Route::post('dispatcher/check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromDispatcher');
 
-    Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+    Route::get('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
 
     Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 
@@ -65,6 +65,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('get/subcategory/vendor', 'Api\v1\HomeController@getSubcategoryVendor');
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
+        Route::post('getShippingProductDeliverySlots', 'Api\v1\ProductController@getShippingProductDeliverySlots');
+        Route::post('getProductDeliverySlotsInterval', 'Api\v1\ProductController@getProductDeliverySlotsInterval');
         Route::POST('checkProductAvailibility', 'Api\v1\ProductController@checkProductAvailibility');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');
@@ -119,6 +121,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('passbase/store', 'Api\v1\PassbaseController@storeAuthkey');
 
         Route::post('order-tracking', 'Api\v1\OrderController@OrderTracking');
+
+        Route::post('upload-cart-file', 'Api\v1\CartController@uploadOrderFile'); 
+        Route::get('remove-cart-file', 'Api\v1\CartController@RemoveOrderFile'); 
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger

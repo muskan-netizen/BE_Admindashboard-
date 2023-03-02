@@ -426,10 +426,10 @@
                                             </ul>
                                         </div>
                                         <div class="product-wrapper-grid">
-                                            <div class="row margin-res">
+                                            <div class="row margin-res test">
                                               @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
-                                                {{-- @dd($data->vendor->id) --}}
+                                                {{-- @dd($data) --}}
                                                 <?php /*$imagePath = $imagePath2 = '';
                                                 $mediaCount = count($data->media);
                                                 for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
@@ -438,7 +438,7 @@
                                                     }
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 }*/ ?>
-                                                <div class="col-xl-3 col-md-3 col-6 mt-3">
+                                                <div class="col-xl-3 col-md-4 col-6 mt-3">
                                                     <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0 product-card-box position-relative al_box_third_template al">
                                                         <div class="product-image">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">

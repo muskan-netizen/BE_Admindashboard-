@@ -29,7 +29,7 @@ $(document).ready(function() {
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-        }
+        }   
     });
     let queryString = window.location.search;
     let path = window.location.pathname;
@@ -45,7 +45,8 @@ $(document).ready(function() {
         if (urlParams.has('ordernumber')) {
             order_number = urlParams.get('ordernumber');
 
-        }if (urlParams.has('payment_from')) {
+        }
+        if (urlParams.has('payment_from')) {
             paymentFrom = urlParams.get('payment_from');
             if(paymentFrom == "pickup_delivery"){
                 path = "pickup_delivery";
@@ -874,6 +875,7 @@ $(document).ready(function() {
         let subscription_id = $("input[name='subscription_id']");
         let walletElement = $("input[name='wallet_amount']");
         let cabElement = $("#pickup_now");
+        let pending_amount = $("input[name='wallet_amount_pending']");
         let ajaxData = [];
         let data = [];
 
@@ -903,6 +905,10 @@ $(document).ready(function() {
             data.payment_from = 'pickup_delivery';
             data.order_number = order.order_number;
             data.reload_route = order.route;
+        }else if((typeof pending_amount_for_past_order !== 'undefined') && (pending_amount_for_past_order == 1)){
+            total_amount = pending_amount.val();
+            payment_form = 'pending_amount_form';
+            data.order_number = $("#order_number").val();
         }
         data.amount = total_amount;
         data.payment_option_id =18;
@@ -2779,6 +2785,329 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
         $.redirect(userede_before_payment, data);
     }
 
+    ///////////////////////////Plugnpay payment Gateway //////////////////////////////
+    window.paymentViaplugnpay = function paymentViaplugnpay(address_id='', payment_option_id='',order='') {
+
+
+        cno = $('#plugnpay-card-element').val();
+         cname = $('#plugnpay-name-element').val();
+        dt  = $('#plugnpay-date-element').val();
+        cv  = $('#plugnpay-cvv-element').val();
+
+		caddr1 = $('#plugnpay-addr1-element').val();
+        caddr2 = $('#plugnpay-addr2-element').val();
+        czip  = $('#plugnpay-zip-element').val();
+        city  = $('#plugnpay-city-element').val();
+        state = $('#plugnpay-state-element').val();
+        country  = $('#plugnpay-country-element').val();
+
+        let total_amount    = 0;
+        let cartElement     = $("input[name='cart_total_payable_amount']");
+        let walletElement   = $("input[name='wallet_amount']");
+        let tipElement      = $("#cart_tip_amount");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let data            = [];
+        let payment_from    = '';
+
+        let cabElement = $("#pickup_now");
+        if (path.indexOf("cart") !== -1) {
+
+            // if (path.indexOf("cart") !== -1) {
+                payment_form = 'cart';
+                total_amount = cartElement.val();
+                data.push(
+                    { name: 'order_number', value: order.order_number },
+                    { name: 'cno', value: cno },
+                    { name: 'dt', value: dt },
+                    { name: 'cv', value: cv },
+                    { name:'cname',value:cname }
+                );
+        
+            // }
+            data.push(
+                { name: 'from', value: payment_form },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+        else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            
+             data.push(
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name:'cname',value:cname },
+                { name: 'caddr1', value: caddr1 },
+                { name: 'caddr2', value: caddr2 },
+                { name: 'czip', value: czip },
+                { name: 'city', value: city },
+                { name:'state',value:state },
+                { name:'country',value:country }
+            );
+        }
+
+        else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            payment_from = 'subscription';
+            data.push(
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name: 'subsid', value: subscription_id.val() },
+            );
+           
+        } 
+        else if (cabElement.length > 0) {
+             total_amount = cabElement.data('amount');
+             payment_from = 'pickup_delivery';
+              data.push(
+                { name: 'order_number', value: order.order_number },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name: 'reload_route', value: address_id },
+            );
+        }
+        else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+
+             data.push(
+                { name: 'order_number', value: $("#order_number").val() },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+
+       
+
+
+
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async: false,
+            url: payment_plugnpay_url,
+            data: data,
+            success: function(response) {
+                
+                if (response.status == "Fail") {
+                     if(response.payment_from == 'wallet'){
+                         $("#wallet_payment_methods_error").html(response.msg);
+                         $("#wallet_payment_methods_error").css("color",'red');
+                         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'pickup_delivery'){
+                         $("#plugnpay_card_error").html(response.msg);
+                         $("#plugnpay_card_error").css("color",'red');
+                         $("#proceed_to_pay_loader").hide();
+                         $('#paywithplugpay').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'subscription'){
+                         $("#plugnpay_card_error").html(response.msg);
+                         $("#plugnpay_card_error").css("color",'red');
+                         $(document).find('.subscription_confirm_btn').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'cart'){
+                         $("#plugnpay_card_error").html(response.msg);
+                         $("#plugnpay_card_error").css("color",'red');
+                         $("#proceed_to_pay_loader").hide();
+                         $(document).find('.proceed_to_pay').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'tip'){
+                         $("#wallet_payment_methods_error").html(response.msg);
+                         $("#wallet_payment_methods_error").css("color",'red');
+                         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                         return false;
+                     }
+                    
+                }
+                else if(response.status == "Success") {
+                   window.location.replace(response.route);
+                     // console.log(response);
+                } else {
+                   window.location.replace(response.route);
+                  
+                }
+            },
+            error: function(response) {
+               
+                window.location.replace(response.route);  
+                // var error = response.responseJSON;
+                // console.log(error, 'Error');
+            }
+        });
+    }
+
+    ///////////////////////////Azulpay payment Gateway //////////////////////////////
+    window.paymentViazulpay = function paymentViazulpay(address_id='', payment_option_id='',order='') {
+
+
+        cno = $('#azul-card-element').val();
+        dt  = $('#azul-date-element').val();
+        cv  = $('#azul-cvv-element').val();
+        let total_amount    = 0;
+        let cartElement     = $("input[name='cart_total_payable_amount']");
+        let walletElement   = $("input[name='wallet_amount']");
+        let tipElement      = $("#cart_tip_amount");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let data            = [];
+        let payment_from    = '';
+
+        let cabElement = $("#pickup_now");
+        if (path.indexOf("cart") !== -1) {
+
+            // if (path.indexOf("cart") !== -1) {
+                payment_form = 'cart';
+                total_amount = cartElement.val();
+                data.push(
+                    { name: 'order_number', value: order.order_number },
+                    { name: 'cno', value: cno },
+                    { name: 'dt', value: dt },
+                    { name: 'cv', value: cv }
+                );
+        
+            // }
+            data.push(
+                { name: 'from', value: payment_form },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+        else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            
+             data.push(
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+        else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            payment_from = 'subscription';
+            data.push(
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name: 'subsid', value: subscription_id.val() },
+            );
+           
+        } 
+        else if (cabElement.length > 0) {
+             total_amount = cabElement.data('amount');
+             payment_from = 'pickup_delivery';
+              data.push(
+                { name: 'order_number', value: order.order_number },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name: 'reload_route', value: address_id },
+            );
+        }
+        else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+
+             data.push(
+                { name: 'order_number', value: $("#order_number").val() },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async: false,
+            url: payment_azulpay_url,
+            data: data,
+            success: function(response) {
+                
+                if (response.status == "Fail") {
+                     if(response.payment_from == 'wallet'){
+                         $("#wallet_payment_methods_error").html(response.msg);
+                         $("#wallet_payment_methods_error").css("color",'red');
+                         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'pickup_delivery'){
+                         $("#azul_card_error").html(response.msg);
+                         $("#azul_card_error").css("color",'red');
+                         $("#proceed_to_pay_loader").hide();
+                         $('#paywithplugpay').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'subscription'){
+                         $("#azul_card_error").html(response.msg);
+                         $("#azul_card_error").css("color",'red');
+                         $(document).find('.subscription_confirm_btn').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'cart'){
+                         $("#azul_card_error").html(response.msg);
+                         $("#azul_card_error").css("color",'red');
+                         $("#proceed_to_pay_loader").hide();
+                         $(document).find('.proceed_to_pay').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'tip'){
+                         $("#wallet_payment_methods_error").html(response.msg);
+                         $("#wallet_payment_methods_error").css("color",'red');
+                         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                         return false;
+                     }
+                    
+                }
+                else if(response.status == "Success") {
+                    window.location.replace(response.route);
+                } else {
+                    window.location.replace(response.route);
+                }
+            }
+        });
+    }
+
+
     ///////////////////////////PayU payment Gateway //////////////////////////////
     window.payWithOpenPay = function payWithOpenPay(address_id='', payment_option_id='', order='') {
         console.log(default_country_code);
@@ -3033,9 +3362,18 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
 
       ///////////////////////////Plugnpay payment Gateway //////////////////////////////
     window.paymentViaplugnpay = function paymentViaplugnpay(address_id='', payment_option_id='',order='') {
+		 cname = $('#plugnpay-name-element').val();
         cno = $('#plugnpay-card-element').val();
         dt  = $('#plugnpay-date-element').val();
         cv  = $('#plugnpay-cvv-element').val();
+        
+        caddr1 = $('#plugnpay-addr1-element').val();
+        caddr2 = $('#plugnpay-addr2-element').val();
+        czip  = $('#plugnpay-zip-element').val();
+        city  = $('#plugnpay-city-element').val();
+        state = $('#plugnpay-state-element').val();
+        country  = $('#plugnpay-country-element').val();
+        
         let total_amount    = 0;
         let cartElement     = $("input[name='cart_total_payable_amount']");
         let walletElement   = $("input[name='wallet_amount']");
@@ -3054,6 +3392,7 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 data.push(
                     { name: 'order_number', value: order.order_number },
                     { name: 'cno', value: cno },
+                    { name: 'cname', value: cname },
                     { name: 'dt', value: dt },
                     { name: 'cv', value: cv }
                 );
@@ -3077,6 +3416,13 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 { name: 'from', value: payment_from },
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
+                 { name:'cname',value:cname },
+                { name: 'caddr1', value: caddr1 },
+                { name: 'caddr2', value: caddr2 },
+                { name: 'czip', value: czip },
+                { name: 'city', value: city },
+                { name:'state',value:state },
+                { name:'country',value:country }
             );
         }
 
@@ -3167,19 +3513,252 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
 
                 }
                 else if(response.status == "Success") {
-                    window.location.replace(response.route);
+                  window.location.replace(response.route);
                 } else {
-                    window.location.replace(response.route);
+                  window.location.replace(response.route);
                 }
             },
             error: function(response) {
 
-                window.location.replace(response.route);
+              window.location.replace(response.route);
                 // var error = response.responseJSON;
-                // console.log(error, 'Error');
+                //console.log(error, 'Error');
             }
         });
     }
+    
+     ///////////////////////////Azulpay payment Gateway //////////////////////////////
+    window.paymentViazulpay = function paymentViazulpay(address_id='', payment_option_id='',order='') {
 
 
+        cno = $('#azul-card-element').val();
+        dt  = $('#azul-date-element').val();
+        cv  = $('#azul-cvv-element').val();
+        let total_amount    = 0;
+        let cartElement     = $("input[name='cart_total_payable_amount']");
+        let walletElement   = $("input[name='wallet_amount']");
+        let tipElement      = $("#cart_tip_amount");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let data            = [];
+        let payment_from    = '';
+
+        let cabElement = $("#pickup_now");
+        if (path.indexOf("cart") !== -1) {
+
+            // if (path.indexOf("cart") !== -1) {
+                payment_form = 'cart';
+                total_amount = cartElement.val();
+                data.push(
+                    { name: 'order_number', value: order.order_number },
+                    { name: 'cno', value: cno },
+                    { name: 'dt', value: dt },
+                    { name: 'cv', value: cv }
+                );
+        
+            // }
+            data.push(
+                { name: 'from', value: payment_form },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+        else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            
+             data.push(
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+
+        else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            payment_from = 'subscription';
+            data.push(
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name: 'subsid', value: subscription_id.val() },
+            );
+           
+        } 
+        else if (cabElement.length > 0) {
+             total_amount = cabElement.data('amount');
+             payment_from = 'pickup_delivery';
+              data.push(
+                { name: 'order_number', value: order.order_number },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+                { name: 'reload_route', value: address_id },
+            );
+        }
+        else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+
+             data.push(
+                { name: 'order_number', value: $("#order_number").val() },
+                { name: 'cno', value: cno },
+                { name: 'dt', value: dt },
+                { name: 'cv', value: cv },
+                { name: 'from', value: payment_from },
+                { name: 'amt', value: total_amount },
+                { name: 'amount', value: total_amount },
+            );
+        }
+        if(creditCardValidation()){
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async: false,
+            url: payment_azulpay_url,
+            data: data,
+            success: function(response) {
+                if (response.status == "Fail") {
+                     if(response.payment_from == 'wallet'){
+                         $("#wallet_payment_methods_error").html(response.msg);
+                         $("#wallet_payment_methods_error").css("color",'red');
+                         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'pickup_delivery'){
+                         $("#azul_card_error").html(response.msg);
+                         $("#azul_card_error").css("color",'red');
+                         $("#proceed_to_pay_loader").hide();
+                         $('#paywithplugpay').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'subscription'){
+                         $("#azul_card_error").html(response.msg);
+                         $("#azul_card_error").css("color",'red');
+                         $(document).find('.subscription_confirm_btn').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'cart'){
+                         $("#azul_card_error").html(response.msg);
+                         $("#azul_card_error").css("color",'red');
+                         $("#proceed_to_pay_loader").hide();
+                         $(document).find('.proceed_to_pay').prop('disabled',false);
+                         return false;
+                     }
+                     else if(response.payment_from == 'tip'){
+                         $("#wallet_payment_methods_error").html(response.msg);
+                         $("#wallet_payment_methods_error").css("color",'red');
+                         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                         return false;
+                     }
+                    
+                }
+                else if(response.status == "Success") {
+                    window.location.replace(response.route);
+                } else {
+                    window.location.replace(response.route);
+                }
+            }
+        });
+        }
+    }
+    
+   window.creditCardValidation =  function creditCardValidation(){
+	var valid = true;	 
+    $(".demoInputBox").css('background-color','');
+    var message = "";
+
+    var cvvRegex = /^[0-9]{3,3}$/;
+    
+    var cardNumber = $("#azul-card-element").val();
+    var cvv = $("#azul-cvv-element").val();
+    
+     var expiry = $("#azul-date-element").val();
+expiry = expiry.split('/');
+
+
+var today, someday;
+var exMonth=expiry[0];
+var exYear=expiry[1];
+today = new Date();
+someday = new Date();
+someday.setFullYear(exYear, exMonth, 1);
+
+	
+
+    if(cardNumber == "" || cvv == "" || expiry == '') {
+    	   message  += "<div>All Fields are Required.</div>";  
+    	  
+    	   if(cardNumber == "") {
+    		   $("#azul-card-element").css('background-color','#FFFFDF');
+    	   }
+    	   if (cvv == "") {
+    		   $("#azul-cvv-element").css('background-color','#FFFFDF');
+    	   }
+    	     if (expiry == "") {
+    		   $("#azul-date-element").css('background-color','#FFFFDF');
+    	   }
+       valid = false;
+    }
+    
+    if(cardNumber != "") {
+        	$('#azul-card-element').validateCreditCard(function(result){
+            if(!(result.valid)){
+                	message  += "<div>Card Number is Invalid</div>";    
+            		$("#card-number").css('background-color','#FFFFDF');
+            		valid = false;
+            }
+        });
+    }
+    
+    if (cvv != "" && !cvvRegex.test(cvv)) {
+        message  += "<div>CVV is Invalid</div>";    
+        $("#azul-cvv-element").css('background-color','#FFFFDF');
+    		valid = false;
+    }
+    
+    
+    if (expiry != "") {
+      
+        
+        if (someday < today) {
+	    message  += "<div>Expiry date is Invalid</div>";    
+        $("#azul-date-element").css('background-color','#FFFFDF');
+            		valid = false;
+
+	}
+        
+    }
+    
+     if(message != "") {
+        $("#azul_card_error").show();
+        $("#azul_card_error").html(message);
+         $(document).find('.topup_wallet_confirm').prop('disabled',false);
+		$("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+		$(".subscription_confirm_btn").attr("disabled", false);
+    }else{
+        $("#azul_card_error").html('');
+		 $(document).find('.topup_wallet_confirm').prop('disabled',true);
+		 $(document).find(".proceed_to_pay").prop('disabled',true);
+		 $(".subscription_confirm_btn").attr("disabled", true);
+	}
+    return valid;
+}
+
+});
+
+$(document).on("keyup","#azul-card-element",function () {
+    if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+       this.value = this.value.replace(/[^0-9\.]/g, '');
+    }
 });

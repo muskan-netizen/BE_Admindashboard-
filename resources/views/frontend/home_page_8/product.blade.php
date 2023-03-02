@@ -31,10 +31,12 @@
                         <span class="rating"><i class="fa fa-star" aria-hidden="true"></i>4.5</span>
                         </p>
                     </div>
+                    @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                     <div class="d-flex align-items-center justify-content-between al_clock pt-2">
                         <b>{!!$product["price"] ?? ''!!} </b>
                         <del>{!!$product["compare_at_price"] ?? ''!!} </del>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

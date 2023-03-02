@@ -104,7 +104,7 @@ class UseRedePaymentController extends FrontController
         } catch (\Exception $e) {
             $data = Session::get('userede_data');
             unset($data['_token']);
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
            
             return Redirect::to(route('payment.userede.beforePayment',$data))->with('error','Invalid Card Detail');
         }
@@ -248,7 +248,7 @@ class UseRedePaymentController extends FrontController
         } catch (\Exception $e) {
             $data = Session::get('userede_data');
             unset($data['_token']);
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
             return Redirect::to(route('payment.userede.beforePayment',$data))->with('error','Invalid Card Detail');
         }
         //Successfully authorized transaction;

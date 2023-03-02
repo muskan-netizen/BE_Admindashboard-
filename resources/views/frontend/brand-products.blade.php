@@ -4,7 +4,11 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @php
-$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch']);
+$is_service_product_price_from_dispatch_forOnDemand = 0;
+if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+    $is_service_product_price_from_dispatch_forOnDemand =1;
+}
 @endphp
 @section('content')
 <style type="text/css">
@@ -27,7 +31,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
-                <div class="collection-filter col-lg-3 main-fillter">
+                <div class="collection-filter col-lg-3 main-fillter filter_brand">
                         <div class="collection-filter-block bg-transparent p-0">
                             <div class="collection-mobile-back">
                                 <span class="filter-back d-lg-none d-inline-block">
@@ -133,9 +137,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                                 <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
                                                                 <div class="d-flex align-items-center justify-content-between">
                                                                     <b>
-                                                                        @if($new['inquiry_only'] == 0)
-                                                                            <?php $multiply = $new['variant_multiplier']; ?>
-                                                                            {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                        @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
+                                                                            @if($new['inquiry_only'] == 0)
+                                                                                <?php $multiply = $new['variant_multiplier']; ?>
+                                                                                {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                            @endif
                                                                         @endif
                                                                     </b>
 
@@ -297,7 +303,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                     </div>--}}
                                      <div class="displayProducts">
                                         <div class="product-wrapper-grid">
-                                            <div class="row margin-res">
+                                            <div class="row margin-res brand_one">
                                               @if($products->isNotEmpty())
                                                 @foreach($products as $key => $data)
                                                 <?php /*$imagePath = $imagePath2 = '';
@@ -334,11 +340,13 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                                     @else
                                                                         <p>{{ $data->translation_description }}</p>
                                                                     @endif
-                                                                    @if($data->inquiry_only == 0)
-                                                                        @if ($additionalPreference ['is_token_currency_enable'])
-                                                                        <h4 class="mt-1"> <i class='fa fa-money' aria-hidden='true'></i> {{(getInToken($data->variant_price * $data->variant_multiplier))}}</h4>
-                                                                        @else
-                                                                        <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                    @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
+                                                                        @if($data->inquiry_only == 0)
+                                                                            @if ($additionalPreference ['is_token_currency_enable'])
+                                                                            <h4 class="mt-1"> <i class='fa fa-money' aria-hidden='true'></i> {{(getInToken($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                            @else
+                                                                            <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                            @endif
                                                                         @endif
                                                                     @endif
                                                                 </div>

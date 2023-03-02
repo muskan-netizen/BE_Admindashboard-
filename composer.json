@@ -77,6 +77,7 @@
         "socialiteproviders/apple": "^5.0",
         "spatie/db-dumper": "^2.21",
         "spatie/geocoder": "^3.10",
+        "spatie/laravel-permission": "^5.7",
         "spatie/laravel-webhook-client": "^2.7",
         "spatie/laravel-webhook-server": "^2.0",
         "square/square": "16.0.0.20211117",
@@ -84,6 +85,7 @@
         "stripe/stripe-php": "^7.100",
         "symfony/psr-http-message-bridge": "^2.1",
         "twilio/sdk": "^6.13",
+        "vonage/client": "2.3",
         "webpatser/laravel-uuid": "^4.0",
         "xeroapi/xero-php-oauth2": "^2.12",
         "yadahan/laravel-authentication-log": "^1.5",
@@ -104,7 +106,8 @@
         "sort-packages": true,
         "platform-check": false,
         "allow-plugins": {
-            "symfony/thanks": true
+            "symfony/thanks": true,
+            "php-http/discovery": true
         }
     },
     "extra": {

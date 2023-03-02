@@ -25,7 +25,14 @@ class OrderProduct extends Model{
         return parent::getArrayableAppends();
     }
 
-
+    public function order_product_status()
+    {
+        return $this->hasOne('App\Models\VendorOrderProductStatus', 'order_vendor_product_id');
+    }
+    public function orderProductStatus()
+    {
+        return $this->hasMany('App\Models\VendorOrderProductStatus', 'order_vendor_product_id');
+    }
     public function vendor(){
         return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'order_pre_time', 'auto_reject_time', 'order_min_amount');
     }
@@ -50,6 +57,10 @@ class OrderProduct extends Model{
     }
     public function media(){
         return $this->hasMany('App\Models\ProductImage', 'product_id', 'product_id')->select('product_id', 'media_id', 'is_default');
+    }
+    public function reqCancelOrder()
+    {
+        return $this->hasOne('App\Models\OrderCancelRequest', 'order_vendor_product_id'); //, 'order_id', 'id'
     }
     public function pimage(){
         return $this->hasMany('App\Models\ProductImage', 'order_product_id', 'order_product_id')->select('product_images.product_id', 'product_images.media_id', 'product_images.is_default', 'vendor_media.media_type', 'vendor_media.path')->join('vendor_media', 'vendor_media.id', 'product_images.media_id')->limit(1);
@@ -145,5 +156,8 @@ class OrderProduct extends Model{
     }
     public function LongTermService(){
       return $this->hasOne('App\Models\OrderLongTermServices', 'order_product_id', 'id');
+    }
+    public function RecurringService(){
+      return $this->hasMany('App\Models\OrderLongTermServiceSchedule', 'order_vendor_product_id', 'id');
     }
 }

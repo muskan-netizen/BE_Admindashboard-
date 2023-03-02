@@ -60,6 +60,16 @@ class BaseController extends Controller{
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
             }
+            elseif($client_preference->sms_provider == 7) //for Vonage gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->vonage_sms($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 8) //for SMS partner gateway France
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_partner_gateway($to,$body,$crendentials);
+            }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -105,6 +115,16 @@ class BaseController extends Controller{
             {
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 7) //for Vonage gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->vonage_sms($to, $body, $crendentials);
+            }
+            elseif($client_preference->sms_provider == 8) //for SMS partner gateway France
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_partner_gateway($to, $body, $crendentials);
             }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
@@ -902,7 +922,7 @@ class BaseController extends Controller{
 
     /******************    ---- check Keys from order Panel keys -----   ******************/
     public function checkOrderPanelKeys(Request $request){
-
+    
         if(checkColumnExists('users', 'is_panel_auth_user')){
             $user =  User::where('is_panel_auth_user', 1)->first();
             if(!$user){

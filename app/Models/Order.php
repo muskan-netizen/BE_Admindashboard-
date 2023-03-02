@@ -51,6 +51,11 @@ class Order extends Model implements Auditable
     {
         return $this->hasMany('App\Models\VendorOrderStatus', 'order_id', 'id');
     }
+
+    public function order_product_status()
+    {
+        return $this->hasMany('App\Models\VendorOrderProductStatus', 'order_id');
+    }
     public function scopeBetween($query, $from, $to)
     {
         $query->whereBetween('created_at', [$from, $to]);
@@ -140,5 +145,13 @@ class Order extends Model implements Auditable
     public function editingInCart()
     {
         return $this->hasOne('App\Models\Cart', 'order_id', 'id');
+    }
+    public function OrderFiles()
+    {
+        return $this->hasMany('App\Models\OrderFiles'); //, 'order_id', 'id'
+    }
+    public function scopeOnlyEnabledLuxuryOptions($query,$EnabledLuxuryOptions=[])
+    {
+        return $query->whereIn('luxury_option_id',$EnabledLuxuryOptions);
     }
 }
