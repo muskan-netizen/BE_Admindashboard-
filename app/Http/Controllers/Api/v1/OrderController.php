@@ -604,7 +604,7 @@ class OrderController extends BaseController
                                     if($vendor_cart_product->service_date == 0){
 
                                         $startdate =  Carbon::now()->endOfMonth()->format('Y-m-d');
-                                        echo $startdate . ' ';
+                                        
                                         if(strtotime($startdate) < strtotime($start_service_date))
                                         $startdate = Carbon::now()->addMonths(1);
 
@@ -712,7 +712,6 @@ class OrderController extends BaseController
                             $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
-                            Log::info("service_fee_percentage_amount ".$service_fee_percentage_amount);
                         }
                         //End applying service fee on vendor products total
                         $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
@@ -1805,15 +1804,15 @@ class OrderController extends BaseController
                     $cartDetails = $this->getCart($cart);
                 }
                 //pr( $cartDetails->toArray());
-
+                $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
                 if ($email_template) {
 
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
 
-                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
+                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
+                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     }
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
@@ -1946,8 +1945,9 @@ class OrderController extends BaseController
             $order_item_count = 0;
             $order->user_name = $user->name;
             $order->user_image = $user->image;
+            $total_total_payable = $order->orderDetail->total_amount + $order->orderDetail->wallet_amount_used + $order->orderDetail->loyalty_amount_saved + $order->orderDetail->taxable_amount + $order->orderDetail->total_delivery_fee + $order->orderDetail->tip_amount + $order->orderDetail->total_service_fee - $order->orderDetail->total_discount;
             $order->date_time = dateTimeInUserTimeZone($order->orderDetail->created_at, $user->timezone);
-            $order->payment_option_title = __($order->orderDetail->paymentOption->title ?? '');
+            $order->payment_option_title = ($order->orderDetail->wallet_amount_used >= ceil($total_total_payable)) ? __("Wallet") : __($order->orderDetail->paymentOption->title ?? '');
             $order->order_number = $order->orderDetail->order_number;
             $order->schedule_pickup = date('d/m/Y',strtotime($order->orderDetail->schedule_pickup));
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;

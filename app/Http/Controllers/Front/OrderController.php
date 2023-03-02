@@ -465,13 +465,14 @@ class OrderController extends FrontController
                         $cartDetails = $this->getCart($cart);
                     }
 
+                    $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
+
                     $email_template_content = $email_template->content;
                     //     if ($vendor_id == "") {
-                    $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
+                    $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     //     } else {
                     //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     // }
-
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{description}", '', $email_template_content);
@@ -493,7 +494,7 @@ class OrderController extends FrontController
                         'customer_name' => ucwords($user->name),
                         'email_template_content' => $email_template_content,
                         'cartData' => $cartDetails,
-                        'user_address' => $address,
+                        'user_address' => $address
                     ];
                     if (!empty($data['admin_email'])) {
                         $email_data['admin_email'] = $data['admin_email'];
@@ -615,7 +616,8 @@ class OrderController extends FrontController
         $subscription_features = array();
         if ($user) {
             //Get earn and used loyalty amount
-            $loyalty_amount_saved = $this->getOrderLoyalityAmount($user);
+            $loyaltyCheck = $this->getOrderLoyalityAmount($user);
+            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
 
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
@@ -1753,6 +1755,7 @@ class OrderController extends FrontController
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
                 //Send Email to customer
+                $request->request->add(['type' => $action]);
                 $this->sendSuccessEmail($request, $order);
                 //Send Email to Vendor
                 foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
