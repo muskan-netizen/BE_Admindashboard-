@@ -440,6 +440,9 @@ trait cartManager{
             $is_long_term_service = 0;
             $container_charges_tax = 0;
 
+            //multivendor delivery charges
+            $delivery_fees = 0;
+            
             $deliver_fee_charges = 0;
             $total_fixed_fee_tax = 0;
             $total_service_fee = 0;
@@ -865,7 +868,7 @@ trait cartManager{
                                 }
                             }
                             $deliveryCharges_real = $vendorTotalDeliveryFee;
-
+                            $delivery_fees += $vendorTotalDeliveryFee;
                             if (isset($deliveryCharges_real) && !empty($deliveryCharges_real)) {
                                 $dtype = explode('_', $code);
                                 CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id], ['delivery_fee' => $deliveryCharges_real,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
@@ -1125,9 +1128,6 @@ trait cartManager{
                         $delivery_status = 0;
                     }
                 }
-                // if ($loyalty_amount_saved > 0) {
-                // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
-                // }
 
                 $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
@@ -1142,10 +1142,6 @@ trait cartManager{
                     $vendorData->les_order_min_amount = 1;
                     $delivery_status = 0;
                 }
-
-
-
-
 
                 $total_payable_amount = $total_payable_amount + $payable_amount + $vendorData->vendor->fixed_fee_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
@@ -1407,7 +1403,7 @@ trait cartManager{
             // $cart->total_payable_amount = decimal_format($total_payable_amount);
             //$cart->delivery_charges = decimal_format($deliveryCharges);
             //$cart->total_payable_amount = decimal_format($total_payable_amount);
-            $cart->delivery_charges = decimal_format($deliveryCharges_real);
+            $cart->delivery_charges = decimal_format($delivery_fees);
             $cart->total_deliver_charges = decimal_format($total_deliver_charges);
             $cart->total_markup_charges = decimal_format($total_markup_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
