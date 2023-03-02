@@ -29,6 +29,7 @@
                         <strong></strong>
                     </span>
                 </div>
+                <div id="cat-error"></div>
             </div>
 
         </div>
@@ -48,7 +49,7 @@
                         @if($langs->is_primary == 1)
                         <td>
                             {!! Form::hidden('language_id[]', $langs->language->id) !!}
-                            {!! Form::text('title[]', null, ['class' => 'form-control', 'required' => 'required']) !!}
+                            {!! Form::text('title[]', null, ['class' => 'form-control']) !!}
                         </td>
 
                         @else
@@ -60,6 +61,7 @@
                         @endforeach
                     </tr>
                 </table>
+                 <div id="brand-title-error"></div>
             </div>
         </div>
     </div>

@@ -31,7 +31,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-5 homepageSix">
+            <div class="row mb-5 homepageSix vendor_onetem">
                 {{-- @dd($category->childs) --}}
                 <div class="collection-filter col-lg-3 main-fillter al">
                     <div class="theme-card custom-inner-card">
@@ -201,7 +201,7 @@
                                     </div>
                                     <div class="displayProducts">
                                         <div class="product-wrapper-grid card-product">
-                                            <div class="row margin-res">
+                                            <div class="row margin-res categories_img">
                                                 @if(!empty($category->childs) && count($category->childs) > 0)
                                                     @foreach($category->childs->toArray() as $cate)
                                                     <div class="col-md-3 col-6 col-grid-box">

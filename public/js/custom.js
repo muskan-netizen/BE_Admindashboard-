@@ -1,5 +1,13 @@
 
 $(function () {
+    $(".al_main_category").hover(
+        function () {
+          $('body').addClass("add_overlay");
+        },
+        function () {
+          $('body').removeClass("add_overlay");
+        }
+      );
     var slotValidater = 2;
 
     var footer_height = jQuery('.footer-light').height();
