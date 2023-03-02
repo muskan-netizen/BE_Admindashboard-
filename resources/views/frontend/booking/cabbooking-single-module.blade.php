@@ -16,7 +16,7 @@
      style="background:url({{ $img }});background-size: cover;background-repeat: no-repeat;background-position: center;">
      <div class="container-fluid  p-64 py-64">
          <div class="row">
-             <div class="col-md-8 col-lg-7 col-xl-5">
+             <div class="col-md-8 col-lg-5 col-xl-4">
                  <div class="card-box mb-0">
                      <h2>{{ $homePageLabel->translations->first() ? $homePageLabel->translations->first()->title : '' }}
                      </h2>

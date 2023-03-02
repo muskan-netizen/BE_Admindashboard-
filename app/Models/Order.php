@@ -141,4 +141,8 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\Cart', 'order_id', 'id');
     }
+    public function scopeOnlyEnabledLuxuryOptions($query,$EnabledLuxuryOptions=[])
+    {
+        return $query->whereIn('luxury_option_id',$EnabledLuxuryOptions);
+    }
 }
