@@ -64,12 +64,6 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                     <aside class="side_fillter mt-2">
                     <!-- side-bar colleps block stat -->
                     <div class="collection-filter-block bg-transparent p-0 m-0 brand-left">
-                        @if( count($category->brands) > 0 || count($variantSets) > 0 )
-                        <!-- <div class="collection-mobile-back">
-                            <span class="filter-back d-lg-none d-inline-block">
-                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
-                            </span>
-                        </div> -->
                         @if(!empty($category->brands) && count($category->brands) > 0)
                         <div class="collection-collapse-block open mb-2">
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
