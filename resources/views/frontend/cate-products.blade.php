@@ -125,7 +125,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                         </div>
                     </div>
                 </aside>
-           
+         
             @php $show_new_Products = 0; @endphp
                     @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
