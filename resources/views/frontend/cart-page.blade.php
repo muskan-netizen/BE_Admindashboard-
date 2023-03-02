@@ -844,11 +844,6 @@
                     </div>
                 </div>
 
-
-
-
-
-
                 @if ($cart_details->guest_user)
                     <div class="col-lg-12 left_box new_cart mt-4 p-3">
 
