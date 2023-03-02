@@ -2702,7 +2702,7 @@ $(document).ready(function () {
         $(this).find('.fa').removeClass("fa-minus").addClass("fa-spinner fa-pulse");
         if (decrevalue >= minimum_order_count) {
             $('#quantity_' + cartproduct_id).val(decrevalue);
-            updateQuantity(cartproduct_id, decrevalue, base_price);
+         updateQuantity(cartproduct_id, decrevalue, base_price);
         } else {
             // alert('remove this product');
             $('#remove_item_modal').modal('show');
@@ -3725,11 +3725,11 @@ $(document).ready(function () {
         }
     });
     $(document).on('click', '.qty-plus-ondemand', function () {
+        $(this).find('.fa').removeClass("fa-minus").addClass("fa-spinner fa-pulse");
         let base_price = $(this).data('base_price');
         let cartproduct_id = $(this).attr("data-id");
         let qty = $('#quantity_ondemand_' + cartproduct_id).val();
         $('#quantity_ondemand_' + cartproduct_id).val(++qty);
-        $(this).find('.fa').removeClass("fa-minus").addClass("fa-spinner fa-pulse");
         updateQuantityOnDemand(cartproduct_id, qty, base_price);
     });
 
