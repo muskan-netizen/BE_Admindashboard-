@@ -37,11 +37,6 @@
                                                                             <b> <img class="blur-up lazyload" data-src="{{$favicon}}" alt="{{$data->vendor->Name}}" style="width: 25px !important; height: 25px;"></b> <b> Order by clickokart </b>
                                                                         </h6>
                                                                     @endif
-                                                                    @if (strlen($data->translation_description) >= 65)
-                                                                        <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
-                                                                    @else
-                                                                        <p>{{ @$data->translation_description }}</p>
-                                                                    @endif
                                                                     </div>
                                                                     @if($data->inquiry_only == 0)
                                                                         @if ($additionalPreference ['is_token_currency_enable'] )
