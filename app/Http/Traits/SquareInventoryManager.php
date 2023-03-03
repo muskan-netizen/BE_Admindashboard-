@@ -3,7 +3,7 @@ namespace App\Http\Traits;
 use Square\SquareClient;
 use Square\Http\ApiResponse;
 use Ramsey\Uuid\Uuid;
-use App\Models\{Product, Variant, TaxCategory, Client, ProductVariantSet, ClientPreference, ProductTranslation, ClientLanguage, ProductVariant};
+use App\Models\{Product, Variant, TaxCategory, Client, ProductVariantSet, ClientPreference, ProductTranslation, ClientLanguage, ProductVariant, ClientCurrency};
 use Auth, Log;
 trait SquareInventoryManager{
 
@@ -30,18 +30,36 @@ trait SquareInventoryManager{
   public function createNewProductInSquare($product_id)
   {
     try{
-      //init square client
-      $products = Product::with(['media.image', 'primary', 'category.cat', 'vendor','brand', 'addOn','variant'])->select('id', 'sku', 'is_live', 'has_variant')
-        ->where('id', $product_id)->where('is_live', 1)->get();
+      $ClientPreference = ClientPreference::with(['primary'])->first();
+      $products         = Product::with(['media.image', 'primary', 'category.cat', 'vendor','brand', 'addOn','variant', 'variant.set', 'variantSets'])->select('id', 'sku', 'is_live', 'has_variant')
+                          ->where('id', $product_id)->where('is_live', 1)->get();
       pr($products->toArray());
       if(!empty($products))
       {
+        //init square client
         $client = $this->init();
 
+        
         //---setting variant price and currency
-        $price_money = new \Square\Models\Money();
-        $price_money->setAmount(300);
-        $price_money->setCurrency('USD');
+        $variations = [];
+        foreach($products->variant as $proVariant){
+          $price_money = new \Square\Models\Money();
+          $price_money->setAmount(300);
+          $price_money->setCurrency('USD');
+
+          $item_variation_data = new \Square\Models\CatalogItemVariation();
+          $item_variation_data->setItemId('#coffee');
+          $item_variation_data->setName('Small');
+          $item_variation_data->setSku('small_coffee');
+          $item_variation_data->setPricingType('FIXED_PRICING');
+          $item_variation_data->setPriceMoney($price_money);
+
+          $catalog_object = new \Square\Models\CatalogObject('ITEM_VARIATION', '#small_coffee');
+          $catalog_object->setItemVariationData($item_variation_data);
+
+          $variations[] = $catalog_object;
+        }
+        
 
         $item_variation_data = new \Square\Models\CatalogItemVariation();
         $item_variation_data->setItemId('#coffee');

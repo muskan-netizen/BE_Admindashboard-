@@ -749,6 +749,10 @@ class PickupDeliveryController extends BaseController{
                             'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
                             'agent' => $request->agent_id ?? null
                         ];
+                if($request->has('bid_task_type')){
+                    $postdata['bid_task_type']    = $request->bid_task_type;
+                    $postdata['accept_bid_price'] = $order->payable_amount;
+                }
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                     'content-type' => 'application/json']
