@@ -179,8 +179,7 @@ article#page-container section .vendors section {
     width: 100%;
     left: 0;
     height: 150px;
-    object-fit: cover;
-    ;
+    object-fit: contain;;
 }
 
 .slick-next:focus:before,
