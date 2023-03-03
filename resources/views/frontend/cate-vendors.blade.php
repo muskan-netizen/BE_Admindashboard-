@@ -34,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-sm-5 homepageSix">
+            <div class="row mb-sm-5 homepageSix vendor_onetem">
                 <div class="collection-filter col-lg-3 al">
                 @if( !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card">
