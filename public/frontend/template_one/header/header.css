@@ -677,7 +677,7 @@ body.al_body_template_two {
         font-size: 16px
     }
     .navigation-tab .nav-link.active {
-        color: #fff !important;
+        color: var(--theme-deafult) !important;
         background-color: var(--theme-deafult) !important;
         border-radius: 40px;
     }
@@ -1057,8 +1057,8 @@ body.al_body_template_two {
         padding-right: 15px;
         padding-top: 10px;
     }
-    body .menu-navigation.al .navigation-tab-item .nav-link {
-        color: #777 !important;
+    body.dark .menu-navigation.al .navigation-tab-item .nav-link {
+        color: #fff !important;
     }
     body .menu-navigation.al .navigation-tab-item .nav-link.active {
         color: var(--theme-deafult);
