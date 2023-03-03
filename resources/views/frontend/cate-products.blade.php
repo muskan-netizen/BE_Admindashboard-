@@ -63,12 +63,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                         </ul> -->
                     <aside class="side_fillter mt-2">
                     <!-- side-bar colleps block stat -->
-                    <div class="collection-filter-block bg-transparent p-0 m-0">
-                        <!-- <div class="collection-mobile-back">
-                            <span class="filter-back d-lg-none d-inline-block">
-                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
-                            </span>
-                        </div> -->
+                    <div class="collection-filter-block bg-transparent p-0 m-0 brand-left">
                         @if(!empty($category->brands) && count($category->brands) > 0)
                         <div class="collection-collapse-block open mb-2">
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
@@ -77,9 +72,13 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                     @foreach($category->brands as $key => $val)
                                         <div class="custom-control custom-checkbox collection-filter-checkbox">
                                             <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->id}}" used="brands" id="brd{{$val->id}}">
-                                            @foreach($val->translation as $k => $v)
-                                                <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
-                                            @endforeach
+                                           @if (count($val->translation) > 0)
+                                                @foreach($val->translation as $k => $v)
+                                                    <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
+                                                @endforeach
+                                            @else
+                                                   <label class="custom-control-label" for="brd{{$val->id}}">{{@$val->brand->title}}</label>                                           
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
@@ -130,7 +129,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                         </div>
                     </div>
                 </aside>
-           
+         
             @php $show_new_Products = 0; @endphp
                     @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
@@ -283,7 +282,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                     </div>
                                     <div class="displayProducts main_category" id="category_products_filter">
                                         <div class="col-12 custom_filtter mt-2">
-                                        <select name="order_type" id='order_type' class="sortingFilter p-1">
+                                        <select name="order_type" id='order_type' class="sortingFilter p-1 mb-0">
                                                 <option value="">{{__('Sort By')}}</option>
                                                 <option value="featured">{{_('Featured')}}</option>
                                                 <option value="a_to_z">{{_('A to Z')}}</option>
@@ -304,70 +303,8 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                                 <li><a href="javascript:void(0)">{{__('Newest Arrivals')}}</a></li>
                                             </ul> -->
                                         </div>
-                                        <div class="product-wrapper-grid">
-                                            <div class="row margin-res">
-                                              @if($listData->isNotEmpty())
-                                                @foreach($listData as $key => $data)
-                                                <?php /*$imagePath = $imagePath2 = '';
-                                                $mediaCount = count($data->media);
-                                                for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
-                                                    if($i == 0){
-                                                        $imagePath = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                    }
-                                                    $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                }*/ ?>
-                                                <div class="col-xl-3 col-md-3 col-6 mt-3">
-                                                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0 product-card-box position-relative al_box_third_template al">
-                                                        <div class="product-image">
-                                                            <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
-                                                        </div>
-                                                        <div class="media-body align-self-center">
-                                                            <div class="inner_spacing w-100">
-                                                                <h3 class="d-flex align-items-center justify-content-between">
-                                                                    <label class="mb-0"><b>{{ $data->translation_title }}</b></label>
-                                                                    @if($client_preference_detail)
-                                                                        @if($client_preference_detail->rating_check == 1)
-                                                                            @if($data->averageRating > 0)
-                                                                                <span class="rating">{{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
-                                                                            @endif
-                                                                        @endif
-                                                                    @endif
-                                                                </h3>
-                                                                <div class="product-description_list border-bottom">
-                                                                    @if($dicountPercentage = productDiscountPercentage($data->variant_price, $data->variant_compare_at_price))
-                                                                        <span class="flag-discount">{{$dicountPercentage}}% Off</span>
-                                                                    @endif
-                                                                    <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
-                                                                    @if(@$data->vendor->is_seller == 1)
-                                                                        <h6 class="sold-by d-flex">
-                                                                            <b> <img class="blur-up lazyload" data-src="{{$favicon}}" alt="{{$data->vendor->Name}}" style="width: 25px !important; height: 25px;"></b> <b> Order by clickokart </b>
-                                                                        </h6>
-                                                                    @endif
-                                                                    @if (strlen($data->translation_description) >= 65)
-                                                                        <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
-                                                                    @else
-                                                                        <p>{{ $data->translation_description }}</p>
-                                                                    @endif
-                                                                    </div>
-                                                                    @if($data->inquiry_only == 0)
-                                                                        @if ($additionalPreference ['is_token_currency_enable'] )
-                                                                        <i class='fa fa-money' aria-hidden='true'></i> {{ getInToken($data->variant_price * $data->variant_multiplier)}}
-                                                                        @else
-                                                                            <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
-                                                                        @endif
-                                                                    @endif
-                                                                
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                @endforeach
-                                              @else
-                                                <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{ __('No Product Found') }}</h5></div>
-                                              @endif
-                                            </div>
-                                        </div>
-                                        <div class="pagination pagination-rounded justify-content-end mb-0">
+                                    @include('frontend.ajax.product-card')
+                                        <div class="pagination pagination-rounded justify-content-end mb-0 page-m-20">
                                             @if(!empty($listData))
                                                 {{ $listData->links() }}
                                             @endif

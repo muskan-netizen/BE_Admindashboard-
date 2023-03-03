@@ -32,6 +32,17 @@ class OrderController extends BaseController
 
     use ApiResponser;
     use \App\Http\Traits\OrderTrait;
+    public $from_date;
+    public $to_date;
+    public $setWeekDate;
+    function __construct()
+    {
+        $this->from_date = Carbon::now()->startOfDay()->subDays(7);
+        $this->to_date = Carbon::now()->endOfDay();
+        $this->setWeekDate =  $this->from_date->format('d M Y') . ' to '. $this->to_date->format('d M Y');
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -42,7 +53,6 @@ class OrderController extends BaseController
         $client_preferences = ClientPreference::first();
         $EnabledLuxuryOptions = $this->geteEnabledLuxuryOptions($client_preferences);
         $user = Auth::user();
-     
         $return_requests = OrderReturnRequest::where('status', 'Pending');
         $rescheduleOrderCount = RescheduleOrder::count();
         if ($user->is_superadmin == 0) {
@@ -87,7 +97,10 @@ class OrderController extends BaseController
                         }
                     });
             });
-        })->count();
+        });
+        
+        $pending_order_count = $pending_order_count->between($this->from_date, $this->to_date)->count();
+
 
         // past orders count
         $past_order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->whereHas('vendors', function ($query) use ($user) {
@@ -115,7 +128,8 @@ class OrderController extends BaseController
                     }
                 });
             });
-        })->count();
+        });
+        $past_order_count = $past_order_count->between($this->from_date, $this->to_date)->count();
 
         // active orders count
         $active_order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->whereHas('vendors', function ($query) use ($user) {
@@ -144,7 +158,8 @@ class OrderController extends BaseController
                     }
                 });
             });
-        })->count();
+        });
+        $active_order_count = $active_order_count->between($this->from_date, $this->to_date)->count();
 
         // all vendors
         $vendors = Vendor::where('status', '!=', '2')->orderBy('id', 'desc');
@@ -162,8 +177,9 @@ class OrderController extends BaseController
         $del_order_count = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id', 6)->count();
         $request->merge(['response'=>2,'filter_order_status'=>'pending_orders']);
         $OrderFilterData = $this->postOrderFilter($request);
+        $setWeekDate = $this->setWeekDate;
        // pr($OrderFilterData['pagination'] );
-        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData'));
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData','setWeekDate'));
     }
    public function geteEnabledLuxuryOptions($clientPreference){
     $LuxuryOptions = [];
@@ -228,13 +244,19 @@ class OrderController extends BaseController
         if (!empty($request->get('date_filter'))) {
             $date_date_filter = explode(' to ', $request->get('date_filter'));
             $to_date = (!empty($date_date_filter[1])) ? $date_date_filter[1] : $date_date_filter[0];
-            $from_date = $date_date_filter[0];
-
+            $from_date = date("Y-m-d", strtotime($date_date_filter[0]));  
+            $to_date = date("Y-m-d", strtotime($to_date));  
             $orders->between($from_date . " 00:00:00", $to_date . " 23:59:59");
+            
 
             //order_count
             $order_count->between($from_date . " 00:00:00", $to_date . " 23:59:59");
+        }else{
+            $orders->between($this->from_date, $this->to_date);
+            //order_count
+            $order_count->between($this->from_date, $this->to_date);
         }
+
         //get by vendor
         if (!empty($request->get('vendor_id'))) {
             $order_count->whereHas('vendors', function ($query)  use ($request) {
@@ -266,6 +288,7 @@ class OrderController extends BaseController
                     ->orWhere('country', 'like', '%' . $request->search_keyword . '%');
             })->orWhere('order_number', 'like', '%' . $request->search_keyword . '%');
         }
+        // dd(count($order_count->get()));
         $pending_orders = clone $order_count;
         $active_orders = clone $order_count;
         $orders_history = clone $order_count;
@@ -523,13 +546,10 @@ class OrderController extends BaseController
         $admincurrency = ClientCurrency::getAdminCurrencySymbol();
 
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-
+    
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
         $response['orders'] = $orders;
-        $response['pending_orders'] = $pending_orders;
-        $response['active_orders'] = $active_orders;
-        $response['orders_history'] = $orders_history;
         $response['admin_currency'] = $admincurrency;
         $filter_order_status = $request->filter_order_status;
         $response2['next_page_url'] = @$orders->toArray()['next_page_url'];
@@ -565,7 +585,7 @@ class OrderController extends BaseController
                         </div>';
             $response2['pagination'] = $pagination;
         }
-        
+        $response2['count_resp'] = count($orders);
         $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee))->render();
         if($request->response ==2){
             return $response2;

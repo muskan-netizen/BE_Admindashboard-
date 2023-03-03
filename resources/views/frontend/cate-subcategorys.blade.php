@@ -31,7 +31,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-5 homepageSix">
+            <div class="row mb-5 homepageSix vendor_onetem">
                 {{-- @dd($category->childs) --}}
                 <div class="collection-filter col-lg-3 main-fillter al">
                     <div class="theme-card custom-inner-card">
