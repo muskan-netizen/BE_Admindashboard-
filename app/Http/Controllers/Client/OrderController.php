@@ -53,7 +53,7 @@ class OrderController extends BaseController
         $client_preferences = ClientPreference::first();
         $EnabledLuxuryOptions = $this->geteEnabledLuxuryOptions($client_preferences);
         $user = Auth::user();
-        $return_requests = OrderReturnRequest::where('status', 'Pending');
+        $return_requests = OrderReturnRequest::where('status', 'Pending')->where('type',1);
         $rescheduleOrderCount = RescheduleOrder::count();
         if ($user->is_superadmin == 0) {
             $return_requests = $return_requests->whereHas('order.vendors.vendor.permissionToUser', function ($query) use ($user) {

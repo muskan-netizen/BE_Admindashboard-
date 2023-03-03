@@ -295,6 +295,9 @@ class OrderController extends FrontController
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                if($vendor->cancelled_by == $user->id){
+                    $vendor->order_status = OrderVendor::CANCEL_STATUS;
+                }
                 foreach ($vendor->products as $product) {
                     if (isset($product->pvariant->media)) {
                         if ($product->pvariant->media->isNotEmpty()) {
