@@ -57,11 +57,19 @@
 }
 
 .al_body_template_one .vendor-design_new {
-    position: absolute;
-    top: 240px;
-    left: 0%;
-    z-index: 1;
-    width: 100%;
+    /* position: absolute;
+    top: 7%;
+    left: 3%;
+    z-index: 9;
+    width: 100%; */
+    margin-top: -16%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+    z-index: 9;
+    margin-left: 4%;
 }
 
 .al_body_template_one .product-banner-img {

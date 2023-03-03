@@ -2386,9 +2386,9 @@ body.al_body_template_eight .outter-fillter-data .product-card-box.position-rela
     text-overflow: ellipsis;
 }
 
-.al_body_template_eight span.rating-number {
+/* .al_body_template_eight span.rating-number {
     display: none !important;
-}
+} */
 
 body.al_body_template_eight.homeHeader .common-product-box.scale-effect {
     position: relative;
