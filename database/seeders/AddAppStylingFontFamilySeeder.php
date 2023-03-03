@@ -13,56 +13,29 @@ class AddAppStylingFontFamilySeeder extends Seeder
      * @return void
      */
     public function run(){ 
-        $app_styling = AppStyling::where([
-            'name' => 'Regular Font',
-            'type' => '2'
-        ])->first();
-        if(!empty($app_styling)){
-           $exist =  AppStylingOption::where([
-                'app_styling_id' => $app_styling->id,
-                'name' => 'Poppins-Regular',
-            ])->first();
-            if(empty($exist)){
-                $app_styling_option = AppStylingOption::insert([
-                    'app_styling_id' => $app_styling->id,
-                    'name' => 'Poppins-Regular',
-                    'is_selected' => '0'
-                ]);
-            }
-        }
-        $app_styling = AppStyling::where([
-            'name' => 'Medium Font',
-            'type' => '2'
-        ])->first();
-        if(!empty($app_styling)){
-            $exist =  AppStylingOption::where([
-                'app_styling_id' => $app_styling->id,
-                'name' => 'Poppins-Medium',
+
+
+        $app_styling_options = array(
+            array('styling_name' => 'Regular Font', 'name' => 'Poppins-Regular'),
+            array('styling_name' => 'Medium Font', 'name' => 'Poppins-Medium'),
+            array('styling_name' => 'Bold Font', 'name' => 'Poppins-Bold')
+        );
+
+        foreach ($app_styling_options as $option) {
+            $app_style = AppStyling::where(['name'=> $option['styling_name'],'type'=>'2'])->first();         
+            if ($app_style) {
+                $exist =  AppStylingOption::where([
+                    'app_styling_id' => $app_style->id,
+                    'name' =>$option['name'],
                 ])->first();
-            if(empty($exist)){
-                $app_styling_option = AppStylingOption::insert([
-                    'app_styling_id' => $app_styling->id,
-                    'name' => 'Poppins-Medium',
-                    'is_selected' => '0'
-                ]);
-            }
-        }
-        $app_styling = AppStyling::where([
-            'name' => 'Bold Font',
-            'type' => '2'
-        ])->first();
-        if(!empty($app_styling)){
-            $exist =  AppStylingOption::where([
-                'app_styling_id' => $app_styling->id,
-                'name' => 'Poppins-Bold',
-                ])->first();
-            if(empty($exist)){
-                $app_styling_option = AppStylingOption::insert([
-                    'app_styling_id' => $app_styling->id,
-                    'name' => 'Poppins-Bold',
-                    'is_selected' => '0'
-                ]);
-            }
+                if(empty($exist)){
+                    $app_styling_option = AppStylingOption::insert([
+                        'app_styling_id' => $app_style->id,
+                        'name' =>$option['name'],
+                        'is_selected' => '0'
+                    ]);
+                }
+            } 
         }
     }
 }
