@@ -44,7 +44,7 @@
                             <li class="nav-item">
                                 <a href="{{ route('vendor.bid.request', $vendor->id) }}" aria-expanded="false"
                                     class="nav-link">
-                                    {{ __('Bid Requests').' ('.$reqBidCnt.')' }}
+                                    {{ __('Bid Requests').' ('.@$reqBidCnt.')' }}
                                 </a>
                             </li>
                          @endif

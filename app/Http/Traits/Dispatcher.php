@@ -16,7 +16,7 @@ trait Dispatcher{
     {
         try {
             $new_dispatch_traking_url = str_replace('/tracking/', '/driver_additional_rating/', $traking_url);
-          //  pr($new_dispatch_traking_url);
+    
             $Httpresponse = Http::get($new_dispatch_traking_url);
             $response = json_decode($Httpresponse->getBody(), true);
             $data =  json_decode($response['data'], true);
@@ -29,7 +29,7 @@ trait Dispatcher{
     # set Driver rating at dispatch panel
     public function setDriverRatingDispatcher($postdata , $traking_url)
     {
-       // try {
+        try {
             $new_dispatch_traking_url = str_replace('/tracking/', '/submit_driver_additional_rating/', $traking_url);
             $client = new GCLIENT();
     
@@ -38,11 +38,12 @@ trait Dispatcher{
                 ['form_params' => ($postdata)]
             );
             $response = json_decode($res->getBody(), true);
-            pr(json_encode($response));
-           // pr($new_dispatch_traking_url);
-        // }catch(\Exception $e){
-        //     return $e->getMessage();
-        // }
+            \Log::info('setDriverRatingDispatcher');
+            \Log::info( $response);
+         return $response ;
+        }catch(\Exception $e){
+            return $e->getMessage();
+        }
     }
     
 }

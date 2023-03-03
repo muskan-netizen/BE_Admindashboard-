@@ -146,7 +146,7 @@ class InventoryController extends Controller
         try{
 
             if(@$request->products && is_array($request->products)){
-                //\Log::info($request->all());
+                \Log::info($request->all());
                 DB::beginTransaction();
                 $order_vendor_id = $request->order_vendor_id;
                 $synced_product = [];
@@ -162,7 +162,7 @@ class InventoryController extends Controller
 
                     $product_details = \DB::table('products')->where('sku', $i_product['sku'])->first();
                     if( !empty($product_details) ) {
-                        $order_cat = $i_product['tax_category_id'] =  $product_details->category_id;
+                        $order_cat = $i_product['tax_category_id'] =  $product_details->tax_category_id;
                     }
 
                     //save product and return product id

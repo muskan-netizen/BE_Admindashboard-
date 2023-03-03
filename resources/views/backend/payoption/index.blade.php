@@ -121,6 +121,12 @@
                 $azul_auth_header_two = (isset($creds->azul_auth_header_two)) ? $creds->azul_auth_header_two : '';
                 $azul_ssl_certificate = (isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
                 $azul_ssl_key = (isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
+                
+                // payway
+                $payway_main_url = (isset($creds->payway_main_url)) ? $creds->payway_main_url : '';
+                $payway_test_url = (isset($creds->payway_test_url)) ? $creds->payway_test_url : '';
+                $payway_merchant_id = (isset($creds->payway_merchant_id)) ? $creds->payway_merchant_id : '';
+                $payway_api_key = (isset($creds->payway_api_key)) ? $creds->payway_api_key : '';
 
                 $company_token = (isset($creds->company_token)) ? $creds->company_token : '';
                 $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
@@ -1538,6 +1544,78 @@
 									<label for="azul_ssl_key" class="mr-3">{{ __("SSL Key") }}</label>
 									<input type="file" name="azul_ssl_key" id="azul_ssl_key"
 										class="form-control" @if($azul_ssl_key== '' && ($opt->status == 1)) required @endif>
+									<p class="font-weight-bold">{{@$azul_ssl_key}}</p>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					
+					@endif @if ( (strtolower($opt->code) == 'payway') )
+					<div class="mt-2" id="azul_fields_wrapper" @if($opt->
+						status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="payway_main_url" class="mr-3">{{ __("Main Url") }}</label>
+									<input type="text" name="payway_main_url" id="payway_main_url"
+										class="form-control" value="{{$payway_main_url}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="payway_test_url" class="mr-3">{{ __("Test Url") }}</label>
+									<input type="text" name="payway_test_url" id="payway_test_url"
+										class="form-control" value="{{$payway_test_url}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_merchant_id" class="mr-3">{{ __("Merchant ID")
+										}}</label> <input type="text" name="azul_merchant_id"
+										id="azul_merchant_id" class="form-control"
+										value="{{$azul_merchant_id}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_auth_header_one" class="mr-3">{{ __("Auth
+										Header 1") }}</label> <input type="text"
+										name="azul_auth_header_one" id="azul_auth_header_one"
+										class="form-control" value="{{$azul_auth_header_one}}"
+										@if($opt->status == 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_auth_header_two" class="mr-3">{{ __("Auth
+										Header 2") }}</label> <input type="text"
+										name="azul_auth_header_two" id="azul_auth_header_two"
+										class="form-control" value="{{$azul_auth_header_two}}"
+										@if($opt->status == 1) required @endif>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_ssl_certificate" class="mr-3">{{ __("SSL
+										Certificate") }}</label> <input type="file"
+										name="azul_ssl_certificate" id="azul_ssl_certificate"
+										class="form-control" @if($azul_ssl_certificate==
+										'') required @endif>
+									<p class="font-weight-bold">{{@$azul_ssl_certificate}}</p>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="azul_ssl_key" class="mr-3">{{ __("SSL Key") }}</label>
+									<input type="file" name="azul_ssl_key" id="azul_ssl_key"
+										class="form-control" @if($azul_ssl_key== '') required @endif>
 									<p class="font-weight-bold">{{@$azul_ssl_key}}</p>
 								</div>
 							</div>

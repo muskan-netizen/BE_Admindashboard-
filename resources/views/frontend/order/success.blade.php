@@ -303,7 +303,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                         <span style="color:var(--theme-deafult);">Unpaid</span>
                                         @endif
                                     </span></li>
-                                    <li class="Shipping col-8">
+                                    <li class="Shipping col-8 d-block">
                                         @if($order->luxury_option_id == 1 || $order->luxury_option_id == 6 || $order->luxury_option_id == 4)
                                            <span> {{__('Delivery Address')}}:</span>
                                         <span>

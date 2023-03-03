@@ -59,7 +59,11 @@ $preference = $client_preference_detail;
                 }
                 @endphp
                 <ul class="header-dropdown d-none d-sm-inline">
+                @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
+                    @endif
                     @if($client_preference_detail->header_quick_link == 1)
+                    
                     <li class="onhover-dropdown quick-links quick-links">
 
                         <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>

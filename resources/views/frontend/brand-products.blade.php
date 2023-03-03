@@ -31,7 +31,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                 </div>
             </div>
             <div class="row mb-5 homepageSix">
-                <div class="collection-filter col-lg-3 main-fillter">
+                <div class="collection-filter col-lg-3 main-fillter filter_brand">
                         <div class="collection-filter-block bg-transparent p-0">
                             <div class="collection-mobile-back">
                                 <span class="filter-back d-lg-none d-inline-block">
@@ -303,7 +303,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                     </div>--}}
                                      <div class="displayProducts">
                                         <div class="product-wrapper-grid">
-                                            <div class="row margin-res">
+                                            <div class="row margin-res brand_one">
                                               @if($products->isNotEmpty())
                                                 @foreach($products as $key => $data)
                                                 <?php /*$imagePath = $imagePath2 = '';

@@ -108,7 +108,7 @@ class RatingController extends FrontController{
                 $postdata['Rating_types']  =$rating_type;
                 $postdata['Rating']  = $rating;
                
-                //$this->setDriverRatingDispatcher($postdata , $request->dispatch_traking_url);
+                $this->setDriverRatingDispatcher($postdata , $request->dispatch_traking_url);
                 $order_details = OrderProduct::where('id',$request->order_vendor_product_id)->whereHas('order',function($q){$q->where('user_id',Auth::id());})->first();
               
                 if($order_details){
@@ -249,8 +249,8 @@ class RatingController extends FrontController{
             $dispatch_rating_types = [];
             $rating_details = OrderDriverRating::where('id',$request->id)->first();
             if($request->has('dispatch_traking_url') && !empty($request->dispatch_traking_url)){
-                $traking_url = 'http://192.168.102.65:8001/order/tracking/745e3f/YUCmbs';
-                $rating_response = $this->getRatingQuestingDispatcher($traking_url); //$request->dispatch_traking_url / change dynamic url
+               // $traking_url = 'http://192.168.102.65:8001/order/tracking/745e3f/YUCmbs';
+                $rating_response = $this->getRatingQuestingDispatcher($request->dispatch_traking_url); //$request->dispatch_traking_url / change dynamic url
                 $dispatch_rating_ques =  @$rating_response['attribute'] ?? [];
                 $dispatch_rating_types =  @$rating_response['ratingType'] ?? [];
             }
@@ -261,9 +261,9 @@ class RatingController extends FrontController{
                             'rating_details'    => $rating_details,
                             'dispatch_rating_ques' => $dispatch_rating_ques,
                             'dispatch_rating_types' => $dispatch_rating_types,
-                            'dispatch_traking_url' => $traking_url //$request->dispatch_traking_url / change dynamic url
+                            'dispatch_traking_url' => $request->dispatch_traking_url 
                             );
-                           // pr( $withArray);
+
             if(isset($rating_details)){
                 $withArray['rating'] = $rating_details->rating;
                 if ($request->ajax()) {

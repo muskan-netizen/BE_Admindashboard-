@@ -1,5 +1,6 @@
 <div class="rating-form" {{ $dispatch_rating }}>
     <fieldset class="form-group">
+        <legend class="form-legend">Rating:</legend>
         <div class="form-item">
 
         <input id="{{$rating_type['id']}}_rating-5" name="{{$rating_type['id']}}_rating" type="radio" value="5" {{ @$dispatch_rating == 5 ? 'checked' : '' }}/>
