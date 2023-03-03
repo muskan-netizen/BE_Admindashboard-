@@ -445,6 +445,7 @@ class UserhomeController extends FrontController
                         ->whereDate('end_date_time', '>=', Carbon::now());
                 });
             });
+          
             if(isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)){
                 if(!empty($latitude) && !empty($longitude)){
                     $banners = $banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
@@ -453,7 +454,7 @@ class UserhomeController extends FrontController
                 }
             }
             $banners = $banners->orderBy('sorting', 'asc')->get();
-
+            //pr($banners);
             $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
             ->where(function ($q) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) {
@@ -504,7 +505,7 @@ class UserhomeController extends FrontController
                 return $da;
 
             });
-dd($homePageData);
+
             
             $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
             if ($only_cab_booking == 1)
@@ -563,7 +564,8 @@ dd($homePageData);
             // dd($view_page);
             //pr($set_template->toArray());exit();
             //pr(Session::get('latitude'));
-            return view('frontend.'.$view_page)->with(['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData]);
+            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData];
+            return view('frontend.'.$view_page)->with($homeData);
 
         } catch (Exception $e) {
             pr($e->getCode());
@@ -668,18 +670,6 @@ dd($homePageData);
         }else{
             $brands = [];
         }
-
-        // $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
-        //         ->where('id', '>', '1')
-        //         // ->where('is_core', 1)
-        //         ->whereNotIn('type_id', [4, 5])
-        //         ->where(function ($q) {
-        //             $q->whereNull('vendor_id');
-        //         })->orderBy('position', 'asc')
-        //         ->orderBy('id', 'asc')
-        //         ->where('status', 1)
-        //         ->orderBy('parent_id', 'asc')->get();
-
 
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
@@ -841,119 +831,18 @@ dd($homePageData);
         }    
         //get Most Selling Vendors
         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
-        $on_sale_product_details = [];
+        $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
-            $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type,$on_sale_title, $p_dim);
-            // foreach ($on_sale_product_details as  $on_sale_product_detail) {
-            //     $multiply = $on_sale_product_detail->variant->first()->multiplier ?? 1;
-            //     $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-            //     $image_url = $on_sale_product_detail->media->first() ? @$on_sale_product_detail->media->first()->image->path['proxy_url'] . $p_dim . @$on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-            //     $user_id = Auth::user()->id??'';
-            //     $product_id = $on_sale_product_detail->id;
-            //     $is_inwishlist_btn = 0;
-            //     $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
-            //     if(@$userWishlistProd){
-            //         $is_inwishlist_btn = 1;
-            //     }
-            //     $on_sale_products[] = array(
-            //         'tag_title' => $on_sale_title??'0',
-            //         'image_url' => $image_url,
-            //         'id' => $on_sale_product_detail->id,
-            //         'sku' => $on_sale_product_detail->sku,
-            //         'updated_at' => $on_sale_product_detail->updated_at,
-            //         'is_inwishlist_btn' => $is_inwishlist_btn,
-            //         'title' => Str::limit($title, 18, '..'),
-            //         'url_slug' => $on_sale_product_detail->url_slug,
-            //         'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
-            //         'inquiry_only' => $on_sale_product_detail->inquiry_only,
-            //         'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
-            //         'vendor' => $on_sale_product_detail->vendor,
-            //         'ProductAttribute' => $on_sale_product_detail->ProductAttribute,
-            //         'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$on_sale_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
-            //         'compare_at_price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
-            //         'compare_price' => @$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply,
-            //         'price_numeric' =>@$on_sale_product_detail->variant->first()->price??0 * $multiply,
-            //         'category' => (!empty($on_sale_product_detail->category) && !empty($on_sale_product_detail->category->categoryDetail) 
-            //         && !empty($on_sale_product_detail->category->categoryDetail->translation)) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??'',
-            //         'category_type' => $new_product_detail->category->categoryDetail->type_id ?? 0
-            //     );
-            // }
+            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type,$on_sale_title, $p_dim);
         }
-        $new_product_details = [];
+        $new_product_details =$new_products = [];
         if (in_array('new_products', $enable_layout)) {  # if enable new_products section in 
-           
-            $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type,$new_products_title,$p_dim);
-        pr( $new_product_details);
-            // foreach ($new_product_details as  $new_product_detail) {
-            //     $multiply = $new_product_detail->variant->first()->multiplier?? 1;
-            //     $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-            //     $image_url = $new_product_detail->media->first() ? @$new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . @$new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-            //     $user_id = Auth::user()->id??'';
-            //     $product_id = $new_product_detail->id;
-            //     $is_inwishlist_btn = 0;
-            //     $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
-            //     if(@$userWishlistProd){
-            //         $is_inwishlist_btn = 1;
-            //     }
-            //     $new_products[] = array(
-            //         'tag_title' => $new_products_title??0,
-            //         'image_url' => $image_url,
-            //         'id' => $new_product_detail->id,
-            //         'sku' => $new_product_detail->sku,
-            //         'updated_at' => $new_product_detail->updated_at,
-            //         'is_inwishlist_btn' => $is_inwishlist_btn,
-            //         'title' => Str::limit($title, 18, '..'),
-            //         'url_slug' => $new_product_detail->url_slug,
-            //         'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
-            //         'inquiry_only' => $new_product_detail->inquiry_only,
-            //         'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
-            //         'vendor' => $new_product_detail->vendor,
-            //         'ProductAttribute' => $new_product_detail->ProductAttribute,
-            //         'price_numeric' =>@$new_product_detail->variant->first()->price??0 * $multiply,
-            //         'compare_price' =>@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,
-            //         'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
-            //         'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
-            //         'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug,
-            //         'category_type' => $new_product_detail->category->categoryDetail->type_id ?? 0
-            //     );
-            // }
+            $new_products = $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type,$new_products_title,$p_dim);
         }
-        $feature_product_details = [];
+        $feature_product_details = $feature_products = [];
+      
         if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in 
-            $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type, $featured_products_title,$p_dim);
-
-            // foreach ($feature_product_details as  $feature_product_detail) {
-            //     $multiply = $feature_product_detail->variant->first()->multiplier ?? 1;
-            //     $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-            //     $image_url = $feature_product_detail->media->first() ? @$feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . @$feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-            //     $user_id = Auth::user()->id??'';
-            //     $product_id = $feature_product_detail->id;
-            //     $is_inwishlist_btn = 0;
-            //     $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
-            //     if(@$userWishlistProd){
-            //         $is_inwishlist_btn = 1;
-            //     }
-            //     $feature_products[] = array(
-            //         'tag_title' => $featured_products_title??'0',
-            //         'image_url' => $image_url,
-            //         'id' => $feature_product_detail->id,
-            //         'sku' => $feature_product_detail->sku,
-            //         'updated_at' => $feature_product_detail->updated_at,
-            //         'is_inwishlist_btn' => $is_inwishlist_btn,
-            //         'title' => Str::limit($title, 18, '..'),
-            //         'url_slug' => $feature_product_detail->url_slug,
-            //         'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
-            //         'inquiry_only' => $feature_product_detail->inquiry_only,
-            //         'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
-            //         'vendor' => $feature_product_detail->vendor,
-            //         'ProductAttribute' => $feature_product_detail->ProductAttribute,
-            //         'price_numeric' =>@$feature_product_detail->variant->first()->price??0 * $multiply,
-            //         'compare_price' =>@$feature_product_detail->variant->first()->compare_at_price??0 * $multiply,
-            //         'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$feature_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply,',')),
-            //         'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug,
-            //         'category_type' => $new_product_detail->category->categoryDetail->type_id ?? 0
-            //     );
-            // }
+            $feature_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type, $featured_products_title,$p_dim);
         } 
         
      
@@ -966,7 +855,7 @@ dd($homePageData);
             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $language_id, $currency_id,'', $request->type,$p_dim);
         }
           
-        if($this->checkTemplateForAction(8)){
+        //if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type,$p_dim);
             $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
 
@@ -981,7 +870,7 @@ dd($homePageData);
 
             $top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
             $top_rated_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $top_rated_products_ids);
-        }
+        //}
         /**  Recent order */
         $activeOrders = [];
         if (in_array('recent_orders', $enable_layout)) {  # if enable recent_orders section in 
@@ -1044,7 +933,7 @@ dd($homePageData);
 
 
         /** Respose data */
-
+      
         $data = [
             'brands' => $brands,
             'vendors' => $vendors,
@@ -1109,7 +998,7 @@ dd($homePageData);
          return $this->cities;
     }
 
-    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type,$title, $p_dim)
+    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type,$Products_title, $p_dim)
     {
      
         $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
@@ -1117,7 +1006,9 @@ dd($homePageData);
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
-            'vendor', 'ProductAttribute' => function ($q) {
+            'vendor' => function ($q) {
+                $q->select('id', 'slug','status','name','dine_in','takeaway','delivery','rental','pick_drop','on_demand','laundry','appointment','p2p');
+            }, 'ProductAttribute' => function ($q) {
                 $q->where('key_name', 'Location');
             },
             'media' => function ($q) {
@@ -1181,7 +1072,7 @@ dd($homePageData);
                     $is_inwishlist_btn = 1;
                 }
                 $returnArray[] = array(
-                    'tag_title' => $title??0,
+                    'tag_title' => $Products_title??0,
                     'image_url' => $image_url,
                     'id' => $value->id,
                     'sku' => $value->sku,
@@ -1204,7 +1095,7 @@ dd($homePageData);
                 
             }
         }
-          //dd($returnArray);
+         
        return $returnArray;
         //pr( $products->toArray());
     }
