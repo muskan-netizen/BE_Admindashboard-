@@ -14,6 +14,7 @@ use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomencl
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
+use App\Http\Traits\SquareInventoryManager;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
 use App\Imports\QrcodesImport;
@@ -21,7 +22,7 @@ use GuzzleHttp\Client as GCLIENT;
 use Carbon\Carbon;
 class ProductController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser, SquareInventoryManager;
     private $folderName = 'prods';
     private $slugIsUnique = true;
     public function __construct()
@@ -377,6 +378,7 @@ class ProductController extends BaseController
     {
         DB::beginTransaction();
         try {
+            $this->createNewProductInSquare($id);
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);

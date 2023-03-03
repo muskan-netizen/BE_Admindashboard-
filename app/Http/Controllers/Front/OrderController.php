@@ -4253,10 +4253,10 @@ class OrderController extends FrontController
 
 
     function squareProductCreate(){
-        $this->createNewProductInSquare();
+        $this->createNewProductInSquareTest();
     }
 
     function squareProductUpdate(){
-        $this->updateNewProductInSquare();
+        $this->updateNewProductInSquareTest();
     }
 }
