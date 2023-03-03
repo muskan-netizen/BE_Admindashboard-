@@ -138,6 +138,9 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
         background: #f2f2f2;
         padding: 10px 0;
     }
+    body.dark.al_body_template_two .menu-navigation {
+        background: transparent;
+    }
 }
 @media (max-width: 767px) {
     body.al_body_template_two .product-wrapper-grid .col-xl-3.col-md-3.col-6.mt-3 {
@@ -371,6 +374,9 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
     }
     .al_body_template_two ul#main-menu .slick-prev {
         left: -10px;
+    }
+    body.dark.al_body_template_two .row.footer-theme.partition-f .footer-logo{
+        margin:20px 0!important;
     }
 }
 
