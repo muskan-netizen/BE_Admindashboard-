@@ -72,9 +72,13 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                     @foreach($category->brands as $key => $val)
                                         <div class="custom-control custom-checkbox collection-filter-checkbox">
                                             <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->id}}" used="brands" id="brd{{$val->id}}">
-                                            @foreach($val->translation as $k => $v)
-                                                <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
-                                            @endforeach
+                                           @if (count($val->translation) > 0)
+                                                @foreach($val->translation as $k => $v)
+                                                    <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
+                                                @endforeach
+                                            @else
+                                                   <label class="custom-control-label" for="brd{{$val->id}}">{{@$val->brand->title}}</label>                                           
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
@@ -300,7 +304,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                             </ul> -->
                                         </div>
                                     @include('frontend.ajax.product-card')
-                                        <div class="pagination pagination-rounded justify-content-end mb-0">
+                                        <div class="pagination pagination-rounded justify-content-end mb-0 page-m-20">
                                             @if(!empty($listData))
                                                 {{ $listData->links() }}
                                             @endif
