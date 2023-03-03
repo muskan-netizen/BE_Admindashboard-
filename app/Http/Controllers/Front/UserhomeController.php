@@ -855,7 +855,7 @@ class UserhomeController extends FrontController
             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $language_id, $currency_id,'', $request->type,$p_dim);
         }
           
-        //if($this->checkTemplateForAction(8)){
+        if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type,$p_dim);
             $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
 
@@ -870,7 +870,7 @@ class UserhomeController extends FrontController
 
             $top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
             $top_rated_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $top_rated_products_ids);
-        //}
+        }
         /**  Recent order */
         $activeOrders = [];
         if (in_array('recent_orders', $enable_layout)) {  # if enable recent_orders section in 
