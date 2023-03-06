@@ -23,12 +23,13 @@ if($client_preference_detail->show_dark_mode == 1){
   }
 }
 
-$body_class = "";
-$left_sidebar = '';
-$footer_content = '';
+$body_class = "al_body_template_one";
+$left_sidebar = 'layouts.store/left-sidebar-template-one';
+$footer_content = 'layouts.store/footer-content-template-one';
 if(isset($set_template))
 {
-  $selectedTemplate = $set_template->template_id;
+  $selectedTemplate = $set_template->template_id ?? 1;
+ 
   switch($selectedTemplate) {
     case 1:
       $body_class = "al_body_template_one";
@@ -82,9 +83,8 @@ if(isset($set_template))
       $left_sidebar = 'layouts.store/left-sidebar-template-nine';
       $footer_content = 'layouts.store/footer-content-template-one';
   }
-  
-}
 
+}
 
 @endphp
 @include('layouts.shared.variables-constant-js')
