@@ -169,7 +169,6 @@ trait ProductActionTrait{
                     $products  =  $products->paginate($pagiNate);
                     foreach ($products as $key => $value) {
                         $multiply = Session::get('currencyMultiplier') ?? 1;
-                        \Log::info('mul--'.$multiply);
                         $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
                         $value->image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . $p_dim . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                         
@@ -192,7 +191,6 @@ trait ProductActionTrait{
 
                     foreach ($products as $key => $value) {
                         $multiply = Session::get('currencyMultiplier') ?? 1;
-                        \Log::info('mul-2-'.$multiply);
                         $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
                         $image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . $p_dim . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                         $productArray[] = array(
