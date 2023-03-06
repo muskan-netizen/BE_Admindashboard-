@@ -1001,7 +1001,7 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
 .al_body_template_eight .product-description_list p span.rating {
   /* background-color:#409a40; */
   background: transparent;
-    padding: 2px 4px;
+    padding: 2px 2px;
     color: #000;
     border-radius: 4px;
     float: right;
@@ -1669,6 +1669,13 @@ body.dark.al_body_template_eight article#page-container section .vendors section
 
 
 /*------------ipad view css-------------*/
+
+@media(max-width:1600px) {
+    .al_clock b{
+        font-size: 14px;
+    }
+
+}
 
 @media(max-width:991px) {
     article#page-container section .vendors section h2.h2-heading {

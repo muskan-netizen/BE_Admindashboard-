@@ -225,7 +225,7 @@
                                             <div class="row margin-res">
                                               @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
-                                                {{-- @dd($data->vendor->id) --}}
+                                                {{-- @dd($data) --}}
                                                 <?php /*$imagePath = $imagePath2 = '';
                                                 $mediaCount = count($data->media);
                                                 for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
@@ -411,8 +411,7 @@
     // $(document).on('change','#search_location',function(){
     //     $latitude = $('#latitude').val();
     //     $longitude = $('#longitude').val();
-    //     alert('longitude >>>>>> ' +longitude);
-    //     alert('latitude >>>>>> ' +latitude);
+    
     //     alert($(this).val());
     //     // filterProducts();
     // });

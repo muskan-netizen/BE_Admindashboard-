@@ -129,9 +129,7 @@ class UserhomeController extends FrontController
     {
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-
-             if($dispatch_domain->business_type == 'taxi'){
-
+             if($dispatch_domain->business_type == 'taxi'){                 
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $endpoint =$url . "/api/send-documents";
                  $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
@@ -974,6 +972,43 @@ class UserhomeController extends FrontController
 
 
         return $this->successResponse($data);
+    }
+    public function vendorProductLoop($ProductArray =[], $p_dim ){
+        $return_products = [];
+
+        foreach ($ProductArray as  $new_product_detail) {
+            $multiply = $new_product_detail->variant->first()->multiplier?? 1;
+            $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
+            $image_url = $new_product_detail->media->first() ? ( !empty($new_product_detail->media->first()->image ) ?( $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path']) : $this->loadDefaultImage() ): $this->loadDefaultImage();
+            $user_id = Auth::user()->id??'';
+            $product_id = $new_product_detail->id;
+            $is_inwishlist_btn = 0;
+            $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
+            if(@$userWishlistProd){
+                $is_inwishlist_btn = 1;
+            }
+            $return_products[] = array(
+                'tag_title' => $new_products_title??0,
+                'image_url' => $image_url,
+                'id' => $new_product_detail->id,
+                'sku' => $new_product_detail->sku,
+                'updated_at' => $new_product_detail->updated_at,
+                'is_inwishlist_btn' => $is_inwishlist_btn,
+                'title' => Str::limit($title, 18, '..'),
+                'url_slug' => $new_product_detail->url_slug,
+                'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
+                'inquiry_only' => $new_product_detail->inquiry_only,
+                'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
+                'vendor' => $new_product_detail->vendor,
+                'ProductAttribute' => $new_product_detail->ProductAttribute,
+                'price_numeric' =>@$new_product_detail->variant->first()->price??0 * $multiply,
+                'compare_price' =>@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,
+                'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
+                'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
+                'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
+            );
+        }
+        return $return_products;
     }
 
     /**

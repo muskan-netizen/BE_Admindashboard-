@@ -523,10 +523,10 @@
             }
             // var charCode = String.fromCharCode(event.which || event.keyCode);
             // if (!regexp.test(charCode)) {
-            //     console.log(">>>ne");
+            
             //     return false;
             // }
-            // console.log(">>>ne2");
+            
             // var n1 = $('#sku').val();
             // $('#url_slug').val(n1+charCode)
 

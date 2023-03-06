@@ -27,8 +27,8 @@
                                                                         <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                                                                     </div>
                                                                     <div class="col-md-3 alOrderStatus">
-                                                                        <h4>{{ __('Customer Name') }}</h4>
-                                                                        <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
+                                                                        <h4>{{ __(getNomenclatureName('Vendor Name',true)) }}</h4>
+                                                                        <span><a class="text-capitalize">{{ @$order->vendors[0]['vendor']->name }}</a></span>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3 ellipsis">

@@ -121,7 +121,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                     <div class="displayProducts main_category" id="category_products_filter">
                                        
                                     @include('frontend.ajax.product-card')
-                                        <div class="pagination pagination-rounded justify-content-end mb-0">
+                                        <div class="pagination pagination-rounded justify-content-end mb-0 page-m-20">
                                             @if(!empty($listData))
                                                 {{ $listData->links() }}
                                             @endif

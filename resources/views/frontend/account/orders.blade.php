@@ -132,7 +132,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                 <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ getNomenclatureName($ordertitle, true). __('Rejected/Cancel ')  }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ getNomenclatureName($ordertitle, true)." ". __('Rejected/Cancel ')  }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if($show_long_term ==1)
@@ -324,6 +324,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
 
 @endsection
 @section('script')
+<script src="{{asset('js/credit-card-validator.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
     @if(in_array('razorpay',$client_payment_options))
     <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -401,6 +402,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
         var ajaxCall = 'ToCancelPrevReq';
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
+         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";    
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
         var create_payphone_url = "{{route('payphone.createHash')}}";
         var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
@@ -752,6 +754,18 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
             }
         });
     });
+    
+    function addSlashes (element) {
+	
+    let ele = document.getElementById(element.id);
+    ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
+    if(ele.length < 4 && ele.length > 0){
+        let finalVal = ele.match(/.{1,2}/g).join('/');
+
+        document.getElementById(element.id).value = finalVal;
+    }
+}
+    
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
