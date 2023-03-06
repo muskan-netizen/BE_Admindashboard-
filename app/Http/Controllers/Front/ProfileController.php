@@ -109,20 +109,18 @@ class ProfileController extends FrontController
         $phonenumber= str_replace('-', '', $request->phone_number);
         $request->phone_number = str_replace(' ', '', $phonenumber);
         $user = User::where('id', Auth::user()->id)->first();
-        
-        if($user->phone_number!=$request->phone_number){
-            $validator = Validator::make($request->all(), [
-                'email' => 'required|email|unique:users',
-                'name' => 'required|string|min:3|max:80',
-                'phone_number' => 'required|unique:users'
-            ]);
-        }else{
-            $validator = Validator::make($request->all(), [
-                'email' => 'required',
-                'name' => 'required|string|min:3|max:80',
-                'phone_number' => 'required'
-            ]);
+
+        $rules = [
+            'name' => 'required|string|min:3|max:80',
+            'phone_number' => 'required|unique:users',
+            'email' => 'email'
+        ];
+
+        if($user->phone_number == $request->phone_number){
+            $rules['phone_number'] = 'required';
         }
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             foreach ($validator->errors()->toArray() as $error_key => $error_value) {
