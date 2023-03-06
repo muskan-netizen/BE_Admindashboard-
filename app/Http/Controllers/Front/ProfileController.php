@@ -113,7 +113,6 @@ class ProfileController extends FrontController
         $rules = [
             'name' => 'required|string|min:3|max:80',
             'phone_number' => 'required|unique:users',
-            'email' => 'nullable',
         ];
 
         if($user->phone_number == $request->phone_number){
@@ -121,7 +120,7 @@ class ProfileController extends FrontController
         }
 
         if(!empty($request->email)){
-            $rules['email'] = 'email';
+            $rules['email'] = 'email|unique:users,email,'.$user.',id'';
         }
 
         $validator = Validator::make($request->all(), $rules);
