@@ -17,7 +17,7 @@ $(function(){
 
 
 
-$(document).on('click','.view_on_demand_price',function(){
+$(document).on('click','.view_on_demand_price',async function(){
     var variant_id = $(this).data('variant_id');
     OrderSessionStorage.setStorageSingle('variant_id',variant_id);
     OrderSessionStorage.setStorageSingle('add_to_cart_url',$(this).data('add_to_cart_url'));
@@ -37,7 +37,7 @@ $(document).on('click','.view_on_demand_price',function(){
         "date" : todayDate,
     }
     ///$('.select-2').select2();
-    getGerenalSlot(formData);
+    await getGerenalSlot(formData);
     $('#driver_sort_by').hide();
     $('#productPriceModel').modal('show');
     $(`#listofdrivers`).html('');
