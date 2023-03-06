@@ -2,14 +2,6 @@
                                             <div class="row margin-res">
                                               @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
-                                                <?php /*$imagePath = $imagePath2 = '';
-                                                $mediaCount = count($data->media);
-                                                for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
-                                                    if($i == 0){
-                                                        $imagePath = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                    }
-                                                    $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                }*/ ?>
                                                 <div class="col-xl-3 col-md-3 col-6 mt-3">
                                                     <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0 product-card-box position-relative al_box_third_template al">
                                                         <div class="product-image">

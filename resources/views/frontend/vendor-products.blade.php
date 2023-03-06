@@ -40,7 +40,9 @@ $currentPage = $_GET['page']??1;
             
             @if(1)
             <div class="row mb-3 homepageSix mt-4">
-                <div class="collection-filter col-md-3 main-fillter">
+               
+            @if((!empty($variantSets) && count($variantSets) > 0) || ((!empty($brands) && count($brands) > 0)))
+            <div class="collection-filter col-md-3 main-fillter">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <aside class="side_fillter">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
@@ -116,7 +118,10 @@ $currentPage = $_GET['page']??1;
                         </div>
                         @endif
                     </aside>
-                    </div>
+                </div>
+            </div>
+            @endif
+
                     @php $show_new_Products = 0; @endphp
                     @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
@@ -195,7 +200,7 @@ $currentPage = $_GET['page']??1;
                     @endif
                     <!-- side-bar banner end here -->
                 </div>
-                <div class="collection-content col-lg-9 outter-fillter-data">
+                <div class="collection-content col-lg outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
