@@ -32,6 +32,9 @@
                                 <div class="item-img mx-1">
                                     @if($product->pvariant->media->isNotEmpty())
                                         <img src="{{ $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'] }}" alt="">
+                                     @elseif($product->media->isNotEmpty())
+                                      <img src="{{ $product->media->first()->image->path['image_fit'].'74/100'.$product->media->first()->image->path['image_path'] }}" alt="">
+                                    
                                     @else
                                         <img src="{{ $product->image['image_fit'].'74/100'.$product->image['image_path'] }}" alt="">
                                     @endif
