@@ -482,6 +482,12 @@ ul.exzoom_img_ul img {
 .al_body_template_eight .margin-res .inner_spacing{
     min-height: 108px;
 }
+.al_body_template_one .margin-res .inner_spacing {
+    min-height:122px;
+}
+body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded{
+    height: auto !important;
+}
 .product-image img.img-fluid.blur-up.lazyloaded {
     height: auto;
 }
