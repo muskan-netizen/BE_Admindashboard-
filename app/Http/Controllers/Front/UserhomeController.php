@@ -1083,7 +1083,7 @@ class UserhomeController extends FrontController
                     $q->where($type, 1);
                 });
                 if ($where == 'is_featured') {
-                         $products = $products->take(10);  
+                         $products = $products->take(20);  
                     }else{
                         $products = $products->take(10);  
                     }

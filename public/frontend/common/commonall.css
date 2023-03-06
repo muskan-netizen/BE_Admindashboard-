@@ -510,6 +510,15 @@ body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded{
     box-shadow: none;
 }
 
+.al_body_template_eight .pixelstrap .al_main_category:hover ul.al_main_category_list {
+    visibility: visible;
+    opacity: 1;
+    -webkit-transition-delay: .6s;
+    transition-delay: .6s;
+    box-shadow: none;
+    transition: ease-in 3s ease;
+}
+
 .al_body_template_one .pixelstrap ul {
     display: block;
     opacity: 0;

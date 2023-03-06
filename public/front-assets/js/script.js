@@ -40,7 +40,7 @@ function  layoutMode(){
         ],
     };
     var sliderConfigEight10 = {
-        rows: (featured_products_length > 10    ? 2 : 1),
+        rows: (featured_products_length >= 20    ? 2 : 1),
 		dots: false,
 		arrows: true,
 		infinite: true,
