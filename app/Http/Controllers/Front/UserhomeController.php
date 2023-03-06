@@ -494,7 +494,7 @@ class UserhomeController extends FrontController
 
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData, $navCategories) {
                 if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
-                    $da[$da->slug] = $homePageData['dashboardProductsData'][$da->slug] ?? '';
+                    $da[$da->slug] = $homePageData[$da->slug] ?? '';
                 }
                 if( $da->slug == 'nav_categories'  ){
                     $da['nav_categories'] = $navCategories ?? '';
@@ -606,7 +606,7 @@ class UserhomeController extends FrontController
      */
     public function postHomePageData(Request $request,$set_template,$enable_layout)
     {
-        //pr($enable_layout);
+        
         $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service']);
         $vendor_ids = [];
         $new_products = [];
@@ -833,7 +833,10 @@ class UserhomeController extends FrontController
             }
         }    
         //get Most Selling Vendors
-        $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
+        $mostSellingVendors = []; //best_sellers
+        if (in_array('best_sellers', $enable_layout)) {
+         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
+        }
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
             $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type,$on_sale_title, $p_dim);
@@ -947,7 +950,8 @@ class UserhomeController extends FrontController
             $data = [
                 'brands' => $brands,
                 'vendors' => $vendors,
-                'top_rated'       => $top_rated_products ?? '',
+                'top_rated'      => $top_rated_products ?? '',
+                'best_sellers'     => $mostSellingVendors ?? '',
                 'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
                 'cities' => $this->cities,
@@ -957,14 +961,14 @@ class UserhomeController extends FrontController
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
                 'recent_orders' => $activeOrders,
             ];
-            if(count($dashboardProductsData)>0){
-                return array_merge($data,$dashboardProductsData);
-            }
+            // if(count($dashboardProductsData)>0){
+            //     return array_merge($data,$dashboardProductsData);
+            // }
             return $data;
         }
-        if(count($dashboardProductsData)>0){
-            $data =  array_merge($data,$dashboardProductsData);
-        }
+        // if(count($dashboardProductsData)>0){
+        //     $data =  array_merge($data,$dashboardProductsData);
+        // }
         return $this->successResponse($data);
     }
     public function vendorProductLoop($ProductArray =[], $p_dim ){
@@ -1680,7 +1684,7 @@ class UserhomeController extends FrontController
             $trendingVendors = [];
         }
 
-
+        $mostSellingVendors = []; //best_sellers
         if (isset($slug) && $slug == 'best_sellers') {
             $mostSellingVendors = Vendor::with('slot.day', 'slotDate')->select('vendors.*', DB::raw('count(vendor_id) as max_sales'))->join('order_vendors', 'vendors.id', '=', 'order_vendors.vendor_id')->whereIn('vendors.id', $vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'), 'desc')->get();
             if ((!empty($mostSellingVendors) && count($mostSellingVendors) > 0)) {
