@@ -1108,6 +1108,9 @@ class ProductController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function importCsv(Request $request){
+        $validated = $request->validate([
+            'product_excel' => 'required|mimes:csv,txt'
+        ]);
         $vendor_id = $request->vendor_id;
         $fileModel = new CsvProductImport;
         if($request->file('product_excel')) {

@@ -192,8 +192,8 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                 <input class="form-control" type="text" placeholder="Bank Name">
             </div>
             <div class="form-group">
-                <label for="">{{__('IFSC Code')}}</label>
-                <input class="form-control" type="text" placeholder="IFSC Code">
+                <label for="">{{getNomenclatureName('IFSC Code', true)}}</label>
+                <input class="form-control" type="text" placeholder="{{getNomenclatureName('IFSC Code', true)}}">
             </div>
             <button type="button" class="btn btn-solid w-100 mt-2" data-dismiss="modal">{{__('Close')}}</button>
         </form>

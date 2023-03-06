@@ -195,8 +195,8 @@
                         },
                         columns: [
                             {data: 'order_number', name: 'order_number', orderable: false, searchable: false},
-                            {data: 'created_date', name: 'name',orderable: false, searchable: false},
-                            {data: 'user.name', name: 'Customer Name',orderable: false, searchable: false},
+                            {data: 'created_date', name: 'created_date',orderable: false, searchable: false},
+                            {data: 'user_name', name: 'Customer Name',orderable: false, searchable: false},
                             {data: 'payable_amount', name: 'payable_amount', orderable: false, searchable: false},
                             {data: 'loyalty_points_used', name: 'loyalty_points_used', orderable: false, searchable: false},
                             {data: 'loyalty_membership', name: 'action', orderable: false, searchable: false},

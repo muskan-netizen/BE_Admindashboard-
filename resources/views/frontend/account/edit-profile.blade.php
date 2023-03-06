@@ -20,6 +20,15 @@
                     </span>
                 </div>
             </div>
+            <div class="col-md-12">
+                <div class="form-group" id="emailInputEdit">
+                    <label class="control-label">{{ __('Email') }}</label>
+                    {!! Form::text('email', $user->email, ['class'=>'form-control']) !!}
+                    <span class="invalid-feedback" role="alert">
+                        <strong></strong>
+                    </span>
+                </div>
+            </div>
             <div class="col-md-12 mb-3">
                 <label for="">{{ __('Phone No.') }}</label>
                 @php

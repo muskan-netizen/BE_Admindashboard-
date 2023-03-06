@@ -32,78 +32,17 @@ $currentPage = $_GET['page']??1;
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <div class="top-banner-wrapper">
-                        @if(!empty($vendor->banner))
-                            <div class="common-banner text-center"><img class="img-fluid blur-up lazyload" data-src="{{$vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path']}}" alt=""></div>
-                        @endif
-                        <div class="row mt-n4">
-                            <div class="col-12">
-                                <form action="">
-                                    <div class="row">
-                                        <div class="col-sm-12 text-center position-relative vendor-page-copy">
-                                            <div class="file file--upload">
-                                                <label>
-                                                    <span class="update_pic border-0">
-                                                    <img class="img-fluid blur-up lazyload rounded-circle avatar-sm avatar-lg w-100" data-src="{{$vendor->logo['image_fit'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            <div class="name_location d-block py-0">
-                                                <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4> 
-                                                <a class="copy-board" href="javascript:void(0)" onclick="copyToClipboard('#p1')" >
-                                                    <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
-                                                    <span class="copied_txt" id="show_copy_msg_on_click_copy">{{ __('Copy') }}</span>
-                                                    <span class="copied_txt" id="show_copy_msg_on_click_copied" style="display:none;">{{ __('Copied') }}</span>
-                                                </a>
-                                                <span id="p1" style="display:none;">{{url()->current()}}</span>
-                                            </div>
-
-                                                <div class="">
-                                                    @if($vendor->is_show_vendor_details == 1)
-                                                    @if($vendor->email)
-                                                        <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
-                                                    @endif
-                                                    <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
-                                                    @if($vendor->website)
-                                                        <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
-                                                    @endif
-                                                    @endif
-                                                    @if(!empty($socialMediaUrls))
-                                                        <a class="open-social-medialinks" data-toggle="tooltip" title="Social Media Links" href="javascript:void(0)"><i class="fa fa-globe"></i></a>
-                                                    @endif
-                                                </div>
-                                                @if ($vendor->is_show_vendor_details == 1 && $vendor->order_min_amount > 0)
-                                                    <span class="badge badge-danger">{{ __('Minimum order value') }}{{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
-                                                @endif
-
-                                        </div>
-                                        @if($vendor->desc)
-                                            <div class="col-md-12 text-center vender-peragraph mt-3 mb-2">
-                                                <p>{{$vendor->desc}}</p>
-                                               <p> {!! $vendor->short_desc !!}</p>
-                                            </div>
-                                        @endif
-                                            @php
-                                               $checkSlot = findSlot('',$vendor->id,'');
-                                            @endphp
-                                        <div class="col-md-12 text-center">
-                                            @if($vendor->is_vendor_closed == 1 && $checkSlot == 0)
-                                            <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
-                                            @elseif($vendor->is_vendor_closed == 1 && $vendor->closed_store_order_scheduled == 1)
-                                            <p class="text-danger">{{__('We are not accepting orders right now. You can schedule this for '). $checkSlot }}.</p>
-                                            @endif
-                                            </div>
-
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                           @include('frontend.vendor-category-topbar-banner')   
                     </div>
-                </div>
+                        @include('frontend.vendor-details-in-banner')
             </div>
+
+            
             @if(1)
             <div class="row mb-3 homepageSix mt-4">
-                <div class="collection-filter col-md-3 main-fillter">
+               
+            @if((!empty($variantSets) && count($variantSets) > 0) || ((!empty($brands) && count($brands) > 0)))
+            <div class="collection-filter col-md-3 main-fillter">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <aside class="side_fillter">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
@@ -179,7 +118,10 @@ $currentPage = $_GET['page']??1;
                         </div>
                         @endif
                     </aside>
-                    </div>
+                </div>
+            </div>
+            @endif
+
                     @php $show_new_Products = 0; @endphp
                     @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
@@ -258,7 +200,7 @@ $currentPage = $_GET['page']??1;
                     @endif
                     <!-- side-bar banner end here -->
                 </div>
-                <div class="collection-content col-lg-9 outter-fillter-data">
+                <div class="collection-content col-lg outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">

@@ -337,7 +337,11 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
     padding: 0;
     font-size: 14px
 }
-
+.common-banner img, .category-block .category-image img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
 .pixelstrap ul.al_main_category_list li a span.new-tag {
     font-size: 12px;
     text-transform: capitalize;

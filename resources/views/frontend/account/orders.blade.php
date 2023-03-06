@@ -132,7 +132,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                 <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ getNomenclatureName($ordertitle, true)." ". __('Rejected/Cancel ')  }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ getNomenclatureName($ordertitle, true). __(' Rejected/Cancel ')  }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if($show_long_term ==1)
