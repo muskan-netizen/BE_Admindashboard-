@@ -16,7 +16,7 @@
     
 <!-- side-bar colleps block stat -->
 <div class="collection-filter-block bg-transparent p-0 m-0 brand-left">
-    @if(@$category->brands->first()->translation && count($category->brands->first()->translation) > 0)
+    @if(@count($category->brands->first()->translation) && count($category->brands->first()->translation) > 0)
     <div class="collection-collapse-block open mb-2">
         <h3 class="collapse-block-title">{{__('Brand')}}</h3>
         <div class="collection-collapse-block-content">
