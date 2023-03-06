@@ -27,7 +27,7 @@ class OrderProduct extends Model{
 
     public function order_product_status()
     {
-        return $this->hasOne('App\Models\VendorOrderProductStatus', 'order_vendor_product_id');
+        return $this->hasOne('App\Models\VendorOrderProductStatus', 'order_vendor_product_id')->orderBy('id','DESC')->limit(1);
     }
     public function orderProductStatus()
     {

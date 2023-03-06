@@ -399,6 +399,7 @@ class OrderController extends BaseController
                             $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                             $price_in_currency = $variant->price / $divider;
                              // change product price when is_service_product_price_from_dispatch on 
+                            
                             if(( checkColumnExists('cart_products', 'dispatch_agent_price') && ($action == 'on_demand') && $additionalPreferences->is_service_product_price_from_dispatch ==1 )){
                                 $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
                             }
@@ -501,10 +502,12 @@ class OrderController extends BaseController
                             $vendor_taxable_amount += $taxable_amount;
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $variant_price = $variant->price;
-
+                            // change variant_price price when is_service_product_price_from_dispatch on 
+                            $is_price_buy_driver = 0;
                             if( checkColumnExists('cart_products', 'dispatch_agent_price') && 
                             (($action == 'on_demand') && ($additionalPreferences->is_service_product_price_from_dispatch ==1) )){
                                 $variant_price =$vendor_cart_product->dispatch_agent_price ;
+                                $is_price_buy_driver = 1;
                             }
                             $total_amount += ($vendor_cart_product->quantity * $variant_price);
                             $order_product = new OrderProduct;
@@ -531,6 +534,9 @@ class OrderController extends BaseController
                             $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                             $product_variant_sets = '';
 
+                            if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
+                                $order_product->is_price_buy_driver = $is_price_buy_driver;
+                            }
 
                             if(@$vendor_cart_product->bid_number)
                             {
