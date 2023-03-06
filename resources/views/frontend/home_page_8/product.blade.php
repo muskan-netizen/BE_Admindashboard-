@@ -17,8 +17,9 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <h6 class="card_title ellips">{{ $product["title"] }}</h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
                      
+                        @if($product["averageRating"] >0)
                         <span class="rating-number">{{ $product["averageRating"] }}</span>
-                        @if($product["averageRating"] >0) @endif
+                         @endif
                          @endif @endif </div>
                     <div class="product-description_list border-bottom">
                         @if($dicountPercentage = productDiscountPercentage(@$product["price_numeric"], @$product["compare_price"]))
