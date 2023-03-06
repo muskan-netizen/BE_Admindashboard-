@@ -47,7 +47,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 <div class="float-right">
                     <div class="row d-flex justify-content-between">
                         <div class="col-sm-4 mb-1">
-                            <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
+                            <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly" value="{{$setWeekDate}}">
                         </div>
                         <div class="col-sm-4 mb-1">
                             <select class="form-control" id="vendor_select_box">
@@ -269,6 +269,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     });
     $("#range-datepicker").flatpickr({
         mode: "range",
+        dateFormat: "d M Y", //change format also 
+
         onClose: function(selectedDates, dateStr, instance) {
             //initDataTable();
             var typ=  $("a.nav-link.active").data('rel');
@@ -299,7 +301,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         init(type, "{{ route('orders.filter') }}", search, false);
     }
 
-    function init(filter_order_status, url, search_keyword = "", isOnload = false) {
+    function init(filter_order_status, url, search_keyword = "", isOnload = false,type=0) {
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
     // var sort_order = $('#sort_order option:selected').val();
@@ -360,18 +362,19 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     }
                     (response.data.p2p_orders != undefined) ? $("#p2p-orders").html("(" + response.data.p2p_orders + ")") : '';
 
+                    if(response.data.count_resp == 0)
+                    {
+                        $(`#${filter_order_status}_row`).html('');
+                        // $(`#${filter_order_status}_pagination`).html('');
+                    }
                 //await $(`#${filter_order_status}_row`).html('');
                 await $(`#${filter_order_status}_pagination`).html('');
                 if (response.status == 'Success') {
-                     await $(`#${filter_order_status}_row`).append(response.data.html);
-                        //var next = response.data.next_page_url;
-                    // var pagination = `<div class="col-md-4 offset-md-4 text-center">
-                    //         <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="${next}" data-rel="${filter_order_status}">
-                    //             <span class="ladda-label">{{ __('Load More') }}</span>
-                    //             <span class="ladda-spinner"></span>
-                    //             <div class="ladda-progress" style="width: 0px;"></div>
-                    //         </button>
-                    //     </div>`;
+                    if(type==1){
+                         await $(`#${filter_order_status}_row`).append(response.data.html);
+                    }else{
+                        await $(`#${filter_order_status}_row`).html(response.data.html);
+                    }
                         if(response.data.pagination!=null && response.data.pagination != ''){
                             await $(`#${filter_order_status}_pagination`).html('');
 
@@ -384,32 +387,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 
                 } 
                 await spinnerJS.hideSpinner();
-               
-                   
-
-                // if (response.status == 'Success') {
-                //     if (!isOnload) {
-                //         $(".tab-pane").html('');
-                //     }
-                //     if (response.data.orders.data.length != 0) {
-                //         // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                //         //             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                //         //          } };
-
-                //         var orderData = _.extend({ Helper: NumberFormatHelper },{
-                //                                                 orders: response.data.orders.data,
-                //                                                 next_page_url: response.data.orders.next_page_url,
-                //                                                 filter_order_status: filter_order_status
-                //                                             });
-
-                //         let order_page_template = _.template($('#order_page_template').html());
-                //         $("#" + filter_order_status).append(order_page_template(orderData));
-                //     } else {
-                //         let no_order_template = _.template($('#no_order_template').html());
-                //         $("#" + filter_order_status).html(no_order_template({}));
-                //     }
-                   
-                //  }
 
             },
             error: function(data) {
@@ -432,7 +409,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var url = $(this).data('url');
             var rel = $(this).data('rel');
             $("#search_via_keyword").val("");
-            init(rel, url, '', true);
+            init(rel, url, '', true,1);
             $(this).remove();
         });
         $(".nav-link").click(function() {

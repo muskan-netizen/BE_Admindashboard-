@@ -721,6 +721,7 @@ class CartController extends BaseController
             $total_fixed_fee_tax = 0;
 
             foreach ($cartData as $ven_key => $vendorData) {
+                $opt_quantity_price_new = 0.00;
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
                 $total_markup_fee_tax = 0;
@@ -777,11 +778,12 @@ class CartController extends BaseController
                 $delivery_fee_charges = 0.00;
                 $couponData = $couponProducts = array();
 
+                $if_previousdeliveryfee_added = 0;
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
 
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
-
+                    
                     //mohit sir branch code updated by sohail farm meat
                     if ($action == 'takeaway') {
                         $processorProduct = ProcessorProduct::where('product_id', $prod->product_id)->first();
@@ -921,6 +923,7 @@ class CartController extends BaseController
                                     $ttAddon = $ttAddon + $opt_quantity_price;
                                     $payable_amount = $payable_amount + $opt_quantity_price;
                                     $order_sub_total = $order_sub_total + $opt_quantity_price;
+                                    $opt_quantity_price_new += $opt_quantity_price;
                                 }
                             }
                             $variantsData['discount_amount'] = $pro_disc;
@@ -1000,7 +1003,7 @@ class CartController extends BaseController
                                             $code = $deliveries[0]['code'];
                                         }
 
-                                        if($prod->product->individual_delivery_fee == 1) {
+                                        /* if($prod->product->individual_delivery_fee == 1) {
                                             $deliveryCharges_real = ($vendorTotalDeliveryFee + $previousdeliveryfee + $deliveryCharges);
                                             $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $deliveryCharges;
                                             $previousdeliveryfee = 0;
@@ -1013,8 +1016,21 @@ class CartController extends BaseController
                                         }
                                         if(isset($deliveries[0]['rate'])){
                                             $deliveries[0]['rate'] = $deliveryCharges_real;
+                                        } */
+
+                                        if($prod->product->individual_delivery_fee == 1) {
+                                            $quantity_deliveryCharges = $deliveryCharges*$prod->quantity;
+                                            $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $quantity_deliveryCharges;
+                                            CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$quantity_deliveryCharges]);
+                                            $prod->product_delivery_fee = $quantity_deliveryCharges;
+                                        }else{
+                                            if($if_previousdeliveryfee_added == 0 && $deliveryCharges > 0){
+                                                $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $deliveryCharges;
+                                                $if_previousdeliveryfee_added = 1;
+                                            }
                                         }
 
+                                        $deliveryCharges_real = $deliveryCharges_real + $vendorTotalDeliveryFee;
                                         $selType = CartDeliveryFee::where(['cart_id'=>$cartID,'vendor_id'=>$vendorData->vendor_id])->first();
                                         $vendorData->delivery_types = $deliveries;
                                         $vendorData->sel_types = (($selType)?$selType->shipping_delivery_type.'_'.$selType->courier_id:$code);
@@ -1151,16 +1167,16 @@ class CartController extends BaseController
                             if($vendorData->coupon->promo->allow_free_delivery ==1   ){
                                 $PromoFreeDeliver = 1;
 
-                                $discount_amount = $discount_amount +  $deliveryCharges_real;
+                                $discount_amount = $discount_amount +  $vendorTotalDeliveryFee;
                             }
                         }
                     }
                 }
 
 
-                $payable_amount = $payable_amount + $deliveryCharges_real ;
+                $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
 
-                $deliver_charge = $deliveryCharges_real * $clientCurrency->doller_compare;
+                $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
                 $vendorData->promo_free_delivery = $PromoFreeDeliver;
@@ -1175,7 +1191,7 @@ class CartController extends BaseController
                 }
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
-                    $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$total_addon_price) * $vendorData->vendor->service_fee_percent) / 100 ;
+                    $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$opt_quantity_price_new) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
@@ -1250,7 +1266,7 @@ class CartController extends BaseController
                 $vendorData->is_promo_code_available = $is_promo_code_available;
                 $slotsDate = findSlot('',$vendorData->vendor->id,$type,'api');
                 $vendorData->delaySlot = $slotsDate;
-                $totalDeliveryCharges+=$deliveryCharges_real;
+                $totalDeliveryCharges+=$vendorTotalDeliveryFee;
 
 
             //All other tax calculations
@@ -1476,19 +1492,18 @@ class CartController extends BaseController
         } else {
             $cart->total_payable_amount = ($total_paying  + $cart->total_tax) - ($total_disc_amount + $loyalty_amount_saved);
         }
-        if($total_taxable_amount>0){
+        //Log::info("total_payable_amount 1".$total_taxable_amount);
+        /* if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
-        }
+        } */
 
         // add other taxes amount as well in total payable amount.
         if($cart->other_taxes>0){
             $cart->total_payable_amount = $cart->total_payable_amount + $cart->other_taxes;
         }
-
         if($cart->total_fixed_fee_amount){
             $cart->total_payable_amount = $cart->total_payable_amount +$cart->total_fixed_fee_amount;
         }
-
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {

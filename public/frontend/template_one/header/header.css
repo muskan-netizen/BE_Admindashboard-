@@ -1,3 +1,4 @@
+
 article#page-container {
     position: relative;
     /* min-height: 100vh; */
@@ -7,7 +8,12 @@ article#page-container {
 .al_body_template_one .container {
     max-width: 1400px;
 }
-
+.search_bar.menu-right .icon-nav a svg {
+    width: 16px;
+}
+.search_form button.btn svg {
+    width: 16px;
+}
 .dark .new-tag {
     color: #fff;
 }
@@ -30,7 +36,8 @@ body.al_body_template_one .top-header.site-topbar.al_template_one .location-bar.
     position: absolute;
     top: 50%;
     -webkit-transform: translateY(-50%);
-    transform: translateY(-50%)
+    transform: translateY(-50%);
+    font-size: 16px;
 }
 
 body .pixelstrap li a:hover .nav-cate-img {
@@ -39,7 +46,6 @@ body .pixelstrap li a:hover .nav-cate-img {
 
 .site-topbar .map-icon .yl-text {
     line-height: normal;
-    height: 20px;
     display: inline-block;
     vertical-align: middle;
     color: #fff
@@ -49,6 +55,30 @@ body .pixelstrap li a:hover .nav-cate-img {
     background-color: #fff
 }
 
+.search_bar.menu-right .icon-nav {
+    text-align: center;
+}
+.search_bar.menu-right .icon-nav a span {
+    font-size: 12px;
+    color: #000;
+    font-weight: 400;
+    text-transform: capitalize;
+}
+.search_bar .bg-cart-header {
+    color: #fff !important;
+    display: inline-block;
+    height: 18px;
+    background: #ff3f6c;
+    position: absolute;
+    border-radius: 50%;
+    top: 7px;
+    width: 18px;
+    right: 0px;
+}
+.fixed-bar .menu-slider li a {
+    font-weight: 600;
+    transition: .5s;
+}
 .site-topbar .location-bar span,
 .top-header .header-dropdown li,
 .top-header .header-dropdown li a,
@@ -131,10 +161,9 @@ body .navigation-tab-overlay {
 ul.sm.pixelstrap.sm-horizontal {
     text-align: center
 }
-
 .navigation-tab {
     border-radius: 40px;
-    background-color: #eee
+background:none;border:none !important;
 }
 
 .navigation-tab .nav-link {
@@ -168,7 +197,7 @@ ul.sm.pixelstrap.sm-horizontal {
 .radius-bar,
 .search_form {
     border-color: #f7f7f7!important;
-    background-color: #f7f7f7;
+    background-color: #f5f5f6;
     border-radius: 30px
 }
 
@@ -246,11 +275,6 @@ ul.sm.pixelstrap.sm-horizontal {
     width: 100%;
     border-left: 2px solid transparent!important
 }
-
-.pixelstrap .al_main_category:hover ul.al_main_category_list {
-    display: block
-}
-
 .al_body_template_one .breadcrumb-section {
     background-color: #f8f8f8;
     padding: 0
@@ -568,7 +592,7 @@ body.al_body_template_two {
     }
     .site-topbar .map-icon .yl-text {
         line-height: normal;
-        height: 20px;
+        height: auto;
         display: inline-block;
         vertical-align: middle;
         color: #fff
@@ -653,7 +677,7 @@ body.al_body_template_two {
         font-size: 16px
     }
     .navigation-tab .nav-link.active {
-        color: #fff !important;
+        color: var(--theme-deafult) !important;
         background-color: var(--theme-deafult) !important;
         border-radius: 40px;
     }
@@ -976,6 +1000,9 @@ body.al_body_template_two {
         float: left;
         padding-right: 5px
     }
+    .location-bar .map-icon svg {
+        width: 10px !important;
+    }
     .site-topbar .location-bar h2 span {
         width: 100%;
         overflow: hidden;
@@ -1030,8 +1057,8 @@ body.al_body_template_two {
         padding-right: 15px;
         padding-top: 10px;
     }
-    body .menu-navigation.al .navigation-tab-item .nav-link {
-        color: #777 !important;
+    body.dark .menu-navigation.al .navigation-tab-item .nav-link {
+        color: #fff !important;
     }
     body .menu-navigation.al .navigation-tab-item .nav-link.active {
         color: var(--theme-deafult);
@@ -1061,7 +1088,6 @@ ul.header-dropdown.d-none.d-sm-inline li {
     box-shadow: 0 1px 6px 0 #ebebeb;
     border-radius: 0;
     z-index: 9;
-    display: none;
     list-style: none;
     margin: 0;
     line-height: normal;
@@ -1069,7 +1095,11 @@ ul.header-dropdown.d-none.d-sm-inline li {
     text-align: left;
     top: auto;
 }
-
+.menu-navigation ul.sm.pixelstrap.sm-horizontal li.al_main_category:hover{
+    border-bottom:2px solid#000;
+    padding-bottom: 4px;
+}
+.pixelstrap ul li{border-bottom: 0px;}
 .dark .pixelstrap ul {
     background-color: #242424;
     box-shadow: 0 1px 6px 0 #242424;
@@ -1115,7 +1145,8 @@ ul.header-dropdown.d-none.d-sm-inline li {
 }
 
 .pixelstrap ul li a span.new-tag {
-    font-size: 14px;
+    font-size: 12px;
+    font-weight: 400;
 }
 
 #main-menu .slick-list {

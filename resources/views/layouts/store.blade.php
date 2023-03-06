@@ -24,29 +24,65 @@ if($client_preference_detail->show_dark_mode == 1){
 }
 
 $body_class = "";
+$left_sidebar = '';
+$footer_content = '';
 if(isset($set_template))
 {
-  if($set_template->template_id == 1)
-    $body_class = "al_body_template_one";
-  elseif($set_template->template_id == 2)
+  $selectedTemplate = $set_template->template_id;
+  switch($selectedTemplate) {
+    case 1:
+      $body_class = "al_body_template_one";
+      $left_sidebar = 'layouts.store/left-sidebar-template-one';
+      $footer_content = 'layouts.store/footer-content-template-one';
+      break;
+    case 2:
     $body_class = "al_body_template_two";
-  elseif($set_template->template_id == 3)
+    $left_sidebar = 'layouts.store/left-sidebar-template-two';
+    $footer_content = 'layouts.store/footer-content-template-two';
+      break;
+    case 3:
     $body_class = "al_body_template_three";
-  elseif($set_template->template_id == 4)
+    $left_sidebar = 'layouts.store/left-sidebar-template-three';
+    $footer_content = 'layouts.store/footer-content-template-three';
+      break;
+    case 4:
     $body_class = "al_body_template_four";
-  elseif($set_template->template_id == 5)
+    $left_sidebar = 'layouts.store/left-sidebar-template-four';
+    $footer_content = 'layouts.store/footer-content-template-four';
+      break;
+    case 5:
     $body_class = "al_body_template_five";
-  elseif($set_template->template_id == 6){
+    $left_sidebar = 'layouts.store/left-sidebar-template-five';
+    $footer_content = 'layouts.store/footer-content-template-five';
+      break;
+    case 6:
     $body_class = "al_body_template_six";
-    if(Route::currentRouteName() == "customer.login" || Route::currentRouteName() == "customer.register"){
-      $body_class =  $body_class. " login";
-    }
-    
-  }
-  elseif($set_template->template_id == 8)
-    $body_class = "al_body_template_eight p2p-module"; //p2p-module class is required because in template 8 css fixed using this class
-  elseif($set_template->template_id == 9)
+      if(Route::currentRouteName() == "customer.login" || Route::currentRouteName() == "customer.register"){
+        $body_class =  $body_class. " login";
+      }
+      $left_sidebar = 'layouts.store/left-sidebar-template-six';
+      $footer_content = 'layouts.store/footer-content-template-six';
+      break;
+    case 7:
+  
+      break;
+    case 8:
+    $body_class = "al_body_template_eight p2p-module";
+    $left_sidebar = 'layouts.store/left-sidebar-template-eight';
+    $footer_content = 'layouts.store/footer-content-template-eight';
+      break;
+    case 9:
     $body_class = "al_body_template_nine p2p-module";
+    $left_sidebar = 'layouts.store/left-sidebar-template-one';
+    $footer_content = 'layouts.store/footer-content-template-one';
+      break;
+      
+    default:
+      $body_class = "al_body_template_one";
+      $left_sidebar = 'layouts.store/left-sidebar-template-nine';
+      $footer_content = 'layouts.store/footer-content-template-one';
+  }
+  
 }
 
 
@@ -63,7 +99,8 @@ if(isset($set_template))
     <header>
       
       <div class="mobile-fix-option_al"></div>
-      @if(isset($set_template)  && $set_template->template_id == 1)
+      @include($left_sidebar)
+      {{-- @if(isset($set_template)  && $set_template->template_id == 1)
       @include('layouts.store/left-sidebar-template-one')
       @elseif(isset($set_template)  && $set_template->template_id == 2)
       @include('layouts.store/left-sidebar-template-two')
@@ -81,7 +118,7 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-nine')
       @else
       @include('layouts.store/left-sidebar-template-one')
-      @endif
+      @endif --}}
     </header>
 
     @if(isset($set_template)  && $set_template->template_id == 4)
@@ -89,7 +126,8 @@ if(isset($set_template))
     @endif
 
     @yield('content')
-    @if(isset($set_template)  && $set_template->template_id == 1)
+    @include($footer_content)
+    {{-- @if(isset($set_template)  && $set_template->template_id == 1)
     @include('layouts.store/footer-content-template-one')
     @elseif(isset($set_template)  && $set_template->template_id == 2)
     @include('layouts.store/footer-content-template-two')
@@ -107,7 +145,8 @@ if(isset($set_template))
     @include('layouts.store/footer-content-template-nine')
     @else
     @include('layouts.store/footer-content-template-one')
-    @endif
+    @endif --}}
+
     @include('layouts.store/footer')
 </body>
 
