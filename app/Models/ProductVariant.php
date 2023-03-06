@@ -10,7 +10,7 @@ use App\Models\UserVendor;
 
 class ProductVariant extends Model
 {
-	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min','role_id'];
+	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min','role_id', 'square_variant_id', 'square_variant_version'];
 
     protected $appends = ['actual_price', 'new_price'];
 
