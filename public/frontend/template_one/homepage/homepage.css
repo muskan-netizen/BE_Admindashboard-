@@ -32,6 +32,9 @@ a.common-product-box.text-center {
     transition: .5s;
     border:none;
 }
+ul.vendor-info li:nth-child(2) {
+    padding-left: 30px !important;
+}
 
 .al_body_template_one .slick-slide {
     float: left;

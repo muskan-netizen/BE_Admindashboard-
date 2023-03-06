@@ -6,6 +6,7 @@
         <input id="fav_pro_one" type="checkbox">
         <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
     </div>--}}
+    <span class="rating-number">4.0</span>
     <a class="common-product-box text-center" href="{{ $product['vendor']->slug }}/product/{{ $product['url_slug'] }}">
         <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product['image_url'] }}" alt="" title="">
             <div class="pref-timing"> </div>
@@ -15,8 +16,10 @@
                 <div class="product-description">
                     <div class="d-flex align-items-center justify-content-between">
                         <h6 class="card_title ellips">{{ $product["title"] }}</h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-                        @if($product["averageRating"] >0)<span class="rating-number">{{ $product["averageRating"] }}</span>
-                        @endif @endif @endif </div>
+                     
+                        <span class="rating-number">{{ $product["averageRating"] }}</span>
+                        @if($product["averageRating"] >0) @endif
+                         @endif @endif </div>
                     <div class="product-description_list border-bottom">
                         @if($dicountPercentage = productDiscountPercentage(@$product["price_numeric"], @$product["compare_price"]))
                             <span class="flag-discount">{{$dicountPercentage}}% Off</span>
@@ -24,16 +27,16 @@
                         <p>
                             {{ $product["vendor_name"] }}
                         </p>
-                        <p class="al_product_category">
+                        <!-- <p class="al_product_category">
                             <span class="product_discription">
                         {{__('In')}}
                         {{$product["category"] ?? ''}}</span>
                         <span class="rating"><i class="fa fa-star" aria-hidden="true"></i>4.5</span>
-                        </p>
+                        </p> -->
                     </div>
-                    <div class="d-flex align-items-center justify-content-between al_clock pt-2">
+                    <div class="d-flex align-items-center justify-content-left al_clock ">
                         <b>{!!$product["price"] ?? ''!!} </b>
-                        <del>{!!$product["compare_at_price"] ?? ''!!} </del>
+                        <del class="ml-2 compare_at_price">{!!$product["compare_at_price"] ?? ''!!} </del>
                     </div>
                 </div>
             </div>
