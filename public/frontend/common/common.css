@@ -5867,3 +5867,13 @@ ul.productVariants li.row.otherSize .checkround{opacity: 0;}
 .pac-container{
     z-index: 9999 !important;
 }
+/*=========== start collection-filter-block arrow  open css==============*/
+.collection-filter-block .open .collapse-block-title::after {
+	content: '\f0d8';
+}
+/*=========== end collection-filter-block arrow  open css==============*/
+
+
+/*start pagination margin top*/
+.page-m-20{margin-top:20px;}
+/*end pagination margin top*/

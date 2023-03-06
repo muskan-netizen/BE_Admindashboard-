@@ -615,8 +615,7 @@
     // $(document).on('change','#search_location',function(){
     //     $latitude = $('#latitude').val();
     //     $longitude = $('#longitude').val();
-    //     alert('longitude >>>>>> ' +longitude);
-    //     alert('latitude >>>>>> ' +latitude);
+    
     //     alert($(this).val());
     //     // filterProducts();
     // });
