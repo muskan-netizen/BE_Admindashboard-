@@ -692,7 +692,7 @@ $preference = $client_preference_detail;
    						<p class="al_productText ellips">
    							<%=product.vendor_name %>
    						</p>
-   						<p class="border-bottom pb-1">
+   						<p class="border-bottom pb-1 d-none">
    							<span>
    						{{__('In')}}
    							<%=product.category %></span>

@@ -21,9 +21,8 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
 
-                        @if(!empty($category->image) && $category->image['is_original'])
-                        <div class="common-banner"><img alt="" data-src="{{$category->image['proxy_url'] . '1370/300' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                        @endif
+                    @include('frontend.vendor-category-topbar-banner')   
+
 
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
@@ -31,7 +30,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-5 homepageSix">
+            <div class="row mb-5 homepageSix vendor_onetem">
                 {{-- @dd($category->childs) --}}
                 <div class="collection-filter col-lg-3 main-fillter al">
                     <div class="theme-card custom-inner-card">
