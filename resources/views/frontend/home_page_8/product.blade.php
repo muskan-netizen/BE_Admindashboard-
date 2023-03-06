@@ -36,7 +36,12 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-left al_clock ">
                         <b>{!!$product["price"] ?? ''!!} </b>
-                        <del class="ml-2 compare_at_price">{!!$product["compare_at_price"] ?? ''!!} </del>
+                        @php
+                        $comp = @$product["compare_price_numeric"]??0;
+                        @endphp
+                        @if(@$comp && $comp>0)
+                            <del class="ml-2 compare_at_price">{!!$product["compare_at_price"] ?? ''!!} </del>
+                        @endif
                     </div>
                 </div>
             </div>
