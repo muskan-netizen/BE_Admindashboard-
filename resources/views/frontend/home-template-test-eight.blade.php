@@ -1,6 +1,9 @@
 @extends('layouts.store', ['title' => __('Home')])
 @section('css-links')
 {{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
+<script>
+	var featured_products_length = {{ isset($homePageData['featured_products']) ? count($homePageData['featured_products']) : ''}};
+</script>
 @endsection
 @section('css')
 <style>

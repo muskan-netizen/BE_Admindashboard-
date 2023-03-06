@@ -32,7 +32,7 @@
             </div>
             <div class="row mb-5 homepageSix vendor_onetem">
                 {{-- @dd($category->childs) --}}
-                <div class="collection-filter col-lg-3 main-fillter al">
+                <div class="collection-filter col-lg-3 main-fillter al catery_eight">
                     <div class="theme-card custom-inner-card">
 
                     <div class="accordion" id="accordionExample">
