@@ -1803,11 +1803,28 @@ body.al_body_template_eight .displayProducts .suppliers-box {
 body.al_body_template_eight .suppliers-box .suppliers-img-outer {
     overflow: hidden;
     border: none;
-    height: 200px;
+    /* height: 200px; */
     background-color: #f9f9f9;
     padding: 0;
 }
-
+.al_body_template_eight .render_full_spotlight_deals .deals-product {
+    min-height: 266px;
+}
+.al_body_template_eight .render_full_spotlight_deals .deals-product .supplier-rating {
+    min-height: 63px;
+}
+.al_body_template_eight .render_featured_products .common-product-box.text-center {
+    min-height: 274px;
+}
+.al_body_template_eight .product-4-best_sellers .deals-product {
+    min-height: 281px;
+}
+.al_body_template_eight .product-4-best_sellers .deals-product .supplier-rating {
+    min-height: 80px;
+}
+.al_body_template_eight .full_width_eccomerce .deals-product.product-card-box {
+    min-height: 266px;
+}
 body.al_body_template_eight .add-to-fav {
     display: none;
 }

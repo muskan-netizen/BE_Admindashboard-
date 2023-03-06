@@ -758,6 +758,7 @@ body.al_body_template_eight section.suppliers-section.container.vender_slider {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;font-size: 16px;
+        padding:0px 10px;
     }
     .al_body_template_eight .full_width_eccomerce .product-4-spotlight_deals .col {
         padding: 2px;
@@ -942,10 +943,13 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
 
 .al_body_template_eight img.blur-up.brand-logo.lazyloaded {
     width: 100%;
-    min-height: 300px;
-    object-fit: unset;
+    /* min-height: 300px; */
+    object-fit: contain;
     margin: 15px auto 10px;
     min-width: 250px;
+}
+.al_body_template_eight .p2p-full-width .alNewSliderTopBrand.render_brands .logo_brand .brand-img img.blur-up.brand-logo.lazyloaded {
+    min-width: 100%;
 }
 .al_custom_brand .logo_brand .brand-img img{
     border-radius: 10px;
@@ -963,7 +967,6 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     width: 100%;
     object-fit: cover;
 }
-
 .al_body_template_eight .suppliers-box .suppliers-img-outer {
     border-radius: 10px 10px 0 0;
     text-align: center;
@@ -972,14 +975,13 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     padding-bottom: 100%;
     position: relative;
     overflow: hidden;
-    height: 200px;
+    /* height: 200px; */
     padding: 0;
 }
 
 .al_body_template_eight .slick-track {
     margin-left: 0 !important;
 }
-
 .al_body_template_eight .suppliers-box .suppliers-img-outer img {
     margin: 0;
     width: 100%;
@@ -1285,7 +1287,7 @@ section.suppliers-section.container {
 }
 
 .deals-product .suppliers-img-outer.position-relative {
-    object-fit: cover;
+    object-fit: contain;
     /* border-radius: 10px; */
 }
 
