@@ -120,7 +120,7 @@ class ProfileController extends FrontController
         }
 
         if(!empty($request->email)){
-            $rules['email'] = 'email|unique:users,email,'.$user.',id'';
+            $rules['email'] = 'email|unique:users,email,'.$user->id.',id';
         }
 
         $validator = Validator::make($request->all(), $rules);

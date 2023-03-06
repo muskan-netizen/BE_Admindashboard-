@@ -29,6 +29,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 @if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
 <header id="al_new_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
    @include('layouts.store/topbar-template-six')
+   @include('layouts.store.search_template')
    @if($client_preference_detail->business_type == 'taxi')
    <!-- Start Cab Booking Header From Here -->
    <div class="cab-booking-header">
@@ -243,3 +244,22 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
       </div>
    </div>
 </div>
+<script>
+    function changeImage(image, check) {
+      var  icon = $(image).attr('data-icon');
+      var  icon_two = $(image).attr('data-icon_two');
+      if(check == 1)
+      {
+        setTimeout(function () {
+            $(image).attr('data-src',icon_two);
+            $(image).attr('src',icon_two);
+        },200);
+      }else if(check == 0){
+           setTimeout(function () {
+               $(image).attr('data-src',icon);
+               $(image).attr('src',icon);
+           },200);
+
+      }
+   }
+</script>
