@@ -2265,6 +2265,21 @@ body[dir=rtl] .modal-header .close{padding:1rem;margin:-1rem!important}
 .dark .table thead th {background: #32383e;border: none;}
 /* dark dashboard css end */
 
+
+
+
+
+
+
+html body .scroll_res .selectize-dropdown .selectize-dropdown-content::-webkit-scrollbar:horizontal {
+  height: 5px!important;
+}
+html body .scroll_res  .selectize-dropdown-content{
+  overflow: auto!important;
+}
+html body .scroll_res  .selectize-dropdown [data-selectable]{
+  overflow: unset!important;
+}
 /*============================================= dashboard page responsive css start here ======================================= */
 @media(max-width:1600px) {
 .card-box {padding: 20px;}
