@@ -122,6 +122,35 @@ trait ProductTrait{
         return $returnResponse;
 
     }
+    public function getGerenalSlotFromDispatcher($date)
+    {
+        $returnResponse = array();
+        $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false ) {
+          
+            $postdata =  [
+                'date'  => $date
+            ];
+            $client = new Guzzle([
+                'headers' => [
+                    'personaltoken' => $dispatch_domain_ondemand->dispacher_home_other_service_key,
+                    'shortcode'     => $dispatch_domain_ondemand->dispacher_home_other_service_key_code,
+                    'content-type'  => 'application/json'
+                ]
+            ]);
+
+            $url = $dispatch_domain_ondemand->dispacher_home_other_service_key_url;
+            $res = $client->post(
+                $url . '/api/get/general_slot',
+                ['form_params' => ($postdata)]
+            );
+            $response = json_decode($res->getBody(), true);
+            if(isset( $response['data']))
+            $returnResponse  = $response['data'];
+        }
+        return $returnResponse;
+
+    }
 
     
      public function getDispatchOnDemandDomain()
