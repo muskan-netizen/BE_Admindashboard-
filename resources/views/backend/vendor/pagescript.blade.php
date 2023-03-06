@@ -558,6 +558,10 @@
 
                 $(".loader_box").show();
             },
+            error: function(response) {
+                sweetAlert.error('Oops...','The product excel must be a file of type: csv.');
+                return false;
+                },
             complete: function() {
                 $(".loader_box").hide();
                 setTimeout(function() {

@@ -1595,7 +1595,7 @@
             <h3 class="mb-2 mt-4">{{ __('Frequently bought together') }}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m">
+                    <div class="product-4 product-m upsell-sell">
                         @foreach ($cart_details->upSell_products as $product)
                             <a class="common-product-box scale-effect text-center"
                                 href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">
@@ -1637,7 +1637,7 @@
             <h3 class="mb-2 mt-3">{{ __('You might be interested in') }}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m">
+                    <div class="product-4 product-m cross-sell">
                         @foreach ($cart_details->crossSell_products as $product)
                             <a class="common-product-box scale-effect text-center"
                                 href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">
