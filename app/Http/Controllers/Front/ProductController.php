@@ -589,8 +589,17 @@ class ProductController extends FrontController{
     }
     public function getGerenalSlot(Request $request){
         $html  = '';
-        $period = GerenalSlot($request->date, '00:00:00', '24:00:00', $Duration="60");
-        foreach ($period as $Slot){
+        $date =  $request->date ??  Carbon::now()->format('Y-m-d');
+        $Slots = $this->getGerenalSlotFromDispatcher($date); // GerenalSlot($request->date, '00:00:00', '24:00:00', $Duration="60");
+       
+      
+        foreach ($Slots as $Slot){
+            // $StartTime = $date.' '.$Slot['start_time'];
+            // $EndTime = $date.' '.$Slot['end_time'];
+          
+            // $name =  Carbon::parse($StartTime)->format('h:i A').' - '.Carbon::parse($EndTime)->format('h:i A');
+            // $value =  Carbon::parse($StartTime)->format('G:i').' - '.Carbon::parse($EndTime)->format('G:i');
+          
             $html .= '<option value="'.$Slot['value'].'">'.$Slot['name'].'</option>';
         }
         return response()->json(array('status' => 'Success', 'html' => $html));
