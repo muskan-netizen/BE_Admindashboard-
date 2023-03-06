@@ -44,7 +44,7 @@ function  layoutMode(){
 		dots: false,
 		arrows: true,
 		infinite: true,
-        centerMode: true,
+        //centerMode: true,
 		speed: 300,
 		slidesToShow: 10,
 		slidesToScroll: 10,
