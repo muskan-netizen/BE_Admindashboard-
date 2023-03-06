@@ -5419,3 +5419,4 @@ function numberWithCommas(x) {
 }
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
+$(".related-css").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});

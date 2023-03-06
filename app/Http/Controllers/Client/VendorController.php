@@ -331,6 +331,13 @@ class VendorController extends BaseController
      */
     public function save(Request $request, Vendor $vendor, $update = 'false'){
         $checks = array();
+        $user = Auth::user();
+        if($user->is_superadmin == 1){
+            $vendor->status = 1;
+        }else{
+            $vendor->status = 0;
+        }
+
         foreach ($request->only('name', 'address', 'latitude', 'longitude', 'desc','short_desc') as $key => $value) {
             $vendor->{$key} = $value;
         }
