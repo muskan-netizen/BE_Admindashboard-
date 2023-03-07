@@ -980,6 +980,16 @@ class BaseController extends Controller{
         }
         
     }
+    # get prefereance if appointment on in config
+    public function getDispatchAppointmentDomain()
+    {
+        $preference = ClientPreference::select('need_appointment_service','appointment_service_key','appointment_service_key_url','appointment_service_key_code')->first();
+        if ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_url) && !empty($preference->appointment_service_key_code)) {
+            return $preference;
+        } else {
+            return false;
+        }
+    }
 
 
 }

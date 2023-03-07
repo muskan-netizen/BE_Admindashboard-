@@ -90,6 +90,9 @@ if(isset($set_template))
 @include('layouts.shared.variables-constant-js')
 @include('layouts.language')
 @yield('headerJs')
+<script>
+	var featured_products_length = '';
+</script>
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}} " dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
 <article id="page-container">
   <article id="content-wrap">

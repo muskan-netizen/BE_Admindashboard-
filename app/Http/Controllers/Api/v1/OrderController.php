@@ -488,7 +488,10 @@ class OrderController extends BaseController
                             $order_product->variant_id = $vendor_cart_product->variant_id;
                             $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                             $product_variant_sets = '';
-
+                            $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
+                            $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
+                            $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
+                            $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
 
                             if(@$vendor_cart_product->bid_number)
                             {

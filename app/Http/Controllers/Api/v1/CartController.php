@@ -10,7 +10,7 @@ use App\Models\Country;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,ProductTrait,CartManager};
+use App\Http\Traits\{ApiResponser,ProductTrait,CartManager,DispatcherSlot};
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +32,7 @@ use Log;
 
 class CartController extends BaseController
 {
-    use ApiResponser,ProductTrait,CartManager;
+    use ApiResponser,ProductTrait,CartManager,DispatcherSlot;
 
     private $field_status = 2;
 
@@ -317,6 +317,9 @@ class CartController extends BaseController
                     'service_date'        => $request->has('service_date') ? $request->service_date : null,
                     'service_period'      => $request->has('service_period') ? $request->service_period : null,
                     'service_start_date'  => @$service_start_date,
+                    'schedule_slot'       => $request->has('schedule_slot') ? $request->schedule_slot : null,
+                    'dispatch_agent_id'   => $request->has('dispatch_agent_id') ? $request->dispatch_agent_id : null,
+                    'schedule_type'       => $request->has('schedule_type') ? $request->schedule_type : null,
                 ];
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
@@ -638,6 +641,9 @@ class CartController extends BaseController
             'vendorProducts.addon.set' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
+            'vendorProducts.product.productcategory'=> function ($q1)  {
+                $q1->select('id', 'type_id');
+            },
             'vendorProducts.product.categoryName' => function ($q) use ($langId) {
                 $q->select('category_id', 'name');
                 $q->where('language_id', $langId);
@@ -731,6 +737,15 @@ class CartController extends BaseController
                 $vendor_products_total_amount = $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
 
+                $vendor_latitude = $vendorData->vendor->latitude ?? 30.71728880;
+                $vendor_longitude =  $vendorData->vendor->longitude ?? 76.80350870;
+
+                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'webFormet');
+                // $vendorData->delaySlot = $slotsDate;
+                $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
+                $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');
+                $vendorStartTime =  (($slotsDate)? ( $slotsDate['time'] ?  $slotsDate['time'] : '' ):'');
+                
                 $vendorData->vendor->closed_store_order_scheduled = $vendorData->vendor->closed_store_order_scheduled;
                 $vendorData->vendor->fixed_fee_amount;
                 if ($action != 'delivery') {
@@ -797,6 +812,41 @@ class CartController extends BaseController
                         $prod->processor_date = '';
                     }
                     //till here
+
+                    $is_slot_from_dispatch = $prod->product->is_slot_from_dispatch ;
+                    $show_dispatcher_agent = $prod->product->is_show_dispatcher_agent  ;
+                    $last_mile_check       = $prod->product->Requires_last_mile  ;
+                    $getSlotingDate        = $prod->scheduled_date_time ;
+                    $cateTypeId = @$prod->product->productcategory ? @$prod->product->productcategory->type_id : '';
+                    $prod->dispatchAgents = [];
+                    if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){
+                        $Dispatch =  $this->getDispatchAppointmentDomain();
+                        $dispatchAgents = [];
+    
+                        if($Dispatch){
+                            $location[] = array(
+                                'latitude' =>   $vendor_longitude,
+                                'longitude' =>  $vendor_longitude
+                            );
+                            $dispatchData=[
+                                'service_key'      => $Dispatch->appointment_service_key,
+                                'service_key_code' => $Dispatch->appointment_service_key_code,
+                                'service_key_url'  => $Dispatch->appointment_service_key_url,
+                                'service_type'     => 'appointment',
+                                'tags'             => $prod->product->tags,
+                                'latitude'         => $vendor_latitude,
+                                'longitude'        => $vendor_longitude,
+                                'service_time'     => $prod->product->minimum_duration_min,
+                                'schedule_date'    => $getSlotingDate,
+                                'slot_start_time'  => $vendorStartTime
+                            ];
+                          
+                            $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
+                        }
+                        $prod->dispatchAgents =  $dispatchAgents;
+                        $prod->vendorStartDate = $vendorStartDate;
+                    }
+
 
                     if(isset($prod->product) && !empty($prod->product)){
                       //  pr($prod->product);
@@ -1264,8 +1314,8 @@ class CartController extends BaseController
                     }
                 }
                 $vendorData->is_promo_code_available = $is_promo_code_available;
-                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'api');
-                $vendorData->delaySlot = $slotsDate;
+               
+
                 $totalDeliveryCharges+=$vendorTotalDeliveryFee;
 
 
