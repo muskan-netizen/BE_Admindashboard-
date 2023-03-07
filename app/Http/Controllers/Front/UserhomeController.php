@@ -827,6 +827,7 @@ class UserhomeController extends FrontController
                 $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
             }
         }    
+
         //get Most Selling Vendors
         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
         $on_sale_product_details =$on_sale_products = [];
@@ -931,6 +932,7 @@ class UserhomeController extends FrontController
 
 
         /** Respose data */
+        // dd($vendors->toArray());
       
         $data = [
             'brands' => $brands,
