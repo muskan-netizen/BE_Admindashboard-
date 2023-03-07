@@ -6,7 +6,7 @@ use HttpRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,UserDevice,ClientPreference};
+use App\Models\{Order,ProductVariant,OrderVendor,VendorOrderCancelReturnPayment,UserDevice,ClientPreference,Product};
 use Auth;
 use GuzzleHttp\Client as GClient;
 trait DispatcherSlot{
@@ -49,5 +49,21 @@ trait DispatcherSlot{
             return [];
         }
     }
-    
+    public function productDetail($product_id){
+        return Product::with(['vendor'=> function ($q1)  {
+            $q1->select('id', 'latitude','longitude');
+        },'productcategory'=> function ($q1)  {
+            $q1->select('id', 'type_id');
+        }])->find($product_id);
+    }
+     # get prefereance if appointment on in config
+     public function getDispatchAppointmentDomain()
+     {
+         $preference = ClientPreference::select('need_appointment_service','appointment_service_key','appointment_service_key_url','appointment_service_key_code')->first();
+         if ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_url) && !empty($preference->appointment_service_key_code)) {
+             return $preference;
+         } else {
+             return false;
+         }
+     }
 }
