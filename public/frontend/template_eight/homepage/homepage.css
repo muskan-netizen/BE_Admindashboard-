@@ -178,9 +178,8 @@ article#page-container section .vendors section {
 .al_body_template_eight .img-outer-box.position-relative img {
     width: 100%;
     left: 0;
-    height: 150px;
-    object-fit: cover;
-    ;
+    height: auto;
+    object-fit: contain;
 }
 
 .slick-next:focus:before,
@@ -223,20 +222,34 @@ article#page-container section .vendors section {
 .dark.al_body_template_eight .product-card-box h6.ellips {
     color: #fff;
 }
-
+.al_body_template_eight span.rating-number::after {
+    content: "\2605";
+    right: 5px;
+    position: absolute;
+}
 .al_body_template_eight span.rating-number {
-    top: 12px;
+    top: 50%;
     position: absolute;
     right: 12px;
     height: 22px;
     width: 42px;
     background-color: #409a40;
-    line-height: 22px;
-    border-radius: 6px;
+    line-height: 18px;
+    border-radius: 3px;
     color: #fff;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding-right: 10px;
     font-size: 12px;
+    z-index: 9;
+}
+.al_body_template_eight .popular-brands .al_custom_categories .category-block {
+    min-height: 184px;
+}
+.al_body_template_eight .popular-brands .al_custom_categories .category-block .brand-img h6 {
+    font-size: 16px;
+    font-weight: 600;
 }
 
 .al_body_template_eight .product-description_list p span {
@@ -259,7 +272,7 @@ article#page-container section .vendors section {
 }
 
 .al_body_template_eight .product-description {
-    text-align: left;
+    text-align: left;min-height: 90px;
 }
 
 .al_body_template_eight .product-description_list p {
@@ -753,6 +766,7 @@ body.al_body_template_eight section.suppliers-section.container.vender_slider {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;font-size: 16px;
+        padding:0px 10px;
     }
     .al_body_template_eight .full_width_eccomerce .product-4-spotlight_deals .col {
         padding: 2px;
@@ -926,6 +940,7 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     mix-blend-mode: normal;
     border-radius: 10px 10px;
     overflow: hidden;
+    height: 164px;
 }
 
 .al_body_template_eight .brand-img img.brand-banner {
@@ -936,10 +951,19 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
 }
 
 .al_body_template_eight img.blur-up.brand-logo.lazyloaded {
-    width: auto;
-    min-height: 250px;
+    width: 100%;
+    /* min-height: 300px; */
     object-fit: contain;
     margin: 15px auto 10px;
+    min-width: 250px;
+}
+.al_body_template_eight .p2p-full-width .alNewSliderTopBrand.render_brands .logo_brand .brand-img img.blur-up.brand-logo.lazyloaded {
+    min-width: 100%;
+    /* min-height: 270px !important; */
+    object-fit: cover;
+}
+.al_body_template_eight .custom_filtter select {
+    border-radius: 15px !important;
 }
 .al_custom_brand .logo_brand .brand-img img{
     border-radius: 10px;
@@ -957,7 +981,6 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     width: 100%;
     object-fit: cover;
 }
-
 .al_body_template_eight .suppliers-box .suppliers-img-outer {
     border-radius: 10px 10px 0 0;
     text-align: center;
@@ -966,19 +989,20 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     padding-bottom: 100%;
     position: relative;
     overflow: hidden;
-    height: 200px;
+    /* height: 200px; */
     padding: 0;
 }
 
 .al_body_template_eight .slick-track {
     margin-left: 0 !important;
 }
-
 .al_body_template_eight .suppliers-box .suppliers-img-outer img {
     margin: 0;
     width: 100%;
-    height: 200px;
+    /* height: 250px; */
+    height: 100%;
     object-fit: cover;
+    overflow: hidden;
 }
 
 .al_body_template_eight .product-card-box h6.ellips {
@@ -995,7 +1019,7 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
 .al_body_template_eight .product-description_list p span.rating {
   /* background-color:#409a40; */
   background: transparent;
-    padding: 2px 4px;
+    padding: 2px 2px;
     color: #000;
     border-radius: 4px;
     float: right;
@@ -1139,7 +1163,7 @@ section.popular-brands.left-shape_.position-relative.categories {
     height: 120px;
     width: 120px;
     object-fit: cover;
-    border-radius: 10px 10px 0 0;
+    border-radius:100%;
     margin: 0 auto;
     text-align: center;
 }
@@ -1279,8 +1303,8 @@ section.suppliers-section.container {
 }
 
 .deals-product .suppliers-img-outer.position-relative {
-    object-fit: cover;
-    border-radius: 10px;
+    object-fit: contain;
+    /* border-radius: 10px; */
 }
 
 /* .deals-product .supplier-rating {
@@ -1294,23 +1318,26 @@ section.suppliers-section.container {
 .deals-product .supplier-rating a.suppliers-box.d-block h4 {
     /* font-family: 'Rubik';
     font-style: normal; */
-    font-weight: 400;
-    font-size: 18px;
+    font-weight: 600;
+    font-size: 15px;
     line-height: 16px;
     color: #0d0c0c;
     margin: 12px 0px 6px 0px;
+    letter-spacing: 0px;
 }
 
 .al_body_template_eight .deals-product .supplier-rating a.suppliers-box.d-block h5 {
     /* font-family: 'Times New Roman';
     font-style: normal; */
     font-weight: 400;
-    font-size: 18px;
-    line-height: 24px;
+    font-size: 14px;
+    line-height: 12px;
     text-align: center;
     color: #0d0c0c;
     font-weight: 500;
     margin-bottom: 0px;
+    letter-spacing: 0px;
+    color: green;
 }
 .suppliers-slider-vendors .supplier-rating h5 {
     padding: 8px 0px;
@@ -1319,7 +1346,7 @@ section.suppliers-section.container {
 .best-seller-eccomerce .deals-product .supplier-rating a {
     display: block;
     font-size: 16px !important;
-    color: #E9248D !important;
+    color: var(--theme-deafult) !important;
     font-weight: 600;
     padding-bottom: 10px;
 }
@@ -1395,9 +1422,13 @@ section.suppliers-section.container.vender_slider .product-m.render_vendors {
 }
 .al_body_template_eight .product-card-box.position-relative.text-center.al_custom_vendors_sec a.spotlight-deal-btn {
     font-weight: 600;
-    font-size: 16px !important;
-    padding: 10px 0px;
+    font-size: 14px !important;
+    padding: 4px 0px;
     display: block;
+    margin-top: 10px;
+    /* color: #fff !important; */
+    color: var(--theme-deafult) !important;
+    margin:0px 0px;
 }
 section.suppliers-section.container.vender_slider .supplier-rating h4 {
     color: #000;
@@ -1419,6 +1450,7 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
 
 .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec .suppliers-img-outer.position-relative {
     border-radius: 10px 10px 0 0;
+    height: 250px;
 }
 
 /* .render_full_spotlight_deals .supplier-rating {
@@ -1491,7 +1523,7 @@ section.popular-brands.left-shape_.position-relative.bg-light-gray {
 section.main-product.single_category_products .deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec {
     background: #fff;
     border-radius: 10px;
-    min-height: 325px;
+    /* min-height: 325px; */
 }
 
 section.main-product.single_category_products .deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec:after {
@@ -1508,7 +1540,7 @@ section.main-product.single_category_products .supplier-rating {
     position: inherit;
     transform: initial;
     left: 0;
-    top: 0;
+    top: 0;padding-bottom: 10px;
 }
 
 section.main-product.single_category_products .supplier-rating h4 {
@@ -1524,8 +1556,8 @@ section.main-product.single_category_products .supplier-rating h5 {
 section.main-product.single_category_products .suppliers-img-outer.position-relative img {
     margin: 0;
     width: 100%;
-    height: 200px;
-    object-fit: cover;
+    /* height: 200px; */
+    object-fit: contain;
 }
 
 section.main-product.single_category_products.mb-0.render_full_selected_products.bg-light-gray {
@@ -1656,6 +1688,13 @@ body.dark.al_body_template_eight article#page-container section .vendors section
 
 
 /*------------ipad view css-------------*/
+
+@media(max-width:1600px) {
+    .al_clock b{
+        font-size: 14px;
+    }
+
+}
 
 @media(max-width:991px) {
     article#page-container section .vendors section h2.h2-heading {

@@ -11,7 +11,7 @@
             </div>
             <div class="supplier-rating">
                 <h4>{{ $vendor->name }}</h4>
-                <h5>10-50% OFF</h5>
+                {{-- <h5>10-50% OFF</h5> --}}
                 <a href="#">SHOP NOW</a>
                 {{--<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
                     <%=vendor.categoriesList %>

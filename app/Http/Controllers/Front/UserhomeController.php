@@ -827,6 +827,7 @@ class UserhomeController extends FrontController
                 $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
             }
         }    
+
         //get Most Selling Vendors
         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
         $on_sale_product_details =$on_sale_products = [];
@@ -931,6 +932,7 @@ class UserhomeController extends FrontController
 
 
         /** Respose data */
+        // dd($vendors->toArray());
       
         $data = [
             'brands' => $brands,
@@ -1004,6 +1006,7 @@ class UserhomeController extends FrontController
                 'price_numeric' =>@$new_product_detail->variant->first()->price??0 * $multiply,
                 'compare_price' =>@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,
                 'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
+                'compare_price_numeric' =>@$new_product_detail->variant->first()->compare_at_price,
                 'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$new_product_detail->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
@@ -1123,6 +1126,7 @@ class UserhomeController extends FrontController
                     'price_numeric' =>@$value->variant->first()->price??0 * $multiply,
                     'compare_price' =>@$value->variant->first()->compare_at_price??0 * $multiply,
                     'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$value->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->compare_at_price??0 * $multiply,',')),
+                    'compare_price_numeric' =>@$value->variant->first()->compare_at_price,
                     'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$value->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price??0 * $multiply,',')),
                     'category' => (@$value->category->categoryDetail->translation) ? @$value->category->categoryDetail->translation->first()->name : @$value->category->categoryDetail->slug,
                     'category_type' => $value->category->categoryDetail->type_id ?? 0

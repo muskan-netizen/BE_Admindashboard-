@@ -1316,7 +1316,7 @@ class CartController extends FrontController
                         }
                     }
                 }
-
+                
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');
@@ -1365,9 +1365,15 @@ class CartController extends FrontController
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                  }
+                 if($vendorData->vendor->service_charge_amount > 0){
+                     $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
+                     $vendor_service_fee_percentage_amount = $vendorData->vendor->service_charge_amount;
+                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
+                 }
+                 
 
                 //end applying service fee on vendor products total
-                $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
                 $vendorData->delivery_fee_charges = decimal_format($delivery_fee_charges);
@@ -1707,7 +1713,6 @@ class CartController extends FrontController
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
-        // dd($cart); die;
         return $cart;
     }
 

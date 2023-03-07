@@ -1,7 +1,6 @@
 @php
   $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
-{{--@if($listData->isNotEmpty()) --}}
 <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
     <nav class="scrollspy-menu">
         <ul>

@@ -5,6 +5,9 @@
 <link rel="stylesheet"  href="{{asset('css/aos.css')}}">
 --}}
 @endsection
+<script>
+	var featured_products_length = {{ isset($homePageData['featured_products']) ? count($homePageData['featured_products']) : ''}};
+</script>
 @php
 $preference = $client_preference_detail;
 @endphp
