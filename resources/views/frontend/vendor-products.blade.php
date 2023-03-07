@@ -245,7 +245,7 @@ $currentPage = $_GET['page']??1;
                                         </div>
                                     </div>
                                     <div class="displayProducts px-0">
-                                        <div class="col-12 custom_filtter mt-2">
+                                        <div class="col-12 custom_filtter mt-2 d-none">
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
                                                 <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
@@ -494,7 +494,7 @@ $currentPage = $_GET['page']??1;
 
     $(document).ready(function(){
         $('.sortingFilter').val('newly_added');
-        filterProducts();
+       // filterProducts();
         });
 
 

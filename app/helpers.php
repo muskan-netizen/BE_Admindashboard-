@@ -1494,6 +1494,12 @@ if( !function_exists('is_category_p2p') ) {
     }
 }
 
+if( !function_exists('is_category_products') ) {
+    function is_category_products($category) {
+        return $products = Product::where('category_id',$category)->count();
+    }
+}
+
 // if( !function_exists('is_p2p_vendor') ) {
 //     function is_p2p_vendor() {
 
@@ -1541,7 +1547,10 @@ if( !function_exists('productDiscountPercentage()') ) {
     {
         if($product_compare_price > 0) {
             $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;
-            return round($discount);
+            if($discount>0){
+                return round($discount);
+            }
+            return 0;
         }
         return 0;
     }
