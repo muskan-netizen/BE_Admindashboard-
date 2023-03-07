@@ -98,7 +98,7 @@
     display: inline-block;
     right:0px;
     position:inherit;
-    top: -4px;
+    /* top: -4px; */
 }
 .al_body_template_one .rating-text-box{border-radius: 3px;    display: inline-block;
     padding: 0px 4px !important;}
