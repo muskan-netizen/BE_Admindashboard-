@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Alata&family=Jost:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Alata&family=Jost:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
  :root {
     --alBodyTemplateThreeFont: 'Jost', sans-serif;
-}
+} */
 
 .al_body_template_three,
 a,
@@ -20,7 +20,8 @@ p,
 section,
 span,
 strong {
-    font-family: var(--alBodyTemplateThreeFont)!important
+    /* font-family: var(--alBodyTemplateThreeFont)!important; */
+    font-family: 'Poppins', sans-serif;
 }
 
 body,
@@ -338,9 +339,11 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
 }
 
 .pixelstrap ul.al_main_category_list li a span.new-tag {
-    font-size: 14px;
+    font-size: 12px;
+    text-transform: capitalize;
+    font-weight: 400;
 }
-
+.pixelstrap ul li{border-bottom: 0px;}
 .menu-navigation.al li.al_main_category a .nav-cate-img {
     border-radius: 50%;
     height: 100px;
@@ -877,9 +880,9 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
     display: block;
     font-style: normal;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 16px;
-    font-weight: 600;
+    font-weight: 500;
     color: #222;
 }
 
@@ -1040,7 +1043,7 @@ body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
 }
 
 body.al_body_template_eight #al_new_design .pixelstrap ul {
-    top: 40px;
+    top: 40px;box-shadow: none;
 }
 
 .al_body_template_eight .menu-navigation.alThreeMenu li.al_main_category {

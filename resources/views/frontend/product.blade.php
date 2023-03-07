@@ -756,21 +756,21 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     <div class="material-border"></div>
                                                 </li> -->
                                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                                                <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
+                                                <li class="nav-item {{(count($rating_details)>0)?'':'hide'}}"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
                                                     <div class="material-border"></div>
                                                 </li>
                                                 @endif
                                             </ul>
                                             <div class="tab-content nav-material" id="top-tabContent">
-                                                <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
+                                                {{-- <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
                                                     <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
                                                         $product->translation[0]->body_html : ''!!}</p>
                                                 </div>
                                                 <div class="tab-pane fade" id="top-profile" role="tabpanel" aria-labelledby="profile-top-tab">
                                                     <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
                                                         $product->translation[0]->body_html : ''!!}</p>
-                                                </div>
-                                                <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
+                                                </div> --}}
+                                                <div class="tab-pane show {{(count($rating_details)>0)?'active':''}}" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
                                                     @forelse ($rating_details as $rating)
                                                     <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
                                                         <div class="review-box">
@@ -801,7 +801,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                         </div>
                                                     </div>
                                                     @empty
-                                                    <p>{{__('No Result Found')}}</p>
+                                                    <p>{{__('No Reviews Yet')}}</p>
                                                     @endforelse
                                                 </div>
                                             </div>

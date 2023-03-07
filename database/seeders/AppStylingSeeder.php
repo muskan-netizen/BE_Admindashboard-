@@ -47,6 +47,12 @@ class AppStylingSeeder extends Seeder{
             'is_selected' => '0'
         ]);
 
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Poppins-Regular',
+            'is_selected' => '0'
+        ]);
+
         $app_styling = AppStyling::insertGetId([
             'name' => 'Medium Font',
             'type' => '2'
@@ -71,9 +77,10 @@ class AppStylingSeeder extends Seeder{
             'name' => 'Eina02-SemiBold',
             'is_selected' => '0'
         ]);
+
         $app_styling_option = AppStylingOption::insert([
             'app_styling_id' => $app_styling,
-            'name' => ' Poppins-Medium',
+            'name' => 'Poppins-Medium',
             'is_selected' => '0'
         ]);
 
@@ -107,6 +114,13 @@ class AppStylingSeeder extends Seeder{
             'name' => 'SFProText-Bold',
             'is_selected' => '0'
         ]);
+
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Poppins-Bold',
+            'is_selected' => '0'
+        ]);
+
 
         $app_styling = AppStyling::insertGetId([
             'name' => 'Primary Color',

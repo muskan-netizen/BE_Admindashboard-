@@ -126,9 +126,7 @@ $currentPage = $_GET['page']??1;
                         @endif
                         @if(!empty($variantSets) && count($variantSets) > 0)
                         @foreach($variantSets as $key => $sets)
-                        
-                        <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
-                            @php
+                         @php
                             
                             $slug = '';
                             if(!empty($sets->variantDetail) && !empty($sets->variantDetail->varcategory) && !empty($sets->variantDetail->varcategory->cate) && !empty($sets->variantDetail->varcategory->cate->slug)) {
@@ -136,6 +134,8 @@ $currentPage = $_GET['page']??1;
                             }
                             @endphp
                             @if($slug)
+                        <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
+                           
                             <h3 class="collapse-block-title"> {{$slug . $sets->title}}</h3>
                             <div class="collection-collapse-block-content">
                                 <div class="collection-brand-filter">
@@ -162,8 +162,8 @@ $currentPage = $_GET['page']??1;
                                     @endif
                                 </div>
                             </div>
-                            @endif
                         </div>
+                         @endif
                         @endforeach
                         @endif
                         @if($show_range == 1)
@@ -556,17 +556,17 @@ $currentPage = $_GET['page']??1;
         });
 
 
-$(document).ready(function(){
-        let currentPage = '{{$_GET["page"]??"1"}}';
-        if(currentPage){
-            $('.page-link').each(function(){
-                if($(this).text()==currentPage){
-                    $(this).prev().addClass('active');
-                    break;
-                }
-            })
-        }
-})
+// $(document).ready(function(){
+//         let currentPage = '{{$_GET["page"]??"1"}}';
+//         if(currentPage){
+//             $('.page-link').each(function(){
+//                 if($(this).text()==currentPage){
+//                     $(this).prev().addClass('active');
+//                     break;
+//                 }
+//             })
+//         }
+// })
 </script>
 
 

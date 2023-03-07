@@ -135,7 +135,7 @@ class Product extends Model implements Auditable{
     }
 
     public function inwishlist(){
-       return $this->hasOne('App\Models\UserWishlist')->select('product_id', 'user_id');
+       return $this->hasOne('App\Models\UserWishlist')->select('product_id','user_id');
     }
 
     public function taxCategory()

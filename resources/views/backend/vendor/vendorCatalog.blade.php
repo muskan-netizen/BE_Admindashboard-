@@ -128,7 +128,7 @@ pr($products->toArray());
             </div>
             <div class="col-lg-8 col-xl-9">
                 <div class="">
-                     @include('backend.vendor.topbar-tabs')
+                @include('backend.vendor.topbar-tabs')
                     
                     <div class="row mt-4">
                         <div class="col-12">
@@ -1182,10 +1182,10 @@ pr($products->toArray());
             }
             // var charCode = String.fromCharCode(event.which || event.keyCode);
             // if (!regexp.test(charCode)) {
-            //     console.log(">>>ne");
+           
             //     return false;
             // }
-            // console.log(">>>ne2");
+           
             // var n1 = $('#sku').val();
             // $('#url_slug').val(n1+charCode)
 

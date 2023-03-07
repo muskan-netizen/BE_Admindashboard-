@@ -698,7 +698,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
    						<p class="al_productText ellips">
    							<%=product.vendor_name %>
    						</p>
-   						<p class="border-bottom pb-1">
+   						<p class="border-bottom pb-1 d-none">
    							<span>
    						{{__('In')}}
    							<%=product.category %></span>

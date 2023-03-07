@@ -181,6 +181,11 @@ class ProductVariant extends Model
 
     }
 
+    public function getCompareAtPriceAttribute($value)
+    {
+        return decimal_format($value);
+    }
+
     public function getMarkupPriceAttribute($value)
     {
         $checkMarkup = 0;
