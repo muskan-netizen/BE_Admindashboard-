@@ -1085,6 +1085,10 @@ body.dark.al_body_template_eight .top-header .header-dropdown li span {
     color: #fff;
 }
 
+body.dark.al_body_template_eight .top-header .cutom_add_wishlist div a.fav-button span {
+  color: #fff;
+}
+
 
 /*--------------inner page header---------*/
 
