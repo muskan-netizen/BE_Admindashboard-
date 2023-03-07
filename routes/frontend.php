@@ -158,7 +158,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/payfast/completePurchase', 'Front\PayfastGatewayController@payfastCompletePurchase')->name('payment.payfastCompletePurchase');
 
 	// Mobbex
-	Route::post('payment/mobbex', 'Front\SkipCashController@mobbexPurchase')->name('payment.mobbexPurchase');
+	Route::post('payment/mobbex', 'Front\MobbexGatewayController@mobbexPurchase')->name('payment.mobbexPurchase');
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
 
 
