@@ -317,6 +317,9 @@ class CartController extends BaseController
                     'service_date'        => $request->has('service_date') ? $request->service_date : null,
                     'service_period'      => $request->has('service_period') ? $request->service_period : null,
                     'service_start_date'  => @$service_start_date,
+                    'schedule_slot'       => $request->has('schedule_slot') ? $request->schedule_slot : null,
+                    'dispatch_agent_id'   => $request->has('dispatch_agent_id') ? $request->dispatch_agent_id : null,
+                    'schedule_type'       => $request->has('schedule_type') ? $request->schedule_type : null,
                 ];
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
