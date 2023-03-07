@@ -57,7 +57,8 @@ class AppointmentController extends BaseController{
                 \Log::info('dispatchData');
                 \Log::info( $dispatchData);
                 $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
-                
+                \Log::info('dispatchData response');
+                \Log::info( $dispatchAgents);
             }
         
         }
