@@ -54,11 +54,9 @@ class AppointmentController extends BaseController{
                     'schedule_date'    => $request->cur_date,
                     'slot_start_time'  => $vendorStartTime
                 ];
-                \Log::info('dispatchData');
-                \Log::info( $dispatchData);
+              
                 $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
-                \Log::info('dispatchData response');
-                \Log::info( $dispatchAgents);
+               
             }
         
         }
