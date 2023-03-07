@@ -297,7 +297,7 @@ class VendorController extends FrontController
                 $is_vendor_closed = 0;
             }
         }
-
+        // dd($page);
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             $vendors = $this->getServiceAreaVendors();
             if(isset($vendor) && isset($vendor->id)){
