@@ -25,10 +25,7 @@ function  layoutMode(){
 }
 !(async function (e) {
     "use strict";
-    var featured_products_count = 0;
-    if(featured_products_length.length > 0){
-        featured_products_count =featured_products_length;
-    }
+   
     var sliderConfig = {
         infinite: !0,
         speed: 300,
@@ -45,7 +42,7 @@ function  layoutMode(){
    
     var sliderConfigEight10 = {
       
-        rows: (featured_products_count >= 20    ? 2 : 1),
+        rows: (featured_products_length >= 20    ? 2 : 1),
 		dots: false,
 		arrows: true,
 		infinite: true,
