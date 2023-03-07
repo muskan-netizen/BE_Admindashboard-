@@ -120,7 +120,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('order-tracking', 'Api\v1\OrderController@OrderTracking');
         // get slot from dispatcher
-        Route::post('getslotsForDispatcher', 'Api\v1\AppointmentController@getSlotFromDispatchDemand');
+        Route::post('getslotsFormDispatcher', 'Api\v1\AppointmentController@getSlotFromDispatchDemand');
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger
