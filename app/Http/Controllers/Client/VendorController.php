@@ -399,7 +399,7 @@ class VendorController extends BaseController
 
         $vendor->slug = Str::slug($request->name, "-");
         if(Vendor::where('slug',$vendor->slug)->count() > 0)
-        $vendor->slug = Str::slug($request->name, "-").rand(10,100);
+        $vendor->slug = Str::slug($request->name, "-");
         $vendor->save();
 
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
