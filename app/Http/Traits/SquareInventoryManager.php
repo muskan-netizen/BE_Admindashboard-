@@ -28,7 +28,7 @@ trait SquareInventoryManager{
     return new SquareClient($config);
   }
 
-  public function createNewProductInSquare($product_id)
+  public function createOrUpdateProductInSquarePos($product_id)
   {
     try{
       $ClientPreference = ClientPreference::with(['primary'])->first();
@@ -38,125 +38,131 @@ trait SquareInventoryManager{
       {
         //init square client
         $client = $this->init();
-
-        //---setting variant price and currency
+        
         //https://developer.squareup.com/docs/catalog-api/build-with-catalog
 
-        // item variant object creation starts here
-        $variations = [];
-        $square_item_id = '#ITEM_'.$product->id;
-        foreach($product->variant as $proVariant){
+        if(empty($product->square_item_id)){
+          //function to create new item (Product)
 
-          $price_money = new \Square\Models\Money();
-          $price_money->setAmount($proVariant->price ?? 0.00);
-          $price_money->setCurrency($ClientPreference->primary->currency->iso_code ?? 'USD');
+          // item variant object creation starts here
+          $variations = [];
+          $square_item_id = '#ITEM_'.$product->id;
+          foreach($product->variant as $proVariant){
+            //---setting variant price and currency
+            $price_money = new \Square\Models\Money();
+            $price_money->setAmount($proVariant->price ?? 0.00);
+            $price_money->setCurrency($ClientPreference->primary->currency->iso_code ?? 'USD');
 
-          if(isset($proVariant->set[0])){
-            $setVName = $proVariant->set[0]->title;
-          }else{
-            $setVName = $product->primary->title ?? $product->title;
+            if(isset($proVariant->set[0])){
+              $setVName = $proVariant->set[0]->title;
+            }else{
+              $setVName = $product->primary->title ?? $product->title;
+            }
+
+            $square_variant_id = '#ITEM_VARIATION_'.$proVariant->id;
+
+            $item_variation_data = new \Square\Models\CatalogItemVariation();
+            $item_variation_data->setItemId($square_item_id);
+            $item_variation_data->setName($setVName);
+            $item_variation_data->setSku(!empty($proVariant->sku) ? $proVariant->sku : $product->sku);
+            $item_variation_data->setPricingType('FIXED_PRICING');//https://developer.squareup.com/reference/square/enums/CatalogPricingType
+            $item_variation_data->setPriceMoney($price_money);//https://developer.squareup.com/reference/square/objects/Money
+            $item_variation_data->setStockable(true);
+            $item_variation_data->setSellable(true);
+            $item_variation_data->setTrackInventory(true);
+
+            $catalog_object = new \Square\Models\CatalogObject('ITEM_VARIATION', $square_variant_id);
+            $catalog_object->setItemVariationData($item_variation_data);
+
+            $variations[] = $catalog_object;
+
           }
+          // item variant object creation ends here
 
-          $square_variant_id = '#ITEM_VARIATION_'.$proVariant->id;
+          // item object creation starts here
+          $item_data = new \Square\Models\CatalogItem();
+          $item_data->setName($product->primary->title ?? $product->title);
+          $item_data->setVariations($variations);
+          $item_data->setProductType('REGULAR');// https://developer.squareup.com/reference/square/enums/CatalogItemProductType
 
-          $item_variation_data = new \Square\Models\CatalogItemVariation();
-          $item_variation_data->setItemId($square_item_id);
-          $item_variation_data->setName($setVName);
-          $item_variation_data->setSku(!empty($proVariant->sku) ? $proVariant->sku : $product->sku);
-          $item_variation_data->setPricingType('FIXED_PRICING');//https://developer.squareup.com/reference/square/enums/CatalogPricingType
-          $item_variation_data->setPriceMoney($price_money);//https://developer.squareup.com/reference/square/objects/Money
-          $item_variation_data->setStockable(true);
-          $item_variation_data->setSellable(true);
-          $item_variation_data->setTrackInventory(true);
+          $catalog_object = new \Square\Models\CatalogObject('ITEM', $square_item_id);
+          $catalog_object->setItemData($item_data);
+          // item object creation ends here
 
-          $catalog_object = new \Square\Models\CatalogObject('ITEM_VARIATION', $square_variant_id);
-          $catalog_object->setItemVariationData($item_variation_data);
-
-          $variations[] = $catalog_object;
-
-        }
-        // item variant object creation ends here
-
-        // item object creation starts here
-        $item_data = new \Square\Models\CatalogItem();
-        $item_data->setName($product->primary->title ?? $product->title);
-        $item_data->setVariations($variations);
-        $item_data->setProductType('REGULAR');// https://developer.squareup.com/reference/square/enums/CatalogItemProductType
-
-        $catalog_object = new \Square\Models\CatalogObject('ITEM', $square_item_id);
-        $catalog_object->setItemData($item_data);
-        // item object creation ends here
-
-        $catalog_object3 = [];
-        $taxrateid = 0;
-        if(!empty($product->taxCategory)){
-          $taxrate = $taxrateid = 0;
-          $square_tax_id = '';
-          foreach($product->taxCategory->taxRate as $taxes){
-            if($taxrate == 0){
-              $taxrate   = $taxes->tax_rate;
-              $taxrateid = $taxes->id;
-              $square_tax_id = '#TAX_'.$taxes->id;
+          $catalog_object3 = [];
+          $taxrateid = 0;
+          if(!empty($product->taxCategory)){
+            $taxrate = $taxrateid = 0;
+            $square_tax_id = '';
+            foreach($product->taxCategory->taxRate as $taxes){
+              if($taxrate == 0 && empty($taxes->square_tax_id)){
+                $taxrate   = $taxes->tax_rate;
+                $taxrateid = $taxes->id;
+                $square_tax_id = '#TAX_'.$taxes->id;
+              }
+            }
+            if($taxrate > 0){
+              $tax_data = new \Square\Models\CatalogTax();//https://developer.squareup.com/reference/square/objects/CatalogTax
+              $tax_data->setName($product->taxCategory->title);
+              $tax_data->setCalculationPhase('TAX_SUBTOTAL_PHASE');
+              $tax_data->setInclusionType('ADDITIVE');
+              $tax_data->setPercentage($taxrate);
+      
+              $catalog_object3 = new \Square\Models\CatalogObject('TAX', $square_tax_id);
+              $catalog_object3->setTaxData($tax_data);
             }
           }
-          if($taxrate > 0){
-            $tax_data = new \Square\Models\CatalogTax();//https://developer.squareup.com/reference/square/objects/CatalogTax
-            $tax_data->setName($product->taxCategory->title);
-            $tax_data->setCalculationPhase('TAX_SUBTOTAL_PHASE');
-            $tax_data->setInclusionType('ADDITIVE');
-            $tax_data->setPercentage($taxrate);
-    
-            $catalog_object3 = new \Square\Models\CatalogObject('TAX', $square_tax_id);
-            $catalog_object3->setTaxData($tax_data);
-          }
-        }
-       
-        $objects = [$catalog_object, $catalog_object3];
-        $catalog_object_batch = new \Square\Models\CatalogObjectBatch($objects);
+        
+          $objects = [$catalog_object, $catalog_object3];
+          $catalog_object_batch = new \Square\Models\CatalogObjectBatch($objects);
 
-        $batches = [$catalog_object_batch];
-        $uniqueid = Uuid::uuid4();
-        $body = new \Square\Models\BatchUpsertCatalogObjectsRequest($uniqueid, $batches);
+          $batches = [$catalog_object_batch];
+          $uniqueid = Uuid::uuid4();
+          $body = new \Square\Models\BatchUpsertCatalogObjectsRequest($uniqueid, $batches);
 
-        $api_response = $client->getCatalogApi()->batchUpsertCatalogObjects($body);
-//pr($api_response->getResult());
-        if ($api_response->isSuccess()) {
-          $resultObject = $api_response->getResult()->getObjects();
-          foreach($resultObject as $resultobjectdata){
-          
-            //update squarepos id and version in respective table
-            if($resultobjectdata->getType() == "ITEM"){
+          $api_response = $client->getCatalogApi()->batchUpsertCatalogObjects($body);
 
-              Product::where('id', $product->id)->update(['square_item_id' => $resultobjectdata->getId(), 'square_item_version' => $resultobjectdata->getVersion()]);
-              
-              foreach($resultobjectdata->getItemData()->getVariations() as $variantData){
-                if($variantData->getType() == "ITEM_VARIATION" && $variantData->getItemVariationData()->getSku()!=''){
-                  ProductVariant::where('product_id', $product->id)->where('sku', '=', $variantData->getItemVariationData()->getSku())->update(['square_variant_id' => $variantData->getId(), 'square_variant_version' => $variantData->getVersion()]);
+          if ($api_response->isSuccess()) {
+            $resultObject = $api_response->getResult()->getObjects();
+            foreach($resultObject as $resultobjectdata){
+            
+              //update squarepos id and version in respective table
+              if($resultobjectdata->getType() == "ITEM"){
+
+                Product::where('id', $product->id)->update(['square_item_id' => $resultobjectdata->getId(), 'square_item_version' => $resultobjectdata->getVersion()]);
+                
+                foreach($resultobjectdata->getItemData()->getVariations() as $variantData){
+                  if($variantData->getType() == "ITEM_VARIATION" && $variantData->getItemVariationData()->getSku()!=''){
+                    ProductVariant::where('product_id', $product->id)->where('sku', '=', $variantData->getItemVariationData()->getSku())->update(['square_variant_id' => $variantData->getId(), 'square_variant_version' => $variantData->getVersion()]);
+                  }
                 }
+
               }
 
+              if($resultobjectdata->getType() == "TAX" && $taxrateid > 0){
+                TaxRate::where('id', $taxrateid)->update(['square_tax_id' => $resultobjectdata->getId(), 'square_tax_version' => $resultobjectdata->getVersion()]);
+              }
             }
-
-            if($resultobjectdata->getType() == "TAX" && $taxrateid > 0){
-              TaxRate::where('id', $taxrateid)->update(['square_tax_id' => $resultobjectdata->getId(), 'square_tax_version' => $resultobjectdata->getVersion()]);
-            }
-          }
-          
-          return response()->json([
-              'status'  => 'success',
+            
+            return response()->json([
+                'status'  => 'success',
+                'result'  => '',
+                'message' => __('product created in Square.')
+            ]);
+          } 
+          else 
+          {
+            $errors = $api_response->getErrors();
+            Log::info($errors);
+            return response()->json([
+              'status'  => 'error',
               'result'  => '',
-              'message' => __('product created in Square.')
-          ]);
-        } 
-        else 
-        {
-          $errors = $api_response->getErrors();
-          Log::info($errors);
-          return response()->json([
-            'status'  => 'error',
-            'result'  => '',
-            'message' => __('There is some error while creating Item, tax and variant in Square.')
-          ]);
+              'message' => __('There is some error while creating Item, tax and variant in Square.')
+            ]);
+          }
+        }else{
+          //function to update item (Product) which having square_item_id (it means product is already on square POS)
+          return $this->updateProductInSquarePos($product);
         }
       }
       else
@@ -178,6 +184,80 @@ trait SquareInventoryManager{
     } 
   }
 
+
+  public function updateProductInSquarePos($product){
+    try{
+      foreach($product->variant as $proVariant){
+        $price_money = new \Square\Models\Money();
+        $price_money->setAmount(7000);
+        $price_money->setCurrency('USD');
+        
+        $item_variation_data = new \Square\Models\CatalogItemVariation();
+        $item_variation_data->setItemId('YNDDANS6FVWXOUZ7HRTEE57I');
+        $item_variation_data->setPricingType('FIXED_PRICING');
+        $item_variation_data->setPriceMoney($price_money);
+        
+        $object = new \Square\Models\CatalogObject('ITEM_VARIATION', 'GUN7HNQBH7ZRARYZN52E7O4B');
+        $object->setVersion(1604352990016);
+        $object->setItemVariationData($item_variation_data);
+        
+        $uniqueid = Uuid::uuid4();
+        $body = new \Square\Models\UpsertCatalogObjectRequest($uniqueid, $object);
+        
+        $api_response = $client->getCatalogApi()->upsertCatalogObject($body);
+        
+        if ($api_response->isSuccess()) {
+            $result = $api_response->getResult();
+        } else {
+            $errors = $api_response->getErrors();
+        }
+      }
+    }
+    catch (ApiException $e) 
+    {
+      return response()->json([
+        'status'  => 'error',
+        'result'  => [],
+        'message' => $e->getMessage()
+      ]);
+    } 
+  }
+
+  public function deleteBatchInSquarePos($batch_square_ids)
+  {
+    try{
+      $client = $this->init();
+      $object_ids = $batch_square_ids;
+      $body = new \Square\Models\BatchDeleteCatalogObjectsRequest();
+      $body->setObjectIds($object_ids);
+
+      $api_response = $client->getCatalogApi()->batchDeleteCatalogObjects($body);
+
+      if ($api_response->isSuccess()) {
+          $result = $api_response->getResult();
+          return response()->json([
+            'status'  => 'success',
+            'result'  => '',
+            'message' => __('Batch deleted in Square.')
+          ]);
+      } else {
+          $errors = $api_response->getErrors();
+          return response()->json([
+            'status'  => 'error',
+            'result'  => [],
+            'message' => __('Something went wrong, Please try again later.')
+          ]);
+      }
+    }
+    catch (ApiException $e) 
+    {
+      return response()->json([
+        'status'  => 'error',
+        'result'  => [],
+        'message' => $e->getMessage()
+      ]);
+    } 
+  }
 
   public function createNewProductInSquareTest()
   {

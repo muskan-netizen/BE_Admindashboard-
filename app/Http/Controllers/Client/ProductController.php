@@ -378,7 +378,6 @@ class ProductController extends BaseController
     {
         DB::beginTransaction();
         try {
-            $this->createNewProductInSquare($id);
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
@@ -805,7 +804,7 @@ class ProductController extends BaseController
 
             }
 
-
+            $this->createOrUpdateProductInSquarePos($id);
             DB::commit();
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
             // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
