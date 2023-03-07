@@ -518,7 +518,13 @@ body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded{
     box-shadow: none;
     transition: ease-in 3s ease;
 }
-
+.al_body_template_one .vendor_first .product-image {
+    height: 234px;
+}
+.al_body_template_one .vendor_first .product-image img {
+    width:100%;
+    height: 100% !important;
+}
 .al_body_template_one .pixelstrap ul {
     display: block;
     opacity: 0;
