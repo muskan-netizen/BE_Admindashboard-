@@ -49,7 +49,7 @@ function  layoutMode(){
 		slidesToShow: 10,
 		slidesToScroll: 10,
         responsive: [
-            { breakpoint: 1500, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint: 1600, settings: { slidesToShow: 7, slidesToScroll: 7 } },
             { breakpoint: 1500, settings: { slidesToShow: 7, slidesToScroll: 7 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
