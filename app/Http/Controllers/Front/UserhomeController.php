@@ -606,6 +606,7 @@ class UserhomeController extends FrontController
      */
     public function postHomePageData(Request $request,$set_template,$enable_layout)
     {
+        $dashboardProductsData = [];
         //pr($enable_layout);
         $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service']);
         $vendor_ids = [];
