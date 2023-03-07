@@ -119,7 +119,7 @@ $currentPage = $_GET['page']??1;
                         @endif
                     </aside>
                 </div>
-            </div>
+            {{-- </div> --}}
             @endif
 
                     @php $show_new_Products = 0; @endphp
@@ -200,7 +200,7 @@ $currentPage = $_GET['page']??1;
                     @endif
                     <!-- side-bar banner end here -->
                 </div>
-                <div class="collection-content col-lg outter-fillter-data">
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
