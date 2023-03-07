@@ -33,7 +33,6 @@ class AppointmentController extends BaseController{
             
             $Dispatch =  $this->getDispatchAppointmentDomain();
             
-            $cart_product_id = $request->cart_product_id??0;
             
             if($Dispatch){
                 
@@ -52,10 +51,11 @@ class AppointmentController extends BaseController{
                     'latitude'         => $vendor_latitude,
                     'longitude'        => $vendor_longitude,
                     'service_time'     => $product->minimum_duration_min,
-                    'schedule_date'    => $request->cur_date,
+                    'schedule_date'    => $request->date,
                     'slot_start_time'  => $vendorStartTime
                 ];
-                
+                \Log::info('dispatchData');
+                \Log::info( $dispatchData);
                 $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
                 
             }
