@@ -1808,7 +1808,7 @@ body.al_body_template_eight .displayProducts .suppliers-box {
 body.al_body_template_eight .suppliers-box .suppliers-img-outer {
     overflow: hidden;
     border: none;
-    /* height: 200px; */
+    height: 200px;
     background-color: #f9f9f9;
     padding: 0;
 }
