@@ -1040,102 +1040,180 @@ class UserhomeController extends FrontController
     {
      
         $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
-        $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([
-            'category.categoryDetail.translation' => function ($q) use ($langId) {
-                $q->where('category_translations.language_id', $langId);
-            },
-            'vendor' => function ($q) {
-                $q->select('id', 'slug','status','name','dine_in','takeaway','delivery','rental','pick_drop','on_demand','laundry','appointment','p2p');
-            }, 'ProductAttribute' => function ($q) {
-                $q->where('key_name', 'Location');
-            },
-            'media' => function ($q) {
-                $q->groupBy('product_id');
-            }, 'media.image',
-            'translation' => function ($q) use ($langId) {
-                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-            },
-            'variant' => function ($q) use ($langId) {
-                $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','compare_at_price');
-                $q->groupBy('product_id');
-            },
-            'inwishlist' => function ($q)  {
-                $user_id = Auth::user() ? Auth::user()->id : '';
-                $q->where('user_id',$user_id);
-            },
-        ]);
+        // $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([
+        //     'category.categoryDetail.translation' => function ($q) use ($langId) {
+        //         $q->where('category_translations.language_id', $langId);
+        //     },
+        //     'vendor' => function ($q) {
+        //         $q->select('id', 'slug','status','name','dine_in','takeaway','delivery','rental','pick_drop','on_demand','laundry','appointment','p2p');
+        //     }, 'ProductAttribute' => function ($q) {
+        //         $q->where('key_name', 'Location');
+        //     },
+        //     'media' => function ($q) {
+        //         $q->groupBy('product_id');
+        //     }, 'media.image',
+        //     'translation' => function ($q) use ($langId) {
+        //         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+        //     },
+        //     'variant' => function ($q) use ($langId) {
+        //         $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','compare_at_price');
+        //         $q->groupBy('product_id');
+        //     },
+        //     'inwishlist' => function ($q)  {
+        //         $user_id = Auth::user() ? Auth::user()->id : '';
+        //         $q->where('user_id',$user_id);
+        //     },
+        // ]);
       
-        if ($where !== '') {  
-            $products = $products->where($where, 1);
-        }
-        if(checkColumnExists('products','is_long_term_service')){
-            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','updated_at', 'id','is_long_term_service');
-        }else{
-            $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','updated_at', 'id');
-        }
-        $pndCategories = Category::where('type_id', 7)->pluck('id');
-        // if (is_array($venderIds)) {
-        //     $products = $products->whereIn('vendor_id', $venderIds);
+        // if ($where !== '') {  
+        //     $products = $products->where($where, 1);
         // }
-        if ($pndCategories) {
-            $products = $products->whereNotIn('category_id', $pndCategories);
-        }
-        $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
-                    $q->where('status',1);
-                    $q->whereIn('id',$venderIds);
-                    $q->where($type, 1);
-                });
-                if ($where == 'is_featured') {
-                         $products = $products->take(20);  
-                    }else{
-                        $products = $products->take(10);  
-                    }
-                $products = $products->inRandomOrder()->get();
+        // if(checkColumnExists('products','is_long_term_service')){
+        //     $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','updated_at', 'id','is_long_term_service');
+        // }else{
+        //     $products = $products->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','updated_at', 'id');
+        // }
+        // $pndCategories = Category::where('type_id', 7)->pluck('id');
+        // // if (is_array($venderIds)) {
+        // //     $products = $products->whereIn('vendor_id', $venderIds);
+        // // }
+        // if ($pndCategories) {
+        //     $products = $products->whereNotIn('category_id', $pndCategories);
+        // }
+        // $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
+        //             $q->where('status',1);
+        //             $q->whereIn('id',$venderIds);
+        //             $q->where($type, 1);
+        //         });
+        //         if ($where == 'is_featured') {
+        //                  $products = $products->take(20);  
+        //             }else{
+        //                 $products = $products->take(10);  
+        //             }
+        //         $products = $products->inRandomOrder()->get();
+        $venderIds = implode(',',$venderIds);
+
+
+        $raw_query = "SELECT 
+            `products`.`id`, 
+            `products`.`sku`, 
+            `products`.`url_slug`, 
+            `products`.`weight_unit`, 
+            `products`.`weight`, 
+            `products`.`vendor_id`, 
+            `products`.`has_variant`, 
+            `products`.`has_inventory`, 
+            `products`.`sell_when_out_of_stock`, 
+            `products`.`requires_shipping`, 
+            `products`.`Requires_last_mile`, 
+            `products`.`averageRating`, 
+            `products`.`inquiry_only`, 
+            `products`.`updated_at`, 
+            `products`.`is_featured`,
+            `products`.`is_new`,  
+            `products`.`category_id`,  
+            -- `products`.`inwishlist` as `is_inwishlist_btn`,
+            `categories`.`id` as `category_id` ,
+            `categories`.`type_id`,
+            `product_images`.`media_id`,
+            `vendor_media`.`path`,
+            `product_translation`.`title`,
+            `product_translation`.`meta_title`,
+            `product_translation`.`meta_keyword`,
+            `product_translation`.`meta_description`,
+            `product_translation`.`language_id`,
+            `product_variant`.`compare_at_price` as `compare_price_numeric`,
+            `product_variant`.`price` as `price_numeric`,
+            `category_translation`.`name` as `category_name` ,
+            `category_translation`.`meta_title` as `category_meta_title` ,
+            `category_translation`.`meta_keywords` as `category_meta_keyword` ,
+            `category_translation`.`meta_description` as `category_meta_description`,
+            `vendors`.`name` as `vendor_name`,
+            `vendors`.`slug` as `vendor_slug`,
+
+            IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`
+            FROM 
+                `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
+                 LEFT JOIN   `product_images` as `product_images` ON `product_images`.`id` = `products`.`id` 
+                 LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1  AND `vendors`.`id` IN ($venderIds)
+                 LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
+                 LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id`
+                 LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
+                 LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id`
+                 
+            WHERE 
+                `products`.`deleted_at` IS NULL 
+                -- AND EXISTS (
+                --     SELECT 
+                --         *  
+                --     FROM 
+                --         `vendors` 
+                --     WHERE 
+                --         `products`.`vendor_id` = `vendors`.`id` 
+                --         AND `vendors`.`status` = 1 
+                        
+                --         AND `vendors`.`id` IN ($venderIds) -- replace with actual vendor IDs
+                -- ) 
+            -- AND NOT EXISTS (
+            --     WHERE 
+            --         `products`.`category_id` = `categories`.`id` 
+            --         AND `categories`.`type_id` = 7
+            -- )
+            -- AND (
+            --     `products`.$where = 1 -- replace with actual column name
+            --     OR `products`.`is_new` = 1 -- replace with actual column name
+            -- )
+        ORDER BY 
+            RAND()
+        LIMIT 
+            10";
+       $products = DB::select( DB::raw($raw_query));
+
                 //get 20 product in template-8
-        // pr( $products);       
-         $returnArray= [];
-        if (!empty($products)) {
-            foreach ($products as $key => $value) {
-                // foreach ($value->variant as $k => $v) {
-                //     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
-                // }
-                $multiply = Session::get('currencyMultiplier') ?? 1;
-                $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
-                $image_url = $value->media->first() ? @$value->media->first()->image->path['proxy_url'] . $p_dim . @$value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-              //  $user_id = Auth::user()->id??'';
-                $product_id = $value->id;
-                $is_inwishlist_btn = 0;
-               // $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
-                if(!empty($value->inwishlist)){
-                    $is_inwishlist_btn = 1;
-                }
-                $returnArray[] = array(
-                    'tag_title' => $Products_title??0,
-                    'image_url' => $image_url,
-                    'id' => $value->id,
-                    'sku' => $value->sku,
-                    'updated_at' => $value->updated_at,
-                    'is_inwishlist_btn' => $is_inwishlist_btn,
-                    'title' => Str::limit($title, 18, '..'),
-                    'url_slug' => $value->url_slug,
-                    'averageRating' => number_format($value->averageRating, 1, '.', ''),
-                    'inquiry_only' => $value->inquiry_only,
-                    'vendor_name' => $value->vendor ? $value->vendor->name : '',
-                    'vendor' => $value->vendor,
-                    'ProductAttribute' => $value->ProductAttribute,
-                    'price_numeric' =>@$value->variant->first()->price??0 * $multiply,
-                    'compare_price' =>@$value->variant->first()->compare_at_price??0 * $multiply,
-                    'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$value->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->compare_at_price??0 * $multiply,',')),
-                    'compare_price_numeric' =>@$value->variant->first()->compare_at_price,
-                    'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$value->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price??0 * $multiply,',')),
-                    'category' => (@$value->category->categoryDetail->translation) ? @$value->category->categoryDetail->translation->first()->name : @$value->category->categoryDetail->slug,
-                    'category_type' => $value->category->categoryDetail->type_id ?? 0
-                );
+        //pr( $products);       
+        // $returnArray[$where] = $products;
+        // if (!empty($products)) {
+        //     foreach ($products as $key => $value) {
+        //         // foreach ($value->variant as $k => $v) {
+        //         //     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
+        //         // }
+        //         $multiply = Session::get('currencyMultiplier') ?? 1;
+        //         $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
+        //         $image_url = $value->media->first() ? @$value->media->first()->image->path['proxy_url'] . $p_dim . @$value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+        //       //  $user_id = Auth::user()->id??'';
+        //         $product_id = $value->id;
+        //         $is_inwishlist_btn = 0;
+        //        // $userWishlistProd = UserWishlist::where(['user_id' => $user_id, 'product_id' => $product_id])->first();
+        //         if(!empty($value->inwishlist)){
+        //             $is_inwishlist_btn = 1;
+        //         }
+        //         $returnArray[] = array(
+        //             'tag_title' => $Products_title??0,
+        //             'image_url' => $image_url,
+        //             'id' => $value->id,
+        //             'sku' => $value->sku,
+        //             'updated_at' => $value->updated_at,
+        //             'is_inwishlist_btn' => $is_inwishlist_btn,
+        //             'title' => Str::limit($title, 18, '..'),
+        //             'url_slug' => $value->url_slug,
+        //             'averageRating' => number_format($value->averageRating, 1, '.', ''),
+        //             'inquiry_only' => $value->inquiry_only,
+        //             'vendor_name' => $value->vendor ? $value->vendor->name : '',
+        //             'vendor' => $value->vendor,
+        //             'ProductAttribute' => $value->ProductAttribute,
+        //             'price_numeric' =>@$value->variant->first()->price??0 * $multiply,
+        //             'compare_price' =>@$value->variant->first()->compare_at_price??0 * $multiply,
+        //             'compare_at_price' =>@$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$value->variant->first()->compare_at_price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->compare_at_price??0 * $multiply,',')),
+        //             'compare_price_numeric' =>@$value->variant->first()->compare_at_price,
+        //             'price' => @$additionalPreference['is_token_currency_enable'] ? "<i class='fa fa-money' aria-hidden='true'></i> ".getInToken(@$value->variant->first()->price??0 * $multiply): Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price??0 * $multiply,',')),
+        //             'category' => (@$value->category->categoryDetail->translation) ? @$value->category->categoryDetail->translation->first()->name : @$value->category->categoryDetail->slug,
+        //             'category_type' => $value->category->categoryDetail->type_id ?? 0
+        //         );
                 
-            }
-        }
-         
-       return $returnArray;
+        //     }
+        // }
+           // pr($returnArray);
+       return $products;
         //pr( $products->toArray());
     }
 

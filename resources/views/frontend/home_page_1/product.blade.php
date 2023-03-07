@@ -4,29 +4,29 @@
         <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
     </div>
     {{-- {{dd($product)}} --}}
-    <a class="common-product-box text-center" href="{{ $product["vendor"]->slug }}/product/{{ $product["url_slug"] }}">
-        <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product["image_url"] }}" alt="" title="">
+    <a class="common-product-box text-center" href="{{ $product->url_slug }}/product/{{ $product->url_slug }}">
+        <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product->path }}" alt="" title="">
             <div class="pref-timing"> </div>
         </div>
         <div class="media-body align-self-center">
             <div class="inner_spacing px-0">
                 <div class="product-description">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h6 class="card_title ellips">{{ $product["title"] }}</h6> 
+                        <h6 class="card_title ellips">{{ $product->title }}</h6> 
                         @if($client_preference_detail && $client_preference_detail->rating_check==1) 
-                        @if($product["averageRating"] >0)
-                            <span class="rating-number">{{ $product["averageRating"] }}</span>
-                        @endif 
+                            @if($product->averageRating >0)
+                                <span class="rating-number">{{ $product->averageRating }}</span>
+                            @endif 
                         @endif 
                     </div>
                     <p class="al_productText ellips">
-                        {{ $product["vendor_name"] }}
+                        {{ $product->vendor_name }}
                     </p>
                     <p class="border-bottom pb-1 d-none">
-                        <span>{{__('In ') . $product["category"]}} </span>
+                        <span>{{__('In ') . $product->category_name}} </span>
                     </p>
                     <div class="d-flex align-items-center justify-content-between al_clock"> 
-                        <b>{!!$product["price"] ?? ''!!}</b>
+                        <b>{!!$product->price_numeric ?? ''!!}</b>
                         <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
                     </div>
                 </div>
