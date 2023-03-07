@@ -49,8 +49,25 @@ function  layoutMode(){
 		slidesToShow: 10,
 		slidesToScroll: 10,
         responsive: [
-            { breakpoint: 1500, settings: { slidesToShow: 7, slidesToScroll: 7 } },
-            { breakpoint: 1500, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint: 1920, settings: { slidesToShow: 10, slidesToScroll: 10 } },
+            { breakpoint: 1530, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigspotlight = {
+        rows:1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+        //centerMode: true,
+		speed: 300,
+		slidesToShow: 8,
+		slidesToScroll: 8,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 6 } },
+            { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 7 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -65,8 +82,24 @@ function  layoutMode(){
 		slidesToShow: 10,
 		slidesToScroll: 10,
         responsive: [
-            { breakpoint: 1500, settings: { slidesToShow: 6, slidesToScroll: 6 } },
-            { breakpoint: 1500, settings: { slidesToShow: 6, slidesToScroll: 6 } },
+            { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 8 } },
+            { breakpoint: 1530, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigSellingProductEight = {
+        rows: 1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+		speed: 300,
+		slidesToShow: 6,
+		slidesToScroll: 6,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 6 } },
+            { breakpoint: 1530, settings: { slidesToShow: 5, slidesToScroll: 5 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -226,8 +259,10 @@ function  layoutMode(){
         e(".product-4-best_sellers").slick(sliderConfig),
         e(".product-4-featured_products").slick(sliderConfig),
         e(".p2p_eccomerce_slider10").slick(sliderConfigEight10),
+        e(".spotlight_deals-eight").slick(sliderConfigspotlight),
         e(".p2p_eccomerce_slider").slick(sliderConfigEight),
         e(".p2p_single_slider").slick(sliderConfig),
+        e(".selling_product_eight").slick(sliderConfigSellingProductEight),
 
         e('.suppliers-slider').slick({
             dots: false,

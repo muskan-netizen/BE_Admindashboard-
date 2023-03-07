@@ -1808,7 +1808,7 @@ body.al_body_template_eight .displayProducts .suppliers-box {
 body.al_body_template_eight .suppliers-box .suppliers-img-outer {
     overflow: hidden;
     border: none;
-    /* height: 200px; */
+    height: 200px;
     background-color: #f9f9f9;
     padding: 0;
 }
@@ -2593,7 +2593,10 @@ body.al_body_template_eight .box-account.box-info .btn-solid {
     padding: 8px 8px !important;
 }
 .al_body_template_eight article#page-container section .vendors section h2.h2-heading{
-    font-size: 30px;
+    font-size: 22px;
+}
+.al_body_template_eight .best-seller-eccomerce h2.col.h2-heading {
+    font-size: 22px;
 }
 .al_body_template_eight .p2p_eccomerce_slider10 .slick-slide>div .col {
     padding: 0px 6px;
