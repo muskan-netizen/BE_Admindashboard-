@@ -55,7 +55,11 @@ class Product extends Model implements Auditable{
 
 
     public function variant(){
-      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges','markup_price','incremental_price','incremental_price_per_min')->where('status', 1);
+      if(checkColumnExists('product_variants','square_variant_id')){
+        return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges','markup_price','incremental_price','incremental_price_per_min', 'square_variant_id', 'square_variant_version')->where('status', 1);
+      }else{
+        return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges','markup_price','incremental_price','incremental_price_per_min')->where('status', 1);
+      }
     }
 
     public function translation($langId = 0){
