@@ -4925,7 +4925,6 @@ $(document).ready(function () {
     function cartPaymentOptions(payment_option_id,address_id,tip, delivery_type)
     {
         var action =  payment_option_id;
-        alert(action);
         switch (action) {
             case '3':
                     paymentViaPaypal(address_id, payment_option_id);
@@ -5420,7 +5419,6 @@ $(document).ready(function () {
               break; 
             case '52':
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-              alert("i am here");
               if (order != '') {
                   paymentViaSkipCash(address_id, order);
               } else {
