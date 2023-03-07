@@ -52,6 +52,9 @@ article#page-container {
     object-fit: cover;
     width: 100% !important;
 }
+.popular-brands .render_nav_categories .category-block .brand-img img {
+    border-radius: 0px;
+}
 
 article#page-container section .vendors section {
     padding: 40px 0 20px;
@@ -754,6 +757,15 @@ body.al_body_template_eight section.suppliers-section.container.vender_slider {
     section#our_vendor_main_div .vendors {
         padding: 0 20px;
     }
+    body.al_body_template_eight .suppliers-box .suppliers-img-outer{
+        height: 140px;
+    }
+    /* .al_body_template_eight .product-card-box.position-relative.text-center.al_custom_vendors_sec{
+        min-height:240px;
+    } */
+    .al_body_template_eight .full_width_eccomerce .deals-product.product-card-box{
+        min-height: 226px;
+    }
     body.al_body_template_eight .p2p-full-width .media-body .al_clock b{font-size: 14px;}
     body.al_body_template_eight .recent-orders-8 .order_detail .ul.price_box_bottom li label {
         font-size: 14px;
@@ -1168,7 +1180,7 @@ section.popular-brands.left-shape_.position-relative.categories {
     height: 120px;
     width: 120px;
     object-fit: cover;
-    border-radius:100%;
+    /* border-radius:100%; */
     margin: 0 auto;
     text-align: center;
 }
