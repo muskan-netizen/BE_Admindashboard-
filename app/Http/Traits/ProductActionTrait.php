@@ -354,7 +354,7 @@ trait ProductActionTrait{
                 if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
                     $single_category_product_ids = $this->getProductsId($where);
                     if(count($single_category_product_ids) > 0){
-                        $single_category_product_ids = implode(',',$single_category_product_ids);
+                        $single_category_product_ids = @implode(',',$single_category_product_ids);
                         $completeWhere = ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
             
                     }    
