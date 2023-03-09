@@ -265,7 +265,8 @@ class DispatcherController extends FrontController
                     'order_vendor_id' =>  $checkiftokenExist->order_vendor_id,
                     'order_vendor_product_id' =>  $checkiftokenExist->order_vendor_product_id,
                 ]);
-           
+                
+                OrderProduct::where('id',$checkiftokenExist->order_vendor_product_id)->update(['dispatcher_status_option_id'=>$request->dispatcher_status_option_id,'order_status_option_id'=>$request->status_option_id]);
     
                 $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
                 DB::commit();

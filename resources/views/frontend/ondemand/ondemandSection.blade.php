@@ -434,9 +434,13 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                 <div id="step-2-ondemand">
                                    @php
                                    $lastKey = count($cartData) - 1;
+                                   $last_cart_product_id = '';
                                    @endphp
                                    {{ Arr::last($cartData)}}
                                     @foreach ($cartData as $cd => $cart_data)
+                                        @php
+                                         $last_cart_product_id =  $cart_data->id
+                                         @endphp
                                         @if(($cart_data->cateTypeId ==8) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
                                             @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
                                             @php
@@ -453,6 +457,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                     @foreach ($cart_data->period as $key => $date)
                                                         <div>
                                                             @php
+                                                         
                                                             $checked = '';
                                                             $singleDate =  trim(date('Y-m-d', strtotime($date)));
                                                             if($productDate == $singleDate && !empty($productDate)){
@@ -549,6 +554,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                     @endforeach
 
                                         <div class="booking-time-wrapper">
+                                            <input type="hidden" id="last_cart_product_id" value="{{ $last_cart_product_id }}">
                                             <h4 class="mt-4 mb-2"><b>{{__('Do you have any specific instructions?')}}</b></h4>
                                             <textarea class="form-control" name="specific_instructions" id="specific_instructions" cols="30" rows="7"></textarea>
                                         </div>
