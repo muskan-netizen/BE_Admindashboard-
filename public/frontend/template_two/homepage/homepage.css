@@ -246,6 +246,13 @@ body .category-head {
         overflow: hidden;
         white-space: nowrap;
     }
+    .al_body_template_two  .cab-banner-area.alTaxiBannerStart {
+        height: 60vh!important;
+        display: flex!important;
+        align-items: center!important;
+        background-position: left!important;
+        margin-top: 60px;
+    }
 }
 
 
@@ -390,6 +397,10 @@ body[dir=rtl] .slick-prev {
     padding: 64px !important;
     margin-bottom: 30px;
 }
+.py-64 {
+    padding: 64px 20px!important;
+    margin-bottom: 30px;
+}
 
 .al_body_template_two .render_full_brands a.barnd-img-outer {
     padding-bottom: 100%;
@@ -399,10 +410,50 @@ body[dir=rtl] .slick-prev {
     background-size: cover !important;
 }
 
-.al_body_template_two .render_full_brands a.barnd-img-outer img.blur-up.lazyloaded {
+/* .al_body_template_two .render_full_brands a.barnd-img-outer img.blur-up.lazyloaded {
     object-fit: contain;
+} */
+body.dark.al_body_template_two .render_full_brands a.barnd-img-outer img.blur-up.lazyloaded{
+    object-fit: cover;
+    background-color:#fff;
 }
-
+body.dark.al_body_template_two .main-top-heading p span {
+    color: #fff!important;
+}
+body.dark  select{
+    background-color: transparent;
+}
+body.dark .inner_spacing{
+    background-color: #ffffff1a;
+    width: 100%!important;
+    padding:10px!important;
+}
+.al_body_template_two .cab-banner-area .btn.btn-solid.new-btn {
+    font-size: 14px;
+}
+@media (max-width:1440px) {
+    .al_body_template_two .cab-banner-area .btn.btn-solid.new-btn {
+        font-size: 12px;
+    }
+    .al_body_template_two  .cab-banner-area .card-box{
+        padding: 48px 30px;
+    }
+}
+@media (max-width:1300px) {
+    .al_body_template_two  .cab-banner-area .card-box{
+        padding: 30px 30px;
+    }
+}
+@media (max-width:1200x) {
+    .al_body_template_two  .cab-banner-area .cab-booking-form .cab-input{
+        margin:0!important;
+    }
+}
+@media (max-width:1100x) {
+    .py-64{
+        padding:44px 20px!important;    
+    }
+}
 @media (max-width:576px) {
     html,
     body {
@@ -439,6 +490,9 @@ body[dir=rtl] .slick-prev {
         padding: 15px;
         box-shadow: 5px 5px 5px 5px #bbb4b46e;
         border-radius: 10px;
+    }
+    body.al_body_template_two .cab-footer button{
+        font-size: 11px!important;
     }
 }
 .al_body_template_two .margin-res .product-image img {

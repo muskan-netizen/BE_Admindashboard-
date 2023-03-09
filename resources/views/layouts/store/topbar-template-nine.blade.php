@@ -59,7 +59,7 @@ if(session()->has('applocale')){
                         </li> --}}
                         @endif
                         @if($client_preference_detail->header_quick_link == 1)
-                        @if( p2p_module_status() )
+                        @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                         <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
                         @endif
                         <li class="onhover-dropdown quick-links quick-links">
@@ -93,7 +93,7 @@ if(session()->has('applocale')){
                             </ul>
                         </li>
                         @endif
-                        @if(count($languageList) > 1)
+                        {{-- @if(count($languageList) > 1) --}}
                         <li class="onhover-dropdown change-language">
                             <a href="javascript:void(0)">
                                 <!-- <span class="alLanguageSign">{{$applocale}}</span> -->
@@ -111,7 +111,7 @@ if(session()->has('applocale')){
                                 @endforeach
                             </ul>
                         </li>
-                        @endif
+                        {{-- @endif --}}
 
                         @if(count($currencyList) > 1)
                         <li class="onhover-dropdown change-currency">

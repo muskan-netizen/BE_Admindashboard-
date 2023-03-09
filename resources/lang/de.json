@@ -1024,7 +1024,17 @@
   "Allow Location Access": "Ermöglichung des Zugangs zum Standort",
   "Add Stop": "Haltestelle hinzufügen",
   "Add Destination": "Zielort hinzufügen",
+  "Slot is required": "Steckplatz ist erforderlich",
+  "Service Details":"Servicedetails",
+  "SERVICE DETAILS":"Servicedetails",
+  "Payment":"Zahlung",
+  "When would you like your service?":"Wann möchten Sie Ihren Service?",
+  "What time would you like us to start?":"Wann möchten Sie, dass wir beginnen?",
+  "Do you have any specific instructions?":"Haben Sie spezielle Anweisungen?",
+  "DATE & TIME":"TERMINZEIT",
+  "PRICE DETAILS":"PREISDETAILS",
+  "View all address":"Alle Adressen anzeigen"
   
-  "Slot is required": "Steckplatz ist erforderlich"
+
 
 }

@@ -209,7 +209,7 @@ class BidController extends FrontController
              $userIds= $vendorIds;
         }
 
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $userIds)->pluck('device_token')->toArray();
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', [$userIds])->pluck('device_token')->toArray();
         if (!empty($devices)) 
         {
             $from = '';
@@ -224,6 +224,7 @@ class BidController extends FrontController
                 $title = $notification_content->subject;
             }else{
                 $title = "Bid accepted by User";
+                $body_content = "Bid accepted";
             }
                 $data = [
                     "registration_ids" => $devices,
@@ -237,7 +238,7 @@ class BidController extends FrontController
                     ],
                     "data" => [
                         'title' => $title,
-                        'body'  => $notification_content->content,
+                        'body'  => $notification_content->content??$title,
                         'data' => $prescriptionData,
                         'prescription_id' => $prescriptionData->id,
                         'type' => "bid_request_created"
@@ -256,7 +257,7 @@ class BidController extends FrontController
     public function sendBidPushNotificationUser($userIds)
     {
    
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $userIds)->pluck('device_token')->toArray();
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', [$userIds])->pluck('device_token')->toArray();
 
         if (!empty($devices)) 
         {

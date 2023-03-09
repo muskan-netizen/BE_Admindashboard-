@@ -112,14 +112,16 @@ trait KwikApi{
 //Price estimation Api
 public function getPriceEstimation($dataRec)
 {
-      $this->configDetails();
-      $end_url = '/send_payment_for_task';
+    $check = $this->configDetails();
+    if($check){
+        $end_url = '/send_payment_for_task';
       $data = [      
         "custom_field_template"=> "pricing-template",
         "access_token"=> $this->access_token,
         "domain_name"=> $this->api_domain,
         "timezone"=> -330,  //For IST : -330
         "vendor_id"=> $this->vendor_id,
+        "sareaId"=> 3,
         "is_multiple_tasks"=> 1,
         "layout_type"=> 0,
         "pickup_custom_field_template"=> "pricing-template",
@@ -176,6 +178,9 @@ public function getPriceEstimation($dataRec)
       curl_close($ch);
       $result = json_decode($result);
       return $result;
+    }
+    $result = (object) array('status' => 400);
+    return $result;
 }
 
 
@@ -187,6 +192,7 @@ public function createKwikOrder($dataRec)
         "access_token"=> $this->access_token,
         "vendor_id"=> $this->vendor_id,
         "is_multiple_tasks"=> 1,
+        "sareaId"=> 3,
         "timezone"=> 60,
         "has_pickup"=> 1,
         "has_delivery"=> 1,

@@ -794,6 +794,7 @@ aria-hidden="true">
     </div>
 </div>
 @endif
+@endif
 <style type="text/css">
     #nestable_list_1 ol,
     #nestable_list_1 ul {
@@ -866,7 +867,7 @@ aria-hidden="true">
         </div>
     </div>
 </div>
-@endif
+
 <style type="text/css">
     #nestable_list_1 ol, #nestable_list_1 ul{
         list-style-type: none;

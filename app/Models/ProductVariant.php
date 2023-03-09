@@ -25,7 +25,8 @@ class ProductVariant extends Model
       $ex = checkImageExtension($img);
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
       $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
-      $values['image_fit'] = \Config::get('app.FIT_URl');
+    //   $values['image_fit'] = \Config::get('app.FIT_URl');
+      $values['image_fit'] = \Config::get('app.FILL_URL');
       return $values;
     }
 
@@ -161,11 +162,11 @@ class ProductVariant extends Model
            if(auth()->user() !=null && auth()->user()->is_admin == 1){
             $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor->vendor_id)->first();
             if($userVendor){
-                return $value;
+                return decimal_format($value);
             }
         }
         if($checkMarkup){
-            return $value + $this->markup_price??0;
+            return decimal_format($value + $this->markup_price??0);
         }
 
         //  price based on role
@@ -175,8 +176,13 @@ class ProductVariant extends Model
                 return $this->productVariantByRole->amount;
             }
         }
-        return $value;
+        return decimal_format($value);
 
+    }
+
+    public function getCompareAtPriceAttribute($value)
+    {
+        return decimal_format($value);
     }
 
     public function getMarkupPriceAttribute($value)

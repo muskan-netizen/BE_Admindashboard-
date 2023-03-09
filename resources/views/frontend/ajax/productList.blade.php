@@ -2,6 +2,7 @@
     $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
 
+<<<<<<< HEAD
 @if(@$data['filter_type'] && $data['filter_type'] == 1)
 <div class="col-12 custom_filtter">
     <ul>
@@ -115,9 +116,12 @@
       @endif
     </div>
 </div>
+=======
+@include('frontend.ajax.product-card')
+>>>>>>> pre_stage
 
 @if(count($listData))
-<div class="pagination pagination-rounded justify-content-end mb-0">
+<div class="pagination pagination-rounded justify-content-end mb-0 page-m-20">
     {{ $listData->links() }}
 </div>
 @endif

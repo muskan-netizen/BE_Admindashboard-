@@ -150,7 +150,7 @@ class HomeController extends BaseController
                     unset($value->redirect_vendor_id);
                 }
             }
-            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
                 ->where('status', 1)->where('validity_on', 1)
                 ->with(['category:id,type_id', 'category.type', 'vendor'])
                 ->where(function ($q) {
@@ -311,7 +311,9 @@ class HomeController extends BaseController
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
+            
             $allVendorData = clone $vendorData;
+            $long_term_vendors = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
@@ -466,7 +468,7 @@ class HomeController extends BaseController
             $isVendorArea = 0;
 
             // Start Mobile Banners
-            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
             ->where('status', 1)->where('validity_on', 1)
             ->with(['category:id,type_id', 'category.type', 'vendor'])
             ->where(function ($q) {
@@ -544,10 +546,10 @@ class HomeController extends BaseController
             $long_term_service_products =[];
             if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
                 $requestFrom='app';
-                $long_term_service_products = $this->longTermServiceProducts($venderIds, $langId, $clientCurrency,'', $type,'', $requestFrom);
+                $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $langId, $clientCurrency,'', $type,'', $requestFrom);
             }
             $homeData['long_term_service'] = $long_term_service_products;
-            \Log::info($homeData['categories']);
+       
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

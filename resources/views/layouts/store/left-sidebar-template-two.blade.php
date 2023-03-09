@@ -13,7 +13,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
    @include('layouts.store/topbar-template-two')
    <!-- Start Cab Booking Header From Here -->
    <div class="cab-booking-header">
-      <div class="container">
+      <div class="container-fluid">
          <div class="row d-flex justify-content-start align-items-center">
             <div class="col-6"> <a class="navbar-brand mr-0"  href="{{route('userHome')}}"><img alt="" style="height:60px" class="logo-image" src="{{$urlImg}}"></a> </div>
             <div class="col-6 text-right top-header bg-transparent d-md-block d-none">
@@ -234,15 +234,64 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                <div class="radius-bar d-lg-inline">
                   <div class="search_form d-flex align-items-center justify-content-between">
-                     <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                     <button class="btn">
+                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 512.000000 512.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by potrace 1.16, written by Peter Selinger 2001-2019
+</metadata>
+<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M1810 5114 c-14 -2 -59 -9 -100 -15 -176 -25 -415 -101 -580 -184
+-587 -295 -982 -823 -1107 -1480 -24 -127 -29 -474 -9 -615 65 -450 264 -848
+583 -1166 485 -482 1170 -686 1841 -548 281 58 570 187 792 353 l65 49 740
+-738 c472 -470 753 -743 777 -753 54 -25 145 -22 199 6 68 36 103 93 107 176
+3 51 0 79 -13 107 -12 26 -257 279 -756 779 l-738 740 25 30 c49 60 140 202
+190 300 133 254 203 507 225 807 43 575 -171 1145 -585 1561 -315 316 -716
+518 -1157 582 -97 14 -425 19 -499 9z m473 -449 c512 -81 970 -430 1188 -903
+282 -612 156 -1316 -321 -1792 -626 -627 -1626 -626 -2251 2 -238 240 -389
+535 -446 870 -19 115 -21 375 -4 478 63 371 216 669 472 916 277 266 611 416
+999 448 74 6 269 -4 363 -19z"/>
+</g>
+</svg>
+                     </button>
                      <input class="form-control border-0 typeahead" type="search" placeholder="{{getNomenclatureName('Search', true)}}" id="main_search_box">
                   </div>
                   <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
                </div>
 
                @include('layouts.store.search_template')
-               @if(auth()->user()) @if($client_preference_detail->show_wishlist==1) <div class="icon-nav mx-2 d-none d-sm-block"> <a href="{{route('user.wishlists')}}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>@endif @endif <div class="icon-nav"> <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}"> @csrf <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}"> </form> <ul class="d-flex align-items-center">
-                  <li class="onhover-div pl-0 shake-effect"> @if($client_preference_detail) @if($client_preference_detail->cart_enable==1) <a class="btn btn-solid_al " href="{{route('showCart')}}"> <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i> <span id="cart_qty_span"></span> </a> @endif @endif <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotals')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script> <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul> </li><li class=" d-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li></ul> </div><div class="icon-nav d-sm-none d-none"> <ul> <li class="onhover-div mobile-search"> <a href="javascript:void(0);" id="mobile_search_box_btn"><i class="ti-search"></i></a> <div id="search-overlay" class="search-overlay"> <div> <span class="closebtn" onclick="closeSearch()" title="Close Overlay">×</span> <div class="overlay-content"> <div class="container"> <div class="row"> <div class="col-xl-12"> <form> <div class="form-group"> <input type="text" class="form-control" id="exampleInputPassword1" placeholder={{__("Search a Product")}}> </div><button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button> </form> </div></div></div></div></div></div></li><li class="onhover-div mobile-setting"> <div data-toggle="modal" data-target="#staticBackdrop"><i class="ti-settings"></i></div><div class="show-div setting"> <h6>{{__('language')}}</h6> <ul> <li><a href="#">{{__("english")}}</a></li><li><a href="#">{{__("french")}}</a></li></ul> <h6>{{__("currency")}}</h6> <ul class="list-inline"> <li><a href="#">{{__("euro")}}</a></li><li><a href="#">{{__("rupees")}}</a></li><li><a href="#">{{__("pound")}}</a></li><li><a href="#">{{__("doller")}}</a></li></ul> <h6>{{__("Change Theme")}}</h6> @if($client_preference_detail->show_dark_mode==1) <ul class="list-inline"> <li><a class="theme-layout-version" href="javascript:void(0)">{{__("Dark")}}</a></li></ul> @endif </div></li><li class="onhover-div mobile-cart"> <a href="{{route('showCart')}}" style="position: relative"> <i class="ti-shopping-cart"></i> <span class="cart_qty_cls" style="display:none"></span> </a>{{--<span class="cart_qty_cls" style="display:none"></span>--}}<ul class="show-div shopping-cart"> </ul> </li></ul> </div></div>
+               @if(auth()->user()) @if($client_preference_detail->show_wishlist==1) <div class="icon-nav mx-2 d-none d-sm-block">
+                   <a href="{{route('user.wishlists')}}">
+                   <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 512.000000 512.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by potrace 1.16, written by Peter Selinger 2001-2019
+</metadata>
+<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M1325 4733 c-455 -57 -857 -339 -1062 -747 -44 -87 -106 -276 -124
+-376 -20 -109 -18 -384 4 -490 46 -230 141 -433 286 -611 33 -41 526 -540
+1095 -1109 l1036 -1035 1053 1055 c823 824 1064 1071 1103 1130 102 156 169
+319 211 510 25 119 25 401 0 520 -42 192 -110 356 -212 510 -65 98 -260 294
+-355 357 -318 212 -686 286 -1052 212 -249 -50 -473 -166 -666 -344 l-83 -77
+-112 108 c-62 60 -146 131 -187 159 -236 157 -502 237 -781 234 -68 -1 -137
+-4 -154 -6z m365 -388 c155 -23 294 -76 423 -162 42 -27 150 -124 260 -232
+l187 -185 178 175 c197 195 222 216 337 282 402 232 921 156 1247 -181 131
+-135 216 -286 265 -470 23 -85 26 -117 26 -252 0 -135 -3 -167 -26 -252 -31
+-119 -89 -243 -156 -340 -35 -51 -329 -351 -961 -983 l-910 -910 -910 910
+c-615 614 -926 933 -959 980 -294 425 -242 980 127 1337 239 231 550 332 872
+283z"/>
+</g>
+</svg>
+ <span>Wishlist</span>
+                     </a> </div>@endif @endif <div class="icon-nav"> <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}"> @csrf <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}"> </form> <ul class="d-flex align-items-center">
+                  <li class="onhover-div pl-0 shake-effect"> @if($client_preference_detail) @if($client_preference_detail->cart_enable==1) <a class="btn btn-solid_al " href="{{route('showCart')}}">
+                  <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                      <span>Cart</span>
+                      <span id="cart_qty_span"></span> </a> @endif @endif <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotals')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script> <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul> </li><li class=" d-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li></ul> </div><div class="icon-nav d-sm-none d-none"> <ul> <li class="onhover-div mobile-search"> <a href="javascript:void(0);" id="mobile_search_box_btn"><i class="ti-search"></i></a> <div id="search-overlay" class="search-overlay"> <div> <span class="closebtn" onclick="closeSearch()" title="Close Overlay">×</span> <div class="overlay-content"> <div class="container"> <div class="row"> <div class="col-xl-12"> <form> <div class="form-group"> <input type="text" class="form-control" id="exampleInputPassword1" placeholder={{__("Search a Product")}}> </div><button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button> </form> </div></div></div></div></div></div></li><li class="onhover-div mobile-setting"> <div data-toggle="modal" data-target="#staticBackdrop"><i class="ti-settings"></i></div><div class="show-div setting"> <h6>{{__('language')}}</h6> <ul> <li><a href="#">{{__("english")}}</a></li><li><a href="#">{{__("french")}}</a></li></ul> <h6>{{__("currency")}}</h6> <ul class="list-inline"> <li><a href="#">{{__("euro")}}</a></li><li><a href="#">{{__("rupees")}}</a></li><li><a href="#">{{__("pound")}}</a></li><li><a href="#">{{__("doller")}}</a></li></ul> <h6>{{__("Change Theme")}}</h6> @if($client_preference_detail->show_dark_mode==1) <ul class="list-inline"> <li><a class="theme-layout-version" href="javascript:void(0)">{{__("Dark")}}</a></li></ul> @endif </div></li><li class="onhover-div mobile-cart"> <a href="{{route('showCart')}}" style="position: relative"> <i class="ti-shopping-cart"></i> <span class="cart_qty_cls" style="display:none"></span> </a>{{--<span class="cart_qty_cls" style="display:none"></span>--}}<ul class="show-div shopping-cart"> </ul> </li></ul> </div></div>
          </div>
       </div>
    </div>

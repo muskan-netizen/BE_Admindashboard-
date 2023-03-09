@@ -488,7 +488,10 @@ class OrderController extends BaseController
                             $order_product->variant_id = $vendor_cart_product->variant_id;
                             $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                             $product_variant_sets = '';
-
+                            $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
+                            $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
+                            $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
+                            $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
 
                             if(@$vendor_cart_product->bid_number)
                             {
@@ -604,7 +607,7 @@ class OrderController extends BaseController
                                     if($vendor_cart_product->service_date == 0){
 
                                         $startdate =  Carbon::now()->endOfMonth()->format('Y-m-d');
-                                        echo $startdate . ' ';
+                                        
                                         if(strtotime($startdate) < strtotime($start_service_date))
                                         $startdate = Carbon::now()->addMonths(1);
 
@@ -712,7 +715,6 @@ class OrderController extends BaseController
                             $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
-                            Log::info("service_fee_percentage_amount ".$service_fee_percentage_amount);
                         }
                         //End applying service fee on vendor products total
                         $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
@@ -1174,6 +1176,42 @@ class OrderController extends BaseController
         $order_dispatchs = 2;
         $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
+
+        if ($luxury_option_id == 8) { // only for appointment type
+            $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+            if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false) {
+                $Appointment = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+
+
+                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
+                        $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+                        //echo $Appointment . 'app';
+                        //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
+
+                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
+
+                            $dispatch_domain = [
+                                'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
+                                'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
+                                'service_key_url'  => $dispatch_domain_Appointment->appointment_service_key_url,
+                                'service_type'     => 'appointment'
+                            ];
+                            //pr($checkdeliveryFeeAdded);
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $Appointment = 1;
+                                return 1;
+                            }
+                        }
+                    }
+                   
+
+                }
+            }
+        }
+
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1))
@@ -1805,23 +1843,24 @@ class OrderController extends BaseController
                     $cartDetails = $this->getCart($cart);
                 }
                 //pr( $cartDetails->toArray());
-
+                $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
                 if ($email_template) {
 
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
 
-                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
+                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
+                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     }
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-                    $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+                    if(!empty($address)){
+                        $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+                    }
                 }
-
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
@@ -1835,7 +1874,6 @@ class OrderController extends BaseController
                     'cartData' => $cartDetails,
                     'user_address' => $address,
                 ];
-
                 if (!empty($data['admin_email'])) {
                     $email_data['admin_email'] = $data['admin_email'];
                 }
@@ -1946,8 +1984,9 @@ class OrderController extends BaseController
             $order_item_count = 0;
             $order->user_name = $user->name;
             $order->user_image = $user->image;
+            $total_total_payable = $order->orderDetail->total_amount + $order->orderDetail->wallet_amount_used + $order->orderDetail->loyalty_amount_saved + $order->orderDetail->taxable_amount + $order->orderDetail->total_delivery_fee + $order->orderDetail->tip_amount + $order->orderDetail->total_service_fee - $order->orderDetail->total_discount;
             $order->date_time = dateTimeInUserTimeZone($order->orderDetail->created_at, $user->timezone);
-            $order->payment_option_title = __($order->orderDetail->paymentOption->title ?? '');
+            $order->payment_option_title = ($order->orderDetail->wallet_amount_used >= ceil($total_total_payable)) ? __("Wallet") : __($order->orderDetail->paymentOption->title ?? '');
             $order->order_number = $order->orderDetail->order_number;
             $order->schedule_pickup = date('d/m/Y',strtotime($order->orderDetail->schedule_pickup));
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;

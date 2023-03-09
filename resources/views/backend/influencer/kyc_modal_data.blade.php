@@ -28,7 +28,7 @@
         <span>{{$influencer_user['kyc']['account_number']}}</span>
     </div>
     <div class="col-sm-6">
-        <span>IFSC Code : </span>
+        <span>{{getNomenclatureName('IFSC Code', true)}} : </span>
         <span>{{$influencer_user['kyc']['ifsc_code']}}</span>
     </div>
     <div class="col-sm-6">

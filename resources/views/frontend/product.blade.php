@@ -67,6 +67,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 @include('frontend.included_files.products_breadcrumb')
 @endif
 @php
+$category_name =  ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
   $img = '';
   $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
 @endphp
@@ -268,9 +269,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 @endif
                                             @endif
                                         @endif
-                                        <div class="description_txt mt-3">
+                                       {{-- <div class="description_txt mt-3">
                                             <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
-                                        </div>
+                                        </div>--}}
                                         <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
                                         <input type="hidden" name="start_time" id="start_time" value="">
                                         <input type="hidden" name="end_time" id="end_time" value="">
@@ -372,7 +373,11 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                                 $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                                 ?>
                                                                     <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"> <span class="color_name ellipsis">{{$optn->title}}</span>
-                                                                    <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
+                                                                        @if($variant->type == 2)
+                                                                            <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
+                                                                        @else
+                                                                            <span class="color_var radio_var" style="padding:8px; border: 1px dotted #CCC; background:#fff;"></span>
+                                                                        @endif
                                                                     <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                     <span class="checkround"></span>
                                                                 </label>
@@ -622,21 +627,21 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                     <div class="material-border"></div>
                                                 </li> -->
                                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                                                <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
+                                                <li class="nav-item {{(count($rating_details)>0)?'':'hide'}}"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
                                                     <div class="material-border"></div>
                                                 </li>
                                                 @endif
                                             </ul>
                                             <div class="tab-content nav-material" id="top-tabContent">
-                                                <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
+                                                {{-- <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
                                                     <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
                                                         $product->translation[0]->body_html : ''!!}</p>
                                                 </div>
                                                 <div class="tab-pane fade" id="top-profile" role="tabpanel" aria-labelledby="profile-top-tab">
                                                     <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
                                                         $product->translation[0]->body_html : ''!!}</p>
-                                                </div>
-                                                <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
+                                                </div> --}}
+                                                <div class="tab-pane show {{(count($rating_details)>0)?'active':''}}" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
                                                     @forelse ($rating_details as $rating)
                                                     <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
                                                         <div class="review-box">
@@ -667,7 +672,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                         </div>
                                                     </div>
                                                     @empty
-                                                    <p>{{__('No Result Found')}}</p>
+                                                    <p>{{__('No Reviews Yet')}}</p>
                                                     @endforelse
                                                 </div>
                                             </div>
@@ -686,9 +691,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                     @if(!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9'))
                     <div class="row">
                         <div class="col-md-12">
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Related Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Similar Products in '. $category_name ])
                             @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Related Product'])
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Vendor Related Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Similar Products by '. $product->vendor->name])
                         </div>
                     </div>
                     @endif
@@ -833,7 +838,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         </div>
     </div>
     <div class="container pb-md-4">
-        <div class="product-4 product-m  related-products pb-2 d-flex">
+        <div class="product-m  related-products pb-2 d-flex related-css">
             @forelse($product->related_products as $related_product)
             <div>
                 <a class="common-product-box scale-effect text-center"
@@ -1058,6 +1063,10 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
             $(".color_var").removeClass("var-active");
             $(this).toggleClass("var-active");
             });
+        $(".radio_var").click(function () {
+            $(".radio_var").removeClass("radio-active");
+            $(this).toggleClass("radio-active");
+        });
     });
 </script>
 

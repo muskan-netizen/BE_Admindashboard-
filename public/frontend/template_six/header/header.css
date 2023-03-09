@@ -215,6 +215,15 @@ body.al_body_template_six.homeHeader {
     height: 90px;
 }
 
+li.add_post a span svg {
+    width: 20px;
+}
+
+li.add_post a span {
+    color: #fff;
+    font-size: 14px;
+}
+
 .homeHeader .site-header .rightHead ul li a svg path,
 .homeHeader .site-header .rightHead ul li a svg {
     fill: #fff;
@@ -1089,6 +1098,26 @@ body .royo_whatsapp_img {
 .al_searchType .form-control {
     background-color: transparent;
 }
+
+
+.al_body_template_six  .al_searchType  .list-items {
+    display: flex;
+    align-items: center;
+}
+.al_body_template_six  .al_searchType  .list-items img {
+    border-radius: 50%;
+    max-width: 40px;
+    margin-right: 15px;
+}
+.al_body_template_six  .al_searchType  .list-items  .result-item-name b {
+    font-size: 14px;
+}
+.al_body_template_six  .al_searchType  .list-box{
+    min-width: 250px;
+}
+
+
+
 
 @media (max-width:576px) {
     .rightHead {

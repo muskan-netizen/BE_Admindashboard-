@@ -2,6 +2,7 @@
 @section('css-links')
 {{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
 @endsection
+
 @section('css')
 <style>
 .cardbanner {height:400px;}
@@ -148,9 +149,9 @@
 				<div class="carousel-inner">
 
 					@foreach($banners as $key => $banner)
-						@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+						@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
 						<div class="carousel-item @if($key == 0) active @endif">
-						<a class="banner-img-outer" href="{{$url??'#'}}">
+						<a class="banner-img-outer" href="{{$url??'#'}}" target="_blank">
 							<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/400' . $banner->image['image_path']}}">
 						</a>
 						</div>
@@ -641,6 +642,9 @@
 @section('js-script')
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script>
+	var featured_products_length = {{ isset($homePageData['featured_products']) ? count($homePageData['featured_products']) : ''}};
+</script>
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection
 @section('script')
