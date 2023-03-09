@@ -804,8 +804,9 @@ class ProductController extends BaseController
 
             }
 
-            $this->createOrUpdateProductInSquarePos($id);
+            
             DB::commit();
+            $this->createOrUpdateProductInSquarePos($id);
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
             // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
             return redirect()->back()->with('toaster', $toaster);
