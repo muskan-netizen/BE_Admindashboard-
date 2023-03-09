@@ -25,7 +25,7 @@ function  layoutMode(){
 }
 !(async function (e) {
     "use strict";
-
+   
     var sliderConfig = {
         infinite: !0,
         speed: 300,
@@ -39,7 +39,9 @@ function  layoutMode(){
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
     };
+   
     var sliderConfigEight10 = {
+      
         rows: (featured_products_length >= 20    ? 2 : 1),
 		dots: false,
 		arrows: true,
