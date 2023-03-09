@@ -1209,6 +1209,7 @@ class OrderController extends BaseController
                 $order_vendor->reject_reason = $request->reject_reason;
                 $order_vendor->cancelled_by = $request->cancelled_by;
                 $order_vendor->save();
+                OrderProduct::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id'=>$request->status_option_id]);
                 DB::commit();
                 $orderData = Order::find($request->order_id);
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
@@ -1217,6 +1218,7 @@ class OrderController extends BaseController
                 if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
                      $this->sendTrackingUrlSMS($orderData);
                 }
+
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),
