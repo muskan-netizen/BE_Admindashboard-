@@ -388,6 +388,11 @@ class OrderController extends FrontController
         if ($checkLongTerm) {
             $rejectedOrders->where('orders.is_long_term', 0);
         }
+        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+            $rejectedOrders->whereHas('vendors.products', function ($q) {
+                $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
+            });
+        }
         $rejectedOrders = $rejectedOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
@@ -445,11 +450,7 @@ class OrderController extends FrontController
                 'status' => 'Active'
             ])->get();
         }
-        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-            $activeOrders->whereHas('vendors.products', function ($q) {
-                $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
-            });
-        }
+       
    
         // dd($activeOrders->toArray());
 
