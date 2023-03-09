@@ -2108,19 +2108,30 @@ class OrderController extends BaseController
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'active';
-        $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
+        $orders = OrderVendor::where('user_id', $user->id)->with('products')->orderBy('id', 'DESC');
+        $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         switch ($type) {
             case 'pending': // which order not assign yet indriver
         
-            $orders->whereHas('products.order_product_status', function ($q1) {
-                        $q1->where('dispatcher_status_option_id',1)->whereNotIn('dispatcher_status_option_id', [2, 3]); // cancel order product
+            $orders->whereHas('products', function ($q1) {
+                        $q1->where('dispatcher_status_option_id',1);
                     });
                 break;
             case 'active':
                 $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
+                if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                    $orders->whereHas('products', function ($q) {
+                        $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+                    });
+                }
                 break;
             case 'past':
                 $orders->whereIn('order_status_option_id', [6, 3, 9]);
+                if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                    $orders->whereHas('products', function ($q) {
+                        $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+                    });
+                }
                 break;
             case 'schedule':
                 $order_status_options = [10];

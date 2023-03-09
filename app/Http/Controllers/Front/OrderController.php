@@ -156,6 +156,11 @@ class OrderController extends FrontController
             ->where('orders.user_id', $user->id);
         if ($checkLongTerm) {
             $pastOrders->where('orders.is_long_term', 0);
+        } 
+        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+            $pastOrders->whereHas('vendors.products', function ($q) {
+                $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+            });
         }
         $pastOrders = $pastOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
@@ -164,9 +169,7 @@ class OrderController extends FrontController
             'vendors' => function ($q) use($additionalPreference) {
                 $q->with(['products'=> function ($Pq) use ( $additionalPreference) {
                     if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                        $Pq->whereHas('order_product_status', function ($q1) {
-                            $q1->where('dispatcher_status_option_id',2)->whereNotIn('dispatcher_status_option_id', [1,5,3]); // cancel order product
-                        });
+                            $Pq->where('dispatcher_status_option_id',2);
                     }
                 }, 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
@@ -218,6 +221,11 @@ class OrderController extends FrontController
             ->where('orders.user_id', $user->id);
         if ($checkLongTerm) {
             $activeOrders->where('orders.is_long_term', 0);
+        }
+        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+            $activeOrders->whereHas('vendors.products', function ($q) {
+                $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+            });
         }
         $activeOrders = $activeOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
@@ -437,6 +445,11 @@ class OrderController extends FrontController
                 'status' => 'Active'
             ])->get();
         }
+        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+            $activeOrders->whereHas('vendors.products', function ($q) {
+                $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
+            });
+        }
    
         // dd($activeOrders->toArray());
 
@@ -487,9 +500,7 @@ class OrderController extends FrontController
         $Orders = Order::with([
             'vendors' => function ($q) {
                 $q->with(['products'=> function ($Pq) {
-                    $Pq->whereHas('order_product_status', function ($q1) {
-                        $q1->where('dispatcher_status_option_id', 1); // cancel order product
-                    });
+                    $Pq->where('dispatcher_status_option_id', 1);
                 }, 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
                     $q->with('exchanged_of_order.orderDetail');
@@ -504,8 +515,8 @@ class OrderController extends FrontController
             'reqCancelOrder'
         ]);
 
-        $Orders->whereHas('vendors.products.order_product_status', function ($q1) {
-            $q1->where('dispatcher_status_option_id', 1); // cancel order product
+        $Orders->whereHas('vendors.products', function ($q1) {
+            $q1->where('dispatcher_status_option_id', 1); 
         })
             ->where(function ($q1) {
             $q1->where('payment_status', 1)
@@ -531,8 +542,8 @@ class OrderController extends FrontController
             ->where('orders.user_id', $user->id);
         
         $Orders = $Orders->orderBy('orders.id', 'DESC')
-            ->select('*', 'id as total_discount_calculate');
-dd($Orders->toSql());
+            ->select('*', 'id as total_discount_calculate')
+            ->paginate(10);
         foreach ($Orders as $order) {
         
             foreach ($order->vendors as $vendor) {

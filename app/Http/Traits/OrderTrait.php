@@ -502,7 +502,7 @@ trait OrderTrait
                         'order_vendor_id' =>    $order_vendor->id,
                         'order_vendor_product_id' =>  $product->id,
                     ]);
-               
+                    OrderProduct::where('id',$product->id)->update(['dispatcher_status_option_id'=>1,'order_status_option_id'=>2]);
                     
                 }
             }
