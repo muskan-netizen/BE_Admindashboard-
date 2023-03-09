@@ -5,6 +5,7 @@ use Illuminate\Support\Str;
 use Auth;
 use Session;
 use Carbon\Carbon;
+use DB;
 
 trait ProductActionTrait{
 
@@ -289,6 +290,125 @@ trait ProductActionTrait{
         }
        return $return;
         
+    }
+
+    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type,$Products_title, $p_dim)
+    {
+
+        $recent_ids = $this->getRecentProductIds();
+        $rc_ids = [];
+        if(sizeof($recent_ids) > 0){
+            $rc_ids = $recent_ids->toArray();
+        } else {
+            return [];
+        }
+     
+        //$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+        // $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
+        //             $q->where('status',1);
+        //             $q->whereIn('id',$venderIds);
+        //             $q->where($type, 1);
+        //         });
+        //         if ($where == 'is_featured') {
+        //                  $products = $products->take(20);  
+        //             }else{
+        //                 $products = $products->take(10);  
+        //             }
+        //         $products = $products->inRandomOrder()->get();
+        $vendorWhereIN = ' ';
+        $completeWhere = ' ';
+        if(!empty($venderIds)){
+            $venid = implode(',',$venderIds);
+            $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
+
+        }
+        if($where!=='all'){
+            if($where =='recent_viewed'){
+
+                if(!empty($rc_ids)){
+                    $rc_ids = implode(',',$rc_ids);
+                    $completeWhere = ' AND  `products`.`id` IN  ('.$rc_ids.')';
+        
+                }    
+            } else {
+                $completeWhere = ' AND `products`.'.$where.' = 1';
+                //die($where);
+            }
+        }
+
+        $raw_query = "SELECT 
+            `products`.`id`, 
+            `products`.`sku`, 
+            `products`.`url_slug`, 
+            `products`.`weight_unit`, 
+            `products`.`weight`, 
+            `products`.`vendor_id`, 
+            `products`.`has_variant`, 
+            `products`.`has_inventory`, 
+            `products`.`sell_when_out_of_stock`, 
+            `products`.`requires_shipping`, 
+            `products`.`Requires_last_mile`, 
+            `products`.`inquiry_only`, 
+            `products`.`updated_at`, 
+            `products`.`is_featured`,
+            `products`.`is_new`,  
+            `products`.`category_id`,  
+            -- `products`.`inwishlist` as `is_inwishlist_btn`,
+            `categories`.`id` as `category_id` ,
+            `categories`.`type_id`,
+            `product_images`.`media_id`,
+            `vendor_media`.`path`,
+            `product_translation`.`title`,
+            `product_translation`.`meta_title`,
+            `product_translation`.`meta_keyword`,
+            `product_translation`.`meta_description`,
+            `product_translation`.`language_id`,
+            `product_variant`.`compare_at_price` as `compare_price_numeric`,
+            `product_variant`.`price` as `price_numeric`,
+            `category_translation`.`name` as `category_name` ,
+            `category_translation`.`meta_title` as `category_meta_title` ,
+            `category_translation`.`meta_keywords` as `category_meta_keyword` ,
+            `category_translation`.`meta_description` as `category_meta_description`,
+            CAST((`products`.`averageRating`) AS DECIMAL(2,1)) AS averageRating,
+            CASE 
+                when `product_variant`.`compare_at_price` > 0 then CAST((`product_variant`.`compare_at_price` - `product_variant`.`price`)/`product_variant`.`compare_at_price`*100 as decimal(12,2))
+                else 0
+            end as discount_percentage,
+            `vendors`.`name` as `vendor_name`,
+            `vendors`.`slug` as `vendor_slug`,
+
+            IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`
+            FROM 
+                `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
+                 LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
+                 LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 $vendorWhereIN
+                 LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
+                 LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id`
+                 LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
+                 LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id`
+                 
+            WHERE 
+                `products`.`deleted_at` IS NULL 
+                    AND `vendors`.`status` = 1 
+                    AND `products`.`is_live` = 1
+
+                    $completeWhere
+                                
+                    $vendorWhereIN 
+                
+                    GROUP BY `products`.`id`
+
+                    ORDER BY 
+                        RAND()
+            
+                    LIMIT 
+                        10";
+                       // echo '<pre>';
+                       // print_r($raw_query); die;
+       $products = DB::select( DB::raw($raw_query));
+
+       $returnArray = $products;
+       return $returnArray;
     }
     
    
