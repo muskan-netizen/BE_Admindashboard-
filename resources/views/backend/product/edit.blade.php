@@ -796,6 +796,9 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     @if(Auth::user()->is_superadmin == 1)
                                         <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
                                     @endif
+                                     @if($product->vendor->is_seller == 0)
+                                        <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                    @endif
                                 @else
                                     <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
                                 @endif
