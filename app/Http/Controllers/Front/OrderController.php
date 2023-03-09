@@ -1116,12 +1116,12 @@ class OrderController extends FrontController
             $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area', 'stop_order_acceptance_for_users')->first();
             $editlimit_datetime = Carbon::now()->toDateTimeString();
             $order_edit_before_hours = 0;
-            $order_edit_before_hours = getAdditionalPreference([
-                'order_edit_before_hours'
-            ])['order_edit_before_hours'];
-            $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch']);
+           
+            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours']);
 
+            $order_edit_before_hours = $additionalPreferences->order_edit_before_hours;
+
+            $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (! empty($request->user_id))) {
@@ -1593,6 +1593,9 @@ class OrderController extends FrontController
                     $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee) ? $vendor_cart_product->product_delivery_fee : 0;
                     if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
                         $order_product->is_price_buy_driver = $is_price_buy_driver;
+                    }
+                    if(checkColumnExists('order_vendor_products', 'specific_instruction')){
+                        $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
                     }
                     /**
                      * for rental case total_booking_time as a total time

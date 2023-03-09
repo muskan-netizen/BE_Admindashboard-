@@ -402,8 +402,9 @@ trait OrderTrait
                     $category_name = isset($product->product->categoryName) ? @$product->product->categoryName->name : 'na' ;
                     $driverCost  = 0;
                     if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
-                        $driverCost  = $product->price ??0;
+                        $driverCost  =($product->is_price_buy_driver ==1) ?  $product->price :0;
                     }
+                    $specific_instruction = (isset($product->specific_instruction) && ($product->specific_instruction !='')) ? $product->specific_instruction : $order->specific_instruction;
                     $client = CP::orderBy('id', 'asc')->first();
                     for ($x = 1; $x <= $product->quantity; $x++) {
                         //  send all payment to fist order
@@ -446,6 +447,7 @@ trait OrderTrait
                             'is_assign_warehouse' => $is_assign_warehouse,
                             'rejectable_order' =>  $rejectable_order,
                             'category_name' =>  $category_name,
+                            'specific_instruction' =>  $specific_instruction,
                             'driverCost' =>  $driverCost 
                         ];
                       

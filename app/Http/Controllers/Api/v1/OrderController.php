@@ -537,7 +537,9 @@ class OrderController extends BaseController
                             if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
                                 $order_product->is_price_buy_driver = $is_price_buy_driver;
                             }
-
+                            if(checkColumnExists('order_vendor_products', 'specific_instruction')){
+                                $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
+                            }
                             if(@$vendor_cart_product->bid_number)
                             {
                                 Bid::where('id', $vendor_cart_product->bid_number)->update(['status'=>1]);
