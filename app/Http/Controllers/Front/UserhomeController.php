@@ -1091,7 +1091,14 @@ class UserhomeController extends FrontController
         //                 $products = $products->take(10);  
         //             }
         //         $products = $products->inRandomOrder()->get();
-        $venderIds = implode(',',$venderIds);
+        $vendorWhereIN = '';
+        if(!empty($venderIds)){
+            $venid = implode(',',$venderIds);
+            $vendorWhereIN = 'AND `vendors`.`id` IN ('.$venid.')';
+
+        }
+
+        
 
 
         $raw_query = "SELECT 
@@ -1135,7 +1142,7 @@ class UserhomeController extends FrontController
             FROM 
                 `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
                  LEFT JOIN   `product_images` as `product_images` ON `product_images`.`id` = `products`.`id` 
-                 LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1  AND `vendors`.`id` IN ($venderIds)
+                 LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 $vendorWhereIN
                  LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
                  LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id`
                  LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
@@ -1150,9 +1157,9 @@ class UserhomeController extends FrontController
                 --         `vendors` 
                 --     WHERE 
                 --         `products`.`vendor_id` = `vendors`.`id` 
-                --         AND `vendors`.`status` = 1 
+                        AND `vendors`.`status` = 1 
                         
-                --         AND `vendors`.`id` IN ($venderIds) -- replace with actual vendor IDs
+                        $vendorWhereIN -- replace with actual vendor IDs
                 -- ) 
             -- AND NOT EXISTS (
             --     WHERE 
@@ -1167,8 +1174,9 @@ class UserhomeController extends FrontController
             RAND()
         LIMIT 
             10";
+//pr($raw_query);
        $products = DB::select( DB::raw($raw_query));
-
+       $returnArray = $products;
                 //get 20 product in template-8
         //pr( $products);       
         // $returnArray[$where] = $products;
@@ -1213,7 +1221,7 @@ class UserhomeController extends FrontController
         //     }
         // }
            // pr($returnArray);
-       return $products;
+       return $returnArray;
         //pr( $products->toArray());
     }
 

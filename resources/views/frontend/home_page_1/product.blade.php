@@ -1,3 +1,5 @@
+
+
 <div class="product-card-box al_box_third_template position-relative al">
     <div class="add-to-fav 12">
         <input id="fav_pro_one" type="checkbox">
@@ -5,7 +7,7 @@
     </div>
     {{-- {{dd($product)}} --}}
     <a class="common-product-box text-center" href="{{ $product->url_slug }}/product/{{ $product->url_slug }}">
-        <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product->path }}" alt="" title="">
+        <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ get_file_path($product->path,'FILL_URL','260','260') }}" alt="" title="">
             <div class="pref-timing"> </div>
         </div>
         <div class="media-body align-self-center">
@@ -26,8 +28,16 @@
                         <span>{{__('In ') . $product->category_name}} </span>
                     </p>
                     <div class="d-flex align-items-center justify-content-between al_clock"> 
-                        <b>{!!$product->price_numeric ?? ''!!}</b>
+                        {{-- <b>{!!$product->price_numeric ?? ''!!}</b> --}}
+                        <b> {{ showPriceWithCurrency($product->price_numeric) }} </b>
+
                         <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
+                        @php
+                        $comp = @$product->compare_price_numeric??0;
+                        @endphp
+                        @if(@$comp && $comp>0)
+                            {!!showPriceWithCurrency($product->compare_price_numeric,'1') !!}
+                        @endif
                     </div>
                 </div>
             </div>

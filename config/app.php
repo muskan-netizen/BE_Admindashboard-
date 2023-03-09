@@ -62,6 +62,10 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
+    'FIT_URL' => env('FIT_URL', 'https://images.royoorders.com/insecure/fill/'),
+
+    'FILL_URL' => env('FILL_URL', 'https://images.royoorders.com/insecure/fit/'),
+
     'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt','144'=>'sk'],
 
     /*

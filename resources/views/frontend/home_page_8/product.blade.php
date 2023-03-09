@@ -36,12 +36,15 @@
                         </p> -->
                     </div>
                     <div class="d-flex align-items-center justify-content-left al_clock ">
-                        <b>{!!$product["price"] ?? ''!!} </b>
+                        {{-- <b>{!!$product->price_numeric ?? ''!!}</b> --}}
+                        <b> {{ showPriceWithCurrency($product->price_numeric) }} </b>
+
+                        <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
                         @php
-                        $comp = @$product["compare_price_numeric"]??0;
+                        $comp = @$product->compare_price_numeric??0;
                         @endphp
                         @if(@$comp && $comp>0)
-                            <del class="ml-2 compare_at_price">{!!$product["compare_at_price"] ?? ''!!} </del>
+                            {!!showPriceWithCurrency($product->compare_price_numeric,'1') !!}
                         @endif
                     </div>
                 </div>
