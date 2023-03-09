@@ -104,7 +104,7 @@
 	<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_nine/homepage/inner_page.css')}}">
 	@endif
 @endif
-{{-- <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/commonall.css')}}"> --}}
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/commonall.css')}}">
 
 
 @yield('css-links')

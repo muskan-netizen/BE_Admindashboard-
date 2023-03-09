@@ -57,6 +57,7 @@ return [
     'IMG_URL1' => env('IMG_URL1', 'https://images.royoorders.com/insecure/fill/'),
 
     'FIT_URl' => env('FIT_URl', 'https://images.royoorders.com/insecure/fit/'),
+    'FILL_URL' => 'https://images.royoorders.com/insecure/fill/',
 
     'IMG_URL2' => env('IMG_URL2', '/sm/0/plain'),
 

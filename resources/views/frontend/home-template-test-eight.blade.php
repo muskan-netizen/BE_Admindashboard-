@@ -643,7 +643,7 @@
 		@elseif($homePageLabel->slug == 'recent_orders' && count($homePageData['recent_orders']) != 0 )
 		<section class="container best-seller-full mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="top-heading d-flex justify-content-between">
-				<h2 class="col h2-heading"> @php
+				<h2 class="h2-heading"> @php
 					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");
 					@endphp </h2>
 			</div>
@@ -804,7 +804,7 @@
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
-					<h2 class="col h2-heading mb-3"> @php
+					<h2 class="col pl-0 h2-heading mb-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
 						<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i></a>  -->
@@ -841,9 +841,9 @@
 		<section class="main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="row ">
-					<div class="col-md-12 text-center">
+					<div class="col-md-12 pl-0 text-center">
 						<div class="top-heading d-flex justify-content-between">
-							<h2 class="col h2-heading"> @php
+							<h2 class="h2-heading"> @php
 								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 								@endphp </h2>
 								<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
