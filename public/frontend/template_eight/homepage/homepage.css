@@ -302,6 +302,7 @@ article#page-container section .vendors section {
 }
 
 .al_body_template_eight .product-description_list p {
+    /*font-size: 18px;*/
     font-size: 16px;
     margin-bottom: 0px;
     color: #000;
@@ -976,7 +977,8 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
 .al_body_template_eight .brand-img {
     /* background: #E6E6E6; */
     mix-blend-mode: normal;
-    border-radius: 10px 10px;
+    /*border-radius: 10px 10px;*/
+    border-radius: 0;
     overflow: hidden;
     height: 164px;
 }
@@ -1009,7 +1011,8 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     border-radius: 15px !important;
 }
 .al_custom_brand .logo_brand .brand-img img{
-    border-radius: 10px;
+    /*border-radius: 10px;*/
+    border-radius: 0;
 }
 .slick-slider .d-flex.align-items-center.justify-content-left.al_clock b{
     font-weight: 600 !important;
