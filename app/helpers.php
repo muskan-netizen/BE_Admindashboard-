@@ -710,6 +710,51 @@ if (!function_exists('showSlot')) {
         return $viewSlot;
     }
 }
+
+if (!function_exists('showPriceWithCurrency')) {
+function showPriceWithCurrency($price = 0,$multiply = 0,$compare = 0)
+    {
+            $currencysymbol = session()->get('currencySymbol').' ';
+            $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+            if($additionalPreference['is_token_currency_enable'] == 1)
+            {
+                $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
+                $amount =  getInToken($price * $multiply);
+            }else{
+                $amount =  decimal_format($price * $multiply);
+            }
+
+            //check to compare price greater > 0 return
+            if($compare>0)
+            {
+                if($price>0){
+                    return $currencysymbol.' <del class="ml-2 compare_at_price">'.$amount.'</del>';
+                 }else{
+                    return '';
+                }
+            }
+
+            return $currencysymbol.$amount;
+    }
+}
+
+if (!function_exists('showNumericPrice')) {
+    function showNumericPrice($price = 0,$multiply = 0)
+        {
+                //$currencysymbol = Session::get('currencySymbol').' ';
+                $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+                if($additionalPreference['is_token_currency_enable'] == 1)
+                {
+                    //$currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
+                    $amount =  getInToken($price * $multiply);
+                }else{
+                    $amount =  decimal_format($price * $multiply);
+                }
+    
+                return $amount??0;
+        }
+    }
+
 if (!function_exists('getShowSlot')) {
     function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
     {
@@ -1449,6 +1494,12 @@ if( !function_exists('is_category_p2p') ) {
     }
 }
 
+if( !function_exists('is_category_products') ) {
+    function is_category_products($category) {
+        return $products = Product::where('category_id',$category)->count();
+    }
+}
+
 // if( !function_exists('is_p2p_vendor') ) {
 //     function is_p2p_vendor() {
 
@@ -1496,7 +1547,10 @@ if( !function_exists('productDiscountPercentage()') ) {
     {
         if($product_compare_price > 0) {
             $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;
-            return round($discount);
+            if($discount>0){
+                return round($discount);
+            }
+            return 0;
         }
         return 0;
     }

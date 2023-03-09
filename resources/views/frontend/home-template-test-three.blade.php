@@ -712,6 +712,9 @@
 {{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage-three.js')}}"></script> --}}
 <script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/template/template-three/templateFunction.js')}}"></script>
+<script>
+	var featured_products_length = {{ isset($homePageData['featured_products']) ? count($homePageData['featured_products']) : ''}};
+</script>
 @endsection
 @endsection
 @section('js-script')

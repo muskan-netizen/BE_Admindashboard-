@@ -109,18 +109,21 @@ class ProfileController extends FrontController
         $phonenumber= str_replace('-', '', $request->phone_number);
         $request->phone_number = str_replace(' ', '', $phonenumber);
         $user = User::where('id', Auth::user()->id)->first();
-        
-        if($user->phone_number!=$request->phone_number){
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|min:3|max:80',
-                'phone_number' => 'required|unique:users'
-            ]);
-        }else{
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|min:3|max:80',
-                'phone_number' => 'required'
-            ]);
+
+        $rules = [
+            'name' => 'required|string|min:3|max:80',
+            'phone_number' => 'required|unique:users',
+        ];
+
+        if($user->phone_number == $request->phone_number){
+            $rules['phone_number'] = 'required';
         }
+
+        if(!empty($request->email)){
+            $rules['email'] = 'email|unique:users,email,'.$user->id.',id';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             foreach ($validator->errors()->toArray() as $error_key => $error_value) {
@@ -136,6 +139,7 @@ class ProfileController extends FrontController
                 $user->image = Storage::disk('s3')->put($this->folderName, $file,'public');
             }
             $user->name = $request->name;
+            $user->email = $request->email;
             $user->timezone = $request->timezone;
             $user->dial_code = $request->dialCode;
             $user->description = $request->description;
