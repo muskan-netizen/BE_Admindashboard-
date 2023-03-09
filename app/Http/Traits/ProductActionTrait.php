@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Traits;
-use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category};
+use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating};
 use Illuminate\Support\Str;
 use Auth;
 use Session;
@@ -27,6 +27,9 @@ trait ProductActionTrait{
                     $query = $query->where('token_id', session()->get('_token'));
                 }
                 $return = $query->orderBy('updated_at','DESC')->pluck('product_id');
+                if(sizeof($return) > 0){
+                    $return = $return->toArray();
+                } 
                 return $return;
             } else{
                 return [];
@@ -292,16 +295,40 @@ trait ProductActionTrait{
         
     }
 
+    public function getProductsId($type='')
+    {
+        $product_ids = [];
+        if (checkTableExists('home_products')) {
+            $single_category_products = HomeProduct::whereSlug($type)->first();
+            if (@$single_category_products) {
+                if(@$single_category_products){
+                    if($type == 'single_category_products'){
+                        $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
+
+                    } elseif($type == 'selected_products'){
+                        $product_ids = json_decode($single_category_products->products);
+                    } elseif($type == 'popular_products'){
+                        $most_sold = OrderVendorProduct::selectRaw('id, product_id, count(product_id) as total')->whereHas('statusDelievered')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
+                        // dd($most_sold);
+                        $most_viewed = ProductRecentlyViewed::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
+
+                        $product_ids = $most_sold->merge($most_viewed);
+                    } elseif($type == 'top_rated_products'){
+                        $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
+                    } elseif($type == 'recent_viewed'){
+                        $product_ids = $this->getRecentProductIds();
+                    }
+                    
+                }
+            }
+        }
+        
+        return $product_ids;
+    }
+
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type,$Products_title, $p_dim)
     {
 
-        $recent_ids = $this->getRecentProductIds();
-        $rc_ids = [];
-        if(sizeof($recent_ids) > 0){
-            $rc_ids = $recent_ids->toArray();
-        } else {
-            return [];
-        }
      
         //$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
         // $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
@@ -323,17 +350,18 @@ trait ProductActionTrait{
 
         }
         if($where!=='all'){
-            if($where =='recent_viewed'){
-
-                if(!empty($rc_ids)){
-                    $rc_ids = implode(',',$rc_ids);
-                    $completeWhere = ' AND  `products`.`id` IN  ('.$rc_ids.')';
-        
-                }    
-            } else {
-                $completeWhere = ' AND `products`.'.$where.' = 1';
-                //die($where);
-            }
+            
+                if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
+                    $single_category_product_ids = $this->getProductsId($where);
+                    if(!empty($single_category_product_ids)){
+                        $single_category_product_ids = implode(',',$single_category_product_ids);
+                        $completeWhere = ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
+            
+                    }    
+                } else {
+                    $completeWhere = ' AND `products`.'.$where.' = 1';
+                    //die($where);
+                }
         }
 
         $raw_query = "SELECT 

@@ -135,18 +135,18 @@ trait HomePageTrait
         return $spotlight_products;
     }
 
-    public function getSingleCategoryProducts()
-    {
-        $product_ids = [];
-        if (checkTableExists('home_products')) {
-            $single_category_products = HomeProduct::whereSlug('single_category_products')->first();
-            if (@$single_category_products) {
-                $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
-            }
-        }
+    // public function getSingleCategoryProducts()
+    // {
+    //     $product_ids = [];
+    //     if (checkTableExists('home_products')) {
+    //         $single_category_products = HomeProduct::whereSlug('single_category_products')->first();
+    //         if (@$single_category_products) {
+    //             $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
+    //         }
+    //     }
         
-        return $product_ids;
-    }
+    //     return $product_ids;
+    // }
 
     public function getSingleCategoryWithProducts()
     {

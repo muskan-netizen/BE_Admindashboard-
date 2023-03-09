@@ -690,8 +690,8 @@
 					<!-- suppliers-slider-{{$homePageLabel->slug}} -->
 						<div class="product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 							<div class="row">
-							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
-							@include('frontend.home_page_8.top_rated')
+							@foreach ($homePageData[$homePageLabel->slug] as $product )
+								@include('frontend.home_page_8.top_rated')
 							@endforeach
 							</div>
 						</div>

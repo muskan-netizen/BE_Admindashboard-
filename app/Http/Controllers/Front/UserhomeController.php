@@ -732,17 +732,18 @@ class UserhomeController extends FrontController
             //$spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
             $spot_light_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'spotlight_deals', $request->type, $featured_products_title,$p_dim);
             // pr($spot_light_products);
-            $single_category_product_ids = $this->getSingleCategoryProducts(); // get single selected category's products
-            $single_category_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $single_category_product_ids);
+            //$single_category_product_ids = $this->getSingleCategoryProducts(); // get single selected category's products
+            $single_category_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'single_category_products', $request->type, $featured_products_title,$p_dim);
             // dd($single_category_products);
-            $selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
-            $selected_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $selected_product_ids);
+            //$selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
+            $selected_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'selected_products', $request->type, $featured_products_title,$p_dim);
 
-            $popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
-            $popular_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $popular_product_ids);
+            //$popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
+            $popular_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'popular_products', $request->type, $featured_products_title,$p_dim);
 
-            $top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
-            $top_rated_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $top_rated_products_ids);
+            //$top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
+            $top_rated_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'top_rated_products', $request->type, $featured_products_title,$p_dim);
+            //pr($top_rated_products);
         }
         /**  Recent order */
         $activeOrders = [];
