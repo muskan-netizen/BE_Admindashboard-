@@ -955,6 +955,7 @@ body.al_body_template_eight .collection-wrapper.al h2 {
     font-size: 24px;
     margin-top: 0;
     padding-left: 35px;
+    font-weight: 500;
 }
 
 body.al_body_template_eight section.buy_details span.rating.main-rating {
@@ -2635,7 +2636,7 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
 .cutom_add_wishlist .fav-button  span{
     display: block;
     color: inherit;
-    font-size: 15px;
+    font-size: 12px;
     text-transform: capitalize;
     color: #000;
     line-height: 20px!important;
