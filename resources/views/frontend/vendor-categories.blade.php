@@ -9,7 +9,9 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @section('content')
-
+@php
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+@endphp
 <section class="section-b-space ratio_asos main_venders">
     <div class="collection-wrapper">
         <div class="container">
@@ -90,7 +92,8 @@
                             </span>
                         </h5>
                         <div class="offer-slider al">
-                            @if(!empty($newProducts) && count($newProducts) > 0)
+                        @php $show_new_Products = 0; @endphp
+                            @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                     @foreach($newProds as $new)
                                     <div class="col-md-12 p-0">
@@ -125,7 +128,7 @@
                                                                 <b>
                                                                     @if($new['inquiry_only'] == 0)
                                                                         <?php $multiply = $new['variant_multiplier']; ?>
-                                                                        {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                        {{ $additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                     @endif
                                                                 </b>
 

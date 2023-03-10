@@ -70,10 +70,28 @@ class PaymentController extends FrontController{
             //     return $this->errorResponse($vendor_min_amount_errors, 402);
             // }
         }
+        $checkCod = '';
+        $payCoulmn = checkColumnExists('carts','payable_amount');
+        if($payCoulmn){
+            $codMinAmount = PaymentOption::select('credentials')->where('code','cod')->value('credentials');
+            $cod = json_decode($codMinAmount);
+            if(isset($cod->cod_min_amount) && ($cod->cod_min_amount>0 && $cart->payable_amount < $cod->cod_min_amount))
+            {
+                $checkCod = 'cod';
+            }
+        }
         $ex_codes = ['cod'];
-        $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
+        //mohit sir branch code added by sohail
+        $serviceType =  Session::get('vendorType');
+        $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+        if($serviceType == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+            $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->where('id', '!=', 1)->get();
+        }else{
+            $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
+        }
+        //till here
         foreach ($payment_options as $k => $payment_option) {
-            if( (in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials)) ){
+            if(((in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials))) && $payment_option->code!=$checkCod){
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
                 if($payment_option->code == 'stripe'){
                     $payment_option->title = 'Credit/Debit Card (Stripe)';

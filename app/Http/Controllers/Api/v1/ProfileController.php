@@ -301,6 +301,7 @@ class ProfileController extends BaseController{
                 $to = $request->phone_number;
                 $provider = $prefer->sms_provider;
                 $body = "Dear ".ucwords($request->phone_number).", Please enter OTP ".$phoneCode." to verify your account.";
+                // $body = 
                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 $response['send_otp'] = 1;
             }
@@ -355,7 +356,7 @@ class ProfileController extends BaseController{
                         $file = $request->file($doc_name);
                         $orignal_name = $request->file($doc_name)->getClientOriginalName();
                         $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
-                        Log::info($orignal_name);
+                       // Log::info($orignal_name);
                         UserDocs::updateOrCreate(
                             
                             ['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id]
@@ -386,6 +387,8 @@ class ProfileController extends BaseController{
 
     public function getProfile(Request $request){
         $user = Auth::user();
+        $client = Client::first();
+        $code = ((@$user->country->code)?@$user->country->code:$client->country->code);
         $user_id =  $user->id;
         $user_registration = UserRegistrationDocuments::with(['user_document' =>function($q) use($user_id){
             $q->where('user_id', $user_id);
@@ -393,7 +396,7 @@ class ProfileController extends BaseController{
         $data['user_document'] = $user_registration;
         $data['name'] = $user->name;
         $data['email'] = $user->email;
-        $data['cca2'] = $request->country_code;
+        $data['cca2'] = $code??'';
         $data['phone_number'] = $user->phone_number;
         $data['is_phone_verified'] = $user->is_phone_verified;
         $data['is_email_verified'] = $user->is_email_verified;

@@ -1,8 +1,9 @@
 <?php
 namespace App\Http\Traits;
-use App\Models\{Order,OrderVendor,UserDevice,ClientPreference};
+use App\Models\{Order,OrderVendor,UserDevice,ClientPreference, Product};
 use Auth;
 use GuzzleHttp\Client as GCLIENT;
+use Log;
 
 trait ChatTrait{
 
@@ -33,6 +34,26 @@ trait ChatTrait{
         ))->findOrFail($order_id);
         return  $order;
     }
+
+    /**
+     * OrderVendorDetail
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function ProductDetail($request)
+    {
+        $data = $request->all();
+        $pid  = $data['product_id'];
+        $product = Product::with([
+        'category.categoryDetail', 'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell']);
+   
+        $product = $product->select('id', 'title', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min',  'is_long_term_service','service_duration');
+   
+        $product = $product->where('id', $pid)
+        ->first();
+        return  $product;
+    }
     
     /**
      * sendNotification
@@ -50,17 +71,21 @@ trait ChatTrait{
         } else{
             $username =  Auth::user()->name;
             $auid =  Auth::user()->id;
-            
             $result = array_values(array_column($request->all()['user_ids'], 'auth_user_id'));
-            $removeAuth = array_values(array_diff($result, array($auid)));
+            $removeAuth = $result;
+            if(@$data['auth_id']==$auid){
+                $removeAuth = array_values(array_diff($result, array($auid)));
+            }
              /**dispacth noti */
-            $this->getDispacthUrl($data['order_vendor_id'],$data['order_id'],$data['vendor_id'],$data);
+             if($data['order_vendor_id']!=''){
+                $this->getDispacthUrl($data['order_vendor_id'],$data['order_id'],$data['vendor_id'],$data);
+             }
+            
             /**end */
         }
        
         $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
         $devices            = UserDevice::whereNotNull('device_token')->whereIn('user_id',$removeAuth)->pluck('device_token') ?? [];
-        
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $data = [
                 "registration_ids" => $devices,
@@ -152,12 +177,16 @@ trait ChatTrait{
                         'content-type' => 'application/json'
                     ]
                 ]);
+                
                 $url = $dispatch_domain['service_key_url'];
+                //Log::info($url);
+                //Log::info($postdata);
                 $res = $client->post(
                     $url . '/api/chat/sendNotificationToAgent',
                     ['form_params' => ($postdata)]
                 );
                 $response = json_decode($res->getBody(), true);
+                //Log::info($response);
                 return $response;
         } else{
             return response()->json(['status' => false, 'notiFY' => [] , 'message' => __('No Data found!!!')]);

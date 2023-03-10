@@ -607,6 +607,25 @@
 						</div>
 				</div>
 			</section>
+        @elseif($homePageLabel->slug == 'long_term_service' && (count($homePageData['long_term_service']) != 0))
+        <section class="suppliers-section container" id="homepage_long_term_service_div">
+            <div class=" top-heading ">
+                <h2 class="h2-heading">{{$homePageLabel->slug =='long_term_service' ? __('Long Term')." ".getNomenclatureName('service', true) : __($homePageLabel->title)}}</h2>
+            </div>
+            <div class="row">
+                <div class="col-12 p-0">
+					{{-- @php
+					pr($homePageData[$homePageLabel->slug]);
+					@endphp --}}
+                    <div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+                        @foreach ($homePageData[$homePageLabel->slug] as $value )
+					
+                        @include('frontend.home_page_3.long_term_service')
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </section>
 		@elseif($homePageLabel->slug == 'recent_orders' && count($homePageData['recent_orders']) != 0 )
 			<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
 				<div class="top-heading d-flex justify-content-between">
@@ -642,7 +661,7 @@
 				</div>
 			</section>
 		@else
-			@if(@count(@$homePageData[$homePageLabel->slug]) != 0)
+			@if(!empty(@$homePageData[$homePageLabel->slug]) && @count(@$homePageData[$homePageLabel->slug]) != 0)
 				<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
 						<div class="top-heading d-flex justify-content-between">
 							<h2 class="h2-heading"> @php

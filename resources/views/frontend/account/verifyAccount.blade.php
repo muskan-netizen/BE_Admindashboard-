@@ -55,7 +55,7 @@
 </style>
 <section class="login-page section-b-space">
     <div class="container">
-        <div class="row my-md-3">
+        <div class="row my-md-3 mt-5 pt-4">
             <h3>Verify Account</h3>
             <div class="col-lg-12">
                 <div class="dashboard-right">

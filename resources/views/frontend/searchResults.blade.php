@@ -4,6 +4,12 @@
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.slick-track{margin-left:0}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}
 body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !important;line-height: 37px;border-radius: 90px;text-align: center;}
+.alPageSearchView .product-box .img-wrapper {margin:0;height:100%;}
+.alPageSearchView .product-box .img-wrapper .front {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
 .gm-style-iw.gm-style-iw-c {
     width: 300px ;
     padding: 12px ;
@@ -119,24 +125,50 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
                                     </div>
                                 </div>
                                 @endif
-                                <div class="row margin-res">
+                                
                                     @if(!empty($listData))
-                                    @foreach($listData as $key => $data)
-                                    <div class="col-md-2 col-6 col-grid-box mt-3">
-                                        <div class="product-box scale-effect mt-0">
-                                            <div class="img-wrapper">
-                                                <div class="front">
-                                                    <a href="{{$data['redirect_url']}}"><img class="img-fluid blur-up lazyload" src="{{$data['image_url']}}" alt=""></a>
+                                    @foreach($listData as $key => $result)
+                                    @if(@$result['title'])
+                                    <div class="row margin-res">
+                                    <div class="col-md-12 col-12 mt-3">
+                                        <!-- <div class="product-box scale-effect mt-0">
+                                            
+                                            <div class="product-detail"> -->
+                                                <div class="inner_spacing search-heading">
+                                                        <h3>{{__($result['title'])}}</h3>
+                                                <!-- </div>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                    </div>
+                                    @endif
+                                    <div class="row margin-res mt-3">
+                                        @foreach($result['result'] as $data)
+                                        <div class="col-md-2 col-6 col-grid-box mt-3">
+                                            <div class="product-box scale-effect mt-0">
+                                                <div class="img-wrapper">
+                                                    <div class="front">
+                                                        @php
+                                                            if(empty($data['image_url'])){
+                                                                $data['image_url'] = loadDefaultImage();
+                                                            }
+                                                            
+                                                        @endphp
+                                                        <a href="{{$data['redirect_url']}}">
+                                                            <img class="img-fluid blur-up lazyload" src="{{$data['image_url']}}" alt=""/>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="product-detail">
-                                                <div class="inner_spacing">
-                                                    <a href="{{$data['redirect_url']}}">
-                                                        <h3>{{__($data['name'])}}</h3>
-                                                    </a>
+                                                <div class="product-detail">
+                                                    <div class="inner_spacing">
+                                                        <a href="{{$data['redirect_url']}}">
+                                                            <h3>{{__($data['name'])}}</h3>
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        @endforeach
                                     </div>
                                     @endforeach
                                     @else
@@ -162,8 +194,8 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
 <script>
     vendorAllOnMap();
     function vendorAllOnMap() {
-        var latitude = "{{ $vendorLatLong[0][0] }}";
-        var longitude = "{{ $vendorLatLong[0][1] }}";
+        var latitude = "{{ $vendorLatLong[0][0] ?? 0 }}";
+        var longitude = "{{ $vendorLatLong[0][1] ?? 0 }}";
         var latlng = new google.maps.LatLng(latitude, longitude);
         var prev_infowindow =false; 
 

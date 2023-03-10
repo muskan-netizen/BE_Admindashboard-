@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use AfricasTalking\SDK\AfricasTalking;  
 use GuzzleHttp\Client;
 use Log;
 use Unifonic;
@@ -145,6 +146,21 @@ trait smsManager{
             return $res->getStatusCode(); // 200
         }catch(Exception $e) {
             dd($e);
+        }
+    }
+
+    public function africasTalking_sms($to,$message,$crendentials)
+    {
+        try{
+            $AT       = new AfricasTalking($crendentials->sender_id, $crendentials->api_key);
+            $sms      = $AT->sms();
+            $result   = $sms->send([
+                'to'      => $to,
+                'message' => $message
+            ]);
+            return $result;
+        }catch(\Exception $e) {
+            return response()->json(['data' => $e->getMessage()]);
         }
     }
 

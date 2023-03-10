@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/toolbarconfigurator/lib/codemirror/neo.css') }}">
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .image-upload>input {
         display: none;
@@ -39,7 +40,7 @@
         top: 0;
         opacity: 0;
     }
-
+.form-label label{font-weight: bold;}
     .product-img-box input[type="checkbox"] {
         position: absolute;
         top: 0;
@@ -75,6 +76,71 @@
     .product-box.editPage .product-action .btn {
         padding: 0px 2px;
     }
+    .saveVariantOrder {
+        display: none;
+    }
+    button.btn.btn-sm.add_attr_options {
+    background: #ccc;
+    height: 30px;
+    width: 30px;
+    color: #fff;
+}
+div#attribute_section button.btn.btn-sm.add_attr_options {
+    background: #a42c7f;
+    height: 30px;
+    width: 30px;
+    color: #fff;
+    padding: 0;
+    position: absolute;
+    right: 0;
+}
+div#attribute_section .select2-container {
+    width: 95% !important;
+}
+div#attribute_section .col-sm-9 .checkbox.checkbox-success.form-check-inline {
+    width: 20%;
+    margin-bottom: 12px;
+}
+div#attribute_section .col-sm-9 .form-check-inline.w-100 {
+    width: 95% !important;
+}
+.css-loader {
+    border: 10px solid #ffffff;
+    border-radius: 50%;
+    border-top: 10px solid #3498db;
+    width: 80px;
+    height: 80px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    position: absolute;
+    z-index: 9999999999;
+    left: 40%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+}
+.outter-loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    background: #0000004a;
+    z-index: 9;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 @endsection
 @php
@@ -91,7 +157,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 <div class="container-fluid">
 
     <div class="row">
-
+        <span class="delete_options d-none">Error while deleting options</span>
         <div class="col-8 d-flex align-items-center">
             <div class="page-title-box">
                 <h4 class="page-title">{{ __("Edit Product") }}</h4>
@@ -104,9 +170,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 </label>
             </div>
         </div>
-        <div class="col-4 text-right" style="margin: auto;">
-            <button type="submit" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
-        </div>
+        @if(isset($product->vendor->need_sync_with_order) && $product->vendor->need_sync_with_order != 1)
+            <div class="col-4 text-right" style="margin: auto;">
+                <button type="submit" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
+            </div>
+        @endif
     </div>
     <a href="{{route('vendor.catalogs',$product->vendor_id)}}">{{ $product->vendor->name}} </a>
     <div class="row mb-2">
@@ -194,7 +262,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-4 p-2 mt-0" style="margin:auto; padding: 8px !important;">
                             <select class="selectize-select form-control" id="language_id" name="language_id">
                                 @foreach($languages as $lang)
-                                <option value="{{$lang->langId}}" {{ ($lang->is_primary == 1) ? 'selected' : ''}}>{{$lang->langName}}</option>
+                                <option value="{{$lang->langId}}" {{ ($lang->is_primary == 1) ? 'selected' : ''}}>{{__($lang->langName)}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -226,22 +294,44 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 pr($product->toArray()); @endphp --}}
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
-
+                    {{-- @dd($product->vendor) --}}
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
                     @if($product->has_variant == 0)
                     <div class="row mb-2">
-                        <div class="col-4 mb-2">
-                            {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
-                            @include('backend.primary_currency')
+                        @if(@$product->vendor->is_seller == 1 && Auth::user()->is_superadmin == 1)
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Cost price'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('cost_price', decimal_format($product->variant[0]->cost_price), ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @elseif (@$product->vendor->is_seller == 1)
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Cost price'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('cost_price', decimal_format($product->variant[0]->cost_price), ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @endif
 
-                            {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        @if(@$product->vendor->is_seller == 0 || Auth::user()->is_superadmin == 1 )
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                @if (isset($getAdditionalPreference['is_price_by_role']))
+                                    @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                        {!! Form::text('price', decimal_format($product->variant[0]->getRawOriginal('price')), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    @else
+                                        {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    @endif
+                                @endif
 
-                        </div>
-                        <div class="col-4 mb-2">
-                            {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
-                            @include('backend.primary_currency')
-                            {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                        </div>
+                            </div>
+
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
+                                @include('backend.primary_currency')
+                                {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @endif
 
                         @if($product->vendor->need_container_charges == 1)
                         <div class="col-4 mb-2">
@@ -304,6 +394,25 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div>
 
+                    {{-- Input Filed of price based on roles (START) --}}
+                    @if($product->has_variant == 0)
+                        @if (isset($getAdditionalPreference['is_price_by_role']))
+                            @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                <div class="row mb-2">
+                                    @if (isset($roles))
+                                        @foreach ($roles as $key => $_role)
+                                            <div class="col-4 mb-2">
+                                                {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
+                                                <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKey(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="{{ isset($product->productVariantByRoles[$key]) ? (decimal_format($product->productVariantByRoles[$key]->amount) ?? 0.00) : 0.00 }}">
+                                                <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            @endif
+                        @endif
+                    @endif
+                    {{-- Input Filed of price based on roles (END) --}}
 
                     @if(  in_array( $product->category->categoryDetail->type_id , [10]) )
                         <div class="row col-md-12 mb-2">
@@ -377,23 +486,26 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
                     @include('backend.product.variant')
                 @else
+
+
                     @if($productVariants->count() > 0)
                     <div class="card-box" >
                         <div class="row mb-2 bg-light">
                             <div class="col-8" style="margin:auto;">
-                                <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
+                                <h5 class="text-uppercase mt-0 bg-light p-2">{{ __(getNomenclatureName('Variant')." Information") }}</h5>
                             </div>
                             @if(!empty($productVariants))
                             <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
-                                <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make Variant Sets") }}</button>
+                                <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make ".getNomenclatureName('Variant')." Sets") }}</button>
                             </div>
                             @endif
                         </div>
-                        <p>{{ __("Select or change category to get variants") }}</p>
+
+                        <p>{{ __("Select or change category to get ".getNomenclatureName('Variant')) }}</p>
 
                         <div class="row" style="width:100%; overflow-x: scroll;">
                             <div id="variantAjaxDiv" class="col-12 mb-2">
-                                <h5 class="">{{__('Variant List')}}</h5>
+                                <h5 class="">{{__(getNomenclatureName('Variant').' List')}}</h5>
                                 <div class="row mb-2">
                                     @foreach($productVariants as $vk => $var)
                                     <div class="col-sm-3">
@@ -422,6 +534,13 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                         <th>{{ __("Name") }}</th>
                                         <th>{{ __("Variants") }}</th>
                                         <th>{{ __("Price") }}</th>
+                                        {{-- Role Price Column (START) --}}
+                                        @if (isset($getAdditionalPreference['is_price_by_role']))
+                                            @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                <th>{{ __("Role's Price") }}</th>
+                                            @endif
+                                        @endif
+                                        {{-- Role Price Column (END) --}}
                                         <th>{{ __('Compare at price') }}</th>
                                         <th>{{ __('Cost Price') }}</th>
                                         <th class="check_inventory">{{ __("Quantity") }}</th>
@@ -464,8 +583,26 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                             </td>
                                             <td>{{rtrim($vsets, ', ')}}</td>
                                             <td>
-                                                <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
+                                                @if (isset($getAdditionalPreference['is_price_by_role']))
+                                                    @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                        <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->getRawOriginal('price') )}}" onkeypress="return isNumberKey(event)">
+                                                    @else
+                                                        <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
+                                                    @endif
+                                                @endif
+                                                {{-- <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)"> --}}
                                             </td>
+                                            {{-- Role Price Column to Enter price with respect to roles (START) --}}
+                                            @if (isset($getAdditionalPreference['is_price_by_role']))
+                                                @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                    <td>
+                                                        <a href="javascript:void(0);" title="Add Price Based On Roles" class="action-icon rolePriceModal" data-toggle="modal" data-target="#rolePriceModal" data-varient-id="{{$varnt->id}}" data-product-id="{{$product->id}}">
+                                                            <i class="mdi mdi-loupe"></i>
+                                                        </a>
+                                                    </td>
+                                                @endif
+                                            @endif
+                                            {{-- Role Price Column to Enter price with respect to roles (END) --}}
                                             <td>
                                                 <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
                                             </td>
@@ -489,6 +626,13 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <div id="variantRowDiv" class="col-12"></div>
                         </div>
                     </div>
+                    @endif
+                    @if( p2p_module_status() )
+                        @if(!empty($productAttributes))
+                        <div id="attribute_section">
+                            @include('layouts.shared.product-attribute')
+                        </div>
+                        @endif
                     @endif
                 @endif
             </div>
@@ -544,6 +688,21 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <input type="checkbox" bid="" id="inquiry_only" data-plugin="switchery" name="inquiry_only" class="chk_box" data-color="#43bee1" @if($product->inquiry_only == 1) checked @endif>
                         </div>
                         @endif
+
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Returnable'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="returnable" data-plugin="switchery" name="returnable" class="chk_box" data-color="#43bee1" @if($product->returnable == 1) checked @endif>
+                        </div>
+
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Replaceable'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="replaceable" data-plugin="switchery" name="replaceable" class="chk_box" data-color="#43bee1" @if($product->replaceable == 1) checked @endif>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Spotlight Deals'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="replaceable" data-plugin="switchery" name="spotlight_deals" class="chk_box" data-color="#43bee1" @if($product->spotlight_deals == 1) checked @endif>
+                        </div>
+
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
@@ -555,7 +714,31 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 @endif
                             </select>
                         </div>
+                        @elseif($product->category->categoryDetail->type_id == 1)
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Individual Delivery Fee'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="individual_delivery_fee" data-plugin="switchery" name="individual_delivery_fee" class="chk_box" data-color="#43bee1" @if($product->individual_delivery_fee == 1) checked @endif>
+                        </div>
+                        <div class="col-md-6 justify-content-between mb-2" id="dispatcher_tags_div">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
+                                </div>
+                                <div class="col-md-7">
+                                    <select class="selectize-select1 form-control" name="tags">
+
+                                        @if($agent_dispatcher_tags != null && count($agent_dispatcher_tags))
+                                        @foreach($agent_dispatcher_tags as $key => $tags)
+                                        <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
+                                        @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                         @endif
+
+
 
                         @if(($configData->need_dispacher_home_other_service == 1 && ($product->category->categoryDetail->type_id == 8)) || ($configData->need_appointment_service == 1 && $product->category->categoryDetail->type_id == 12 ) )
                         @if($product->Requires_last_mile == 1 )
@@ -602,12 +785,23 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 
                     </div>
+
+
                     <div class="row">
                         <div class="col-sm-12 mb-2">
                             {!! Form::label('title', __('Live'),['class' => 'control-label']) !!}
                             <select class="selectizeInput form-control" id="is_live" name="is_live">
                                 <option value="0" @if($product->is_live == 0) selected @endif>{{ __('Draft')}}</option>
-                                <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                @if (isset($getAdditionalPreference['is_seller_module']) && $getAdditionalPreference['is_seller_module'] == 1)
+                                    @if(Auth::user()->is_superadmin == 1)
+                                        <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                    @endif
+                                     @if($product->vendor->is_seller == 0)
+                                        <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                    @endif
+                                @else
+                                    <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                @endif
                             </select>
                         </div>
 
@@ -636,15 +830,62 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                     {{--@if($configData->minimum_order_batch == 1 || $product->minimum_order_count > 0)--}}
                     <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    {!! Form::label('title', __('Minimum Order Count'),['class' => 'control-label']) !!}
-                                    {!! Form::number('minimum_order_count', $product->minimum_order_count, ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
-                                    {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
-                                </div>
+                        @if($getAdditionalPreference['is_price_by_role'] == '1')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Minimum Order Count'),['class' => 'control-label']) !!}
+                                {!! Form::number('minimum_order_count', $product->getRawOriginal('minimum_order_count'), ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @else
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Minimum Order Count'),['class' => 'control-label']) !!}
+                                {!! Form::number('minimum_order_count', $product->minimum_order_count, ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        @endif
+
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
+                            {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
+                            {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                    </div>
+                    <div class="row">
+                        @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
+                            @if (isset($roles))
+                                @foreach ($roles as $key => $role)
+                                    @php
+                                        $label_min = 'Minimum Order Count ['.$role->role.']';
+                                        $input_min = 'minimum_order_count['.$role->role.']';
+                                    @endphp
+                                    <div class="col-md-6 mb-2">
+                                        {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
+
+                                        <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_arr[{{$role['id']}}]" value="{{ isset($product->productByRoleForAdmin[$key]) ? (decimal_format($product->productByRoleForAdmin[$key]->minimum_order_count) ?? 0.00) : 0.00 }}">
+
+                                    </div>
+                                @endforeach
+                            @endif
+                        @endif
+                    </div>
+
+                    {{-- product free delivery fees --}}
+                    @if($getAdditionalPreference['is_free_delivery_by_roles'] == '1')
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="control-label">Free Delivery (Select Roles)</label>
+                                <select class="form-control select2-multiple" name="free_delivery_roles[]" data-toggle="select2" multiple="multiple" placeholder="Select role...">
+                                    @foreach($allRoles as $allRole)
+                                        <option value="{{$allRole->id}}" @if(in_array($allRole->id, $selectedRoles)) selected @endif>{{ $allRole->role }}</option>
+                                    @endforeach
+                                </select>
+
+                            </div>
+                        </div>
+                    @endif
                     {{--@endif--}}
 
 
@@ -713,6 +954,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                     @if($product->vendor->need_container_charges)
                     <div class="form-group w-100" id="container_charges_tax_id">
+                        <input type="hidden" value="on" name="container_charges_tax">
                      {!! Form::label('title',__('On Container Charges') .' '. __('Taxes Available'),['class' => 'control-label']) !!}
                         <select class="form-control" name="container_charges_tax_id">
                             <option value="">{{__('Select any')}}</option>
@@ -838,20 +1080,72 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         </div>
                     </div> -->
 
+                    @if($product->vendor->pick_drop == 1 && $product->category->categoryDetail->type_id == 7)
+                    <div class="row mb-2">
+                        <div class="col-md-6 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Toll Tax'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="is_toll_tax" id="is_toll_tax" class="form-control" data-color="#43bee1" @if($product->is_toll_tax == 1) checked @endif>
+                        </div>
+                        <div class="col-sm-6" id="is_toll_tax_div1" style="display:@if($product->is_toll_tax == 1) @else none @endif;">
+                            {!! Form::label('title', __('Travel Mode'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/RouteTravelMode" target="_blank"><i class="fas fa-info-circle"></i></a>
+                            <select class="form-control" name="travel_mode" data-toggle="select2" placeholder="Select Travel Mode...">
+                                @foreach($travelMode as $cel)
+                                <option value="{{$cel->id}}" @if($cel->id==$product->travel_mode_id) selected @endif> {{$cel->travel_mode_name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-2" id="is_toll_tax_div2" style="display:@if($product->is_toll_tax == 1) @else none @endif;">
+                        <div class="col-sm-6 mb-1">
+                            {!! Form::label('title', __('TollPass eg. IN_FASTAG'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/TollPass" target="_blank"><i class="fas fa-info-circle"></i></a>
+                            <select class="form-control" name="toll_passes" data-toggle="select2" placeholder="Select Tollpass...">
+                                @foreach($tollPassOrigin as $cel)
+                                <option value="{{$cel->id}}" @if($cel->id == $product->toll_pass_id) selected @endif > {{$cel->toll_pass_name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-sm-6 mb-1">
+                            {!! Form::label('title', __('Emission Type eg. GASOLINE'),['class' => 'control-label']) !!} <a href="https://developers.google.com/maps/documentation/routes_preferred/reference/rest/Shared.Types/VehicleEmissionType" target="_blank"><i class="fas fa-info-circle"></i></a>
+                            <select class="form-control" name="emission_type" data-toggle="select2" placeholder="Select Emission Type...">
+                                @foreach($vehicleEmissionType as $cel)
+                                <option value="{{$cel->id}}" @if($cel->id == $product->emission_type_id) selected @endif > {{$cel->emission_type_name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    @endif
+                    @if($product->vendor->pick_drop == 1 && $configData->is_cab_pooling == 1 && $product->category->categoryDetail->type_id == 7)
+                    <div class="row">
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Available for Pooling'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="available_for_pooling" id="available_for_pooling" class="form-control" data-color="#43bee1" @if($product->available_for_pooling == 1) checked @endif>
+                        </div>
+                    </div>
+                    <div class="row" id="available_for_pooling_div" style="display:@if($product->available_for_pooling == 1) @else none @endif;">
+                        <div class="col-sm-6 mb-1">
+                            {!! Form::label('title', __('Total Number Of Seats'),['class' => 'control-label']) !!}
+                            <input type="number"  class="form-control" value="{{$product->seats}}" name="seats" id="seats" placeholder="{{__('Number Of Seats')}}">
+                        </div>
+                        <div class="col-sm-6 mb-1">
+                            {!! Form::label('title', __('Number Of Seats Available for Pooling'),['class' => 'control-label']) !!}
+                            <input type="number"  class="form-control" value="{{$product->seats_for_booking}}" name="seats_for_booking" id="seats_for_booking" placeholder="{{__('Number Of Seats Available for Booking')}}">
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 <div class="card-box">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Product Images") }}</h5>
-                    <div class="row mb-2">
+                     <div class="row mb-2">
                         @if(isset($product->media) && !empty($product->media))
                         @foreach($product->media as $media)
-                        <div class="col-4 product-box editPage" style="overflow: hidden;">
-                            <?php
-                            $mediaPath = Storage::disk('s3')->url('default/default_image.png');
+                         @php
+                         //   $mediaPath = Storage::disk('s3')->url('default/default_image.png');
                             if (isset($media->image) && is_array($media->image->path)) {
                                 $mediaPath = $media->image->path['proxy_url'] . '300/300' . $media->image->path['image_path'];
-                            }
-                            ?>
+                           @endphp
+                        <div class="col-4 product-box editPage mt-1" style="overflow: hidden;">
+                           
                             <div class="product-action">
                                 @if(isset($media->image))
                                 <a href="{{route('product.deleteImg',[$product->id, $media->image->id])}}" class="btn btn-danger btn-xs waves-effect waves-light" onclick="return confirm('Are you sure? You want to delete the image.')"><i class="mdi mdi-close" {{$media->image}}></i></a>
@@ -861,6 +1155,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 <img src="{{$mediaPath}}" style="width:100%;" class="vimg_{{$media->id}}" />
                             </div>
                         </div>
+                        @php  }
+                            @endphp
                         @endforeach
                         @endif
                     </div>
@@ -939,6 +1235,46 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 </div>
                 @endif
 
+                {{-- mohit sir branch code added by sohail --}}
+                <div class="card-box" style="">
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pickup Point For Customer") }}</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="title" class="control-label">Pickup Point :</label>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <input type="radio" class="custom-control-input check is-processor-enable" id="option2" value="0" name="is_processor_enable" {{ @$processorProduct->is_processor_enable == 0 ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="option2">{{ __("Vendor") }}</label>
+                        </div>
+                        <div class="col-md-4 text-align:left;">
+                            <input type="radio" class="custom-control-input check is-processor-enable" id="option1" value="1" name="is_processor_enable" {{ @$processorProduct->is_processor_enable == 1 ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="option1">{{ __("Processor") }}</label>
+                        </div>
+                    </div>
+                    <div class="row processor-enable-row" style="display:{{ @$processorProduct->is_processor_enable == 1 ? 'flex;' : 'none;' }}">
+                        <div class="col-md-6 mb-2" >
+                            {!! Form::label('title', __('Processor Name'),['class' => 'control-label']) !!}
+                            <input class="form-control" id="processor-title" required name="processor_title" type="text" value="{{ (@$processorProduct->name) ? $processorProduct->name : '' }}">
+                        </div>
+                        <div class="col-md-6 mb-2" >
+                            {!! Form::label('title', __('Processor Date'),['class' => 'control-label']) !!}
+                            <input class="form-control date-datepicker flatpickr-input" id="processor-date" required name="processor_date" type="text" value="{{ (@$processorProduct->date) ? $processorProduct->date : '' }}">
+                        </div>
+                        <div class="col-md-12 mb-2" >
+                            {!! Form::label('title', __('Processor Address'),['class' => 'control-label']) !!}
+                            <input class="form-control"
+                            type="text" placeholder="{{ __('Enter Pickup Location') }}"
+                            name="processor_address" id="pickup_location" value="{{ (@$processorProduct->address) ? $processorProduct->address : '' }}">
+
+                            <input type="hidden" name="processor_latitude" value="{{ (@$processorProduct->latitude) ? $processorProduct->latitude : '' }}" id="pickup_location_latitude_home"/>
+
+                            <input type="hidden"
+                            name="processor_longitude" value="{{ (@$processorProduct->longitude) ? $processorProduct->longitude : '' }}"
+                            id="pickup_location_longitude_home" />
+                        </div>
+                    </div>
+                </div>
+                {{-- till here --}}
 
                 <!-- start product faqs -->
                 @if($configData->product_order_form == 1)
@@ -1129,6 +1465,43 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
  </div>
 <!-- end product faq -->
 
+<!-- Role based Price (Start) -->
+<div class="modal fade" id="rolePriceModal" tabindex="-1" role="dialog" aria-labelledby="rolePriceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="rolePriceModalLabel">Insert Price Based On Roles</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{route('product.updateRolePrice')}}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    @if (isset($roles))
+                        @foreach ($roles as $key => $_role)
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
+                                <input type="number" class="form-control" min="0" id="{{lcfirst($_role['id'])}}_price" onkeyup="isNumberKey(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="0.00">
+                                <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
+                            </div>
+                        @endforeach
+                    @endif
+                    <input type="hidden" id="role_variant_id" name="variant_id" value="">
+                    <input type="hidden" id="role_product_id" name="product_id" value="">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- Role based Price (END) -->
+
 <script type="text/template" id="vendorSelectorTemp">
     <tr class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
     <input type="hidden" name="option_id[<%= id-1 %>][]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
@@ -1153,16 +1526,18 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 
 </script>
+@include('backend.catalog.modals')
 @endsection
 
-@section('script')
+@section('script-bottom')
 
 <link href="{{asset('assets/css/dropzone.css')}}" rel="stylesheet" />
 <script src="{{asset('assets/js/dropzone.js')}}"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> -->
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
-
+<script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
+{{-- <script src="{{asset('js/cab_booking.js')}}"></script> --}}
 <script>
     CKEDITOR.replace('body_html');
     CKEDITOR.config.height = 150;
@@ -1170,7 +1545,37 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 <script type="text/javascript">
 
-        $(document).on("change", "#file_type_select", function() {
+    //mohit sir branch code added by sohail
+    var isProcessorEnable = $('#is-processor-enable');
+    $(document).on("click", ".is-processor-enable", function() {
+        $('.processor-enable-row').hide();
+        if($(this).val() == 1){
+            $('.processor-enable-row').show();
+        }
+    });
+    function checkAddressString(obj,name)
+    {
+        if($(obj).val() == "")
+        {
+            document.getElementById(name + '_latitude').value = '';
+            document.getElementById(name + '_longitude').value = '';
+        }
+    }
+    //till here
+
+    $("#pickup_location").keydown(function(){
+        var input = document.getElementById('pickup_location');
+        if(input){
+            var autocomplete = new google.maps.places.Autocomplete(input);
+            google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                var place = autocomplete.getPlace();
+                $('#pickup_location_latitude_home').val(place.geometry.location.lat());
+                $('#pickup_location_longitude_home').val(place.geometry.location.lng());
+            });
+        }
+    });
+
+    $(document).on("change", "#file_type_select", function() {
         var file_type = $(this).val();
         if(file_type == 'selector'){
             $("#selector_div").removeClass("d-none");
@@ -1343,7 +1748,11 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
     var uploadedDocumentMap = {};
     Dropzone.autoDiscover = false;
+
+
+
     $(document).ready(function() {
+
         var val = $('#has_inventory').prop('checked');
 
         if (val == true) {
@@ -1371,6 +1780,25 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 $('.check_inventory').show();
             } else {
                 $('.check_inventory').hide();
+            }
+        });
+
+        $('#available_for_pooling').change(function() {
+            var val = $(this).prop('checked');
+            if (val == true) {
+                $('#available_for_pooling_div').show();
+            } else {
+                $('#available_for_pooling_div').hide();
+                $("#seats_for_booking, #seats").val(0);
+            }
+        });
+
+        $('#is_toll_tax').change(function() {
+            var val = $(this).prop('checked');
+            if (val == true) {
+                $('#is_toll_tax_div1, #is_toll_tax_div2').show();
+            } else {
+                $('#is_toll_tax_div1, #is_toll_tax_div2').hide();
             }
         });
 
@@ -1534,7 +1962,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
         $(this).closest('tr').remove();
     });
 
-
+    $('#processor-date').flatpickr({
+        enableTime: false,
+        startDate: new Date(),
+        minDate: new Date(),
+        dateFormat: "Y-m-d"
+    });
 
     $(document).on('change', '.vimageNew', function() {
 
@@ -1719,6 +2152,14 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
 <!-- start product faq -->
 <script>
+    $(document).on("change",".attr_radio", function() {
+
+    var parentClass = $(this).parent().prop('className');
+    var attr_radio_class = $(this).data('class');
+    $("."+parentClass+" .attr_radio").prop('checked', false);
+    $(this).prop('checked', true);
+    // $('.'+attr_radio_class).not(this).prop('checked', false);
+});
  $('#add_product_faq_modal_btn').click(function(e) {
          document.getElementById("productFaqForm").reset();
          $('#add_product_faq_modal input[name=product_faq_id]').val("");
@@ -1792,6 +2233,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
         editProductOrderForm(product_faq_id);
     });
+
     function editProductOrderForm(product_faq_id){
         let language_id = $('#option_client_language').val();
         $('#add_product_faq_modal input[name=product_faq_id]').val(product_faq_id);
@@ -1883,7 +2325,45 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
         })
 
     </script>
-
 <!-- end product faq -->
+
+{{-- Insert Value to Role Price Modal (Start) --}}
+    <script>
+        $( document ).delegate( ".rolePriceModal", "click", function() {
+            var variant_id = $(this).attr('data-varient-id');
+            var product_id =  $(this).attr('data-product-id');
+
+            $('#role_variant_id').val(variant_id);
+            $('#role_product_id').val(product_id);
+
+            // Calling ajax to show the price based on roles (if its present in product_variant_by_roles table)
+            $.ajax({
+                    url: "{{ route('product.getRolePrice') }}",
+                    type: "POST",
+                    data: {
+                        variant_id: variant_id,
+                        product_id: product_id,
+                        _token: '{{csrf_token()}}'
+                    },
+                    success: function(result) {
+                        console.log(result);
+                        $('#rolePriceModal').modal('show');
+                        $(':input[type="number"]').val('');
+
+                        let data = result.result;
+                        data.forEach((val) => {
+
+                            if(val != undefined){
+                                $('#'+val.role_id+'_price').val(val.amount);
+                            }
+
+                        });
+                    }
+                });
+        });
+        $('.select2-multiple').select2();
+    </script>
+{{-- Insert Value to Role Price Modal (End) --}}
+@include('backend.catalog.pagescript')
 <script src="{{ asset('assets/js/backend/product/edit_product.js')}}"></script>
 @endsection

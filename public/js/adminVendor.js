@@ -2,6 +2,14 @@ $(function(){
     var longTermServiceTable = '' ;
     initServiceDataTable();
     $(document).on("click",".addServiceBtn",function() {
+        $('#add-service input[name=long_term__service_id]').val();
+        $('#add-service .modal-title').html('Add Service');
+        var html = `<input type="file" id="service_image" name="file" class="dropify form-control" data-default-file="" required />`;
+        $('.service_image').html(html);
+        $('#add-service .dropify').dropify();
+        $('#service_period').val([]);
+        $('#service_period').select2();
+        $('#save_service_form')[0].reset();
         $('#add-service').modal({
             keyboard: false
         });
@@ -60,13 +68,17 @@ async function deleteService(id){
 
 }
 
-function setProductVariant(product_id,selected_variant=''){
-    axios.post(`/client/product/getVariant`, {product_id: product_id})
+async function setProductVariant(product_id,selected_variant='',service_product_id=''){
+    console.log(service_product_id);
+    axios.post(`/client/product/getVariant`, {product_id: product_id,service_product_id:service_product_id})
     .then(async response => {
+        console.log(response.data.data);
         if(response.data.status == "Success"){
             $('#service_product_variant').selectize()[0].selectize.destroy();
             $("#service_product_variant").find('option').remove();
-            $("#service_product_variant").append(response.data.data);
+            $("#service_product_variant").append(response.data.data.variantOpt);
+           // $("#addonSection").html('');
+            $("#addonSection").html(response.data.data.addOnHtml);
             if(selected_variant!=''){
                 var $select = $("#service_product_variant").selectize();
                 var selectize = $select[0].selectize;
@@ -78,11 +90,7 @@ function setProductVariant(product_id,selected_variant=''){
     })
     .catch(e => {
         console.log(e);
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Something went wrong, try again later!',
-        })
+        sweetAlert.error();
     }) 
 }
 
@@ -93,28 +101,42 @@ function GetServiceData(service_id) {
             $('#save_service_form')[0].reset();
             if(response.data.status == "Success"){
                 var service = response.data.data;
+                console.log(service);
                 $('#add-service input[name=long_term__service_id]').val(service_id);
                 $('#add-service .modal-title').html('Edit Service');
-                $("#add-service input[name=serviceSku]").val(service.sku);
-                $("#add-service input[name=serice_price]").val(service.price);
-                $("#add-service input[name=product_quantity]").val(service.product.quantity);
+                $("#add-service input[name=sku]").val(service.sku);
+                $("#add-service input[name=serice_price]").val( (Math.round(service?.variant[0]?.price * 100) / 100).toFixed(2) );
+                $("#add-service input[name=product_quantity]").val(service.long_term_products.quantity);
+                $("#add-service input[name=service_duration]").val(service.service_duration);
+                // select product 
                 var $select = $("#service_product_list").selectize();
                 var selectize = $select[0].selectize;
-                selectize.setValue(service.product.product_id)
-                setProductVariant(service.product.product_id)
-                var image = service.image.proxy_url+'100/100'+service.image.image_path;
-                var html = `<input type="file" id="service_image" name="image" class="dropify form-control" data-default-file="${image}" required />`;
+                selectize.setValue(service.long_term_products.product_id);
+               // select period of service
+                $('#service_period').val(service.ServicePeriods);
+                $('#service_period').select2();
+            
+                
+             
+                // var $service_duration = $("#service_duration").selectize();
+                // var duration_selectize = $service_duration[0].selectize;
+                // duration_selectize.setValue(service.service_duration);
+             
+                await setProductVariant(service.long_term_products.product_id,'',service.long_term_products.id)
+                var image = service.image;
+                var html = `<input type="file" id="service_image" name="file" class="dropify form-control" data-default-file="${image}" required />`;
                 $('.service_image').html(html);
                 $('#add-service .dropify').dropify();
               
-                $('#add-service').modal('show');service_product_list
-                $.each(service.translations, function( index, value ) {
-                    $('#add-service #service_name_'+value.language_id).val(value.name);
+                $('#add-service').modal('show');
+                $.each(service.translation, function( index, value ) {
+                    $('#add-service #service_name_'+value.language_id).val(value.title);
                 });
                 
             }
         })
         .catch(e => {
+            console.log(e);
             sweetAlert.error();
         })  
        
@@ -122,24 +144,32 @@ function GetServiceData(service_id) {
 
 }
 function saveServiceData(formData, data_uri) {
-
+    $('.submitServiceProduct').attr("disabled", true);
+    spinnerJS.showSpinner();
+  
     axios.post(data_uri,formData )
         .then(async response => {
+            hideError()
             console.log(response);
             if(response.data.status == "Success"){
+                spinnerJS.hideSpinner();
                 sweetAlert.success('Success',response.data.message);
             } else{
+                $('.submitServiceProduct').attr("disabled", false);
+                spinnerJS.hideSpinner();
                 sweetAlert.error('',response.data.message);
             }
             $('#save_service_form')[0].reset();
             setTimeout(() => {
+                $('.submitServiceProduct').attr("disabled", false);
                 $('#add-service').modal('hide');
                 longTermServiceTable.ajax.reload();
             },1000);
             document.getElementById("save_service_form").reset();
         })
         .catch(e => {
-          
+            spinnerJS.hideSpinner();
+            $('.submitServiceProduct').attr("disabled", false);
             if (e.response.status === 422) {
                
                 let errors = e.response.data.errors;
@@ -159,6 +189,12 @@ function saveServiceData(formData, data_uri) {
             
         })  
 
+}
+function hideError(){
+    var errorClass = document.getElementsByClassName('invalid-feedback');
+    $.each(errorClass, function( index, value ) {
+        $(this).children("strong").text('');
+    });
 }
 function setServiceSkuFromName(event,getVal='',setVal='') {
     var n1 = $('#'+getVal).val()

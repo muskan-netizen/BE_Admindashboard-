@@ -2107,7 +2107,6 @@ class VendorController extends BaseController{
                         'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled')
                         ->withAvg('product', 'averageRating');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                \Log::info('latitude '.$latitude);
                
                 $latitude = (($latitude != '') && ($latitude != "undefined")) ? $latitude : $preferences->Default_latitude;
                 $longitude = (($longitude != '') &&( $longitude != "undefined")) ? $longitude : $preferences->Default_longitude;
@@ -2493,21 +2492,22 @@ class VendorController extends BaseController{
 
                 $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
 
-                if ($vendor->vendor_templete_id == 5) {
+                if ($vendor->vendor_templete_id == 5) 
+                {
                     $vid = $vendor->id;
 
-                $vendor_categories = Category::select('id')->whereHas('vendorCategory',function ($q)use($vid){
-                    $q->where('vendor_id',$vid)->where('status', 1);
-                })->whereHas('data',function ($q)use($vid){
-                    $q->where('is_live', 1)->where('vendor_id', $vid);
-                })
-                //->withCount(['data' => function ($q)use($vid){
-                //     $q->where('is_live', 1)->where('vendor_id', $vid);
-                // }])
-                ->with(['translation' => function($q) use($langId){
-                    $q->where('category_translations.language_id', $langId);
-                }])->with(['data' => function ($products)use($order_type,$request,$langId,$userid, $multipli,$variantIds,$vid,$startRange, $endRange,$type){
-                    //product query
+                    $vendor_categories = Category::select('id')->whereHas('vendorCategory',function ($q)use($vid){
+                        $q->where('vendor_id',$vid)->where('status', 1);
+                    })->whereHas('data',function ($q)use($vid){
+                        $q->where('is_live', 1)->where('vendor_id', $vid);
+                    })
+                    //->withCount(['data' => function ($q)use($vid){
+                    //     $q->where('is_live', 1)->where('vendor_id', $vid);
+                    // }])
+                    ->with(['translation' => function($q) use($langId){
+                        $q->where('category_translations.language_id', $langId);
+                    }])->with(['data' => function ($products)use($order_type,$request,$langId,$userid, $multipli,$variantIds,$vid,$startRange, $endRange,$type){
+                        //product query
                         $products->byProductCategoryServiceType($type)->where('is_live', 1)->select('products.*',DB::raw("'$multipli' as variant_multiplier"))->withCount('OrderProduct');
                         
                         $products = $products->with([
@@ -2541,6 +2541,10 @@ class VendorController extends BaseController{
                                 });
                     if (!empty($productIds)) {
                         $products = $products->whereIn('id', $productIds);
+                    }
+
+                    if ($vid > 0) {
+                        $products = $products->where('vendor_id', $vid);
                     }
 
                     if ($request->has('brands') && !empty($request->brands)) {
@@ -2600,8 +2604,8 @@ class VendorController extends BaseController{
                     $listData =     ($vendor_categories->toArray());
                     
                    
-                   
                 } else {
+                    
                     $vendorCategories = VendorCategory::with(['category.translation' => function ($q) use ($langId) {
                         $q->where('category_translations.language_id', $langId);
                     }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
@@ -2691,7 +2695,7 @@ class VendorController extends BaseController{
 
                             $products = $products->orderBy('order_product_count', 'desc');
                         }
-                    $products = $products->where('is_live', 1)->groupBy('products.id')->where('vendor_id', $vendor->id)->paginate($paginate);
+                    $products = $products->where('is_live', 1)->groupBy('products.id')->where('products.vendor_id', $vendor->id)->paginate($paginate);
 
                     if (!empty($products)) {
                         foreach ($products as $key => $product) {
@@ -2833,6 +2837,7 @@ class VendorController extends BaseController{
 
                     $products = $products->orderBy('order_product_count', 'desc');
                 }
+                $products = $products->distinct();
                 $products = $products->paginate($limit, $page);
            
                 $response['products'] = $products ?? [];

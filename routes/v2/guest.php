@@ -4,6 +4,7 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
     Route::group(['middleware' => ['dbCheck', 'checkAuth']], function() {
 
         Route::get('category/{id?}', 'Api\v1\v2\CategoryController@categoryData');
+        Route::post('attribute/category/{id?}', 'Api\v1\v2\P2PController@categoryData');
         Route::post('category/filters/{id?}', 'Api\v1\v2\CategoryController@categoryFilters');
          
         Route::get('vendor/{id?}', 'Api\v1\v2\VendorController@productsByVendor');
@@ -15,6 +16,11 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
         Route::get('vendor-optimize/{id?}', 'Api\v1\v2\VendorController@productsByVendorOptimize');  
         Route::match(['get','post'],'vendor-optimize-category/{id}', 'Api\v1\v2\VendorController@productsByVendorCategoryOptimize');  
         Route::post('vendor/vendorProductsFilterOptimize', 'Api\v1\v2\VendorController@vendorProductsFilterOptimize');
+        Route::post('homepage', 'Api\v1\v2\HomeController@homepage');
+        Route::post('get_products', 'Api\v1\v2\HomeController@get_spotlight_deals_selected_producst');
+        Route::post('search/{type}/{id?}', 'Api\v1\v2\HomeController@globalSearch');
+        
+        Route::get('getP2pCategories', 'Api\v1\v2\P2PController@getP2pCategories');
 
     });
     Route::group(['middleware' => ['dbCheck','systemAuth']], function() {

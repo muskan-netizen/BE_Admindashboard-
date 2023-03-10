@@ -36,7 +36,7 @@ $timezone = Auth::user()->timezone;
                                     <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
                                         <i class="mdi mdi-close"></i>
                                     </button>
-                                    <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                                    <input type="search" class="form-control" placeholder="{{ __('Search') }}..." id="search_via_keyword">
                                 </div>
                             </div>
                     </div>
@@ -108,7 +108,11 @@ $timezone = Auth::user()->timezone;
                                             <td class="">
                                                 <b class="text-black">{{@$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                             </td>
-                                            <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
+                                            <td>
+                                                @if(@$order->order->created_at)
+                                                {{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}
+                                                @endif
+                                            </td>
                                             <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
                                         </tr>
                                         @endforeach
@@ -241,7 +245,7 @@ $timezone = Auth::user()->timezone;
     </div>
 <!-- product return modal -->
 <div class="modal fade return-order" id="return_order" tabindex="-1" aria-labelledby="return_orderLabel">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

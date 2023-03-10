@@ -23,7 +23,7 @@
                         </p>
                     </div>
                     <div class="d-flex align-items-center justify-content-end al_clock px-2">
-                        <b>@if($product['inquiry_only']==0) {{ $product["price"] }} @endif</b>
+                        <b>@if($product['inquiry_only']==0) {!!$product["price"] ?? ''!!} @endif</b>
                     </div>
                 </div>
             </div>

@@ -133,11 +133,12 @@
                                                 <a class="action-icon openEditModal" loyaltyID="{{$campaign->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a>
                                             </div> --}}
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('campaign.destroy', $campaign->id) }}" id="deleteCampaign">
+                                                <form method="POST" action="{{ route('campaign.destroy', $campaign->id) }}" id="deleteCampaign{{ $campaign->id }}">
                                                     @csrf
                                                     @method('DELETE')
+                                                    <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
                                                     <div class="form-group">
-                                                       <button type="button" id="deleteCampaignButton" class="btn btn-primary-outline action-icon deleteCampaignButton"><i class="mdi mdi-delete"></i></button>
+                                                       <button type="button" id="deleteCampaignButton" class="btn btn-primary-outline action-icon deleteCampaignButton" data-id="{{ $campaign->id }}"><i class="mdi mdi-delete"></i></button> 
                                                     </div>
                                                 </form>
                                             </div>
@@ -164,6 +165,7 @@
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script type="text/javascript">
     $('.deleteCampaignButton').click(function(e) {
+        var campId=$(this).attr('data-id');
         e.preventDefault();
         Swal.fire({
             title: "{{__('Are you sure?')}}",
@@ -174,7 +176,7 @@
         }).then((result) => {
             if(result.value)
             {
-                $("#deleteCampaign").off("submit").submit();
+                $(`#deleteCampaign${campId}`).submit();
             }else{
                 return false;
             }

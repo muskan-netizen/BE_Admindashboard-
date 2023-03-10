@@ -197,7 +197,7 @@
                 <div class="row mb-2">
                     <div class="col-sm-12">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="page-title">{{ __("Variant") }}</h4>
+                            <h4 class="page-title">{{ getNomenclatureName("Variant") }}</h4>
                             <button class="btn btn-info waves-effect waves-light text-sm-right addVariantbtn" dataid="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
                             </button>
                         </div>
@@ -398,6 +398,9 @@
                     </div> -->
                 </div>
             </div>
+            @if( p2p_module_status() ) 
+                @include('layouts.shared.attribute')
+            @endif
             @if($client_preference_detail->is_vendor_tags == '1')
             {{--  facilty section --}}
 

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\UserDevice;
-use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction,UserDocs,UserRegistrationDocuments};
+use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction,UserDocs,UserRegistrationDocuments, UserVendor};
 
 class ProfileController extends FrontController
 {
@@ -173,7 +173,9 @@ class ProfileController extends FrontController
         $timezone = $request->timezone ? $request->timezone : NULL;
         $user = User::where('id', Auth::user()->id)->first();
         if ($user){
+            $user = Auth::user();
             $user->timezone = $timezone;
+            Auth::user()->timezone = $timezone;
             $user->save();
             return redirect()->back()->with('success', 'Timezone has been updated');
         }
@@ -243,6 +245,36 @@ class ProfileController extends FrontController
         UserDevice::updateOrCreate(['device_token' => $request->fcm_token],['user_id' => Auth::user()->id, 'device_type' => "web"])->first();
         Session::put('current_fcm_token', $request->fcm_token);
         return response()->json([ 'status'=>'success', 'message' => 'Token updated successfully']);
+    }
+
+    //get my ads/products
+    public function getMyAds(){
+        $user = Auth::user();	
+        $user_vendor = UserVendor::where('user_id', $user->id)->pluck('vendor_id')->toArray();
+        $products = [];
+        if(@$user_vendor){
+            $products = Product::with(['media.image', 'primary', 'category.cat', 'category.categoryDetail', 'brand', 'variant' => function ($v) {
+                $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
+            }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title','category_id')
+                ->whereIn('vendor_id', $user_vendor)->whereHas('category.categoryDetail', function ($query) {
+                    $query->where('type_id','!=','7');
+                })->get()->sortBy('primary.title', SORT_REGULAR, false);
+        }
+        // dd($products);
+        return view('frontend.account.my-ads',compact('products'));
+    }
+
+    public function getNotification(){
+        return view('frontend.account.notifications');
+    }
+
+    public function updatePostStatus(Request $request,$domain = ''){
+        if ($request->ajax()) {
+            $product = Product::where('id', $request->product_id)->update([
+                'is_live' => $request->status
+            ]);
+            return response()->json([ 'status'=>'success', 'message' => 'Post status updated successfully']);
+        }
     }
 
 }

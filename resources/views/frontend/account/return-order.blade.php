@@ -47,50 +47,58 @@
                                 @endforeach
                             @endforeach
 
-                                <form id="return-upload-form" class="theme-form" action="javascript:void(0)" method="post" enctype="multipart/form-data">
+                                <form id="return-upload-form" class="theme-form bg-light mt-2" action="javascript:void(0)" method="post" enctype="multipart/form-data">
+
                                         @csrf
                                     <input type="hidden" name="order_vendor_product_id" value="{{app('request')->input('return_ids')}}">
                                     <input type="hidden" name="file_set" id="files_set" value="0">
-                                    <div id="remove_files">
-                                    </div>
-                                    <div class="row rating_files">
-                                        <div class="col-12">
-                                        <label>{{__('Upload Images')}}</label>
-                                        </div>
-                                        <div class="col-6 col-md-3 col-lg-2">
-                                            <div class="file file--upload">
-                                                <label for="input-file">
-                                                    <span class="plus_icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                                </label>
-                                                <input id="input-file" type="file" name="images[]" accept="image/*"  multiple>
+                                    <div class="row ">
+                                        <div class="col-md-6 py-2">
+                                            <div id="remove_files"></div>
+                                            <div class="rating_files">
+                                                <div class="col-12 mb-3">
+                                                    <label>{{__('Upload Images')}}</label>
+                                                    <div class="file file--upload w-100 h-100">
+                                                        <label for="input-file">
+                                                            <span class="plus_icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                                        </label>
+                                                        <input id="input-file" type="file" name="images[]" accept="image/*"  multiple>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <span class="row show-multiple-image-preview" id="thumb-output">
+                                                    </span>
+                                                </div>
 
                                             </div>
-                                        </div>
-                                        <div class="col-10">
-                                            <span class="row show-multiple-image-preview" id="thumb-output">
-                                            </span>
-                                        </div>
-
-                                    </div>
 
 
-                                    <div class="row form-group">
-                                        <div class="col-md-6">
-                                            <label>{{__('Reason for return product')}}</label>
-                                            <select class="form-control" name="reason" id="reason">
-                                                @foreach ($reasons as $reason)
-                                                    <option value="{{$reason->title}}">{{$reason->title}}</option>
-                                                @endforeach
-                                            </select>
+
                                         </div>
+                                        <div class="col-md-6 py-2">
+                                                <div class="col-md-12 mb-2">
+                                                    <label>{{__('Reason for return product')}}</label>
+                                                    <select class="form-control" name="reason" id="reason">
+                                                        @foreach ($reasons as $reason)
+                                                            <option value="{{$reason->title}}">{{$reason->title}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label>{{__('Comments (Optional)')}}:</label>
+                                                    <textarea class="form-control" name="coments" id="comments"></textarea>
+                                                </div>
+
+                                            </div>
+
                                     </div>
-                                    <div class="form-group">
-                                        <label>{{__('Comments (Optional)')}}:</label>
-                                        <textarea class="form-control" name="coments" id="comments" cols="20" rows="4"></textarea>
+                                    <div class="col-12">
+                                        <span class="text-danger" id="error-msg"></span>
+                                        <span class="text-success" id="success-msg"></span>
+                                        <button class="btn btn-solid mt-2 float-right" id="return_form_button">{{__('Request')}}</button>
                                     </div>
-                                    <span class="text-danger" id="error-msg"></span>
-                                    <span class="text-success" id="success-msg"></span>
-                                    <button class="btn btn-solid mt-3" id="return_form_button">{{__('Request')}}</button>
+
                                 </form>
                             </div>
                         </div>

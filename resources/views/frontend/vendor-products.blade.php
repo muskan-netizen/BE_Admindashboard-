@@ -11,7 +11,14 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @section('content')
-
+@php
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+@endphp
+<!-- get current page -->
+@php
+$currentPage = $_GET['page']??1;
+@endphp
+<!-- get current page end -->
 <!-- section start -->
 <section class="section-b-space ratio_asos al_vendor_product_page">
     <div class="collection-wrapper">
@@ -64,7 +71,7 @@
 
                                         </div>
                                         @if($vendor->desc)
-                                            <div class="col-md-12 text-left vender-peragraph mt-3 mb-2">
+                                            <div class="col-md-12 text-center vender-peragraph mt-3 mb-2">
                                                 <p>{{$vendor->desc}}</p>
                                                <p> {!! $vendor->short_desc !!}</p>
                                             </div>
@@ -115,7 +122,11 @@
                         
                         <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
                             @php
-                            $slug = $sets->variantDetail->varcategory ?  ($sets->variantDetail->varcategory->cate ? $sets->variantDetail->varcategory->cate->slug.' > ' : '' ) : '';
+                            
+                            $slug = '';
+                            if(!empty($sets->variantDetail) && !empty($sets->variantDetail->varcategory) && !empty($sets->variantDetail->varcategory->cate) && !empty($sets->variantDetail->varcategory->cate->slug)) {
+                                $slug = $sets->variantDetail->varcategory->cate->slug;
+                            }
                             @endphp
                             @if($slug)
                             <h3 class="collapse-block-title"> {{$slug . $sets->title}}</h3>
@@ -162,7 +173,8 @@
                         @endif
                     </aside>
                     </div>
-                    @if(!empty($newProducts) && count($newProducts) > 0)
+                    @php $show_new_Products = 0; @endphp
+                    @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
@@ -207,7 +219,7 @@
                                                                 <b>
                                                                     @if($new['inquiry_only'] == 0)
                                                                         <?php $multiply = $new['variant_multiplier']; ?>
-                                                                        {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                        {{$additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                     @endif
                                                                 </b>
 
@@ -237,7 +249,7 @@
                     @endif
                     <!-- side-bar banner end here -->
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -282,18 +294,29 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts px-0">
-                                        <div class="col-12 text-right">
+                                        <div class="col-12 custom_filtter mt-2">
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
+                                                <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
                                                 <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
                                                 <option value="a_to_z" {{isset($input['order_type']) && $input['order_type'] == "a_to_z" ? 'selected' : ''}}>{{__('A to Z')}}</option>
                                                 <option value="z_to_a" {{isset($input['order_type']) && $input['order_type'] == "z_to_a" ? 'selected' : ''}}>{{__('Z to A')}}</option>
                                                 <option value="low_to_high" {{isset($input['order_type']) && $input['order_type'] == "low_to_high" ? 'selected' : ''}}>{{__('Cost : Low to High')}}</option>
                                                 <option value="high_to_low" {{isset($input['order_type']) && $input['order_type'] == "high_to_low" ? 'selected' : ''}}>{{__('Cost : High to Low')}}</option>
                                                 <option value="rating" {{isset($input['order_type']) && $input['order_type'] == "rating" ? 'selected' : ''}}>{{__('Avg. Customer Review')}}</option>
-                                                <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
+                                                
 
                                             </select>
+                                            <!-- <ul>
+                                                <li><span>Sort By:</span></li>
+                                                <li><a href="javascript:void(0)" class="active">Featured</a></li>
+                                                <li><a href="javascript:void(0)">A to Z</a></li>
+                                                <li><a href="javascript:void(0)">Z to A</a></li>
+                                                <li><a href="javascript:void(0)">Cost : Low to High</a></li>
+                                                <li><a href="javascript:void(0)">Cost : High to Low</a></li>
+                                                <li><a href="javascript:void(0)">Avg. Customer Review</a></li>
+                                                <li><a href="javascript:void(0)">Newest Arrivals</a></li>
+                                            </ul> -->
                                         </div>
                                         <div class="product-wrapper-grid alVender">
                                             <div class="row margin-res">
@@ -335,7 +358,7 @@
 
                                                                     <div class="d-flex align-items-center justify-content-between">
                                                                         @if($data['inquiry_only'] == 0)
-                                                                            <h4 class="mt-0">{{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                            <h4 class="mt-0">{{$additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($data->variant_price * $data->variant_multiplier)) : Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                         @endif
                                                                       <!--   @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)
@@ -515,6 +538,13 @@
             },
         });
     }
+
+    $(document).ready(function(){
+        $('.sortingFilter').val('newly_added');
+        filterProducts();
+        });
 </script>
+
+
 
 @endsection

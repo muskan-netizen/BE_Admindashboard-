@@ -105,6 +105,17 @@
         <div class="row mb-1">
             <div class="col-sm-12">
                 <div class="text-sm-left">
+
+                    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
                     @if (\Session::has('success'))
                         <div class="alert alert-success">
                             <span>{!! \Session::get('success') !!}</span>
@@ -225,49 +236,35 @@
                                         <h4 class="mb-0"> {{ __('Payout') }}</h4>
                                     </div>
                                     <div class="col-6 d-flex align-items-center justify-content-end mb-3">
-                                        {{-- <a class="btn btn-info  waves-effect waves-light text-sm-right action_product_button" dataid="0"
-                                            id="action_product_button" href="javascript:void(0);"
-                                            style="display: none;"><i class="mdi mdi-plus-circle mr-1"></i>
-                                            {{ __('Action') }}
-                                        </a>
-                                        <a class="btn btn-info waves-effect waves-light text-sm-right importProductBtn mx-2 {{ $vendor->status == 1 ? '' : 'disabled' }}"
-                                            dataid="0" href="javascript:void(0);"
-                                            {{ $vendor->status == 1 ? '' : 'disabled' }}><i
-                                                class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
-                                        </a> --}}
-                                        {{-- <a class="btn btn-info waves-effect waves-light text-sm-right addProductBtn {{ $vendor->status == 1 ? '' : 'disabled' }}"
-                                            dataid="0" href="javascript:void(0);"><i
-                                                class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}
-                                        </a> --}}
-
+                                       @php 
+                                        $razorpayConnect = false;
+                                       @endphp
                                         @foreach ($payout_options as $opt)
                                             @if($opt->code != 'cash')
                                             @if($opt->is_connected == 1)
                                                 <h5 class="mr-2">
                                                     <i class="fa fa-check text-success mr-2"></i><b>{{ __('Connected to') .' '. __($opt->title) }}</b>
                                                 </h5>
+                                                @php $razorpayConnect =  true; @endphp
                                             @else
-                                                <button type="button" class="btn btn-info waves-effect text-sm-right connect_btn" id="{{$opt->code}}_connect_btn" 
+                                                <button type="button" class="btn btn-info waves-effect text-sm-right connect_btn mr-2" id="{{$opt->code}}_connect_btn" 
                                                     @if($opt->code == 'stripe')
                                                         onclick="location.href='{{$opt->stripe_connect_url}}'";
+                                                    @elseif($opt->code == 'razorpay')
+                                                    data-toggle="modal" data-target="#razorpay-connect-modal"
                                                     @endif
                                                 data-vendor="{{$vendor->id}}"
                                                 data-payout_option="{{$opt->code}}"
                                                 >
                                                     {{ __("Connect to") .' '. __($opt->title) }}
                                                 </button>
+                                               
                                             @endif
                                             @endif
                                         @endforeach
-                                        
-                                        {{-- @if($is_stripe_connected == 1)
-                                            <h5><i class="fa fa-check text-success mr-2"></i><b>Connected to Stripe</b></h5>
-                                        @else
-                                            @if($is_stripe_payout_enabled == 1)
-                                                <button type="button" class="btn btn-info waves-effect text-sm-right" onclick="location.href='{{$stripe_connect_url}}'">{{ __("Connect to Stripe") }}</button>
-                                            @endif
-                                        @endif --}}
-                                        <button type="button" class="btn btn-info waves-effect text-sm-right ml-2" data-toggle="modal" data-target="#pay-receive-modal">{{ __("Payout") }}</button>
+                                       
+                                        <button type="button" class="btn btn-info waves-effect text-sm-right" data-toggle="modal" data-target="#pay-receive-modal">{{ __("Payout") }}</button>
+                                        @if($razorpayConnect == true)<button type="button" class="btn btn-info waves-effect text-sm-right ml-2" data-toggle="modal" data-target="#razorpay-connect-modal">{{ __("Add New Bank") }}</button> @endif
                                     </div>
                                     <div class="col-md-12">
                                         <div class="table-responsive">
@@ -307,22 +304,6 @@
                     @csrf
                     <div class="modal-body px-3 py-0">
                         <div class="row">
-                            {{-- <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="login-form setmodal">
-                                        <ul class="list-inline">
-                                            <li class="d-inline-block mr-2">
-                                                <input type="radio" id="teacher" name="payment_type" value="1" checked="">
-                                                <label for="teacher"><span class="showspan">Pay</span></label>
-                                                </li>
-                                            <li class="d-inline-block mr-2">
-                                                <input type="radio" id="student" name="payment_type" value="2">
-                                                <label for="student"><span class="showspan">Receive</span></label>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div> --}}
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field-1" class="control-label">Amount</label>
@@ -385,6 +366,7 @@
             </div>
         </div>
     </div>
+    @include('backend.vendor.razorpay-api-account')
 
     <script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script>
     <!-- end product popup -->

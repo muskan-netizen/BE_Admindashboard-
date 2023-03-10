@@ -9,6 +9,7 @@ $applocale = 'en';
 if(session()->has('applocale')){
 $applocale = session()->get('applocale');
 }
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 @endphp
 
 
@@ -32,9 +33,11 @@ $applocale = session()->get('applocale');
                <li>
                   <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
                </li>
+               @if($getAdditionalPreference['is_phone_signup'] != 1)
                <li>
                   <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
                </li>
+               @endif
                @endif
                @if($client_preference_detail->show_wishlist == 1)
                <li class="onhover-dropdown_al mobile-wishlist_al">
@@ -182,6 +185,9 @@ $applocale = session()->get('applocale');
                <div class="rightHead d-flex align-items-end">
                   <ul class="p-0 m-0 d-flex align-items-center ml-auto">
                      <!-- alUserIcon start -->
+                     @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                        <li class="add_post pr-3"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span> {{__('Add Post')}}</span></a></li>
+                    @endif
                      <li class="alUserIcon onhover-dropdown">
                         <a href="#">
                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

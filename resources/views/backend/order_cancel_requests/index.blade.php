@@ -41,7 +41,7 @@
                                 <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
                                     <i class="mdi mdi-close"></i>
                                 </button>
-                                <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                                <input type="search" class="form-control" placeholder="{{ __('Search') }}..." id="search_via_keyword">
                             </div>
                         </div>
                     </div>
@@ -156,6 +156,32 @@
     </div>
 
 </div>
+
+<!-- start vendor request reject order -->
+<div class="modal fade vendor-order-reject order_popop" id="vendor_order_reject" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body p-3">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div id="cancel-order-form-modal">
+            <form id="addRejectReqForm" method="post" class="text-center" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" name="id" id="id" value="">
+                <input type="hidden" name="status" id="status" value="">
+                <input type="hidden" name="title" id="title" value="">
+                <p id="error-case" style="color:red;"></p>
+                <label style="font-size:medium;">Enter reason for reject the order. <small>(Optional)</small> </label>
+                <textarea class="reject_reason w-100" data-name="reject_reason" name="reject_reason" id="reject_reason" cols="50" rows="5"></textarea>
+                <button type="button" class="btn btn-info waves-effect waves-light vendorrejectReqSubmit mt-2">{{ __("Submit") }}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- end vendor request reject order -->
 
 <script type="text/template" id="user_id_section">
     <li class="d-flex justify-content-start align-items-center position-relative" id ="user_selected_<%= id %>" data-section_number="<%= id %>">

@@ -28,7 +28,8 @@ use App\Exports\CustomerExport;
 use App\Http\Traits\ApiResponser;
 use App\Models\UserDevice;
 use Session;
-use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction,UserDocs,UserRegistrationDocuments,OrderVendor,VendorOrderStatus, ClientCurrency};
+use DB;
+use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency};
 
 class UserController extends BaseController
 {
@@ -37,8 +38,8 @@ class UserController extends BaseController
 
     public function __construct()
     {
-        $code = Client::orderBy('id','asc')->value('code');
-        $this->folderName = '/'.$code.'/user/document';
+        $code = Client::orderBy('id', 'asc')->value('code');
+        $this->folderName = '/' . $code . '/user/document';
     }
     use ToasterResponser;
     /**
@@ -68,35 +69,61 @@ class UserController extends BaseController
             }
         }
         $csvCustomers = CsvCustomerImport::all();
-        return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries,'csvCustomers'=>$csvCustomers,'user_registration_documents'=>$user_registration_documents]);
+        return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries, 'csvCustomers' => $csvCustomers, 'user_registration_documents' => $user_registration_documents]);
     }
     public function getFilterData(Request $request)
     {
+
+
         $current_user = Auth::user();
         $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
-        if($request->type == 'active'){
+        if (!empty($request->date_filter)) {
+            $date = explode(",", $request->date_filter);
+            if (isset($date[0]) && isset($date[1])) {
+
+                $e_day      = date('Y-m-d', strtotime($date[1]. ' + 1 day'));
+                $start_date = Carbon::parse($date[0])->format('Y-m-d');
+                $end_date   = Carbon::parse($e_day)->format('Y-m-d');
+                $start_date = $start_date . ' 00:00:00';
+                $end_date   = $end_date . ' 00:00:00';
+                $query      = 'SELECT * FROM users WHERE EXISTS (SELECT 1 FROM orders WHERE orders.user_id = users.id AND orders.created_at >= "'.$start_date.'" AND orders.created_at <= "'.$end_date.'")';
+                $user_ids   = DB::select($query); 
+               
+                $user_ids   = array_column($user_ids, 'id');
+               
+                $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->whereNotIn('id',$user_ids)->where('is_superadmin', '!=', 1)->where('created_at', '<=', $end_date )
+                ->orderBy('id', 'desc');
+                
+
+             
+
+            }
+        }
+
+
+        if ($request->type == 'active') {
             $users->where('status', 1);
-        }else if($request->type == 'inactive'){
+        } else if ($request->type == 'inactive') {
             $users->where('status', 3);
         }
         return Datatables::of($users)
-            ->addColumn('edit_url', function($users) {
+            ->addColumn('edit_url', function ($users) {
                 return route('customer.new.edit', $users->id);
             })
-            ->addColumn('delete_url', function($users) {
+            ->addColumn('delete_url', function ($users) {
                 return route('customer.account.action', [$users->id, 3]);
             })
-            ->addColumn('image_url', function($users) {
+            ->addColumn('image_url', function ($users) {
                 return $users->image['proxy_url'] . '40/40' . $users->image['image_path'];
             })
-            ->addColumn('user_type', function($users) {
+            ->addColumn('user_type', function ($users) {
                 if (!empty($users->is_admin) && $users->is_admin == 1) {
                     return 'Vendor';
                 } else {
                     return 'Customer';
                 }
             })
-            ->addColumn('login_type', function($users) {
+            ->addColumn('login_type', function ($users) {
                 if (!empty($users->facebook_auth_id)) {
                     return 'Facebook';
                 } elseif (!empty($users->twitter_auth_id)) {
@@ -105,30 +132,30 @@ class UserController extends BaseController
                     return 'Google';
                 } elseif (!empty($users->apple_auth_id)) {
                     return 'Apple';
-                } else{
+                } else {
                     return 'Email';
                 }
             })
-            ->addColumn('is_superadmin', function($users) use($current_user) {
+            ->addColumn('is_superadmin', function ($users) use ($current_user) {
                 return $current_user->is_superadmin;
             })
-            ->addColumn('wallet_id', function($users) {
+            ->addColumn('wallet_id', function ($users) {
                 return $users->wallet->id ?? '';
             })
-            ->addColumn('signup_date', function($users) {
+            ->addColumn('signup_date', function ($users) {
                 $date = dateTimeInUserTimeZone($users->created_at, $users->timezone);
-                return explode(' ',$date)[0] ; 
+                return explode(' ', $date)[0];
             })
-            ->addColumn('last_login', function($users) use($current_user) {
+            ->addColumn('last_login', function ($users) use ($current_user) {
                 return is_null($users->last_login_at) ? ' - ' : dateTimeInUserTimeZone($users->last_login_at, $current_user->timezone);
             })
-            ->addColumn('total_order_value', function($users) {
+            ->addColumn('total_order_value', function ($users) {
                 return decimal_format($users->orders->sum('total_amount'));
             })
-            ->addColumn('total_discount_value', function($users) {
+            ->addColumn('total_discount_value', function ($users) {
                 return decimal_format($users->orders->sum('total_discount'));
             })
-            ->addColumn('login_type_value', function($users) {
+            ->addColumn('login_type_value', function ($users) {
                 if (!empty($users->facebook_auth_id)) {
                     return $users->facebook_auth_id;
                 } elseif (!empty($users->twitter_auth_id)) {
@@ -137,28 +164,26 @@ class UserController extends BaseController
                     return $users->google_auth_id;
                 } elseif (!empty($users->apple_auth_id)) {
                     return $users->apple_auth_id;
-                } else{
+                } else {
                     return $users->email;
                 }
             })
-            ->addColumn('balanceFloat', function($users) {
+            ->addColumn('balanceFloat', function ($users) {
                 return decimal_format($users->balanceFloat);
             })
-            ->addColumn('edit_url', function($users) {
+            ->addColumn('edit_url', function ($users) {
                 return route('customer.new.edit', $users->id);
             })
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
                     $search = $request->get('search');
-                    $instance->where(function($query) use($search) {
-                        $query->where('name', 'LIKE', '%'.$search.'%')
-                        ->orWhere('email', 'LIKE', '%'.$search.'%')
-                        ->orWhere('phone_number', 'LIKE', '%'.$search.'%')
-                        ->orWhere('import_user_id', 'LIKE', '%'.$search.'%');
+                    $instance->where(function ($query) use ($search) {
+                        $query->where('name', 'LIKE', '%' . $search . '%')
+                            ->orWhere('email', 'LIKE', '%' . $search . '%')
+                            ->orWhere('phone_number', 'LIKE', '%' . $search . '%')
+                            ->orWhere('import_user_id', 'LIKE', '%' . $search . '%');
                     });
-
-
                 }
             }, true)
             ->make(true);
@@ -236,8 +261,8 @@ class UserController extends BaseController
     {
         $customer = new User();
 
-       $validation  = Validator::make($request->all(), $customer->rules())->validate();
-       //$validator = $this->validator($request->all())->validate();
+        $validation  = Validator::make($request->all(), $customer->rules())->validate();
+        //$validator = $this->validator($request->all())->validate();
 
         $saveId = $this->save($request, $customer, 'false');
         if ($saveId > 0) {
@@ -286,10 +311,10 @@ class UserController extends BaseController
                         $filePath = $this->folderName . '/' . Str::random(40);
                         $file = $request->file($doc_name);
                         $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
-                        UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $file_name]);
+                        UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id], ['file_name' => $file_name]);
                     }
                 } else {
-                    UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $request->$doc_name]);
+                    UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id], ['file_name' => $request->$doc_name]);
                 }
             }
         }
@@ -301,7 +326,7 @@ class UserController extends BaseController
 
 
 
-     /**
+    /**
      * Import Excel file for vendors
      *
      * @param  \Illuminate\Http\Request  $request
@@ -309,10 +334,10 @@ class UserController extends BaseController
      */
     public function importCsv(Request $request)
     {
-        if($request->has('customer_csv')){
+        if ($request->has('customer_csv')) {
             $csv_vendor_import = new CsvCustomerImport();
-            if($request->file('customer_csv')) {
-                $fileName = time().'_'.$request->file('customer_csv')->getClientOriginalName();
+            if ($request->file('customer_csv')) {
+                $fileName = time() . '_' . $request->file('customer_csv')->getClientOriginalName();
                 $filePath = $request->file('customer_csv')->storeAs('csv_customers', $fileName, 'public');
                 $csv_vendor_import->name = $fileName;
                 $csv_vendor_import->path = '/storage/' . $filePath;
@@ -348,39 +373,43 @@ class UserController extends BaseController
     public function newEdit($domain = '', $id)
     {
         $subadmin = User::find($id);
-        $permissions = Permissions::where('status',1)->whereNotin('id',[4,5,6,7,8,9,10,11,14,15,16,22,23,24,25])->get();
+        $permissions = Permissions::where('status', 1)->whereNotin('id', [4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 22, 23, 24, 25])->get();
         $user_permissions = UserPermissions::where('user_id', $id)->get();
         $vendor_permissions = UserVendor::where('user_id', $id)->pluck('vendor_id')->toArray();
         $user_docs = UserDocs::where('user_id', $id)->get();
         $user_registration_documents = UserRegistrationDocuments::get();
         $vendors = Vendor::where('status', 1)->get();
-        $active_orders = $this->getUserOrders($id,'active');
-        $completed_orders =  $this->getUserOrders($id,'completed');
+        $active_orders = $this->getUserOrders($id, 'active');
+        $completed_orders =  $this->getUserOrders($id, 'completed');
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents,'active_orders'=>$active_orders,'completed_orders'=>$completed_orders,'clientCurrency'=>$clientCurrency,'fixedFee'=>$fixedFee]);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        $roles = Role::where('status', 1)
+            // ->where('is_enable_pricing',1)
+            ->get();
+        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions, 'user_docs' => $user_docs, 'user_registration_documents' => $user_registration_documents, 'active_orders' => $active_orders, 'completed_orders' => $completed_orders, 'clientCurrency' => $clientCurrency, 'fixedFee' => $fixedFee, 'getAdditionalPreference' => $getAdditionalPreference, 'roles' => $roles]);
     }
-    public function getUserOrders($id,$order_type){
+    public function getUserOrders($id, $order_type)
+    {
         $user = Auth::user();
-        if($order_type == 'active'){
+        if ($order_type == 'active') {
             $order_status_option_id = [2, 4, 5];
-        }elseif($order_type == 'completed'){
+        } elseif ($order_type == 'completed') {
             $order_status_option_id = [3, 6];
         }
-        $orders = OrderVendor::with('orderDetail','products')->where('user_id',$id)->whereIn('order_status_option_id',$order_status_option_id)->orderBy('id','desc')->get();
-        foreach($orders as $key=>$order){
+        $orders = OrderVendor::with('orderDetail', 'products')->where('user_id', $id)->whereIn('order_status_option_id', $order_status_option_id)->orderBy('id', 'desc')->get();
+        foreach ($orders as $key => $order) {
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->order_id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
             $order->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
             $product_total_count = 0;
             foreach ($order->products as $product) {
                 $product_total_count += $product->quantity * $product->price;
-                $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
+                $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image) ? $product->media->first()->image->path : getDefaultImagePath();
             }
         }
-        return $orders; 
-
+        return $orders;
     }
     /**
      * Update the specified resource in storage.
@@ -391,13 +420,14 @@ class UserController extends BaseController
      */
     public function newUpdate(Request $request, $domain = '', $id)
     {
-      
+        $user = User::where('id', $id)->first();
         $data = [
-            'status' => $request->status,
-            'is_admin' => $request->is_admin,
+            'status'        => $request->status,
+            'role_id'       => $request->has('role_id') ? $request->get('role_id') : $user->role_id,
+            'is_admin'      => $request->is_admin,
             'is_superadmin' => 0
         ];
-        $client = User::where('id', $id)->update($data);
+        $client = $user->update($data);
         //for updating permissions
         $removepermissions = UserPermissions::where('user_id', $id)->delete();
         if ($request->permissions) {
@@ -427,10 +457,10 @@ class UserController extends BaseController
                         $filePath = $this->folderName . '/' . Str::random(40);
                         $file = $request->file($doc_name);
                         $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
-                        UserDocs::updateOrCreate(['user_id' => $id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $file_name]);
+                        UserDocs::updateOrCreate(['user_id' => $id, 'user_registration_document_id' => $user_registration_document->id], ['file_name' => $file_name]);
                     }
                 } else {
-                    UserDocs::updateOrCreate(['user_id' => $id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $request->$doc_name]);
+                    UserDocs::updateOrCreate(['user_id' => $id, 'user_registration_document_id' => $user_registration_document->id], ['file_name' => $request->$doc_name]);
                 }
             }
         }
@@ -443,7 +473,7 @@ class UserController extends BaseController
         $client = Client::where('code', Auth::user()->code)->first();
         $tzlist = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
 
-        $tzlist = Timezone::whereIn('timezone',$tzlist)->get();
+        $tzlist = Timezone::whereIn('timezone', $tzlist)->get();
         return view('backend/setting/profile')->with(['client' => $client, 'countries' => $countries, 'tzlist' => $tzlist]);
     }
 
@@ -476,7 +506,7 @@ class UserController extends BaseController
         } else {
             $data['logo'] = $client->getRawOriginal('logo');
         }
-        
+
         if ($request->hasFile('dark_logo')) {
             $file = $request->file('dark_logo');
             $file_name = 'Clientlogo/' . uniqid() . '.' .  $file->getClientOriginalExtension();
@@ -524,18 +554,18 @@ class UserController extends BaseController
             'password' => 'required|confirmed|min:6',
         ]);
         if ($validator->fails()) {
-           $message = $validator->getMessageBag()->toArray();
-           $data = array('type'=>'error','message'=>$message['password'][0]);
-           return json_encode($data);
+            $message = $validator->getMessageBag()->toArray();
+            $data = array('type' => 'error', 'message' => $message['password'][0]);
+            return json_encode($data);
         }
         if (Hash::check($request->old_password, $client->password)) {
             $client->password = Hash::make($request->password);
             $client->save();
             $clientData = 'empty';
             //return redirect()->back()->with('success', 'Password Changed successfully!');
-            $data = array('type'=>'success','message'=>'Password Changed successfully!');
-            
-            
+            $data = array('type' => 'success', 'message' => 'Password Changed successfully!');
+
+
             // $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username','mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
             // $user = Auth()->user();
             //     $phone_number = "+919999999999";
@@ -548,7 +578,7 @@ class UserController extends BaseController
 
             return json_encode($data);
         } else {
-            $data = array('type'=>'error','message'=>'Wrong Old Password');
+            $data = array('type' => 'error', 'message' => 'Wrong Old Password');
             return json_encode($data);
 
             // $request->session()->flash('error', 'Wrong Old Password');
@@ -573,29 +603,29 @@ class UserController extends BaseController
         //     $trans->type = $trans->type;
         // }
         return Datatables::of($trans)
-            ->addColumn('date', function($trans) {
+            ->addColumn('date', function ($trans) {
                 return Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
             })
-            ->editColumn('amount', function($trans) use($clientCurrency) {
+            ->editColumn('amount', function ($trans) use ($clientCurrency) {
                 return $clientCurrency->currency->symbol . sprintf("%.2f", ($trans->amount / 100));
             })
-            ->addColumn('description', function($trans) {
+            ->addColumn('description', function ($trans) {
                 $reason = json_decode($trans->meta, true);
                 $description = $reason['description'] ?? $reason[0];
                 return $description;
             })
-            ->addColumn('remarks', function($trans) {
+            ->addColumn('remarks', function ($trans) {
                 $reason = json_decode($trans->meta, true);
                 $remarks = $reason['remarks'] ?? '';
                 return $remarks;
             })
-            ->addColumn('created_by', function($trans) {
+            ->addColumn('created_by', function ($trans) {
                 $reason = json_decode($trans->meta, true);
                 $created_by = $reason['created_by'] ?? '';
-                if($created_by > 0){
+                if ($created_by > 0) {
                     $user = User::find($created_by)->value('name');
                     return $user;
-                }else{
+                } else {
                     return '';
                 }
             })
@@ -604,18 +634,26 @@ class UserController extends BaseController
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
                     $search = $request->get('search');
-                    $instance->where(function($query) use($search){
-                        $query->where('date', 'LIKE', '%'.$search.'%')
-                        ->orWhere('meta', 'LIKE', '%'.$search.'%')
-                        ->orWhere('amount', 'LIKE', '%'.$search.'%');
+                    $instance->where(function ($query) use ($search) {
+                        $query->where('date', 'LIKE', '%' . $search . '%')
+                            ->orWhere('meta', 'LIKE', '%' . $search . '%')
+                            ->orWhere('amount', 'LIKE', '%' . $search . '%');
                     });
                 }
             })->make(true);
     }
 
-    public function export()
-    {
-        return Excel::download(new CustomerExport, 'users.xlsx');
+    public function export(Request $request)
+    {   
+       
+        $fileName ="users.xlsx";
+        if(!empty($request->start_date) && !empty($request->end_date)){
+            $daterange = $request->start_date.' to '.$request->end_date;
+            $fileName ="no_order_by_users_for($daterange).xlsx";
+        }
+
+       
+        return Excel::download(new CustomerExport($request),$fileName);
     }
 
     public function save_fcm(Request $request)
@@ -646,32 +684,31 @@ class UserController extends BaseController
     public function sendNotification(Request $request)
     {
         //dd($request->all());
-        if(isset($request->all_customer))
-        {
+        if (isset($request->all_customer)) {
             //return $request->all();
             return $customers = User::where('status', 1)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc')->get();
-        }else{
+        } else {
             //return "sdfsd";
         }
     }
 
-    public function sendPushNotification($user_ids, $orderData, $header_code='')
+    public function sendPushNotification($user_ids, $orderData, $header_code = '')
     {
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-           $notification_content = NotificationTemplate::where('id', 4)->first();
-            
+            $notification_content = NotificationTemplate::where('id', 4)->first();
+
             if ($notification_content) {
-                if($header_code == ''){
+                if ($header_code == '') {
                     $header_code = Client::orderBy('id', 'asc')->first()->code;
                 }
                 $code = $header_code;
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
-                
+
                 $data = [
                     "registration_ids" => $devices,
                     "notification" => [
@@ -700,17 +737,17 @@ class UserController extends BaseController
         $search = $request->search;
         if (isset($search)) {
             if ($search == '') {
-                $users = User::orderby('name', 'asc')->select('id', 'name', 'email')->where('status','1')->limit(10)->get();
+                $users = User::orderby('name', 'asc')->select('id', 'name', 'email')->where('status', '1')->limit(10)->get();
             } else {
-                $users = User::orderby('name', 'asc')->select('id', 'name', 'email')->where('status','1')
-                ->where(function($q) use($search){
-                    $q->where('name', 'like', '%'.$search.'%')->orWhere('email', 'like', '%'.$search.'%');
-                })
-                ->limit(10)->get();
+                $users = User::orderby('name', 'asc')->select('id', 'name', 'email')->where('status', '1')
+                    ->where(function ($q) use ($search) {
+                        $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
+                    })
+                    ->limit(10)->get();
             }
             $response = array();
             foreach ($users as $user) {
-                $response[] = array("value" => $user->id, "label" => $user->name . '('.$user->email.')');
+                $response[] = array("value" => $user->id, "label" => $user->name . '(' . $user->email . ')');
             }
 
             return response()->json($response);
@@ -721,21 +758,20 @@ class UserController extends BaseController
 
     public function payReceive(Request $request, $domain = '')
     {
-        try{
+        try {
             $user_id = $request->cusid;
             $user = User::where('id', $user_id)->where('status', 1)->first();
             $amount = $request->amount;
             $wallet = $user->wallet;
             if ($amount > 0) {
-                if($request->payment_type == 1){
+                if ($request->payment_type == 1) {
                     $wallet->depositFloat($amount, [
                         'description' => 'Wallet has been <b>Credited</b>',
                         'remarks' => $request->remarks,
                         'created_by' => Auth::id()
                     ]);
-                }
-                elseif($request->payment_type == 2){
-                    if($amount > $user->balanceFloat){
+                } elseif ($request->payment_type == 2) {
+                    if ($amount > $user->balanceFloat) {
                         return $this->errorResponse(__('Amount is greater than customer available funds'), 422);
                     }
                     $wallet->withdrawFloat($amount, [
@@ -743,16 +779,14 @@ class UserController extends BaseController
                         'remarks' => $request->remarks,
                         'created_by' => Auth::id()
                     ]);
-                }
-                else{
+                } else {
                     return $this->errorResponse(__('Invalid Data'), 422);
                 }
                 return $this->successResponse('', __('Payment is successfully completed'), 201);
-            }else{
+            } else {
                 return $this->errorResponse(__('Insufficient Amount'), 422);
-            }            
-        }
-        catch (Exception $e) {
+            }
+        } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
