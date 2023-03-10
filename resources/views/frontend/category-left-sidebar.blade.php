@@ -16,23 +16,25 @@
     
 <!-- side-bar colleps block stat -->
 <div class="collection-filter-block bg-transparent p-0 m-0 brand-left">
-    @if(@count($category->brands->first()->translation) && count($category->brands->first()->translation) > 0)
-    <div class="collection-collapse-block open mb-2">
-        <h3 class="collapse-block-title">{{__('Brand')}}</h3>
-        <div class="collection-collapse-block-content">
-            <div class="collection-brand-filter">
-                @foreach($category->brands as $key => $val)
-                    <div class="custom-control custom-checkbox collection-filter-checkbox">
-                        <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->id}}" used="brands" id="brd{{$val->id}}">
-                        @foreach($val->translation as $k => $v)
-                            <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
+  @if(@$category->brands)
+        @if(@count(@$category->brands->first()->translation) && count(@$category->brands->first()->translation) > 0)
+            <div class="collection-collapse-block open mb-2">
+                <h3 class="collapse-block-title">{{__('Brand')}}</h3>
+                <div class="collection-collapse-block-content">
+                    <div class="collection-brand-filter">
+                        @foreach($category->brands as $key => $val)
+                            <div class="custom-control custom-checkbox collection-filter-checkbox">
+                                <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->id}}" used="brands" id="brd{{$val->id}}">
+                                @foreach($val->translation as $k => $v)
+                                    <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
+                                @endforeach
+                            </div>
                         @endforeach
                     </div>
-                @endforeach
+                </div>
             </div>
-        </div>
-    </div>
-    @endif
+        @endif
+     @endif
     @if(!empty($variantSets) && count($variantSets) > 0)
     @foreach($variantSets as $key => $sets)
         <div class="collection-collapse-block border-0 mb-2 open">
