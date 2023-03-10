@@ -13,9 +13,9 @@
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
-                        @if(!empty($celebrity->avatar))
-                            <div class="common-banner"><img class="img-fluid blur-up lazyload" data-src="{{$celebrity->avatar['image_fit'] . '1920/1080' . $celebrity->avatar['image_path']}}" alt=""></div>
-                        @endif
+                       
+                        @include('frontend.vendor-category-topbar-banner')   
+
                         <div class="top-banner-content small-section">
                             <h4>{{ $celebrity->name }}</h4>
                         </div>
@@ -30,166 +30,12 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
                             </span>
                         </div> -->
-                        <aside class="side_fillter">
-                        <div class="collection-collapse-block open mb-2">
-                            @if(!empty($category->brands) && count($category->brands) > 0)
-                            <h3 class="collapse-block-title">{{__('Brand')}}</h3>
-                            <div class="collection-collapse-block-content">
-                                <div class="collection-brand-filter">
-                                    @foreach($category->brands as $key => $val)
-                                        <div class="custom-control custom-checkbox collection-filter-checkbox">
-                                            <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->id}}" used="brands" id="brd{{$val->id}}">
-                                            @foreach($val->translation as $k => $v)
-                                                <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
-                                            @endforeach
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            @endif
-                        </div>
-                        @if(!empty($variantSets) && count($variantSets) > 0)
-                          @foreach($variantSets as $key => $sets)
-                            <div class="collection-collapse-block border-0 mb-2 open">
-                                <h3 class="collapse-block-title">{{$sets->title}}</h3>
-                                <div class="collection-collapse-block-content">
-                                    <div class="collection-brand-filter">
-
-                                    @if($sets->type == 2)
-                                        @foreach($sets->options as $ok => $opt)
-                                            <div class="chiller_cb small_label d-inline-block color-selector mt-2">
-                                                <?php $checkMark = ($key == 0) ? 'checked' : ''; ?>
-                                                <input class="custom-control-input productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
-                                                <label for="Opt{{$key.'-'.$opt->id}}"></label>
-                                                @if(strtoupper($opt->hexacode) == '#FFF' || strtoupper($opt->hexacode) == '#FFFFFF')
-                                                    <span style="background: #FFFFFF; border-color:#000;" class="check_icon white_check"></span>
-                                                @else
-                                                    <span class="check_icon" style="background:{{$opt->hexacode}}; border-color: {{$opt->hexacode}};"></span>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        @foreach($sets->options as $ok => $opt)
-                                            <div class="custom-control custom-checkbox collection-filter-checkbox">
-                                                <input type="checkbox" class="custom-control-input productFilter" id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" type="variants" optid="{{$opt->id}}">
-                                                <label class="custom-control-label" for="Opt{{$key.'-'.$opt->id}}">{{$opt->title}}</label>
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                          @endforeach
-                        @endif
-                        <div class="collection-collapse-block border-0 mb-2 open">
-                            <h3 class="collapse-block-title">{{__('Price')}}</h3>
-                            <div class="collection-collapse-block-content">
-                                <div class="wrapper mt-3">
-                                    <div class="range-slider">
-                                        <input type="text" class="js-range-slider rangeSliderPrice" value="" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        </aside>
+                         <!--- Left Sidebar filters -->
+                         @include('frontend.category-left-sidebar')
+                    <!---End Left Sidebar filters -->
+                    
                     </div>
-                    @php $show_new_Products = 0; @endphp
-                    @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card custom-inner-cardcollection-filter-block bg-transparent p-0 m-0">
-                        <h5 class="title-border d-flex align-items-center justify-content-between">
-                            <span>{{__('New Product')}}</span>
-                            <span class="filter-back d-lg-none d-inline-block">
-                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
-                            </span>
-                        </h5>
-                        <div class="offer-slider al">
-                            
-                                @foreach($newProducts as $newProds)
-                                    <div  class="col-12 p-0">
-                                    @foreach($newProds as $new)
-                                        <?php /*$imagePath = '';
-                                        foreach ($new['media'] as $k => $v) {
-                                            $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
-                                        }*/ ?>
-                                        <div class="common-product-box scale-effect mb-2">
-                                            <a class=" row  w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                <div class="col-4">
-                                                    <div class="img-outer-box position-relative">
-                                                        <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
-                                                        <div class="pref-timing">
-                                                            <!--<span>5-10 min</span>-->
-                                                        </div>
-                                                        <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="col-8">
-                                                    <div class="media-body align-self-center">
-                                                        <div class="inner_spacing px-0">
-                                                            <div class="product-description">
-                                                                <div class="d-flex align-items-center justify-content-between">
-                                                                    <h6 class="card_title ellips">{{ $new['translation_title'] }}</h6>
-                                                                    <!--<span class="rating-number">2.0</span>-->
-                                                                </div>
-                                                                <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
-                                                                <p>{{$new['vendor']['name']}}</p>
-                                                                <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
-                                                                <div class="d-flex align-items-center justify-content-between">
-                                                                    <b>
-                                                                        @if($new['inquiry_only'] == 0)
-                                                                            <?php $multiply = $new['variant_multiplier']; ?>
-                                                                            {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
-                                                                        @endif
-                                                                    </b>
-
-                                                                    <!-- @if($client_preference_detail)
-                                                                        @if($client_preference_detail->rating_check == 1)
-                                                                            @if($new['averageRating'] > 0)
-                                                                                <div class="rating-box">
-                                                                                    <i class="fa fa-star" aria-hidden="true"></i>
-                                                                                    <span>{{ $new['averageRating'] }}</span>
-                                                                                </div>
-                                                                            @endif
-                                                                        @endif
-                                                                    @endif   -->
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-
-                                        {{-- <div class="media">
-                                            <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" data-src="{{$imagePath}}" alt="" ></a>
-                                            <div class="media-body align-self-center">
-                                                <div class="inner_spacing">
-                                                    <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                        <h3>{{ $new['translation_title'] }}</h3>
-                                                    </a>
-                                                    <h6><b>{{$new['vendor']['name']}}</b></h6>
-                                                    @if($new['inquiry_only'] == 0)
-                                                    <h4 class="mt-1">
-                                                        <//?php $multiply = $new['variant_multiplier']; ?>
-                                                        {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}} </h4>
-                                                    @endif
-                                                    @if($client_preference_detail)
-                                                        @if($client_preference_detail->rating_check == 1)
-                                                            @if($new['averageRating'] > 0)
-                                                                <span class="rating">{{ $new['averageRating'] }} <i class="fa fa-star text-white p-0"></i></span>
-                                                            @endif
-                                                        @endif
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div> --}}
-                                    @endforeach
-                                    </div>
-                                @endforeach
-                            
-                        </div>
-                    </div>
-                    @endif
+                 
                 </div>
                 <div class="collection-content col-lg-9 outter-fillter-data">
                     <div class="page-main-content">

@@ -18,71 +18,18 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper">
-                        @if(!empty($vendor->banner))
-                            <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1920/1080' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                        @endif
-                        <div class="row mt-n4">
-                            <div class="col-12">
-                                <form action="">
-                                    <div class="row">
-                                        <div class="col-sm-12 text-left w-10 pl-5">
-                                            <div class="file file--upload">
-                                                <label>
-                                                    <span class="update_pic border-0">
-                                                    <img src="{{$vendor->logo['proxy_url'] . '200/200' . $vendor->logo['image_path']}}" alt="">
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            <div class="name_location d-block py-0">
-                                                <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
-                                            </div>
-                                            <div class="">
-                                                @if($vendor->is_show_vendor_details == 1)
-                                                @if($vendor->email)
-                                                    <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
-                                                @endif
-                                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
-                                                @if($vendor->website)
-                                                    <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
-                                                @endif
-                                                @endif
-                                                @if($vendor->instagram_url)
-                                                <a class="open-social-medialinks" href="javascript:void(0)" data-toggle="tooltip" title="Social Media Links"><i class="fa fa-globe"></i></a>
-                                                    <!-- <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a> -->
-                                                @endif
-                                            </div>
-                                            @if ($vendor->is_show_vendor_details == 1 && $vendor->order_min_amount > 0)
-                                                <span class="badge badge-danger">{{ __('Minimum order value') }}{{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
-                                            @endif
-                                        </div>
-                                        @if($vendor->desc)
-                                            <div class="col-md-12 text-center vender-peragraph mt-3">
-                                                <p>{{$vendor->desc}}</p>
-                                                <p>{!! $vendor->short_desc !!}</p>
-                                            </div>
-                                        @endif
-
-                                        @php
-                                        $checkSlot = findSlot('',$vendor->id,'');
-                                        @endphp
-
-                                        <div class="col-md-12 text-center">
-                                        @if($is_vendor_closed == 1 && $checkSlot == 0)
-                                        <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
-                                        @elseif($is_vendor_closed == 1 && $vendor->closed_store_order_scheduled == 1)
-                                        <p class="text-danger">{{__('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.</p>
-                                        @endif
-                                        </div>
-
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    @include('frontend.vendor-category-topbar-banner')
+       
+                    @include('frontend.vendor-details-in-banner')
+                       
             </div>
         </div>
-        <div class="container homepageSix">
-            <div class="row mb-sm-5 mb-2 mt-5">
+</div>
+        <div class="row homepageSix mt-4">
+            <div class="row mb-sm-5 mb-2 mt-5 ml-0">
+            @php $show_new_Products = 0; @endphp      
+            @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
+            @foreach($newProducts as $newProds)
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -92,9 +39,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                             </span>
                         </h5>
                         <div class="offer-slider al">
-                        @php $show_new_Products = 0; @endphp
-                            @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
-                                @foreach($newProducts as $newProds)
+                          
                                     @foreach($newProds as $new)
                                     <div class="col-md-12 p-0">
                                     <?php /*$imagePath = '';
@@ -152,10 +97,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                 </div>
                                     @endforeach
                                 @endforeach
-                            @endif
                         </div>
                     </div>
                 </div>
+                @endif
+
                 <div class="collection-content col-lg-9">
                     <div class="page-main-content">
                         <div class="col-12">

@@ -111,7 +111,7 @@ class LoyaltyController extends Controller{
                     return $orders->loyalty_points_earned ? $orders->loyalty_points_earned : '0.00';
                 })
                 ->addColumn('payment_option_title',function($orders){
-                    return __($orders->paymentOption->title);
+                    return __($orders->paymentOption->title??'N/A');
                 })
                 ->addColumn('payable_amount',function($orders){
                     return decimal_format($orders->payable_amount,",");

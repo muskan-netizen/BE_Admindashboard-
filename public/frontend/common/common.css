@@ -2024,7 +2024,14 @@ body.al_body_template_six section#alSixHomeServices .row.mb-lg-5.mb-md-4.mb-3 {
 body.al_body_template_six.dark.homeHeader .main-fillter .side_fillter {
     background: #232323 !important;
 }
-
+.alProductsPage .common-product-box {
+    padding: 10px;
+}
+.alProductsPage .common-product-box h6 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
 
 /*-------------ipad css--------*/
 

@@ -252,7 +252,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
 
-                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-6'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-5'; } else { echo 'col-lg-5'; } @endphp rtl-text p-0">
+                                <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-6'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -271,9 +271,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 @endif
                                             @endif
                                         @endif
-                                        <div class="description_txt mt-3">
+                                       {{-- <div class="description_txt mt-3">
                                             <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
-                                        </div>
+                                        </div>--}}
                                         <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
                                         <input type="hidden" name="start_time" id="start_time" value="">
                                         <input type="hidden" name="end_time" id="end_time" value="">
@@ -967,7 +967,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
         </div>
     </div>
     <div class="container pb-md-4">
-        <div class="product-4 product-m  related-products pb-2 d-flex">
+        <div class="product-m  related-products pb-2 d-flex related-css">
             @forelse($product->related_products as $related_product)
             <div>
                 <a class="common-product-box scale-effect text-center"

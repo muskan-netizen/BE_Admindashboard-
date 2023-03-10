@@ -89,7 +89,7 @@
                     <div class="row">
                         <div class="col-12">
                             <h4 class="page-title mt-0">
-                                <input class="form-control mb-2" id="edit_title" name="meta_title" type="text">
+                                <input class="form-control mb-2" id="edit_title" name="edit_title" type="text">
                             </h4>
                         </div>
                     </div>

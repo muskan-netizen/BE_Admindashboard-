@@ -1285,6 +1285,8 @@ trait cartManager{
                 if($vendorData->vendor->delivery_charges_tax_id)
                 $total_deliver_charges +=  $deliveryfee_ifnot_discounted;
 
+                $delivery_fees = $delivery_fees + $deliveryfee_ifnot_discounted;
+
                 if($vendorData->vendor->add_markup_price)
                 $total_markup_charges +=  $totalMarkup;
 
