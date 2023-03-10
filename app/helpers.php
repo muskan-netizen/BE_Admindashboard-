@@ -64,6 +64,7 @@ if (!function_exists('getAdditionalPreference')) {
             $emptyArr = array_fill_keys($emp, '');
             $return = array_merge($emptyArr, $dbreturn);
         }
+      
         return $return;
     }
 }
