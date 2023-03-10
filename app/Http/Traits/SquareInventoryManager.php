@@ -5,7 +5,8 @@ use Square\Environment;
 use Square\Exceptions\ApiException;
 use Ramsey\Uuid\Uuid;
 use App\Models\{Product, Variant, TaxCategory, Client, ProductVariantSet, ClientPreference, ProductTranslation, ClientLanguage, ProductVariant, ClientCurrency, TaxRate, AddonSet, AddonOption};
-use Auth, Log;
+use Auth, Log, DB;
+use Carbon\Carbon;
 trait SquareInventoryManager{
 
   private $application_id;
@@ -33,6 +34,7 @@ trait SquareInventoryManager{
 
   public function createOrUpdateProductInSquarePos($product_id)
   {
+    DB::beginTransaction();
     try{
       $product         = Product::with(['media.image', 'primary', 'category.cat', 'vendor','brand','variant', 'variant.set', 'variantSets', 'taxCategory.taxRate', 
                           'sets.addOnName'])->select('id', 'sku', 'is_live', 'has_variant', 'tax_category_id', 'square_item_id', 'square_item_version')
@@ -69,8 +71,9 @@ trait SquareInventoryManager{
           $square_item_id = '#ITEM_'.$product->id;
         }
 
-        $variations = [];
+
         //------item variant object creation starts here
+        $variations = [];
         foreach($product->variant as $proVariant){
           
           $price_money = new \Square\Models\Money();
@@ -124,6 +127,7 @@ trait SquareInventoryManager{
         $objects[] = $catalog_object;
         //------item object creation ends here
 
+
         //------tax object creation starts here
         if($taxrate > 0){
             $tax_data = new \Square\Models\CatalogTax();//------https://developer.squareup.com/reference/square/objects/CatalogTax
@@ -141,6 +145,7 @@ trait SquareInventoryManager{
         }
         //------tax object creation ends here
       
+
         $catalog_object_batch = new \Square\Models\CatalogObjectBatch($objects);
         $batches = [$catalog_object_batch];
           
@@ -152,7 +157,6 @@ trait SquareInventoryManager{
           $resultObject = $api_response->getResult()->getObjects();
           
           foreach($resultObject as $resultobjectdata){
-          
             //------update squarepos item/version/tax id and version in respective table
             if($resultobjectdata->getType() == "ITEM"){
 
@@ -167,10 +171,13 @@ trait SquareInventoryManager{
               
               foreach($resultobjectdata->getItemData()->getVariations() as $variantData){
                 if($variantData->getType() == "ITEM_VARIATION" && $variantData->getItemVariationData()->getSku()!=''){
+                  $variant = ProductVariant::where('product_id', $product->id)->where('sku', '=', $variantData->getItemVariationData()->getSku())->first();
                   ProductVariant::where('product_id', $product->id)->where('sku', '=', $variantData->getItemVariationData()->getSku())->update(['square_variant_id' => $variantData->getId(), 'square_variant_version' => $variantData->getVersion()]);
+                  if(!empty($variant)){
+                    $inventoryupdate = $this->inventoryAdjustmentInSquarePos($variantData->getId(), $variant->quantity, "PHYSICAL_COUNT", "IN_STOCK");
+                  }
                 }
               }
-
             }
 
             if($resultobjectdata->getType() == "TAX" && $taxrateid > 0){
@@ -178,7 +185,7 @@ trait SquareInventoryManager{
             }
 
           }
-          
+          DB::commit();
           return response()->json([
               'status'  => 'success',
               'result'  => '',
@@ -187,6 +194,7 @@ trait SquareInventoryManager{
         } 
         else 
         {
+          DB::rollback();
           $errors = $api_response->getErrors();
           Log::info($errors);
           return response()->json([
@@ -199,6 +207,7 @@ trait SquareInventoryManager{
       }
       else
       {
+        DB::rollback();
         return response()->json([
           'status'  => 'error',
           'result'  => [],
@@ -208,6 +217,7 @@ trait SquareInventoryManager{
     } 
     catch (ApiException $e) 
     {
+      DB::rollback();
       Log::info($e->getMessage());
       return response()->json([
         'status'  => 'error',
@@ -219,9 +229,10 @@ trait SquareInventoryManager{
 
   public function createOrUpdateModifiersSquare($addOnid)
   {
+    DB::beginTransaction();
     try{
       $addOn = AddonSet::with(['primary', 'option.translation_one'])->where('id', $addOnid)->first();
-      //pr($addOn->toArray());
+      
       if(!empty($addOn)){
         //------init square client
         $client = $this->init();
@@ -293,13 +304,25 @@ trait SquareInventoryManager{
                             })->update(['square_modifier_option_id' => $modifierData->getId()]);
               }
             }
-
           }
+          DB::commit();
+          return response()->json([
+            'status'  => 'success',
+            'result'  => '',
+            'message' => __('Modifiers successfully created/updated in square.')
+          ]);
         } else {
+            DB::rollback();
             $errors = $api_response->getErrors();
-            pr($errors);
+            Log::info($errors);
+            return response()->json([
+              'status'  => 'error',
+              'result'  => '',
+              'message' => __('There is some error while adding/updating Modifier in square. Please check log for the error.')
+            ]);
         }
       }else{
+        DB::rollback();
         return response()->json([
           'status'  => 'error',
           'result'  => [],
@@ -310,6 +333,7 @@ trait SquareInventoryManager{
     } 
     catch (ApiException $e) 
     {
+      DB::rollback();
       return response()->json([
         'status'  => 'error',
         'result'  => [],
@@ -361,6 +385,11 @@ trait SquareInventoryManager{
     } else {
         $errors = $api_response->getErrors();
         Log::info($errors);
+        return response()->json([
+          'status'  => 'error',
+          'result'  => '',
+          'message' => __('There is some error while retriving versions related to squareids from square. Please check log for the error.')
+        ]);
     }
     return $object_versions;
   }//------get square pos verionas objects ids (item, tax..... etc) ends here
@@ -386,9 +415,59 @@ trait SquareInventoryManager{
         ]);
     } else {
         $errors = $api_response->getErrors();
+        Log::info($errors);
+        return response()->json([
+          'status'  => 'error',
+          'result'  => '',
+          'message' => __('There is some error while appling Modifier to Product in square. Please check log for the error.')
+        ]);
     }
   }//------get square pos verionas objects ids (item, tax..... etc) ends here
 
+
+  //------update veriant quantity function starts here
+  public function inventoryAdjustmentInSquarePos($square_variant_id, $quantity, $type, $state)
+  {
+    $client = $this->init();
+    $physical_count = new \Square\Models\InventoryPhysicalCount();
+    $uniqueid     = Uuid::uuid4();
+    $physical_count->setReferenceId($uniqueid);
+    $physical_count->setCatalogObjectId($square_variant_id);
+    $physical_count->setState($state);
+    $physical_count->setLocationId($this->location_id);
+    $physical_count->setQuantity($quantity);
+    //$physical_count->setTeamMemberId('LRK57NSQ5X7PUD05');
+    $physical_count->setOccurredAt(Carbon::now()->toIso8601ZuluString());
+
+    $inventory_change = new \Square\Models\InventoryChange();
+    $inventory_change->setType($type);
+    $inventory_change->setPhysicalCount($physical_count);
+
+    $changes = [$inventory_change];
+    $uniqueid     = Uuid::uuid4();
+    $body = new \Square\Models\BatchChangeInventoryRequest($uniqueid);
+    $body->setChanges($changes);
+    $body->setIgnoreUnchangedCounts(true);
+
+    $api_response = $client->getInventoryApi()->batchChangeInventory($body);
+
+    if ($api_response->isSuccess()) {
+        $result = $api_response->getResult();
+        return response()->json([
+          'status'  => 'success',
+          'result'  => '',
+          'message' => __('Product variant stock updated in square.')
+        ]);
+    } else {
+        $errors = $api_response->getErrors();
+        Log::info($errors);
+        return response()->json([
+          'status'  => 'error',
+          'result'  => '',
+          'message' => __('There is some error while updating Product variant stock in square. Please check log for the error.')
+        ]);
+    }
+  }//------update veriant quantity function ends here
 
   public function deleteBatchInSquarePos($batch_square_ids)
   {
