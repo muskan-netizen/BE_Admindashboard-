@@ -17,7 +17,8 @@ trait SquareInventoryManager{
   public function init()
   {
     $this->ClientPreference      = ClientPreference::with(['primary'])->first();
-    $getAdditionalPreference     = getAdditionalPreference(['square_enable_status', 'square_credentials']);
+    $getAdditionalPreference     = getAdditionalPreference(['square_enable_status', 'square_credentials', 'is_tax_price_inclusive']);
+    $this->ClientPreference->is_tax_price_inclusive = $getAdditionalPreference['is_tax_price_inclusive'];
     $square_credentials          = json_decode($getAdditionalPreference['square_credentials'], true);
     $this->sandbox_enable_status = (int) isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : 0;
     $this->application_id        = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
@@ -34,10 +35,11 @@ trait SquareInventoryManager{
   {
     try{
       $product         = Product::with(['media.image', 'primary', 'category.cat', 'vendor','brand','variant', 'variant.set', 'variantSets', 'taxCategory.taxRate', 
-                          'addOn.setoptions'])->select('id', 'sku', 'is_live', 'has_variant', 'tax_category_id', 'square_item_id', 'square_item_version')
+                          'sets.addOnName'])->select('id', 'sku', 'is_live', 'has_variant', 'tax_category_id', 'square_item_id', 'square_item_version')
                           ->where('id', $product_id)->where('is_live', 1)->first();
       if(!empty($product))
       {
+        
         //------https://developer.squareup.com/docs/catalog-api/build-with-catalog
 
         //------init square client
@@ -62,6 +64,11 @@ trait SquareInventoryManager{
         //------get versions if items already exists
         $object_versions = $this->getItemVersionFromSquarePos($object_ids);
 
+        if(!isset($object_versions[$square_item_id]))
+        {
+          $square_item_id = '#ITEM_'.$product->id;
+        }
+
         $variations = [];
         //------item variant object creation starts here
         foreach($product->variant as $proVariant){
@@ -76,7 +83,7 @@ trait SquareInventoryManager{
             $setVName = $product->primary->title ?? $product->title;
           }
 
-          $square_variant_id = !empty($proVariant->square_variant_id) ? $proVariant->square_variant_id : '#ITEM_VARIATION_'.$proVariant->id;
+          $square_variant_id = (!empty($proVariant->square_variant_id) && isset($object_versions[$proVariant->square_variant_id])) ? $proVariant->square_variant_id : '#ITEM_VARIATION_'.$proVariant->id;
           
           $item_variation_data = new \Square\Models\CatalogItemVariation();
           $item_variation_data->setItemId($square_item_id);
@@ -84,9 +91,13 @@ trait SquareInventoryManager{
           $item_variation_data->setSku(!empty($proVariant->sku) ? $proVariant->sku : $product->sku);
           $item_variation_data->setPricingType('FIXED_PRICING');//------https://developer.squareup.com/reference/square/enums/CatalogPricingType
           $item_variation_data->setPriceMoney($price_money);//------https://developer.squareup.com/reference/square/objects/Money
+          if($product->has_inventory == 0)
+          {
+            $item_variation_data->setTrackInventory(true);
+          }
           $item_variation_data->setStockable(true);
           $item_variation_data->setSellable(true);
-          $item_variation_data->setTrackInventory(true);
+          
 
           $catalog_object = new \Square\Models\CatalogObject('ITEM_VARIATION', $square_variant_id);
           if(isset($object_versions[$square_variant_id]) && $object_versions[$square_variant_id] !='')
@@ -118,7 +129,7 @@ trait SquareInventoryManager{
             $tax_data = new \Square\Models\CatalogTax();//------https://developer.squareup.com/reference/square/objects/CatalogTax
             $tax_data->setName($product->taxCategory->title);
             $tax_data->setCalculationPhase('TAX_SUBTOTAL_PHASE');
-            $tax_data->setInclusionType('ADDITIVE');
+            $tax_data->setInclusionType(($this->ClientPreference->is_tax_price_inclusive==1) ? 'INCLUSIVE' : 'ADDITIVE');
             $tax_data->setPercentage($taxrate);
     
             $catalog_object3 = new \Square\Models\CatalogObject('TAX', $square_tax_id);
@@ -146,6 +157,13 @@ trait SquareInventoryManager{
             if($resultobjectdata->getType() == "ITEM"){
 
               Product::where('id', $product->id)->update(['square_item_id' => $resultobjectdata->getId(), 'square_item_version' => $resultobjectdata->getVersion()]);
+              if(!empty($product->sets)){
+                $modifierids = [];
+                foreach($product->sets as $modifierset){
+                  $modifierids[] = !empty($modifierset->addOnName->square_modifier_id) ? $modifierset->addOnName->square_modifier_id : '';
+                }
+                $modify = $this->applyModifierToItemSquare([$resultobjectdata->getId()], $modifierids);
+              }
               
               foreach($resultobjectdata->getItemData()->getVariations() as $variantData){
                 if($variantData->getType() == "ITEM_VARIATION" && $variantData->getItemVariationData()->getSku()!=''){
@@ -190,6 +208,7 @@ trait SquareInventoryManager{
     } 
     catch (ApiException $e) 
     {
+      Log::info($e->getMessage());
       return response()->json([
         'status'  => 'error',
         'result'  => [],
@@ -198,101 +217,106 @@ trait SquareInventoryManager{
     } 
   }
 
-public function createOrUpdateModifiersSquare($addOnid)
-{
-  try{
-    $addOn = AddonSet::with(['primary', 'option.translation_one'])->where('id', $addOnid)->first();
-    //pr($addOn->toArray());
-    if(!empty($addOn)){
-      //------init square client
-      $client = $this->init();
-      //------item addon object creation starts here
-      $square_modifier_id = !empty($addOn->square_modifier_id) ? $addOn->square_modifier_id : '#modifier_list';
-      $object_versions = $this->getItemVersionFromSquarePos([$square_modifier_id]);
-      $modifiers = [];
-      
-      foreach($addOn->option as $addonOptionData)
-      {
-        $price_money = new \Square\Models\Money();
-        $price_money->setAmount(($addonOptionData->price ?? 0.00) * 100);
-        $price_money->setCurrency($this->ClientPreference->primary->currency->iso_code ?? 'USD');
-
-        $setVName = !empty($addonOptionData->translation_one) ? $addonOptionData->translation_one->title : $addonOptionData->title;
+  public function createOrUpdateModifiersSquare($addOnid)
+  {
+    try{
+      $addOn = AddonSet::with(['primary', 'option.translation_one'])->where('id', $addOnid)->first();
+      //pr($addOn->toArray());
+      if(!empty($addOn)){
+        //------init square client
+        $client = $this->init();
+        //------item addon object creation starts here
+        $square_modifier_id = !empty($addOn->square_modifier_id) ? $addOn->square_modifier_id : '#modifier_list';
+        $object_versions = $this->getItemVersionFromSquarePos([$square_modifier_id]);
         
-        $modifier_data = new \Square\Models\CatalogModifier();
-        $modifier_data->setName($setVName);
-        $modifier_data->setPriceMoney($price_money);
-        $modifier_data->setModifierListId($square_modifier_id);
-
-        $square_modifier_option_id = !empty($addonOptionData->square_modifier_option_id) ? $addonOptionData->square_modifier_option_id : '#MODIFIER_'.$addonOptionData->id;
-        $catalog_object = new \Square\Models\CatalogObject('MODIFIER', $square_modifier_option_id);
-
-        if(isset($object_versions[$square_modifier_option_id]) && $object_versions[$square_modifier_option_id] !='')
+        $modifiers = [];
+        
+        foreach($addOn->option as $addonOptionData)
         {
-          $catalog_object->setVersion($object_versions[$square_modifier_option_id]);
+          $price_money = new \Square\Models\Money();
+          $price_money->setAmount(($addonOptionData->price ?? 0.00) * 100);
+          $price_money->setCurrency($this->ClientPreference->primary->currency->iso_code ?? 'USD');
+
+          $setVName = !empty($addonOptionData->translation_one) ? $addonOptionData->translation_one->title : $addonOptionData->title;
+          
+          $modifier_data = new \Square\Models\CatalogModifier();
+          $modifier_data->setName($setVName);
+          $modifier_data->setPriceMoney($price_money);
+          $modifier_data->setModifierListId($square_modifier_id);
+
+          $square_modifier_option_id = !empty($addonOptionData->square_modifier_option_id) ? $addonOptionData->square_modifier_option_id : '#MODIFIER_'.$addonOptionData->id;
+          $catalog_object = new \Square\Models\CatalogObject('MODIFIER', $square_modifier_option_id);
+
+          if(isset($object_versions[$square_modifier_option_id]) && $object_versions[$square_modifier_option_id] !='')
+          {
+            $catalog_object->setVersion($object_versions[$square_modifier_option_id]);
+          }
+          $catalog_object->setModifierData($modifier_data);
+          $modifiers[] = $catalog_object;
         }
-        $catalog_object->setModifierData($modifier_data);
-        $modifiers[] = $catalog_object;
-      }
-  
-      $modifier_list_data = new \Square\Models\CatalogModifierList();
-      $modifier_list_data->setName($addOn->primary->title);
-      $modifier_list_data->setModifiers($modifiers);
+    
+        $modifier_list_data = new \Square\Models\CatalogModifierList();
+        $modifier_list_data->setName($addOn->primary->title);
+        $modifier_list_data->setSelectionType(($addOn->max_select > 1) ? 'MULTIPLE' : 'SINGLE');
+        $modifier_list_data->setModifiers($modifiers);
 
-      $object       = new \Square\Models\CatalogObject('MODIFIER_LIST', $square_modifier_id);
-      if(isset($object_versions[$square_modifier_id]) && $object_versions[$square_modifier_id] !='')
-      {
-        $object->setVersion($object_versions[$square_modifier_id]);
-      }
-      $object->setModifierListData($modifier_list_data);
+        $object       = new \Square\Models\CatalogObject('MODIFIER_LIST', $square_modifier_id);
+        if(isset($object_versions[$square_modifier_id]) && $object_versions[$square_modifier_id] !='')
+        {
+          $object->setVersion($object_versions[$square_modifier_id]);
+        }
+        $object->setModifierListData($modifier_list_data);
 
-      $uniqueid     = Uuid::uuid4();
-      $body         = new \Square\Models\UpsertCatalogObjectRequest($uniqueid, $object);
+        $uniqueid     = Uuid::uuid4();
+        $body         = new \Square\Models\UpsertCatalogObjectRequest($uniqueid, $object);
 
-      $api_response = $client->getCatalogApi()->upsertCatalogObject($body);
+        $api_response = $client->getCatalogApi()->upsertCatalogObject($body);
 
-      if ($api_response->isSuccess()) {
-        $result = $api_response->getResult();
-        //pr($result);
-        $resultObject = $api_response->getResult()->getCatalogObject();
-        
-        foreach($resultObject as $resultobjectdata){
-        
-          //------update squarepos item/version/tax id and version in respective table
-          if($resultobjectdata->getType() == "MODIFIER_LIST"){
+        if($api_response->isSuccess()) {
+          $result = $api_response->getResult();
+          
+          $resultObject = $api_response->getResult()->getCatalogObject();
+          
+          if($resultObject->getType() == "MODIFIER_LIST"){
 
-            AddonSet::where('id', $addOn->id)->update(['square_item_id' => $resultobjectdata->getId()]);
+            AddonSet::where('id', $addOn->id)->update(['square_modifier_id' => $resultObject->getId()]);
             
-            foreach($resultobjectdata->getItemData()->getModifiers() as $modifierData){
+            foreach($resultObject->getModifierListData()->getModifiers() as $modifierData){
               if($modifierData->getType() == "MODIFIER"){
-                AddonOption::where('product_id', $addOn->id)->where('title', '=', $modifierData->getModifierData()->getName())->update(['square_modifier_option_id' => $modifierData->getId()]);
+                $modifierName = $modifierData->getModifierData()->getName();
+                AddonOption::where('addon_id', $addOn->id)
+                            ->where(function($q) use ($modifierName){
+                                $q->where('title', '=', $modifierName)
+                                ->orWhereHas('translation_one', function($query) use ($modifierName){
+                                    $query->where('title', '=', $modifierName);
+                                });
+                            })->update(['square_modifier_option_id' => $modifierData->getId()]);
               }
             }
 
           }
+        } else {
+            $errors = $api_response->getErrors();
+            pr($errors);
         }
-      } else {
-          $errors = $api_response->getErrors();
-          pr($errors);
+      }else{
+        return response()->json([
+          'status'  => 'error',
+          'result'  => [],
+          'message' => __("Addon does not exists")
+        ]);
       }
-    }else{
+      
+    } 
+    catch (ApiException $e) 
+    {
       return response()->json([
         'status'  => 'error',
         'result'  => [],
-        'message' => __("Addon does not exists")
+        'message' => $e->getMessage()
       ]);
-    }
-    
-  } 
-  catch (ApiException $e) 
-  {
-    return response()->json([
-      'status'  => 'error',
-      'result'  => [],
-      'message' => $e->getMessage()
-    ]);
-  } 
-}
+    } 
+  }
   
   //------get square pos verionas objects ids (item, tax..... etc) starts here
   public function getItemVersionFromSquarePos($object_ids){
@@ -323,6 +347,15 @@ public function createOrUpdateModifiersSquare($addOnid)
           if($resultobjectdata->getType() == "TAX"){
             $object_versions[$resultobjectdata->getId()] = $resultobjectdata->getVersion();
           }
+
+          if($resultobjectdata->getType() == "MODIFIER_LIST"){
+            $object_versions[$resultobjectdata->getId()] = $resultobjectdata->getVersion();
+            foreach($resultobjectdata->getModifierListData()->getModifiers() as $modifierData){
+              if($modifierData->getType() == "MODIFIER"){
+                $object_versions[$modifierData->getId()] = $modifierData->getVersion();
+              }
+            }
+          }
         }
       }
     } else {
@@ -330,6 +363,30 @@ public function createOrUpdateModifiersSquare($addOnid)
         Log::info($errors);
     }
     return $object_versions;
+  }//------get square pos verionas objects ids (item, tax..... etc) ends here
+
+
+  //------get square pos verionas objects ids (item, tax..... etc) starts here
+  public function applyModifierToItemSquare($itemids, $modifierids){
+
+    //-----init square client--------
+    $client = $this->init();
+
+    $body = new \Square\Models\UpdateItemModifierListsRequest($itemids);
+    $body->setModifierListsToEnable($modifierids);
+
+    $api_response = $client->getCatalogApi()->updateItemModifierLists($body);
+
+    if ($api_response->isSuccess()) {
+        $result = $api_response->getResult();
+        return response()->json([
+          'status'  => 'success',
+          'result'  => '',
+          'message' => __('Modifier applied to items in Square.')
+        ]);
+    } else {
+        $errors = $api_response->getErrors();
+    }
   }//------get square pos verionas objects ids (item, tax..... etc) ends here
 
 
