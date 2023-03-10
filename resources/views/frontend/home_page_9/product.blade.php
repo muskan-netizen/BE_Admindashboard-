@@ -1,4 +1,4 @@
-@dd($product->title)
+
 <div class="item">
     <div class="product-card-box position-relative al_box_third_template al"  >
         {{-- {{ dd($product)}} --}}
