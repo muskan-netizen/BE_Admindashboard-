@@ -435,11 +435,14 @@ trait cartManager{
             $total_deliver_charges = 0 ;
             $total_markup_charges = 0;
             $total_quantity = 0;
-            $deliveryCharges_real = $bid_total_discount = 0;
+            $bid_total_discount = 0;
             $deliveryCharges_real = 0;
             $is_long_term_service = 0;
             $container_charges_tax = 0;
 
+            //multivendor delivery charges
+            $delivery_fees = 0;
+            
             $deliver_fee_charges = 0;
             $total_fixed_fee_tax = 0;
             $total_service_fee = 0;
@@ -549,12 +552,14 @@ trait cartManager{
                 $bid_vendor_discount = 0;
 
                 /* Getting in Vendor product loop and setting product values*/
-                $vendorTotalDeliveryFee = 0;
+                
                 $previousdeliveryfee = 0;
                 $if_previousdeliveryfee_added = 0;
+                $vendorTotalDeliveryFee = 0;
+
                 $deliveryfeeOnCoupon = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-
+                    
                     $prod->product->ServicePeriods = [];
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
@@ -864,11 +869,12 @@ trait cartManager{
                                     $if_previousdeliveryfee_added = 1;
                                 }
                             }
-                            $deliveryCharges_real = $vendorTotalDeliveryFee;
+                           
+                            $deliveryCharges_real = $deliveryCharges_real + $vendorTotalDeliveryFee;
 
-                            if (isset($deliveryCharges_real) && !empty($deliveryCharges_real)) {
+                            if (isset($vendorTotalDeliveryFee) && !empty($vendorTotalDeliveryFee)) {
                                 $dtype = explode('_', $code);
-                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id], ['delivery_fee' => $deliveryCharges_real,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id], ['delivery_fee' => $vendorTotalDeliveryFee,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
                             }
                         }//End Check last time stone
                     }
@@ -1001,7 +1007,7 @@ trait cartManager{
                             if($vendorData->coupon->promo->allow_free_delivery ==1   ){
                                 $PromoFreeDeliver = 1;
                               // $coupon_amount_used = $coupon_amount_used ;
-                                $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
+                                $coupon_amount_used = $coupon_amount_used +  $vendorTotalDeliveryFee;
                                 $payable_amount = $payable_amount;
                                 $deliveryfeeOnCoupon = 1;
                             }
@@ -1020,7 +1026,7 @@ trait cartManager{
                     }
                 }
 
-                $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $deliveryCharges_real : 0;
+                $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $vendorTotalDeliveryFee : 0;
                 if($user){
                     // calculate subscription discount On admin and vendor
                     $vendor_subs_disc_percent       = isset($vendorData->vendor->subscription_discount_percent) ? $vendorData->vendor->subscription_discount_percent : 0;
@@ -1031,7 +1037,9 @@ trait cartManager{
                 }
                 // add total delivery fee
                 if($vendorData->vendor->delivery_charges_tax_id)
-                $total_deliver_charges +=  $deliveryfee_ifnot_discounted;;
+                $total_deliver_charges +=  $deliveryfee_ifnot_discounted;
+
+                $delivery_fees = $delivery_fees + $deliveryfee_ifnot_discounted;
 
                 if($vendorData->vendor->add_markup_price)
                 $total_markup_charges +=  $totalMarkup;
@@ -1051,6 +1059,11 @@ trait cartManager{
                 if($vendorData->vendor->service_fee_percent > 0){
                     $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
+                    $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
+                }
+                
+                if($vendorData->vendor->service_charge_amount > 0){
+                    $vendor_service_fee_percentage_amount =  $vendorData->vendor->service_charge_amount ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
 
@@ -1120,9 +1133,6 @@ trait cartManager{
                         $delivery_status = 0;
                     }
                 }
-                // if ($loyalty_amount_saved > 0) {
-                // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
-                // }
 
                 $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
@@ -1137,10 +1147,6 @@ trait cartManager{
                     $vendorData->les_order_min_amount = 1;
                     $delivery_status = 0;
                 }
-
-
-
-
 
                 $total_payable_amount = $total_payable_amount + $payable_amount + $vendorData->vendor->fixed_fee_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
@@ -1402,7 +1408,7 @@ trait cartManager{
             // $cart->total_payable_amount = decimal_format($total_payable_amount);
             //$cart->delivery_charges = decimal_format($deliveryCharges);
             //$cart->total_payable_amount = decimal_format($total_payable_amount);
-            $cart->delivery_charges = decimal_format($deliveryCharges_real);
+            $cart->delivery_charges = decimal_format($delivery_fees);
             $cart->total_deliver_charges = decimal_format($total_deliver_charges);
             $cart->total_markup_charges = decimal_format($total_markup_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
@@ -1463,6 +1469,7 @@ trait cartManager{
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
             $cart->sub_total =  $sub_total??0;
+            $cart->sub_total_inc_tax =  decimal_format($cart->sub_total + $total_taxable_amount);
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
             // dd($cart->toArray());

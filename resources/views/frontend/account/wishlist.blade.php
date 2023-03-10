@@ -104,7 +104,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                                 <th scope="col">{{__(getNomenclatureName('Product Name', true)) }}</th>
                                                 <th scope="col">{{__('Price')}}</th>
                                                 <th scope="col">{{__('Date Added')}}</th>
+                                                @if(!p2p_module_status())
                                                 <th scope="col">{{__(getNomenclatureName('Stock Status',true))}}</th>
+                                                @endif
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>
@@ -142,6 +144,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                                 {{ Session::get('currencySymbol').decimal_format($wish['product']['variant_price'])}}
                                                 @endif</td>
                                                 <td>{{ dateTimeInUserTimeZone($wish['added_on'], $timezone, true, false) }}</td>
+                                                @if(!p2p_module_status())
                                                 <td>
                                                     @if(empty($wish['product']['deleted_at']))
                                                         @if($wish['product']['variant_quantity'] > 0)
@@ -154,6 +157,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                                         <span class="text-danger">{{__('This product no longer exists')}}</span>
                                                     @endif
                                                 </td>
+                                                @endif
                                                 <td><a href="{{ route('removeWishlist', $wish['product']['sku']) }}" class="icon me-3"><i class="ti-close"></i> </a></td>
                                             </tr>
                                             @empty
@@ -161,7 +165,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                                             @endforelse
 
                                         </tbody>
-                                        @if(count($wishList))
+                                        @if(count($wishList) && !p2p_module_status())
                                             <tfoot class="border-top border-bottom">
                                                 <tr>
                                                     <td colspan="7" class="pt-2">

@@ -5,6 +5,7 @@
 <link rel="stylesheet"  href="{{asset('css/aos.css')}}">
 --}}
 @endsection
+
 @php
 $preference = $client_preference_detail;
 @endphp
@@ -286,9 +287,9 @@ $preference = $client_preference_detail;
       <div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
          <div class="carousel-inner">
             @foreach($banners as $key => $banner)
-            @php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+            @php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
             <div class="carousel-item @if($key == 0) active @endif">
-               <a class="banner-img-outer" href="{{$url??'#'}}">
+               <a class="banner-img-outer" href="{{$url??'#'}}" target="_blank">
                   <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
                   <img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
                </a>
@@ -692,7 +693,7 @@ $preference = $client_preference_detail;
    						<p class="al_productText ellips">
    							<%=product.vendor_name %>
    						</p>
-   						<p class="border-bottom pb-1">
+   						<p class="border-bottom pb-1 d-none">
    							<span>
    						{{__('In')}}
    							<%=product.category %></span>
@@ -751,6 +752,9 @@ $preference = $client_preference_detail;
 @section('js-script')
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script>
+	var featured_products_length = {{ isset($homePageData['featured_products']) ? count($homePageData['featured_products']) : ''}};
+</script>
 {{-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/less@4"></script> --}}
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection

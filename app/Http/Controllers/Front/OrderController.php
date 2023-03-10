@@ -295,6 +295,9 @@ class OrderController extends FrontController
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                if($vendor->cancelled_by == $user->id){
+                    $vendor->order_status = OrderVendor::CANCEL_STATUS;
+                }
                 foreach ($vendor->products as $product) {
                     if (isset($product->pvariant->media)) {
                         if ($product->pvariant->media->isNotEmpty()) {
@@ -465,13 +468,14 @@ class OrderController extends FrontController
                         $cartDetails = $this->getCart($cart);
                     }
 
+                    $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
+
                     $email_template_content = $email_template->content;
                     //     if ($vendor_id == "") {
-                    $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
+                    $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     //     } else {
                     //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     // }
-
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{description}", '', $email_template_content);
@@ -493,7 +497,7 @@ class OrderController extends FrontController
                         'customer_name' => ucwords($user->name),
                         'email_template_content' => $email_template_content,
                         'cartData' => $cartDetails,
-                        'user_address' => $address,
+                        'user_address' => $address
                     ];
                     if (!empty($data['admin_email'])) {
                         $email_data['admin_email'] = $data['admin_email'];
@@ -615,7 +619,8 @@ class OrderController extends FrontController
         $subscription_features = array();
         if ($user) {
             //Get earn and used loyalty amount
-            $loyalty_amount_saved = $this->getOrderLoyalityAmount($user);
+            $loyaltyCheck = $this->getOrderLoyalityAmount($user);
+            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
 
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
@@ -1277,9 +1282,9 @@ class OrderController extends FrontController
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                     $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
                     $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
-                    if (checkColumnExists('order_vendor_products', 'dispatch_agent_id')) {
+                   // if (checkColumnExists('order_vendor_products', 'dispatch_agent_id')) {
                         $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
-                    }
+                   // }
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
@@ -1750,9 +1755,10 @@ class OrderController extends FrontController
 
             $ex_gateways = [4, 5, 7, 8, 9, 10, 12, 13, 15, 17, 18, 19, 20, 21, 23, 24, 25, 26, 28, 29, 30, 31, 32, 34, 35, 36, 37, 39, 40, 41, 42, 43, 44, 45, 47]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal
 
-            if (!in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay == 1)) {
+            if (!in_array($request->payment_option_id, $ex_gateways)) {
 
                 //Send Email to customer
+                $request->request->add(['type' => $action]);
                 $this->sendSuccessEmail($request, $order);
                 //Send Email to Vendor
                 foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
@@ -1799,7 +1805,7 @@ class OrderController extends FrontController
                 ]);
             }
             $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor', 'products'])->where('order_number', $order->order_number)->first();
-            if (!in_array($request->payment_option_id, $ex_gateways) && (isset($request->is_postpay) && $request->is_postpay == 1)) {
+            if (!in_array($request->payment_option_id, $ex_gateways)) {
                 if (!empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {
                         $vendorDetail = $vendor_value->vendor;
@@ -2837,33 +2843,77 @@ class OrderController extends FrontController
     public function checkIfLastMileDeliveryOn()
     {
         $preference = ClientPreference::first();
-        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)) {
-            return $preference;
-        } else {
-            return false;
+        
+        if($preference->business_type == 'taxi'){
+            if ($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
+                return $preference;
+                else
+                    return false;
+        }elseif($preference->business_type == 'laundry'){
+            if ($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
+                return $preference;
+                else
+                    return false;
+        } else{
+            if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+                return $preference;
+                else
+                    return false;
         }
+        
     }
 
     public function driverDocuments()
-    {
+    { 
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-            $url = $dispatch_domain->delivery_service_key_url;
-            $endpoint = $url . "/api/send-documents";
-            // $dispatch_domain->delivery_service_key_code = '649a9a';
-            // $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
-            $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
-
-            $response = $client->post($endpoint);
-            $response = json_decode($response->getBody(), true);
-
-            return json_encode($response['data']);
+            if($dispatch_domain->business_type == 'taxi'){
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $endpoint =$url . "/api/send-documents";
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+                
+                $response = $client->post($endpoint);
+                $response = json_decode($response->getBody(), true);
+                $response['api_data'] = [
+                    'url'=>$url,
+                    'token'=>$dispatch_domain->pickup_delivery_service_key,
+                    'code' => $dispatch_domain->pickup_delivery_service_key_code
+                ];
+            } elseif($dispatch_domain->business_type == 'laundry'){
+                $url = $dispatch_domain->laundry_service_key_url;
+                $endpoint =$url . "/api/send-documents";
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key, 'shortcode' => $dispatch_domain->laundry_service_key_code]]);
+                
+                $response = $client->post($endpoint);
+                $response = json_decode($response->getBody(), true);
+                $response['api_data'] = [
+                    'url'=>$url,
+                    'token'=>$dispatch_domain->laundry_service_key,
+                    'code' => $dispatch_domain->laundry_service_key_code
+                ];
+            } else{
+                
+                $url = $dispatch_domain->delivery_service_key_url;
+                $endpoint =$url . "/api/send-documents";
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
+                
+                $response = $client->post($endpoint);
+                $response = json_decode($response->getBody(), true);
+                $response['api_data'] = [
+                                            'url'=>$url,
+                                            'token'=>$dispatch_domain->delivery_service_key,
+                                            'code' => $dispatch_domain->delivery_service_key_code
+                                        ];
+                
+            }
+            return json_encode($response);
         } catch (\Exception $e) {
             $data = [];
             $data['status'] = 400;
             $data['message'] =  $e->getMessage();
             return $data;
         }
+        
     }
 
     public function driverSignup(Request $request)
@@ -2886,7 +2936,9 @@ class OrderController extends FrontController
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
 
-                $data = json_decode($this->driverDocuments());
+                $driver_documents = json_decode($this->driverDocuments());
+                $data= $driver_documents->data;
+                $api = $driver_documents->api_data;
                 $driver_registration_documents = $data->documents;
                 $rules_array = [
                     'name' => 'required',
@@ -2939,8 +2991,8 @@ class OrderController extends FrontController
                 }
                 // $dispatch_domain->delivery_service_key_code = '649a9a';
                 //  $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
-                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
-                $url = $dispatch_domain->delivery_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' =>$api->token, 'shortcode' => $api->code]]);
+                $url = $api->url;
                 $key1 = 0;
                 $key2 = 0;
                 $filedata = [];

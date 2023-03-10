@@ -145,9 +145,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
-                        @if(!empty($category->image) && $category->image['is_original'])
-                            <div class="common-banner"><img alt="" class="blur-up lazyload" data-src="{{$category->image['image_fit'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                        @endif
+                         @include('frontend.vendor-category-topbar-banner') 
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
                             
@@ -162,214 +160,16 @@
                                 </span><span class="active">Healthcare Device</span></a>
                             </li>
                         </ul> -->
-                    <aside class="side_fillter">
-                       
-                    <!-- side-bar colleps block stat -->
-                    @if( (count($category->brands) > 0) || (count($variantSets) > 0) )
-                    <div class="collection-filter-block bg-transparent p-0 m-0">
-                        <!-- <div class="collection-mobile-back">
-                            <span class="filter-back d-lg-none d-inline-block">
-                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
-                            </span>
-                        </div> -->
-                        @if(!empty($category->brands) && count($category->brands) > 0)
-                        <div class="collection-collapse-block open mb-2">
-                            <h3 class="collapse-block-title">{{__('Brand')}}</h3>
-                            <div class="collection-collapse-block-content">
-                                <div class="collection-brand-filter">
-                                    @foreach($category->brands as $key => $val)
-                                        <div class="custom-control custom-checkbox collection-filter-checkbox">
-                                            <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->id}}" used="brands" id="brd{{$val->id}}">
-                                            @foreach($val->translation as $k => $v)
-                                                <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
-                                            @endforeach
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                        @if(!empty($variantSets) && count($variantSets) > 0)
-                          @foreach($variantSets as $key => $sets)
-                            <div class="collection-collapse-block border-0 mb-2 open p-2">
-                                <h3 class="collapse-block-title">{{$sets->title}}</h3>
-                                <div class="collection-collapse-block-content">
-                                    <div class="collection-brand-filter">
-                                    <?php /*
-                                    @if($sets->type == 2)
-                                        @foreach($sets->options as $ok => $opt)
-                                            <div class="chiller_cb small_label d-inline-block color-selector mt-2">
-                                                <?php $checkMark = ($key == 0) ? 'checked' : ''; ?>
-                                                <input class=" productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
-                                                {{-- custom-control-input --}}
-                                                <label for="Opt{{$key.'-'.$opt->id}}"></label>
-                                                @if(strtoupper($opt->hexacode) == '#FFF' || strtoupper($opt->hexacode) == '#FFFFFF')
-                                                    <span style="background: #FFFFFF; border-color:#000;" class="check_icon white_check"></span>
-                                                @else
-                                                    <span class="check_icon" style="background:{{$opt->hexacode}}; border-color: {{$opt->hexacode}};"></span>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        @foreach($sets->options as $ok => $opt)
-                                            <div class="custom-control custom-checkbox collection-filter-checkbox">
-                                                <input type="checkbox" class="custom-control-input productFilter" id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" type="variants" optid="{{$opt->id}}">
-                                                <label class="custom-control-label" for="Opt{{$key.'-'.$opt->id}}">{{$opt->title}}</label>
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                    */ ?>
-                                    </div>
-                                </div>
-                            </div>
-                          @endforeach
-                        @endif
-                        <div class="collection-collapse-block border-0 mb-2 open p-2">
-                            <h3 class="collapse-block-title">{{__('Price')}}</h3>
-                            <div class="collection-collapse-block-content">
-                                <div class="wrapper mt-3">
-                                    <div class="range-slider">
-                                        <input type="text" class="js-range-slider rangeSliderPrice" value="" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-                    @php $show_new_Products = 0; @endphp
-                    @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card custom-inner-card">
-                        <h5 class="title-border d-flex align-items-center justify-content-between">
-                            <span>{{__('New Product')}}</span>
-                            <span class="filter-back d-lg-none d-inline-block">
-                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
-                            </span>
-                        </h5>
 
-                        <div class="offer-slider al">
+                        
                            
-                                @foreach($newProducts as $newProds)
-                                    <div class="col-12 p-0">
-                                    @foreach($newProds as $new)
-                                        <?php /*$imagePath = '';
-                                        foreach ($new['media'] as $k => $v) {
-                                            $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
-                                        }*/ ?>
-                                        <div class=" common-product-box scale-effect mb-2">
-                                            <a class="row  w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                <div class="col-4">
-                                                    <div class="img-outer-box position-relative  pr-0">
-                                                        <img class="blur-up lazyload p-0" data-src="{{$new['image_url']}}" alt="">
-                                                        <div class="pref-timing"></div>
-                                                        {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
-                                                    </div>
-                                                </div>
-                                                <div class="col-8">
-                                                    <div class="media-body align-self-center ">
-                                                        <div class="inner_spacing px-0">
-                                                            <div class="product-description">
-                                                                <div class="d-flex align-items-center justify-content-between">
-                                                                    <h6 class="card_title ellips">{{ $new['translation_title'] }}</h6>
-                                                                    <!--<span class="rating-number">2.0</span>-->
-                                                                </div>
-                                                                <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
-                                                                <p>{{$new['vendor']['name']}}</p>
-                                                                <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
-                                                                <div class="d-flex align-items-center justify-content-between">
-                                                                    <b>
-                                                                        @if($new['inquiry_only'] == 0)
-                                                                            <?php $multiply = $new['variant_multiplier']; ?>
-                                                                            {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
-                                                                        @endif
-                                                                    </b>
 
-                                                                    <!-- @if($client_preference_detail)
-                                                                        @if($client_preference_detail->rating_check == 1)
-                                                                            @if($new['averageRating'] > 0)
-                                                                                <div class="rating-box">
-                                                                                    <i class="fa fa-star" aria-hidden="true"></i>
-                                                                                    <span>{{ $new['averageRating'] }}</span>
-                                                                                </div>
-                                                                            @endif
-                                                                        @endif
-                                                                    @endif   -->
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    @endforeach
-                                    </div>
-                                @endforeach
-                            
-                        </div>
-                    </div>
-                    @endif
+                  
 
-                    @php $getAdditionalPreference = getAdditionalPreference(['is_attribute']); @endphp
-                    @if( isset($getAdditionalPreference['is_attribute']) && !empty($productAttributes))
-                        <div class="p2p-sidebar" >
-                            
-                            <div class="row">
-                                <div id="variantAjaxDiv" class="col-12 mb-2">
-                                    <div class="row mb-2">
-                                        
-                                        @foreach($productAttributes as $vk => $var)
-                                        @php $counter = 0; @endphp
-                                        <div class="col-sm-12">
-                                            <label class="control-label">{{$var->title??null}}</label>
-                                        </div>
-                                        <div class="col-sm-12">
-                                            @if( !empty($var->type) && $var->type == 1 )
-                                            {{-- <select class="form-control " name="free_delivery_roles[]" data-toggle="select2" multiple="multiple" placeholder="Select role..."> --}}
-                                            <select name="" class="dropdown_select select2-multiple" data-key="{{$var->title}}" multiple>
-                                                @foreach($var->option as $key => $opt)
-                                                <option value="{{$opt->id}}">{{$opt->title}}</option>
-                                                @endforeach
-                                            </select>
+                    <!--- Left Sidebar filters -->
+                      @include('frontend.category-left-sidebar')
+                    <!---End Left Sidebar filters -->
 
-                                            @else
-                                            
-                                            @foreach($var->option as $key => $opt)
-                                            
-                                            @if(isset($opt) && isset($var) && !empty($var->title) )
-
-                                                @if( !empty($var->type) && $var->type == 3 )
-                                                    <div class="form-check-inline">
-                                                        <div class="attr_radio_{{$var->id}}">
-                                                        <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio"  
-                                                        value="{{$opt->id}}" data-key="{{$var->title}}">
-                                                        </div>
-                                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
-                                                    </div>
-
-
-                                                @elseif( !empty($var->type) && $var->type == 4 )
-                                                    <div class="form-check-inline d-block">
-                                                        <input type="textbox" class="text_field custom-search" name="attribute[{{$var->id}}][option][{{$counter}}][value]" value="" data-key="{{$var->title}}">
-                                                    </div>
-                                                @else
-                                                    <div class="checkbox checkbox-success form-check-inline">
-                                                        <input type="checkbox" name="" value="{{$opt->id}}" class="dynamic_checkbox" data-key="{{$var->title}}">
-                                                        <option value=""></option>
-                                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
-                                                    </div>
-                                                @endif
-                                                @php $counter++; @endphp
-                                            @endif
-                                            @endforeach
-                                            @endif
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    @endif
-                    </aside>
                 </div>
                 
                 <div class="collection-content col-lg-9 outter-fillter-data">
@@ -425,6 +225,7 @@
                                             <div class="row margin-res">
                                               @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
+                                                {{-- @dd($data) --}}
                                                 <?php /*$imagePath = $imagePath2 = '';
                                                 $mediaCount = count($data->media);
                                                 for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
@@ -450,7 +251,7 @@
                                                                         @endif
                                                                     @endif
                                                                 </h3>
-                                                                <div class="product-description_list border-bottom">
+                                                                <div class="product-description_list">
                                                                     <span class="flag-discount">30% Off</span>
                                                                     <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
                                                                     @if (strlen($data->translation_description) >= 65)
@@ -459,10 +260,35 @@
                                                                         <p>{{ $data->translation_description }}</p>
                                                                     @endif
                                                                     </div>
-                                                                    @if($data->inquiry_only == 0)
-                                                                        <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                    @if(!empty($data->ProductAttribute))
+                                                                        @foreach ($data->ProductAttribute as $attribute) 
+                                                                            @if(@$attribute && $attribute->key_name == "Location") 
+                                                                                <div class="d-flex align-items-center justify-content-between prod_location pt-2">
+                                                                                    <b class="flex nowrap"><span class="loction ellips"><i class="fa fa-map-marker" aria-hidden="true"></i>   {{$attribute->key_value}}</span></b>
+                                                                                </div>
+                                                                            @endif
+                                                                        @endforeach
                                                                     @endif
-                                                                
+                                                                    <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
+                                                                        <b>Updated {{ convertDateToHumanReadable($data->updated_at) }} </b>
+                                                                    </div>
+                                                                    <div class="product-price-chat-sec">
+                                                                        @if($data->inquiry_only == 0)
+                                                                            <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                                                        @endif
+                                                                        <div class="prod-details">
+                                                                            <div class="chat-button">
+                                                                                @if(getAdditionalPreference(['chat_button'])['chat_button'])
+                                                                                    <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$data->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$data->id}}" style="margin-right: 5px !important;"><i class="fa fa-comments" aria-hidden="true"></i></button>
+                                                                                    
+                                                                                @endif
+                                                                                @if(getAdditionalPreference(['call_button'])['call_button'])
+                                                                                    <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></button>
+                                                                                    
+                                                                                @endif
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                             </div>
                                                         </div>
                                                     </a>
@@ -489,8 +315,31 @@
     </div>
     <input type="hidden" id="vendor_id" value="{{ isset($vendor_id) ? $vendor_id : ''}}">
 </section>
+@php
+      $user_type = 'user';
+        $to_message = 'to_user';
+        $from_message = 'from_user';
+        $chat_type = 'user_to_user';
+        $startChatype = 'user_to_user';
+        $apiPre = 'client';
+        $rePre = 'user/chat/userToUser';
+        $fetchDe = 'fetchRoomByUserIdUserToUser';
+  @endphp
 @endsection
+
 @section('script')
+<script>
+    var to_message = `<?php echo $to_message; ?>`;
+    var user_type = `<?php echo $user_type; ?>`;
+    var from_message = `<?php echo $from_message; ?>`;
+    var chat_type = `<?php echo $chat_type; ?>`;
+    var startChatype = `<?php echo $startChatype; ?>`;
+    var apiPre = `<?php echo $apiPre; ?>`;
+    var rePre = `<?php echo $rePre; ?>`;
+    var fetchDe = `<?php echo $fetchDe; ?>`;
+</script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
 <script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
@@ -504,7 +353,7 @@
 <script>
     $(document).ready(function() {
         $('.sortingFilter').val('newly_added');
-        filterProducts();
+        // filterProducts();
     });
     $(document).on("change",".attr_radio", function() {
         
@@ -558,6 +407,14 @@
     $('.attr_radio, .dynamic_checkbox, .dropdown_select, .text_field').change(function() {
         filterProducts();
     });
+
+    // $(document).on('change','#search_location',function(){
+    //     $latitude = $('#latitude').val();
+    //     $longitude = $('#longitude').val();
+    
+    //     alert($(this).val());
+    //     // filterProducts();
+    // });
 
     function filterProducts(page='', limit=''){
         var brands = [];
@@ -613,6 +470,10 @@
         });
         var range = $('.rangeSliderPrice').val();
         var order_type = $('.sortingFilter').val();
+        var latitude = $('#latitude').val();
+        console.log(latitude);
+        var longitude = $('#longitude').val();
+        console.log(longitude);
         var ajaxData = {
             "_token": "{{ csrf_token() }}",
             "brands": brands,
@@ -622,7 +483,9 @@
             "range": range,
             "order_type" : order_type,
             "dynamic_options" : dynamic_options,
-            "filter_type" : 1
+            "filter_type" : 1,
+            "latitude" : latitude,
+            "longitude" : longitude
         };
 
         if(limit != ''){
@@ -656,5 +519,62 @@
     }
 
     $('.select2-multiple').select2();
+
+    var autocomplete = {};
+    var autocompletesWraps = [];
+    var count = 1;
+    editCount = 0;
+    $(document).ready(function() {
+        
+        autocompletesWraps.push('def');
+        loadMap(autocompletesWraps);
+    });
+
+    function loadMap(autocompletesWraps) {
+        
+        // console.log(autocompletesWraps);
+        $.each(autocompletesWraps, function(index, name) {
+            const geocoder = new google.maps.Geocoder;
+
+            // if ($('#' + name).length == 0) {
+            //     return;
+            // }
+            //autocomplete[name] = new google.maps.places.Autocomplete(('.form-control')[0], { types: ['geocode'] }); console.log('hello');
+            autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById('search_location'), {
+                types: ['geocode']
+            });
+
+            google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
+                var place = autocomplete[name].getPlace();
+                if (!place.geometry) {
+                    window.alert("Autocomplete's returned place contains no geometry");
+                    return;
+                }
+                geocoder.geocode({
+                    'placeId': place.place_id
+                }, function(results, status) {
+
+                    if (status === google.maps.GeocoderStatus.OK) {
+                        const lat = results[0].geometry.location.lat();
+                        const lng = results[0].geometry.location.lng();
+                        document.getElementById('latitude').value = lat;
+                        document.getElementById('longitude').value = lng;
+                        filterProducts();
+                    }
+
+                });
+            });
+
+        });
+    }
+    function checkAddressString(obj,name)
+    {
+        if($(obj).val() == "")
+        {
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+            filterProducts();
+        }
+    }
 </script>
 @endsection

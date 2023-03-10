@@ -86,8 +86,20 @@ class LoyaltyController extends Controller{
         }
         $orders = $orders_query->orderBy('id', 'desc');
         return Datatables::of($orders)
+                ->addColumn('order_number', function($orders) {
+                    return $orders->order_number ?? '';
+                })
+                ->addColumn('created_at', function($orders) {
+                    return $orders->created_at ??'N/A';
+                })
+                ->addColumn('user_name', function($orders) {
+                    return $orders->user->name ?? 'N/A';
+                })
+                ->addColumn('payable_amount', function($orders) {
+                    return $orders->payable_amount ?? '0.00';
+                })
                 ->addColumn('loyalty_membership', function($orders) {
-                    return $orders->loyaltyCard ? $orders->loyaltyCard->name : '';
+                    return $orders->loyaltyCard->name ?? 'N/A';
                 })
                 ->addColumn('loyalty_points_used', function($orders) {
                     return $orders->loyalty_points_used ? $orders->loyalty_points_used : '0.00';
@@ -99,7 +111,7 @@ class LoyaltyController extends Controller{
                     return $orders->loyalty_points_earned ? $orders->loyalty_points_earned : '0.00';
                 })
                 ->addColumn('payment_option_title',function($orders){
-                    return __($orders->paymentOption->title);
+                    return __($orders->paymentOption->title??'N/A');
                 })
                 ->addColumn('payable_amount',function($orders){
                     return decimal_format($orders->payable_amount,",");

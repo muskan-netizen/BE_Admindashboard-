@@ -159,13 +159,14 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    </div>
    <!-- End Cab Booking Header From Here -->
    @else
-   <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif" style="display:none;">
+   <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif" @if ($client_preference_detail->business_type != 'super_app') style="display:none;" @endif>
       <div class="container_fluid_al d-block" >
           <div class="row align-items-center justify-content-center position-initial">
               <div class="col-lg-12">
                   <div class="container al_mobile-header d-flex align-items-center justify-content-between position-relative">
                       <div class="al_count_tabs_new_design d-none d-sm-block"  >
                           @if($mod_count > 1)
+                          
                           <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
                               @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                   @php
@@ -264,7 +265,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                           @endif
                       </div>
       
-                      <div class="al_new_ipad_view ipad-view"  >
+                      {{-- <div class="al_new_ipad_view ipad-view d-none"  >
                           <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                               @if( (Session::get('preferences')))
                               @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
@@ -463,7 +464,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                   </li>
                                                   <li class="onhover-div mobile-cart">
                                                       <a href="{{ route('showCart') }}" style="position: relative"> <i class="ti-shopping-cart"></i> <span
-                                                              class="cart_qty_cls" style="display:none"></span> </a>{{-- <span class="cart_qty_cls" style="display:none"></span> --}}
+                                                              class="cart_qty_cls" style="display:none"></span> </a>
+                                                              
                                                       <ul class="show-div shopping-cart"> </ul>
                                                   </li>
                                               </ul>
@@ -473,8 +475,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
       
                               </div>
                           </div>
-                      </div>
-                  </div>
+                      </div> --}}
+                  </div> 
               </div>
           </div>
       </div>
@@ -482,10 +484,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    @endif
    @if(!empty($navCategories) && count($navCategories) )  {{--  && \Route::current()->getName() != 'userHome'  --}}
    <div class="menu-navigation alThreeMenu">
-      <div class="container-fluid">
+      <div class="container">
          <div class="row">
             <div class="col-12">
-               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
+               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider" >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
                   <li class="al_main_category"  >

@@ -101,6 +101,9 @@ class PickupDeliveryController extends BaseController{
                     $product->toll_fee   = $tags_price['toll_fee']??0;
                     $product->tags_price = $tags_price['delivery_fee']??0;
 
+                    $product->distance = decimal_format($tags_price['distance']);
+                    $product->duration = decimal_format($tags_price['duration']);
+
                     $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
                     if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
                     {
@@ -241,9 +244,9 @@ class PickupDeliveryController extends BaseController{
                     );
                     $response = json_decode($res->getBody(), true);
                     if($response && $response['message'] == 'success'){
-                        return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00);
+                        return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00, 'distance' => isset($response['total_distance']) ? $response['total_distance'] : 0, 'duration' => isset($response['total_duration']) ? $response['total_duration'] :0);
                     }else{
-                        return array('delivery_fee' => 0, 'toll_fee' => 0);
+                        return array('delivery_fee' => 0, 'toll_fee' => 0, 'distance' => 0, 'duration' => 0);
                     }
 
                 }
@@ -602,7 +605,7 @@ class PickupDeliveryController extends BaseController{
                 $payment->date = date('Y-m-d');
                 $payment->order_id = $order->id;
                 $payment->transaction_id = $request->transaction_id;
-                $payment->balance_transaction = $order->payable_amount;
+                $payment->balance_transaction =!empty($order->payable_amount)?$order->payable_amount:$request->amount;
                 $payment->type = 'pickup/delivery';
                 $payment->save();
             }

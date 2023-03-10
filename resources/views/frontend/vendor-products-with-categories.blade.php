@@ -30,126 +30,15 @@ span.alPriceValue, span.alPriceValue i {
     <!-- section start -->
     <section class="section-b-space ratio_asos alProductCategories">
         <div class="collection-wrapper">
-            <div class="container">
+            <div class="container p-0">
                 <div class="row">
-                    <div class="col-12">
-                        <div class="product-banner-img">
-                            @if (!empty($vendor->banner))
-                            <link rel="preload" as="image" href="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" />
-                            <img alt="" src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}">
-                            @endif
+                        <div class="col-12">
+                            @include('frontend.vendor-category-topbar-banner')   
                         </div>
-                        </div>
+                        @include('frontend.vendor-details-in-banner')
+                       
                 </div>
-                    {{-- <div class="row">
-                        <div class="col-12"> --}}
-                        <div class="col-12 product-bottom-bar vendor-description pb-2">
-                            <div class="vendor-details-left d-sm-flex align-items-center">
-                                <div class="vender-icon mr-sm-3">
-                                    <div class="vendor-stories">
-                                        <div class="circle-wrapper"></div>
-                                        <a href="" data-toggle="modal" data-target="#vendorStories_">
-                                            <img id="vendorStoriesImg" src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-sm avatar-lg" alt="profile-image">
-                                        </a>
-                                    </div>
-                                    <div class="vendor-reviwes">
-                                        @if ($vendor->vendorRating > 0)
-                                            <div class="rating-text-box ml-sm-auto">
-                                                <span>{{ $vendor->vendorRating }}</span>
-                                                <i class="fa fa-star" aria-hidden="true"></i>
-                                            </div>
-                                        @endif
-                                        {{-- <div class="review-text">
-                                                <div class="reviw-number">409</div>
-                                                <div class="reviews-text">Delivery Reviews</div>
-                                            </div> --}}
-                                    </div>
-                                    <!-- <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image"> -->
-                                </div>
-                                <div class="ml-sm-1 position-relative profile_address">
-                                            <h3>{{ $vendor->name }}</h3>
-                                            @if (!empty($vendor->desc))
-                                                <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
-                                                    {{ substr($vendor->desc, 0, 80) . '...' }}</h4>
-                                            @endif
-                                            <p>{!! $vendor->short_desc !!}</p>
-                                            <ul class="vendor-info">
 
-                                                    <li class="d-block vendor-location">
-                                                        <a href="javascript:void(0)" onclick="copyToClipboard('#p1')" >
-                                                            <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
-                                                            <span class="copied_txt" id="show_copy_msg_on_click_copy">{{ __('Copy') }}</span>
-                                                            <span class="copied_txt" id="show_copy_msg_on_click_copied" style="display:none;">{{ __('Copied') }}</span>
-                                                        </a>
-                                                        <span id="p1" style="display:none;">{{url()->current()}}</span>
-                                                    </li>
-
-                                                {{-- <li class="d-block food-items">
-                                                        <i class="icon-ic_eat"></i>
-                                                        @forelse($listData as $key => $data)
-                                                            {{ $data->category->translation_one->name . (( $key !=  count($listData)-1 ) ? ',' : '') }}
-                                                        @empty
-                                                        @endforelse
-                                                </li> --}}
-
-                                                @if ($vendor->is_show_vendor_details == 1)
-                                                    <li class="d-block vendor-location">
-                                                        <i class="icon-location"></i> {{ $vendor->address }}
-                                                    </li>
-                                                    @if ($vendor->email)
-                                                        <li class="d-block vendor-email">
-                                                            <i class="fa fa-envelope"></i> {{ $vendor->email }}
-                                                        </li>
-                                                    @endif
-                                                    @if ($vendor->website)
-                                                        <li class="d-block vendor-website">
-                                                            <i class="fa fa-home"></i> {{ $vendor->website }}
-                                                        </li>
-                                                    @endif
-                                                @endif
-                                                @if(!empty($socialMediaUrls))
-                                                    <li class="d-block vendor-instagram">
-                                                        <i class="fa fa-globe"></i> <a class="open-social-medialinks" href="javascript:void(0)">Social Media Links</a>
-                                                    </li>
-                                                @endif
-
-
-                                                @php
-                                                    $checkSlot = findSlot('', $vendor->id, '');
-                                                @endphp
-
-                                                <li class="vendor-timing">
-                                                    <i class="icon-time"></i>
-                                                    @if ($vendor->is_vendor_closed == 0 && $vendor->show_slot == 0)
-                                                        {{ $vendor->opening_time }} – {{ $vendor->closing_time }}
-                                                        <span class="badge badge-success">{{ __('Open') }}</span>
-                                                    @elseif($vendor->is_vendor_closed == 0 && $vendor->show_slot == 1)
-                                                        24 x 7 <span class="badge badge-success">{{ __('Open') }}</span>
-                                                    @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
-                                                        <span class="badge badge-danger">{{ __('Closed') }}</span>
-                                                        {{ __('We are not accepting orders right now. You can schedule this for ') . $checkSlot }}.
-                                                    @else
-                                                        <span class="badge badge-danger">{{ __('Closed') }}</span>
-                                                    @endif
-                                                    </span>
-                                                    {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
-                                                            <span class="tooltip-text d-none">Mon-Sun : 11am - 11pm</span> --}}
-                                                    </span>
-
-                                                </li>
-                                                @if ($vendor->order_min_amount > 0)
-                                                    <span class="badge badge-danger">{{ __('Minimum order value') }}
-                                                        {{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
-                                                @endif
-
-                                            </ul>
-                                        </div>
-                            </div>
-
-                        </div>
-                        {{-- </div>
-                    </div> --}}
-            </div>
                 <div class="position-relative container">
                     <div class="categories-product-list mt-sm-4">
 
@@ -177,7 +66,7 @@ span.alPriceValue, span.alPriceValue i {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-5 text-right pl-0">
+                                        <div class="col-5 text-right pl-0 pr-0">
                                             <!-- <span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span> -->
                                             <select name="order_type" id='order_type' class="product_tag_filter p-1">
                                                 <option value="featured">{{ __('Featured') }}</option>
@@ -307,7 +196,7 @@ span.alPriceValue, span.alPriceValue i {
                                                                                         @endif
                                                                                     @endforeach
 
-                                                                                    @if ($vendor->is_vendor_closed == 0 || ($vendor->closed_store_order_scheduled != 0 && $checkSlot != 0)   )
+                                                                                    @if ($vendor->is_vendor_closed == 0 || ($vendor->closed_store_order_scheduled != 0 && @$checkSlot != 0)   )
                                                                                         @php
                                                                                             $is_customizable = false;
                                                                                             if ($isAddonExist > 0 && ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)) {
@@ -647,6 +536,21 @@ span.alPriceValue, span.alPriceValue i {
             <% }); %>
 
             <h5 class="d-flex align-items-center justify-content-between pb-2">{{ __('PRICE DETAILS') }} </h5>
+            
+            <% if(cart_details.total_service_fee > 0){ %>
+            <li class="p-0 alSixCart">
+                <div class='media-body'>
+                    <h6 class="d-flex align-items-center justify-content-between">
+                        <span class="ellips">{{ __('Service Fee') }}</span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= Helper.formatPrice(cart_details.total_service_fee * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                                <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.total_service_fee) %></span>
+                            <% } %>
+                    </h6>
+                </div>
+            </li>
+            <% } %>
             <li class="p-0 alSixCart">
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\UserDevice;
-use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction,UserDocs,UserRegistrationDocuments};
+use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction,UserDocs,UserRegistrationDocuments, UserVendor};
 
 class ProfileController extends FrontController
 {
@@ -109,18 +109,21 @@ class ProfileController extends FrontController
         $phonenumber= str_replace('-', '', $request->phone_number);
         $request->phone_number = str_replace(' ', '', $phonenumber);
         $user = User::where('id', Auth::user()->id)->first();
-        
-        if($user->phone_number!=$request->phone_number){
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|min:3|max:80',
-                'phone_number' => 'required|unique:users'
-            ]);
-        }else{
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|min:3|max:80',
-                'phone_number' => 'required'
-            ]);
+
+        $rules = [
+            'name' => 'required|string|min:3|max:80',
+            'phone_number' => 'required|unique:users',
+        ];
+
+        if($user->phone_number == $request->phone_number){
+            $rules['phone_number'] = 'required';
         }
+
+        if(!empty($request->email)){
+            $rules['email'] = 'email|unique:users,email,'.$user->id.',id';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             foreach ($validator->errors()->toArray() as $error_key => $error_value) {
@@ -136,6 +139,7 @@ class ProfileController extends FrontController
                 $user->image = Storage::disk('s3')->put($this->folderName, $file,'public');
             }
             $user->name = $request->name;
+            $user->email = $request->email;
             $user->timezone = $request->timezone;
             $user->dial_code = $request->dialCode;
             $user->description = $request->description;
@@ -245,6 +249,36 @@ class ProfileController extends FrontController
         UserDevice::updateOrCreate(['device_token' => $request->fcm_token],['user_id' => Auth::user()->id, 'device_type' => "web"])->first();
         Session::put('current_fcm_token', $request->fcm_token);
         return response()->json([ 'status'=>'success', 'message' => 'Token updated successfully']);
+    }
+
+    //get my ads/products
+    public function getMyAds(){
+        $user = Auth::user();	
+        $user_vendor = UserVendor::where('user_id', $user->id)->pluck('vendor_id')->toArray();
+        $products = [];
+        if(@$user_vendor){
+            $products = Product::with(['media.image', 'primary', 'category.cat', 'category.categoryDetail', 'brand', 'variant' => function ($v) {
+                $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
+            }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title','category_id')
+                ->whereIn('vendor_id', $user_vendor)->whereHas('category.categoryDetail', function ($query) {
+                    $query->where('type_id','!=','7');
+                })->get()->sortBy('primary.title', SORT_REGULAR, false);
+        }
+        // dd($products);
+        return view('frontend.account.my-ads',compact('products'));
+    }
+
+    public function getNotification(){
+        return view('frontend.account.notifications');
+    }
+
+    public function updatePostStatus(Request $request,$domain = ''){
+        if ($request->ajax()) {
+            $product = Product::where('id', $request->product_id)->update([
+                'is_live' => $request->status
+            ]);
+            return response()->json([ 'status'=>'success', 'message' => 'Post status updated successfully']);
+        }
     }
 
 }

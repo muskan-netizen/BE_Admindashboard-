@@ -844,11 +844,6 @@
                     </div>
                 </div>
 
-
-
-
-
-
                 @if ($cart_details->guest_user)
                     <div class="col-lg-12 left_box new_cart mt-4 p-3">
 
@@ -1039,6 +1034,19 @@
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
                                                 {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->sub_total) }}
+                                            @endif
+                                        </b>
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+
+                            @if ($cart_details->delivery_charges > 0)
+                                <div class="row">
+                                    <div class="col-6">{{ __('Total Delivery Fee') }}</div>
+                                    <div class="col-6 text-right"><b>
+                                            @if ($additionalPreference['is_token_currency_enable'])
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->delivery_charges) }}
                                             @endif
                                         </b>
                                     </div>
@@ -1515,43 +1523,7 @@
                                                         </li>
                                                     @endif
                                                 </ul>
-                                                <div class=" col-sm-12 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1"
-                                                    id="schedule_div"
-                                                    style="{{ $cart_details->schedule_type == 'schedule' ? '' : 'display:none!important' }}">
-
-
-                                                    @if ($cart_details->slotsCnt == 0)
-                                                        @if ($cart_details->delay_date != 0)
-                                                            <input type="datetime-local" id="schedule_datetime"
-                                                                class="form-control" placeholder="Inline calendar"
-                                                                value="{{ $cart_details->schedule_type == 'schedule' ? $cart_details->scheduled_date_time : '' }}"
-                                                                min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}">
-                                                        @else
-                                                            <input type="datetime-local" id="schedule_datetime"
-                                                                class="form-control" placeholder="Inline calendar"
-                                                                value="{{ $cart_details->schedule_type == 'schedule' ? $cart_details->scheduled_date_time : '' }}"
-                                                                min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}">
-                                                        @endif
-                                                    @else
-                                                        <input type="date" id="schedule_datetime"
-                                                            class="form-control schedule_datetime"
-                                                            placeholder="Inline calendar"
-                                                            value="{{ $cart_details->scheduled_date_time != '' ? $cart_details->scheduled_date_time : $cart_details->delay_date }}"
-                                                            min="{{ $cart_details->delay_date }}">
-                                                        <input type="hidden" id="checkSlot" value="1">
-                                                        <select name="slots" id="slot"
-                                                            onchange="checkSlotOrders();" class="form-control">
-                                                            <option value="">{{ __('Select Slot') }} </option>
-                                                            @foreach ($cart_details->slots as $slot)
-                                                                <option value="{{ $slot->value }}"
-                                                                    {{ $slot->value == $cart_details->scheduled->slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    @endif
-
-
-                                                </div>
+                                                @include('frontend.cart.schedule_time')
                                             </div>
                                         </div>
 
@@ -1623,7 +1595,7 @@
             <h3 class="mb-2 mt-4">{{ __('Frequently bought together') }}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m">
+                    <div class="product-4 product-m upsell-sell">
                         @foreach ($cart_details->upSell_products as $product)
                             <a class="common-product-box scale-effect text-center"
                                 href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">
@@ -1665,7 +1637,7 @@
             <h3 class="mb-2 mt-3">{{ __('You might be interested in') }}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m">
+                    <div class="product-4 product-m cross-sell">
                         @foreach ($cart_details->crossSell_products as $product)
                             <a class="common-product-box scale-effect text-center"
                                 href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">

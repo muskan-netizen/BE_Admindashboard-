@@ -193,6 +193,7 @@
                                                 <div class="row classes_wrapper no-gutters align-items-center" href="#">
                                                     <div class="col-md-9 col-sm-8 pr-md-2">
                                                         <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
+                                                        <span class="mb-1 font-weight-bold">{!! $data->vendor->name !!}</span>
                                                         <div class="productDetails pr-2">
                                                             <p class="mb-1">{!! $data->translation_description !!}</p>
                                                         </div>
@@ -656,7 +657,7 @@
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Total')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total) %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total_inc_tax) %></span>
                                                 </h6>
                                             </div>
                                         </li>

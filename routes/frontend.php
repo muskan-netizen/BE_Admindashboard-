@@ -45,23 +45,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('send-notification', 'Front\CustomerAuthController@sendNotification');
     Route::get('vendor-notification', 'Front\DispatcherController@test');
 	Route::get('test/email1', 'Front\FrontController@sendmailtest');
-	Route::get('test/email', function () {
-		$send_mail = 'test@yopmail.com';
-		// App\Jobs\SendRefferalCodeEmailJob::dispatch($send_mail);
-		// dispatch(new App\Jobs\SendRefferalCodeEmailJob($send_mail));
-		$details = [
-			'title' => 'Mail from ItSolutionStuff.com',
-			'body' => 'This is for testing email using smtp'
-		];
-
-		try {
-				\Mail::to('sandeep.kumar@codebrewinnovations.com')->send(new \App\Mail\MyTestMail($details));
-				dd('send mail successfully !!');
-			}catch(\Exception $e) {
-					return response()->json(['data' => $e->getMessage()]);
-			}
-	});
-
 
 	// Start edit order routes
 	Route::post('edit-order/search/vendor/products', 'Front\TempCartController@vendorProductsSearchResults');
@@ -165,7 +148,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/simplify/page','Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
 	Route::post('payment/simplify','Front\SimplifyController@createPayment')->name('payment.simplify.createPayment');
 
-
+	//azulpay
+	Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
 	//Square
 	Route::match(['get','post'],'payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square','Front\SquareController@createPayment')->name('payment.square.createPayment');
@@ -497,6 +481,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('user/address/{id}', 'Front\AddressController@address')->name('user.address');
 	Route::get('user/checkout', 'Front\UserController@checkout')->name('user.checkout');
 	Route::get('user/profile', 'Front\ProfileController@profile')->name('user.profile');
+	Route::get('user/my-ads', 'Front\ProfileController@getMyAds')->name('user.productList');
+	Route::post('user/update-post-status', 'Front\ProfileController@updatePostStatus')->name('user.updatePostStatus');
+	Route::get('user/notification', 'Front\ProfileController@getNotification')->name('user.notification');
 	Route::get('user/logout', 'Front\CustomerAuthController@logout')->name('user.logout');
 	Route::get('verifyAccountProcess', 'Front\UserController@sendToken')->name('email.send');
 	Route::get('user/editAddress/{id}', 'Front\AddressController@edit')->name('editAddress');

@@ -1,5 +1,8 @@
 @extends('layouts.store', ['title' => __('Home')])
 @section('css-links')
+<script>
+	var featured_products_length = {{ isset($homePageData['featured_products']) ? count($homePageData['featured_products']) : ''}};
+</script>
 @endsection
 @section('cssnew')
 <style>
@@ -111,9 +114,9 @@
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
 				@foreach($banners as $key => $banner)
-					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" href="{{$url??'#'}}">
+					 <a class="banner-img-outer" href="{{$url??'#'}}" target="_blank">
                         <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1920/500' . $banner->image['image_path']}}" />
 						<img alt="" title="" class="lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/500' . $banner->image['image_path']}}">
 					</a>

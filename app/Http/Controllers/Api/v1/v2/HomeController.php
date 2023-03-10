@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference,Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
+use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference,Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
 use DateTime;
 use Illuminate\Support\Str;
 use DateTimeZone;
@@ -254,7 +254,7 @@ class HomeController extends BaseController{
 
     public function homepage(Request $request, $domain='')
     {
-
+          
         try {
             $home = array();
             $vendor_ids = array();
@@ -392,7 +392,15 @@ class HomeController extends BaseController{
                     $da['data'] = $navCategories;
                    // dd($da[$da->slug]);
                 }
-
+                if($da->slug=='single_category_products'){
+                    $da['data']= $this->getSingleCategoryWithProducts($da->slug);
+                }
+                if($da->slug=='spotlight_deals'){
+                    $da['data']=$this->getSpotlightProducts($da->id);
+                }
+                 if($da->slug=='selected_products'){
+                    $da['data'] = $this->getSelectedProduct($da->id);
+                 }
                 return $da;
 
             });
@@ -544,6 +552,7 @@ class HomeController extends BaseController{
         /**
          * put a limit to get vendors.
          */
+        $long_term_vendors = $vendors;
         $vendors = $vendors->where('status', 1)
                     ->inRandomOrder()
                     ->limit(10)->get();
@@ -746,7 +755,7 @@ class HomeController extends BaseController{
          //get long term service 
          $long_term_service_products =[];
          if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
-             $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $language_id, $currency_id,'', $request->type,$p_dim);
+             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $language_id, $currency_id,'', $request->type,$p_dim);
          }
           
         if($this->checkTemplateForAction(8)){
@@ -886,6 +895,23 @@ class HomeController extends BaseController{
             return $da;
          });
          return $this->cities;
+    }
+
+
+    public function get_spotlight_deals_selected_producst(Request $request){
+        try{
+          if(!empty($request->layout_id)){
+            $selected_products = HomeProduct::with(['products.variants','products.media.image'])->where('layout_id',$request->layout_id)->paginate(15);
+          } else{
+            if(checkColumnExists('products','spotlight_deals')){
+                $selected_products = Product::with(['variants','media.image'
+                ])->select('id', 'sku','title', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','spotlight_deals')->where('spotlight_deals', 1)->paginate(15);
+            } 
+          }
+          return $this->successResponse($selected_products);
+        }catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 
     public function globalSearch(Request $request, $for = 'all', $dataId = 0)

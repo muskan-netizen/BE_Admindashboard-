@@ -80,6 +80,7 @@
                                             <label for="password">{{__('Password')}}</label>
                                             <input type="password" class="form-control" name="password" value="" required="">
                                             <span class="invalid-feedback" id="password_error"><strong></strong></span>
+                                            <span toggle="#password-field" class=" fa fa-eye-slash toggle-password" aria-hidden="true"></span>
                                         </div>
                                         <div class="col-md-3 mb-2" id="confirm_passwordInput">
                                             <label for="confirm_password">{{__('Confirm Password')}}</label>
@@ -122,15 +123,17 @@
                                 <div class="form-row">
 
                                     @if(!$user)
-                                        <div class="col-md-3 mb-3" id="passwordInput">
+                                        <div class="col-md-3 mb-3 resgiter_password" id="passwordInput" > 
                                             <label for="password">{{__('Password')}}</label>
                                             <input type="password" class="form-control" name="password" value="" required="">
                                             <span class="invalid-feedback" id="password_error"><strong></strong></span>
+                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>                                            
                                         </div>
-                                        <div class="col-md-3 mb-3" id="confirm_passwordInput">
+                                        <div class="col-md-3 mb-3 resgiter_password"  id="confirm_passwordInput">
                                             <label for="confirm_password">{{__('Confirm Password')}}</label>
                                             <input type="password" class="form-control" name="confirm_password" value="" required="">
                                             <span class="invalid-feedback" id="confirm_password_error"><strong></strong></span>
+                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>                                            
                                         </div>
                                     @endif
                                 </div>
@@ -172,8 +175,8 @@
                                         <span class="invalid-feedback" id="account_number_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="ifsc_codeInput">
-                                        <label for="ifsccode">{{__('IFSC Code')}}</label>
-                                        <input type="text" class="form-control" name="ifsc_code" placeholder="IFSC Code" value="{{$user ? $user->title : ''}}" placeholder="">
+                                        <label for="ifsccode">{{getNomenclatureName('IFSC Code', true)}}</label>
+                                        <input type="text" class="form-control" name="ifsc_code" placeholder="{{getNomenclatureName('IFSC Code', true)}}" value="{{$user ? $user->title : ''}}" placeholder="">
                                         <span class="invalid-feedback" id="ifsc_code_error"><strong></strong></span>
                                     </div>
                                 </div>
@@ -968,5 +971,17 @@ function isNumberKey(evt) {
    });
     
     //// end vendor register page map icon 
+</script>
+
+<script>
+    $(document).ready(function(){
+        $('.toggle-password').on('click',function(){
+            if($(this).prev().prev().attr('type')=='password'){
+                $(this).prev().prev().attr('type','text')
+            }else{
+                $(this).prev().prev().attr('type','password')
+            }
+        })
+    })
 </script>
 @endsection

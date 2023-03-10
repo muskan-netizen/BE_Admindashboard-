@@ -307,7 +307,7 @@ class ProductController extends FrontController{
                             $product_attr[$key]['hexacode'] = optional($value->attributeOption)->hexacode ?? '';
                             $product_attr[$key]['type'] = optional($value->attribute)->type ?? '';
                             
-                            if( !empty($value->attribute) && $value->attribute->type != 4) {
+                            if( !empty($value->attribute) && $value->attribute->type != 4 && $value->attribute->type != 6) {
                                 $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
                             }
                             else {
@@ -343,7 +343,7 @@ class ProductController extends FrontController{
             if(@$user->id){
                 $user_vendor = UserVendor::where('user_id', $user->id)->first();
             }
-
+            
             return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template]);
 
         }
@@ -375,26 +375,9 @@ class ProductController extends FrontController{
         $data['is_available'] = $is_available;
 
         $pv_ids = array();
-        $product_variant = '';
+        $product_variant = [];
         if ($request->has('options') && !empty($request->options)) {
             foreach ($request->options as $key => $value) {
-                // $newIds = array();
-                // $product_variant = ProductVariantSet::where('variant_type_id', $request->variants[$key])
-                //     ->where('variant_option_id', $request->options[$key]);
-
-                // if (!empty($pv_ids)) {
-                //     $product_variant = $product_variant->whereIn('product_variant_id', $pv_ids);
-                // }
-                // $product_variant = $product_variant->where('product_id', $product->id)->get();
-                // if ($product_variant) {
-                //     foreach ($product_variant as $key => $value) {
-                //         if(!in_array($value->product_variant_id, $pv_ids)){
-                //             $pv_ids[] = $value->product_variant_id;
-                //         }
-                //     }
-                // }
-                // $pv_ids = $newIds;
-
                 if ($product_variant) {
                     $pv_ids = array();
                     foreach ($product_variant as $k => $variant) {
@@ -445,19 +428,6 @@ class ProductController extends FrontController{
                 foreach($variantData as $variant){
 
                     $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
-                    // dump($variant->productPrice);
-                   
-                    // $variant->productPrice = Session::get('currencySymbol') . number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
-                    // $sets[] = $availableSet->toArray();
-                    // foreach($availableSet->groupBy('product_variant_id') as $avSets){
-                    //     $variant_type_id = array();
-                    //     $variant_option_id = array();
-                    //     foreach($avSets as $avSet){
-                    //         $variant_type_id[] = $avSet->variant_type_id;
-                    //         $variant_option_id[] = $avSet->variant_option_id;
-                    //     }
-                    //     $sets[] = ['variant_types' => $variant_type_id, 'variant_options' => $variant_option_id];
-                    // }
                 }
                 if(count($variantData) <= 1){
                     $image_fit = "";

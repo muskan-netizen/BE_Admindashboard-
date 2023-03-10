@@ -132,9 +132,8 @@ class CategoryController extends FrontController{
                  //   pr($variantSets);
         $redirect_to = $category->type->redirect_to;
         
-        $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds);
-     
-      //  pr($listData);
+        $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds,false);
+        $maxPrice = $this->listData($langId, $category->id, $redirect_to,$vendorIds,true);
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
         $productAttributes = '';        
@@ -162,7 +161,7 @@ class CategoryController extends FrontController{
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
 
-                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'], 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
+                return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'], 'is_postpay_enable' => getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable']]);
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
 
@@ -188,22 +187,19 @@ class CategoryController extends FrontController{
                 if ($request->session()->has('skip_addons')) {
                    // pr($cartDataGet['period']->toArray());
                     $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
-                    return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
+                    return view('frontend.ondemand.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
                 }
                 $request->session()->put('skip_addons', '1');
                 $new_url = $request->path()."?step=2";
                 return redirect($new_url);
-            }
-
+            }            
             $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
-            return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
+            return view('frontend.ondemand.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }else{
-
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
-                // dd($listData[0]->variant);
                 if(view()->exists('frontend/cate-'.$page.'s')){
-                    return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'productAttributes'=> $productAttributes]);
+                    return view('frontend/cate-'.$page.'s')->with(['maxPrice'=>$maxPrice,'listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'productAttributes'=> $productAttributes]);
                 }else{
                 
                     abort(404);
@@ -224,7 +220,7 @@ class CategoryController extends FrontController{
     }
 
    
-    public function listData($langId, $category_id, $type = '',$vendorIds = array()){
+    public function listData($langId, $category_id, $type = '',$vendorIds = array(),$is_max = false){
         //pr($category_id);
 
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
@@ -313,7 +309,7 @@ class CategoryController extends FrontController{
             }
             
             // pr($vendors);
-            $products = Product::with(['vendor', 'media.image', 'category',
+            $products = Product::with(['vendor', 'media.image', 'category', 'ProductAttribute',
                         'translation' => function($q) use($langId){
                           $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                           $q->groupBy('language_id','product_id');
@@ -322,14 +318,14 @@ class CategoryController extends FrontController{
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','id', 'compare_at_price');
                             $q->groupBy('product_id');
                         },'variant.checkIfInCart'])
-                        ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count')
+                        ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count','products.updated_at')
                         ->where('products.is_live', 1)
                         ->where('products.category_id', $category_id);
             if(count($vendors) > 0){
                 $products = $products->whereIn('products.vendor_id', $vendors);
             }
+            $maxPrice = 0;
             $products = $products->paginate($pagiNate);
-              //pr($products);
             if(!empty($products)){
                 foreach ($products as $key => $value) {
                     $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
@@ -338,12 +334,18 @@ class CategoryController extends FrontController{
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
                     $value->variant_compare_at_price = (!empty($value->variant->first())) ? $value->variant->first()->compare_at_price : 0;
                     $value->image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-                    // foreach ($value->variant as $k => $v) {
+                   
+                    if($value->variant_price > $maxPrice){
+                        $maxPrice = $value->variant_price;
+                    }// foreach ($value->variant as $k => $v) {
                     //     $value->variant[$k]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     // }
                 }
             }
             $listData = $products;
+            if($is_max){
+                $listData = $maxPrice;
+            }
             return $listData;
         }
     }
@@ -445,6 +447,7 @@ class CategoryController extends FrontController{
      */
     public function categoryFilters(Request $request, $domain = '', $cid = 0)
     {
+        // dd($request->all());
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $limit = $request->has('limit') ? $request->limit : 12;
@@ -517,18 +520,18 @@ class CategoryController extends FrontController{
         }*/
        // print_r($variantIds);die;
         $order_type = $request->has('order_type') ? $request->order_type : '';
-        $products = Product::with(['media.image',
+        $products = Product::with(['media.image', 'ProductAttribute',
                         'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId, $variantIds){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','id');
+                        $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','id','compare_at_price');
                             if(!empty($variantIds)){
                                 $q->whereIn('id', $variantIds);
                             }
                             $q->groupBy('product_id');
                         },
-                    ])->select('products.id', 'products.sku', 'products.brand_id', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count', 'products.is_featured','products.batch_count')
+                    ])->select('products.id', 'products.sku', 'products.brand_id', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count', 'products.is_featured','products.batch_count', 'products.updated_at')
                             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                             ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                     // ->where('vendor_id', $vid)
@@ -545,14 +548,28 @@ class CategoryController extends FrontController{
             
             $getAdditionalPreference = getAdditionalPreference(['is_attribute']);
             
+            $calc_value = 30; //kilometer
+            if(@$request->latitude && @$request->longitude){
+                $products->whereHas('ProductAttribute', function($q) use( $calc_value, $request){
+                    $latitude = $request->latitude;
+                    $longitude = $request->longitude;
+                    // dd($longitude);
+                    $q->select('*', DB::raw(' ( 6371  * acos( cos( radians(' . $latitude . ') ) *
+                    cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                    sin( radians(' . $latitude . ') ) *
+                    sin( radians( latitude ) ) ) )  AS distance'))
+                    ->having("distance", "<", $calc_value);
+                });
+            }
             // Dynamic search fields
             if($getAdditionalPreference['is_attribute']) {
-                \Log::info(json_encode($request->dynamic_options));
+                // \Log::info(json_encode($request->dynamic_options));
                 if( !empty($request->dynamic_options) ) {
                     foreach($request->dynamic_options as $key => $val) {
                         foreach($val as $inn_key => $inn_val) {
                             if( !empty($inn_key) && !empty($inn_val) ) {
-                                $products->whereHas('ProductAttribute', function($q) use($inn_key, $inn_val){
+                                $products->whereHas('ProductAttribute', function($q) use($inn_key, $inn_val, $calc_value, $request){
+                                    
                                     $q->where('key_name', $inn_key);
                                     if( is_array($inn_val) ) {
                                         $q->whereIn('key_value', $inn_val);
@@ -599,13 +616,15 @@ class CategoryController extends FrontController{
             // $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
 
             $products = $products->groupBy('products.id')->paginate($limit, $page);
-
+// dd($products);
         if(!empty($products)){
             foreach ($products as $key => $value) {
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? strip_tags($value->translation->first()->body_html) : $value->sku;
                 $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                 $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
+                $value->variant_compare_at_price = (!empty($value->variant->first())) ? $value->variant->first()->compare_at_price : 0;
+                
                 $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 // foreach ($value->variant as $k => $v) {
                 //     $value->variant[$k]->multiplier = $clientCurrency->doller_compare;
