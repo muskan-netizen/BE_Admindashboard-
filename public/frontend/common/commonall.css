@@ -637,6 +637,10 @@ li.vendor-timing p{
     height: 100%;
     left: 0px;border-radius: 10px;
 }
+.al_body_template_six .common-banner:after{
+    position:inherit;
+    background:transparent;
+}
 .top-banner-content.small-section h4 {
     color: #fff;
 }
