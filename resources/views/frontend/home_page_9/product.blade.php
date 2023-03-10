@@ -1,4 +1,4 @@
-
+@dd($product->title)
 <div class="item">
     <div class="product-card-box position-relative al_box_third_template al"  >
         {{-- {{ dd($product)}} --}}
@@ -7,22 +7,22 @@
             <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
         </div>--}}
         {{-- @dd($product['ProductAttribute'][0]->key_value) --}}
-        <a class="common-product-box text-center" href="{{ $product['vendor']->slug }}/product/{{ $product['url_slug'] }}">
-            <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product['image_url'] }}" alt="" title="">
+        <a class="common-product-box text-center" href="{{ $product->vendor_slug }}/product/{{ $product->url_slug }}">
+            <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ get_file_path($product->path,'FILL_URL','260','260') }}" alt="" title="">
                 {{-- <div class="pref-timing"> </div> --}}
-                <div class="wishlist-icon btn-default" prosku="{{ $product['sku'] }}" remwishlist='<i class="fa fa-heart" aria-hidden="true"></i>' addwishlist='<i class="fa fa-heart-o" aria-hidden="true"></i>'>
+                {{-- <div class="wishlist-icon btn-default" prosku="{{ $product['sku'] }}" remwishlist='<i class="fa fa-heart" aria-hidden="true"></i>' addwishlist='<i class="fa fa-heart-o" aria-hidden="true"></i>'>
                     @if($product['is_inwishlist_btn'] == 0) 
                         <i class="fa fa-heart-o" aria-hidden="true"></i>
                         @else
                         <i class="fa fa-heart" aria-hidden="true"></i>
                     @endif
-                </div>
+                </div> --}}
             </div>
             <div class="media-body align-self-start">
                 <div class="inner_spacing">
                     <div class="product-description">
                         <div class="d-flex align-items-center justify-content-between">
-                            <h6 class="card_title ellips" style="width:100%;">{{ $product["title"] }}</h6> 
+                            <h6 class="card_title ellips" style="width:100%;">{{  $product->title }}</h6> 
                             {{-- @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
                             @if($product["averageRating"] >0)
                             <!-- <span class="rating-number">{{ $product["averageRating"] }}</span> -->
@@ -32,7 +32,7 @@
                         <div class="product-description_list">
                             <!-- <span class="flag-discount">30% Off</span> -->
                             <!-- <p>
-                                {{ $product["vendor_name"] }}
+                                {{ $product->vendor_name  }}
                             </p> -->
                             <!-- <p class="al_product_category">
                                 <span class="product_discription">
@@ -47,7 +47,7 @@
                             </div>
                         @endif
                         <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
-                            <b>Updated {{ convertDateToHumanReadable($product["updated_at"]) }} </b>
+                            <b>Updated {{ convertDateToHumanReadable($product->updated_at) }} </b>
                         </div>
                         <div class="prod-details">
                             <div class="d-flex align-items-center justify-content-between al_clock pt-2">
