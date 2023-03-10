@@ -687,3 +687,9 @@ display: inline-block;
     min-width: 100% !important;
     max-width: 100% !important;
 } */
+.custom_banner img{
+    border-radius: 50px;
+    min-height: 300px;
+    object-fit:cover;
+    object-position: center;
+}

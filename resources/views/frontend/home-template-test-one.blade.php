@@ -488,6 +488,33 @@ $preference = $client_preference_detail;
                     </div>
                 </div>
             </section>
+         @elseif($homePageLabel->slug == 'banner' && (count($homePageData['banners']) != 0))
+            @if(!empty($homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]))
+               <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
+                  <div class="top-heading d-flex justify-content-between">
+                     <h2 class="h2-heading"> @php
+                        echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+                     @endphp </h2>
+                  </div>
+   
+                  <div class="custom_banner">
+                     <div class="container">
+                        <div class="text-center">
+                           @php
+                              $imgEx = ['jpg','png', 'gif', 'jpeg', 'webp']
+                           @endphp
+                           @if(in_array(pathinfo($homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id], PATHINFO_EXTENSION),  $imgEx))
+                              <img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+                           @else
+                              <video id="video1" width="100%" controls autoplay muted>
+                                 <source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
+                              </video>
+                           @endif
+                        </div>
+                     </div>
+                  </div>
+               </section>
+            @endif
          @else
             @if(!empty($homePageData[$homePageLabel->slug]) && count($homePageData[$homePageLabel->slug]) != 0)
                <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >

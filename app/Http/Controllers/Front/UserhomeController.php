@@ -612,6 +612,7 @@ class UserhomeController extends FrontController
         $on_sale_products = [];
         $long_term_service_products = [];
         $recently_viewed = [];
+        $banners = [];
         //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
         $p_dim = '260/260';
         if (isset($set_template)  && $set_template->template_id == 3){
@@ -654,6 +655,8 @@ class UserhomeController extends FrontController
         $trending_vendors_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','trending');})->value('title');
 
         $recent_orders_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
+        
+        $banner_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','banner');})->value('title');
 
         //$enable_layout = CabBookingLayout::where('is_active',1)->web()->pluck('slug')->toArray();
         $home_page_labels = HomePageLabel::with('translations')->get();
@@ -840,11 +843,16 @@ class UserhomeController extends FrontController
         }
         $feature_product_details = $feature_products = [];
       
-        if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in 
+        if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in
             $feature_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type, $featured_products_title,$p_dim);
         } 
-        
-     
+
+        if (in_array('banner', $enable_layout)) {  # if enable banner section in
+            $cab_booking_layouts = CabBookingLayout::with('banner_image')->whereIn('slug',['banner'])->get();
+            foreach($cab_booking_layouts as $bkey => $bval){
+                $banners[$bval->banner_image[0]->cab_booking_layout_id] = $bval->banner_image[0]->banner_image_url;
+            }
+        } 
         
         $top_rated_products = '';
 
@@ -966,6 +974,7 @@ class UserhomeController extends FrontController
                 'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
                 'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
                 'recent_orders' => $activeOrders,
+                'banners' => $banners,
             ];
             // dd( $data);
             return $data ;

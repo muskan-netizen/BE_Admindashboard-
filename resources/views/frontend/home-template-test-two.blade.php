@@ -630,6 +630,27 @@ height: auto;
                                 </div>
                             </div>
                         </section>
+                    @elseif($homePageLabel->slug == 'banner' && (count($homePageData['banners']) != 0))
+                        @if(!empty($homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]))
+                           <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">               
+                              <div class="custom_banner">
+                                 <div class="container">
+                                    <div class="text-center">
+                                        @php
+                                            $imgEx = ['jpg','png', 'gif', 'jpeg', 'webp']
+                                        @endphp
+                                        @if(in_array(pathinfo($homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id], PATHINFO_EXTENSION),  $imgEx))
+                                            <img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+                                        @else
+                                            <video id="video1" width="100%" controls autoplay muted>
+                                                <source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
+                                            </video>
+                                        @endif
+                                    </div>
+                                 </div>
+                              </div>
+                           </section>
+                        @endif
                     @else
                     @if(!empty($homePageData[$homePageLabel->slug]) && count($homePageData[$homePageLabel->slug]) != 0)
                     <div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}">
