@@ -75,6 +75,24 @@ function  layoutMode(){
         ],
     };
 
+
+    var sliderConfigCategoriesSlide = {
+        rows:1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+        //centerMode: true,
+		speed: 300,
+		slidesToShow: 7,
+		slidesToScroll: 7,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 6 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
     var sliderConfigEight = {
         rows: 1,
 		dots: false,
@@ -86,6 +104,22 @@ function  layoutMode(){
         responsive: [
             { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 8 } },
             { breakpoint: 1530, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigEighttop = {
+        rows: 1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+		speed: 300,
+		slidesToShow: 5,
+		slidesToScroll: 5,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+            { breakpoint: 1530, settings: { slidesToShow: 4, slidesToScroll: 4 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -262,7 +296,9 @@ function  layoutMode(){
         e(".product-4-featured_products").slick(sliderConfig),
         e(".p2p_eccomerce_slider10").slick(sliderConfigEight10),
         e(".spotlight_deals-eight").slick(sliderConfigspotlight),
+        e(".categories_sliderEight").slick(sliderConfigCategoriesSlide),
         e(".p2p_eccomerce_slider").slick(sliderConfigEight),
+        e(".TopratedSliderEight").slick(sliderConfigEighttop),
         e(".p2p_single_slider").slick(sliderConfig),
         e(".selling_product_eight").slick(sliderConfigSellingProductEight),
 
