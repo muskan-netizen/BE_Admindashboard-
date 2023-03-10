@@ -17,8 +17,6 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 @endphp
 
 <style type="text/css">
-
-
 /* start tab*/
 
 /* Style the tab */
@@ -29,7 +27,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 }
 
 /* Style the buttons inside the tab */
-.tab button {
+.tab a {
   background-color: inherit;
   float: left;
   border: none;
@@ -41,12 +39,12 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 }
 
 /* Change background color of buttons on hover */
-.tab button:hover {
+.tab a:hover {
   background-color: #ddd;
 }
 
 /* Create an active/current tablink class */
-.tab button.active {
+.tab a.active {
   background-color: #ccc;
 }
 
@@ -60,7 +58,6 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 
 
 /*end tab*/
-
 
     .productVariants .firstChild {
         min-width: 150px;
@@ -464,8 +461,8 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
 
 <div class="tab">
-    <button class="tablinks" onclick="clickHandle(event, 'Add-Card')">Add Card</button>
-    <button class="tablinks" onclick="clickHandle(event, 'Card-List')">Card List</button>
+    <a class="tablinks" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
+    <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
   </div>
 
   <div id="Add-Card" class="tabcontent">
@@ -485,24 +482,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
   </div>
 
   <div id="Card-List" class="tabcontent">
-    
-
-
-
-
-
   </div>
-
- 
-   
-                      
- 
-
-
-
-
-
-
 
                     </div>
                 <% } %>
@@ -587,7 +567,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-
+var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
 
     var inline='';
     $('#wallet_amount').keypress(function(event) {
@@ -783,55 +763,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
             $("#error_dev").html(html).show();
         }
     });
-    
-    function clickHandle(evt, tabName) {
-  let i, tabcontent, tablinks;
-
-  // This is to clear the previous clicked content.
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-
-  // Set the tab to be "active".
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-
-  // Display the clicked tab and set it to active.
-  document.getElementById(tabName).style.display = "block";
-  evt.currentTarget.className += " active";
-  
-  if(tabName == 'Card-List'){
-  
-  	  ajaxCall = $.ajax({
-            type: "post",
-            dataType: "json",
-            url: "{{ route('payment.azulpay.getCards') }}",
-            beforeSend : function() {
-                if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
-                    ajaxCall.abort();
-                }
-                $('.spinner-overlay').show();
-            },
-            success: function(response) {
-                $('#Card-List').html(response.html);
-            },
-            complete: function() {
-                $('.spinner-overlay').hide();
-            },
-            error: function (data) {
-                //location.reload();
-            },
-        });
-  
-  
-  }
-  
-  
-  
-}
     
 </script>
 <script>

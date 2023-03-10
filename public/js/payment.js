@@ -3400,7 +3400,6 @@ someday.setFullYear(exYear, exMonth, 1);
         
     }
     var azul_card_id = $("input[type='radio'][name='azul_card_id']:checked").val();
-    console.log(azul_card_id+" hello");
     if(azul_card_id){
 		message = '';
 		valid = true;
@@ -3429,3 +3428,50 @@ $(document).on("keyup","#azul-card-element",function () {
        this.value = this.value.replace(/[^0-9\.]/g, '');
     }
 });
+
+    
+function clickHandle(evt, tabName) {
+  let i, tabcontent, tablinks;
+
+  // This is to clear the previous clicked content.
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Set the tab to be "active".
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Display the clicked tab and set it to active.
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+  
+  if(tabName == 'Card-List'){
+  
+  	  ajaxCall = $.ajax({
+            type: "post",
+            dataType: "json",
+            url: user_cards_url,
+            beforeSend : function() {
+                if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
+                    ajaxCall.abort();
+                }
+                $('.spinner-overlay').show();
+            },
+            success: function(response) {
+                $('#Card-List').html(response.html);
+            },
+            complete: function() {
+                $('.spinner-overlay').hide();
+            },
+            error: function (data) {
+                //location.reload();
+            },
+        });
+  
+  
+  }
+}

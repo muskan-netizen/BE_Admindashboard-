@@ -1829,12 +1829,15 @@ $(document).ready(function () {
             cno = $('#azul-card-element').val();
             dt = $('#azul-date-element').val();
             cv = $('#azul-cvv-element').val();
+            
             $("#azul_card_error").html();
-            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
-            {
-                success_error_alert('error', 'Please Fill Details', "#azul_card_error");
-                return false;
-            }
+            if(!creditCardValidation()){
+	            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+	            {
+	                success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+	                return false;
+	            }
+	        }
         }
 
         $('#proceed_to_pay_loader').show();
