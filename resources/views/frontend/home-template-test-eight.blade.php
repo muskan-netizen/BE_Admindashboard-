@@ -587,7 +587,7 @@
 				<h2 class="col h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
 			</div>
 			<div class="col-12">
-				<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+				<div class="suppliers-slider-{{$homePageLabel->slug}} product-m renderqw_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					@foreach ($homePageData[$homePageLabel->slug] as $cities )
 					<div class="alSpaListSlider">
 						<div>
@@ -689,7 +689,7 @@
 					<div class="col-md-12 mb-4">
 					<!-- suppliers-slider-{{$homePageLabel->slug}} -->
 						<div class="product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="row">
+							<div class="row TopratedSliderEight">
 							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
 							@include('frontend.home_page_8.top_rated')
 							@endforeach
@@ -709,7 +709,7 @@
 				<div class="row">
 					<div class=" col-12 al_custom_categories">
 						<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="col-12 d-flex align-items-center justify-content-center">
+							<div class="col-12 d-flex align-items-center justify-content-center categories_sliderEight">
 								@foreach ( $homePageLabel->nav_categories as $category )
 									@include('frontend.home_page_8.category')
 								@endforeach
