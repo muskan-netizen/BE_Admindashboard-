@@ -960,8 +960,9 @@ class StripeGatewayController extends FrontController
             ////// Create webhook Endpoint ///////
             $secret_key = stripeDynamicPaymentCredentials('stripe_ideal')->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
+           
+            $webhook_url = 'http://'.$domain.'/payment/webhook/stripe_ideal';
             
-            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_ideal';
             $webhook_exists = false;
 
             // $stripe->webhookEndpoints->delete(
@@ -1034,12 +1035,12 @@ class StripeGatewayController extends FrontController
                 'payment_method_types' => ['ideal'],
                 'amount' => $amount * 100,
                 'currency' => $this->currency, //'eur'
-                // // 'customer' => '',
-                // 'receipt_email' => $user->email ?? '',
-                // 'metadata' => [
-                //     'user_id' => $user->id,
-                //     'payment_form' => $payment_form
-                // ]
+                // 'customer' => '',
+                'receipt_email' => $user->email ?? '',
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'payment_form' => $payment_form
+                ]
             ];
 
             // if(isset($customer_id) && !empty($customer_id)){
@@ -1723,13 +1724,14 @@ class StripeGatewayController extends FrontController
 
     public function stripeIdealWebhook(Request $request)
     {
+        Log::info('start');
         $secret_key = stripeDynamicPaymentCredentials('stripe_ideal')->secret_key;
         \Stripe\Stripe::setApiKey($secret_key);
 
         $payload = @file_get_contents('php://input');
 
-        // //\Log::info('in webhook');
-        // //\Log::info(json_encode($payload));
+         //\Log::info('in webhook');
+        // \Log::info(json_encode($payload));
         $event = null;
         try {
             $event = \Stripe\Event::constructFrom(

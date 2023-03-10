@@ -20,7 +20,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
 <section class="section-b-space ratio_asos">
     <div class="collection-wrapper">
-        <div class="container">
+        <div class="container" id="divFirst">
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
@@ -239,5 +239,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
             },
         });
     }
+    $(".page-link").on("click" ,function(){
+        document.getElementById("divFirst").scrollIntoView();
+
+});
 </script>
 @endsection
