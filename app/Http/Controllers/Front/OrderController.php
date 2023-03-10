@@ -138,13 +138,19 @@ class OrderController extends FrontController
         if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
             $pastOrders = $pastOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
         }
-        $pastOrders->whereHas('vendors', function ($q) {
-            $q->whereIn('order_status_option_id', [
-                6,
-                9
-            ]);
-        })
-            ->where(function ($q1) {
+        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+            $pastOrders->whereHas('vendors.products', function ($q) {
+                $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+            });
+        }else{
+            $pastOrders = $pastOrders->whereHas('vendors', function ($q) {
+                $q->whereIn('order_status_option_id', [
+                    6,
+                    9
+                ]);
+            });
+        }
+        $pastOrders = $pastOrders->where(function ($q1) {
             $q1->where('payment_status', 1)
                 ->whereNotIn('payment_option_id', [
                 1
@@ -157,11 +163,7 @@ class OrderController extends FrontController
         if ($checkLongTerm) {
             $pastOrders->where('orders.is_long_term', 0);
         } 
-        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-            $pastOrders->whereHas('vendors.products', function ($q) {
-                $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
-            });
-        }
+     
         $pastOrders = $pastOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
@@ -372,10 +374,48 @@ class OrderController extends FrontController
             'products.productRating',
             'user',
             'address'
-        ])->whereHas('vendors', function ($q) {
-            $q->where('order_status_option_id', 3);
-        })
-            ->where(function ($q1) {
+        ]);
+        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+    //         $rejectedOrders =   $rejectedOrders->whereRaw("
+    //     IF (final_movie_type = 'hindi', upcomming_movi, 7) LIKE concat('%', weekday('{$movies_list}'), '%')
+    //         OR
+    //     IF (final_movie_type = 'english', upcomming_movi, 0) = DAY('{$movies_list}')
+    //         OR  
+    //     (
+    //         IF (final_movie_type = 'tamil', substring_index(upcomming_movi, '/', 1), 0) = DAY('{$movies_list}')
+    //             AND
+    //         IF (final_movie_type = 'gujrati', substring_index(upcomming_movi, '/', -1), 0) = MONTH('{$movies_list}')
+    //     )
+    // ")
+            // $rejectedOrders->where(function($w_q) {
+            //     $w_q->case(function (CaseBuilder $case) {
+            //         $case->when('luxury_option_id', '=', 6)->then(function($case_q){
+            //             $case_q->whereHas('vendors.products', function ($q) {
+            //                 $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
+            //             });
+            //         })
+            //        ->else(function($else_q){
+            //             $else_q->whereHas('vendors', function ($q) {
+            //                 $q->where('order_status_option_id', 3);
+            //             });
+            //         });
+            //     });
+            // });
+                //     $q->where('luxury_option_id', 6)
+                //     ->whereHas('vendors.products', function ($q) {
+                //             $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
+                //         });
+                // });
+            $rejectedOrders->whereHas('vendors.products', function ($q) {
+                $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
+            });
+        }else{
+
+            $rejectedOrders = $rejectedOrders->whereHas('vendors', function ($q) {
+                $q->where('order_status_option_id', 3);
+            });
+        }
+        $rejectedOrders = $rejectedOrders->where(function ($q1) {
             $q1->where('payment_status', 1)
                 ->whereNotIn('payment_option_id', [
                 1
@@ -388,15 +428,11 @@ class OrderController extends FrontController
         if ($checkLongTerm) {
             $rejectedOrders->where('orders.is_long_term', 0);
         }
-        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-            $rejectedOrders->whereHas('vendors.products', function ($q) {
-                $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
-            });
-        }
+        
         $rejectedOrders = $rejectedOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
-
+pr( $rejectedOrders->toArray());
         foreach ($rejectedOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
