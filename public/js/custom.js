@@ -3783,7 +3783,7 @@ $(document).ready(function () {
         var schedule_date = $("input[name='booking_date']:checked").val();
         var schedule_time = $("input[name='booking_time']:checked").val();
         var specific_instructions = $("#specific_instructions").val();
-        var productid = $("#productid").val();
+        var productid = $("#last_cart_product_id").val();
         //alert(schedule_date);
         //alert(schedule_time);
        var schedule_dt = schedule_date;
@@ -3800,7 +3800,7 @@ $(document).ready(function () {
             data: { task_type: task_type ,specific_instructions:specific_instructions,productid:productid}, //, schedule_dt: schedule_dt,schedule_time:schedule_time
             success: function (response) {
                 if (response.status == "Success") {
-                    window.location.href = showCart;
+                   window.location.href = showCart;
                 }
             },
             error: function (error) {
