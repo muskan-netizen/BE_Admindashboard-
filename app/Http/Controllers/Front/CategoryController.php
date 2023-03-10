@@ -150,7 +150,7 @@ class CategoryController extends FrontController{
                     ->orderBy('position', 'asc')->get();
             }
         }
-        
+       
         $newProducts = [];
         if($page == 'pickup/delivery'){
             if(!Auth::user()){

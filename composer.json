@@ -103,7 +103,8 @@
         "sort-packages": true,
         "platform-check": false,
         "allow-plugins": {
-            "symfony/thanks": true
+            "symfony/thanks": true,
+            "php-http/discovery": true
         }
     },
     "extra": {
