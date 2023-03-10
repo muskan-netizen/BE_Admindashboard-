@@ -17,13 +17,14 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
-
+if (!function_exists('setUserCode')) {
 function setUserCode(){
     $userCode = session()->has('userCode');
     if(!$userCode){
         $user = ClientData::first();
         session()->put('userCode', $user->code);
     }
+}
 }
 
 // Returns the values of the additional preferences.
@@ -54,7 +55,7 @@ if (!function_exists('getAdditionalPreference')) {
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => session()->get('userCode')])->get() : [];
+            $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
             $return = array_column($result->toArray(), 'key_value', 'key_name');
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
@@ -1543,7 +1544,7 @@ if( !function_exists('is_category_products') ) {
 //     }
 // }
 
-if( !function_exists('productDiscountPercentage()') ) {
+if( !function_exists('productDiscountPercentage') ) {
     function productDiscountPercentage($product_price = 0, $product_compare_price)
     {
         if($product_compare_price > 0) {

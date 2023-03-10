@@ -34,7 +34,7 @@ class VerifyCsrfToken extends Middleware
         
         'payment/cashfree/notify',
         'verify/payment/otp/app/*',
-
+        'payment/webhook/stripe_ideal',
         /** routes for edit order **/
         'edit-order/*',
         'payment/webhook/*',
