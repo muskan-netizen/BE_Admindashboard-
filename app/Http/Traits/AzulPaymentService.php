@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\UserDataVault;
 
 trait AzulPaymentService
 {
@@ -78,7 +79,7 @@ trait AzulPaymentService
             'OrderNumber' => $card['order_number'],
             'ECommerceUrl' => $this->ECOMMERCE_URL,
             'CustomOrderId' => $card['order_number'],
-            'SaveToDataVault' => '0',
+            'SaveToDataVault' => '1',
             'DataVaultToken' => '',
             'ForceNo3DS' => '1'
         ];
