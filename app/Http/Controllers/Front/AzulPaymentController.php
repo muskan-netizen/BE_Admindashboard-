@@ -22,6 +22,7 @@ use App\Models\User;
 use App\Models\UserVendor;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
+use App\Models\UserDataVault;
 
 class AzulPaymentController extends FrontController
 {
@@ -343,5 +344,14 @@ class AzulPaymentController extends FrontController
 
             return $response;
         }
+    }
+    
+    public function getUserCards(Request $request){
+        $auth_user = Auth::user();
+        
+        $listData = UserDataVault::where(['user_id' => $auth_user->id])->get();
+        
+        $returnHTML = view('frontend.card-list')->with(['cards' => $listData])->render();
+        return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 }

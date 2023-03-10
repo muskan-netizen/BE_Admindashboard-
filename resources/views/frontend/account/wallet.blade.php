@@ -17,6 +17,51 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 @endphp
 
 <style type="text/css">
+
+
+/* start tab*/
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+
+/*end tab*/
+
+
     .productVariants .firstChild {
         min-width: 150px;
         text-align: left !important;
@@ -417,19 +462,48 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 
  <% if(payment_option.slug == 'azulpay') { %>
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
-                        <div class="row no-gutters">
+
+<div class="tab">
+    <button class="tablinks" onclick="clickHandle(event, 'Add-Card')">Add Card</button>
+    <button class="tablinks" onclick="clickHandle(event, 'Card-List')">Card List</button>
+  </div>
+
+  <div id="Add-Card" class="tabcontent">
+     <div class="row no-gutters">
                             <div class="col-6">
-                                <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" required />
+                                <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" />
                             </div>
                             <div class="col-3">
-                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" />
                             </div>
                             <div class="col-3">
-                                <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" required />
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" />
                             </div>
                         </div>
 
                         <span class="error text-danger" id="azul_card_error"></span>
+  </div>
+
+  <div id="Card-List" class="tabcontent">
+    
+
+
+
+
+
+  </div>
+
+ 
+   
+                      
+ 
+
+
+
+
+
+
+
                     </div>
                 <% } %>
             <% } %>
@@ -709,6 +783,56 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
             $("#error_dev").html(html).show();
         }
     });
+    
+    function clickHandle(evt, tabName) {
+  let i, tabcontent, tablinks;
+
+  // This is to clear the previous clicked content.
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Set the tab to be "active".
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Display the clicked tab and set it to active.
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+  
+  if(tabName == 'Card-List'){
+  
+  	  ajaxCall = $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{{ route('payment.azulpay.getCards') }}",
+            beforeSend : function() {
+                if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
+                    ajaxCall.abort();
+                }
+                $('.spinner-overlay').show();
+            },
+            success: function(response) {
+                $('#Card-List').html(response.html);
+            },
+            complete: function() {
+                $('.spinner-overlay').hide();
+            },
+            error: function (data) {
+                //location.reload();
+            },
+        });
+  
+  
+  }
+  
+  
+  
+}
+    
 </script>
 <script>
     var loadFile = function(event) {
