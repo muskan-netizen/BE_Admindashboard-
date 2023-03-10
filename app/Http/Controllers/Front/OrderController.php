@@ -432,7 +432,7 @@ class OrderController extends FrontController
         $rejectedOrders = $rejectedOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
-pr( $rejectedOrders->toArray());
+
         foreach ($rejectedOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
