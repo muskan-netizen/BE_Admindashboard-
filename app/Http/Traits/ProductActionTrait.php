@@ -438,11 +438,9 @@ trait ProductActionTrait{
             
                     LIMIT 
                         10";
-                       // echo '<pre>';
-                       // print_r($raw_query); die;
+     
        $products = DB::select( DB::raw($raw_query));
-// echo '<pre>';
-//                        print_r($products); die;
+
        $returnArray = $products;
        return $returnArray;
     }
