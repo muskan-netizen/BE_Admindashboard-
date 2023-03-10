@@ -187,7 +187,6 @@ class VendorController extends FrontController
         })->with('tags')->join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
         // dd(DB::getQueryLog());
         // dd($range_products->toArray());
-
         if($vendor->vendor_templete_id == 2){
             $page = 'categories';
         }elseif($vendor->vendor_templete_id == 5){
@@ -297,7 +296,6 @@ class VendorController extends FrontController
                 $is_vendor_closed = 0;
             }
         }
-        // dd($page);
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             $vendors = $this->getServiceAreaVendors();
             if(isset($vendor) && isset($vendor->id)){

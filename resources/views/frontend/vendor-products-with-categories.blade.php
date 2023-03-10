@@ -536,6 +536,21 @@ span.alPriceValue, span.alPriceValue i {
             <% }); %>
 
             <h5 class="d-flex align-items-center justify-content-between pb-2">{{ __('PRICE DETAILS') }} </h5>
+            
+            <% if(cart_details.total_service_fee > 0){ %>
+            <li class="p-0 alSixCart">
+                <div class='media-body'>
+                    <h6 class="d-flex align-items-center justify-content-between">
+                        <span class="ellips">{{ __('Service Fee') }}</span>
+                        <% if(cart_details.is_token_enable == 1) { %>
+                            <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%= Helper.formatPrice(cart_details.total_service_fee * cart_details.tokenAmount) %></span>
+                            <% }else{ %>
+                                <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.total_service_fee) %></span>
+                            <% } %>
+                    </h6>
+                </div>
+            </li>
+            <% } %>
             <li class="p-0 alSixCart">
                 <div class='media-body'>
                     <h6 class="d-flex align-items-center justify-content-between">

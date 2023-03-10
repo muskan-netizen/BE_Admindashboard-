@@ -713,7 +713,25 @@ body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image {
     right: 0;
     padding: 0;
 }
+.al_body_template_eight .categories_img .product-image {
+    top: 0px !important;
+    position: inherit;
+    height: 160px;
+    min-height: 160px;
+}
+.al_body_template_eight .categories_img .category-image {
+    height: 193px;
+    min-height: 193px;
+    text-align: center;
+}
 
+.al_body_template_eight .categories_img .category-image img {
+    width: 100%;
+    max-width: 80%;
+}
+.al_body_template_eight .categories_img .product-detail a h5 {
+    text-align: center;
+}
 body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .collection-filter.col-lg-3 button.btn.btn-link.btn-block.text-left.p-0.collapsed h5 span i {
     transform: rotate(180deg);
 }
@@ -1736,7 +1754,6 @@ body.al_body_template_eight .custom-vender-card .supplier-rating {
 body.al_body_template_eight section#continental .product_variant_quantity_wrapper {
     text-align: right;
 }
-
 body.al_body_template_eight .needs-validation.vendor-signup h2 {
     background: none !important;
     padding-top: 0;
@@ -1761,9 +1778,9 @@ body.al_body_template_eight .outter-fillter-data .product-card-box.position-rela
 
 body.al_body_template_eight.homeHeader .outter-fillter-data .product-wrapper-grid .product-image img {
     position: relative;
-    height: 200px;
+    /* height: 200px; */
     width: 100%;
-    object-fit: cover;
+    object-fit: fill;
     border-radius: 10px 10px 0 0;
     padding-top: 0;
 }
@@ -2340,10 +2357,10 @@ body.al_body_template_eight .product-wrapper-grid.card-product img {
     padding-top: 15px;
 }
 
-body.al_body_template_eight .product-wrapper-grid.card-product .col-md-3.col-6.col-grid-box h3.d-flex.align-items-center.justify-content-between {
+/* body.al_body_template_eight .product-wrapper-grid.card-product .col-md-3.col-6.col-grid-box h3.d-flex.align-items-center.justify-content-between {
     margin: 0 0 10px!important;
-}
-
+} */
+body.al_body_template_eight .categories_img .media-body.align-self-center{padding-bottom: 0px;}
 body.al_body_template_eight ul#header_cart_main_ul li .total {
     text-align: left;
     border-top: 1px solid #f1f5f4;
@@ -2594,7 +2611,10 @@ body.al_body_template_eight .box-account.box-info .btn-solid {
     padding: 8px 8px !important;
 }
 .al_body_template_eight article#page-container section .vendors section h2.h2-heading{
-    font-size: 30px;
+    font-size: 22px;
+}
+.al_body_template_eight .best-seller-eccomerce h2.col.h2-heading {
+    font-size: 22px;
 }
 .al_body_template_eight .p2p_eccomerce_slider10 .slick-slide>div .col {
     padding: 0px 6px;
