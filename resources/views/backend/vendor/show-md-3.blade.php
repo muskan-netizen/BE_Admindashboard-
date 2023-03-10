@@ -381,7 +381,6 @@ body .rating-form .btn-reset {
                         </div>
                     </div>
                     @endif
-
                     @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
                         @if(isset($roles))
                             @foreach($roles as $role)
@@ -477,7 +476,8 @@ body .rating-form .btn-reset {
         </div>
     </div>
 </div>
-<button class="add_edit_driver_review">rating</button>
+@if(isset($getAdditionalPreference['is_admin_vendor_rating']) && $getAdditionalPreference['is_admin_vendor_rating'] == '1')
+<button class="add_edit_driver_review">Vendor Rating</button>
 <input type="hidden" value="{{$vendor->id}}" id="vendor_id">
 <div class="modal fade driver-rating driver_rating_vendor" id="driver_rating" tabindex="-1" aria-labelledby="driver_ratingLabel"
 aria-hidden="true">
@@ -493,6 +493,7 @@ aria-hidden="true">
     </div>
 </div>
 </div>
+@endif
 
 
 @if(Auth::user()->is_superadmin == 1)
