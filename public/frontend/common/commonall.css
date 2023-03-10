@@ -667,6 +667,12 @@ white-space: nowrap;
 font-weight: 400;
 display: inline-block;
 }
+.al_body_template_eight .TopratedSliderEight .col {
+    max-width: 100% !important;flex: none !important;
+}
+.al_body_template_eight .TopratedSliderEight .product-card-box .img-outer-box.position-relative img{
+    object-fit: contain;
+}
 .slick-slider .d-flex.align-items-center.justify-content-between.al_clock{ margin-top: 0px !important;}
 .slick-slider .d-flex.align-items-center.justify-content-between.al_clock b{font-weight: 600;font-size: 16px;}
 .slick-slider .product-card-box .img-outer-box.position-relative img{object-fit: fill;width:100%;height:100%;}
