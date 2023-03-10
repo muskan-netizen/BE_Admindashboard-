@@ -406,7 +406,10 @@ trait ProductActionTrait{
                 else 0
             end as discount_percentage,
             `vendors`.`name` as `vendor_name`,
+            `vendors`.`id` as `vendor_id`,
             `vendors`.`slug` as `vendor_slug`,
+            `product_attribute`.`key_name` as `attribute_key_name`,
+            `product_attribute`.`key_value` as `attribute_key_value`,
 
             IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`
             FROM 
@@ -417,6 +420,7 @@ trait ProductActionTrait{
                  LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id`
                  LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
                  LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id`
+                 LEFT JOIN   `product_attributes` as `product_attribute` ON `product_attribute`.`product_id` = `products`.`id` AND `product_attribute`.`key_name` = 'Location'
                  
             WHERE 
                 `products`.`deleted_at` IS NULL 
@@ -437,7 +441,8 @@ trait ProductActionTrait{
                        // echo '<pre>';
                        // print_r($raw_query); die;
        $products = DB::select( DB::raw($raw_query));
-
+// echo '<pre>';
+//                        print_r($products); die;
        $returnArray = $products;
        return $returnArray;
     }

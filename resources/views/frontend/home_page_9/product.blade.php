@@ -1,4 +1,3 @@
-@dd($product->title)
 <div class="item">
     <div class="product-card-box position-relative al_box_third_template al"  >
         {{-- {{ dd($product)}} --}}
@@ -37,13 +36,13 @@
                             <!-- <p class="al_product_category">
                                 <span class="product_discription">
                             {{__('In')}}
-                            {{$product["category"] ?? ''}}</span>
+                            {{$product->category_name ?? ''}}</span>
                             <span class="rating"><i class="fa fa-star" aria-hidden="true"></i>4.5</span>
                             </p> -->
                         </div>
-                        @if(!empty($product['ProductAttribute'][0]))
+                        @if(!empty($product->attribute_key_value))
                             <div class="d-flex align-items-center justify-content-between prod_location pt-2">
-                                <b> <span class="loction ellips"><i class="fa fa-map-marker" aria-hidden="true"></i> {{$product['ProductAttribute'][0]->key_value}}</span></b>
+                                <b> <span class="loction ellips"><i class="fa fa-map-marker" aria-hidden="true"></i> {{$product->attribute_key_value}}</span></b>
                             </div>
                         @endif
                         <div class="d-flex align-items-center justify-content-between al_clock pt-2 update_year">
@@ -51,12 +50,12 @@
                         </div>
                         <div class="prod-details">
                             <div class="d-flex align-items-center justify-content-between al_clock pt-2">
-                                <b>{{$product["price"] ?? ''}} </b>
+                                <b>{{showPriceWithCurrency($product->price_numeric)}} </b>
                             </div>
-                            @if($product['category_type'] == 13){
+                            @if($product->type_id == 13)
                             <div class="chat-button">
                                 @if(getAdditionalPreference(['chat_button'])['chat_button'])
-                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$product['vendor']->id}}" data-orderid="" data-order_id="" data-product_id="{{$product["id"]}}"><i class="fa fa-comments" aria-hidden="true"></i></a>
+                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$product->vendor_id}}" data-orderid="" data-order_id="" data-product_id="{{$product->id}}"><i class="fa fa-comments" aria-hidden="true"></i></a>
                                     {{-- {{__('Chat')}} --}}
                                 @endif
                                 @if(getAdditionalPreference(['call_button'])['call_button'])
