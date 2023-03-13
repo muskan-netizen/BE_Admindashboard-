@@ -15,6 +15,15 @@ body #page-container #footer .footer-theme .sub-title .contact-list li span{padd
 .footer-theme .sub-title li:hover a:before{display: none;}
 .al_body_template_three .social-links li i{font-size: 24px;background-color: transparent;box-shadow: none;color: #777;width: auto;height: auto;}
 body .footer-theme .sub-title li{padding-top: 0;}
+
+/*new css*/
+ul.social-links.d-flex li {
+    margin-right: 15px;
+}
+
+ul.social-links.d-flex li a {
+    font-size: 20px;
+}
 @media(max-width:767px){
 .tap-top{width: 35px;height: 35px;line-height: 35px;}
 }
