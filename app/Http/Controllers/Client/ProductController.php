@@ -830,6 +830,11 @@ class ProductController extends BaseController
         try{
 
             DB::beginTransaction();
+            $product = Product::find($id);
+            if(!empty($product) && isset($product->square_item_id) && !empty($product->square_item_id)){
+                $this->deleteBatchInSquarePos([$product->square_item_id]);
+            }
+            
             $productde = Product::productDelete($id);
             // $product = Product::find($id);
 
@@ -1045,8 +1050,15 @@ class ProductController extends BaseController
     {
         $product_variant = ProductVariant::where('id', $request->product_variant_id)->where('product_id', $request->product_id)->first();
         $product_variant->status = 0;
+        if(isset($product_variant->square_variant_id) && !empty($product_variant->square_variant_id)){
+            $this->deleteBatchInSquarePos([$product_variant->square_variant_id]);
+        }
         $product_variant->save();
         if ($request->is_product_delete > 0) {
+            $product = Product::find($request->product_id);
+            if(!empty($product) && isset($product->square_item_id) && !empty($product->square_item_id)){
+                $this->deleteBatchInSquarePos([$product->square_item_id]);
+            }
             Product::where('id', $request->product_id)->delete();
         }
         return response()->json(array('success' => true, 'msg' => 'Product variant deleted successfully.'));
@@ -1422,8 +1434,12 @@ class ProductController extends BaseController
                 case "delete":
                     // delete product harrry
                     $products = Product::whereIn('id',$request->product_id)->get();
+                    $batch_square_ids = array();
                     foreach($products as $product){
                         DB::beginTransaction();
+                        if(isset($product->square_item_id) && !empty($product->square_item_id)){
+                            $batch_square_ids[] = $product->square_item_id;
+                        }
                         Product::productDelete($product->id);
                         // $dynamic = time();
 
@@ -1443,6 +1459,7 @@ class ProductController extends BaseController
 
                         DB::commit();
                     }
+                    $this->deleteBatchInSquarePos($batch_square_ids);
                 break;
                 default:
                 '';

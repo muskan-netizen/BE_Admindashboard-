@@ -40,6 +40,7 @@ class VerifyCsrfToken extends Middleware
         'sendNotificationToUserByDispatcher',
         'dispatch/customer/distance/notification/*',
         'dispatch/driver/bids/update/*',
-        'dispatch/driver/bids/status/*'
+        'dispatch/driver/bids/status/*',
+        'square/inventory/event/update'
     ];
 }

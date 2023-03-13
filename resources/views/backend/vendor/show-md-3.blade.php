@@ -520,6 +520,7 @@ body .rating-form .btn-reset {
         </div>
     </div>
 </div>
+@endif
 @if(isset($getAdditionalPreference['is_admin_vendor_rating']) && $getAdditionalPreference['is_admin_vendor_rating'] == '1')
 <button class="add_edit_driver_review">Vendor Rating</button>
 <input type="hidden" value="{{$vendor->id}}" id="vendor_id">
