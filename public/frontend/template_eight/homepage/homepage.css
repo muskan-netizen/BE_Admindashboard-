@@ -84,7 +84,9 @@ article#page-container section .vendors section {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0)
 }
-
+.categories_sliderEight div {
+    margin: 0px 2px;
+}
 .slick-track {
     position: relative;
     left: 0;
