@@ -79,7 +79,6 @@ article#page-container section .vendors section {
 .slick-slider {
     overflow: inherit
 }
-
 .slick-slider .slick-list,
 .slick-slider .slick-track {
     -webkit-transform: translate3d(0, 0, 0);
