@@ -1631,7 +1631,7 @@ body.al_body_template_eight .category-block {
     margin: 0 10px 20px;
     padding: 10px;
     border-radius: 15px;
-    box-shadow: 0px 4px 10px rgb(0 0 0 / 25%);
+    box-shadow: 0px 1px 4px rgb(0 0 0 / 25%);
     max-width: 100%;
     width: 100%;
 }
@@ -1787,7 +1787,6 @@ body.dark.al_body_template_eight article#page-container section .vendors section
     border: 3px solid #DA5A3A;
     padding-left: 20px;
   }
-
 
 /*----------new design media css---------*/
 
