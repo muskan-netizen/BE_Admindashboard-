@@ -270,7 +270,6 @@ class PickupDeliveryController extends FrontController{
             $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
             $user = Auth::user();
             $userid = $user->id;
-            $user   = Auth::user();
             if(empty($user->timezone)){
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
