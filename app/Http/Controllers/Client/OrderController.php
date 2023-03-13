@@ -185,7 +185,7 @@ class OrderController extends BaseController
         $OrderFilterData = $this->postOrderFilter($request);
         $setWeekDate = $this->setWeekDate;
       
-        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData','setWeekDate'));
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData','setWeekDate','returnFormRequestCount'));
     }
    public function geteEnabledLuxuryOptions($clientPreference){
     $LuxuryOptions = [];

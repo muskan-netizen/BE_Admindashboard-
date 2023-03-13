@@ -12,8 +12,8 @@ class SkipCashController extends Controller
 {
 
     public function showSkipCashPage(Request $request){
-        // // $data = $request->all();
-        // // //  dd($data);
+        $data = $request->all();
+         // dd($data);
         // // return view('frontend.payment_gatway.skip_cash',compact('data'));
         // $this->checkPayment($request);
         $creds = PaymentOption::where('code', 'skip_cash')
@@ -42,7 +42,7 @@ class SkipCashController extends Controller
             'State' => 'CA',
             'Country' => 'US',
             'PostalCode' => '12345',
-            'TransactionId' => $request->order_id,
+            'TransactionId' => $request->order_number,
             //'return_url' => $return_url,
 
             //'Custom1' => '',
