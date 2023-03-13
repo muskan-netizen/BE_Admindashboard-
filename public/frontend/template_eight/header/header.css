@@ -899,7 +899,7 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
     display: block;
     font-style: normal;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 13px;    
     line-height: 16px;
     font-weight:600;
     color: #222;
@@ -1051,9 +1051,13 @@ header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu {
     height: 65px !important;
     padding-top: 20px !important;
 } */
-
+/* 
 header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu ul.al_main_category_list {
     top: 40px !important;
+} */
+.navscroll ul li ul{
+    position: fixed;
+    top: 208px !important;
 }
 
 body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
@@ -1085,12 +1089,12 @@ body.al_body_template_eight #al_new_design .pixelstrap ul {
     display: none;
 }
 
-.al_body_template_eight .pixelstrap a,
+/* .al_body_template_eight .pixelstrap a,
 .pixelstrap a:active,
 .pixelstrap a:hover,
 .pixelstrap li>a {
     width: unset !important;
-}
+} */
 
 .menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img img {
     width: 50px !important;
