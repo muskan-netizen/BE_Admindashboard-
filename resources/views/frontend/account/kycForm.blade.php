@@ -74,7 +74,7 @@
             @enderror
         </div>
         <div class="form-group">
-            <label for="">IFSC Code</label>
+            <label for="">{{getNomenclatureName('IFSC Code', true)}}</label>
             <input type="text" name="ifsc_code" id="ifsc_code" class="form-control" value="" required />
             @error('ifsc_code')
             <div class="error">{{ $message }}</div>

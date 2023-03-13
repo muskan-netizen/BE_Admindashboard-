@@ -174,7 +174,7 @@ $pages = \App\Models\Page::with([
                                         <li class="navigation-tab-item pr-lg-2" role="presentation">
                                             <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
                                         id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
-                                        aria-controls="profile" aria-selected="false">
+                                        aria-controls="profile" aria-selected="false" data-sessiontype="{{Session::get('vendorType') ?? ''}}">
                                         <span class="al_tabsIcons">
                                         <img src="{{$client_preference_detail->$iconFiledName ? $client_preference_detail->$iconFiledName['proxy_url'].'36/36'.$client_preference_detail-> $iconFiledName['image_path'] : asset('images/al_custom3.png')}}" alt="{{$iconFiledName}}"></span>
                                         <span class="al_textTabsText">{{$NomenclatureName}} </span></a>
@@ -222,7 +222,7 @@ $pages = \App\Models\Page::with([
                                         @endphp
 
                                         @if($client_preference_detail->$clientVendorTypes == 1)
-                                        <li class="navigation-tab-item pr-lg-2" role="presentation">
+                                        <li class="navigation-tab-item pr-lg-2" role="presentation" data-sessionType="{{Session::get('vendorType') ?? ''}}">
                                         <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
                                         id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
                                         aria-controls="profile" aria-selected="false">

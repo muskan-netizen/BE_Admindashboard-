@@ -1099,6 +1099,26 @@ body .royo_whatsapp_img {
     background-color: transparent;
 }
 
+
+.al_body_template_six  .al_searchType  .list-items {
+    display: flex;
+    align-items: center;
+}
+.al_body_template_six  .al_searchType  .list-items img {
+    border-radius: 50%;
+    max-width: 40px;
+    margin-right: 15px;
+}
+.al_body_template_six  .al_searchType  .list-items  .result-item-name b {
+    font-size: 14px;
+}
+.al_body_template_six  .al_searchType  .list-box{
+    min-width: 250px;
+}
+
+
+
+
 @media (max-width:576px) {
     .rightHead {
         order: 2;

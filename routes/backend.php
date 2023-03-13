@@ -477,6 +477,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('sendnotification', 'Client\UserController@sendNotification')->name('send.notification');
         Route::get('/review/delect/{id}', 'Client\ReviewController@destroy')->name('review.delete');
         Route::resource('review', 'Client\ReviewController');
+        Route::get('/get-vendor-rating/{id}', 'Client\ReviewController@getVendorRating')->name('get-vendor-rating-details');
+        Route::post('/update-vendor-review', 'Client\ReviewController@update_vendor_rating')->name('update-vendor-review');
         // Cancel order requests routes
         Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
         Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');

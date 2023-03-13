@@ -21,9 +21,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
-                        @if(!empty($brand->image_banner))
-                            <div class="common-banner"><img alt="" data-src="{{$brand->image_banner['image_fit'] . '1920/1080' . $brand->image_banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                        @endif
+                            @include('frontend.vendor-category-topbar-banner')
                         <div class="top-banner-content small-section">
                             <h4>{{ $brand->translation_title }}</h4>
                         </div>
@@ -43,8 +41,13 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                     </span><span class="active">Healthcare Device</span></a>
                                 </li>
                             </ul> -->
+
+
+                             <!--- Left Sidebar filters -->
+                                  @include('frontend.category-left-sidebar')
+                            <!---End Left Sidebar filters -->
                             
-                            <aside class="side_fillter">
+                            <!-- <aside class="side_fillter">
                             @if(!empty($variantSets) && count($variantSets) > 0)
                             @foreach($variantSets as $key => $sets)
                                 <div class="collection-collapse-block border-0 mb-2 open">
@@ -92,7 +95,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                     </div>
                                 </div>
                             </div>
-                        </aside>
+                        </aside> -->
                         </div>
                    
                     <!-- side-bar single product slider start -->

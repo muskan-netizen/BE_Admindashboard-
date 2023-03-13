@@ -235,8 +235,8 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="ifsccode">{{__('IFSC Code')}}</label>
-                            <input type="text" class="form-control" name="ifsc_code" placeholder="IFSC Code" value="{{$vendor->VendorAdditionalInfo->ifsc_code??''}}" placeholder="">
+                            <label for="ifsccode">{{getNomenclatureName('IFSC Code', true)}}</label>
+                            <input type="text" class="form-control" name="ifsc_code" placeholder="{{getNomenclatureName('IFSC Code', true)}}" value="{{$vendor->VendorAdditionalInfo->ifsc_code??''}}" placeholder="">
                             <span class="invalid-feedback" id="ifsc_code_error"><strong></strong></span>
                         </div>
                     </div>
@@ -342,7 +342,7 @@
                         <input type="file" accept="image/*" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug??''}}" class="dropify" data-default-file="{{ $field_value }}" />
                         @else
                         <label class="d-flex align-items-center justify-content-between" for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}<a href="{{ $field_value }}" target="__blank"><i class="fa fa-eye" aria-hidden="true"></i></a></label>
-                        <input type="file" accept=".pdf" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug??''}}" class="dropify" data-default-file="" />
+                        <input type="file" accept=".pdf" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug??''}}" class="dropify" data-default-file="{{ $field_value }}" />
                         @endif
                     @endif
                     <span class="invalid-feedback" role="alert">

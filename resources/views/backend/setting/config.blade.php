@@ -1733,23 +1733,49 @@
                     </div>
                 </div><!-- Twitter card end -->
             </div>
-            <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
-                <!-- Google card start -->
-                <div class="card-box h-100">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group mb-0 switchery-demo">
-                                <label for="google_login" class="d-flex align-items-center justify-content-between">
-                                    <h5 class="social_head"><i class="fab fa-google"></i>
-                                        <span>{{ __('Google') }}</span>
-                                    </h5>
-                                    <button class="btn btn-info btn-block save_btn" type="submit">
-                                        {{ __('Save') }} </button>
-                                </label>
-                                <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="google_login" id="google_login"
-                                    class="form-control" data-color="#43bee1"
-                                    @if (isset($preference) && $preference->google_login == '1') checked='checked' @endif>
+            <!-- Customer Support end -->
+
+
+        </div>
+
+        @php
+            $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card','is_cab_pooling','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating']);
+        @endphp
+        <div class="row">
+            {{-- hubspot form --}}
+            <div class="col-xl-4 col-lg-4 mb-3">
+                <!-- Social Logins title start -->
+                <div class="page-title-box">
+                    <h4 class="page-title text-uppercase">CRM</h4>
+                </div><!-- Social Logins title end -->
+
+                <form method="POST" action="{{ route('additional.update') }}">
+                    <input type="hidden" name="crm" id="crm" value="1">
+                    <input type="hidden" name="send_to" id="send_to" value="configure">
+                    @csrf
+                    <!-- HubSpot card start -->
+                    <div class="card-box h-100">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0 switchery-demo">
+                                    <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                                        <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-hubspot"></i>
+                                            <span>{{ __('Hubspot') }}</span></h5>
+
+                                        <button class="btn btn-info btn-block save_btn" name="hubspot_submit"
+                                            type="submit"> {{ __('Save') }} </button>
+                                    </label>
+                                    <label for="" class="mr-3">{{ __('Enable') }}</label>
+                                    <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable"
+                                        class="form-control checkbox_change" data-className="is_hubspot_enable_hidden"
+                                        data-color="#43bee1"
+                                        @if (@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1" @endif>
+                                    <input type="hidden"
+                                        @if (isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif
+                                        name="is_hubspot_enable" id="is_hubspot_enable_hidden" />
+
+                                    {{-- @if (isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1') checked='checked' @endif> --}}
+                                </div>
                             </div>
                         </div>
                     </div>
