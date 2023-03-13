@@ -1,5 +1,8 @@
 @extends('layouts.store', ['title' => __('Home')])
 @section('css-links')
+<script>
+	var featured_products_length = {{ isset($homePageData['featured_products']) ? count($homePageData['featured_products']) : ''}};
+</script>
 @endsection
 @section('cssnew')
 <style>

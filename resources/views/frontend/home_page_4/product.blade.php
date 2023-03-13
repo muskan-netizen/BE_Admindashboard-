@@ -1,30 +1,42 @@
-<div class="product-card-box position-relative al_box_four_template al">
-    <a class="common-product-box text-center" href="{{ $product["vendor"]->slug }}/product/{{ $product["url_slug"] }}">
-        <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $product["image_url"] }}" alt="" title="">
+<div class="product-card-box position-relative al_box_third_template al"  >
+    {{-- {{ dd($product)}} --}}
+    {{--<div class="add-to-fav 12">
+        <input id="fav_pro_one" type="checkbox">
+        <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
+    </div>--}}
+    <a class="common-product-box text-center" href="{{ $product->vendor_slug }}/product/{{ $product->url_slug }}">
+        <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ get_file_path($product->path,'FILL_URL','260','260') }}" alt="" title="">
             <div class="pref-timing"> </div>
         </div>
         <div class="media-body align-self-start">
             <div class="inner_spacing px-0">
-                <div class="product-description mt-2 text-left">
-                    <div class="al_productName">
-                        <p class="al_vendorName mb-0 ellips">{{ $product["vendor_name"] }}</p>
+                <div class="product-description">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="card_title ellips">{{ $product->title }}</h6> 
+                        @if($client_preference_detail && $client_preference_detail->rating_check==1) 
+                            @if($product->averageRating >0)
+                                <span class="rating-number">{{ $product->averageRating }}</span>
+                            @endif 
+                        @endif 
                     </div>
-                    <h6 class="card_title m-0 ellips">{{ $product["title"] }}</h6> 
-                    @if($client_preference_detail && $client_preference_detail->rating_check==1)
-                    @if($product["averageRating"] >0)
-
-                    @endif @endif
-                    <div class="product-description_list">
-                        <p class="al_ratingNumber mb-0">
-                            <span class="Stars" style="--rating: {{ $product["averageRating"] }}" aria-label="Rating of this product is {{ $product["averageRating"] }} out of 5."></span>
-                        </p>
-                        <p class="al_product_category mb-0">
-                            <span>{{__('In') . $product["category"]}} </span>
-                        </p>
-                    </div>
+                    <p class="al_productText ellips">
+                        {{ $product->vendor_name }}
+                    </p>
+                    <p class="border-bottom pb-1 d-none">
+                        <span>{{__('In ') . $product->category_name}} </span>
+                    </p>
                     @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
-                    <div class="d-flex align-items-center justify-content-end al_clock px-2">
-                        <b>@if($product['inquiry_only']==0) {!!$product["price"] ?? ''!!} @endif</b>
+                    <div class="d-flex align-items-center justify-content-between al_clock"> 
+                        {{-- <b>{!!$product->price_numeric ?? ''!!}</b> --}}
+                        <b> {{ showPriceWithCurrency($product->price_numeric) }} </b>
+
+                        <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
+                        @php
+                        $comp = @$product->compare_price_numeric??0;
+                        @endphp
+                        @if(@$comp && $comp>0)
+                            {!!showPriceWithCurrency($product->compare_price_numeric,'1') !!}
+                        @endif
                     </div>
                     @endif
                 </div>

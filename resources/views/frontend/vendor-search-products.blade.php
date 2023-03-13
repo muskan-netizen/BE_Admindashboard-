@@ -9,7 +9,6 @@ $add_to_cart =  route('addToCart') ;
     }
 
 @endphp
-{{--@if($listData->isNotEmpty()) --}}
 <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
     <nav class="scrollspy-menu">
         <ul>

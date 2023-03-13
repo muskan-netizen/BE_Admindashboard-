@@ -5,6 +5,7 @@
 <link rel="stylesheet"  href="{{asset('css/aos.css')}}">
 --}}
 @endsection
+
 @php
 $preference = $client_preference_detail;
 $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
@@ -757,6 +758,9 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 @section('js-script')
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script>
+	var featured_products_length = {{ isset($homePageData['featured_products']) ? count($homePageData['featured_products']) : ''}};
+</script>
 {{-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/less@4"></script> --}}
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection

@@ -1726,6 +1726,10 @@ class OrderController extends FrontController
                         $order_product->slot_price = ! empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
                     }
 
+                  
+                   // if (checkColumnExists('order_vendor_products', 'dispatch_agent_id')) {
+                        $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
+                   // }
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
