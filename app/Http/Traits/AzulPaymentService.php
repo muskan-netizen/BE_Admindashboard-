@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\UserDataVault;
 
 trait AzulPaymentService
 {
@@ -54,34 +55,61 @@ trait AzulPaymentService
     public function payWithCard($card)
     {
         $phone_number = auth()->user()->phone_number;
-        $exp = explode('/', $card['dt']);
-        $expiry = $exp[1] . $exp[0];
-        if (isset($card['come_from']) && $card['come_from'] == 'app') {
-            $expiry = $card['dt'];
+        $user_id = auth()->user()->id;        
+        if(isset($card['card_id']) && !empty($card['card_id'])){
+            $userCard = UserDataVault::where(['id' => $card['card_id']])->first();
+            $request = [
+                'Channel' => $this->PAYMENT_CHANNEL,
+                'Store' => $this->MERCHANT_ID,
+                'CardNumber' => '',
+                'Expiration' => '',
+                'PosInputMode' => $this->POST_INPUT_MODE,
+                'TrxType' => 'Sale',
+                'Amount' => $this->parseAmount($card['amount']),
+                'Itbis' => '000',
+                'CurrencyPosCode' => '$',
+                'Payments' => '1',
+                'Plan' => '0',
+                'AcquirerRefData' => '1',
+                "RRN" => '',
+                'CustomerServicePhone' => $phone_number,
+                'OrderNumber' => $card['order_number'],
+                'ECommerceUrl' => $this->ECOMMERCE_URL,
+                'CustomOrderId' => $card['order_number'],
+                'DataVaultToken' => $userCard->token,
+                'ForceNo3DS' => '1'
+            ];
+        }else{
+            $exp = explode('/', $card['dt']);
+            $expiry = $exp[1] . $exp[0];
+            if (isset($card['come_from']) && $card['come_from'] == 'app') {
+                $expiry = $card['dt'];
+            }
+            $request = [
+                'Channel' => $this->PAYMENT_CHANNEL,
+                'Store' => $this->MERCHANT_ID,
+                'CardNumber' => $card['cno'],
+                'Expiration' => $expiry,
+                'CVC' => $card['cv'],
+                'PosInputMode' => $this->POST_INPUT_MODE,
+                'TrxType' => 'Sale',
+                'Amount' => $this->parseAmount($card['amount']),
+                'Itbis' => '000',
+                'CurrencyPosCode' => '$',
+                'Payments' => '1',
+                'Plan' => '0',
+                'AcquirerRefData' => '1',
+                "RRN" => '',
+                'CustomerServicePhone' => $phone_number,
+                'OrderNumber' => $card['order_number'],
+                'ECommerceUrl' => $this->ECOMMERCE_URL,
+                'CustomOrderId' => $card['order_number'],
+                'SaveToDataVault' => '1',
+                'DataVaultToken' => '',
+                'ForceNo3DS' => '1'
+            ];
+            $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
         }
-        $request = [
-            'Channel' => $this->PAYMENT_CHANNEL,
-            'Store' => $this->MERCHANT_ID,
-            'CardNumber' => $card['cno'],
-            'Expiration' => $expiry,
-            'CVC' => $card['cv'],
-            'PosInputMode' => $this->POST_INPUT_MODE,
-            'TrxType' => 'Sale',
-            'Amount' => $this->parseAmount($card['amount']),
-            'Itbis' => '000',
-            'CurrencyPosCode' => '$',
-            'Payments' => '1',
-            'Plan' => '0',
-            'AcquirerRefData' => '1',
-            "RRN" => '',
-            'CustomerServicePhone' => $phone_number,
-            'OrderNumber' => $card['order_number'],
-            'ECommerceUrl' => $this->ECOMMERCE_URL,
-            'CustomOrderId' => $card['order_number'],
-            'SaveToDataVault' => '0',
-            'DataVaultToken' => '',
-            'ForceNo3DS' => '1'
-        ];
         $response = $this->sendRequest($request);
         if ($response['code'] != 200) {
             Log::info([
@@ -467,15 +495,19 @@ trait AzulPaymentService
                 'ok' => false
             ];
         }
-
         $datavault = UserDataVault::create([
             'user_id' => $user_id,
+            'is_default' => 1,
             'token' => $response['data']->DataVaultToken,
             'expiration' => $response['data']->Expiration,
             'brand' => $response['data']->Brand,
             'card_hint' => $response['data']->CardNumber
         ]);
-
+        
+        if($datavault){
+            UserDataVault::where('id','!=',$datavault->id)->update(['is_default' => 0]);
+        }
+        
         return [
             'ok' => true,
             'data_vault' => $datavault,
