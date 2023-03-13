@@ -79,7 +79,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                      <a href="javascript:void(0)">
                         {{ session()->get('locale') }}
                         <span class="icon-icLang align-middle">
-                           <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path fill-rule="evenodd" clip-rule="evenodd" d="M6.59803 0H15.3954C16.3301 0 17.0449 0.714786 17.0449 1.64951V7.6977C17.0449 8.63242 16.3301 9.3472 15.3954 9.3472H9.3472V13.1961H5.66331L2.19934 16.0002V13.1961H1.64951C0.714786 13.1961 0 12.4813 0 11.5465V5.49836C0 4.56364 0.714786 3.84885 1.64951 3.84885H8.79737V2.74918H6.59803V0ZM5.66331 10.062L5.93822 10.9417H7.25783L5.44337 6.04819H4.12377L2.30931 10.9417H3.62891L3.95882 10.062H5.66331ZM12.1514 7.14786C12.8112 7.47776 13.5809 7.6977 14.2957 7.6977V6.59803C13.9658 6.59803 13.6359 6.54304 13.251 6.43308C14.0758 5.60832 14.5157 4.45367 14.4607 3.29901L14.4057 2.74918H12.5912V1.64951H11.4916V2.74918H9.84206V3.84885H13.1411C13.0861 4.6736 12.7012 5.38839 12.0964 5.88324C11.7115 5.55334 11.3816 5.16845 11.2166 4.6736H10.062C10.2269 5.33341 10.5568 5.93822 11.0517 6.43308C10.6668 6.54304 10.2819 6.59803 9.89704 6.59803L9.95202 7.6977C10.7218 7.64271 11.4916 7.47776 12.1514 7.14786ZM4.23384 9.12727L4.78368 7.42278L5.33351 9.12727H4.23384Z" fill="#777777"/>
                            </svg>
                         </span>
@@ -101,7 +101,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                      <a href="javascript:void(0)">
                         {{ session()->get('iso_code') }}
                         <span class="icon-icCurrency align-middle">
-                           <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path fill-rule="evenodd" clip-rule="evenodd" d="M9.39724 0.142578H1.69458C1.26547 0.142578 0.917597 0.490456 0.917597 0.919564V2.05797C0.917597 2.48705 1.26547 2.83496 1.69458 2.83496H9.39724C9.82635 2.83496 10.1742 2.48708 10.1742 2.05797V0.919564C10.1742 0.490456 9.82638 0.142578 9.39724 0.142578ZM1.08326 4.57899H8.78588C9.21502 4.57899 9.56287 4.92687 9.5629 5.35598V5.94463C8.76654 6.24743 8.08369 6.70273 7.51822 7.2682L7.51514 7.27137H1.08326C0.654151 7.27137 0.306273 6.92349 0.306273 6.49439V5.35598C0.306273 4.92687 0.654151 4.57899 1.08326 4.57899ZM6.31719 9.0156H2.18655C1.75744 9.0156 1.40956 9.36347 1.40956 9.79258V10.931C1.40956 11.3601 1.75744 11.708 2.18655 11.708H5.8268C5.77784 10.8364 5.91763 9.95693 6.2739 9.11453C6.28796 9.08133 6.30256 9.04848 6.31719 9.0156ZM6.20036 13.452H0.776986C0.347878 13.452 0 13.7999 0 14.229V15.3674C0 15.7965 0.347878 16.1444 0.776986 16.1444H8.3093C7.38347 15.4994 6.63238 14.5788 6.20036 13.452ZM6.85635 11.3741C6.85635 8.74051 8.99127 6.60557 11.6249 6.60557C14.2584 6.60557 16.3933 8.74048 16.3934 11.3741C16.3934 14.0077 14.2585 16.1426 11.6249 16.1426C8.99127 16.1426 6.85635 14.0076 6.85635 11.3741Z" fill="#777777"/>
                            </svg>
                         </span>
@@ -166,7 +166,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                   <div class="container al_mobile-header d-flex align-items-center justify-content-between position-relative">
                       <div class="al_count_tabs_new_design d-none d-sm-block"  >
                           @if($mod_count > 1)
-                          
+
                           <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
                               @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                   @php
@@ -175,7 +175,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                   $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
                                   $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key)
                                   @endphp
-      
+
                                   @if($client_preference_detail->$clientVendorTypes == 1)
                                   <li class="navigation-tab-item pr-lg-2" role="presentation">
                                       <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
@@ -210,12 +210,12 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                   </a>
                               </li>
                               @endif --}}
-      
+
                               <div class="navigation-tab-overlay_alnew_design"></div>
                           </ul>
                           @endif
                       </div>
-      
+
                       <div class="al_count_tabs_new_design al_tab_mobile position-fixed d-block d-sm-none">
                           @if($mod_count > 1)
                           <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods d-flex justify-content-around" id="top-tab" role="tablist">
@@ -226,7 +226,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                   $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
                                   $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key)
                                   @endphp
-      
+
                                   @if($client_preference_detail->$clientVendorTypes == 1)
                                   <li class="navigation-tab-item pr-lg-2" role="presentation">
                                   <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
@@ -264,7 +264,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                           </ul>
                           @endif
                       </div>
-      
+
                       {{-- <div class="al_new_ipad_view ipad-view d-none"  >
                           <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                               @if( (Session::get('preferences')))
@@ -287,13 +287,13 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                               <div class="icon-nav d-none d-lg-inline-block">
                                   <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}"> @csrf <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}"> </form>
                                   <ul class="d-flex align-items-center m-0">
-                                      
+
                                       <li class="onhover-div pl-0 shake-effect">
                                           @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
                                           <a class="btn btn-solid d-flex align-items-center p-0" href="{{route('showCart')}}">
                                               <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      
-                                              
+
+
                                               <span id="cart_qty_span"></span>
                                           </a> @endif @endif
                                           <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script>
@@ -350,7 +350,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                           </div>
                                       </li>
                                   </ul>
-      
+
                                   <div class="ipad-view order-lg-3">
                                       <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                                           @if (Session::get('preferences')) @if(
@@ -399,7 +399,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                               <path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                                               </svg>
                                                               </span>
-                                                             
+
                                                               <span id="cart_qty_span">
                                                               </span>
                                                           </a>
@@ -465,29 +465,29 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                   <li class="onhover-div mobile-cart">
                                                       <a href="{{ route('showCart') }}" style="position: relative"> <i class="ti-shopping-cart"></i> <span
                                                               class="cart_qty_cls" style="display:none"></span> </a>
-                                                              
+
                                                       <ul class="show-div shopping-cart"> </ul>
                                                   </li>
                                               </ul>
                                           </div>
                                       </div>
                                   </div>
-      
+
                               </div>
                           </div>
                       </div> --}}
-                  </div> 
+                  </div>
               </div>
           </div>
       </div>
       </div>
    @endif
    @if(!empty($navCategories) && count($navCategories) )  {{--  && \Route::current()->getName() != 'userHome'  --}}
-   <div class="menu-navigation alThreeMenu">
+   <div class="menu-navigation alThreeMenu ">
       <div class="container">
          <div class="row">
-            <div class="col-12">
-               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider" >
+            <div class="col-12 navscroll">
+               <ul id="main-menu" class="sm pixelstrap sm-horizontal " >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
                   <li class="al_main_category"  >
@@ -539,7 +539,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
         icon_two_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
       %>
-   
+
    <li class="al_main_category"  >
        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category[0]) && $category->slug == $cate[0]['slug'] ? 'current_category' : ''}}">
            @if($client_preference_detail->show_icons==1)
