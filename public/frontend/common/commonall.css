@@ -556,6 +556,10 @@ body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded{
     margin-top: 6px;
 } */
 
+.al_body_template_six.add_overlay:after {
+    background:transparent;
+}
+
 .add_overlay {
     position: relative;
 }
