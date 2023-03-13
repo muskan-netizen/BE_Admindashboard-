@@ -1282,8 +1282,8 @@ a.navbar-brand.mr-3 {
 }
 
 .category-related-product .img-outer-box.position-relative {
-    min-height: auto !important;
-    height: auto!important;
+    min-height: 260px !important;
+    height: 260px!important;
 }
 
 .al_custom_categories .slick-slide > div {
