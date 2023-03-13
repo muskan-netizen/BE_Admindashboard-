@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Api\v1;
 use DB;
 use Config;
-use App\Http\Controllers\Controller;
 use App\Jobs\SyncToDispatcher;
-use App\Models\Category;
-use App\Models\ClientPreference;
+use App\Http\Controllers\Controller;
+use App\Models\{ClientPreference,Category};
+use App\Http\Traits\{ ProductTrait};
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Log;
 class DispatcherController extends Controller
 {
-    
+    use ProductTrait;
     public function categoryProductSyncDispatcher(Request $request)
     {
         
@@ -94,5 +95,13 @@ class DispatcherController extends Controller
         config(["database.connections.mysql.database" => $schemaName]);
         DB::setDefaultConnection($schemaName);
         return true;
+    }
+
+    public function getDispatcherGerenalSlot(Request $request){
+      
+        $date =  $request->date ??  Carbon::now()->format('Y-m-d');
+        $Slots = $this->getGerenalSlotFromDispatcher($date); 
+        return response()->json(array('status' => 'Success', 'Slots' => $Slots));
+       
     }
 }

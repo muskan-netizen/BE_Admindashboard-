@@ -126,6 +126,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('remove-cart-file', 'Api\v1\CartController@RemoveOrderFile'); 
         // get slot from dispatcher
         Route::post('getslotsFormDispatcher', 'Api\v1\AppointmentController@getSlotFromDispatchDemand');
+        // get GerenalSlot slot from dispatcher
+        Route::get('getDispatcherGerenalSlot', 'Api\v1\DispatcherController@getDispatcherGerenalSlot');
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger
