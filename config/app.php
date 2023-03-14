@@ -63,7 +63,11 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
-    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt','144'=>'sk'],
+    'FIT_URL' => env('FIT_URL', 'https://images.royoorders.com/insecure/fill/'),
+
+    'FILL_URL' => env('FILL_URL', 'https://images.royoorders.com/insecure/fit/'),
+
+    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt','144'=>'sk','40'=>'nl'],
 
     /*
     |--------------------------------------------------------------------------
@@ -172,7 +176,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         AkibTanjim\Currency\CurrencyServiceProvider::class,
         Kreait\Laravel\Firebase\ServiceProvider::class,
-        // Maatwebsite\Excel\ExcelServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         Orangehill\Iseed\IseedServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
