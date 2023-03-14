@@ -1,4 +1,3 @@
-
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Configurations'])
 @section('css')
 @endsection
@@ -412,20 +411,20 @@
    </div>
    @endif --}}
 
-            @if ($client_preference_detail->enable_inventory_service == 1)
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <!-- Order Panel section start -->
-                    <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
-                        @csrf
-                        <div class="card-box h-100">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <h4 class="header-title mb-0">{{ __('Inventory Service') }}</h4>
-                                <button class="btn btn-info d-block" type="submit" name="need_inventory_service_submit_btn"
-                                    value="1"> {{ __('Save') }} </button>
-                            </div>
-                            <p class="sub-header">{{ __('Offer Inventory Services with Order.') }}</p>
-                            <div class="row">
-                                <div class="col-12">
+        @if ($client_preference_detail->enable_inventory_service == 1)
+            <div class="col-lg-3 col-md-6 mb-3">
+                <!-- Order Panel section start -->
+                <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                    @csrf
+                    <div class="card-box h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h4 class="header-title mb-0">{{ __('Inventory Service') }}</h4>
+                            <button class="btn btn-info d-block" type="submit" name="need_inventory_service_submit_btn"
+                                value="1"> {{ __('Save') }} </button>
+                        </div>
+                        <p class="sub-header">{{ __('Offer Inventory Services with Order.') }}</p>
+                        <div class="row">
+                            <div class="col-12">
                                 <div class="form-group mb-0">
                                     <div class="form-group mb-0 switchery-demo">
                                         <label for="need_inventory_service" class="mr-3">{{ __('Enable') }}</label>
@@ -480,11 +479,11 @@
                             </div>
 
                         </div><!-- On Demand Services section end -->
-                    </form>
-                </div>
-            @endif
+                </form>
+            </div>
+        @endif
 
-            {{-- @if ($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app')
+        {{-- @if ($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app')
 
 
             <div class="col-lg-3 col-md-6 mb-3">
@@ -640,972 +639,13 @@
             </div><!-- Social Logins title end -->
         </div>
     </div>
-    
+
     <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
         <input type="hidden" name="social_login" id="social_login" value="1">
         @csrf
         <div class="row">
             <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
                 <!-- Facebook card start -->
-                <div class="card-box h-100">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group mb-0 switchery-demo">
-                                <label for="fb_login" class="d-flex align-items-center justify-content-between">
-                                    <h5 class="social_head"><i class="fab fa-facebook-f"></i>
-                                        <span>{{ __('Facebook') }}</span></h5>
-                                    <button class="btn btn-info btn-block save_btn" type="submit">
-                                        {{ __('Save') }} </button>
-                                </label>
-                                <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="fb_login" id="fb_login"
-                                    class="form-control" data-color="#43bee1"
-                                    @if (isset($preference) && $preference->fb_login == '1') checked='checked' @endif>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row fb_row"
-                        style="{{ isset($preference) && $preference->fb_login == '1' ? '' : 'display:none;' }}">
-                        <div class="col-12">
-                            <div class="form-group mb-2 mt-2">
-                                <label for="fb_client_id">{{ __('Facebook Client Key') }}</label>
-                                <input type="text" name="fb_client_id" id="fb_client_id" placeholder=""
-                                    class="form-control"
-                                    value="{{ old('fb_client_id', $preference->fb_client_id ?? '') }}">
-                                @if ($errors->has('fb_client_id'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('fb_client_id') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group mb-2">
-                                <label for="fb_client_secret">{{ __('Facebook Client Secret') }}</label>
-                                <input type="password" name="fb_client_secret" id="fb_client_secret" placeholder=""
-                                    class="form-control"
-                                    value="{{ old('fb_client_secret', $preference->fb_client_secret ?? '') }}">
-                                @if ($errors->has('fb_client_secret'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('fb_client_secret') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group mb-0">
-                                <label for="fb_client_url">{{ __('Facebook Redirect URL') }}</label>
-                                <input type="text" name="fb_client_url" id="fb_client_url" placeholder=""
-                                    class="form-control"
-                                    value="{{ old('fb_client_url', $preference->fb_client_url ?? '') }}">
-                                @if ($errors->has('fb_client_url'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('fb_client_url') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div><!-- Facebook card end -->
-            </div>
-            <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
-                <!-- Twitter card start -->
-                <div class="card-box h-100">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group mb-0 switchery-demo">
-                                <label for="twitter_login" class="d-flex align-items-center justify-content-between">
-                                    <h5 class="social_head"><i class="fab fa-twitter"></i>
-                                        <span>{{ __('Twitter') }}</span></h5>
-                                    <button class="btn btn-info btn-block save_btn" type="submit">
-                                        {{ __('Save') }} </button>
-                                </label>
-                                <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="twitter_login"
-                                    id="twitter_login" class="form-control" data-color="#43bee1"
-                                    @if (isset($preference) && $preference->twitter_login == '1') checked='checked' @endif>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row  twitter_row"
-                        style="{{ isset($preference) && $preference->twitter_login == '1' ? '' : 'display:none;' }}">
-                        <div class="col-12">
-                            <div class="form-group mb-2 mt-2">
-                                <label for="twitter_client_id"></label>{{ __('Twitter Client Key') }}</label>
-                                <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                <input type="text" name="twitter_client_id" id="twitter_client_id" placeholder=""
-                                    class="form-control"
-                                    value="{{ old('twitter_client_id', $preference->twitter_client_id ?? '') }}">
-                                @if ($errors->has('twitter_client_id'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('twitter_client_id') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group mb-2">
-                                <label for="twitter_client_secret">{{ __('Twitter Client Secret') }}</label>
-                                <input type="password" name="twitter_client_secret" id="twitter_client_secret"
-                                    placeholder="" class="form-control"
-                                    value="{{ old('twitter_client_secret', $preference->twitter_client_secret ?? '') }}">
-                                @if ($errors->has('twitter_client_secret'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('twitter_client_secret') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group mb-0">
-                                <label for="twitter_client_url">{{ __('Twitter Redirect URL') }}</label>
-                                <input type="text" name="twitter_client_url" id="twitter_client_url"
-                                    placeholder="" class="form-control"
-                                    value="{{ old('twitter_client_url', $preference->twitter_client_url ?? '') }}">
-                                @if ($errors->has('twitter_client_url'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('twitter_client_url') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div><!-- Twitter card end -->
-            </div>
-            <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
-                <!-- Google card start -->
-                <div class="card-box h-100">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group mb-0 switchery-demo">
-                                <label for="google_login" class="d-flex align-items-center justify-content-between">
-                                    <h5 class="social_head"><i class="fab fa-google"></i>
-                                        <span>{{ __('Google') }}</span></h5>
-                                    <button class="btn btn-info btn-block save_btn" type="submit">
-                                        {{ __('Save') }} </button>
-                                </label>
-                                <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="google_login" id="google_login"
-                                    class="form-control" data-color="#43bee1"
-                                    @if (isset($preference) && $preference->google_login == '1') checked='checked' @endif>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row google_row"
-                        style="{{ isset($preference) && $preference->google_login == '1' ? '' : 'display:none;' }}">
-                        <div class="col-md-12">
-                            <div class="form-group mb-2 mt-2">
-                                <label for="google_client_id">{{ __('Google') }} {{ __('Client Key') }}</label>
-                                <input type="text" name="google_client_id" id="google_client_id" placeholder=""
-                                    class="form-control"
-                                    value="{{ old('google_client_id', $preference->google_client_id ?? '') }}">
-                                @if ($errors->has('google_client_id'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('google_client_id') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group mb-2">
-                                <label for="google_client_secret">{{ __('Google') }}
-                                    {{ __('Client Secret') }}</label>
-                                <input type="password" name="google_client_secret" id="google_client_secret"
-                                    placeholder="" class="form-control"
-                                    value="{{ old('google_client_secret', $preference->google_client_secret ?? '') }}">
-                                @if ($errors->has('google_client_secret'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('google_client_secret') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group mb-0">
-                                <label for="google_client_url">{{ __('Google') }} {{ __('Redirect URL') }}</label>
-                                <input type="text" name="google_client_url" id="google_client_url" placeholder=""
-                                    class="form-control"
-                                    value="{{ old('google_client_url', $preference->google_client_url ?? '') }}">
-                                @if ($errors->has('google_client_url'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('google_client_url') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div><!-- Google card end -->
-            </div>
-            <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
-                <!-- Apple card start -->
-                <div class="card-box h-100">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group mb-0 switchery-demo">
-                                <label for="apple_login" class="d-flex align-items-center justify-content-between">
-                                    <h5 class="social_head"><i class="fab fa-apple"></i>
-                                        <span>{{ __('Apple') }}</span></h5>
-                                    <button class="btn btn-info btn-block save_btn" type="submit">
-                                        {{ __('Save') }} </button>
-                                </label>
-                                <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="apple_login" id="apple_login"
-                                    class="form-control" data-color="#43bee1"
-                                    @if (isset($preference) && $preference->apple_login == '1') checked='checked' @endif>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row apple_row"
-                        style="{{ isset($preference) && $preference->apple_login == '1' ? '' : 'display:none;' }}">
-                        <div class="col-12">
-                            <div class="form-group mb-2 mt-2">
-                                <label for="apple_client_id">Apple {{ __('Client Key') }}</label>
-                                <input type="text" name="apple_client_id" id="apple_client_id" placeholder=""
-                                    class="form-control"
-                                    value="{{ old('apple_client_id', $preference->apple_client_id ?? '') }}">
-                                @if ($errors->has('apple_client_id'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('apple_client_id') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group mb-2">
-                                <label for="apple_client_secret">Apple {{ __('Client Secret') }}</label>
-                                <input type="password" name="apple_client_secret" id="apple_client_secret"
-                                    placeholder="" class="form-control"
-                                    value="{{ old('apple_client_secret', $preference->apple_client_secret ?? '') }}">
-                                @if ($errors->has('apple_client_secret'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('apple_client_secret') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group mb-0">
-                                <label for="apple_client_url"> Apple {{ __('Redirect URL') }}</label>
-                                <input type="text" name="apple_client_url" id="apple_client_url" placeholder=""
-                                    class="form-control"
-                                    value="{{ old('apple_client_url', $preference->apple_client_url ?? '') }}">
-                                @if ($errors->has('apple_client_url'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('apple_client_url') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div><!-- Apple card end -->
-            </div>
-        </div>
-    </form>
-
-
-        <div class="row">
-            <div class="col-12">
-                <!-- Map Sms Emails title start -->
-                <div class="page-title-box">
-                    <h4 class="page-title text-uppercase">{{ __('Map Sms Emails') }}</h4>
-                </div><!-- Map Sms Emails title end -->
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-3 mb-3">
-                <!-- Map Configuration start -->
-                <form class="h-100" method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
-                    @csrf
-                    <div class="card-box h-100">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h4 class="header-title mb-0">{{ __('Map Configuration') }}</h4>
-                            <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
-                        </div>
-                        <p class="sub-header">
-                            {{ __("View and update your Map type and it's API key.") }}
-                        </p>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="currency">{{ __('MAP PROVIDER') }}</label>
-                                    <select class="form-control" id="map_provider" name="map_provider">
-                                        @foreach ($mapTypes as $map)
-                                            <option value="{{ $map->id }}"
-                                                {{ isset($preference) && $preference->map_provider == $map->id ? 'selected' : '' }}>
-                                                {{ $map->provider }} </option>
-                                        @endforeach
-                                    </select>
-                                    @if ($errors->has('map_provider'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('map_provider') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="map_key">{{ __('API KEY') }}</label>
-                                    <input type="password" name="map_key" id="map_key" placeholder=""
-                                        class="form-control" value="{{ old('map_key', $preference->map_key ?? '') }}">
-                                    @if ($errors->has('map_key'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('map_key') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="map_key_for_app">{{ __('API KEY FOR APP') }}</label>
-                                    <input type="password" name="map_key_for_app" id="map_key_for_app" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('map_key_for_app', $preference->map_key_for_app ?? '') }}">
-                                    @if ($errors->has('map_key_for_app'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('map_key_for_app') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form><!-- Map Configuration end -->
-            </div>
-            <div class="col-lg-3 mb-3">
-                <!-- SMS Configuration start -->
-                <form class="h-100" method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
-                    @csrf
-                    <div class="card-box h-100 h-100">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h4 class="header-title mb-0">{{ __('SMS Configuration') }}</h4>
-                            <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
-                        </div>
-                        <p class="sub-header">{{ __("View and update your SMS Gateway and it's API keys.") }}</p>
-                        <div class="row mb-0">
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="sms_provider">{{ __('SMS PROVIDER') }}</label>
-                                    <select class="form-control" id="sms_provider" name="sms_provider"
-                                        onchange="toggle_smsFields(this)">
-                                        @foreach ($smsTypes as $sms)
-                                            <option data-id="{{ $sms->keyword }}_fields" value="{{ $sms->id }}"
-                                                {{ isset($preference) && $preference->sms_provider == $sms->id ? 'selected' : '' }}>
-                                                {{ $sms->provider }} </option>
-                                        @endforeach
-                                    </select>
-                                    @if ($errors->has('sms_provider'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('sms_provider') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <!-- For twillio -->
-                            <div class="sms_fields row mx-0" id="twilio_fields"
-                                style="display : {{ $preference->sms_provider == 1 ? 'flex' : 'none' }};">
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="sms_from">{{ __('SMS From') }}</label>
-                                        <input type="text" name="sms_from" id="sms_from" placeholder=""
-                                            class="form-control"
-                                            value="{{ old('sms_from', $preference->sms_from ?? '') }}">
-                                        @if ($errors->has('sms_from'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('sms_from') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="sms_key">{{ __('API KEY') }}</label>
-                                        <input type="text" name="sms_key" id="sms_key" placeholder=""
-                                            class="form-control"
-                                            value="{{ old('sms_key', $preference->sms_key ?? '') }}">
-                                        @if ($errors->has('sms_key'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('sms_key') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="sms_secret">{{ __('API Secret') }}</label>
-                                        <input type="password" name="sms_secret" id="sms_secret" placeholder=""
-                                            class="form-control"
-                                            value="{{ old('sms_secret', $preference->sms_secret ?? '') }}">
-                                        @if ($errors->has('sms_secret'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('sms_secret') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <!-- For mTalkz -->
-                            <div class="row sms_fields mx-0" id="mTalkz_fields"
-                                style="display : {{ $preference->sms_provider == 2 ? 'flex' : 'none' }};">
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="mtalkz_api_key">{{ __('API Key') }}</label>
-                                        <input type="text" name="mtalkz_api_key" id="mtalkz_api_key" placeholder=""
-                                            class="form-control"
-                                            value="{{ old('mtalkz_api_key', $sms_crendential->api_key ?? '') }}">
-                                        @if ($errors->has('mtalkz_api_key'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('mtalkz_api_key') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="mtalkz_sender_id">{{ __('Sender ID') }}</label>
-                                        <input type="text" name="mtalkz_sender_id" id="mtalkz_sender_id"
-                                            placeholder="" class="form-control"
-                                            value="{{ old('mtalkz_sender_id', $sms_crendential->sender_id ?? '') }}">
-                                        @if ($errors->has('mtalkz_sender_id'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('mtalkz_sender_id') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- For mTalkz -->
-                            <div class="row sms_fields mx-0" id="mazinhost_fields"
-                                style="display : {{ $preference->sms_provider == 3 ? 'flex' : 'none' }};">
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="mazinhost_api_key">{{ __('API Key') }}</label>
-                                        <input type="text" name="mazinhost_api_key" id="mazinhost_api_key"
-                                            placeholder="" class="form-control"
-                                            value="{{ old('mazinhost_api_key', $sms_crendential->api_key ?? '') }}">
-                                        @if ($errors->has('mazinhost_api_key'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('mazinhost_api_key') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="mazinhost_sender_id">{{ __('Sender ID') }}</label>
-                                        <input type="text" name="mazinhost_sender_id" id="mazinhost_sender_id"
-                                            placeholder="" class="form-control"
-                                            value="{{ old('mazinhost_sender_id', $sms_crendential->sender_id ?? '') }}">
-                                        @if ($errors->has('mazinhost_sender_id'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('mazinhost_sender_id') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- For unifonic_fields -->
-                            <div class="row sms_fields mx-0" id="unifonic_fields"
-                                style="display : {{ $preference->sms_provider == 4 ? 'flex' : 'none' }};">
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="unifonic_app_id">{{ __('App Id') }}</label>
-                                        <input type="text" name="unifonic_app_id" id="unifonic_app_id" placeholder=""
-                                            class="form-control"
-                                            value="{{ old('unifonic_app_id', $sms_crendential->unifonic_app_id ?? '') }}">
-                                        @if ($errors->has('unifonic_app_id'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('unifonic_app_id') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="unifonic_account_email">{{ __('Unifonic Account Email') }}</label>
-                                        <input type="text" name="unifonic_account_email" id="unifonic_account_email"
-                                            placeholder="" class="form-control"
-                                            value="{{ old('unifonic_account_email', $sms_crendential->unifonic_account_email ?? '') }}">
-                                        @if ($errors->has('unifonic_account_email'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('unifonic_account_email') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label
-                                            for="unifonic_account_password">{{ __('Unifonic Account Password') }}</label>
-                                        <input type="text" name="unifonic_account_password"
-                                            id="unifonic_account_password" placeholder="" class="form-control"
-                                            value="{{ old('unifonic_account_password', $sms_crendential->unifonic_account_password ?? '') }}">
-                                        @if ($errors->has('unifonic_account_password'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('unifonic_account_password') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- For arkesel -->
-                            <div class="row sms_fields mx-0" id="arkesel_fields"
-                                style="display : {{ $preference->sms_provider == 5 ? 'flex' : 'none' }};">
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="arkesel_api_key">{{ __('API Key') }}</label>
-                                        <input type="text" name="arkesel_api_key" id="arkesel_api_key" placeholder=""
-                                            class="form-control"
-                                            value="{{ old('arkesel_api_key', $sms_crendential->api_key ?? '') }}">
-                                        @if ($errors->has('arkesel_api_key'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('arkesel_api_key') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="arkesel_sender_id">{{ __('Sender ID') }}</label>
-                                        <input type="text" name="arkesel_sender_id" id="arkesel_sender_id"
-                                            placeholder="" class="form-control"
-                                            value="{{ old('arkesel_sender_id', $sms_crendential->sender_id ?? '') }}">
-                                        @if ($errors->has('arkesel_sender_id'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('arkesel_sender_id') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- For afrTalk -->
-                            <div class="row sms_fields mx-0" id="afrTalk_fields" style="display : {{$preference->sms_provider == 6 ? 'flex' : 'none'}};">
-                                <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="afrTalk_api_key">{{ __("API Key") }}</label>
-                                    <input type="text" name="afrTalk_api_key" id="afrTalk_api_key" placeholder="" class="form-control" value="{{ old('afrTalk_api_key', $sms_crendential->api_key ?? '')}}">
-                                    @if($errors->has('afrTalk_api_key'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('afrTalk_api_key') }}</strong>
-                                    </span>
-                                    @endif
-                                </div>
-                                </div>
-                                <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="afrTalk_sender_id">{{ __("Sender ID") }}</label>
-                                    <input type="text" name="afrTalk_sender_id" id="afrTalk_sender_id" placeholder="" class="form-control" value="{{ old('afrTalk_sender_id', $sms_crendential->sender_id ?? '')}}">
-                                    @if($errors->has('afrTalk_sender_id'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('afrTalk_sender_id') }}</strong>
-                                    </span>
-                                    @endif
-                                </div>
-                                </div>
-                            </div>
-
-                            <!-- For vonage -->
-                            <div class="row sms_fields mx-0" id="vonage_fields"
-                                style="display : {{ $preference->sms_provider == 2 ? 'flex' : 'none' }};">
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="vonage_api_key">{{ __('API Key') }}</label>
-                                        <input type="text" name="vonage_api_key" id="vonage_api_key" placeholder=""
-                                            class="form-control"
-                                            value="{{ old('vonage_api_key', $sms_crendential->api_key ?? '') }}">
-                                        @if ($errors->has('vonage_api_key'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('vonage_api_key') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="vonage_secret_key">{{ __('Secret Key') }}</label>
-                                        <input type="password" name="vonage_secret_key" id="vonage_secret_key"
-                                            placeholder="" class="form-control"
-                                            value="{{ old('vonage_secret_key', $sms_crendential->secret_key ?? '') }}">
-                                        @if ($errors->has('vonage_secret_key'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('vonage_secret_key') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <!-- For SMS Partner France -->
-                            <div class="row sms_fields mx-0" id="sms_partner_fields"
-                                style="display : {{ $preference->sms_provider == 2 ? 'flex' : 'none' }};">
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="sms_partner_api_key">{{ __('API Key') }}</label>
-                                        <input type="password" name="sms_partner_api_key" id="sms_partner_api_key" placeholder=""
-                                            class="form-control"
-                                            value="{{ old('sms_partner_api_key', $sms_crendential->api_key ?? '') }}">
-                                        @if ($errors->has('sms_partner_api_key'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('sms_partner_api_key') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group mb-2">
-                                        <label for="sms_partner_sender_id">{{ __('Sender Id') }}</label>
-                                        <input type="text" name="sms_partner_sender_id" id="sms_partner_sender_id"
-                                            placeholder="" class="form-control"
-                                            value="{{ old('sms_partner_sender_id', $sms_crendential->sender_id ?? '') }}">
-                                        @if ($errors->has('sms_partner_sender_id'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ $errors->first('sms_partner_sender_id') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </form><!-- SMS Configuration end -->
-            </div>
-            <div class="col-lg-6 mb-3">
-                <!-- Mail Configuration start -->
-                <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}" class="h-100">
-                    @csrf
-                    <div class="card-box h-100 h-100">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h4 class="header-title mb-0">{{ __('Mail Configuration') }}</h4>
-                            <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
-                        </div>
-                        <p class="sub-header"> {{ __('View and update your SMTP credentials.') }}</p>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="mail_type">{{ __('Mail Type') }}</label>
-                                    <input type="text" name="mail_type" id="mail_type" placeholder="SMTP"
-                                        class="form-control"
-                                        value="{{ old('mail_type', $preference->mail_type ?? '') }}">
-                                    @if ($errors->has('mail_type'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('mail_type') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="mail_driver">{{ __('Mail Driver') }}</label>
-                                    <input type="text" name="mail_driver" id="mail_driver" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('mail_driver', $preference->mail_driver ?? '') }}">
-                                    @if ($errors->has('mail_driver'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('mail_driver') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="mail_host">{{ __('Mail Host') }}</label>
-                                    <input type="text" name="mail_host" id="mail_host" placeholder="SMTP"
-                                        class="form-control"
-                                        value="{{ old('mail_host', $preference->mail_host ?? '') }}">
-                                    @if ($errors->has('mail_host'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('mail_host') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="mail_port">{{ __('Mail Port') }}</label>
-                                    <input type="text" name="mail_port" id="mail_port" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('mail_port', $preference->mail_port ?? '') }}">
-                                    @if ($errors->has('mail_port'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('mail_port') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="mail_username">{{ __('Mail Username') }}</label>
-                                    <input type="text" name="mail_username" id="mail_username" placeholder="username"
-                                        class="form-control"
-                                        value="{{ old('mail_username', $preference->mail_username ?? '') }}">
-                                    @if ($errors->has('mail_username'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('mail_username') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="mail_password">{{ __('Mail Password') }}</label>
-                                    <input type="password" name="mail_password" id="mail_password" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('mail_password', $preference->mail_password ?? '') }}">
-                                    @if ($errors->has('mail_password'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('mail_password') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="mail_encryption">{{ __('Mail Encryption') }}</label>
-                                    <input type="text" name="mail_encryption" id="mail_encryption"
-                                        placeholder="username" class="form-control"
-                                        value="{{ old('mail_encryption', $preference->mail_encryption ?? '') }}">
-                                    @if ($errors->has('mail_encryption'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('mail_encryption') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="mail_from">{{ __('Mail From') }}</label>
-                                    <input type="text" name="mail_from" id="mail_from" placeholder="service@xyz.com"
-                                        class="form-control"
-                                        value="{{ old('mail_from', $preference->mail_from ?? '') }}">
-                                    @if ($errors->has('mail_from'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('mail_from') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form><!-- Mail Configuration end -->
-            </div>
-            <div class="col-lg-6 mb-3">
-                <!-- Firebase Notification Configuration start -->
-                <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}" class="h-100">
-                    @csrf
-                    <div class="card-box h-100 h-100">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h4 class="header-title text-uppercase mb-0">{{ __('Firebase Notification Configuration') }}
-                            </h4>
-                            <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
-                        </div>
-                        <p class="sub-header">{{ __('View and update your Firebase Keys') }}</p>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="fcm_server_key">{{ __('Server Key') }}</label>
-                                    <input type="text" name="fcm_server_key" id="fcm_server_key" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('fcm_server_key', $preference->fcm_server_key ?? '') }}" required>
-                                    @if ($errors->has('fcm_server_key'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fcm_server_key') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="vendor_fcm_server_key">{{ __('Individual Vendor Server Key') }}</label>
-                                    <input type="text" name="vendor_fcm_server_key" id="vendor_fcm_server_key"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('vendor_fcm_server_key', $preference->vendor_fcm_server_key ?? '') }}"
-                                        required>
-                                    @if ($errors->has('vendor_fcm_server_key'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('vendor_fcm_server_key') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="fcm_api_key">{{ __('API Key') }}</label>
-                                    <input type="text" name="fcm_api_key" id="fcm_api_key" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('fcm_api_key', $preference->fcm_api_key ?? '') }}" required>
-                                    @if ($errors->has('fcm_api_key'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fcm_api_key') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="fcm_auth_domain">{{ __('Auth Domain') }}</label>
-                                    <input type="text" name="fcm_auth_domain" id="fcm_auth_domain" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('fcm_auth_domain', $preference->fcm_auth_domain ?? '') }}"
-                                        required>
-                                    @if ($errors->has('fcm_auth_domain'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fcm_auth_domain') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="fcm_project_id">{{ __('Project ID') }}</label>
-                                    <input type="text" name="fcm_project_id" id="fcm_project_id" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('fcm_project_id', $preference->fcm_project_id ?? '') }}" required>
-                                    @if ($errors->has('fcm_project_id'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fcm_project_id') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="fcm_storage_bucket">{{ __('Storage Bucket') }}</label>
-                                    <input type="text" name="fcm_storage_bucket" id="fcm_storage_bucket"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('fcm_storage_bucket', $preference->fcm_storage_bucket ?? '') }}"
-                                        required>
-                                    @if ($errors->has('fcm_storage_bucket'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fcm_storage_bucket') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="fcm_messaging_sender_id">{{ __('Messaging Sender ID') }}</label>
-                                    <input type="text" name="fcm_messaging_sender_id" id="fcm_messaging_sender_id"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('fcm_messaging_sender_id', $preference->fcm_messaging_sender_id ?? '') }}"
-                                        required>
-                                    @if ($errors->has('fcm_messaging_sender_id'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fcm_messaging_sender_id') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="fcm_app_id">{{ __('App ID') }}</label>
-                                    <input type="text" name="fcm_app_id" id="fcm_app_id" placeholder=""
-                                        class="form-control"
-                                        value="{{ old('fcm_app_id', $preference->fcm_app_id ?? '') }}" required>
-                                    @if ($errors->has('fcm_app_id'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fcm_app_id') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="fcm_measurement_id">{{ __('Measurement ID') }}</label>
-                                    <input type="text" name="fcm_measurement_id" id="fcm_measurement_id"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('fcm_measurement_id', $preference->fcm_measurement_id ?? '') }}">
-                                    @if ($errors->has('fcm_measurement_id'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('fcm_measurement_id') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form><!-- Firebase Notification Configuration end -->
-            </div>
-
-
-            <!-- Customer Support -->
-            <div class="col-lg-3 col-md-6 mb-3">
-                <div class="row h-100">
-                    <div class="col-12">
-                        <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}"
-                            class="h-100">
-                            @csrf
-                            <div class="card-box h-100">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <h4 class="header-title text-uppercase mb-0">{{ __('Customer Support') }}</h4>
-                                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
-                                </div>
-                                <p class="sub-header">
-                                    {{ __("View and update your Customer Support, it's API key and Application ID") }}</p>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group mb-0">
-                                            <label for="customer_support">{{ __('Customer Support') }}</label>
-                                            <select class="form-control" id="customer_support" name="customer_support">
-                                                <option value="zen_desk"
-                                                    {{ isset($preference) && $preference->customer_support == 'zen_desk' ? 'selected' : '' }}>
-                                                    {{ __('Zen Desk') }}
-                                                </option>
-                                            </select>
-                                            @if ($errors->has('customer_support'))
-                                                <span class="text-danger" role="alert">
-                                                    <strong>{{ $errors->first('customer_support') }}</strong>
-                                                </span>
-                                            @endif
-                                        </div>
-
-                                        <div class="form-group mt-3 mb-0">
-                                            <label for="customer_support_key">{{ __('API Key') }}</label>
-                                            <input type="text" name="customer_support_key" id="customer_support_key"
-                                                placeholder="{{ __('Please enter key') }}" class="form-control"
-                                                value="{{ old('customer_support_key', $preference->customer_support_key ?? '') }}">
-                                            @if ($errors->has('customer_support_key'))
-                                                <span class="text-danger" role="alert">
-                                                    <strong>{{ $errors->first('customer_support_key') }}</strong>
-                                                </span>
-                                            @endif
-                                        </div>
-
-                                        <div class="form-group mt-3 mb-0">
-                                            <label
-                                                for="customer_support_application_id">{{ __('Application ID') }}</label>
-                                            <input type="text" name="customer_support_application_id"
-                                                id="customer_support_application_id"
-                                                placeholder="{{ __('Please enter application ID') }}"
-                                                class="form-control"
-                                                value="{{ old('customer_support_application_id', $preference->customer_support_application_id ?? '') }}">
-                                            @if ($errors->has('customer_support_application_id'))
-                                                <span class="text-danger" role="alert">
-                                                    <strong>{{ $errors->first('customer_support_application_id') }}</strong>
-                                                </span>
-                                            @endif
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <!-- Customer Support end -->
-
-
-            <!-- sos Support -->
-            <div class="col-lg-3 col-md-6 mb-3">
                 <div class="card-box h-100">
                     <div class="row">
                         <div class="col-12">
@@ -1733,49 +773,23 @@
                     </div>
                 </div><!-- Twitter card end -->
             </div>
-            <!-- Customer Support end -->
-
-
-        </div>
-
-        @php
-            $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card','is_cab_pooling','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating']);
-        @endphp
-        <div class="row">
-            {{-- hubspot form --}}
-            <div class="col-xl-4 col-lg-4 mb-3">
-                <!-- Social Logins title start -->
-                <div class="page-title-box">
-                    <h4 class="page-title text-uppercase">CRM</h4>
-                </div><!-- Social Logins title end -->
-
-                <form method="POST" action="{{ route('additional.update') }}">
-                    <input type="hidden" name="crm" id="crm" value="1">
-                    <input type="hidden" name="send_to" id="send_to" value="configure">
-                    @csrf
-                    <!-- HubSpot card start -->
-                    <div class="card-box h-100">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-0 switchery-demo">
-                                    <label for="fb_login" class="d-flex align-items-center justify-content-between">
-                                        <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-hubspot"></i>
-                                            <span>{{ __('Hubspot') }}</span></h5>
-
-                                        <button class="btn btn-info btn-block save_btn" name="hubspot_submit"
-                                            type="submit"> {{ __('Save') }} </button>
-                                    </label>
-                                    <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                    <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable"
-                                        class="form-control checkbox_change" data-className="is_hubspot_enable_hidden"
-                                        data-color="#43bee1"
-                                        @if (@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1" @endif>
-                                    <input type="hidden"
-                                        @if (isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif
-                                        name="is_hubspot_enable" id="is_hubspot_enable_hidden" />
-
-                                    {{-- @if (isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1') checked='checked' @endif> --}}
-                                </div>
+            <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+                <!-- Google card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="google_login" class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head"><i class="fab fa-google"></i>
+                                        <span>{{ __('Google') }}</span>
+                                    </h5>
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                                <label for="" class="mr-3">{{ __('Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="google_login" id="google_login"
+                                    class="form-control" data-color="#43bee1"
+                                    @if (isset($preference) && $preference->google_login == '1') checked='checked' @endif>
                             </div>
                         </div>
                     </div>
@@ -1957,7 +971,6 @@
                                 @endif
                             </div>
                         </div>
-
                     </div>
                 </div>
             </form><!-- Map Configuration end -->
@@ -2082,16 +1095,6 @@
                                     @endif
                                 </div>
                             </div>
-                        </div>
-                        {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
-                  <input type="hidden" name='is_hubspot' value='1'> --}}
-                        {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
-                        @php
-                            $allRoles = \App\Models\RoleOld::get();
-                        @endphp
-                        <hr />
-                        {{-- <div class="row hub_row alCustomToggleColor"
-                            style="{{ isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1 ? '' : 'display:none;' }}">
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="mazinhost_sender_id">{{ __('Sender ID') }}</label>
@@ -2105,7 +1108,7 @@
                                     @endif
                                 </div>
                             </div>
-                        </div> --}}
+                        </div>
 
                         <!-- For unifonic_fields -->
                         <div class="row sms_fields mx-0" id="unifonic_fields"
@@ -2181,6 +1184,101 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- For afrTalk -->
+                        <div class="row sms_fields mx-0" id="afrTalk_fields"
+                            style="display : {{ $preference->sms_provider == 6 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="afrTalk_api_key">{{ __('API Key') }}</label>
+                                    <input type="text" name="afrTalk_api_key" id="afrTalk_api_key" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('afrTalk_api_key', $sms_crendential->api_key ?? '') }}">
+                                    @if ($errors->has('afrTalk_api_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('afrTalk_api_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="afrTalk_sender_id">{{ __('Sender ID') }}</label>
+                                    <input type="text" name="afrTalk_sender_id" id="afrTalk_sender_id" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('afrTalk_sender_id', $sms_crendential->sender_id ?? '') }}">
+                                    @if ($errors->has('afrTalk_sender_id'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('afrTalk_sender_id') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- For vonage -->
+                        <div class="row sms_fields mx-0" id="vonage_fields"
+                            style="display : {{ $preference->sms_provider == 2 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="vonage_api_key">{{ __('API Key') }}</label>
+                                    <input type="text" name="vonage_api_key" id="vonage_api_key" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('vonage_api_key', $sms_crendential->api_key ?? '') }}">
+                                    @if ($errors->has('vonage_api_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('vonage_api_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="vonage_secret_key">{{ __('Secret Key') }}</label>
+                                    <input type="password" name="vonage_secret_key" id="vonage_secret_key"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('vonage_secret_key', $sms_crendential->secret_key ?? '') }}">
+                                    @if ($errors->has('vonage_secret_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('vonage_secret_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- For SMS Partner France -->
+                        <div class="row sms_fields mx-0" id="sms_partner_fields"
+                            style="display : {{ $preference->sms_provider == 2 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="sms_partner_api_key">{{ __('API Key') }}</label>
+                                    <input type="password" name="sms_partner_api_key" id="sms_partner_api_key"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('sms_partner_api_key', $sms_crendential->api_key ?? '') }}">
+                                    @if ($errors->has('sms_partner_api_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('sms_partner_api_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="sms_partner_sender_id">{{ __('Sender Id') }}</label>
+                                    <input type="text" name="sms_partner_sender_id" id="sms_partner_sender_id"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('sms_partner_sender_id', $sms_crendential->sender_id ?? '') }}">
+                                    @if ($errors->has('sms_partner_sender_id'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('sms_partner_sender_id') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </form><!-- SMS Configuration end -->
@@ -2506,6 +1604,907 @@
         <!-- sos Support -->
         <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                                <h5 class="social_head"><i class="fab fa-facebook-f"></i>
+                                    <span>{{ __('Facebook') }}</span>
+                                </h5>
+                                <button class="btn btn-info btn-block save_btn" type="submit">
+                                    {{ __('Save') }} </button>
+                            </label>
+                            <label for="" class="mr-3">{{ __('Enable') }}</label>
+                            <input type="checkbox" data-plugin="switchery" name="fb_login" id="fb_login"
+                                class="form-control" data-color="#43bee1"
+                                @if (isset($preference) && $preference->fb_login == '1') checked='checked' @endif>
+                        </div>
+                    </div>
+                </div>
+                <div class="row fb_row"
+                    style="{{ isset($preference) && $preference->fb_login == '1' ? '' : 'display:none;' }}">
+                    <div class="col-12">
+                        <div class="form-group mb-2 mt-2">
+                            <label for="fb_client_id">{{ __('Facebook Client Key') }}</label>
+                            <input type="text" name="fb_client_id" id="fb_client_id" placeholder=""
+                                class="form-control"
+                                value="{{ old('fb_client_id', $preference->fb_client_id ?? '') }}">
+                            @if ($errors->has('fb_client_id'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('fb_client_id') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="fb_client_secret">{{ __('Facebook Client Secret') }}</label>
+                            <input type="password" name="fb_client_secret" id="fb_client_secret" placeholder=""
+                                class="form-control"
+                                value="{{ old('fb_client_secret', $preference->fb_client_secret ?? '') }}">
+                            @if ($errors->has('fb_client_secret'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('fb_client_secret') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-0">
+                            <label for="fb_client_url">{{ __('Facebook Redirect URL') }}</label>
+                            <input type="text" name="fb_client_url" id="fb_client_url" placeholder=""
+                                class="form-control"
+                                value="{{ old('fb_client_url', $preference->fb_client_url ?? '') }}">
+                            @if ($errors->has('fb_client_url'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('fb_client_url') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div><!-- Facebook card end -->
+        </div>
+        <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+            <!-- Twitter card start -->
+            <div class="card-box h-100">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="twitter_login" class="d-flex align-items-center justify-content-between">
+                                <h5 class="social_head"><i class="fab fa-twitter"></i>
+                                    <span>{{ __('Twitter') }}</span>
+                                </h5>
+                                <button class="btn btn-info btn-block save_btn" type="submit">
+                                    {{ __('Save') }} </button>
+                            </label>
+                            <label for="" class="mr-3">{{ __('Enable') }}</label>
+                            <input type="checkbox" data-plugin="switchery" name="twitter_login" id="twitter_login"
+                                class="form-control" data-color="#43bee1"
+                                @if (isset($preference) && $preference->twitter_login == '1') checked='checked' @endif>
+                        </div>
+                    </div>
+                </div>
+                <div class="row  twitter_row"
+                    style="{{ isset($preference) && $preference->twitter_login == '1' ? '' : 'display:none;' }}">
+                    <div class="col-12">
+                        <div class="form-group mb-2 mt-2">
+                            <label for="twitter_client_id"></label>{{ __('Twitter Client Key') }}</label>
+                            <label for="" class="mr-3">{{ __('Enable') }}</label>
+                            <input type="text" name="twitter_client_id" id="twitter_client_id" placeholder=""
+                                class="form-control"
+                                value="{{ old('twitter_client_id', $preference->twitter_client_id ?? '') }}">
+                            @if ($errors->has('twitter_client_id'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('twitter_client_id') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="twitter_client_secret">{{ __('Twitter Client Secret') }}</label>
+                            <input type="password" name="twitter_client_secret" id="twitter_client_secret"
+                                placeholder="" class="form-control"
+                                value="{{ old('twitter_client_secret', $preference->twitter_client_secret ?? '') }}">
+                            @if ($errors->has('twitter_client_secret'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('twitter_client_secret') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-0">
+                            <label for="twitter_client_url">{{ __('Twitter Redirect URL') }}</label>
+                            <input type="text" name="twitter_client_url" id="twitter_client_url" placeholder=""
+                                class="form-control"
+                                value="{{ old('twitter_client_url', $preference->twitter_client_url ?? '') }}">
+                            @if ($errors->has('twitter_client_url'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('twitter_client_url') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div><!-- Twitter card end -->
+        </div>
+        <!-- Customer Support end -->
+
+
+    </div>
+
+    @php
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials']);
+    @endphp
+    <div class="row">
+        {{-- hubspot form --}}
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <!-- Social Logins title start -->
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">CRM</h4>
+            </div><!-- Social Logins title end -->
+
+            <form method="POST" action="{{ route('additional.update') }}">
+                <input type="hidden" name="crm" id="crm" value="1">
+                <input type="hidden" name="send_to" id="send_to" value="configure">
+                @csrf
+                <!-- HubSpot card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-hubspot"></i>
+                                        <span>{{ __('Hubspot') }}</span>
+                                    </h5>
+
+                                    <button class="btn btn-info btn-block save_btn" name="hubspot_submit"
+                                        type="submit"> {{ __('Save') }} </button>
+                                </label>
+                                <label for="" class="mr-3">{{ __('Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" id="is_hubspot_enable"
+                                    class="form-control checkbox_change" data-className="is_hubspot_enable_hidden"
+                                    data-color="#43bee1"
+                                    @if (@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1" @endif>
+                                <input type="hidden" @if (isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif
+                                    name="is_hubspot_enable" id="is_hubspot_enable_hidden" />
+
+                                {{-- @if (isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1') checked='checked' @endif> --}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row google_row"
+                    style="{{ isset($preference) && $preference->google_login == '1' ? '' : 'display:none;' }}">
+                    <div class="col-md-12">
+                        <div class="form-group mb-2 mt-2">
+                            <label for="google_client_id">{{ __('Google') }} {{ __('Client Key') }}</label>
+                            <input type="text" name="google_client_id" id="google_client_id" placeholder=""
+                                class="form-control"
+                                value="{{ old('google_client_id', $preference->google_client_id ?? '') }}">
+                            @if ($errors->has('google_client_id'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('google_client_id') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group mb-2">
+                            <label for="google_client_secret">{{ __('Google') }}
+                                {{ __('Client Secret') }}</label>
+                            <input type="password" name="google_client_secret" id="google_client_secret"
+                                placeholder="" class="form-control"
+                                value="{{ old('google_client_secret', $preference->google_client_secret ?? '') }}">
+                            @if ($errors->has('google_client_secret'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('google_client_secret') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group mb-0">
+                            <label for="google_client_url">{{ __('Google') }} {{ __('Redirect URL') }}</label>
+                            <input type="text" name="google_client_url" id="google_client_url" placeholder=""
+                                class="form-control"
+                                value="{{ old('google_client_url', $preference->google_client_url ?? '') }}">
+                            @if ($errors->has('google_client_url'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('google_client_url') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+        </div><!-- Google card end -->
+    </div>
+    <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+        <!-- Apple card start -->
+        <div class="card-box h-100">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group mb-0 switchery-demo">
+                        <label for="apple_login" class="d-flex align-items-center justify-content-between">
+                            <h5 class="social_head"><i class="fab fa-apple"></i>
+                                <span>{{ __('Apple') }}</span>
+                            </h5>
+                            <button class="btn btn-info btn-block save_btn" type="submit">
+                                {{ __('Save') }} </button>
+                        </label>
+                        <label for="" class="mr-3">{{ __('Enable') }}</label>
+                        <input type="checkbox" data-plugin="switchery" name="apple_login" id="apple_login"
+                            class="form-control" data-color="#43bee1"
+                            @if (isset($preference) && $preference->apple_login == '1') checked='checked' @endif>
+                    </div>
+                </div>
+            </div>
+            <div class="row apple_row"
+                style="{{ isset($preference) && $preference->apple_login == '1' ? '' : 'display:none;' }}">
+                <div class="col-12">
+                    <div class="form-group mb-2 mt-2">
+                        <label for="apple_client_id">Apple {{ __('Client Key') }}</label>
+                        <input type="text" name="apple_client_id" id="apple_client_id" placeholder=""
+                            class="form-control"
+                            value="{{ old('apple_client_id', $preference->apple_client_id ?? '') }}">
+                        @if ($errors->has('apple_client_id'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('apple_client_id') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group mb-2">
+                        <label for="apple_client_secret">Apple {{ __('Client Secret') }}</label>
+                        <input type="password" name="apple_client_secret" id="apple_client_secret" placeholder=""
+                            class="form-control"
+                            value="{{ old('apple_client_secret', $preference->apple_client_secret ?? '') }}">
+                        @if ($errors->has('apple_client_secret'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('apple_client_secret') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group mb-0">
+                        <label for="apple_client_url"> Apple {{ __('Redirect URL') }}</label>
+                        <input type="text" name="apple_client_url" id="apple_client_url" placeholder=""
+                            class="form-control"
+                            value="{{ old('apple_client_url', $preference->apple_client_url ?? '') }}">
+                        @if ($errors->has('apple_client_url'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('apple_client_url') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div><!-- Apple card end -->
+    </div>
+    </div>
+    </form>
+
+
+    <div class="row">
+        <div class="col-12">
+            <!-- Map Sms Emails title start -->
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __('Map Sms Emails') }}</h4>
+            </div><!-- Map Sms Emails title end -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 mb-3">
+            <!-- Map Configuration start -->
+            <form class="h-100" method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                @csrf
+                <div class="card-box h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title mb-0">{{ __('Map Configuration') }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
+                    </div>
+                    <p class="sub-header">
+                        {{ __("View and update your Map type and it's API key.") }}
+                    </p>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="currency">{{ __('MAP PROVIDER') }}</label>
+                                <select class="form-control" id="map_provider" name="map_provider">
+                                    @foreach ($mapTypes as $map)
+                                        <option value="{{ $map->id }}"
+                                            {{ isset($preference) && $preference->map_provider == $map->id ? 'selected' : '' }}>
+                                            {{ $map->provider }} </option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('map_provider'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('map_provider') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="map_key">{{ __('API KEY') }}</label>
+                                <input type="password" name="map_key" id="map_key" placeholder=""
+                                    class="form-control" value="{{ old('map_key', $preference->map_key ?? '') }}">
+                                @if ($errors->has('map_key'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('map_key') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="map_key_for_app">{{ __('API KEY FOR APP') }}</label>
+                                <input type="password" name="map_key_for_app" id="map_key_for_app" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('map_key_for_app', $preference->map_key_for_app ?? '') }}">
+                                @if ($errors->has('map_key_for_app'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('map_key_for_app') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </form><!-- Map Configuration end -->
+        </div>
+        <div class="col-lg-3 mb-3">
+            <!-- SMS Configuration start -->
+            <form class="h-100" method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                @csrf
+                <div class="card-box h-100 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title mb-0">{{ __('SMS Configuration') }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
+                    </div>
+                    <p class="sub-header">{{ __("View and update your SMS Gateway and it's API keys.") }}</p>
+                    <div class="row mb-0">
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="sms_provider">{{ __('SMS PROVIDER') }}</label>
+                                <select class="form-control" id="sms_provider" name="sms_provider"
+                                    onchange="toggle_smsFields(this)">
+                                    @foreach ($smsTypes as $sms)
+                                        <option data-id="{{ $sms->keyword }}_fields" value="{{ $sms->id }}"
+                                            {{ isset($preference) && $preference->sms_provider == $sms->id ? 'selected' : '' }}>
+                                            {{ $sms->provider }} </option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('sms_provider'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('sms_provider') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- For twillio -->
+                        <div class="sms_fields row mx-0" id="twilio_fields"
+                            style="display : {{ $preference->sms_provider == 1 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="sms_from">{{ __('SMS From') }}</label>
+                                    <input type="text" name="sms_from" id="sms_from" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('sms_from', $preference->sms_from ?? '') }}">
+                                    @if ($errors->has('sms_from'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('sms_from') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="sms_key">{{ __('API KEY') }}</label>
+                                    <input type="text" name="sms_key" id="sms_key" placeholder=""
+                                        class="form-control" value="{{ old('sms_key', $preference->sms_key ?? '') }}">
+                                    @if ($errors->has('sms_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('sms_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="sms_secret">{{ __('API Secret') }}</label>
+                                    <input type="password" name="sms_secret" id="sms_secret" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('sms_secret', $preference->sms_secret ?? '') }}">
+                                    @if ($errors->has('sms_secret'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('sms_secret') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- For mTalkz -->
+                        <div class="row sms_fields mx-0" id="mTalkz_fields"
+                            style="display : {{ $preference->sms_provider == 2 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mtalkz_api_key">{{ __('API Key') }}</label>
+                                    <input type="text" name="mtalkz_api_key" id="mtalkz_api_key" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('mtalkz_api_key', $sms_crendential->api_key ?? '') }}">
+                                    @if ($errors->has('mtalkz_api_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('mtalkz_api_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mtalkz_sender_id">{{ __('Sender ID') }}</label>
+                                    <input type="text" name="mtalkz_sender_id" id="mtalkz_sender_id"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('mtalkz_sender_id', $sms_crendential->sender_id ?? '') }}">
+                                    @if ($errors->has('mtalkz_sender_id'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('mtalkz_sender_id') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- For mTalkz -->
+                        <div class="row sms_fields mx-0" id="mazinhost_fields"
+                            style="display : {{ $preference->sms_provider == 3 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mazinhost_api_key">{{ __('API Key') }}</label>
+                                    <input type="text" name="mazinhost_api_key" id="mazinhost_api_key"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('mazinhost_api_key', $sms_crendential->api_key ?? '') }}">
+                                    @if ($errors->has('mazinhost_api_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('mazinhost_api_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
+                  <input type="hidden" name='is_hubspot' value='1'> --}}
+                        {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
+                        @php
+                            $allRoles = \App\Models\RoleOld::get();
+                        @endphp
+                        <hr />
+                        {{-- <div class="row hub_row alCustomToggleColor"
+                            style="{{ isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1 ? '' : 'display:none;' }}">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mazinhost_sender_id">{{ __('Sender ID') }}</label>
+                                    <input type="text" name="mazinhost_sender_id" id="mazinhost_sender_id"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('mazinhost_sender_id', $sms_crendential->sender_id ?? '') }}">
+                                    @if ($errors->has('mazinhost_sender_id'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('mazinhost_sender_id') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div> --}}
+
+                        <!-- For unifonic_fields -->
+                        <div class="row sms_fields mx-0" id="unifonic_fields"
+                            style="display : {{ $preference->sms_provider == 4 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="unifonic_app_id">{{ __('App Id') }}</label>
+                                    <input type="text" name="unifonic_app_id" id="unifonic_app_id" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('unifonic_app_id', $sms_crendential->unifonic_app_id ?? '') }}">
+                                    @if ($errors->has('unifonic_app_id'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('unifonic_app_id') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="unifonic_account_email">{{ __('Unifonic Account Email') }}</label>
+                                    <input type="text" name="unifonic_account_email" id="unifonic_account_email"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('unifonic_account_email', $sms_crendential->unifonic_account_email ?? '') }}">
+                                    @if ($errors->has('unifonic_account_email'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('unifonic_account_email') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="unifonic_account_password">{{ __('Unifonic Account Password') }}</label>
+                                    <input type="text" name="unifonic_account_password"
+                                        id="unifonic_account_password" placeholder="" class="form-control"
+                                        value="{{ old('unifonic_account_password', $sms_crendential->unifonic_account_password ?? '') }}">
+                                    @if ($errors->has('unifonic_account_password'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('unifonic_account_password') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- For arkesel -->
+                        <div class="row sms_fields mx-0" id="arkesel_fields"
+                            style="display : {{ $preference->sms_provider == 5 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="arkesel_api_key">{{ __('API Key') }}</label>
+                                    <input type="text" name="arkesel_api_key" id="arkesel_api_key" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('arkesel_api_key', $sms_crendential->api_key ?? '') }}">
+                                    @if ($errors->has('arkesel_api_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('arkesel_api_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="arkesel_sender_id">{{ __('Sender ID') }}</label>
+                                    <input type="text" name="arkesel_sender_id" id="arkesel_sender_id"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('arkesel_sender_id', $sms_crendential->sender_id ?? '') }}">
+                                    @if ($errors->has('arkesel_sender_id'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('arkesel_sender_id') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form><!-- SMS Configuration end -->
+        </div>
+        <div class="col-lg-6 mb-3">
+            <!-- Mail Configuration start -->
+            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}" class="h-100">
+                @csrf
+                <div class="card-box h-100 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title mb-0">{{ __('Mail Configuration') }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
+                    </div>
+                    <p class="sub-header"> {{ __('View and update your SMTP credentials.') }}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="mail_type">{{ __('Mail Type') }}</label>
+                                <input type="text" name="mail_type" id="mail_type" placeholder="SMTP"
+                                    class="form-control" value="{{ old('mail_type', $preference->mail_type ?? '') }}">
+                                @if ($errors->has('mail_type'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('mail_type') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="mail_driver">{{ __('Mail Driver') }}</label>
+                                <input type="text" name="mail_driver" id="mail_driver" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('mail_driver', $preference->mail_driver ?? '') }}">
+                                @if ($errors->has('mail_driver'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('mail_driver') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="mail_host">{{ __('Mail Host') }}</label>
+                                <input type="text" name="mail_host" id="mail_host" placeholder="SMTP"
+                                    class="form-control" value="{{ old('mail_host', $preference->mail_host ?? '') }}">
+                                @if ($errors->has('mail_host'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('mail_host') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="mail_port">{{ __('Mail Port') }}</label>
+                                <input type="text" name="mail_port" id="mail_port" placeholder=""
+                                    class="form-control" value="{{ old('mail_port', $preference->mail_port ?? '') }}">
+                                @if ($errors->has('mail_port'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('mail_port') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="mail_username">{{ __('Mail Username') }}</label>
+                                <input type="text" name="mail_username" id="mail_username" placeholder="username"
+                                    class="form-control"
+                                    value="{{ old('mail_username', $preference->mail_username ?? '') }}">
+                                @if ($errors->has('mail_username'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('mail_username') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="mail_password">{{ __('Mail Password') }}</label>
+                                <input type="password" name="mail_password" id="mail_password" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('mail_password', $preference->mail_password ?? '') }}">
+                                @if ($errors->has('mail_password'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('mail_password') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="mail_encryption">{{ __('Mail Encryption') }}</label>
+                                <input type="text" name="mail_encryption" id="mail_encryption"
+                                    placeholder="username" class="form-control"
+                                    value="{{ old('mail_encryption', $preference->mail_encryption ?? '') }}">
+                                @if ($errors->has('mail_encryption'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('mail_encryption') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="mail_from">{{ __('Mail From') }}</label>
+                                <input type="text" name="mail_from" id="mail_from" placeholder="service@xyz.com"
+                                    class="form-control" value="{{ old('mail_from', $preference->mail_from ?? '') }}">
+                                @if ($errors->has('mail_from'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('mail_from') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form><!-- Mail Configuration end -->
+        </div>
+        <div class="col-lg-6 mb-3">
+            <!-- Firebase Notification Configuration start -->
+            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}" class="h-100">
+                @csrf
+                <div class="card-box h-100 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title text-uppercase mb-0">{{ __('Firebase Notification Configuration') }}
+                        </h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
+                    </div>
+                    <p class="sub-header">{{ __('View and update your Firebase Keys') }}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="fcm_server_key">{{ __('Server Key') }}</label>
+                                <input type="text" name="fcm_server_key" id="fcm_server_key" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('fcm_server_key', $preference->fcm_server_key ?? '') }}" required>
+                                @if ($errors->has('fcm_server_key'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fcm_server_key') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="vendor_fcm_server_key">{{ __('Individual Vendor Server Key') }}</label>
+                                <input type="text" name="vendor_fcm_server_key" id="vendor_fcm_server_key"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('vendor_fcm_server_key', $preference->vendor_fcm_server_key ?? '') }}"
+                                    required>
+                                @if ($errors->has('vendor_fcm_server_key'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('vendor_fcm_server_key') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="fcm_api_key">{{ __('API Key') }}</label>
+                                <input type="text" name="fcm_api_key" id="fcm_api_key" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('fcm_api_key', $preference->fcm_api_key ?? '') }}" required>
+                                @if ($errors->has('fcm_api_key'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fcm_api_key') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="fcm_auth_domain">{{ __('Auth Domain') }}</label>
+                                <input type="text" name="fcm_auth_domain" id="fcm_auth_domain" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('fcm_auth_domain', $preference->fcm_auth_domain ?? '') }}" required>
+                                @if ($errors->has('fcm_auth_domain'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fcm_auth_domain') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="fcm_project_id">{{ __('Project ID') }}</label>
+                                <input type="text" name="fcm_project_id" id="fcm_project_id" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('fcm_project_id', $preference->fcm_project_id ?? '') }}" required>
+                                @if ($errors->has('fcm_project_id'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fcm_project_id') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="fcm_storage_bucket">{{ __('Storage Bucket') }}</label>
+                                <input type="text" name="fcm_storage_bucket" id="fcm_storage_bucket"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('fcm_storage_bucket', $preference->fcm_storage_bucket ?? '') }}"
+                                    required>
+                                @if ($errors->has('fcm_storage_bucket'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fcm_storage_bucket') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="fcm_messaging_sender_id">{{ __('Messaging Sender ID') }}</label>
+                                <input type="text" name="fcm_messaging_sender_id" id="fcm_messaging_sender_id"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('fcm_messaging_sender_id', $preference->fcm_messaging_sender_id ?? '') }}"
+                                    required>
+                                @if ($errors->has('fcm_messaging_sender_id'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fcm_messaging_sender_id') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="fcm_app_id">{{ __('App ID') }}</label>
+                                <input type="text" name="fcm_app_id" id="fcm_app_id" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('fcm_app_id', $preference->fcm_app_id ?? '') }}" required>
+                                @if ($errors->has('fcm_app_id'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fcm_app_id') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="fcm_measurement_id">{{ __('Measurement ID') }}</label>
+                                <input type="text" name="fcm_measurement_id" id="fcm_measurement_id"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('fcm_measurement_id', $preference->fcm_measurement_id ?? '') }}">
+                                @if ($errors->has('fcm_measurement_id'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fcm_measurement_id') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form><!-- Firebase Notification Configuration end -->
+        </div>
+
+
+        <!-- Customer Support -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="row h-100">
+                <div class="col-12">
+                    <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}"
+                        class="h-100">
+                        @csrf
+                        <div class="card-box h-100">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h4 class="header-title text-uppercase mb-0">{{ __('Customer Support') }}</h4>
+                                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
+                            </div>
+                            <p class="sub-header">
+                                {{ __("View and update your Customer Support, it's API key and Application ID") }}</p>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group mb-0">
+                                        <label for="customer_support">{{ __('Customer Support') }}</label>
+                                        <select class="form-control" id="customer_support" name="customer_support">
+                                            <option value="zen_desk"
+                                                {{ isset($preference) && $preference->customer_support == 'zen_desk' ? 'selected' : '' }}>
+                                                {{ __('Zen Desk') }}
+                                            </option>
+                                        </select>
+                                        @if ($errors->has('customer_support'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ $errors->first('customer_support') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <div class="form-group mt-3 mb-0">
+                                        <label for="customer_support_key">{{ __('API Key') }}</label>
+                                        <input type="text" name="customer_support_key" id="customer_support_key"
+                                            placeholder="{{ __('Please enter key') }}" class="form-control"
+                                            value="{{ old('customer_support_key', $preference->customer_support_key ?? '') }}">
+                                        @if ($errors->has('customer_support_key'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ $errors->first('customer_support_key') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <div class="form-group mt-3 mb-0">
+                                        <label for="customer_support_application_id">{{ __('Application ID') }}</label>
+                                        <input type="text" name="customer_support_application_id"
+                                            id="customer_support_application_id"
+                                            placeholder="{{ __('Please enter application ID') }}" class="form-control"
+                                            value="{{ old('customer_support_application_id', $preference->customer_support_application_id ?? '') }}">
+                                        @if ($errors->has('customer_support_application_id'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ $errors->first('customer_support_application_id') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Customer Support end -->
+
+
+        <!-- sos Support -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card-box h-100">
                 <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}" class="h-100">
                     @csrf
                     <input type="hidden" name="sos_enable" value="1">
@@ -2529,8 +2528,8 @@
                         <div class="col-12">
                             <div class="form-group mb-2 mt-2">
                                 <label for="sos_police_contact"></label>{{ __('Police Number') }}</label>
-                                <input type="text" name="sos_police_contact" id="sos_police_contact" placeholder=""
-                                    class="form-control"
+                                <input type="text" name="sos_police_contact" id="sos_police_contact"
+                                    placeholder="" class="form-control"
                                     value="{{ old('twitter_client_id', $preference->sos_police_contact ?? '') }}">
                                 @if ($errors->has('sos_police_contact'))
                                     <span class="text-danger" role="alert">
@@ -2561,9 +2560,6 @@
 
     </div>
 
-    @php
-    $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card','is_cab_pooling','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating']);
-@endphp
     <div class="row">
         {{-- hubspot form --}}
         <div class="col-xl-4 col-lg-4 mb-3">
@@ -2586,7 +2582,8 @@
                                         <span>{{ __('Hubspot') }}</span>
                                     </h5>
 
-                                    <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit">
+                                    <button class="btn btn-info btn-block save_btn" name="hubspot_submit"
+                                        type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
                                 <label for="" class="mr-3">{{ __('Enable') }}</label>
@@ -2594,7 +2591,8 @@
                                     class="form-control checkbox_change" data-className="is_hubspot_enable_hidden"
                                     data-color="#43bee1"
                                     @if (@$getAdditionalPreference['is_hubspot_enable'] == '1') checked='checked' value="1" @endif>
-                                <input type="hidden" @if (isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif
+                                <input type="hidden"
+                                    @if (isset($getAdditionalPreference['is_hubspot_enable']) == 1) value="1" @else value="0" @endif
                                     name="is_hubspot_enable" id="is_hubspot_enable_hidden" />
 
                                 {{-- @if (isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1') checked='checked' @endif> --}}
@@ -2656,7 +2654,8 @@
                                     class="form-control checkbox_change"
                                     data-className="is_free_delivery_by_roles_hidden" data-color="#43bee1"
                                     @if (@$getAdditionalPreference['is_free_delivery_by_roles'] == '1') checked='checked' value="1" @endif>
-                                <input type="hidden" @if (isset($getAdditionalPreference['is_free_delivery_by_roles']) == 1) value="1" @else value="0" @endif
+                                <input type="hidden"
+                                    @if (isset($getAdditionalPreference['is_free_delivery_by_roles']) == 1) value="1" @else value="0" @endif
                                     name="is_free_delivery_by_roles" id="is_free_delivery_by_roles_hidden" />
 
                                 {{-- @if (isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1') checked='checked' @endif> --}}
@@ -2691,7 +2690,9 @@
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
-                <h4 class="page-title text-uppercase">{{ __('Edit Order, Instant Booking and Bid & Ride') }} <!-- {{ __('Post Pay & Edit Order') }} --></h4>
+                <h4 class="page-title text-uppercase">{{ __('Edit Order, Instant Booking and Bid & Ride') }}
+                    <!-- {{ __('Post Pay & Edit Order') }} -->
+                </h4>
             </div><!-- Social Logins title end -->
 
             <form method="POST" action="{{ route('additional.update') }}">
@@ -2704,7 +2705,8 @@
                         <div class="col-12">
                             <div class="form-group mb-0 switchery-demo">
                                 <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <h4 class="header-title text-uppercase mb-0">{{ __('Edit Order') }}<!-- {{ __('Post Pay & Edit Order') }} -->
+                                    <h4 class="header-title text-uppercase mb-0">{{ __('Edit Order') }}
+                                        <!-- {{ __('Post Pay & Edit Order') }} -->
                                     </h4>
                                     <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
                                     </button>
@@ -2714,14 +2716,14 @@
                                     <!-- {{ __('Post Pay allows customers to pay after placing order. Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.') }} -->
                                 </p>
                                 <!-- <label for="" class="mr-3">{{ __('Post Pay Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch"
-                                    id="is_postpay_enable_switch" class="form-control checkbox_change"
-                                    data-className="is_postpay_enable" data-color="#43bee1"
-                                    @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) checked='checked' @endif>
-                                <input type="hidden"
-                                    @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) value="1" @else value="0" @endif
-                                    name="is_postpay_enable" id="is_postpay_enable" /> -->
-                            </div>  
+                                    <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch"
+                                        id="is_postpay_enable_switch" class="form-control checkbox_change"
+                                        data-className="is_postpay_enable" data-color="#43bee1"
+                                        @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) checked='checked' @endif>
+                                    <input type="hidden"
+                                        @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) value="1" @else value="0" @endif
+                                        name="is_postpay_enable" id="is_postpay_enable" /> -->
+                            </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group mb-0 d-flex switchery-demo">
@@ -2733,24 +2735,27 @@
                                 <input type="hidden"
                                     @if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_order_edit_enable" id="is_order_edit_enable" />
-                            </div>  
-                        
-                            <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) @else none @endif;">
+                            </div>
+
+                            <div class="row mt-2" id="edit_order_time_limit_div"
+                                style="display:@if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) @else none @endif;">
                                 <div class="col-8">
-                                    <label for="" class="mr-3">{{ __('Disable Order Edit before (Hours)') }}</label>
+                                    <label for=""
+                                        class="mr-3">{{ __('Disable Order Edit before (Hours)') }}</label>
                                 </div>
                                 <div class="col-4">
                                     <input type="number" name="order_edit_before_hours" id="order_edit_before_hours"
                                         placeholder="" class="form-control"
                                         value="{{ old('order_edit_before_hours', @getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'] ?? '') }}">
                                 </div>
-                                <hr/>
+                                <hr />
                             </div>
                         </div>
 
                         <div class="col-12 mt-2">
                             <div class="form-group mt-2 d-flex switchery-demo">
-                                <label for="" class="mr-3">{{ __('One Push Button For Booking (Pick & Drop) Enable') }}</label>
+                                <label for=""
+                                    class="mr-3">{{ __('One Push Button For Booking (Pick & Drop) Enable') }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="is_one_push_book_enable_switch"
                                     id="is_one_push_book_enable_switch" class="form-control checkbox_change"
                                     data-className="is_one_push_book_enable" data-color="#43bee1"
@@ -2784,7 +2789,7 @@
                         </div>
                     </div>
                 </div>
-            
+
             </form>
         </div><!-- Post Pay Card end -->
     </div>
@@ -2800,7 +2805,8 @@
 
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
                 @csrf
-                <input type="hidden" name="third_party_accounting_config" id="third_party_accounting_config" value="1">
+                <input type="hidden" name="third_party_accounting_config" id="third_party_accounting_config"
+                    value="1">
                 <!-- HubSpot card start -->
                 <div class="card-box h-100">
                     <div class="row">
@@ -2819,7 +2825,8 @@
                                     {{ __('Enable to use third party Accounting.') }}
                                 </p>
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                    <label for="third_party_accounting" class="mr-2 mb-0">{{ __('Third party Accounting') }}</label>
+                                    <label for="third_party_accounting"
+                                        class="mr-2 mb-0">{{ __('Third party Accounting') }}</label>
                                     <span> <input type="checkbox" data-plugin="switchery"
                                             name="third_party_accounting" id="third_party_accounting"
                                             class="form-control" data-color="#43bee1"
@@ -2828,35 +2835,45 @@
                                 </div>
                             </div>
 
-                            <div class="form-group mb-0" id="xero_config_div" style="@if (isset($preference) && $preference->third_party_accounting == 1) '' @else display:none; @endif">
-                                <hr/>
+                            <div class="form-group mb-0" id="xero_config_div"
+                                style="@if (isset($preference) && $preference->third_party_accounting == 1) '' @else display:none; @endif">
+                                <hr />
                                 @php
-                                    $accounting_status = (isset($accounting) && !empty($accounting)) ? $accounting->status : 0;
-                                    $creds = (isset($accounting) && !empty($accounting)) ? json_decode($accounting->credentials, true) : [];
+                                    $accounting_status = isset($accounting) && !empty($accounting) ? $accounting->status : 0;
+                                    $creds = isset($accounting) && !empty($accounting) ? json_decode($accounting->credentials, true) : [];
                                 @endphp
-                                
+
                                 <div class="row">
                                     <div class="col-12">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="xero_enable_switch" class="mr-3">{{ __("Xero Configuration") }} <br/><small>{{__('View and update your Xero Keys')}}</small></label>
-                                        <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if(($accounting_status == '1')) checked='checked' @endif>
-                                    </div>
-                                        
-                                        <div class="mt-2 xeroFields" @if( $accounting_status != 1) style="display:none" @endif>
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="form-group mb-2">
-                                                    <label for="xero_client_id">{{ __("Client ID") }}</label>
-                                                    <input type="text" name="xero_client_id" id="xero_client_id" placeholder="" class="form-control" value="{{ old('xero_client_id', $creds->client_id ?? '')}}">
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="form-group mb-2">
-                                                    <label for="xero_secret_id">{{ __("Secret ID") }}</label>
-                                                    <input type="text" name="xero_secret_id" id="xero_secret_id" placeholder="" class="form-control" value="{{ old('xero_secret_id', $creds->secret_id ?? '')}}">
-                                                </div>
-                                            </div>
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="xero_enable_switch"
+                                                class="mr-3">{{ __('Xero Configuration') }}
+                                                <br /><small>{{ __('View and update your Xero Keys') }}</small></label>
+                                            <input type="checkbox" data-plugin="switchery" name="xero_status"
+                                                id="xero_enable_switch" class="form-control" data-color="#43bee1"
+                                                @if ($accounting_status == '1') checked='checked' @endif>
                                         </div>
+
+                                        <div class="mt-2 xeroFields"
+                                            @if ($accounting_status != 1) style="display:none" @endif>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label for="xero_client_id">{{ __('Client ID') }}</label>
+                                                        <input type="text" name="xero_client_id"
+                                                            id="xero_client_id" placeholder="" class="form-control"
+                                                            value="{{ old('xero_client_id', $creds->client_id ?? '') }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label for="xero_secret_id">{{ __('Secret ID') }}</label>
+                                                        <input type="text" name="xero_secret_id"
+                                                            id="xero_secret_id" placeholder="" class="form-control"
+                                                            value="{{ old('xero_secret_id', $creds->secret_id ?? '') }}">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -2898,43 +2915,77 @@
                             <div class="form-group mb-0">
                                 <div class="row">
                                     <div class="col-12">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="square_enable_status_switch" class="mr-3">{{ __("Enable") }} <br/></label>
-                                        <input type="checkbox" data-plugin="switchery" name="square_enable_status_switch" id="square_enable_status_switch" class="form-control checkbox_change" data-className="square_enable_status" data-color="#43bee1" @if($getAdditionalPreference['square_enable_status'] == 1) checked @endif>
-                                        <input type="hidden" @if($getAdditionalPreference['square_enable_status'] == 1) value="1" @else value="0" @endif name="square_enable_status" id="square_enable_status" />
-                                    </div>
-                                    @php
-                                        $square_credentials = json_decode($getAdditionalPreference['square_credentials'], true);
-                                        $square_sandbox_enable_status = isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : '';
-                                        $square_application_id = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
-                                        $square_access_token = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
-                                        $square_location_id = isset($square_credentials['location_id']) ? $square_credentials['location_id'] : '';
-                                    @endphp
-                                        <div class="mt-2 squareFields" @if($getAdditionalPreference['square_enable_status'] != 1) style="display:none;" @endif>
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="square_enable_status_switch"
+                                                class="mr-3">{{ __('Enable') }} <br /></label>
+                                            <input type="checkbox" data-plugin="switchery"
+                                                name="square_enable_status_switch" id="square_enable_status_switch"
+                                                class="form-control checkbox_change"
+                                                data-className="square_enable_status" data-color="#43bee1"
+                                                @if ($getAdditionalPreference['square_enable_status'] == 1) checked @endif>
+                                            <input type="hidden"
+                                                @if ($getAdditionalPreference['square_enable_status'] == 1) value="1" @else value="0" @endif
+                                                name="square_enable_status" id="square_enable_status" />
+                                        </div>
+                                        @php
+                                            $square_credentials = json_decode($getAdditionalPreference['square_credentials'], true);
+                                            $square_sandbox_enable_status = isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : '';
+                                            $square_application_id = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
+                                            $square_access_token = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
+                                            $square_location_id = isset($square_credentials['location_id']) ? $square_credentials['location_id'] : '';
+                                        @endphp
+                                        <div class="mt-2 squareFields"
+                                            @if ($getAdditionalPreference['square_enable_status'] != 1) style="display:none;" @endif>
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                                        <label for="square_sandbox_enable_status_switch" class="mr-3">{{ __("Sandbox") }} <br/><small>{{__('Update Sandbox Application ID and Access Token')}}</small></label>
-                                                        <input type="checkbox" data-plugin="switchery" name="square_sandbox_enable_status_switch" id="square_sandbox_enable_status_switch" class="form-control checkbox_change" data-className="square_sandbox_enable_status" data-color="#43bee1" @if($square_sandbox_enable_status == 1) checked @endif>
-                                                        <input type="hidden" @if($square_sandbox_enable_status == 1) value="1" @else value="0" @endif name="square_sandbox_enable_status" id="square_sandbox_enable_status" />
+                                                    <div
+                                                        class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                        <label for="square_sandbox_enable_status_switch"
+                                                            class="mr-3">{{ __('Sandbox') }}
+                                                            <br /><small>{{ __('Update Sandbox Application ID and Access Token') }}</small></label>
+                                                        <input type="checkbox" data-plugin="switchery"
+                                                            name="square_sandbox_enable_status_switch"
+                                                            id="square_sandbox_enable_status_switch"
+                                                            class="form-control checkbox_change"
+                                                            data-className="square_sandbox_enable_status"
+                                                            data-color="#43bee1"
+                                                            @if ($square_sandbox_enable_status == 1) checked @endif>
+                                                        <input type="hidden"
+                                                            @if ($square_sandbox_enable_status == 1) value="1" @else value="0" @endif
+                                                            name="square_sandbox_enable_status"
+                                                            id="square_sandbox_enable_status" />
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="square_location_id">{{ __("Location ID") }}</label>
-                                                        <input type="text" name="square_location_id" id="square_location_id" placeholder="" class="form-control" value="{{ old('square_location_id', $square_location_id)}}" autocomplete="off">
+                                                        <label for="square_location_id">{{ __('Location ID') }}</label>
+                                                        <input type="text" name="square_location_id"
+                                                            id="square_location_id" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('square_location_id', $square_location_id) }}"
+                                                            autocomplete="off">
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="square_application_id">{{ __("Application ID") }}</label>
-                                                        <input type="text" name="square_application_id" id="square_application_id" placeholder="" class="form-control" value="{{ old('square_application_id', $square_application_id)}}" autocomplete="off">
+                                                        <label
+                                                            for="square_application_id">{{ __('Application ID') }}</label>
+                                                        <input type="text" name="square_application_id"
+                                                            id="square_application_id" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('square_application_id', $square_application_id) }}"
+                                                            autocomplete="off">
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="square_access_token">{{ __("Access Token") }}</label>
-                                                        <input type="password" name="square_access_token" id="square_access_token" placeholder="" class="form-control" value="{{ old('square_access_token', $square_access_token)}}" autocomplete="off">
+                                                        <label
+                                                            for="square_access_token">{{ __('Access Token') }}</label>
+                                                        <input type="password" name="square_access_token"
+                                                            id="square_access_token" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('square_access_token', $square_access_token) }}"
+                                                            autocomplete="off">
                                                     </div>
                                                 </div>
                                             </div>
@@ -2954,7 +3005,7 @@
 
 
     <div class="row">
-            
+
         <div class="col-md-12">
             <!-- Custom Mods start -->
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -2966,16 +3017,16 @@
                     </div>
                     <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
 
-                        <div class="row align-items-start">
-                          @include('backend.setting.customMode')
-                        </div>
-                       
-
+                    <div class="row align-items-start">
+                        @include('backend.setting.customMode')
                     </div>
+
+
                 </div>
-            </form>
-            <!-- Custom Mods end -->
         </div>
+        </form>
+        <!-- Custom Mods end -->
+    </div>
     </div>
 
     <div class="row">
@@ -3816,8 +3867,7 @@
 
         if (need_inventory_service.length > 0) {
             need_inventory_service[0].onchange = function() {
-                if ($('#need_inventory_service:checked').length != 1) 
-                {
+                if ($('#need_inventory_service:checked').length != 1) {
                     $('.inventoryFields').hide();
                     var is_order_edit_enable = $('#is_order_edit_enable_switch');
 
@@ -3844,11 +3894,12 @@
         }
 
         var is_one_push_book_enable = $('#is_one_push_book_enable_switch');
-        var is_bid_ride_enable      = $('#is_bid_ride_enable_switch');
+        var is_bid_ride_enable = $('#is_bid_ride_enable_switch');
 
 
         is_one_push_book_enable[0].onchange = function() {
-            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
+            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked')
+                .length != 1) {
                 $('#bid_expire_time_limit_div').hide();
                 $('#bid_expire_time_limit_seconds').val(0);
             } else {
@@ -3857,7 +3908,8 @@
         }
 
         is_bid_ride_enable[0].onchange = function() {
-            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
+            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked')
+                .length != 1) {
                 $('#bid_expire_time_limit_div').hide();
                 $('#bid_expire_time_limit_seconds').val(0);
             } else {
@@ -3949,7 +4001,7 @@
         third_party_accounting[0].onchange = function() {
             if ($('#third_party_accounting:checked').length != 1) {
                 $('#xero_config_div').hide();
-                if($('#xero_enable_switch').is(':checked')==1){
+                if ($('#xero_enable_switch').is(':checked') == 1) {
                     $('#xero_enable_switch').trigger("click");
                 }
             } else {
@@ -3958,12 +4010,12 @@
         }
 
         var xero_enable_switch = $('#xero_enable_switch');
-        if(xero_enable_switch.length > 0){
+        if (xero_enable_switch.length > 0) {
             xero_enable_switch[0].onchange = function() {
 
-                if ($('#xero_enable_switch:checked').length != 1) 
-                {
-                    $("#xero_client_id").val('');$("#xero_secret_id").val('');
+                if ($('#xero_enable_switch:checked').length != 1) {
+                    $("#xero_client_id").val('');
+                    $("#xero_secret_id").val('');
                     $('.xeroFields').hide();
                 } else {
                     $('.xeroFields').show();
@@ -3973,12 +4025,12 @@
 
 
         var square_enable_status_switch = $('#square_enable_status_switch');
-        if(square_enable_status_switch.length > 0){
+        if (square_enable_status_switch.length > 0) {
             square_enable_status_switch[0].onchange = function() {
 
-                if ($('#square_enable_status_switch:checked').length != 1) 
-                {
-                    $("#xero_client_id").val('');$("#xero_secret_id").val('');
+                if ($('#square_enable_status_switch:checked').length != 1) {
+                    $("#xero_client_id").val('');
+                    $("#xero_secret_id").val('');
                     $('.squareFields').hide();
                 } else {
                     $('.squareFields').show();
