@@ -6,7 +6,7 @@
 
 
     @php
-        $sms_crendential = json_decode($preference->sms_credentials, true);
+        $sms_crendential = json_decode($preference->sms_credentials);
     @endphp
 
     <div class="container-fluid custom-toggle al">
