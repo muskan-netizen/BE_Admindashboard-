@@ -9,7 +9,7 @@ class ProductAddon extends Model
    protected $fillable = ['product_id','addon_id'];
 
     public function addOn(){
-       return $this->belongsTo('App\Models\AddonSet', 'id', 'addon_id')->select('id', 'title', 'min_select', 'max_select', 'position'); 
+       return $this->belongsTo('App\Models\AddonSet', 'id', 'addon_id')->select('id', 'title', 'min_select', 'max_select', 'position', 'square_modifier_id'); 
     }
 
     public function setoptions(){
@@ -18,7 +18,7 @@ class ProductAddon extends Model
 
 
     public function addOnName(){
-      return $this->belongsTo('App\Models\AddonSet', 'addon_id', 'id')->select('id', 'title', 'min_select', 'max_select', 'position'); 
+      return $this->belongsTo('App\Models\AddonSet', 'addon_id', 'id')->select('id', 'title', 'min_select', 'max_select', 'position', 'square_modifier_id'); 
    }
     
 

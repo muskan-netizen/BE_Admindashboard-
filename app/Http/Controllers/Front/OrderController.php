@@ -60,7 +60,8 @@ use App\Models\CartDeliveryFee;
 use App\Models\ClientPreference;
 use App\Http\Traits\ {
     ApiResponser,
-    CartManager
+    CartManager,
+    SquareInventoryManager
 };
 use App\Models\AddonOption;
 use App\Models\ {
@@ -82,7 +83,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager;
+    use ApiResponser, CartManager, SquareInventoryManager;
     use \App\Http\Traits\OrderTrait;
 
     /**
@@ -4271,5 +4272,14 @@ class OrderController extends FrontController
             'quantity_price' => $quantity_price,
             'amount' => $amount
         ];
+    }
+
+
+    function squareProductCreate(){
+        $this->createNewProductInSquareTest();
+    }
+
+    function squareProductUpdate(){
+        $this->updateNewProductInSquareTest();
     }
 }
