@@ -461,11 +461,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
 
 <div class="tab">
-    <a class="tablinks" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
+    <a class="tablinks active" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
     <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
   </div>
 
-  <div id="Add-Card" class="tabcontent">
+  <div id="Add-Card" class="tabcontent show" style="display:block">
      <div class="row no-gutters">
                             <div class="col-6">
                                 <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" />
@@ -567,7 +567,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
 
     var inline='';
     $('#wallet_amount').keypress(function(event) {
