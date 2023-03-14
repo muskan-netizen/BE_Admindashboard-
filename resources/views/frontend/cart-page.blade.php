@@ -456,9 +456,9 @@
                                                         <div class="col-md-6 col col-sm-4">
                                                             <div class="extra-items-price">
                                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($addon->option->price_in_cart * $addon->option->multiplier)) }}
+                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format(@$addon->option->price_in_cart * $addon->option->multiplier)) }}
                                                                 @else
-                                                                    {{ Session::get('currencySymbol') . decimal_format($addon->option->price_in_cart * $addon->option->multiplier) }}
+                                                                    {{ Session::get('currencySymbol') . decimal_format(@$addon->option->price_in_cart * $addon->option->multiplier) }}
                                                                 @endif
                                                             </div>
                                                         </div>
