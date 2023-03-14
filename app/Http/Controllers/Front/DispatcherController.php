@@ -801,6 +801,7 @@ class DispatcherController extends FrontController
                     $order->order_item_count = $order_item_count;
                 }
                 
+                $order['DatabaseName'] = DB::connection()->getDatabaseName().'_';
                 return $this->successResponse($order, null, 201);
             }
 

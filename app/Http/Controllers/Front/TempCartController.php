@@ -8,14 +8,14 @@ use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
-use App\Http\Traits\{ApiResponser,CartManager};
+use App\Http\Traits\{ApiResponser,CartManager,ProductTrait};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\{FrontController, LalaMovesController, OrderController, PromoCodeController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, TempCart, TempCartAddon, TempCartProduct, TempCartCoupon, TempCartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot, UserDevice, NotificationTemplate};
 use Log;
 class TempCartController extends FrontController
 {
-    use ApiResponser,CartManager;
+    use ApiResponser,CartManager,ProductTrait;
 
     /**
      * get products from cart
@@ -893,7 +893,12 @@ class TempCartController extends FrontController
     {
         try{
             $order_vendor_id = $request->order_vendor_id;
-            $getallproduct = OrderVendor::with(['products.addon'])->where('id', $order_vendor_id)->first();
+            $order_vendor_product_id = $request->order_vendor_product_id ?? '';
+            $getallproduct = OrderVendor::with(['products' => function ($q) use ($order_vendor_product_id) {
+                if($order_vendor_product_id){
+                    $q->where('id', $order_vendor_product_id);
+                }
+            },'products.addon'])->where('id', $order_vendor_id)->first();
             if(!$request->has('user_id')){
                 $request->request->add(['user_id' => $getallproduct->user_id]);
             }
@@ -1420,6 +1425,81 @@ class TempCartController extends FrontController
                 $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
                 $response[] = $product;
             }
+            return $this->successResponse($response);
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    public function AgentProductsSearchResults(Request $request, $domain = '')
+    {
+       // return 1;
+      // pr($request->all());
+        try {
+            $keyword = $request->input('keyword');
+            $vid = $request->input('vendor');
+            $productSku = $request->input('productSku')?? [];
+            $agent_id = $request->input('agent_id');
+            $limit = $request->has('limit') ? $request->limit : 10;
+            $page  = $request->has('page') ? $request->page : 1;
+          
+            $clientLanguage = ClientLanguage::where('is_primary', 1)->first();
+            $langId = $clientLanguage ? $clientLanguage->language_id : 1;
+
+            $productSku = explode(',',$productSku);
+
+            $response = array();
+             
+            $products = Product::with(['media.image','variants' => function($q) use($productSku){
+                $q->whereIn('sku', $productSku);
+            },
+            'translation' => function($q) use($langId, $keyword){
+                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                if($keyword){
+                    $q->where(function ($q1) use ($keyword) {
+                        $q1->where('title', 'LIKE', '%' . $keyword . '%')
+                        ->orWhere('body_html', 'LIKE', '%' . $keyword . '%');
+                    });
+                }
+                $q->groupBy('product_id');
+            }])
+            ->select('id', 'sku', 'title', 'description', 'category_id', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+            if($keyword){
+                $products = $products->where(function ($q) use ($keyword, $langId) {
+                    $q->where(function ($q1) use ($keyword) {
+                        $q1->where('sku', 'LIKE', '%' . $keyword . '%')
+                        ->orWhere('url_slug', 'LIKE', '%' . $keyword . '%')
+                        ->orWhere('title', 'LIKE', '%' . $keyword . '%');
+                    });
+                    $q->orWhereHas('translation', function ($q1) use ($keyword, $langId) {
+                        $q1->where(function ($q2) use ($keyword) {
+                            $q2->where('title', 'LIKE', '%' . $keyword . '%');
+                        });
+                    });
+                });                
+            }
+            $products = $products->whereHas('variants' , function($q) use($productSku){
+                $q->whereIn('sku', $productSku);
+            });
+            $products = $products->where('is_live', 1)
+                //->whereIn('sku', $productSku)
+                ->whereNull('products.deleted_at')
+                ->paginate($limit, $page);
+            foreach ($products as $product) {
+                foreach ($product->variants as $variant) {
+                    
+                    $Agent_price =  $this->getAgentProductPriceFromDispatcher(  $variant->sku,$agent_id);
+                    if($Agent_price){
+                        $actual_price = $Agent_price['data'] ? $Agent_price['data']['price'] : 0.0;
+                        $variant['agent_price'] =  $actual_price;
+                    }
+
+                }
+                $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+
+                $response[] = $product;
+            }
+           
             return $this->successResponse($response);
         }
         catch (Exception $e) {
