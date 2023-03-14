@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\{SendReferralRequest};
 use App\Models\{User,UserRefferal,ClientPreference,Client,UserWishlist,ClientCurrency, EmailTemplate,UserRegistrationDocuments, Product,UserDocs};
+use App\Models\UserDataVault;
 
 class ProfileController extends BaseController{
 
@@ -404,6 +405,17 @@ class ProfileController extends BaseController{
             'data' => $data,
             'message' => __('Profile get successfully.')
         ]);
+    }
+    
+    
+    public function getUserCards(Request $request)
+    {
+        $auth_user = auth()->user();
+        $listData = UserDataVault::where([
+            'user_id' => $auth_user->id
+        ])->orderBy('is_default','DESC')->get();
+        
+        return response()->json(['data' => $listData??[]]);
     }
 
 }
