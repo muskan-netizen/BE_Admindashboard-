@@ -1842,7 +1842,7 @@ class OrderController extends BaseController
                 }
             }
             $dynamic = uniqid($order->id . $vendor);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address','order_pre_time')->first();
             $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
             // pr($orderVendorDetails);
             if(!empty($orderVendorDetails->web_hook_code))
@@ -1964,6 +1964,8 @@ class OrderController extends BaseController
                             'vendor_name' => $vendor_details->name ?? null,
                             'tip_amount' => $order->tip_amount,
                             'payment_method' => $order->payment_method,
+                            'order_pre_time'=>$vendor_details->order_pre_time
+
                         ];
                         //pr($postdata);
                         if ($orderVendorDetails->is_restricted == 1) {
