@@ -15,6 +15,7 @@ class AddFieldsToOrderVendorProductsTable extends Migration
     {
         Schema::table('order_vendor_products', function (Blueprint $table) {
             $table->tinyInteger('order_status_option_id')->nullable();
+            $table->tinyInteger('dispatcher_status_option_id')->nullable();
         });
     }
 
@@ -26,7 +27,8 @@ class AddFieldsToOrderVendorProductsTable extends Migration
     public function down()
     {
         Schema::table('order_vendor_products', function (Blueprint $table) {
-            //
+            $table->dropColumn('order_status_option_id');
+            $table->dropColumn('dispatcher_status_option_id');
         });
     }
 }
