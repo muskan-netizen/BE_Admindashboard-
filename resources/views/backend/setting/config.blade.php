@@ -260,11 +260,7 @@
         </div>
 
         {{-- @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
-=======
-=======
-
         <div class="row">
-
             @if ($client_preference_detail->business_type != 'taxi')
                 <div class="col-lg-4 col-md-6 mb-3">
                     <div class="row h-100">
