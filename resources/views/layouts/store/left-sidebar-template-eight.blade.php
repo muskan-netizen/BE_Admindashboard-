@@ -486,8 +486,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    <div class="menu-navigation alThreeMenu ">
       <div class="container">
          <div class="row">
-            <div class="col-12 navscroll">
-               <ul id="main-menu" class="sm pixelstrap sm-horizontal " >
+            <div class="col-12 ">
+               <ul id="main-menu" class="sm pixelstrap sm-horizontal main-menu" >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
                   <li class="al_main_category"  >
