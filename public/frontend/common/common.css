@@ -2024,7 +2024,14 @@ body.al_body_template_six section#alSixHomeServices .row.mb-lg-5.mb-md-4.mb-3 {
 body.al_body_template_six.dark.homeHeader .main-fillter .side_fillter {
     background: #232323 !important;
 }
-
+.alProductsPage .common-product-box {
+    padding: 10px;
+}
+.alProductsPage .common-product-box h6 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
 
 /*-------------ipad css--------*/
 
@@ -3708,3 +3715,14 @@ ul.productVariants li.row.otherSize .checkround{opacity: 0;}
 
 .size-box ul.productVariants li.row.otherSize label .var-active{border: 2px solid#4c4a4a !important;}
 .size-box ul.productVariants li.row.otherSize label .radio-active{border: 2px solid#4c4a4a !important;background:#000 !important;}
+
+/*=========== start collection-filter-block arrow  open css==============*/
+.collection-filter-block .open .collapse-block-title::after {
+	content: '\f0d8';
+}
+/*=========== end collection-filter-block arrow  open css==============*/
+
+
+/*start pagination margin top*/
+.page-m-20{margin-top:20px;}
+/*end pagination margin top*/

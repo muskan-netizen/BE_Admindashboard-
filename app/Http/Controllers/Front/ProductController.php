@@ -375,26 +375,9 @@ class ProductController extends FrontController{
         $data['is_available'] = $is_available;
 
         $pv_ids = array();
-        $product_variant = '';
+        $product_variant = [];
         if ($request->has('options') && !empty($request->options)) {
             foreach ($request->options as $key => $value) {
-                // $newIds = array();
-                // $product_variant = ProductVariantSet::where('variant_type_id', $request->variants[$key])
-                //     ->where('variant_option_id', $request->options[$key]);
-
-                // if (!empty($pv_ids)) {
-                //     $product_variant = $product_variant->whereIn('product_variant_id', $pv_ids);
-                // }
-                // $product_variant = $product_variant->where('product_id', $product->id)->get();
-                // if ($product_variant) {
-                //     foreach ($product_variant as $key => $value) {
-                //         if(!in_array($value->product_variant_id, $pv_ids)){
-                //             $pv_ids[] = $value->product_variant_id;
-                //         }
-                //     }
-                // }
-                // $pv_ids = $newIds;
-
                 if ($product_variant) {
                     $pv_ids = array();
                     foreach ($product_variant as $k => $variant) {
@@ -445,19 +428,6 @@ class ProductController extends FrontController{
                 foreach($variantData as $variant){
 
                     $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
-                    // dump($variant->productPrice);
-                   
-                    // $variant->productPrice = Session::get('currencySymbol') . number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
-                    // $sets[] = $availableSet->toArray();
-                    // foreach($availableSet->groupBy('product_variant_id') as $avSets){
-                    //     $variant_type_id = array();
-                    //     $variant_option_id = array();
-                    //     foreach($avSets as $avSet){
-                    //         $variant_type_id[] = $avSet->variant_type_id;
-                    //         $variant_option_id[] = $avSet->variant_option_id;
-                    //     }
-                    //     $sets[] = ['variant_types' => $variant_type_id, 'variant_options' => $variant_option_id];
-                    // }
                 }
                 if(count($variantData) <= 1){
                     $image_fit = "";

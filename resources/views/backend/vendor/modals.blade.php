@@ -319,8 +319,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="ifsccode">{{__('IFSC Code')}}</label>
-                                    <input type="text" class="form-control" name="ifsc_code" placeholder="IFSC Code" value="" placeholder="">
+                                    <label for="ifsccode">{{getNomenclatureName('IFSC Code', true)}}</label>
+                                    <input type="text" class="form-control" name="ifsc_code" placeholder="{{getNomenclatureName('IFSC Code', true)}}" value="" placeholder="">
                                     <span class="invalid-feedback" id="ifsc_code_error"><strong></strong></span>
                                 </div>
                             </div>
@@ -607,7 +607,7 @@
                                         <td></td>
                                         @else
                                         <td>{{ __('Errors') }}</td>
-                                        <td class="position-relative text-center">
+                                        <td class="position-relative text-center alTooltipHover">
                                             <i class="mdi mdi-exclamation-thick"></i>
                                             <ul class="tooltip_error">
                                                 <?php $error_csv = json_decode($csv->error); ?>

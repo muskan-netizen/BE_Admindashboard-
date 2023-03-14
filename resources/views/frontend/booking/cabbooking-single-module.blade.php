@@ -14,7 +14,7 @@
 
  <section class="cab-banner-area alTaxiBannerStart"
      style="background:url({{ $img }});background-size: cover;background-repeat: no-repeat;background-position: center;">
-     <div class="container-fluid p-64 py-64">
+     <div class="container-fluid  p-64 py-64">
          <div class="row">
              <div class="col-md-8 col-lg-5 col-xl-4">
                  <div class="card-box mb-0">

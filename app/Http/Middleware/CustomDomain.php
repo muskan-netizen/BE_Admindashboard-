@@ -139,10 +139,7 @@ class CustomDomain{
           
           if($clientPreference){
          
-              // if($clientPreference->dinein_check == 1){$vendor_mode_count++;    $single_vendor_type = "dine_in";}
-              // if($clientPreference->takeaway_check == 1){$vendor_mode_count++;  $single_vendor_type = "takeaway";}
-              // if($clientPreference->delivery_check == 1){$vendor_mode_count++;  $single_vendor_type = "delivery";}
-
+         
               foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
 									$clientVendorTypes = $vendor_typ_key.'_check';
                   

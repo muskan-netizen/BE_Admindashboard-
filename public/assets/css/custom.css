@@ -1924,7 +1924,10 @@ body .page-title-box .page-title{line-height:55px}
 .card-body.position-relative.al{padding-bottom:10px}
 body div.dataTables_wrapper div.dataTables_paginate{float:right;padding-top:10px}
 body div.dataTables_wrapper div.dataTables_info{height:50px;vertical-align:middle;display:inline-flex;align-items:center}
-.al_card{display:block;height:50px;box-shadow:0 3px 10px 0 #000!important;border-radius:10px!important;overflow:hidden}
+/* .al_card{display:block;height:50px;box-shadow:0 3px 10px 0 #000!important;border-radius:10px!important;overflow:hidden} */
+.al_card{display:block;height:50px;
+  /* box-shadow:0 3px 10px 0 #000!important; */
+  border-radius:10px!important;overflow:hidden}
 .al_card label{height:50px;vertical-align:middle;padding:0 10px;display:flex}
 body .main-customer-page .set-height{min-height:calc(100vh - 350px)}
 body .dataTables_scrollBody{height:auto}
@@ -2262,6 +2265,21 @@ body[dir=rtl] .modal-header .close{padding:1rem;margin:-1rem!important}
 .dark .table thead th {background: #32383e;border: none;}
 /* dark dashboard css end */
 
+
+
+
+
+
+
+html body .scroll_res .selectize-dropdown .selectize-dropdown-content::-webkit-scrollbar:horizontal {
+  height: 5px!important;
+}
+html body .scroll_res  .selectize-dropdown-content{
+  overflow: auto!important;
+}
+html body .scroll_res  .selectize-dropdown [data-selectable]{
+  overflow: unset!important;
+}
 /*============================================= dashboard page responsive css start here ======================================= */
 @media(max-width:1600px) {
 .card-box {padding: 20px;}

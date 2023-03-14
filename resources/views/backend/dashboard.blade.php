@@ -208,7 +208,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
             <div class="card alRevenueByLocation">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="header-title">{{ __('Revenue By Location') }}</h4>
+                        <h4 class="header-title">{{ __('Revenue By Location') }}</h4> 
                         <!-- <div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>

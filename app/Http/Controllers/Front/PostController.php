@@ -100,9 +100,9 @@ class PostController extends FrontController
     {
         try {
             // dd($request->all());
-            $request->sku = "adfasdf".time();
+            // $request->sku = "adfasdf".time();
 
-            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            // $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
             // $product = Product::where('id', $id)->firstOrFail();
@@ -284,22 +284,45 @@ class PostController extends FrontController
         $user_vendor = UserVendor::where('user_id', $user->id)->first();
         // dd($user_vendor);
         if(@$user_vendor->vendor_id){
-            $vendor = Vendor::where('id', $user_vendor->vendor_id)->first();
-            if(@$vendor){
-                $product = new Product();
-                $product->sku = $slug;
-                $product->url_slug = $generated_slug;
-                $product->title = empty($request->product_name) ? $request->sku : $request->product_name;
-                $product->type_id = $request->type_id ?? 1;
-                $product->category_id = $request->category_id;
-                $product->vendor_id = $user_vendor->vendor_id ?? $user->id;
-                $product->is_live = 1;
-                $product->publish_at = date('Y-m-d H:i:s');
-                $client_lang = ClientLanguage::where('is_primary', 1)->first();
-                if (!$client_lang) {
-                    $client_lang = ClientLanguage::where('is_active', 1)->first();
-                }
-                $product->save();
+            $product = new Product();
+            $product->sku = $slug;
+            $product->url_slug = $generated_slug;
+            $product->title = empty($request->product_name) ? $request->sku : $request->product_name;
+            $product->type_id = $request->type_id ?? 1;
+            $product->category_id = $request->category_id;
+            $product->vendor_id = $user_vendor->vendor_id ?? $user->id;
+            $product->is_live = 1;
+            $product->publish_at = date('Y-m-d H:i:s');
+            $client_lang = ClientLanguage::where('is_primary', 1)->first();
+            if (!$client_lang) {
+                $client_lang = ClientLanguage::where('is_active', 1)->first();
+            }
+            $product->save();
+            
+            if ($product->id > 0) {
+                $datatrans[] = [
+                    'title' => $request->product_name??null,
+                    'body_html' => '',
+                    'meta_title' => '',
+                    'meta_keyword' => '',
+                    'meta_description' => '',
+                    'product_id' => $product->id,
+                    'language_id' => $client_lang->language_id
+                ];
+                $product_category = new ProductCategory();
+                $product_category->product_id = $product->id;
+                $product_category->category_id = $request->category_id;
+                $product_category->save();
+                $proVariant = new ProductVariant();
+                $proVariant->price = $request->price;
+                $proVariant->sku =$slug;
+                $proVariant->title =$slug . '-' .  empty($request->product_name) ?$slug : $request->product_name;
+                $proVariant->product_id = $product->id;
+                $proVariant->barcode = $this->generateBarcodeNumber();
+                $proVariant->quantity = 1;            
+                $proVariant->status = 1;
+                $proVariant->save();
+                ProductTranslation::insert($datatrans);
                 
 
                 

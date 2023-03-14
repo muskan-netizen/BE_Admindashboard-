@@ -166,6 +166,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                   <div class="container al_mobile-header d-flex align-items-center justify-content-between position-relative">
                       <div class="al_count_tabs_new_design d-none d-sm-block"  >
                           @if($mod_count > 1)
+                          
                           <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
                               @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                   @php
@@ -483,10 +484,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    @endif
    @if(!empty($navCategories) && count($navCategories) )  {{--  && \Route::current()->getName() != 'userHome'  --}}
    <div class="menu-navigation alThreeMenu">
-      <div class="container-fluid">
+      <div class="container">
          <div class="row">
             <div class="col-12">
-               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
+               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider" >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
                   <li class="al_main_category"  >

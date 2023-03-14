@@ -349,6 +349,8 @@ if(session()->has('applocale')){
                               </div>
                           </div>
                       </div>
+
+
                         <li class="onhover-div pl-0 shake-effect">
                                                 @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
                                                 <a class="btn btn-solid d-flex align-items-center p-0" href="{{route('showCart')}}">
