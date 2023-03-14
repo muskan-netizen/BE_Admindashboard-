@@ -192,14 +192,8 @@ class OrderController extends FrontController
             'reqCancelOrder'
         ]);
 
-        $activeOrders->whereHas('vendors', function ($q) {
-            $q->whereNotIn('order_status_option_id', [
-                3,
-                6,
-                9
-            ]);
-        })
-            ->where(function ($q1) {
+        
+        $activeOrders->where(function ($q1) {
             $q1->where('payment_status', 1)
                 ->whereNotIn('payment_option_id', [
                 1,
@@ -225,8 +219,16 @@ class OrderController extends FrontController
             $activeOrders->where('orders.is_long_term', 0);
         }
         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-            $activeOrders->whereHas('vendors.products', function ($q) {
+            $activeOrders =  $activeOrders->whereHas('vendors.products', function ($q) {
                 $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+            });
+        }else{
+            $activeOrders=   $activeOrders->whereHas('vendors', function ($q) {
+                $q->whereNotIn('order_status_option_id', [
+                    3,
+                    6,
+                    9
+                ]);
             });
         }
         $activeOrders = $activeOrders->orderBy('orders.id', 'DESC')
@@ -376,36 +378,6 @@ class OrderController extends FrontController
             'address'
         ]);
         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-    //         $rejectedOrders =   $rejectedOrders->whereRaw("
-    //     IF (final_movie_type = 'hindi', upcomming_movi, 7) LIKE concat('%', weekday('{$movies_list}'), '%')
-    //         OR
-    //     IF (final_movie_type = 'english', upcomming_movi, 0) = DAY('{$movies_list}')
-    //         OR  
-    //     (
-    //         IF (final_movie_type = 'tamil', substring_index(upcomming_movi, '/', 1), 0) = DAY('{$movies_list}')
-    //             AND
-    //         IF (final_movie_type = 'gujrati', substring_index(upcomming_movi, '/', -1), 0) = MONTH('{$movies_list}')
-    //     )
-    // ")
-            // $rejectedOrders->where(function($w_q) {
-            //     $w_q->case(function (CaseBuilder $case) {
-            //         $case->when('luxury_option_id', '=', 6)->then(function($case_q){
-            //             $case_q->whereHas('vendors.products', function ($q) {
-            //                 $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
-            //             });
-            //         })
-            //        ->else(function($else_q){
-            //             $else_q->whereHas('vendors', function ($q) {
-            //                 $q->where('order_status_option_id', 3);
-            //             });
-            //         });
-            //     });
-            // });
-                //     $q->where('luxury_option_id', 6)
-                //     ->whereHas('vendors.products', function ($q) {
-                //             $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
-                //         });
-                // });
             $rejectedOrders->whereHas('vendors.products', function ($q) {
                 $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
             });
