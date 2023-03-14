@@ -13,7 +13,7 @@ class SkipCashController extends Controller
 
     public function showSkipCashPage(Request $request){
         $data = $request->all();
-         // dd($data);
+          dd($data);
         // // return view('frontend.payment_gatway.skip_cash',compact('data'));
         // $this->checkPayment($request);
         $creds = PaymentOption::where('code', 'skip_cash')
