@@ -27,14 +27,16 @@ class OrderVendorListExport implements FromCollection,WithHeadings,WithMapping
         foreach ($vendors as $vendor) {
             $vendor->total_paid = 0.00;
             $vendor->delivery_fee = decimal_format($vendor->orders->sum('delivery_fee'));
+            $vendor->service_fee = decimal_format($vendor->orders->sum('service_fee_percentage_amount'));
             $vendor->order_value = decimal_format($vendor->orders->sum('payable_amount'));
-            $vendor->payment_method = decimal_format($vendor->orders->whereIn('payment_option_id', [2,3, 4])->sum('payable_amount'));
+            $vendor->payment_method = decimal_format($vendor->orders->where('order_status_option_id', '!=', 3)->whereNotIn('payment_option_id', [1,2])->sum('payable_amount'));
             $vendor->promo_admin_amount = decimal_format($vendor->orders->where('coupon_paid_by', 1)->sum('discount_amount'));
             $vendor->promo_vendor_amount = decimal_format($vendor->orders->where('coupon_paid_by', 0)->sum('discount_amount'));
-            $vendor->cash_collected_amount = decimal_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'));
-            $vendor->admin_commission_amount = decimal_format($vendor->orders->sum('admin_commission_percentage_amount') + $vendor->orders->sum('admin_commission_percentage_amount'));
-            $admin_commission_amount = $vendor->orders->sum('admin_commission_percentage_amount')+ $vendor->orders->sum('admin_commission_percentage_amount');
-            $vendor->vendor_earning = decimal_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $admin_commission_amount));
+            $vendor->cash_collected_amount = decimal_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount') + $vendor->orders->sum('taxable_amount') + $vendor->orders->sum('service_fee_percentage_amount'));
+            $vendor->admin_commission_amount = decimal_format($vendor->orders->sum('admin_commission_percentage_amount') + $vendor->orders->sum('admin_commission_fixed_amount'));
+            $admin_commission_amount = $vendor->orders->sum('admin_commission_percentage_amount') + $vendor->orders->sum('admin_commission_fixed_amount');
+            $vendor->vendor_earning = decimal_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $admin_commission_amount - $vendor->orders->sum('delivery_fee')));
+            $vendor->taxable_amount = decimal_format($vendor->orders->sum('taxable_amount'));
         }
         return $vendors;
     }
@@ -47,9 +49,11 @@ class OrderVendorListExport implements FromCollection,WithHeadings,WithMapping
             'Admin Commissions',
             'Promo [Vendor]',
             'Promo [Admin]',
+            'Service Fees',
             'Cash Collected',
             'Payment Gateway',
-            'Vendor Earning'
+            'Vendor Earning',
+            'Tax'
         ];
     }
 
@@ -62,9 +66,11 @@ class OrderVendorListExport implements FromCollection,WithHeadings,WithMapping
             $orders->admin_commission_amount,
             $orders->promo_vendor_amount,
             $orders->promo_admin_amount,
+            $orders->service_fee,
             $orders->cash_collected_amount,
             $orders->payment_method,
-            $orders->vendor_earning
+            $orders->vendor_earning,
+            $orders->taxable_amount
         ];
     }
 
