@@ -672,142 +672,143 @@ class DispatcherController extends FrontController
         }
     }
 
-       /******************    ---- share all details of order for dispatcher -----   ******************/
-       public function dispatchOrderProductDetails(Request $request, $domain = '', $web_hook_code)
-       {
-           try {
-               $user = Auth::user();
-               $order_item_count = 0;
-               $order_vendor = OrderProductDispatchRoute::where('web_hook_code',$web_hook_code)->first();
-               
-               if(isset($order_vendor) && !empty($order_vendor)){
-                   $order = Order::where('id',$order_vendor->order_id)->first();
-                   $user = User::where('id',$order->user_id)->first();
-                   $language_id = $user->language;
-                   $order_id = $order_vendor->order_id;
-                   $vendor_id = $order_vendor->order_vendor_id;
-                   $order_vendor_product_id = $order_vendor->order_vendor_product_id;
-                 
-                    $order = Order::with([
-                        'vendors' => function ($q) use ($vendor_id) {
-                            $q->where('id', $vendor_id);
-                        },
-                        'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
-                            $qry->where('language_id', $language_id);
-                        }, 'vendors.dineInTable.category',
-                        'vendors.products' => function ($q) use ($vendor_id, $order_vendor_product_id) {
-                            $q->where('id',$order_vendor_product_id);
-                        },
-                        'vendors.products.translation' => function ($q) use ($language_id) {
-                            $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
-                            $q->where('language_id', $language_id);
-                        },
-                        'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus',
-                        'vendors.cancel_request',
-                        'user','user.passbase_verification','user.passbase_verification.resources'
-                    ])
-                    ->where(function ($q1) {
-                        $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
-                        $q1->orWhere(function ($q2) {
-                            $q2->where('payment_option_id', 1);
-                        });
-                    })
-                    ->where('id', $order_id)->select('*','id as total_discount_calculate')->first();
-                 
-                   $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-                   if ($order) {
-                       $order->user_name = $order->user->name;
-                       $order->user_image = $order->user->image;
-                       $order->payment_option_title = __($order->paymentOption->title);
-                       $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
-                       $order->tip_amount = $order->tip_amount;
-                       $order->tip = array(
-                           ['label' => '5%', 'value' => decimal_format(0.05 * ($order->payable_amount - $order->total_discount_calculate))],
-                           ['label' => '10%', 'value' => decimal_format(0.1 * ($order->payable_amount - $order->total_discount_calculate))],
-                           ['label' => '15%', 'value' => decimal_format(0.15 * ($order->payable_amount - $order->total_discount_calculate))]
-                       );
-                       foreach ($order->vendors as $vendor) {
-                           $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
-                           if ($vendor_order_status) {
-                               $vendor->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => __($vendor_order_status->OrderStatusOption->title)]];
-                           } else {
-                               $vendor->current_status = null;
-                           }
-                           $couponData = [];
-                           $payable_amount = 0;
-                           $discount_amount = 0;
-                           $product_addons = [];
-                           $vendor->vendor_name = $vendor->vendor->name;
-                           foreach ($vendor->products as  $product) {
-                               $product_addons = [];
-                               $variant_options = [];
-                               $order_item_count += $product->quantity;
-                               $product->image_path = $product->media->first() ? $product->media->first()->image->path : $product->image;
-                               if ($product->pvariant) {
-                                   foreach ($product->pvariant->vset as $variant_set_option) {
-                                       $variant_options[] = array(
-                                           'option' => $variant_set_option->optionData->trans->title,
-                                           'title' => $variant_set_option->variantDetail->trans->title,
-                                       );
-                                   }
-                               }
-                               $product->variant_options = $variant_options;
-                               if (!empty($product->addon)) {
-                                   foreach ($product->addon as $k => $addon) {
-                                    
-                                       $opt_quantity_price = 0;
-                                       $opt_price_in_currency = $addon->option ? $addon->option->price : 0;
-                                       $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
-                                       $opt_quantity_price = $opt_price_in_doller_compare * $product->quantity;
-                                       $product_addons[$k]['quantity'] = $product->quantity;
-                                       $product_addons[$k]['addon_id'] = $addon->addon_id;
-                                       $product_addons[$k]['option_id'] = $addon->option_id;
-                                       $product_addons[$k]['price'] = $opt_price_in_currency;
-                                       $product_addons[$k]['addon_title'] = $addon->set->title;
-                                       $product_addons[$k]['quantity_price'] = $opt_quantity_price;
-                                       $product_addons[$k]['option_title'] = $addon->option ? $addon->option->title : 0;
-                                       // $product_addons[$k]['multiplier'] = $clientCurrency->doller_compare;
-                                   }
-                               }
-                               $product->product_addons = $product_addons;
-                           }
-                           if($vendor->delivery_fee > 0){
-                               $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
-                               $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
-                               $ETA = $order_pre_time + $user_to_vendor_time;
-                               $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time,$user) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
-                           }
-                           if($vendor->dineInTable){
-                               $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
-                               $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
-                               $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
-                           }
-                       }
-                       if(!empty($order->scheduled_date_time)){
-                           $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
-                       }
-                       $luxury_option_name = '';
-                       if($order->luxury_option_id > 0){
-                           $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
-                           if($luxury_option->title == 'takeaway'){
-                               $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-                           }elseif($luxury_option->title == 'dine_in'){
-                               $luxury_option_name = 'Dine-In';
-                           }else{
-                               $luxury_option_name = 'Delivery';
-                           }
-                       }
-                       $order->luxury_option_name = $luxury_option_name;
-                       $order->order_item_count = $order_item_count;
-                   }
-                   
-                   return $this->successResponse($order, null, 201);
-               }
-   
-           } catch (Exception $e) {
-               return $this->errorResponse($e->getMessage(), $e->getCode());
-           }
-       }
+    /******************    ---- share all details of order for dispatcher -----   ******************/
+    public function dispatchOrderProductDetails(Request $request, $domain = '', $web_hook_code)
+    {
+        try {
+            $user = Auth::user();
+            $order_item_count = 0;
+            $order_vendor = OrderProductDispatchRoute::where('web_hook_code',$web_hook_code)->first();
+            
+            if(isset($order_vendor) && !empty($order_vendor)){
+                $order = Order::where('id',$order_vendor->order_id)->first();
+                $user = User::where('id',$order->user_id)->first();
+                $language_id = $user->language;
+                $order_id = $order_vendor->order_id;
+                $vendor_id = $order_vendor->order_vendor_id;
+                $order_vendor_product_id = $order_vendor->order_vendor_product_id;
+                
+                $order = Order::with([
+                    'vendors' => function ($q) use ($vendor_id) {
+                        $q->where('id', $vendor_id);
+                    },
+                    'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
+                        $qry->where('language_id', $language_id);
+                    }, 'vendors.dineInTable.category',
+                    'vendors.products' => function ($q) use ($vendor_id, $order_vendor_product_id) {
+                        $q->where('id',$order_vendor_product_id);
+                    },
+                    'vendors.products.translation' => function ($q) use ($language_id) {
+                        $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                        $q->where('language_id', $language_id);
+                    },
+                    'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus',
+                    'vendors.cancel_request',
+                    'user','user.passbase_verification','user.passbase_verification.resources'
+                ])
+                // ->where(function ($q1) {
+                //     $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+                //     $q1->orWhere(function ($q2) {
+                //         $q2->where('payment_option_id', 1);
+                //     });
+                // })
+                ->where('id', $order_id)->select('*','id as total_discount_calculate')->first();
+                
+                $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+                if ($order) {
+                    $order->user_name = $order->user->name;
+                    $order->user_image = $order->user->image;
+                    $order->payment_option_title = __($order->paymentOption->title);
+                    $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+                    $order->tip_amount = $order->tip_amount;
+                    $order->tip = array(
+                        ['label' => '5%', 'value' => decimal_format(0.05 * ($order->payable_amount - $order->total_discount_calculate))],
+                        ['label' => '10%', 'value' => decimal_format(0.1 * ($order->payable_amount - $order->total_discount_calculate))],
+                        ['label' => '15%', 'value' => decimal_format(0.15 * ($order->payable_amount - $order->total_discount_calculate))]
+                    );
+                    foreach ($order->vendors as $vendor) {
+                        $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
+                        if ($vendor_order_status) {
+                            $vendor->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => __($vendor_order_status->OrderStatusOption->title)]];
+                        } else {
+                            $vendor->current_status = null;
+                        }
+                        $couponData = [];
+                        $payable_amount = 0;
+                        $discount_amount = 0;
+                        $product_addons = [];
+                        $vendor->vendor_name = $vendor->vendor->name;
+                        foreach ($vendor->products as  $product) {
+                            $product_addons = [];
+                            $variant_options = [];
+                            $order_item_count += $product->quantity;
+                            $product->image_path = $product->media->first() ? $product->media->first()->image->path : $product->image;
+                            if ($product->pvariant) {
+                                foreach ($product->pvariant->vset as $variant_set_option) {
+                                    $variant_options[] = array(
+                                        'option' => $variant_set_option->optionData->trans->title,
+                                        'title' => $variant_set_option->variantDetail->trans->title,
+                                    );
+                                }
+                            }
+                            $product->variant_options = $variant_options;
+                            if (!empty($product->addon)) {
+                                foreach ($product->addon as $k => $addon) {
+                                
+                                    $opt_quantity_price = 0;
+                                    $opt_price_in_currency = $addon->option ? $addon->option->price : 0;
+                                    $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                                    $opt_quantity_price = $opt_price_in_doller_compare * $product->quantity;
+                                    $product_addons[$k]['quantity'] = $product->quantity;
+                                    $product_addons[$k]['addon_id'] = $addon->addon_id;
+                                    $product_addons[$k]['option_id'] = $addon->option_id;
+                                    $product_addons[$k]['price'] = $opt_price_in_currency;
+                                    $product_addons[$k]['addon_title'] = $addon->set->title;
+                                    $product_addons[$k]['quantity_price'] = $opt_quantity_price;
+                                    $product_addons[$k]['option_title'] = $addon->option ? $addon->option->title : 0;
+                                    // $product_addons[$k]['multiplier'] = $clientCurrency->doller_compare;
+                                }
+                            }
+                            $product->product_addons = $product_addons;
+                        }
+                        if($vendor->delivery_fee > 0){
+                            $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
+                            $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
+                            $ETA = $order_pre_time + $user_to_vendor_time;
+                            $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time,$user) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
+                        }
+                        if($vendor->dineInTable){
+                            $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                            $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                            $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
+                        }
+                    }
+                    if(!empty($order->scheduled_date_time)){
+                        $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+                    }
+                    $luxury_option_name = '';
+                    if($order->luxury_option_id > 0){
+                        $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+                        if($luxury_option->title == 'takeaway'){
+                            $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+                        }elseif($luxury_option->title == 'dine_in'){
+                            $luxury_option_name = 'Dine-In';
+                        }else{
+                            $luxury_option_name = 'Delivery';
+                        }
+                    }
+                    $order->luxury_option_name = $luxury_option_name;
+                    $order->order_item_count = $order_item_count;
+                }
+                
+                return $this->successResponse($order, null, 201);
+            }
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    
     public function test(Request $request){
         $devices[] = $request->token;
 
