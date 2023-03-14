@@ -240,7 +240,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         </div> -->
                                         <p class="exzoom_btn">
                                             <a href="javascript:void(0);" class="exzoom_prev_btn">
-                                                < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
+                                                </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
                                             </a>
                                         </p>
                                         @endif
