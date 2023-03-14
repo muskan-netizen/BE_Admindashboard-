@@ -263,7 +263,7 @@ class ClientPreferenceController extends BaseController{
         return true;
     }
     public function update(Request $request, $code){
-
+        
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(!$preference){
