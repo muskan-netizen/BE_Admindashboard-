@@ -289,9 +289,9 @@
                                                 <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                                     <div class="items-price">
                                                         @if ($additionalPreference['is_token_currency_enable'])
-                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier)) }}
+                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1))) }}
                                                         @else
-                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }}
+                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1)) }}
                                                         @endif
                                                         @if (in_array($serviceType, ['appointment', 'on_demand']))
                                                             <span class="">
@@ -456,9 +456,9 @@
                                                         <div class="col-md-6 col col-sm-4">
                                                             <div class="extra-items-price">
                                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format(@$addon->option->price_in_cart * $addon->option->multiplier)) }}
+                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format(@$addon->option->price_in_cart *(@$addon->option->multiplier ?? 1))) }}
                                                                 @else
-                                                                    {{ Session::get('currencySymbol') . decimal_format(@$addon->option->price_in_cart * $addon->option->multiplier) }}
+                                                                    {{ Session::get('currencySymbol') . decimal_format(@$addon->option->price_in_cart * (@$addon->option->multiplier ?? 1)) }}
                                                                 @endif
                                                             </div>
                                                         </div>
