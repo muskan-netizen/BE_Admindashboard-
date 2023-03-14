@@ -632,19 +632,23 @@ height: auto;
                         </section>
                     @elseif($homePageLabel->slug == 'banner' && (count($homePageData['banners']) != 0))
                         @if(!empty($homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]))
-                           <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">               
+                           <section class="container mb-1 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">               
                               <div class="custom_banner">
                                  <div class="container">
                                     <div class="text-center">
                                         @php
-                                            $imgEx = ['jpg','png', 'gif', 'jpeg', 'webp']
+                                            $url = $homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]; // replace with your URL
+                                            $extension = pathinfo($url, PATHINFO_EXTENSION);
+                                            $image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']; // list of image extensions
+                                            $video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
                                         @endphp
-                                        @if(in_array(pathinfo($homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id], PATHINFO_EXTENSION),  $imgEx))
+                                        @if(in_array($extension, $image_extensions))
                                             <img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
-                                        @else
+                                        @elseif (in_array($extension, $video_extensions))
                                             <video id="video1" width="100%" controls autoplay muted>
                                                 <source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
                                             </video>
+                                        @else
                                         @endif
                                     </div>
                                  </div>
