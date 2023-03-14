@@ -260,11 +260,7 @@
         </div>
 
         {{-- @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
-=======
-=======
-
         <div class="row">
-
             @if ($client_preference_detail->business_type != 'taxi')
                 <div class="col-lg-4 col-md-6 mb-3">
                     <div class="row h-100">
@@ -1739,8 +1735,8 @@
         </div>
 
         @php
-            $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card','is_cab_pooling','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating']);
-        @endphp
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials']);
+    @endphp
         <div class="row">
             {{-- hubspot form --}}
             <div class="col-xl-4 col-lg-4 mb-3">
@@ -2561,9 +2557,7 @@
 
     </div>
 
-    @php
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration']);
-    @endphp
+   
     <div class="row">
         {{-- hubspot form --}}
         <div class="col-xl-4 col-lg-4 mb-3">
@@ -2832,7 +2826,7 @@
                                 <hr/>
                                 @php
                                     $accounting_status = (isset($accounting) && !empty($accounting)) ? $accounting->status : 0;
-                                    $creds = (isset($accounting) && !empty($accounting)) ? json_decode($accounting->credentials) : [];
+                                    $creds = (isset($accounting) && !empty($accounting)) ? json_decode($accounting->credentials, true) : [];
                                 @endphp
                                 
                                 <div class="row">
@@ -2868,6 +2862,87 @@
             </form>
         </div>
         {{-- ends here Third party Accounting form --}}
+
+        {{-- starts square POS integration --}}
+        <div class="col-xl-4 col-lg-4 h-100">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">Square POS integration</h4>
+            </div>
+
+            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                @csrf
+                <input type="hidden" name="square_pos_integration" id="square_pos_integration" value="1">
+                <!-- HubSpot card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head text-uppercase">
+                                        <span>{{ __('Square Inventory Configuration') }}</span>
+                                    </h5>
+
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                                <p class="sub-header">
+                                    {{ __('View and update Application ID and Access Token.') }}
+                                </p>
+                            </div>
+                            <div class="form-group mb-0">
+                                <div class="row">
+                                    <div class="col-12">
+                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                        <label for="square_enable_status_switch" class="mr-3">{{ __("Enable") }} <br/></label>
+                                        <input type="checkbox" data-plugin="switchery" name="square_enable_status_switch" id="square_enable_status_switch" class="form-control checkbox_change" data-className="square_enable_status" data-color="#43bee1" @if($getAdditionalPreference['square_enable_status'] == 1) checked @endif>
+                                        <input type="hidden" @if($getAdditionalPreference['square_enable_status'] == 1) value="1" @else value="0" @endif name="square_enable_status" id="square_enable_status" />
+                                    </div>
+                                    @php
+                                        $square_credentials = json_decode($getAdditionalPreference['square_credentials'], true);
+                                        $square_sandbox_enable_status = isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : '';
+                                        $square_application_id = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
+                                        $square_access_token = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
+                                        $square_location_id = isset($square_credentials['location_id']) ? $square_credentials['location_id'] : '';
+                                    @endphp
+                                        <div class="mt-2 squareFields" @if($getAdditionalPreference['square_enable_status'] != 1) style="display:none;" @endif>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                        <label for="square_sandbox_enable_status_switch" class="mr-3">{{ __("Sandbox") }} <br/><small>{{__('Update Sandbox Application ID and Access Token')}}</small></label>
+                                                        <input type="checkbox" data-plugin="switchery" name="square_sandbox_enable_status_switch" id="square_sandbox_enable_status_switch" class="form-control checkbox_change" data-className="square_sandbox_enable_status" data-color="#43bee1" @if($square_sandbox_enable_status == 1) checked @endif>
+                                                        <input type="hidden" @if($square_sandbox_enable_status == 1) value="1" @else value="0" @endif name="square_sandbox_enable_status" id="square_sandbox_enable_status" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label for="square_location_id">{{ __("Location ID") }}</label>
+                                                        <input type="text" name="square_location_id" id="square_location_id" placeholder="" class="form-control" value="{{ old('square_location_id', $square_location_id)}}" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label for="square_application_id">{{ __("Application ID") }}</label>
+                                                        <input type="text" name="square_application_id" id="square_application_id" placeholder="" class="form-control" value="{{ old('square_application_id', $square_application_id)}}" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label for="square_access_token">{{ __("Access Token") }}</label>
+                                                        <input type="password" name="square_access_token" id="square_access_token" placeholder="" class="form-control" value="{{ old('square_access_token', $square_access_token)}}" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
     </div>
 
 
@@ -3890,6 +3965,20 @@
             }
         }
 
+
+        var square_enable_status_switch = $('#square_enable_status_switch');
+        if(square_enable_status_switch.length > 0){
+            square_enable_status_switch[0].onchange = function() {
+
+                if ($('#square_enable_status_switch:checked').length != 1) 
+                {
+                    $("#xero_client_id").val('');$("#xero_secret_id").val('');
+                    $('.squareFields').hide();
+                } else {
+                    $('.squareFields').show();
+                }
+            }
+        }
 
         function optionsChecked(id) {
             var delivery_checked = $("#delivery_check").is(":checked");

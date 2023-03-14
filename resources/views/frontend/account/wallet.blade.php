@@ -17,6 +17,48 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 @endphp
 
 <style type="text/css">
+/* start tab*/
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab a {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab a:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab a.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+
+/*end tab*/
+
     .productVariants .firstChild {
         min-width: 150px;
         text-align: left !important;
@@ -456,19 +498,31 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 
  <% if(payment_option.slug == 'azulpay') { %>
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
-                        <div class="row no-gutters">
+
+<div class="tab">
+    <a class="tablinks" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
+    <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
+  </div>
+
+  <div id="Add-Card" class="tabcontent">
+     <div class="row no-gutters">
                             <div class="col-6">
-                                <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" required />
+                                <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" />
                             </div>
                             <div class="col-3">
-                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" />
                             </div>
                             <div class="col-3">
-                                <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" required />
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" />
                             </div>
                         </div>
 
                         <span class="error text-danger" id="azul_card_error"></span>
+  </div>
+
+  <div id="Card-List" class="tabcontent">
+  </div>
+
                     </div>
                 <% } %>
             <% } %>
@@ -552,7 +606,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-
+var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
 
     var inline='';
     $('#wallet_amount').keypress(function(event) {
@@ -749,6 +803,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
             $("#error_dev").html(html).show();
         }
     });
+    
 </script>
 <script>
     var loadFile = function(event) {

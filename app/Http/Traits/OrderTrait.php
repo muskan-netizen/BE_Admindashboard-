@@ -11,7 +11,7 @@ use App\Models\Client as CP;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use App\Http\Traits\{ValidatorTrait, ApiResponser};
+use App\Http\Traits\{ValidatorTrait, ApiResponser, SquareInventoryManager};
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
@@ -19,7 +19,7 @@ use App\Models\{Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayme
 
 trait OrderTrait
 {
-    use ValidatorTrait, ApiResponser;
+    use ValidatorTrait, ApiResponser, SquareInventoryManager;
 
     public function ProductVariantStock($order_id, $request='')
     {
@@ -37,6 +37,9 @@ trait OrderTrait
 
                         $ProductVariant->quantity  = $update_quantity;
                         $ProductVariant->save();
+
+                        if(isset($ProductVariant->square_variant_id) && !empty($ProductVariant->square_variant_id))
+                        $this->inventoryAdjustmentInSquarePos($ProductVariant->square_variant_id, $ProductVariant->quantity, "PHYSICAL_COUNT", "IN_STOCK");
                     }
                     if(@$request && $request->order_luxury_option_id == 4){
                         $ProductVariant->increment('rented_product_count', $product->quantity);
@@ -56,6 +59,9 @@ trait OrderTrait
                 $update_quantity  = 0;
             $ProductVariant->quantity  = $update_quantity;
             $ProductVariant->save();
+
+            if(isset($ProductVariant->square_variant_id) && !empty($ProductVariant->square_variant_id))
+            $this->inventoryAdjustmentInSquarePos($ProductVariant->square_variant_id, $ProductVariant->quantity, "PHYSICAL_COUNT", "IN_STOCK");
         }
        
         return 1;
@@ -74,6 +80,9 @@ trait OrderTrait
                         $update_quantity  = 0;
                         $ProductVariant->quantity  = $update_quantity;
                         $ProductVariant->save();
+
+                        if(isset($ProductVariant->square_variant_id) && !empty($ProductVariant->square_variant_id))
+                        $this->inventoryAdjustmentInSquarePos($ProductVariant->square_variant_id, $ProductVariant->quantity, "PHYSICAL_COUNT", "IN_STOCK");
                     }
                     if(@$rental && $rental == 'rental'){
                         $ProductVariant->decrement('rented_product_count', $product->quantity);

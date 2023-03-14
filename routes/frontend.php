@@ -45,6 +45,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('dispatch/driver/bids/update/{id?}', 'Front\DispatcherController@dispatchDriverBidUpdate')->name('dispatch-driver-bids'); // instant booking / Bid and Ride pickup delivery update from dispatch
 	Route::post('dispatch/driver/bids/status/{id?}', 'Front\DispatcherController@dispatchDriverBidStatus')->name('dispatch-driver-bids-status'); // instant booking / Bid and Ride Bid Status pickup delivery update from dispatch
 	
+	Route::match(['get', 'post'], 'square/inventory/event/update', 'Front\SquareInventoryController@squareInventoryEventUpdate')->name('square-inventory-event-update'); // webhook to receive inventory updates from square inventory update events
 	
 	Route::get('testsms', 'Front\FrontController@testsms');
 
@@ -167,6 +168,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//azulpay
 	Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
+	Route::match(['get','post'],'payment/get-cards','Front\AzulPaymentController@getUserCards')->name('payment.azulpay.getCards');
+	
 	//Square
 	Route::match(['get', 'post'], 'payment/square/page', 'Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square', 'Front\SquareController@createPayment')->name('payment.square.createPayment');

@@ -43,7 +43,7 @@ class PickupDeliveryController extends BaseController{
 
             $schedule_datetime_del = '';
             if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
-                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
             }else{
                 $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
             }
@@ -169,7 +169,7 @@ class PickupDeliveryController extends BaseController{
             $user = Auth::user();
             $schedule_datetime_del = '';
             if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
-                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
             }else{
                 $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
             }
@@ -749,6 +749,10 @@ class PickupDeliveryController extends BaseController{
                             'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
                             'agent' => $request->agent_id ?? null
                         ];
+                if($request->has('bid_task_type')){
+                    $postdata['bid_task_type']    = $request->bid_task_type;
+                    $postdata['accept_bid_price'] = $order->payable_amount;
+                }
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                     'content-type' => 'application/json']
