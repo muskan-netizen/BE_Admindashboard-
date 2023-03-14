@@ -301,7 +301,7 @@
                                                     </div>
                                                 </div>
                                             @endif
-                                            @if (!empty($vendor_product->quantity_price))
+                                            @if (!empty(@$vendor_product->quantity_price))
                                                 <div class="col-6 col-md-2 text-left order-md-4">
                                                     @if ($serviceType == 'rental')
                                                         @php
@@ -312,17 +312,17 @@
                                                         @endphp
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->quantity_price + $additionalPrice)) }}
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format((@$vendor_product->quantity_price) + $additionalPrice)) }}
                                                             @else
-                                                                {{ Session::get('currencySymbol') . decimal_format($vendor_product->quantity_price + $additionalPrice) }}
+                                                                {{ Session::get('currencySymbol') . decimal_format((@$vendor_product->quantity_price) + $additionalPrice) }}
                                                             @endif
                                                         </div>
                                                     @else
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->quantity_price)) }}
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format(@$vendor_product->quantity_price)) }}
                                                             @else
-                                                                {{ Session::get('currencySymbol') . decimal_format($vendor_product->quantity_price) }}
+                                                                {{ Session::get('currencySymbol') . decimal_format(@$vendor_product->quantity_price) }}
                                                             @endif
                                                         </div>
                                                     @endif
@@ -465,9 +465,9 @@
                                                         <div class="col-md-3 col col-sm-4">
                                                             <div class="extra-items-price">
                                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($addon->option->quantity_price)) }}
+                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format((@$addon->option->quantity_price ?? 0))) }}
                                                                 @else
-                                                                    {{ Session::get('currencySymbol') . decimal_format($addon->option->quantity_price) }}
+                                                                    {{ Session::get('currencySymbol') . decimal_format((@$addon->option->quantity_price??0)) }}
                                                                 @endif
                                                             </div>
                                                         </div>
