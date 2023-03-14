@@ -630,28 +630,7 @@ li.vendor-timing p{
 }
 
 
-.navscroll {
-    width: 1500px;
-    overflow-x: auto;
-}
- 
 
-
-.navscroll ul {
-    width: 100%;
-    display: flex;
-    flex-wrap: nowrap;
-}
-
-.navscroll ul li{
-    position: relative;
-}
-
-.navscroll ul li ul{
-    position: absolute;
-    position: fixed;
-    top: 198px !important;
-}
 .al_body_template_six .common-banner:after{
     position:inherit;
     background:transparent;
