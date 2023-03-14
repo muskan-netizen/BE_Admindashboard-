@@ -165,6 +165,8 @@ Route::group(['middleware' => ['domain']], function () {
 	//Skip Cash
 
 	Route::post('payment/skipcash', 'Front\SkipCashController@showSkipCashPage')->name('payment.skipcash');
+	Route::get('order/success', 'Front\SkipCashController@successPage')->name('payment.skipcash.success');
+
 	// Route::post('payment/skipcashpay', 'Front\SkipCashController@checkPayment')->name('payment.skipcash.pay');
 
 
