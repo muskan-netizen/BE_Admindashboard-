@@ -1029,7 +1029,7 @@
 
                             @if ($cart_details->sub_total > 0)
                                 <div class="row">
-                                    <div class="col-6">{{ __('Sub Total') }}</div>
+                                    <div class="col-6">{{ __('Total') }}</div>
                                     {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
@@ -1112,7 +1112,7 @@
                             @if ($price_bifurcation != 1)
                                 <!-- <hr class="my-2"> -->
                                 <div class="row">
-                                    <div class="col-6">{{ __('Total') }}</div>
+                                    <div class="col-6">{{ __('Sub Total') }}</div>
                                     {{-- @if ($serviceType == 'rental')
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>

@@ -689,9 +689,9 @@
 					<div class="col-md-12 mb-4">
 					<!-- suppliers-slider-{{$homePageLabel->slug}} -->
 						<div class="product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="row TopratedSliderEight">
-							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
-							@include('frontend.home_page_8.top_rated')
+							<div class="row">
+							@foreach ($homePageData[$homePageLabel->slug] as $product )
+								@include('frontend.home_page_8.top_rated')
 							@endforeach
 							</div>
 						</div>
@@ -709,7 +709,7 @@
 				<div class="row">
 					<div class=" col-12 al_custom_categories">
 						<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="col-12 d-flex align-items-center justify-content-center categories_sliderEight">
+							<div class="categories_sliderEight text-center">
 								@foreach ( $homePageLabel->nav_categories as $category )
 									@include('frontend.home_page_8.category')
 								@endforeach

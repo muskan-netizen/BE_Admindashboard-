@@ -25,7 +25,7 @@ function  layoutMode(){
 }
 !(async function (e) {
     "use strict";
-   
+
     var sliderConfig = {
         infinite: !0,
         speed: 300,
@@ -39,9 +39,9 @@ function  layoutMode(){
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
     };
-   
+
     var sliderConfigEight10 = {
-      
+
         rows: (featured_products_length >= 20    ? 2 : 1),
 		dots: false,
 		arrows: true,
@@ -81,14 +81,14 @@ function  layoutMode(){
 		dots: false,
 		arrows: true,
 		infinite: true,
-        //centerMode: true,
+        centerMode: false,
 		speed: 300,
-		slidesToShow: 7,
-		slidesToScroll: 7,
+		slidesToShow: 10,
+		slidesToScroll: 2,
         responsive: [
-            { breakpoint: 1920, settings: { slidesToShow: 7, slidesToScroll: 7 } },
-            { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 6 } },
-            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint: 1920, settings: { slidesToShow: 10, slidesToScroll: 2 } },
+            { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 2 } },
+            { breakpoint:  991, settings: { slidesToShow: 4, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
     };
@@ -125,7 +125,25 @@ function  layoutMode(){
         ],
     };
 
+    
+
     var sliderConfigSellingProductEight = {
+        rows: 1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+		speed: 300,
+		slidesToShow: 6,
+		slidesToScroll: 6,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 6 } },
+            { breakpoint: 1530, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigEight = {
         rows: 1,
 		dots: false,
 		arrows: true,

@@ -656,7 +656,7 @@
                                 <div class="col-md-5 col-5 mb-3">
 
                                     <label>{{ __("Choose Categories") }}</label>
-                                    <select class="form-control" id='categoryForProducts' name="product_category" data-placeholder="Choose ..." required>
+                                    <select class="form-control select2search" id='categoryForProducts' name="product_category"  data-placeholder="Choose ..." required>
                                         <option value="">{{ __("Select Product Category") }}</option>
                                         @foreach($categories as $category)
                                         <option value="{{$category->id}}" >
@@ -671,7 +671,7 @@
                                 <div class="col-md-5 col-5 mb-3">
                                         <label>{{ __("Select Products") }}</label>
                                         <div id="editProductsBox">
-                                            <select class="form-control" id='product_id' name="product_id" data-placeholder="Choose ..." required>
+                                            <select class="form-control select2search" id='product_id' name="product_id"  data-placeholder="Choose ..." required>
                                                 <option value="">{{ __("Select Product") }}</option>
                                             </select>
                                         </div>
@@ -1310,7 +1310,12 @@ $(document).on('click', '.deletePickupSection', function() {
                 $('.loader_box').hide();
             }
         });
+
+       
     }
+    // $.fn.modal.Constructor.prototype.enforceFocus = function() {};
+        
+        $(".select2search").select2();
 </script>
 
 @endsection
