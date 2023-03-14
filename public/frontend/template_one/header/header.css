@@ -275,13 +275,6 @@ background:none;border:none !important;
     width: 100%;
     border-left: 2px solid transparent!important
 }
-
-.pixelstrap .al_main_category:hover ul.al_main_category_list {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
 .al_body_template_one .breadcrumb-section {
     background-color: #f8f8f8;
     padding: 0
@@ -1112,19 +1105,12 @@ ul.header-dropdown.d-none.d-sm-inline li {
     box-shadow: 0 1px 6px 0 #ebebeb;
     border-radius: 0;
     z-index: 9;
-    display: block;
     list-style: none;
     margin: 0;
     line-height: normal;
     direction: ltr;
     text-align: left;
     top: auto;
-    opacity: 0;
-visibility: hidden;
--webkit-transition: all .5s ease-out;
-transition: all .5s ease-out;
-transform: translateY(50%);
-margin-top: 6px;
 }
 .menu-navigation ul.sm.pixelstrap.sm-horizontal li.al_main_category:hover{
     border-bottom:2px solid#000;

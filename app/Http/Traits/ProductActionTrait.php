@@ -176,10 +176,9 @@ trait ProductActionTrait{
                         $value->averageRating = number_format($value->averageRating, 1, '.', '');
                         $value->inquiry_only = $value->inquiry_only;
                         $value->vendor_name = $value->vendor ? $value->vendor->name : '';
-                        
                         $value->price = Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price??0 * $multiply,','));
-
                         $value->compare_at_price = Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->compare_at_price??0 * $multiply,','));
+                        $value->compare_price_numeric = decimal_format(@$value->variant->first()->compare_at_price??0 * $multiply,',');
                         $value->category =  (@$value->category->categoryDetail->translation) ? @$value->category->categoryDetail->translation->first()->name : @$value->category->categoryDetail->slug;
                     }
                     return $products;
@@ -206,6 +205,7 @@ trait ProductActionTrait{
                             'vendor' => $value->vendor,
                             'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$value->variant->first()->price??0 * $multiply,',')),
                             'compare_price' =>@$value->variant->first()->compare_at_price * $multiply,
+                            'compare_price_numeric' =>@$value->variant->first()->compare_at_price * $multiply,
                             'price_numeric' =>@$value->variant->first()->price * $multiply,
                             'category' => (@$value->category->categoryDetail->translation) ? @$value->category->categoryDetail->translation->first()->name : @$value->category->categoryDetail->slug
                         );

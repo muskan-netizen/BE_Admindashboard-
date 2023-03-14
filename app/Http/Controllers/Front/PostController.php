@@ -100,9 +100,9 @@ class PostController extends FrontController
     {
         try {
             // dd($request->all());
-            $request->sku = "adfasdf".time();
+            // $request->sku = "adfasdf".time();
 
-            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            // $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
             // $product = Product::where('id', $id)->firstOrFail();
@@ -299,8 +299,6 @@ class PostController extends FrontController
             }
             $product->save();
             
-
-            
             if ($product->id > 0) {
                 $datatrans[] = [
                     'title' => $request->product_name??null,
@@ -326,9 +324,40 @@ class PostController extends FrontController
                 $proVariant->save();
                 ProductTranslation::insert($datatrans);
                 
-            }
 
-            return $product;
+                
+                if ($product->id > 0) {
+                    $datatrans[] = [
+                        'title' => $request->product_name??null,
+                        'body_html' => '',
+                        'meta_title' => '',
+                        'meta_keyword' => '',
+                        'meta_description' => '',
+                        'product_id' => $product->id,
+                        'language_id' => $client_lang->language_id
+                    ];
+                    $product_category = new ProductCategory();
+                    $product_category->product_id = $product->id;
+                    $product_category->category_id = $request->category_id;
+                    $product_category->save();
+                    $proVariant = new ProductVariant();
+                    $proVariant->price = $request->price;
+                    $proVariant->sku =$slug;
+                    $proVariant->title =$slug . '-' .  empty($request->product_name) ?$slug : $request->product_name;
+                    $proVariant->product_id = $product->id;
+                    $proVariant->barcode = $this->generateBarcodeNumber();
+                    $proVariant->quantity = 1;            
+                    $proVariant->status = 1;
+                    $proVariant->save();
+                    ProductTranslation::insert($datatrans);
+                    
+                }
+
+                return $product;
+            }
+            else{
+                throw new \ErrorException('Sorry, You are not a vendor.', 400);
+            }
         }else{
             throw new \ErrorException('Sorry, You are not a vendor.', 400);
         }

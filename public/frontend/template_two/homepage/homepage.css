@@ -428,6 +428,32 @@ body.dark .inner_spacing{
     width: 100%!important;
     padding:10px!important;
 }
+.al_body_template_two .cab-banner-area .btn.btn-solid.new-btn {
+    font-size: 14px;
+}
+@media (max-width:1440px) {
+    .al_body_template_two .cab-banner-area .btn.btn-solid.new-btn {
+        font-size: 12px;
+    }
+    .al_body_template_two  .cab-banner-area .card-box{
+        padding: 48px 30px;
+    }
+}
+@media (max-width:1300px) {
+    .al_body_template_two  .cab-banner-area .card-box{
+        padding: 30px 30px;
+    }
+}
+@media (max-width:1200x) {
+    .al_body_template_two  .cab-banner-area .cab-booking-form .cab-input{
+        margin:0!important;
+    }
+}
+@media (max-width:1100x) {
+    .py-64{
+        padding:44px 20px!important;    
+    }
+}
 @media (max-width:576px) {
     html,
     body {

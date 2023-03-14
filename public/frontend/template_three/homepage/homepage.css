@@ -967,3 +967,8 @@ body.al_body_template_three .al_box_third_template {
         width: auto !important;
     }
 }
+
+.al_body_template_three .al_custom_brand .barnd-img-outer img{
+    object-fit: cover;
+        padding: 0px;
+    }

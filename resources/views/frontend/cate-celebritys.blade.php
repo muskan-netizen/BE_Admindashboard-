@@ -17,9 +17,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
-                        @if(!empty($category->image) && $category->image['is_original'])
-                        <div class="common-banner"><img alt="" data-src="{{$category->image['proxy_url'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                        @endif
+                             @include('frontend.vendor-category-topbar-banner')   
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
                             {{-- <div class="row">

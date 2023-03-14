@@ -1,6 +1,6 @@
 
 <div class="item">
-    <div class="product-card-box position-relative al_box_third_template al"  >
+    <div class="product-card-box position-relative al_box_third_template al test"  >
         {{-- {{ dd($product)}} --}}
         {{--<div class="add-to-fav 12">
             <input id="fav_pro_one" type="checkbox">
@@ -53,7 +53,7 @@
                             <div class="d-flex align-items-center justify-content-between al_clock pt-2">
                                 <b>{{$product["price"] ?? ''}} </b>
                             </div>
-                            @if($product['category_type'] == 13){
+                            @if($product['category_type'] == 13)
                             <div class="chat-button">
                                 @if(getAdditionalPreference(['chat_button'])['chat_button'])
                                     <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$product['vendor']->id}}" data-orderid="" data-order_id="" data-product_id="{{$product["id"]}}"><i class="fa fa-comments" aria-hidden="true"></i></a>

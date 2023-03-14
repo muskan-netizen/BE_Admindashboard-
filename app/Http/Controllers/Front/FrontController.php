@@ -737,13 +737,7 @@ class FrontController extends Controller
         Session::put('vendorType', $type);
         return Session::get('vendorType');
     }
-    public function productDetail($product_id){
-        return Product::with(['vendor'=> function ($q1)  {
-            $q1->select('id', 'latitude','longitude');
-        },'productcategory'=> function ($q1)  {
-            $q1->select('id', 'type_id');
-        }])->find($product_id);
-    }
+   
 
     // get cart data in on demand product listing page
     public function getCartOnDemand($request)

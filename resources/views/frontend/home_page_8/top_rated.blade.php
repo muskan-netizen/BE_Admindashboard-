@@ -31,6 +31,7 @@
                             </div>
                             <div class="d-flex align-items-center justify-content-between al_clock pt-2">
                                 <b>{{$product["price"] ?? ''}} </b>
+                                <del class="ml-2">{!!$product["compare_at_price"] ?? ''!!} </del>
                             </div>
                         </div>
                     </div>

@@ -9,7 +9,7 @@
                         </h5>
                         <ul style="padding: 0; margin: 0;">
                             @if($order->luxury_option_name != '')
-                                <li style="display: inline-block;vertical-align: middle;margin-right: 10px"><span style="font-family: Lato,sans-serif; background-color: #05C3DF;color: #fff;border-radius: 10px;font-size: 12px;padding: 2px 7px">Delivery</span></li>
+                                <li style="display: inline-block;vertical-align: middle;margin-right: 10px"><span style="font-family: Lato,sans-serif; background-color: #05C3DF;color: #fff;border-radius: 10px;font-size: 12px;padding: 2px 7px">{{ $order->luxury_option_name ?? 'Delivery' }}</span></li>
                             @endif
                             <li style="display: inline-block;vertical-align: middle;"><span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Items from Order") }} #{{$order->order_number}}</span></li>
                         </ul>

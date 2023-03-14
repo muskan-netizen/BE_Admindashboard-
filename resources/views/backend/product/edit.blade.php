@@ -796,6 +796,9 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     @if(Auth::user()->is_superadmin == 1)
                                         <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
                                     @endif
+                                     @if($product->vendor->is_seller == 0)
+                                        <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
+                                    @endif
                                 @else
                                     <option value="1" @if($product->is_live == 1) selected @endif>{{ __('Published')}}</option>
                                 @endif
@@ -1133,16 +1136,16 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                 <div class="card-box">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Product Images") }}</h5>
-                    <div class="row mb-2">
+                     <div class="row mb-2">
                         @if(isset($product->media) && !empty($product->media))
                         @foreach($product->media as $media)
-                        <div class="col-4 product-box editPage" style="overflow: hidden;">
-                            <?php
-                            $mediaPath = Storage::disk('s3')->url('default/default_image.png');
+                         @php
+                         //   $mediaPath = Storage::disk('s3')->url('default/default_image.png');
                             if (isset($media->image) && is_array($media->image->path)) {
                                 $mediaPath = $media->image->path['proxy_url'] . '300/300' . $media->image->path['image_path'];
-                            }
-                            ?>
+                           @endphp
+                        <div class="col-4 product-box editPage mt-1" style="overflow: hidden;">
+                           
                             <div class="product-action">
                                 @if(isset($media->image))
                                 <a href="{{route('product.deleteImg',[$product->id, $media->image->id])}}" class="btn btn-danger btn-xs waves-effect waves-light" onclick="return confirm('Are you sure? You want to delete the image.')"><i class="mdi mdi-close" {{$media->image}}></i></a>
@@ -1152,6 +1155,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                 <img src="{{$mediaPath}}" style="width:100%;" class="vimg_{{$media->id}}" />
                             </div>
                         </div>
+                        @php  }
+                            @endphp
                         @endforeach
                         @endif
                     </div>
