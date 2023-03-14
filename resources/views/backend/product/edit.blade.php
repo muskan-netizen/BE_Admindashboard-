@@ -1140,23 +1140,22 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         @if(isset($product->media) && !empty($product->media))
                         @foreach($product->media as $media)
                          @php
-                         //   $mediaPath = Storage::disk('s3')->url('default/default_image.png');
+                            $mediaPath = Storage::disk('s3')->url('default/default_image.png');
                             if (isset($media->image) && is_array($media->image->path)) {
                                 $mediaPath = $media->image->path['proxy_url'] . '300/300' . $media->image->path['image_path'];
+                                }
                            @endphp
                         <div class="col-4 product-box editPage mt-1" style="overflow: hidden;">
                            
                             <div class="product-action">
-                                @if(isset($media->image))
-                                <a href="{{route('product.deleteImg',[$product->id, $media->image->id])}}" class="btn btn-danger btn-xs waves-effect waves-light" onclick="return confirm('Are you sure? You want to delete the image.')"><i class="mdi mdi-close" {{$media->image}}></i></a>
+                                @if(isset($media))
+                                <a href="{{route('product.deleteImg',[$product->id,  $media->id])}}" class="btn btn-danger btn-xs waves-effect waves-light" onclick="return confirm('Are you sure? You want to delete the image.')"><i class="mdi mdi-close" {{$media->image}}></i></a>
                                 @endif
                             </div>
                             <div class="bg-light">
                                 <img src="{{$mediaPath}}" style="width:100%;" class="vimg_{{$media->id}}" />
                             </div>
                         </div>
-                        @php  }
-                            @endphp
                         @endforeach
                         @endif
                     </div>
