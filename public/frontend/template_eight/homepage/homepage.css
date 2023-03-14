@@ -1536,12 +1536,12 @@ section#homepage_top_rated .slick-slider .slick-next {
     display: inline-block !important;
     text-align: left;
 }
-
+/* 
 .al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row .col {
     width: 20%;
     max-width: 20%;
     flex: 20%;
-}
+} */
 
 .al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row {
     flex-wrap: wrap;
@@ -1762,15 +1762,16 @@ body.dark.al_body_template_eight article#page-container section .vendors section
 
 }
 
+
 /* ===== Scrollbar CSS ===== */
   /* Firefox */
-  .navscroll {
+  /*.navscroll {
     scrollbar-width: auto;
     scrollbar-color: #DA5A3A #34a099;
   }
-
+  */
   /* Chrome, Edge, and Safari */
-  .navscroll::-webkit-scrollbar {
+  /*.navscroll::-webkit-scrollbar {
     width: 3px !important;
     padding-left: 20px;
     height: 3px !important;

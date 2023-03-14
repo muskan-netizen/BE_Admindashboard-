@@ -48,11 +48,11 @@ function  layoutMode(){
 		infinite: true,
         //centerMode: true,
 		speed: 300,
-		slidesToShow: 10,
-		slidesToScroll: 10,
+		slidesToShow: 8,
+		slidesToScroll: 2,
         responsive: [
-            { breakpoint: 1920, settings: { slidesToShow: 10, slidesToScroll: 10 } },
-            { breakpoint: 1530, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 2 } },
+            { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 3 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -154,6 +154,23 @@ function  layoutMode(){
         responsive: [
             { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 6 } },
             { breakpoint: 1530, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigTopRatedProductEight = {
+        rows:1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+        //centerMode: true,
+		speed: 300,
+		slidesToShow: 8,
+		slidesToScroll: 8,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 6 } },
+            { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 7 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -319,6 +336,7 @@ function  layoutMode(){
         e(".TopratedSliderEight").slick(sliderConfigEighttop),
         e(".p2p_single_slider").slick(sliderConfig),
         e(".selling_product_eight").slick(sliderConfigSellingProductEight),
+        e(".top_rated_slider").slick(sliderConfigTopRatedProductEight),
 
         e('.suppliers-slider').slick({
             dots: false,

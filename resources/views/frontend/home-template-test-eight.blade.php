@@ -679,7 +679,7 @@
 		@elseif($homePageLabel->slug == 'top_rated' && (count($homePageData['top_rated']) != 0))
 		<section class="main-pro-slider suppliers-section  mb-4" id="homepage_top_rated">
 			<div class="container-fluid">
-				<div class="row">
+				<div class="row ">
 					<div class="col-md-12">
 						<div class=" top-heading text-center">
 							<h2 class="h2-heading">{{$homePageLabel->slug=='top_rated' ? __('Top')." ".getNomenclatureName('Rated', true) : __($homePageLabel->title)}}</h2>
@@ -689,7 +689,7 @@
 					<div class="col-md-12 mb-4">
 					<!-- suppliers-slider-{{$homePageLabel->slug}} -->
 						<div class="product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="row">
+							<div class="row top_rated_slider">
 							@foreach ($homePageData[$homePageLabel->slug] as $product )
 								@include('frontend.home_page_8.top_rated')
 							@endforeach
