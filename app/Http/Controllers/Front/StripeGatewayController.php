@@ -1752,8 +1752,8 @@ class StripeGatewayController extends FrontController
                     if ($order) {
                         $order->payment_status = 1;
                         $order->save();
-                        $payment_exists = Payment::where('transaction_id', $transactionId)->first();
-                        if (!$payment_exists) {
+                        // $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                        // if (!$payment_exists) {
                             $payment = new Payment();
                             $payment->date = date('Y-m-d');
                             $payment->order_id = $order->id;
@@ -1788,7 +1788,7 @@ class StripeGatewayController extends FrontController
                             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-                        }
+                        
     
                         // Send Email
                         //   $this->successMail();
