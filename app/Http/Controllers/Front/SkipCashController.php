@@ -15,9 +15,6 @@ class SkipCashController extends Controller
 
     public function showSkipCashPage(Request $request){
         $data = $request->all();
-        //   dd($data);
-        // // return view('frontend.payment_gatway.skip_cash',compact('data'));
-        // $this->checkPayment($request);
         $creds = PaymentOption::where('code', 'skip_cash')
         ->where('status', 1)
         ->first();
@@ -34,7 +31,6 @@ class SkipCashController extends Controller
         $secretKey = $creds_arr->skip_cash_api_secret;
 
         $addres = Order::with('address')->where('order_number',$request->order_number)->first();
-        // Define the request fields
         $fields = [
             "Uid" => Str::uuid()->toString(),
             'KeyId' => $keyId,
@@ -49,11 +45,7 @@ class SkipCashController extends Controller
             'Country' => $addres->address->country_code ?? 'IN',
             'PostalCode' => '12345',
             'TransactionId' => $request->order_number,
-            //'return_url' => $return_url,
-
-            //'Custom1' => '',
-            //  'ClientID' => $client_id,
-            //  'keyId'=>$keyId,
+        
         ];
         $signatureString = '';
         foreach ($fields as $key => $value) {
@@ -66,13 +58,9 @@ class SkipCashController extends Controller
 
         // Encrypt the signature string using HMACSHA256 with the secret key
         $signature = hash_hmac('sha256', $signatureString, $secretKey, true);
-        // echo $signature;
-        // die;
-        // Convert the encrypted result to base64 format
+        
         $signatureBase64 = base64_encode($signature);
-        // dd($signatureBase64);
-        // Set the headers
-        // echo "$keyId:$signatureBase64";
+       
         $headers = [
             'Content-Type: application/json',
             "Authorization: $signatureBase64",
