@@ -639,9 +639,14 @@ li.vendor-timing p{
     position: absolute;
     background: #0e0c0ca6;
     z-index: 9;
-    width: 100%;
+    width: calc(100% - 24px)!important;
     height: 100%;
-    left: 0px;border-radius: 10px;
+    left: 0px;
+    border-radius: 10px;
+    margin: 0 auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }
 .top-banner-content.small-section h4 {
     color: #fff;
