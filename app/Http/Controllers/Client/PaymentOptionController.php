@@ -574,7 +574,7 @@ class PaymentOptionController extends BaseController
                             ]);
                             $json_creds = json_encode(array(
                                 'api_key' => $request->paytech_key,
-                                ' secret_key' => $request->paytech_secret_key
+                                'secret_key' => $request->paytech_secret_key
                             ));
                             break;
 

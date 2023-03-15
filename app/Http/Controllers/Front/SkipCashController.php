@@ -27,7 +27,6 @@ class SkipCashController extends Controller
         }
     
         $keyId = $creds_arr->skip_cash_key_id;
-        // dd($keyId);
         $secretKey = $creds_arr->skip_cash_api_secret;
 
         $addres = Order::with('address')->where('order_number',$request->order_number)->first();
@@ -54,7 +53,6 @@ class SkipCashController extends Controller
             }
         }
         $signatureString = rtrim($signatureString, ',');
-        // dd($signatureString);
 
         // Encrypt the signature string using HMACSHA256 with the secret key
         $signature = hash_hmac('sha256', $signatureString, $secretKey, true);
@@ -81,12 +79,9 @@ class SkipCashController extends Controller
 
         // Execute the request
         $response = curl_exec($ch);
-        //  dd($response);
         $error = curl_error($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
-        // dd($response);
-        // Check for errors
         if ($error) {
         //     //  dd($info);
         $message = 'Payment error';
@@ -100,10 +95,7 @@ class SkipCashController extends Controller
             return redirect()->back()->with('success', $message);   
 
         } else {
-            // dd("succ");
-            // echo "Response: $response\n";
-            $responseObj = json_decode($response);
-            // dd($responseObj);    
+            $responseObj = json_decode($response);  
             $payUrl = $responseObj->resultObj->payUrl;
             //  dd($payUrl);
             $user = auth()->user();
@@ -194,7 +186,6 @@ class SkipCashController extends Controller
 
     public function successPage(Request $request)
     {
-        //  dd($request->get('transId'));
         if (isset($_POST['response'])) {
            
           
