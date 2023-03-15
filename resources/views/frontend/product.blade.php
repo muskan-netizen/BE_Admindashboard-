@@ -69,7 +69,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 @php
 $category_name =  ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
   $img = '';
-  $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
+  $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency', 'add_to_cart_btn']);
 @endphp
 <!-- <div class="toast">
     <div class="toast-header">
@@ -580,6 +580,17 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
                                             </button>
                                             @endif
+                                            @php
+                                                if($product->sell_when_out_of_stock == 1 && $product->variant[0]->quantity == 0){
+                                                    $product_quantity_in_cart = 1;
+                                                    $product->variant[0]->quantity = 2;
+                                                }
+                                                else
+                                                    $product_quantity_in_cart = $product_in_cart->quantity??0;
+                                                @endphp
+                                            @if($is_available == 1 && $additionalPreference['add_to_cart_btn'] == 1)
+                                                <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                            @endif
                                         </div>
                                         @endif
                                         {{-- @dump($product) --}}
@@ -691,9 +702,13 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                     @if(!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9'))
                     <div class="row">
                         <div class="col-md-12">
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Similar Products in '. $category_name ])
+                            @php
+                                $similar_title = getNomenclatureName('Similar Product', true);
+                                $similar_title_label = ($similar_title=="Similar Product")?__('Similar Product'):__($similar_title);
+                            @endphp
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => $similar_title_label.' In '.$category_name ])
                             @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Related Product'])
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Similar Products by '. $product->vendor->name])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => $similar_title_label.' By '. $product->vendor->name])
                         </div>
                     </div>
                     @endif
