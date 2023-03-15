@@ -584,6 +584,7 @@ c-13 -26 -36 -53 -58 -66 l-37 -23 -1465 0 -1465 0 -37 23 c-22 13 -45 40 -58
                             <div class="col-12">
                                 {{-- @include('frontend.home_page_1.sub_menu') --}}
                                 <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
+                                    @if(@$navCategories)
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])
                                     <li class="al_main_category">
@@ -624,6 +625,7 @@ c-13 -26 -36 -53 -58 -66 l-37 -23 -1465 0 -1465 0 -37 23 c-22 13 -45 40 -58
                             </li>
                             @endif
                             @endforeach
+                            @endif
                         </ul>
                     </div>
                 </div>
