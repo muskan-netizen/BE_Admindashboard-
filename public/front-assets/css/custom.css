@@ -2494,7 +2494,8 @@ div#test {
 }
 
 .inner_spacing h3,
-.inner_spacing h3 span {
+.inner_spacing h3 span,
+.inner_spacing h3 label {
     margin: 0;
     font-weight: 700;
     color: rgb(0, 0, 0 / 68%);
