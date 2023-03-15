@@ -496,7 +496,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 $checkSlot = 0;
                                         @endphp
 
-                                        @if( !is_category_p2p($product->category) )
+                                        @if( $product->category->categoryDetail->type_id != 13 )
                                         <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)

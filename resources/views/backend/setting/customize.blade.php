@@ -1443,7 +1443,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
-                                    <input type="hidden" name="variant_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="hidden" name="similar_product_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="similar_product[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Similar Product'))}}">
                                     @if($k == 0)
                                         @if($errors->has('referral_code_names.0'))
