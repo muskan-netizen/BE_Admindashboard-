@@ -678,7 +678,7 @@
 		</section>
 		@elseif($homePageLabel->slug == 'top_rated' && (count($homePageData['top_rated']) != 0))
 		<section class="main-pro-slider suppliers-section  mb-4" id="homepage_top_rated">
-			<div class="container-fluid">
+			<div class="container p2p-full-width">
 				<div class="row ">
 					<div class="col-md-12">
 						<div class=" top-heading text-center">
@@ -686,18 +686,16 @@
 							<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>
 						</div>
 					</div>
-					<div class="col-md-12 mb-4">
-					<!-- suppliers-slider-{{$homePageLabel->slug}} -->
-						<div class="product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="row top_rated_slider">
-							@foreach ($homePageData[$homePageLabel->slug] as $product )
-								@include('frontend.home_page_8.top_rated')
-							@endforeach
-							</div>
+				</div>		
+				<!-- suppliers-slider-{{$homePageLabel->slug}} -->
+					<div class="product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+						<div class="row top_rated_slider">
+						@foreach ($homePageData[$homePageLabel->slug] as $product )
+							@include('frontend.home_page_8.top_rated')
+						@endforeach
 						</div>
 					</div>
 				</div>
-			</div>
 		</section>
 		{{--  && (count($homePageData['nav_categories']) != 0) --}}
 		@elseif(!empty($homePageLabel->nav_categories) && $homePageLabel->slug == 'nav_categories' && (count($homePageLabel->nav_categories) != 0))
@@ -780,7 +778,7 @@
 		</section>
 		@elseif($homePageLabel->slug == 'selected_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
-			<div class="container">
+			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="col h2-heading mb-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
@@ -789,15 +787,14 @@
 				</div>
 				<div class="row">
 					<div class="col-12">
-						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="row">
-								@foreach ($homePageData[$homePageLabel->slug] as $product )
-								@include('frontend.home_page_8.selected_products')
-								@endforeach
-							</div>
-						</div>
-					</div>
-				</div>
+						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+					</div>	
+				</div>	
+				<div class="row selected_products-slider">
+					@foreach ($homePageData[$homePageLabel->slug] as $product )
+					@include('frontend.home_page_8.selected_products')
+					@endforeach
+				</div>		
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'most_popular_products' && (count($homePageData[$homePageLabel->slug]) != 0))
