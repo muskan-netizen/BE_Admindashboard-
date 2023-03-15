@@ -771,6 +771,8 @@ class PaymentOptionController extends BaseController
                                 'skip_cash_client_id' => $request->skip_cash_client_id,
                                 'skip_cash_key_id' => $request->skip_cash_key_id,
                                 'skip_cash_api_secret' => $request->skip_cash_api_secret,
+                                'skip_cash_testing_url' => $request->skip_cash_testing_url,
+                                'skip_cash_live_url' => $request->skip_cash_live_url,
                             ));
                             break;
                     }

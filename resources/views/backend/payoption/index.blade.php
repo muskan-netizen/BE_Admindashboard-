@@ -141,7 +141,7 @@
 				$skip_cash_client_id = (isset($creds->skip_cash_client_id)) ? $creds->skip_cash_client_id : '';
 				$skip_cash_api_secret = (isset($creds->skip_cash_api_secret)) ? $creds->skip_cash_api_secret : '';
 				$skip_cash_key_id = (isset($creds->skip_cash_key_id)) ? $creds->skip_cash_key_id : '';
-				$skip_cash_test_url = (isset($creds->skip_cash_test_url)) ? $creds->skip_cash_test_url : '';
+				$skip_cash_testing_url = (isset($creds->skip_cash_testing_url)) ? $creds->skip_cash_testing_url : '';
 				$skip_cash_live_url = (isset($creds->skip_cash_live_url)) ? $creds->skip_cash_live_url : '';
 
 
@@ -1657,7 +1657,7 @@
 							 <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="skip_cash_test_url" class="mr-3">{{ __("Testing URL") }}</label>
-                                    <input type="text" name="skip_cash_test_url" id="skip_cash_test_url" class="form-control" value="{{$skip_cash_test_url}}" @if($opt->status == 1) required @endif>
+                                    <input type="text" name="skip_cash_testing_url" id="skip_cash_testing_url" class="form-control" value="{{$skip_cash_testing_url}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
 							 <div class="col-12">

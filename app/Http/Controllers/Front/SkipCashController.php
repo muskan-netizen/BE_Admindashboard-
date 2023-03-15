@@ -8,7 +8,7 @@ use GuzzleHttp\Client;
 use App\Models\PaymentOption;
 use Str;
 use Auth;
-use App\Models\{Order, Payment,User,Cart,UserVendor,CartProductPrescription,CartProduct,CartCoupon,CartAddon,CaregoryKycDoc};
+use App\Models\{Order, Payment,User,Cart,UserVendor,CartProductPrescription,CartProduct,CartCoupon,OrderProduct,OrderProductAddon,OrderProductPrescription,VendorOrderStatus,OrderVendor,OrderTax,CartAddon,CaregoryKycDoc,ClientPreference,ClientCurrency};
 use Session;
 class SkipCashController extends Controller
 {
@@ -23,13 +23,17 @@ class SkipCashController extends Controller
         ->first();
         $creds_arr = json_decode($creds->credentials);
         $skipCashClientId=$creds_arr->skip_cash_client_id;
-        $url = 'https://skipcashtest.azurewebsites.net/api/v1/payments';
+        if($creds->test_mode==0){
+            $url = $creds_arr->skip_cash_testing_url;
+        }else{
+            $url = $creds_arr->skip_cash_live_url;  
+        }
+    
         $keyId = $creds_arr->skip_cash_key_id;
         // dd($keyId);
         $secretKey = $creds_arr->skip_cash_api_secret;
-        //  dd($kesecretKeyyId);
-        $return_url  = 'https://example.com/success';
-        
+
+        $addres = Order::with('address')->where('order_number',$request->order_number)->first();
         // Define the request fields
         $fields = [
             "Uid" => Str::uuid()->toString(),
@@ -41,8 +45,8 @@ class SkipCashController extends Controller
             'Email' =>  Auth::user()->email,
             'Street' => '123',
             'City' => 'Anytown',
-            'State' => 'CA',
-            'Country' => 'US',
+            'State' => $addres->address->country_code ?? 'IN',
+            'Country' => $addres->address->country_code ?? 'IN',
             'PostalCode' => '12345',
             'TransactionId' => $request->order_number,
             //'return_url' => $return_url,
@@ -96,12 +100,17 @@ class SkipCashController extends Controller
         // dd($response);
         // Check for errors
         if ($error) {
-            //  dd($info);
-            echo "cURL Error: $error\n";
+        //     //  dd($info);
+        $message = 'Payment error';
+        
+        $this->failedPayment($request);
+        return redirect()->back()->with('success', $message);   
+           
         } elseif ($info['http_code'] !== 200) {
-          //  dd("not");
-        //   dd($info);
-            echo "HTTP Error: {$info['http_code']}\n";
+            $message = 'Payment error';
+            $this->failedPayment($request);
+            return redirect()->back()->with('success', $message);   
+
         } else {
             // dd("succ");
             // echo "Response: $response\n";
@@ -151,7 +160,7 @@ class SkipCashController extends Controller
                     ]);
                 } elseif ($request->payment_from == 'wallet') {
                     $time = ($request->transaction_id) ?? time();
-                    Payment::create([
+                    Payment::create([ 
                         'amount' => 0,
                         'payment_option_id' => 52,
                         'transaction_id' => $time,
@@ -193,114 +202,15 @@ class SkipCashController extends Controller
     
 
 
-   
 
-
-    // public function checkPayment(Request $request)
-    // {
-    //     $creds = PaymentOption::where('code', 'skip_cash')
-    //     ->where('status', 1)
-    //     ->first();
-    //     $creds_arr = json_decode($creds->credentials);
-    //     $skipCashClientId=$creds_arr->skip_cash_client_id;
-    //     $url = 'https://skipcashtest.azurewebsites.net/api/v1/payments';
-    //     $keyId = $creds_arr->skip_cash_key_id;
-    //     // dd($keyId);
-    //     $secretKey = $creds_arr->skip_cash_api_secret;
-    //     //  dd($kesecretKeyyId);
-    //     $return_url  = 'https://example.com/success';
-        
-    //     // Define the request fields
-    //     $fields = [
-    //         "Uid" => Str::uuid()->toString(),
-    //         'KeyId' => $keyId,
-    //         'Amount' => $request->amount, 
-    //         'FirstName' => Auth::user()->name,
-    //         'LastName' =>  Auth::user()->name,
-    //         'Phone' => Auth::user()->phone_number,
-    //         'Email' =>  Auth::user()->email,
-    //         'Street' => '123',
-    //         'City' => 'Anytown',
-    //         'State' => 'CA',
-    //         'Country' => 'US',
-    //         'PostalCode' => '12345',
-    //         'TransactionId' => $request->order_id,
-    //         //'return_url' => $return_url,
-
-    //         //'Custom1' => '',
-    //         //  'ClientID' => $client_id,
-    //         //  'keyId'=>$keyId,
-    //     ];
-    //     $signatureString = '';
-    //     foreach ($fields as $key => $value) {
-    //         if (!empty($value)) {
-    //             $signatureString .= "$key=$value,";
-    //         }
-    //     }
-    //     $signatureString = rtrim($signatureString, ',');
-    //     // dd($signatureString);
-
-    //     // Encrypt the signature string using HMACSHA256 with the secret key
-    //     $signature = hash_hmac('sha256', $signatureString, $secretKey, true);
-    //     // echo $signature;
-    //     // die;
-    //     // Convert the encrypted result to base64 format
-    //     $signatureBase64 = base64_encode($signature);
-    //     // dd($signatureBase64);
-    //     // Set the headers
-    //     // echo "$keyId:$signatureBase64";
-    //     $headers = [
-    //         'Content-Type: application/json',
-    //         "Authorization: $signatureBase64",
-    //         'x-client-id: ' . $skipCashClientId
-
-    //     ];
-
-    //     // Set the request body
-    //     $body = json_encode($fields);
-
-    //     // Create the cURL handle
-    //     $ch = curl_init();
-    //     curl_setopt($ch, CURLOPT_URL, $url);
-    //     curl_setopt($ch, CURLOPT_POST, true);
-    //     curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-    //     // Execute the request
-    //     $response = curl_exec($ch);
-    //     //  dd($response);
-    //     $error = curl_error($ch);
-    //     $info = curl_getinfo($ch);
-    //     curl_close($ch);
-    //     // dd($response);
-    //     // Check for errors
-    //     if ($error) {
-    //         //  dd($info);
-    //         echo "cURL Error: $error\n";
-    //     } elseif ($info['http_code'] !== 200) {
-    //       //  dd("not");
-    //     //   dd($info);
-    //         echo "HTTP Error: {$info['http_code']}\n";
-    //     } else {
-    //         // dd("succ");
-    //         // echo "Response: $response\n";
-    //         $responseObj = json_decode($response);
-    //       //  dd($responseObj);    
-    //         $payUrl = $responseObj->resultObj->payUrl;
-    //         //  dd($payUrl);
-    //        return redirect($payUrl);
-    //     }
-        
-    // }
 
     public function successPage(Request $request)
     {
-        // dd($request->get('transId'));
+        //  dd($request->get('transId'));
         if (isset($_POST['response'])) {
            
           
-            $payment = Payment::where('transaction_id', $response['tran_id'])->first();
+            $payment = Payment::where('transaction_id', $request->get('transId'))->first();
             if ($payment->type == 'cart') {
                 $this->completeOrderCart($request, $payment);
             } elseif ($payment->type == 'wallet') {
@@ -317,16 +227,17 @@ class SkipCashController extends Controller
         }
         
         if(auth()->user()){
-            // dd("ASASS");
+        //   dd($request->get('transId'));
             \Log::info("user ".json_encode(auth()->user()->id));
             //  dd(auth()->user()->id);
-            $payment = Payment::select('*')->where('user_id',auth()->user()->id)->where(['payment_option_id' => 52])->orderBy('id','DESC')->first();
-            // dd($payment);
+            $payment = Payment::select('*')->where('user_id',auth()->user()->id)->where(['transaction_id' => $request->get('transId')])->orderBy('id','DESC')->first();
+            //  dd($payment);
             if($payment){
                 if ($payment->type == 'cart') {   
                     $message = 'Order has been placed successfully';
                     Session::put('success', $message);
                     \Log::info("payment order id : ".$payment->order_id);
+                    $this->completeOrderCart($request, $payment);
                     return redirect()->route('order.success',['order_id' => $payment->order_id]);                  
                 } elseif (in_array($payment->type,[ 'wallet','wallet_topup'])) {
                     $message = 'Wallet has been credited successfully';
@@ -350,7 +261,9 @@ class SkipCashController extends Controller
 
     public function completeOrderCart(Request $request, $pay)
     {
+        // dd($pay);
         $order = Order::where('order_number', $pay->transaction_id)->first();
+        // dd($order);
         if (! empty($order)) {
             $order->payment_status = '1';
             $order->save();
@@ -417,6 +330,65 @@ class SkipCashController extends Controller
             return 0;
         }
     }
+
+    public function sendSuccessSMS($request, $order, $vendor_id = '')
+    {
+        try {
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+
+            $user = Auth::user();
+            if ($user) {
+                $customerCurrency = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.currency_id', $user->currency)->first();
+                $currSymbol = $customerCurrency->symbol;
+                if ($user->dial_code == "971") {
+                    $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                } else {
+                    $to = '+' . $user->dial_code . $user->phone_number;
+                }
+                $provider = $prefer->sms_provider;
+                $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
+                $body = sendSmsTemplate('order-place-Successfully',$keyData);
+
+                if (!empty($prefer->sms_provider)) {
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                }
+            }
+        } catch (\Exception $ex) {
+        }
+    }
+
+    public function handleWebhook(Request $request)
+    {
+            // Get the webhook payload
+            $payload = json_decode($request->getContent(), true);
+
+            // Log the payload to your application's logs
+            Log::info('SkipCash webhook received: '. print_r($payload, true));
+
+            // Do any additional processing based on the webhook payload
+    }
+
+
+    public function failedPayment($request)
+    {
+    	if($request->payment_from == 'cart'){
+            $order_number = $request->order_number;
+            $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+            $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+            foreach ($order_products as $order_prod) {
+                OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+            }
+            OrderProduct::where('order_id', $order->id)->delete();
+            OrderProductPrescription::where('order_id', $order->id)->delete();
+            VendorOrderStatus::where('order_id', $order->id)->delete();
+            OrderVendor::where('order_id', $order->id)->delete();
+            OrderTax::where('order_id', $order->id)->delete();
+            Order::where('id', $order->id)->delete();
+            
+        }
+      
+    }
+
 
 
     
