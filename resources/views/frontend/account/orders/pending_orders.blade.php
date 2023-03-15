@@ -234,7 +234,7 @@
                             @php
                                 $security_amount = 0.0;
                             @endphp
-                            <ul class="order_vender_product product_list p-0 m-0 text-center">
+                            <ul class="product_list p-0 m-0 text-center">
                                 @foreach ($vendor->products as $product)
                                     {{-- @dd($product) --}}
 

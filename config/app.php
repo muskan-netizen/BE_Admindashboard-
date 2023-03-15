@@ -57,12 +57,17 @@ return [
     'IMG_URL1' => env('IMG_URL1', 'https://images.royoorders.com/insecure/fill/'),
 
     'FIT_URl' => env('FIT_URl', 'https://images.royoorders.com/insecure/fit/'),
+    'FILL_URL' => 'https://images.royoorders.com/insecure/fill/',
 
     'IMG_URL2' => env('IMG_URL2', '/sm/0/plain'),
 
     'asset_url' => env('ASSET_URL', null),
 
-    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt','144'=>'sk'],
+    'FIT_URL' => env('FIT_URL', 'https://images.royoorders.com/insecure/fill/'),
+
+    'FILL_URL' => env('FILL_URL', 'https://images.royoorders.com/insecure/fit/'),
+
+    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt','144'=>'sk','40'=>'nl'],
 
     /*
     |--------------------------------------------------------------------------

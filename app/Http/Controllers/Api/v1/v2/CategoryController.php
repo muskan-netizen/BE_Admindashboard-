@@ -46,13 +46,13 @@ class CategoryController extends BaseController
                 ->where('id', $cid)->first();
             $mode_of_service = "";
 
-            if (!empty($category)) {
+            // if (!empty($category)) {
 
-                $mode_of_service_data = Product::where('category_id',$cid)->first();
+            //     $mode_of_service_data = Product::where('category_id',$cid)->first();
 
-                $mode_of_service = $mode_of_service_data->mode_of_service ?? null;
+            //     $mode_of_service = $mode_of_service_data->mode_of_service ?? null;
                
-            }
+            // }
 
            
 
@@ -172,8 +172,9 @@ class CategoryController extends BaseController
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }
-            ])->select('products.category_id', 'products.id', 'mode_of_service', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
-                ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
+            ])->select('products.category_id', 'products.id',  'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags')
+                ->where('products.category_id', $category_id)->where('products.is_live', 1)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
+               // ->where('mode_of_service', $mode_of_service)
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
                     $product->vendor->is_vendor_closed = 0;
@@ -289,7 +290,7 @@ class CategoryController extends BaseController
             ])->where('products.category_id', $category_id)
                 ->where('products.is_live', 1); 
 
-            $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', DB::raw("'$multipli' as variant_multiplier"))
+            $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', DB::raw("'$multipli' as variant_multiplier")  ,'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags')
                 ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->withCount('OrderProduct');
@@ -460,7 +461,7 @@ class CategoryController extends BaseController
             $products = $products->whereIn('id', $productIds);
             }
 
-            $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
+            $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags')
                 ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->withCount('OrderProduct');

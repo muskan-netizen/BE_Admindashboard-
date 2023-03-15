@@ -11,7 +11,7 @@ use App\Models\Client as CP;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use App\Http\Traits\{ValidatorTrait, ApiResponser};
+use App\Http\Traits\{ValidatorTrait, ApiResponser, SquareInventoryManager};
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
@@ -19,7 +19,7 @@ use App\Models\{Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayme
 
 trait OrderTrait
 {
-    use ValidatorTrait, ApiResponser;
+    use ValidatorTrait, ApiResponser, SquareInventoryManager;
 
     public function ProductVariantStock($order_id, $request='')
     {
@@ -37,6 +37,9 @@ trait OrderTrait
 
                         $ProductVariant->quantity  = $update_quantity;
                         $ProductVariant->save();
+
+                        if(isset($ProductVariant->square_variant_id) && !empty($ProductVariant->square_variant_id))
+                        $this->inventoryAdjustmentInSquarePos($ProductVariant->square_variant_id, $ProductVariant->quantity, "PHYSICAL_COUNT", "IN_STOCK");
                     }
                     if(@$request && $request->order_luxury_option_id == 4){
                         $ProductVariant->increment('rented_product_count', $product->quantity);
@@ -56,6 +59,9 @@ trait OrderTrait
                 $update_quantity  = 0;
             $ProductVariant->quantity  = $update_quantity;
             $ProductVariant->save();
+
+            if(isset($ProductVariant->square_variant_id) && !empty($ProductVariant->square_variant_id))
+            $this->inventoryAdjustmentInSquarePos($ProductVariant->square_variant_id, $ProductVariant->quantity, "PHYSICAL_COUNT", "IN_STOCK");
         }
        
         return 1;
@@ -74,6 +80,9 @@ trait OrderTrait
                         $update_quantity  = 0;
                         $ProductVariant->quantity  = $update_quantity;
                         $ProductVariant->save();
+
+                        if(isset($ProductVariant->square_variant_id) && !empty($ProductVariant->square_variant_id))
+                        $this->inventoryAdjustmentInSquarePos($ProductVariant->square_variant_id, $ProductVariant->quantity, "PHYSICAL_COUNT", "IN_STOCK");
                     }
                     if(@$rental && $rental == 'rental'){
                         $ProductVariant->decrement('rented_product_count', $product->quantity);
@@ -400,6 +409,11 @@ trait OrderTrait
                         $orderfromName =  $customer->name ?? $vendor_details->name;
                     }
                     $category_name = isset($product->product->categoryName) ? @$product->product->categoryName->name : 'na' ;
+                    $driverCost  = 0;
+                    if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
+                        $driverCost  =($product->is_price_buy_driver ==1) ?  $product->price :0;
+                    }
+                    $specific_instruction = (isset($product->specific_instruction) && ($product->specific_instruction !='')) ? $product->specific_instruction : $order->specific_instruction;
                     $client = CP::orderBy('id', 'asc')->first();
                     for ($x = 1; $x <= $product->quantity; $x++) {
                         //  send all payment to fist order
@@ -441,7 +455,9 @@ trait OrderTrait
                             'service_time' =>  $service_time,
                             'is_assign_warehouse' => $is_assign_warehouse,
                             'rejectable_order' =>  $rejectable_order,
-                            'category_name' =>  $category_name 
+                            'category_name' =>  $category_name,
+                            'specific_instruction' =>  $specific_instruction,
+                            'driverCost' =>  $driverCost 
                         ];
                       
                         if($order_vendor->is_restricted == 1)
@@ -497,7 +513,7 @@ trait OrderTrait
                         'order_vendor_id' =>    $order_vendor->id,
                         'order_vendor_product_id' =>  $product->id,
                     ]);
-               
+                    OrderProduct::where('id',$product->id)->update(['dispatcher_status_option_id'=>1,'order_status_option_id'=>2]);
                     
                 }
             }

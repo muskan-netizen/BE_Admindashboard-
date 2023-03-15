@@ -14,6 +14,7 @@ use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomencl
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
+use App\Http\Traits\SquareInventoryManager;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
 use App\Imports\QrcodesImport;
@@ -21,7 +22,7 @@ use GuzzleHttp\Client as GCLIENT;
 use Carbon\Carbon;
 class ProductController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser, SquareInventoryManager;
     private $folderName = 'prods';
     private $slugIsUnique = true;
     public function __construct()
@@ -803,14 +804,15 @@ class ProductController extends BaseController
 
             }
 
-
+            
             DB::commit();
+            $this->createOrUpdateProductInSquarePos($id);
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
             // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
             return redirect()->back()->with('toaster', $toaster);
         } catch (\Exception $e) {
             DB::rollback();
-
+            \Log::info($e->getMessage());
             $toaster = $this->errorToaster(__('ERROR'),$e->getMessage() );
             return redirect()->back()->with('toaster', $toaster);
 
@@ -828,6 +830,11 @@ class ProductController extends BaseController
         try{
 
             DB::beginTransaction();
+            $product = Product::find($id);
+            if(!empty($product) && isset($product->square_item_id) && !empty($product->square_item_id)){
+                $this->deleteBatchInSquarePos([$product->square_item_id]);
+            }
+            
             $productde = Product::productDelete($id);
             // $product = Product::find($id);
 
@@ -1043,8 +1050,15 @@ class ProductController extends BaseController
     {
         $product_variant = ProductVariant::where('id', $request->product_variant_id)->where('product_id', $request->product_id)->first();
         $product_variant->status = 0;
+        if(isset($product_variant->square_variant_id) && !empty($product_variant->square_variant_id)){
+            $this->deleteBatchInSquarePos([$product_variant->square_variant_id]);
+        }
         $product_variant->save();
         if ($request->is_product_delete > 0) {
+            $product = Product::find($request->product_id);
+            if(!empty($product) && isset($product->square_item_id) && !empty($product->square_item_id)){
+                $this->deleteBatchInSquarePos([$product->square_item_id]);
+            }
             Product::where('id', $request->product_id)->delete();
         }
         return response()->json(array('success' => true, 'msg' => 'Product variant deleted successfully.'));
@@ -1165,8 +1179,14 @@ class ProductController extends BaseController
 
     public function deleteImage(Request $request, $domain = '', $pid = 0, $imgId = 0){
         $product = Product::findOrfail($pid);
-        $img = VendorMedia::findOrfail($imgId);
-        $img->delete();
+//      /   $img = VendorMedia::findOrfail($imgId);     
+        $prodImage =  ProductImage::findOrfail($imgId);
+       // $img->delete();
+        if(!empty($prodImage)){
+            if(isset( $prodImage->image))
+                $prodImage->image->delete();
+            $prodImage->delete();
+        }
         return redirect()->back()->with('success', 'Product image deleted successfully!');
     }
 
@@ -1177,6 +1197,9 @@ class ProductController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function importCsv(Request $request){
+        $validated = $request->validate([
+            'product_excel' => 'required|mimes:csv,txt'
+        ]);
         $vendor_id = $request->vendor_id;
         $fileModel = new CsvProductImport;
         if($request->file('product_excel')) {
@@ -1417,8 +1440,12 @@ class ProductController extends BaseController
                 case "delete":
                     // delete product harrry
                     $products = Product::whereIn('id',$request->product_id)->get();
+                    $batch_square_ids = array();
                     foreach($products as $product){
                         DB::beginTransaction();
+                        if(isset($product->square_item_id) && !empty($product->square_item_id)){
+                            $batch_square_ids[] = $product->square_item_id;
+                        }
                         Product::productDelete($product->id);
                         // $dynamic = time();
 
@@ -1438,6 +1465,7 @@ class ProductController extends BaseController
 
                         DB::commit();
                     }
+                    $this->deleteBatchInSquarePos($batch_square_ids);
                 break;
                 default:
                 '';

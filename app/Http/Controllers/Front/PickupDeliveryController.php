@@ -166,9 +166,9 @@ class PickupDeliveryController extends FrontController{
 
         $schedule_datetime_del = '';
         if(isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
-            $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+            $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
         }else{
-            $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+            $schedule_datetime_del = Carbon::now()->timezone('UTC')->format('Y-m-d H:i:s');
         }
 
         $product = Product::with(['category.categoryDetail','media.image', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
@@ -272,16 +272,16 @@ class PickupDeliveryController extends FrontController{
             $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
             $user = Auth::user();
             $userid = $user->id;
-            if(!empty($user)){
+            if(empty($user->timezone)){
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
             }
 
             $schedule_datetime_del = '';
             if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
-                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
             }else{
-                $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+                $schedule_datetime_del = Carbon::now()->timezone('UTC')->format('Y-m-d H:i:s');
             }
 
             $paginate = $request->has('limit') ? $request->limit : 12;
@@ -381,14 +381,14 @@ class PickupDeliveryController extends FrontController{
             $langId = Auth::user()->language;
 
             $user   = Auth::user();
-            if(!empty($user)){
+            if(empty($user->timezone)){
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
             }
 
             $schedule_datetime_del = '';
             if(isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
-                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
             }else{
                 $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
             }
@@ -647,13 +647,9 @@ class PickupDeliveryController extends FrontController{
                 $order->is_postpay          = ($request->postpay_enable)?$request->postpay_enable:0;
                 $schedule_datetime_del      = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del  = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
+                    $schedule_datetime_del  = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
-                $schedule_datetime_del      = NULL;
-                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del  = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
-                }
                 $order->scheduled_date_time = $schedule_datetime_del;
                 /*book for a friend*/
                 $order->type                = $request->type;
@@ -913,9 +909,15 @@ class PickupDeliveryController extends FrontController{
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $client = Client::orderBy('id', 'asc')->first();
 
+                $user = Auth::user();
+                if(empty($user->timezone))
+                {
+                    $client_timezone = DB::table('clients')->first('timezone');
+                    $user->timezone = $client_timezone->timezone ?? $user->timezone;
+                }
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
                 $postdata =  [

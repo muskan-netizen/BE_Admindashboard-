@@ -3576,6 +3576,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id,order){
         cno = $('#azul-card-element').val();
         dt  = $('#azul-date-element').val();
         cv  = $('#azul-cvv-element').val();
+        card_id  =$("input[type='radio'][name='azul_card_id']:checked").val();
         let total_amount    = 0;
         let cartElement     = $("input[name='cart_total_payable_amount']");
         let walletElement   = $("input[name='wallet_amount']");
@@ -3595,7 +3596,8 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id,order){
                     { name: 'order_number', value: order.order_number },
                     { name: 'cno', value: cno },
                     { name: 'dt', value: dt },
-                    { name: 'cv', value: cv }
+                    { name: 'cv', value: cv },
+                    { name: 'card_id', value: card_id }
                 );
         
             // }
@@ -3617,6 +3619,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id,order){
                 { name: 'from', value: payment_from },
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
+                    { name: 'card_id', value: card_id }
             );
         }
 
@@ -3631,6 +3634,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id,order){
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
                 { name: 'subsid', value: subscription_id.val() },
+                    { name: 'card_id', value: card_id }
             );
            
         } 
@@ -3646,6 +3650,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id,order){
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
                 { name: 'reload_route', value: address_id },
+                    { name: 'card_id', value: card_id }
             );
         }
         else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
@@ -3660,6 +3665,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id,order){
                 { name: 'from', value: payment_from },
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
+                { name: 'card_id', value: card_id }
             );
         }
         if(creditCardValidation()){
@@ -3681,7 +3687,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id,order){
                          $("#azul_card_error").html(response.msg);
                          $("#azul_card_error").css("color",'red');
                          $("#proceed_to_pay_loader").hide();
-                         $('#paywithplugpay').prop('disabled',false);
+                         $('#paywithazulpay').prop('disabled',false);
                          return false;
                      }
                      else if(response.payment_from == 'subscription'){
@@ -3781,6 +3787,12 @@ someday.setFullYear(exYear, exMonth, 1);
 	}
         
     }
+    var azul_card_id = $("input[type='radio'][name='azul_card_id']:checked").val();
+    if(azul_card_id){
+		message = '';
+		valid = true;
+	}
+    
     
      if(message != "") {
         $("#azul_card_error").show();
@@ -3804,3 +3816,50 @@ $(document).on("keyup","#azul-card-element",function () {
        this.value = this.value.replace(/[^0-9\.]/g, '');
     }
 });
+
+    
+function clickHandle(evt, tabName) {
+  let i, tabcontent, tablinks;
+
+  // This is to clear the previous clicked content.
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Set the tab to be "active".
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Display the clicked tab and set it to active.
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+  
+  if(tabName == 'Card-List'){
+  
+  	  ajaxCall = $.ajax({
+            type: "post",
+            dataType: "json",
+            url: user_cards_url,
+            beforeSend : function() {
+                if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
+                    ajaxCall.abort();
+                }
+                $('.spinner-overlay').show();
+            },
+            success: function(response) {
+                $('#Card-List').html(response.html);
+            },
+            complete: function() {
+                $('.spinner-overlay').hide();
+            },
+            error: function (data) {
+                //location.reload();
+            },
+        });
+  
+  
+  }
+}

@@ -60,7 +60,8 @@ use App\Models\CartDeliveryFee;
 use App\Models\ClientPreference;
 use App\Http\Traits\ {
     ApiResponser,
-    CartManager
+    CartManager,
+    SquareInventoryManager
 };
 use App\Models\AddonOption;
 use App\Models\ {
@@ -82,7 +83,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager;
+    use ApiResponser, CartManager, SquareInventoryManager;
     use \App\Http\Traits\OrderTrait;
 
     /**
@@ -138,13 +139,19 @@ class OrderController extends FrontController
         if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
             $pastOrders = $pastOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
         }
-        $pastOrders->whereHas('vendors', function ($q) {
-            $q->whereIn('order_status_option_id', [
-                6,
-                9
-            ]);
-        })
-            ->where(function ($q1) {
+        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+            $pastOrders->whereHas('vendors.products', function ($q) {
+                $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+            });
+        }else{
+            $pastOrders = $pastOrders->whereHas('vendors', function ($q) {
+                $q->whereIn('order_status_option_id', [
+                    6,
+                    9
+                ]);
+            });
+        }
+        $pastOrders = $pastOrders->where(function ($q1) {
             $q1->where('payment_status', 1)
                 ->whereNotIn('payment_option_id', [
                 1
@@ -156,7 +163,8 @@ class OrderController extends FrontController
             ->where('orders.user_id', $user->id);
         if ($checkLongTerm) {
             $pastOrders->where('orders.is_long_term', 0);
-        }
+        } 
+     
         $pastOrders = $pastOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
@@ -164,9 +172,7 @@ class OrderController extends FrontController
             'vendors' => function ($q) use($additionalPreference) {
                 $q->with(['products'=> function ($Pq) use ( $additionalPreference) {
                     if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                        $Pq->whereHas('order_product_status', function ($q1) {
-                            $q1->where('dispatcher_status_option_id',2)->whereNotIn('dispatcher_status_option_id', [1,5,3]); // cancel order product
-                        });
+                            $Pq->where('dispatcher_status_option_id',2);
                     }
                 }, 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
@@ -187,14 +193,8 @@ class OrderController extends FrontController
             'reqCancelOrder'
         ]);
 
-        $activeOrders->whereHas('vendors', function ($q) {
-            $q->whereNotIn('order_status_option_id', [
-                3,
-                6,
-                9
-            ]);
-        })
-            ->where(function ($q1) {
+        
+        $activeOrders->where(function ($q1) {
             $q1->where('payment_status', 1)
                 ->whereNotIn('payment_option_id', [
                 1,
@@ -218,6 +218,19 @@ class OrderController extends FrontController
             ->where('orders.user_id', $user->id);
         if ($checkLongTerm) {
             $activeOrders->where('orders.is_long_term', 0);
+        }
+        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+            $activeOrders =  $activeOrders->whereHas('vendors.products', function ($q) {
+                $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+            });
+        }else{
+            $activeOrders=   $activeOrders->whereHas('vendors', function ($q) {
+                $q->whereNotIn('order_status_option_id', [
+                    3,
+                    6,
+                    9
+                ]);
+            });
         }
         $activeOrders = $activeOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
@@ -364,10 +377,18 @@ class OrderController extends FrontController
             'products.productRating',
             'user',
             'address'
-        ])->whereHas('vendors', function ($q) {
-            $q->where('order_status_option_id', 3);
-        })
-            ->where(function ($q1) {
+        ]);
+        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+            $rejectedOrders->whereHas('vendors.products', function ($q) {
+                $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
+            });
+        }else{
+
+            $rejectedOrders = $rejectedOrders->whereHas('vendors', function ($q) {
+                $q->where('order_status_option_id', 3);
+            });
+        }
+        $rejectedOrders = $rejectedOrders->where(function ($q1) {
             $q1->where('payment_status', 1)
                 ->whereNotIn('payment_option_id', [
                 1
@@ -380,6 +401,7 @@ class OrderController extends FrontController
         if ($checkLongTerm) {
             $rejectedOrders->where('orders.is_long_term', 0);
         }
+        
         $rejectedOrders = $rejectedOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
@@ -437,6 +459,7 @@ class OrderController extends FrontController
                 'status' => 'Active'
             ])->get();
         }
+       
    
         // dd($activeOrders->toArray());
 
@@ -487,9 +510,7 @@ class OrderController extends FrontController
         $Orders = Order::with([
             'vendors' => function ($q) {
                 $q->with(['products'=> function ($Pq) {
-                    $Pq->whereHas('order_product_status', function ($q1) {
-                        $q1->where('dispatcher_status_option_id',1)->whereNotIn('dispatcher_status_option_id', [2, 3]); // cancel order product
-                    });
+                    $Pq->where('dispatcher_status_option_id', 1);
                 }, 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
                     $q->with('exchanged_of_order.orderDetail');
@@ -504,8 +525,8 @@ class OrderController extends FrontController
             'reqCancelOrder'
         ]);
 
-        $Orders->whereHas('vendors.products.order_product_status', function ($q1) {
-            $q1->where('dispatcher_status_option_id',1)->whereNotIn('dispatcher_status_option_id', [2, 3]); // cancel order product
+        $Orders->whereHas('vendors.products', function ($q1) {
+            $q1->where('dispatcher_status_option_id', 1); 
         })
             ->where(function ($q1) {
             $q1->where('payment_status', 1)
@@ -533,7 +554,6 @@ class OrderController extends FrontController
         $Orders = $Orders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
-
         foreach ($Orders as $order) {
         
             foreach ($order->vendors as $vendor) {
@@ -1114,12 +1134,12 @@ class OrderController extends FrontController
             $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area', 'stop_order_acceptance_for_users')->first();
             $editlimit_datetime = Carbon::now()->toDateTimeString();
             $order_edit_before_hours = 0;
-            $order_edit_before_hours = getAdditionalPreference([
-                'order_edit_before_hours'
-            ])['order_edit_before_hours'];
-            $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch']);
+           
+            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours']);
 
+            $order_edit_before_hours = $additionalPreferences->order_edit_before_hours;
+
+            $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (! empty($request->user_id))) {
@@ -1565,9 +1585,11 @@ class OrderController extends FrontController
                     $vendor_taxable_amount = $taxable_amount;
                     $variant_price = $variant->price * $daysCountRecurring;
                     // change variant_price price when is_service_product_price_from_dispatch on 
+                    $is_price_buy_driver = 0;
                     if(($action == 'on_demand') && checkColumnExists('cart_products', 'dispatch_agent_price') && 
                     ($additionalPreferences->is_service_product_price_from_dispatch ==1 )){
                         $variant_price =$vendor_cart_product->dispatch_agent_price ;
+                        $is_price_buy_driver = 1;
                     }
                     $total_amount += $vendor_cart_product->quantity * $variant_price;
                     
@@ -1587,6 +1609,12 @@ class OrderController extends FrontController
                     $order_product->start_date_time = $vendor_cart_product->start_date_time;
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
                     $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee) ? $vendor_cart_product->product_delivery_fee : 0;
+                    if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
+                        $order_product->is_price_buy_driver = $is_price_buy_driver;
+                    }
+                    if(checkColumnExists('order_vendor_products', 'specific_instruction')){
+                        $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
+                    }
                     /**
                      * for rental case total_booking_time as a total time
                      * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity
@@ -1679,6 +1707,10 @@ class OrderController extends FrontController
                         $order_product->slot_price = ! empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
                     }
 
+                  
+                   // if (checkColumnExists('order_vendor_products', 'dispatch_agent_id')) {
+                        $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
+                   // }
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
@@ -4257,5 +4289,14 @@ class OrderController extends FrontController
             'quantity_price' => $quantity_price,
             'amount' => $amount
         ];
+    }
+
+
+    function squareProductCreate(){
+        $this->createNewProductInSquareTest();
+    }
+
+    function squareProductUpdate(){
+        $this->updateNewProductInSquareTest();
     }
 }

@@ -122,6 +122,37 @@ trait ProductTrait{
         return $returnResponse;
 
     }
+    public function getAgentProductPriceFromDispatcher( $productVariantSku,$agent_id) // for update order by freelancer
+    {
+        $returnResponse['data'] = array();
+        $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false ) {
+            $DatabaseName = DB::connection()->getDatabaseName();
+         
+            $postdata =  [
+                'product_variant_sku'  =>  $DatabaseName.'_'.$productVariantSku,
+                'agent_id' => $agent_id,
+            ];
+            $client = new Guzzle([
+                'headers' => [
+                    'personaltoken' => $dispatch_domain_ondemand->dispacher_home_other_service_key,
+                    'shortcode'     => $dispatch_domain_ondemand->dispacher_home_other_service_key_code,
+                    'content-type'  => 'application/json'
+                ]
+            ]);
+
+            $url = $dispatch_domain_ondemand->dispacher_home_other_service_key_url;
+            $res = $client->post(
+                $url . '/api/getProductPriceByAgent',
+                ['form_params' => ($postdata)]
+            );
+            $response = json_decode($res->getBody(), true);
+            if(isset( $response['data']))
+            $returnResponse['data']  = $response['data'];
+        }
+        return $returnResponse;
+
+    }
     public function getGerenalSlotFromDispatcher($date)
     {
         $returnResponse = array();

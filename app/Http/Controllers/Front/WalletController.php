@@ -9,6 +9,7 @@ use App\Models\{User, Transaction, ClientCurrency, Payment, PaymentOption};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use Session;
+use App\Models\UserDataVault;
 
 class WalletController extends FrontController
 {
@@ -34,7 +35,10 @@ class WalletController extends FrontController
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
         }
-        return view('frontend/account/wallet',compact('public_key_yoco'))->with(['user'=>$user, 'navCategories'=>$navCategories, 'user_transactions'=>$user_transactions, 'clientCurrency'=>$clientCurrency]);
+        
+        $userCardExist =        UserDataVault::where(['user_id' => $auth_user->id])->count();
+        
+        return view('frontend/account/wallet',compact('public_key_yoco'))->with(['user'=>$user, 'navCategories'=>$navCategories, 'user_transactions'=>$user_transactions, 'clientCurrency'=>$clientCurrency,'userCardExist'=>$userCardExist]);
     }
 
     /**

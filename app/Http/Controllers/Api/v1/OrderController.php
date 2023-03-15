@@ -399,6 +399,7 @@ class OrderController extends BaseController
                             $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                             $price_in_currency = $variant->price / $divider;
                              // change product price when is_service_product_price_from_dispatch on 
+                            
                             if(( checkColumnExists('cart_products', 'dispatch_agent_price') && ($action == 'on_demand') && $additionalPreferences->is_service_product_price_from_dispatch ==1 )){
                                 $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
                             }
@@ -501,10 +502,12 @@ class OrderController extends BaseController
                             $vendor_taxable_amount += $taxable_amount;
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $variant_price = $variant->price;
-
+                            // change variant_price price when is_service_product_price_from_dispatch on 
+                            $is_price_buy_driver = 0;
                             if( checkColumnExists('cart_products', 'dispatch_agent_price') && 
                             (($action == 'on_demand') && ($additionalPreferences->is_service_product_price_from_dispatch ==1) )){
                                 $variant_price =$vendor_cart_product->dispatch_agent_price ;
+                                $is_price_buy_driver = 1;
                             }
                             $total_amount += ($vendor_cart_product->quantity * $variant_price);
                             $order_product = new OrderProduct;
@@ -531,6 +534,16 @@ class OrderController extends BaseController
                             $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                             $product_variant_sets = '';
 
+                            if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
+                                $order_product->is_price_buy_driver = $is_price_buy_driver;
+                            }
+                            if(checkColumnExists('order_vendor_products', 'specific_instruction')){
+                                $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
+                            }
+                            $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
+                            $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
+                            $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
+                            $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
 
                             if(@$vendor_cart_product->bid_number)
                             {
@@ -1365,6 +1378,38 @@ class OrderController extends BaseController
                     }else{ //for long term service
 
                     }
+                }
+            }
+        }
+        if ($luxury_option_id == 8) { // only for appointment type
+            $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+            if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false) {
+                $Appointment = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+
+
+                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
+                        $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+                        //echo $Appointment . 'app';
+                        //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
+
+                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
+
+                            $dispatch_domain = [
+                                'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
+                                'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
+                                'service_key_url'  => $dispatch_domain_Appointment->appointment_service_key_url,
+                                'service_type'     => 'appointment'
+                            ];
+                            //pr($checkdeliveryFeeAdded);
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $Appointment = 1;
+                                return 1;
+                            }
+                        }
+                    }
+                   
 
                 }
             }
@@ -2015,9 +2060,10 @@ class OrderController extends BaseController
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-                    $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+                    if(!empty($address)){
+                        $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+                    }
                 }
-
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
@@ -2031,7 +2077,6 @@ class OrderController extends BaseController
                     'cartData' => $cartDetails,
                     'user_address' => $address,
                 ];
-
                 if (!empty($data['admin_email'])) {
                     $email_data['admin_email'] = $data['admin_email'];
                 }
@@ -2102,19 +2147,30 @@ class OrderController extends BaseController
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'active';
-        $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
+        $orders = OrderVendor::where('user_id', $user->id)->with('products')->orderBy('id', 'DESC');
+        $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         switch ($type) {
             case 'pending': // which order not assign yet indriver
         
-            $orders->whereHas('products.order_product_status', function ($q1) {
-                        $q1->where('dispatcher_status_option_id',1)->whereNotIn('dispatcher_status_option_id', [2, 3]); // cancel order product
+            $orders->whereHas('products', function ($q1) {
+                        $q1->where('dispatcher_status_option_id',1);
                     });
                 break;
             case 'active':
                 $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
+                if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                    $orders->whereHas('products', function ($q) {
+                        $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+                    });
+                }
                 break;
             case 'past':
                 $orders->whereIn('order_status_option_id', [6, 3, 9]);
+                if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                    $orders->whereHas('products', function ($q) {
+                        $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+                    });
+                }
                 break;
             case 'schedule':
                 $order_status_options = [10];

@@ -30,7 +30,7 @@ class VerifyCsrfToken extends Middleware
         
         'payment/cashfree/notify',
         'verify/payment/otp/app/*',
-
+        'payment/webhook/stripe_ideal',
         /** routes for edit order **/
         'edit-order/*',
         'payment/webhook/*',
@@ -40,6 +40,7 @@ class VerifyCsrfToken extends Middleware
         'sendNotificationToUserByDispatcher',
         'dispatch/customer/distance/notification/*',
         'dispatch/driver/bids/update/*',
-        'dispatch/driver/bids/status/*'
+        'dispatch/driver/bids/status/*',
+        'square/inventory/event/update'
     ];
 }

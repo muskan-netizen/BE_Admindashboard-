@@ -347,6 +347,13 @@ class VendorController extends BaseController
      */
     public function save(Request $request, Vendor $vendor, $update = 'false'){
         $checks = array();
+        $user = Auth::user();
+        if($user->is_superadmin == 1){
+            $vendor->status = 1;
+        }else{
+            $vendor->status = 0;
+        }
+
         foreach ($request->only('name', 'address', 'latitude', 'longitude', 'desc','short_desc') as $key => $value) {
             $vendor->{$key} = $value;
         }
@@ -384,7 +391,9 @@ class VendorController extends BaseController
         else{
             $vendor->$single_vendor_type = 1;
         }
-
+        if($request->vendor_type){
+            $vendor->is_seller = 1;
+        }
         if ($update == 'false') {
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
@@ -411,7 +420,7 @@ class VendorController extends BaseController
         }
         $vendor->slug = Str::slug($request->name, "-");
         if(Vendor::where('slug',$vendor->slug)->count() > 0)
-        $vendor->slug = Str::slug($request->name, "-").rand(10,100);
+        $vendor->slug = Str::slug($request->name, "-");
         $vendor->save();
 
         if(@auth()->user()->getRoleNames()[0]=='Manager')
@@ -940,6 +949,7 @@ class VendorController extends BaseController
         $vendor_for_appointment_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',12);})->count();
         $reqBidCnt = Bid::where('vendor_id','!=',$id)->groupBy('bid_req_id')->count();
 
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_admin_vendor_rating']);
 
         return ['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'typeArray' => $type, 'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages, 'reqBidCnt'=>$reqBidCnt];
     }

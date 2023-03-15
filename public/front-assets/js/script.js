@@ -39,18 +39,56 @@ function  layoutMode(){
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
     };
+
     var sliderConfigEight10 = {
-        rows: 1,
+
+        rows: (featured_products_length >= 20    ? 2 : 1),
 		dots: false,
 		arrows: true,
 		infinite: true,
+        //centerMode: true,
 		speed: 300,
 		slidesToShow: 10,
 		slidesToScroll: 10,
         responsive: [
-            { breakpoint: 1500, settings: { slidesToShow: 7, slidesToScroll: 7 } },
-            { breakpoint: 1500, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint: 1920, settings: { slidesToShow: 10, slidesToScroll: 10 } },
+            { breakpoint: 1530, settings: { slidesToShow: 7, slidesToScroll: 7 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigspotlight = {
+        rows:1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+        //centerMode: true,
+		speed: 300,
+		slidesToShow: 8,
+		slidesToScroll: 2,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 2 } },
+            { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 7 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+
+    var sliderConfigCategoriesSlide = {
+        rows:1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+        centerMode: false,
+		speed: 300,
+		slidesToShow: 10,
+		slidesToScroll: 2,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 10, slidesToScroll: 2 } },
+            { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 2 } },
+            { breakpoint:  991, settings: { slidesToShow: 4, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
     };
@@ -83,8 +121,58 @@ function  layoutMode(){
 		slidesToShow: 10,
 		slidesToScroll: 10,
         responsive: [
-            { breakpoint: 1500, settings: { slidesToShow: 6, slidesToScroll: 6 } },
-            { breakpoint: 1500, settings: { slidesToShow: 6, slidesToScroll: 6 } },
+            { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 8 } },
+            { breakpoint: 1530, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigEighttop = {
+        rows: 1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+		speed: 300,
+		slidesToShow: 5,
+		slidesToScroll: 5,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+            { breakpoint: 1530, settings: { slidesToShow: 4, slidesToScroll: 4 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    
+
+    var sliderConfigSellingProductEight = {
+        rows: 1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+		speed: 300,
+		slidesToShow: 6,
+		slidesToScroll: 6,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 6 } },
+            { breakpoint: 1530, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigEight = {
+        rows: 1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+		speed: 300,
+		slidesToShow: 6,
+		slidesToScroll: 6,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 6 } },
+            { breakpoint: 1530, settings: { slidesToShow: 5, slidesToScroll: 5 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -245,10 +333,14 @@ function  layoutMode(){
         e(".Popular_Brands").slick(sliderConfigp2peight),
         e(".product-4-featured_products").slick(sliderConfig),
         e(".p2p_eccomerce_slider10").slick(sliderConfigEight10),
+        e(".spotlight_deals-eight").slick(sliderConfigspotlight),
+        e(".categories_sliderEight").slick(sliderConfigCategoriesSlide),
         e(".p2p_eccomerce_slider").slick(sliderConfigEight),
+        e(".TopratedSliderEight").slick(sliderConfigEighttop),
         e(".p2p_single_slider").slick(sliderConfig),
         e(".product-4-selected_products").slick(sliderConfig),
         e(".product-4-most_popular_products").slick(sliderConfig),
+        e(".selling_product_eight").slick(sliderConfigSellingProductEight),
 
         e('.suppliers-slider').slick({
             dots: false,

@@ -30,6 +30,7 @@ if (!function_exists('setUserCode')) {
 }
 
 
+
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {
   /** check if column exits in table
@@ -58,7 +59,7 @@ if (!function_exists('getAdditionalPreference')) {
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => session()->get('userCode')])->get() : [];
+            $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
             $return = array_column($result->toArray(), 'key_value', 'key_name');
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
@@ -713,6 +714,52 @@ if (!function_exists('showSlot')) {
         return $viewSlot;
     }
 }
+
+if (!function_exists('showPriceWithCurrency')) {
+function showPriceWithCurrency($price = 0,$compare = 0)
+    {
+            $multiply =  session()->get('currencyMultiplier') ?? 1;
+            $currencysymbol = session()->get('currencySymbol').' ';
+            $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+            if($additionalPreference['is_token_currency_enable'] == 1)
+            {
+                $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
+                $amount =  getInToken($price * $multiply);
+            }else{
+                $amount =  decimal_format($price * $multiply);
+            }
+
+            //check to compare price greater > 0 return
+            if($compare>0)
+            {
+                if($price>0){
+                    return '<del class="ml-2 compare_at_price">'.$currencysymbol.$amount.'</del>';
+                 }else{
+                    return '';
+                }
+            }
+
+            return $currencysymbol.$amount;
+    }
+}
+
+if (!function_exists('showNumericPrice')) {
+    function showNumericPrice($price = 0)
+        {
+                $multiply =  session()->get('currencyMultiplier') ?? 1;
+                $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+                if($additionalPreference['is_token_currency_enable'] == 1)
+                {
+                    //$currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
+                    $amount =  getInToken($price * $multiply);
+                }else{
+                    $amount =  decimal_format($price * $multiply);
+                }
+    
+                return $amount??0;
+        }
+    }
+
 if (!function_exists('getShowSlot')) {
     function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
     {
@@ -1488,6 +1535,12 @@ if( !function_exists('is_category_p2p') ) {
     }
 }
 
+if( !function_exists('is_category_products') ) {
+    function is_category_products($category) {
+        return $products = Product::where('category_id',$category)->count();
+    }
+}
+
 // if( !function_exists('is_p2p_vendor') ) {
 //     function is_p2p_vendor() {
 
@@ -1530,12 +1583,15 @@ if( !function_exists('is_category_p2p') ) {
 //     }
 // }
 
-if( !function_exists('productDiscountPercentage()') ) {
+if( !function_exists('productDiscountPercentage') ) {
     function productDiscountPercentage($product_price = 0, $product_compare_price)
     {
         if($product_compare_price > 0) {
             $discount = ($product_compare_price - $product_price) / $product_compare_price * 100;
-            return round($discount);
+            if($discount>0){
+                return round($discount);
+            }
+            return 0;
         }
         return 0;
     }
@@ -1731,6 +1787,29 @@ if (!function_exists('getDaysArrayBetweenTwoDates')) {
             }
         // Convert the period to an array of dates
         return $periods;
+    }
+}
+
+if( !function_exists('get_file_path') ) {
+    function get_file_path($url,$type="FILL_URL",$height="260",$width="260")  {
+        $img = 'default/default_image.png';
+      if(!empty($url)){
+        $img = $url;
+      }
+      $ex = checkImageExtension($img);
+      $values =  \Config::get('app.'.$type);
+      //pr($values);
+    //   $img = 'default/default_image.png';
+    //   if(!empty($value)){
+    //     $img = $value;
+    //     $values['is_original'] = true; 
+    //   }
+    //   $ex = checkImageExtension($img);
+    //   $values['proxy_url'] = \Config::get('app.IMG_URL1');
+    //   $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+    //   $values['image_fit'] = \Config::get('app.FIT_URl');
+    //   $values['image'] = $value;
+      return $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
     }
 }
 

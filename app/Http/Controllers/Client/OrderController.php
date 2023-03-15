@@ -184,7 +184,6 @@ class OrderController extends BaseController
         $request->merge(['response'=>2,'filter_order_status'=>'pending_orders']);
         $OrderFilterData = $this->postOrderFilter($request);
         $setWeekDate = $this->setWeekDate;
-      
         return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData','setWeekDate','returnFormRequestCount'));
     }
    public function geteEnabledLuxuryOptions($clientPreference){
@@ -1209,6 +1208,7 @@ class OrderController extends BaseController
                 $order_vendor->reject_reason = $request->reject_reason;
                 $order_vendor->cancelled_by = $request->cancelled_by;
                 $order_vendor->save();
+                OrderProduct::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id'=>$request->status_option_id]);
                 DB::commit();
                 $orderData = Order::find($request->order_id);
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
@@ -1217,6 +1217,7 @@ class OrderController extends BaseController
                 if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
                      $this->sendTrackingUrlSMS($orderData);
                 }
+
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),
@@ -1840,8 +1841,8 @@ class OrderController extends BaseController
                 }
             }
             $dynamic = uniqid($order->id . $vendor);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
-            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address','order_pre_time')->first();
+            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->first();
             // pr($orderVendorDetails);
             if(!empty($orderVendorDetails->web_hook_code))
             {
@@ -1962,6 +1963,8 @@ class OrderController extends BaseController
                             'vendor_name' => $vendor_details->name ?? null,
                             'tip_amount' => $order->tip_amount,
                             'payment_method' => $order->payment_method,
+                            'order_pre_time'=>$vendor_details->order_pre_time
+
                         ];
                         //pr($postdata);
                         if ($orderVendorDetails->is_restricted == 1) {
@@ -2049,7 +2052,7 @@ class OrderController extends BaseController
                 'allocation_type' => 'a',
                 'task_type' => $task_type,
                 'schedule_time' => $schedule_time ?? null,
-                'cash_to_be_collected' => $orderVendorDetails->payable_amount ?? 0.00,
+                'cash_to_be_collected' => !empty($orderVendorDetails) ? ($orderVendorDetails->payable_amount + $orderVendorDetails->service_fee_percentage_amount) : 0.00,
                 'order_number' => $order->order_number,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,

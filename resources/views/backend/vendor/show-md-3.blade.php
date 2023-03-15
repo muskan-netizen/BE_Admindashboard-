@@ -3,6 +3,166 @@
     a.deleteMultiBanner {
         color: #fff;
     }
+    .rating-form .form-group {
+    position: relative;
+    border: 0
+}
+.rating-star{cursor: pointer;font-size: 16px;}
+.rating-form .form-legend {
+    display: none;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    font-size: 2rem
+}
+
+.rating-form .form-item {
+    position: relative;
+    width: 220px;
+    direction: rtl
+}
+
+.rating-form .form-legend+.form-item {
+    padding-top: 10px
+}
+
+.rating-form input[type='radio'] {
+    position: absolute;
+    left: -9999px
+}
+
+.rating-form label {
+    display: inline-block;
+    cursor: pointer;
+    margin: 0
+}
+
+.rating-form .rating-star {
+    display: inline-block;
+    position: relative
+}
+
+.rating-form input[type='radio']+label:before,
+.rating-form input[type='radio']+label:after {
+    top: 13px;
+    font-size: 16px
+}
+
+.rating-form input[type='radio']+label:before {
+    content: attr(data-value);
+    position: absolute;
+    right: 30px;
+    opacity: 0;
+    direction: ltr
+}
+
+.rating-form input[type='radio']:checked+label:before {
+    right: 25px;
+    opacity: 1
+}
+
+.rating-form input[type='radio']+label:after {
+    content: "/ 5";
+    position: absolute;
+    right: 0;
+    opacity: 0;
+    direction: ltr
+}
+
+.rating-form input[type='radio']:checked+label:after {
+    opacity: 1
+}
+
+.rating-form label .fa {
+    font-size: 30px;
+    line-height: 30px
+}
+
+.rating-form label:hover .fa-star-o,
+.rating-form label:focus .fa-star-o,
+.rating-form label:hover~label .fa-star-o,
+.rating-form label:focus~label .fa-star-o,
+.rating-form input[type='radio']:checked~label .fa-star-o {
+    opacity: 0
+}
+
+/* .rating-form label .fa-star {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0
+} */
+
+.rating-form label:hover .fa-star,
+.rating-form label:focus .fa-star,
+.rating-form label:hover~label .fa-star,
+.rating-form label:focus~label .fa-star,
+.rating-form input[type='radio']:checked~label .fa-star {
+    opacity: 1
+}
+
+.rating-form input[type='radio']:checked~label .fa-star {
+    color: gold
+}
+
+.rating-form .ir {
+    position: absolute;
+    left: -9999px
+}
+
+.rating-form .form-action {
+    opacity: 0;
+    position: absolute;
+    left: 5px;
+    bottom: 0
+}
+
+.rating-form input[type='radio']:checked~.form-action {
+    cursor: pointer;
+    opacity: 1
+}
+
+body .rating-form .btn-reset {
+    display: inline-block;
+    margin: 0;
+    padding: 4px 10px;
+    border: 0;
+    font-size: 16px;
+    background: #fff;
+    color: #333;
+    cursor: auto;
+    border-radius: 5px;
+    outline: 0
+}
+
+.rating-form .btn-reset:hover,
+.rating-form .btn-reset:focus {
+    background: gold
+}
+
+.rating-form input[type='radio']:checked~.form-action .btn-reset {
+    cursor: pointer
+}
+
+.rating-form .form-output {
+    display: none;
+    position: absolute;
+    right: 15px;
+    bottom: -45px;
+    font-size: 30px;
+    font-size: 3rem;
+    opacity: 0
+}
+
+.no-js .rating-form .form-output {
+    right: 5px;
+    opacity: 1
+}
+
+.rating-form input[type='radio']:checked~.form-output {
+    right: 5px;
+    opacity: 1
+}
     .add_field{display: inline-block;}td.lasttd.manage_social.text-center {vertical-align: middle;}.social_manage .addUrlRow-Add {font-size: 12px;}
 </style>
 <div class="card-box text-center p-0 overflow-hidden" style="">
@@ -258,7 +418,6 @@
                         </div>
                     </div>
                     @endif
-
                     @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
                         @if(isset($roles))
                             @foreach($roles as $role)
@@ -362,6 +521,25 @@
     </div>
 </div>
 @endif
+@if(isset($getAdditionalPreference['is_admin_vendor_rating']) && $getAdditionalPreference['is_admin_vendor_rating'] == '1')
+<button class="add_edit_driver_review">Vendor Rating</button>
+<input type="hidden" value="{{$vendor->id}}" id="vendor_id">
+<div class="modal fade driver-rating driver_rating_vendor" id="driver_rating" tabindex="-1" aria-labelledby="driver_ratingLabel"
+aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-body">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div id="vendor_rating">
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+@endif
+
 
 @if(Auth::user()->is_superadmin == 1)
 
@@ -662,6 +840,7 @@
     </div>
 </div>
 @endif
+@endif
 <style type="text/css">
     #nestable_list_1 ol,
     #nestable_list_1 ul {
@@ -734,7 +913,7 @@
         </div>
     </div>
 </div>
-@endif
+
 <style type="text/css">
     #nestable_list_1 ol, #nestable_list_1 ul{
         list-style-type: none;
@@ -1404,6 +1583,19 @@ $("input[name='need_container_charges']").change(function() {
             $("#service_fee_percentInput").css("display", "block");
         }
     })
+
+    $('body').on('click', '.add_edit_driver_review', function(event) {
+            event.preventDefault();
+            var id= $('#vendor_id').val();
+            var route="{{url('client/get-vendor-rating')}}/"+id 
+            $.get(route,
+                function(markup) {
+                    console.log(markup);
+                    $('#driver_rating').modal('show');
+                    $('#vendor_rating').html(markup);
+                });
+        });
+
 </script>
 {{-- <script>
     var dynamic_html = "";

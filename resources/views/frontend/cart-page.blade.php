@@ -301,9 +301,9 @@
                                                 <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                                     <div class="items-price">
                                                         @if ($additionalPreference['is_token_currency_enable'])
-                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier)) }}
+                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1))) }}
                                                         @else
-                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }}
+                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1)) }}
                                                         @endif
                                                         @if (in_array($serviceType, ['appointment', 'on_demand']))
                                                             <span class="">
@@ -313,7 +313,7 @@
                                                     </div>
                                                 </div>
                                             @endif
-                                            @if (!empty($vendor_product->quantity_price))
+                                            @if (!empty(@$vendor_product->quantity_price))
                                                 <div class="col-6 col-md-2 text-left order-md-4">
                                                     @if ($serviceType == 'rental')
                                                         @php
@@ -324,18 +324,17 @@
                                                         @endphp
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->quantity_price + $additionalPrice)) }}
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format((@$vendor_product->quantity_price) + $additionalPrice)) }}
                                                             @else
-                                                                {{ Session::get('currencySymbol') . decimal_format($vendor_product->quantity_price + $additionalPrice) }}
+                                                                {{ Session::get('currencySymbol') . decimal_format((@$vendor_product->quantity_price) + $additionalPrice) }}
                                                             @endif
                                                         </div>
                                                     @else
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->quantity_price)) }}
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format(@$vendor_product->quantity_price)) }}
                                                             @else
-
-                                                                {{ Session::get('currencySymbol') . decimal_format($vendor_product->quantity_price) }}
+                                                                {{ Session::get('currencySymbol') . decimal_format(@$vendor_product->quantity_price) }}
                                                             @endif
                                                         </div>
                                                     @endif
@@ -498,18 +497,18 @@
                                                         <div class="col-md-6 col col-sm-4">
                                                             <div class="extra-items-price">
                                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($addon->option->price_in_cart * $addon->option->multiplier)) }}
+                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format(@$addon->option->price_in_cart *(@$addon->option->multiplier ?? 1))) }}
                                                                 @else
-                                                                    {{ Session::get('currencySymbol') . decimal_format($addon->option->price_in_cart * $addon->option->multiplier) }}
+                                                                    {{ Session::get('currencySymbol') . decimal_format(@$addon->option->price_in_cart * (@$addon->option->multiplier ?? 1)) }}
                                                                 @endif
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3 col col-sm-4">
                                                             <div class="extra-items-price">
                                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($addon->option->quantity_price)) }}
+                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format((@$addon->option->quantity_price ?? 0))) }}
                                                                 @else
-                                                                    {{ Session::get('currencySymbol') . decimal_format($addon->option->quantity_price) }}
+                                                                    {{ Session::get('currencySymbol') . decimal_format((@$addon->option->quantity_price??0)) }}
                                                                 @endif
                                                             </div>
                                                         </div>
@@ -1113,8 +1112,8 @@
 
                             @if ($cart_details->sub_total > 0)
                                 <div class="row">
-                                    <div class="col-6">{{ __('Sub Total') }}</div>
-                                    {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total)}}</b></div> --}}
+                                    <div class="col-6">{{ __('Total') }}</div>
+                                    {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
                                                 {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->sub_total) }}
@@ -1211,7 +1210,7 @@
                             @if ($price_bifurcation != 1)
                                 <!-- <hr class="my-2"> -->
                                 <div class="row">
-                                    <div class="col-6">{{ __('Total') }}</div>
+                                    <div class="col-6">{{ __('Sub Total') }}</div>
                                     {{-- @if ($serviceType == 'rental')
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
@@ -1705,7 +1704,7 @@
             <h3 class="mb-2 mt-4">{{ __('Frequently bought together') }}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m">
+                    <div class="product-4 product-m upsell-sell">
                         @foreach ($cart_details->upSell_products as $product)
                             <a class="common-product-box scale-effect text-center"
                                 href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">
@@ -1747,7 +1746,7 @@
             <h3 class="mb-2 mt-3">{{ __('You might be interested in') }}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m">
+                    <div class="product-4 product-m cross-sell">
                         @foreach ($cart_details->crossSell_products as $product)
                             <a class="common-product-box scale-effect text-center"
                                 href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">

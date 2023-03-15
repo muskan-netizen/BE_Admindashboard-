@@ -53,14 +53,14 @@
                                 @if($subscription->status_id == 2)
                                     @if( $subscription->end_date >= $now )
                                         @if($subscription->plan->status == 1)
-                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __("Pay now") }} (${{ $subscription->plan->price }})</a>
+                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __("Pay now") }} ({{$clientCurrency->currency->symbol}}{{ decimal_format($subscription->plan->price) }})</a>
                                         @endif
                                         @if(empty($subscription->cancelled_at))
                                             <a class="cancel-subscription-link btn btn-info" href="#cancel-subscription" data-toggle="modal" data-id="{{ $subscription->slug }}">{{ __('Cancel') }}</a>
                                         @endif
                                     @else
                                         @if($subscription->plan->status == 1)
-                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __("Renew") }} (${{ $subscription->plan->price }})</a>
+                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __("Renew") }} ({{$clientCurrency->currency->symbol}}{{ decimal_format($subscription->plan->price) }})</a>
                                         @endif
                                     @endif
                                 @endif

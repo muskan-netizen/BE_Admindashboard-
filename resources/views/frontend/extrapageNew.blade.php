@@ -175,8 +175,8 @@
                                         <span class="invalid-feedback" id="account_number_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="ifsc_codeInput">
-                                        <label for="ifsccode">{{__('IFSC Code')}}</label>
-                                        <input type="text" class="form-control" name="ifsc_code" placeholder="IFSC Code" value="{{$user ? $user->title : ''}}" placeholder="">
+                                        <label for="ifsccode">{{getNomenclatureName('IFSC Code', true)}}</label>
+                                        <input type="text" class="form-control" name="ifsc_code" placeholder="{{getNomenclatureName('IFSC Code', true)}}" value="{{$user ? $user->title : ''}}" placeholder="">
                                         <span class="invalid-feedback" id="ifsc_code_error"><strong></strong></span>
                                     </div>
                                 </div>

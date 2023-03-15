@@ -1880,12 +1880,15 @@ $(document).ready(function () {
             cno = $('#azul-card-element').val();
             dt = $('#azul-date-element').val();
             cv = $('#azul-cvv-element').val();
+            
             $("#azul_card_error").html();
-            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
-            {
-                success_error_alert('error', 'Please Fill Details', "#azul_card_error");
-                return false;
-            }
+            if(!creditCardValidation()){
+	            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+	            {
+	                success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+	                return false;
+	            }
+	        }
         }
 
         $('#proceed_to_pay_loader').show();
@@ -2213,7 +2216,8 @@ $(document).ready(function () {
         let cart_qty_total = 0;
         $(".shopping-cart li").each(function (index) {
             if ($(this).data('qty')) {
-                cart_qty_total += $(this).data('qty');
+                cart_qty_total = $(this).data('qty');
+
             }
         });
         if (cart_qty_total > 0) {
@@ -2766,7 +2770,7 @@ $(document).ready(function () {
         $(this).find('.fa').removeClass("fa-minus").addClass("fa-spinner fa-pulse");
         if (decrevalue >= minimum_order_count) {
             $('#quantity_' + cartproduct_id).val(decrevalue);
-            updateQuantity(cartproduct_id, decrevalue, base_price);
+         updateQuantity(cartproduct_id, decrevalue, base_price);
         } else {
             // alert('remove this product');
             $('#remove_item_modal').modal('show');
@@ -3783,7 +3787,7 @@ $(document).ready(function () {
         var schedule_date = $("input[name='booking_date']:checked").val();
         var schedule_time = $("input[name='booking_time']:checked").val();
         var specific_instructions = $("#specific_instructions").val();
-        var productid = $("#productid").val();
+        var productid = $("#last_cart_product_id").val();
         //alert(schedule_date);
         //alert(schedule_time);
        var schedule_dt = schedule_date;
@@ -3800,7 +3804,7 @@ $(document).ready(function () {
             data: { task_type: task_type ,specific_instructions:specific_instructions,productid:productid}, //, schedule_dt: schedule_dt,schedule_time:schedule_time
             success: function (response) {
                 if (response.status == "Success") {
-                    window.location.href = showCart;
+                   window.location.href = showCart;
                 }
             },
             error: function (error) {
@@ -5661,3 +5665,4 @@ function numberWithCommas(x) {
 }
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
+$(".related-css").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});

@@ -1119,7 +1119,7 @@ body.al_body_template_nine.p2p-module  .top-header .navbar .container {
     width: 85%;
 }
 body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dropdown {
-    padding: 0 5px 0 0  !important;
+    padding: 0 25px 0 0  !important;
     border-right: 1px solid #ccc;
     margin-right: 10px!important;
 }

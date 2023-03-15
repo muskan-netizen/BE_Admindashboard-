@@ -45,6 +45,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('dispatch/driver/bids/update/{id?}', 'Front\DispatcherController@dispatchDriverBidUpdate')->name('dispatch-driver-bids'); // instant booking / Bid and Ride pickup delivery update from dispatch
 	Route::post('dispatch/driver/bids/status/{id?}', 'Front\DispatcherController@dispatchDriverBidStatus')->name('dispatch-driver-bids-status'); // instant booking / Bid and Ride Bid Status pickup delivery update from dispatch
 	
+	Route::match(['get', 'post'], 'square/inventory/event/update', 'Front\SquareInventoryController@squareInventoryEventUpdate')->name('square-inventory-event-update'); // webhook to receive inventory updates from square inventory update events
 	
 	Route::get('testsms', 'Front\FrontController@testsms');
 
@@ -53,29 +54,13 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('demo/cabBooking', 'Front\CustomerAuthController@getDemoCabBookingPage');
 	Route::get('fcm', 'Front\CustomerAuthController@fcm');
 	Route::get('send-notification', 'Front\CustomerAuthController@sendNotification');
-	Route::get('vendor-notification', 'Front\DispatcherController@test');
-	Route::get('test/email1/{to?}', 'Front\FrontController@sendmailtest');
-	Route::get('test/email', function () {
-		$send_mail = 'test@yopmail.com';
-		// App\Jobs\SendRefferalCodeEmailJob::dispatch($send_mail);
-		// dispatch(new App\Jobs\SendRefferalCodeEmailJob($send_mail));
-		$details = [
-			'title' => 'Mail from ItSolutionStuff.com',
-			'body' => 'This is for testing email using smtp'
-		];
-
-		try {
-				\Mail::to('sandeep.kumar@codebrewinnovations.com')->send(new \App\Mail\MyTestMail($details));
-				dd('send mail successfully !!');
-			}catch(\Exception $e) {
-					return response()->json(['data' => $e->getMessage()]);
-			}
-	});
-
+    Route::get('vendor-notification', 'Front\DispatcherController@test');
+	Route::get('test/email1', 'Front\FrontController@sendmailtest');
 
 	// Start edit order routes
 	Route::post('edit-order/search/vendor/products', 'Front\TempCartController@vendorProductsSearchResults');
-	Route::post('edit-order/vendor/products/getProductsInCart', 'Front\TempCartController@getProductsInCart');
+	Route::match(['get', 'post'],'edit-order/search/Agent/products', 'Front\TempCartController@AgentProductsSearchResults');
+	Route::match(['get', 'post'],'edit-order/vendor/products/getProductsInCart', 'Front\TempCartController@getProductsInCart');
 	Route::post('edit-order/temp-cart/product/add', 'Front\TempCartController@postAddToTempCart');
 	Route::post('edit-order/temp-cart/product/updateQuantity', 'Front\TempCartController@updateQuantity');
 	Route::post('edit-order/temp-cart/product/detailWithAddons', 'Front\TempCartController@getCartProductDetailWithAddons');
@@ -191,6 +176,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//azulpay
 	Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
+	Route::match(['get','post'],'payment/get-cards','Front\AzulPaymentController@getUserCards')->name('payment.azulpay.getCards');
+	
 	//Square
 	Route::match(['get', 'post'], 'payment/square/page', 'Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square', 'Front\SquareController@createPayment')->name('payment.square.createPayment');
@@ -403,7 +390,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
 
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
-	Route::get('/homeTest', 'Front\UserhomeController@indexTest')->name('homeTest');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
 	//Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup')->name('page/driver-registration');
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
