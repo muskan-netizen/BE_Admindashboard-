@@ -289,9 +289,9 @@
                                                 <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                                     <div class="items-price">
                                                         @if ($additionalPreference['is_token_currency_enable'])
-                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier)) }}
+                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1))) }}
                                                         @else
-                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }}
+                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1)) }}
                                                         @endif
                                                         @if (in_array($serviceType, ['appointment', 'on_demand']))
                                                             <span class="">
@@ -301,7 +301,7 @@
                                                     </div>
                                                 </div>
                                             @endif
-                                            @if (!empty($vendor_product->quantity_price))
+                                            @if (!empty(@$vendor_product->quantity_price))
                                                 <div class="col-6 col-md-2 text-left order-md-4">
                                                     @if ($serviceType == 'rental')
                                                         @php
@@ -312,17 +312,17 @@
                                                         @endphp
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->quantity_price + $additionalPrice)) }}
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format((@$vendor_product->quantity_price) + $additionalPrice)) }}
                                                             @else
-                                                                {{ Session::get('currencySymbol') . decimal_format($vendor_product->quantity_price + $additionalPrice) }}
+                                                                {{ Session::get('currencySymbol') . decimal_format((@$vendor_product->quantity_price) + $additionalPrice) }}
                                                             @endif
                                                         </div>
                                                     @else
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->quantity_price)) }}
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format(@$vendor_product->quantity_price)) }}
                                                             @else
-                                                                {{ Session::get('currencySymbol') . decimal_format($vendor_product->quantity_price) }}
+                                                                {{ Session::get('currencySymbol') . decimal_format(@$vendor_product->quantity_price) }}
                                                             @endif
                                                         </div>
                                                     @endif
@@ -456,18 +456,18 @@
                                                         <div class="col-md-6 col col-sm-4">
                                                             <div class="extra-items-price">
                                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($addon->option->price_in_cart * $addon->option->multiplier)) }}
+                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format(@$addon->option->price_in_cart *(@$addon->option->multiplier ?? 1))) }}
                                                                 @else
-                                                                    {{ Session::get('currencySymbol') . decimal_format($addon->option->price_in_cart * $addon->option->multiplier) }}
+                                                                    {{ Session::get('currencySymbol') . decimal_format(@$addon->option->price_in_cart * (@$addon->option->multiplier ?? 1)) }}
                                                                 @endif
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3 col col-sm-4">
                                                             <div class="extra-items-price">
                                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($addon->option->quantity_price)) }}
+                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format((@$addon->option->quantity_price ?? 0))) }}
                                                                 @else
-                                                                    {{ Session::get('currencySymbol') . decimal_format($addon->option->quantity_price) }}
+                                                                    {{ Session::get('currencySymbol') . decimal_format((@$addon->option->quantity_price??0)) }}
                                                                 @endif
                                                             </div>
                                                         </div>

@@ -324,9 +324,12 @@ class PostController extends FrontController
                 $proVariant->save();
                 ProductTranslation::insert($datatrans);
                 
-            }
 
-            return $product;
+                return $product;
+            }
+            else{
+                throw new \ErrorException('Sorry, You are not a vendor.', 400);
+            }
         }else{
             throw new \ErrorException('Sorry, You are not a vendor.', 400);
         }

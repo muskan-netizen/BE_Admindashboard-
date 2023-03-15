@@ -48,7 +48,6 @@
     font-weight: 400;
     text-transform: capitalize;
 }
-
 .al_body_template_one .search_bar.menu-right .icon-nav a span {
     font-size: 12px;
     color: #000;
@@ -206,7 +205,9 @@
 .search_form input.form-control {
     font-size: 14px;
 }
-
+.al_body_template_eight .categories_sliderEight .slick-track {
+    margin:0 auto !important;
+    }
 .categories-product-list .text-right select#order_type {
     border: 1px solid#ddd;
     color: #000;
@@ -285,10 +286,12 @@ span.org_price.ml-1.font-14 {
     font-weight: 400;
     border-radius: 4px;
 }
+
 .al_body_template_eight .common-banner .small-section h4{
     font-size: 40px;
     font-weight: 500 !important;
 }
+
 .al_body_template_one .common-banner img {
     border-radius: 10px;
 }
@@ -555,6 +558,10 @@ body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded{
     transform: translateY(0%);
     margin-top: 6px;
 } */
+
+.al_body_template_six.add_overlay:after {
+    background:transparent;
+}
 
 .add_overlay {
     position: relative;
