@@ -31,6 +31,7 @@
 
     var card = '';
     var stripe = '';
+    var currencySymbol = "{{Session::get('currencySymbol')}}";
 
     // Razor Pay script
     var razorpay_options = {
@@ -116,7 +117,7 @@
                         success: function(response) {
                             if (response.status == "Success") {
                                 $("#subscription_payment #subscription_title").html(response.sub_plan.title);
-                                $("#subscription_payment #subscription_price").html('$' + response.sub_plan.price);
+                                $("#subscription_payment #subscription_price").html(currencySymbol + response.sub_plan.price);
                                 $("#subscription_payment #subscription_frequency").html(response.sub_plan.frequency);
                                 $("#subscription_payment #features_list").html(response.sub_plan.features);
                                 $("#subscription_payment #subscription_id").val(sub_id);

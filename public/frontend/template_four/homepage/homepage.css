@@ -4168,6 +4168,23 @@ body.dark {
 }
 body.al_body_template_four .file.file--upload{border:none;}
 
+/*===========  07-03-2023 vendor-registration css start ============*/
+body.al_body_template_four .al_details_vendor  .file.file--upload {
+    border: 1px solid#ced4da;
+}
+body.al_body_template_four .vendor-signup  .file.file--upload {
+    border: 1px solid#ced4da;
+}
+body.al_body_template_four .vendor-signup .form-row input#phone {
+    padding-right: 0!important;
+    padding-left: 76px!important;
+}
+body.al_body_template_four .vendor-signup  input#phone {
+    padding-left: 76px!important;
+    padding-right: 0!important;
+}
+
+/*===========  07-03-2023 vendor-registration css end ============*/
 /* car bar css start */
 
 .p-64 {

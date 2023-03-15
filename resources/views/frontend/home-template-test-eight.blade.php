@@ -709,7 +709,7 @@
 				<div class="row">
 					<div class=" col-12 al_custom_categories">
 						<div class="render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="col-12 d-flex align-items-center justify-content-center categories_sliderEight">
+							<div class="col-12 categories_sliderEight">
 								@foreach ( $homePageLabel->nav_categories as $category )
 									@include('frontend.home_page_8.category')
 								@endforeach

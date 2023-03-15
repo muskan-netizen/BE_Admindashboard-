@@ -101,7 +101,7 @@ class Product extends Model implements Auditable{
     }
 
     public function media(){
-        return $this->hasMany('App\Models\ProductImage')->select('product_id', 'media_id', 'is_default');
+        return $this->hasMany('App\Models\ProductImage')->select('id','product_id', 'media_id', 'is_default');
     }
 
     public function pimage(){

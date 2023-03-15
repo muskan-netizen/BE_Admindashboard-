@@ -1179,8 +1179,14 @@ class ProductController extends BaseController
 
     public function deleteImage(Request $request, $domain = '', $pid = 0, $imgId = 0){
         $product = Product::findOrfail($pid);
-        $img = VendorMedia::findOrfail($imgId);
-        $img->delete();
+//      /   $img = VendorMedia::findOrfail($imgId);     
+        $prodImage =  ProductImage::findOrfail($imgId);
+       // $img->delete();
+        if(!empty($prodImage)){
+            if(isset( $prodImage->image))
+                $prodImage->image->delete();
+            $prodImage->delete();
+        }
         return redirect()->back()->with('success', 'Product image deleted successfully!');
     }
 
