@@ -1,7 +1,7 @@
  <!--- Left Sidebar filters -->
  <aside class="side_fillter mt-2">
 
-<div class="col-12 custom_filtter mt-3 mb-3">
+{{-- <div class="col-12 custom_filtter mt-3 mb-3">
     <select name="order_type" id='order_type' class="form-control sortingFilter p-1 mb-0">
         <option value="">{{__('Sort By')}}</option>
         <option value="featured">{{_('Featured')}}</option>
@@ -12,7 +12,7 @@
         <option value="rating">{{_('Avg. Customer Review')}}</option>
         <option value="newly_added">{{_('Newest Arrivals')}}</option>
     </select>
-</div>
+</div> --}}
     
 <!-- side-bar colleps block stat -->
 <div class="collection-filter-block bg-transparent p-0 m-0 brand-left">

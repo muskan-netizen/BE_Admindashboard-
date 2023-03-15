@@ -216,7 +216,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @endif
                                             </ul>
                                         </div>
-                                        @if(count($product->media) > 1)
+                                        {{-- @if(count($product->media) > 1)
                                         <div class="exzoom_nav">
                                             @if(!empty($product->media))
                                             @foreach($product->media as $k => $image)
@@ -243,7 +243,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
                                             </a>
                                         </p>
-                                        @endif
+                                        @endif --}}
                                     </div>
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
