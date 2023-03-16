@@ -182,6 +182,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('category/delete/{id}', 'Client\CategoryController@destroy');
         Route::resource('variant', 'Client\VariantController');
         Route::post('variant/order', 'Client\VariantController@updateOrders')->name('variant.order');
+        Route::post('variant/delete-option', 'Client\VariantController@deleteVariantOption')->name('variant.delete.option');        
         Route::get('variant/cate/{cid}', 'Client\VariantController@variantbyCategory');
         Route::resource('brand', 'Client\BrandController');
         Route::post('brand/order', 'Client\BrandController@updateOrders')->name('brand.order');
