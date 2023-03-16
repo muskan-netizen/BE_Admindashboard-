@@ -10,6 +10,7 @@ use Str;
 use Auth;
 use App\Models\{Order, Payment,User,Cart,UserVendor,CartProductPrescription,CartProduct,CartCoupon,OrderProduct,OrderProductAddon,OrderProductPrescription,VendorOrderStatus,OrderVendor,OrderTax,CartAddon,CaregoryKycDoc,ClientPreference,ClientCurrency};
 use Session;
+use Log;
 class SkipCashController extends Controller
 {
 
@@ -340,6 +341,7 @@ class SkipCashController extends Controller
     {
             // Get the webhook payload
             $payload = json_decode($request->getContent(), true);
+            // print_r($payload, true);
 
             // Log the payload to your application's logs
             Log::info('SkipCash webhook received: '. print_r($payload, true));
