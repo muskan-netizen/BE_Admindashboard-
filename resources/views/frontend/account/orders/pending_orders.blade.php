@@ -3,6 +3,11 @@
         @if ($pendingOrder->isNotEmpty())
             @foreach ($pendingOrder as $key => $order)
                 @php
+
+                    if(count($order->vendors)==0)
+                    {
+                        continue;
+                    }
                     
                     $total_other_taxes = 0.0;
                     foreach (explode(':', $order->total_other_taxes) as $row) {

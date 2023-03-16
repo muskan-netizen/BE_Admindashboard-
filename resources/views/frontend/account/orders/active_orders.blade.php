@@ -2,7 +2,13 @@
     <div class="row">
         @if ($activeOrders->isNotEmpty())
         @foreach ($activeOrders as $key => $order)
-        @php
+        @php            
+                if(count($order->vendors)==0)
+                {
+                    continue;
+                }
+
+            
 
         $total_other_taxes=0.00;
         foreach(explode(":",$order->total_other_taxes) as $row){
