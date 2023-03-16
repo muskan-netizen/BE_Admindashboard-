@@ -169,7 +169,7 @@
                                             @if( !empty($var->type) && $var->type == 1 )
                                             {{-- <select class="form-control " name="free_delivery_roles[]" data-toggle="select2" multiple="multiple" placeholder="Select role..."> --}}
                                                 @if($var->option->count() <= 6)
-                                                    <div class="checkbox checkbox-success form-check-inline">
+                                                    <div class="flex-wrap checkbox checkbox-success form-check-inline">
                                                         @foreach($var->option as $key => $opt)
                                                             <div class="checkbox_filter">
                                                                 <input type="checkbox" name="" value="{{$opt->id}}" class="dynamic_checkbox" data-key="{{$var->title}}">
