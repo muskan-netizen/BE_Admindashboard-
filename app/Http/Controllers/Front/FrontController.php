@@ -25,11 +25,27 @@ class FrontController extends Controller
     use \App\Http\Traits\smsManager;
     use \App\Http\Traits\DispatcherSlot;
 
+    public $client_preferences = [];
+
+    
+    
+    public function __construct(Request $request)
+    {
+        $this->middleware(function ($request, $next) {
+            if (Session::has('preferences') && !empty(Session::get('preferences'))) {
+                $this->client_preferences = Session::get('preferences');
+                return $next($request);
+            }
+            abort(403);
+        });
+        
+    }
+
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
          
-            $client_preference =  getClientPreferenceDetail();
+            $client_preference =  $this->client_preferences;
             if($client_preference->sms_provider == 1)
             {
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
@@ -90,7 +106,7 @@ class FrontController extends Controller
         try{
             $body = $body['body']??'';
             $template_id = $body['template_id']??'';
-            $client_preference =  getClientPreferenceDetail();
+            $client_preference =  $this->client_preferences;
             if($client_preference->sms_provider == 1)
             {
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
@@ -172,7 +188,7 @@ class FrontController extends Controller
         // set category layout by on behalf of vendor type
         $categoryTypes = getServiceTypesCategory($vendorType);
        // pr($categoryTypes);
-        $primary     = ClientLanguage::orderBy('is_primary','desc')->first();
+        $primary     = Session::get('customerLanguage');
        // DB::enableQueryLog();
         $categories  = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
                                 ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id','cts.name','categories.type_id')
@@ -218,7 +234,7 @@ class FrontController extends Controller
                                 ->where('categories.status', '!=', $status)
                                 ->where('cts.language_id', $lang_id)
                                 ->where(function ($qrt) use($lang_id,$primary){
-                                    $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
+                                    $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary);
                                 })
                                 ->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')

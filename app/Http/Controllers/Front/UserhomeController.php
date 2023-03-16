@@ -29,10 +29,20 @@ class UserhomeController extends FrontController
     private $field_status = 2;
     public $cities = [];
     public $additionalPreference =[];
+    public $client_preferences = [];
+
+    
     
     public function __construct(Request $request)
     {
-     //   $this->additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency']);
+        $this->middleware(function ($request, $next) {
+            if (Session::has('preferences') && !empty(Session::get('preferences'))) {
+                $this->client_preferences = Session::get('preferences');
+                return $next($request);
+            }
+            abort(403);
+        });
+        
     }
 
 
@@ -49,7 +59,8 @@ class UserhomeController extends FrontController
     }
     public function getConfig()
     {
-        $client_preferences = ClientPreference::first()->makeHidden(['customer_support_key','delivery_service_key','fcm_server_key','fcm_api_key','mail_username','mail_password','sms_key','sms_secret','sms_credentials','fb_client_secret','fcm_storage_bucket','customer_support_application_id','pickup_delivery_service_key']);
+        $client_preferences = $this->client_preferences;
+        $client_preferences = $client_preferences->makeHidden(['customer_support_key','delivery_service_key','fcm_server_key','fcm_api_key','mail_username','mail_password','sms_key','sms_secret','sms_credentials','fb_client_secret','fcm_storage_bucket','customer_support_application_id','pickup_delivery_service_key']);
         return response()->json(['success' => true, 'client_preferences' => $client_preferences]);
 
     }
@@ -104,7 +115,7 @@ class UserhomeController extends FrontController
 
     public function checkIfLastMileDeliveryOn()
     {
-        $preference = ClientPreference::first();
+        $preference = $this->client_preferences;
 
         if($preference->business_type == 'taxi'){
             if ($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
@@ -168,7 +179,7 @@ class UserhomeController extends FrontController
     {
         $user = Auth::user();
         $language_id = Session::get('customerLanguage');
-        $client_preferences = ClientPreference::first();
+        $client_preferences = $this->client_preferences;
         $navCategories = $this->categoryNav($language_id);
         $client = Auth::user();
         $page_detail = Page::with(['translations' => function ($q) {
@@ -185,7 +196,7 @@ class UserhomeController extends FrontController
 
     public function checkIfLastMileOn()
     {
-        $preference = ClientPreference::first();
+        $preference = $this->client_preferences;
         if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
             return $preference;
         else
@@ -203,7 +214,7 @@ class UserhomeController extends FrontController
     {
         $user = Auth::user();
         $language_id = Session::get('customerLanguage');
-        $client_preferences = ClientPreference::first();
+        $client_preferences = $this->client_preferences;
         $navCategories = $this->categoryNav($language_id);
         $page_detail = Page::with(['translations' => function ($q) {
             $q->where('language_id', session()->get('customerLanguage'));
@@ -277,30 +288,29 @@ class UserhomeController extends FrontController
             $latitude = Session::get('latitude') ?? null;
             $longitude = Session::get('longitude') ?? null;
             $curId = Session::get('customerCurrency');
-            $preferences = Session::get('preferences');
             $langId = Session::get('customerLanguage');
             $client_config = Session::get('client_config');
             $selectedAddress = Session::get('selectedAddress');
+            $client_preferences = $this->client_preferences;
             $_REQUEST['request_from'] = 1;
 
             $navCategories = $this->categoryNav($langId);
             Session::put('navCategories', $navCategories);
-            $clientPreferences = ClientPreference::first();
             $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
 
 
             $count = 0;
-            if ($clientPreferences) {
+            if ($client_preferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                     $clientVendorTypes = $vendor_typ_key.'_check';
-                    if($clientPreferences->$clientVendorTypes == 1){
+                    if($client_preferences->$clientVendorTypes == 1){
                         $count++;
                     }
                 }
 
                 if(empty($latitude) && empty($longitude)){
-                    $latitude = $clientPreferences->Default_latitude;
-                    $longitude = $clientPreferences->Default_longitude;
+                    $latitude = $client_preferences->Default_latitude;
+                    $longitude = $client_preferences->Default_longitude;
                 }
 
             }
@@ -317,15 +327,13 @@ class UserhomeController extends FrontController
                 });
             });
           
-            if(isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)){
-                if(!empty($latitude) && !empty($longitude)){
-                    $banners = $banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
-                        $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                    });
-                }
+            if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
+                $banners = $banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
+                    $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                });
             }
             $banners = $banners->orderBy('sorting', 'asc')->get();
-            //pr($banners);
+            
             $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
             ->where(function ($q) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) {
@@ -333,12 +341,10 @@ class UserhomeController extends FrontController
                         ->whereDate('end_date_time', '>=', Carbon::now());
                 });
             });
-            if(isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)){
-                if(!empty($latitude) && !empty($longitude)){
-                    $mobile_banners = $mobile_banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
-                        $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                    });
-                }
+            if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
+                $mobile_banners = $mobile_banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
+                    $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                });
             }
             $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
 
@@ -353,7 +359,7 @@ class UserhomeController extends FrontController
 
             $home_page_labels = $home_page_labels->get();
             // if nothing in enblead for home page then show all 
-            // if (count($home_page_labels) == 0)
+           
             //     $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
             $request->request->add(['type'=>Session::get('vendorType')??'delivery','noTinJson'=>1] );
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
@@ -363,7 +369,7 @@ class UserhomeController extends FrontController
             $for_no_product_found_html = clone $CabBookingLayout;
             $enable_layout             = clone $CabBookingLayout;
             $enable_layout = $enable_layout->orderBy('order_by','asc')->pluck('slug')->toArray();
-            $homePageData = $this->postHomePageData($request, $set_template,$enable_layout);
+            $homePageData = $this->postHomePageData($request, $set_template, $enable_layout);
 
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData, $navCategories) {
                 if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
@@ -394,7 +400,7 @@ class UserhomeController extends FrontController
             if(isset($set_template)  && ($set_template->template_id == 8 || $set_template->template_id == 9)){
                 $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
                 ->where('id', '>', '1')
-                // ->where('is_core', 1)
+                
                 ->whereNotIn('type_id', [4, 5])
                 ->where(function ($q) {
                     $q->whereNull('vendor_id');
@@ -403,9 +409,9 @@ class UserhomeController extends FrontController
                 ->where('status', 1)
                 ->orderBy('parent_id', 'asc')->get();
             }
-            // dd($categories);
+            
 
-            // $last_mile = $this->checkIfLastMileDeliveryOn();
+            
             $view_page ="home-template-one";
             if (isset($set_template)  && $set_template->template_id == 1){
                 // $view_page = 'home-template-one';
@@ -433,9 +439,8 @@ class UserhomeController extends FrontController
                 $view_page = "home-template-test-nine";
             }
            
-            //pr($set_template->toArray());exit();
-            //pr(Session::get('latitude'));
-            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData];
+           
+            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData];
             return view('frontend.'.$view_page)->with($homeData);
 
         } catch (Exception $e) {
@@ -477,7 +482,6 @@ class UserhomeController extends FrontController
      */
     public function postHomePageData(Request $request,$set_template,$enable_layout)
     {
-        //pr($enable_layout);
         $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating']);
         $vendor_ids = [];
         $new_products = [];
@@ -485,7 +489,7 @@ class UserhomeController extends FrontController
         $on_sale_products = [];
         $long_term_service_products = [];
         $recently_viewed = [];
-        //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+        
         $p_dim = '260/260';
         if (isset($set_template)  && $set_template->template_id == 3){
             $p_dim = '300/300';
@@ -506,12 +510,14 @@ class UserhomeController extends FrontController
         }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
-        $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();
+        $preferences = $this->client_preferences;
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
 
         $currency_id = $this->setCurrencyInSesion();
-        $CabBookingLayoutTranslation =CabBookingLayoutTranslation::where('language_id',$language_id);
+        $CabBookingLayoutTranslation =CabBookingLayoutTranslation::where('language_id', $language_id)->select('title');
+
+
         $featured_products_title =  $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','featured_products');})->value('title');
 
         $vendors_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','vendors');})->value('title');
@@ -1011,7 +1017,7 @@ class UserhomeController extends FrontController
 
     public function getClientPreferences(Request $request)
     {
-        $clientPreferences = ClientPreference::first();
+        $clientPreferences = $this->client_preferences;
         if ($clientPreferences) {
             $dinein_check = $clientPreferences->dinein_check;
             $delivery_check = $clientPreferences->delivery_check;
@@ -1040,7 +1046,7 @@ class UserhomeController extends FrontController
             $selectedAddress = Session::get('selectedAddress');
             $navCategories = $this->categoryNav($langId);
             Session::put('navCategories', $navCategories);
-            $clientPreferences = ClientPreference::first();
+            $clientPreferences = Session::get('preferences');
             $count = 0;
             if ($clientPreferences) {
                 if ($clientPreferences->dinein_check == 1) {
@@ -1128,7 +1134,7 @@ class UserhomeController extends FrontController
 
     public function postHomePageDataBanners(Request $request)
     {
-        $preferences = ClientPreference::select('is_service_area_for_banners', 'is_hyperlocal', 'Default_latitude', 'Default_longitude')->first();
+        $preferences = Session::get('preferences');
         $latitude = $request->has('latitude') ? $request->get('latitude') : null;
         $longitude = $request->has('longitude') ? $request->get('longitude') : null;
 

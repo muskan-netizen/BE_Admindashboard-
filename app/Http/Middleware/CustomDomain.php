@@ -172,6 +172,8 @@ class CustomDomain{
           Session::put('default_country_phonecode', $phoneCode);
 
           Session::put('preferences', $preferData);
+          $cl->logo_image_url = $cl ? $cl->logo['original'] : ' ';
+          Session::put('clientdata', $cl);
 
       }else{
         return redirect()->route('error_404');

@@ -130,9 +130,7 @@ trait ProductActionTrait{
         try {
                 $recent_ids = $this->getRecentProductIds();
                 $rc_ids = [];
-                if(sizeof($recent_ids) > 0){
-                $rc_ids = $recent_ids->toArray();
-                } else {
+                if(sizeof($recent_ids) <= 0){
                     return [];
                 }
                 $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 30;
@@ -155,7 +153,7 @@ trait ProductActionTrait{
                 if ($where !== '') {
                     $products = $products->where($where, 1);
                 }
-                $products = $products->whereIn('id', $rc_ids);
+                $products = $products->whereIn('id', $recent_ids);
 
                 $pndCategories = Category::where('type_id', 7)->pluck('id');
                 // if (is_array($venderIds)) {

@@ -367,13 +367,13 @@ if($showSubscriptionPlanPopUp == 1){
     var khalti_api_key = "{{getKhaltiPayApiKey()??''}}";
 
 // Client Perference  Detail
-    var client_preference_web_color = "{{getClientPreferenceDetail()->web_color}}";
-    var client_preference_web_rgb_color = "{{getClientPreferenceDetail()->wb_color_rgb}}";
-    var stop_accepting_orders = "{{getClientPreferenceDetail()->stop_order_acceptance_for_users ?? 0}}";
+    var client_preference_web_color = "{{Session::get('preferences')->web_color}}";
+    var client_preference_web_rgb_color = "{{Session::get('preferences')->wb_color_rgb}}";
+    var stop_accepting_orders = "{{Session::get('preferences')->stop_order_acceptance_for_users ?? 0}}";
 
 // Client Detail
-    var client_company_name = "{{getClientDetail()->company_name}}";
-    var client_logo_url = "{{getClientDetail()->logo_image_url}}";
+    var client_company_name = "{{Session::get('clientdata')->company_name}}";
+    var client_logo_url = "{{Session::get('clientdata')->logo_image_url}}";
     var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
 
 // is restricted

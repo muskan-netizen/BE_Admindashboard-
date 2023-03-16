@@ -143,7 +143,7 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data ,$fcm_server_key = '')
     {
-        $client_preferences = ClientPreference::first();
+        $client_preferences = ClientPreference::select('fcm_server_key')->first();
         $fcm_server_key = ($fcm_server_key =='') ? $client_preferences->fcm_server_key :  $fcm_server_key ;
          if (!empty($fcm_server_key )) {
             $headers = [
@@ -644,7 +644,7 @@ if (!function_exists('showSlot')) {
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
         //type must be a : delivery , takeaway,dine_in
         $client = ClientData::select('timezone')->first();
-        $preferences = ClientPreference::first();
+        $preferences = ClientPreference::select('scheduling_with_slots', 'business_type')->first();
         $viewSlot = array();
         if (!empty($myDate)) {
             $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
@@ -968,7 +968,7 @@ if (!function_exists('GoogleDistanceMatrix')) {
     function GoogleDistanceMatrix($latitude, $longitude)
     {
         $send   = [];
-        $client = ClientPreference::where('id', 1)->first();
+        $client = ClientPreference::select('map_key', 'distance_unit')->where('id', 1)->first();
         $lengths = count($latitude) - 1;
         $value = [];
 
@@ -1277,10 +1277,7 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray = ['p2p'];
                 break;
             case "super_app":
-                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment' ];
-                if( checkColumnExists('client_preferences', 'p2p_check') ) {
-                    $typeArray[] = 'p2p';
-                }
+                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p' ];
                 break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
@@ -1408,7 +1405,7 @@ if (!function_exists('inventorySyncOnOff')) {
     {
         if (!empty($vendor_id) && checkColumnExists('client_preferences', 'inventory_service_key_url')) {
 
-            $client_preferences = ClientPreference::first();
+            $client_preferences = ClientPreference::select('inventory_service_key_url', 'inventory_service_key_code')->first();
             if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
 
                 $client = new \GuzzleHttp\Client([
@@ -1439,7 +1436,7 @@ if (!function_exists('inventorySyncOnOff')) {
 if( !function_exists('clientPrefrenceModuleStatus') ) {
     function clientPrefrenceModuleStatus($module_name) {
         if( checkColumnExists('client_preferences', $module_name) ) {
-            return ClientPreference::first()->value($module_name);
+            return ClientPreference::select($module_name)->first()->value($module_name);
         }
 
     }
