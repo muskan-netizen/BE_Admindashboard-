@@ -184,7 +184,6 @@ class OrderController extends BaseController
         $request->merge(['response'=>2,'filter_order_status'=>'pending_orders']);
         $OrderFilterData = $this->postOrderFilter($request);
         $setWeekDate = $this->setWeekDate;
-     //  pr(  $OrderFilterData );
         return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData','setWeekDate','returnFormRequestCount'));
     }
    public function geteEnabledLuxuryOptions($clientPreference){

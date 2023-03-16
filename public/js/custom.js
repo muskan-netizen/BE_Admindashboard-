@@ -5420,7 +5420,15 @@ $(document).ready(function () {
                 }else{
 					         $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
 				}
-              break;  
+              break; 
+            case '52':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                  paymentViaSkipCash(address_id, order);
+              } else {
+                  return false;
+              }
+          break 
         }
 
     }

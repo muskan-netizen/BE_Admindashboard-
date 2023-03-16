@@ -136,6 +136,15 @@
                 $reference_id = (isset($creds->reference_id)) ? $creds->reference_id : '';
                 $mtn_api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $plugnpay_publisher_name = (isset($creds->plugnpay_publisher_name)) ? $creds->plugnpay_publisher_name : '';
+
+				//skip cash 
+				$skip_cash_client_id = (isset($creds->skip_cash_client_id)) ? $creds->skip_cash_client_id : '';
+				$skip_cash_api_secret = (isset($creds->skip_cash_api_secret)) ? $creds->skip_cash_api_secret : '';
+				$skip_cash_key_id = (isset($creds->skip_cash_key_id)) ? $creds->skip_cash_key_id : '';
+				$skip_cash_testing_url = (isset($creds->skip_cash_testing_url)) ? $creds->skip_cash_testing_url : '';
+				$skip_cash_live_url = (isset($creds->skip_cash_live_url)) ? $creds->skip_cash_live_url : '';
+
+
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -1552,7 +1561,7 @@
 					</div>
 					
 					@endif @if ( (strtolower($opt->code) == 'payway') )
-					<div class="mt-2" id="azul_fields_wrapper" @if($opt->
+					<div class="mt-2" id="payway_fields_wrapper" @if($opt->
 						status != 1) style="display:none" @endif>
 						<div class="row">
 							<div class="col-12">
@@ -1605,8 +1614,7 @@
 									<label for="azul_ssl_certificate" class="mr-3">{{ __("SSL
 										Certificate") }}</label> <input type="file"
 										name="azul_ssl_certificate" id="azul_ssl_certificate"
-										class="form-control" @if($azul_ssl_certificate==
-										'') required @endif>
+										class="form-control" 	@if($opt->status == 1) required @endif>
 									<p class="font-weight-bold">{{@$azul_ssl_certificate}}</p>
 								</div>
 							</div>
@@ -1615,7 +1623,7 @@
 								<div class="form-group mb-2">
 									<label for="azul_ssl_key" class="mr-3">{{ __("SSL Key") }}</label>
 									<input type="file" name="azul_ssl_key" id="azul_ssl_key"
-										class="form-control" @if($azul_ssl_key== '') required @endif>
+										class="form-control" 	@if($opt->status == 1) required @endif>
 									<p class="font-weight-bold">{{@$azul_ssl_key}}</p>
 								</div>
 							</div>
@@ -1623,6 +1631,44 @@
 						</div>
 					</div>
 					@endif
+
+
+					 @if ( (strtolower($opt->code) == 'skip_cash') )
+                    <div class="mt-2" id="skip_cash_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="skip_cash_client_id" class="mr-3">{{ __("SKIPCASH CLIENT ID") }}</label>
+                                    <input type="password" name="skip_cash_client_id" id="skip_cash_client_id" class="form-control" value="{{$skip_cash_client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="skip_cash_key_id" class="mr-3">{{ __("SKIPCASH KEY ID") }}</label>
+                                    <input type="password" name="skip_cash_key_id" id="skip_cash_key_id" class="form-control" value="{{$skip_cash_key_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="skip_cash_api_secret" class="mr-3">{{ __("SKIPCASH_API_SECRET") }}</label>
+                                    <input type="password" name="skip_cash_api_secret" id="skip_cash_api_secret" class="form-control" value="{{$skip_cash_api_secret}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="skip_cash_test_url" class="mr-3">{{ __("Testing URL") }}</label>
+                                    <input type="text" name="skip_cash_testing_url" id="skip_cash_testing_url" class="form-control" value="{{$skip_cash_testing_url}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="skip_cash_live_url" class="mr-3">{{ __("SKIPCASH LIVE URL") }}</label>
+                                    <input type="text" name="skip_cash_live_url" id="skip_cash_live_url" class="form-control" value="{{$skip_cash_live_url}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
 				</div>
 			</div>
@@ -1737,6 +1783,7 @@
 
 
                     @if ( (strtolower($opt->code) == 'razorpay') )
+					
                     <div class="2" id="razorpay_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
                             <div class="col-12">
@@ -1759,6 +1806,7 @@
                         </div>
                     </div>
                     @endif
+
 
 
 
