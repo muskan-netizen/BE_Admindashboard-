@@ -78,7 +78,7 @@ class HubSpotSyncData extends Command
                
                 //$client_preferences = ClientPreference::on($database_name)->first();
                 $arr = ['hubspot_access_token','is_hubspot_enable','hubspot_last_update'];
-                $ClientPreference = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::on($database_name)->getQuery(): [];
+                $ClientPreference = ClientPreferenceAdditional::on($database_name)->getQuery();
                 $ClientData = ClientData::on($database_name);
                 $User = User::on($database_name)->getQuery();
                 $ClientPreferenceAdditional =clone $ClientPreference;

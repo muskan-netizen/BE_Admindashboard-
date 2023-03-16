@@ -14,7 +14,7 @@
   </div>
 @php
     $mapKey = '1234';
-    $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
+    $theme = Session::get('preferences');
     $analytics = getAdditionalPreference(['gtag_id', 'fpixel_id']);
     if($theme && !empty($theme->map_key)){
         $mapKey = $theme->map_key;

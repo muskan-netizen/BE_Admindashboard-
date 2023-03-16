@@ -9,7 +9,7 @@ $vendor_total_discount = 0;
 $serviceType =  Session::get('vendorType');
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 $timezone = Auth::user()->timezone;
-$order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_long_term : 0;
+$order_is_long_term = $order->is_long_term;
 @endphp
 @section('customcss')
 <style>
@@ -242,7 +242,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                         <li>{{$additionalPreference ['is_token_currency_enable'] ? __('Used Token') : __('Wallet Amount')}} <span> @if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
-                                    @if( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                    @if($order->gift_card_amount > 0)
                                         <li>{{__('Gift Card Amount')}} <span> {{Session::get('currencySymbol')}}{{decimal_format($order->gift_card_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if($order->tip_amount > 0)
@@ -287,9 +287,8 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                     <li class="col-4"><span>{{__('Order Total')}}:</span><span> {{Session::get('currencySymbol')}}{{decimal_format($total_amount)}}
                                     <li class="col-4">{{__('Order Total')}}:<span>@if( $additionalPreference["is_token_currency_enable"])
                                         {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total_amount))}}@else{{Session::get('currencySymbol').decimal_format($total_amount)}}@endif
-                                        @if(!checkColumnExists('orders', 'is_postpay'))
-                                            $order->is_postpay = 0;
-                                        @endif
+                                        $order->is_postpay = 0;
+                                        
 
                                         @if($order->payment_option_id != 1 && $order->payment_status!=1 && $order->is_postpay==1)
                                         <span style="color:var(--theme-deafult);">Unpaid</span>

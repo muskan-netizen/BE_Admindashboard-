@@ -28,11 +28,7 @@ class Product extends Model implements Auditable{
     }
 
     public function vendor(){
-      if(checkColumnExists('vendors', 'need_sync_with_order') && checkColumnExists('vendors', 'is_seller')){
-        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code');
-      }
-      
-      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude',  'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code');
+      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code');
     }
 
     public function related(){
@@ -321,18 +317,14 @@ class Product extends Model implements Auditable{
     public function scopeByProductWhereCheck($query)
     {   
         $query = $query->where(['is_live'=>1]);
-        if(checkColumnExists('products','is_long_term_service')){
-          $query = $query->where('is_long_term_service',0);
-        }
+        $query = $query->where('is_long_term_service',0);
         return $query;
     }
     // check product validate 
     public function scopeByProductLongTerm($query)
     {   
         $query = $query->where(['is_live'=>1]);
-        if(checkColumnExists('products','is_long_term_service')){
-          $query = $query->where('is_long_term_service',1);
-        }
+        $query = $query->where('is_long_term_service',1);
         return $query;
     }
 

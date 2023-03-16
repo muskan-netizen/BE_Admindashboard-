@@ -12,12 +12,6 @@ trait ValidatorTrait{
      * @param  mixed $columnName
      * @return void
      */
-    public function checkColumnExists($tableName, $columnName){
-        if (Schema::hasColumn($tableName, $columnName)){
-            return true;
-        }else{
-            return false;
-        }
-    }
+    
 
 }

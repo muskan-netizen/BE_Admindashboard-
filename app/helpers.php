@@ -1193,19 +1193,32 @@ if (!function_exists('getServiceTypesCategory')) {
     function getServiceTypesCategory($vendorType) {
         //echo $vendorType; exit();
         try {
-            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+            //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
-            // if(isset($set_template)  && $set_template->template_id == 9){
-
-            //     if(@$client_preference->p2p_check){
-            //         $vendorType = 'p2p';
-            //         // session()->put('vendorType', 'p2p');
-            //     }
-            // }
+            
 
             $types =   Type::query();
+
             $service_types = [];
-            if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
+
+            $alltypes = [
+                'delivery'     => ['products_service'],
+                'dine_in'      => ['products_service'],
+                'takeaway'     => ['products_service'],
+                'rental'       => ['rental_service'],
+                'pick_drop'    => ['pick_drop_service'],
+                'on_demand'    => ['on_demand_service'],
+                'laundry'      => ['laundry_service'],
+                'appointment'  => ['appointment_service'],
+                'taxi'         => ['pick_drop_service'],
+                'p2p'          => ['p2p'],
+                'home_service' => ['on_demand_service', 'appointment_service'],
+            ];
+            
+            $service_types = $alltypes[$vendorType];
+
+            $service_types = $alltypes[$client_preference->business_type];
+            /* if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
                 $service_types = ['products_service'];
             } elseif ($vendorType == "rental") {
                 $service_types = ['rental_service'];
@@ -1217,15 +1230,13 @@ if (!function_exists('getServiceTypesCategory')) {
                 $service_types = ['laundry_service'];
             } elseif ($vendorType == "appointment") {
                 $service_types = ['appointment_service'];
-            }
-            // elseif ($vendorType == "p2p") {
-            //     $service_types = ['products_service'];
-            // }
+            } 
+            
             elseif ($vendorType == "p2p") {
                 $service_types = ['p2p'];
-            }
+            }*/
 
-            if ($client_preference->business_type == 'taxi') {
+            /* if ($client_preference->business_type == 'taxi') {
                 $service_types = ['pick_drop_service'];
             } elseif ($client_preference->business_type == 'laundry') {
                 $service_types = ['laundry_service'];
@@ -1240,7 +1251,7 @@ if (!function_exists('getServiceTypesCategory')) {
             // }
             if ($client_preference->business_type == 'p2p') {
                 $service_types = ['p2p'];
-            }
+            } */
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
             return $types_id ;
@@ -1403,7 +1414,7 @@ if (!function_exists('checkTableExists')) {
 if (!function_exists('inventorySyncOnOff')) {
     function inventorySyncOnOff($vendor_id)
     {
-        if (!empty($vendor_id) && checkColumnExists('client_preferences', 'inventory_service_key_url')) {
+        if (!empty($vendor_id)) {
 
             $client_preferences = ClientPreference::select('inventory_service_key_url', 'inventory_service_key_code')->first();
             if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
@@ -1435,9 +1446,7 @@ if (!function_exists('inventorySyncOnOff')) {
 
 if( !function_exists('clientPrefrenceModuleStatus') ) {
     function clientPrefrenceModuleStatus($module_name) {
-        if( checkColumnExists('client_preferences', $module_name) ) {
             return ClientPreference::select($module_name)->first()->value($module_name);
-        }
 
     }
 }

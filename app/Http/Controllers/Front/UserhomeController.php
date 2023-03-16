@@ -39,6 +39,9 @@ class UserhomeController extends FrontController
             if (Session::has('preferences') && !empty(Session::get('preferences'))) {
                 $this->client_preferences = Session::get('preferences');
                 return $next($request);
+            }else{
+                $this->client_preferences = ClientPreference::first();
+                return $next($request);
             }
             abort(403);
         });
@@ -534,7 +537,7 @@ class UserhomeController extends FrontController
 
         $recent_orders_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
 
-        //$enable_layout = CabBookingLayout::where('is_active',1)->web()->pluck('slug')->toArray();
+       
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
             $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {

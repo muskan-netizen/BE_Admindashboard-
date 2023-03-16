@@ -56,17 +56,14 @@ trait WebStylingTrait
     public function updateSelectedProductstoDb($id, $request)
     {
       
-        if (checkColumnExists('home_products','product_id')) {
-            $delete = HomeProduct::where('layout_id', $id)->delete();
-            foreach($request->selected_products as $products){
+        $delete = HomeProduct::where('layout_id', $id)->delete();
+        foreach($request->selected_products as $products){
             $relatedArray[] = [
                 'slug' => 'selected_products',
                 'product_id' => $products,
                 'layout_id'=> $id
             ];
-        }
             HomeProduct::insert($relatedArray);
-
         }
         return true;
     }
@@ -83,14 +80,12 @@ trait WebStylingTrait
     public function getSelectedProducts()
     {
         $product_ids = [];
-        if (checkColumnExists('home_products', 'slug')) {
-            $single_category_products = HomeProduct::whereSlug('selected_products')->first();
-            if (!empty($single_category_products->products)) {
+        $single_category_products = HomeProduct::whereSlug('selected_products')->first();
+        if (!empty($single_category_products->products)) {
 
-                $product_ids = json_decode($single_category_products->products);
-            } else {
-                $product_ids = [];
-            }
+            $product_ids = json_decode($single_category_products->products);
+        } else {
+            $product_ids = [];
         }
         return $product_ids;
     }

@@ -94,8 +94,7 @@ class OrderController extends FrontController
             }
             $iconsArray[] =  $imgUrl;
         }
-        // dd($iconsArray);
-        $checkLongTerm = checkColumnExists('orders', 'is_long_term');
+        
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->whereIn('order_status_option_id', [6, 9]);
@@ -105,9 +104,8 @@ class OrderController extends FrontController
             }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.product', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports',
 
         ]);
-        if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
-            $pastOrders = $pastOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
-        }
+        $pastOrders = $pastOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+
         $pastOrders->whereHas('vendors', function ($q) {
             $q->whereIn('order_status_option_id', [6, 9]);
         })
@@ -118,9 +116,8 @@ class OrderController extends FrontController
                 });
             })
             ->where('orders.user_id', $user->id);
-            if($checkLongTerm){
-                $pastOrders->where('orders.is_long_term', 0);
-            }
+            $pastOrders->where('orders.is_long_term', 0);
+            
             $pastOrders     =  $pastOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
         $activeOrders = Order::with([
             'vendors' => function ($q) {
@@ -134,9 +131,7 @@ class OrderController extends FrontController
 
 
         ]);
-        if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
-            $activeOrders = $activeOrders->with('vendors.exchanged_of_order.orderDetail');
-        }
+        $activeOrders = $activeOrders->with('vendors.exchanged_of_order.orderDetail');
         $activeOrders->whereHas('vendors', function ($q) {
             $q->where('order_status_option_id', '!=', 6);
             $q->where('order_status_option_id', '!=', 3);
@@ -153,9 +148,7 @@ class OrderController extends FrontController
                 });
             })
             ->where('orders.user_id', $user->id);
-            if($checkLongTerm){
-                $activeOrders->where('orders.is_long_term', 0);
-            }
+        $activeOrders->where('orders.is_long_term', 0);
         $activeOrders = $activeOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
 
         foreach ($activeOrders as $order) {
@@ -245,9 +238,7 @@ class OrderController extends FrontController
             }
         ])->whereHas('vendors.products.productReturn')
             ->where('orders.user_id', $user->id);
-            if($checkLongTerm){
-                $returnOrders->where('orders.is_long_term', 0);
-            }
+        $returnOrders->where('orders.is_long_term', 0);
         $returnOrders  =   $returnOrders->orderBy('orders.id', 'DESC')->paginate(20);
         foreach ($returnOrders as $order) {
             foreach ($order->vendors as $vendor) {
@@ -286,9 +277,7 @@ class OrderController extends FrontController
                 });
             })
             ->where('orders.user_id', $user->id);
-            if($checkLongTerm){
-                $rejectedOrders->where('orders.is_long_term', 0);
-            }
+        $rejectedOrders->where('orders.is_long_term', 0);
         $rejectedOrders = $rejectedOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
 
         foreach ($rejectedOrders as $order) {
@@ -333,17 +322,13 @@ class OrderController extends FrontController
             $client_preferences->editlimit_datetime = Carbon::now()->addHours($client_preferences->order_edit_before_hours)->toDateTimeString();
         }
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
-        if (checkColumnExists('return_reasons', 'type')) {
-            $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
-        } else {
-            $cancellation_reason = ReturnReason::where(['status' => 'Active'])->get();
-        }
+        $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
 
         //   dd($activeOrders->toArray());
 
         $longTermOrder = [];
         /** get user long term orders */
-        if (getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1 && checkColumnExists('products', 'is_long_term_service'))
+        if (getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1)
             $longTermOrder = $this->getUserLongTermService($user, $langId, $currency_id);
         // dd($longTermOrder->toArray());
         $langId = Session::get('customerLanguage');
@@ -362,7 +347,7 @@ class OrderController extends FrontController
                                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                                     $q->where('language_id', $langId);
                                 }, 'address']);
-        if(checkTableExists('order_long_term_services') &&  checkColumnExists('orders','is_long_term') ){
+        if(checkTableExists('order_long_term_services')){
             $order =    $order->with(['products.LongTermService.product','products.LongTermService.product.translation_one' => function ($q) use ($langId) {
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $langId);
@@ -864,11 +849,7 @@ class OrderController extends FrontController
             }
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
-            if (checkColumnExists('carts', 'order_id')) { //get if any order is being edit
-                $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
-            } else {
-                $cart = Cart::where('user_id', $user->id)->first();
-            }
+            $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
 
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
@@ -879,7 +860,7 @@ class OrderController extends FrontController
             $loyalty_points_used = $loyaltyCheck->loyalty_points_used??0;
 
             // check gift card
-            if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
+            if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1){
 
                 if(isset($cart->giftCard) && !empty($cart->giftCard)){
 
@@ -980,9 +961,7 @@ class OrderController extends FrontController
             $order->is_gift = $request->is_gift ?? 0;
             $order->user_latitude = $latitude ? $latitude : null;
             $order->user_longitude = $longitude ? $longitude : null;
-            if (checkColumnExists('orders', 'is_postpay')) {
-                $order->is_postpay = (isset($request->is_postpay)) ? $request->is_postpay : 0;
-            }
+            $order->is_postpay = (isset($request->is_postpay)) ? $request->is_postpay : 0;
             /* Save initial details of order */
             $order->save();
 
@@ -1043,7 +1022,6 @@ class OrderController extends FrontController
             $is_long_term_order = 0;
             $deliveryfeeOnCoupon = 0;
             
-            $checkLongTermInDB = checkColumnExists('products', 'is_long_term_service');
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (!empty($request->other_taxes_string)) {
                 foreach (explode(":", $request->other_taxes_string) as $row) {
@@ -1275,16 +1253,15 @@ class OrderController extends FrontController
                     $order_product->product_name = $vendor_cart_product->product->title ?? $vendor_cart_product->product->sku;
 
                     $product_dispatcher_tag = $vendor_cart_product->product->tags;
-                    if (($checkLongTermInDB == 1)) {
-                    }
+                    
                     $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
 
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                     $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
                     $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
-                   // if (checkColumnExists('order_vendor_products', 'dispatch_agent_id')) {
-                        $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
-                   // }
+                   
+                    $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
+                   
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
@@ -1296,7 +1273,7 @@ class OrderController extends FrontController
                     $order_product->save();
 
                     /** for long Term Service */
-                    if (($checkLongTermInDB == 1) && $vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts) {
+                    if ($vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts) {
                         $is_long_term_order = 1;
                         $service_start_date =  $vendor_cart_product->service_start_date ??   Carbon::now()->format('Y-m-d H:i:s');
                         $service_end_date = Carbon::parse($service_start_date)->addMonths($vendor_cart_product->product->service_duration)->setTimezone('UTC')->format('Y-m-d H:i:s');
@@ -1583,10 +1560,9 @@ class OrderController extends FrontController
                 $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                 $subs_discount_vendor           = $subs_discount_arr['vendor'];
 
-                if(checkColumnExists('order_vendors', 'subscription_discount_admin')){
-                    $OrderVendor->subscription_discount_admin  = $subs_discount_admin;
-                    $OrderVendor->subscription_discount_vendor = $subs_discount_vendor;
-                }
+                $OrderVendor->subscription_discount_admin  = $subs_discount_admin;
+                $OrderVendor->subscription_discount_vendor = $subs_discount_vendor;
+                
                 $total_subscription_discount = $total_subscription_discount + $subs_discount_admin + $subs_discount_vendor;
                 $OrderVendor->is_restricted = $is_restricted;
                 $OrderVendor->bid_discount = $bid_vendor_discount??0;
@@ -1723,7 +1699,7 @@ class OrderController extends FrontController
                 }
                 $order->payable_amount = $orderTotalPay;
             }
-            if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1 && checkColumnExists('orders', 'gift_card_id') ){
+            if(getAdditionalPreference(['is_gift_card'])['is_gift_card']==1){
                 $order->gift_card_id     = $cart->gift_card_id;
                 $order->gift_card_amount = decimal_format($giftCardUsedAmount);
                 $order->gift_card_code   = $userGiftCardCode;
@@ -1765,17 +1741,11 @@ class OrderController extends FrontController
                     $this->sendSuccessEmail($request, $order, $vendor_id);
                 }
 
-                if (checkColumnExists('carts', 'order_id')) {
-                    Cart::where('id', $cart->id)->update([
+                Cart::where('id', $cart->id)->update([
                         'schedule_type' => null, 'scheduled_date_time' => null,
                         'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null, 'order_id' => NULL
                     ]);
-                } else {
-                    Cart::where('id', $cart->id)->update([
-                        'schedule_type' => null, 'scheduled_date_time' => null,
-                        'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
-                    ]);
-                }
+                
                 CaregoryKycDoc::where('cart_id', $cart->id)->update(['ordre_id' => $order->id, 'cart_id' => '']);
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
@@ -2304,14 +2274,9 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if (checkColumnExists('orders', 'is_postpay')) {
-                    if ($order->is_postpay == 1 && $order->payment_status == 0) {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    } else {
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                if ($order->is_postpay == 1 && $order->payment_status == 0) {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2448,14 +2413,9 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if (checkColumnExists('orders', 'is_postpay')) {
-                    if ($order->is_postpay == 1 && $order->payment_status == 0) {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    } else {
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                if ($order->is_postpay == 1 && $order->payment_status == 0) {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2580,14 +2540,9 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if (checkColumnExists('orders', 'is_postpay')) {
-                    if ($order->is_postpay == 1 && $order->payment_status == 0) {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    } else {
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                if ($order->is_postpay == 1 && $order->payment_status == 0) {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;

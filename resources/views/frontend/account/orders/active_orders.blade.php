@@ -582,7 +582,7 @@
                                                                                     </li>
                                                                                 @endif
 
-                                                                                @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                                                                @if ($order->gift_card_amount > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
@@ -598,9 +598,8 @@
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
                                                                                     <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->payable_amount+$order->fixed_fee_amount)) : Session::get('currencySymbol') .decimal_format($order->payable_amount+$order->fixed_fee_amount)}}
 
-                                                                                    @if(!checkColumnExists('orders', 'is_postpay'))
-                                                                                        $order->is_postpay = 0;
-                                                                                    @endif
+                                                                                    $order->is_postpay = 0;
+                                                                                    
 
                                                                                     @if ($order->payment_option_id != 1 && $order->is_postpay == 1 && $order->payment_status == 0)
                                                                                         <br/><span style="color:var(--theme-deafult);">Unpaid</span>

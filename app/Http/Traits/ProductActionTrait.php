@@ -19,21 +19,17 @@ trait ProductActionTrait{
     public function getRecentProductIds()
     {
         try {
-            if(checkColumnExists('product_recently_viewed','product_id')){
-                $query =  ProductRecentlyViewed::query();
-                if(Auth::check()){
-                    $query =  $query->where('user_id', Auth::user()->id);
-                } else{
-                    $query = $query->where('token_id', session()->get('_token'));
-                }
-                $return = $query->orderBy('updated_at','DESC')->pluck('product_id');
-                if(sizeof($return) > 0){
-                    $return = $return->toArray();
-                } 
-                return $return;
+            $query =  ProductRecentlyViewed::query();
+            if(Auth::check()){
+                $query =  $query->where('user_id', Auth::user()->id);
             } else{
-                return [];
+                $query = $query->where('token_id', session()->get('_token'));
             }
+            $return = $query->orderBy('updated_at','DESC')->pluck('product_id');
+            if(sizeof($return) > 0){
+                $return = $return->toArray();
+            } 
+            return $return;
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -67,11 +63,10 @@ trait ProductActionTrait{
                 'user_id' => $user_id,
                 'updated_at' => Carbon::now()
             ];
-            if(checkColumnExists('product_recently_viewed','product_id')){
-                ProductRecentlyViewed::updateOrCreate(
+            ProductRecentlyViewed::updateOrCreate(
                     $update_by
                 ,$RecentlyViewed);
-            }
+            
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -91,9 +86,7 @@ trait ProductActionTrait{
     public function LoginActionRecentView($user_id)
     {
         try {
-            if(checkColumnExists('product_recently_viewed','product_id')){
-                ProductRecentlyViewed::where('token_id', session()->get('_token'))->update(['user_id' => $user_id, 'token_id' => '']);
-            }
+            ProductRecentlyViewed::where('token_id', session()->get('_token'))->update(['user_id' => $user_id, 'token_id' => '']);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

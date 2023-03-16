@@ -180,12 +180,9 @@ class OrderController extends BaseController
                     return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
                 }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
-                if(checkColumnExists('carts','order_id'))
-                {//get if any order is being edit
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
-                }else{
-                    $cart = Cart::where('user_id', $user->id)->first();
-                }
+                
+                $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
+                
                 if ($cart) {
                     // $loyalty_points_used=0;
                     // $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
@@ -287,13 +284,12 @@ class OrderController extends BaseController
                                     }
                                 }
                     $order->taxable_amount = $total_taxes;
-                    if(checkColumnExists('orders', 'is_postpay')){
-                        $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
-                    }
+                    
+                    $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+                    
                     $order->save();
 
                     $is_long_term_order = 0;
-                    $checkLongTermInDB =checkColumnExists('products','is_long_term_service');
                     /* Updating order prescription if any */
                     $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
                     foreach ($cart_prescriptions as $cart_prescription) {
@@ -534,7 +530,7 @@ class OrderController extends BaseController
                             }
                             $order_product->save();
 
-                            if( ($checkLongTermInDB ==1) && $vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
+                            if($vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
                                 $is_long_term_order = 1;
                                 $service_start_date =  $vendor_cart_product->service_start_date ??   Carbon::now()->format('Y-m-d H:i:s');
                                 $service_end_date = Carbon::parse( $service_start_date )->addMonths($vendor_cart_product->product->service_duration)->setTimezone('UTC')->format('Y-m-d H:i:s');
@@ -743,10 +739,9 @@ class OrderController extends BaseController
                         $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                         $subs_discount_vendor           = $subs_discount_arr['vendor'];
 
-                        if(checkColumnExists('order_vendors', 'subscription_discount_admin')){
-                            $order_vendor->subscription_discount_admin  = $subs_discount_admin;
-                            $order_vendor->subscription_discount_vendor = $subs_discount_vendor;
-                        }
+                     
+                        $order_vendor->subscription_discount_admin  = $subs_discount_admin;
+                        $order_vendor->subscription_discount_vendor = $subs_discount_vendor;
                         $total_subscription_discount = $total_subscription_discount + $subs_discount_admin + $subs_discount_vendor;
 
                         $order_vendor->is_restricted = $is_restricted;
@@ -864,9 +859,9 @@ class OrderController extends BaseController
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         $order->payment_status = 1;
                     }
-                    if(checkColumnExists('orders','is_long_term')){
-                        $order->is_long_term            = $is_long_term_order;
-                    }
+                    
+                    $order->is_long_term            = $is_long_term_order;
+                   
                     $order->bid_discount  = $Order_bid_discount??0;
                     $order->save();
 
@@ -887,12 +882,7 @@ class OrderController extends BaseController
 
                         CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
 
-                        if(checkColumnExists('carts','order_id'))
-                        {
-                            Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL, 'order_id' => NULL]);
-                        }else{
-                            Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
-                        }
+                        Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL, 'order_id' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
@@ -1294,20 +1284,15 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
+                if($order->is_postpay==1 && $order->payment_status == 0)
                 {
-                    if($order->is_postpay==1 && $order->payment_status == 0)
-                    {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    }else{
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
                 }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id', 'asc')->first();
@@ -1443,20 +1428,15 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
+                if($order->is_postpay==1 && $order->payment_status == 0)
                 {
-                    if($order->is_postpay==1 && $order->payment_status == 0)
-                    {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    }else{
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
                 }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id', 'asc')->first();
@@ -1583,20 +1563,15 @@ class OrderController extends BaseController
                  $cash_to_be_collected = 'Yes';
                  $payable_amount = $order->payable_amount;
              } else {
-                if(checkColumnExists('orders', 'is_postpay'))
+                if($order->is_postpay==1 && $order->payment_status == 0)
                 {
-                    if($order->is_postpay==1 && $order->payment_status == 0)
-                    {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    }else{
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
                 }
+                
              }
 
 
@@ -1992,12 +1967,10 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-            if(checkColumnExists('orders', 'is_postpay')){
-                $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
-            }
-            if(checkColumnExists('orders', 'is_edited')){
-                $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
-            }
+            $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+            
+            $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
+            
             if(!empty($order->orderDetail->scheduled_date_time) && $is_order_edit_enable == 1 && $order_edit_before_hours > 0 && ($order->orderDetail->payment_option_id==1 || $order->orderDetail->payment_status !=1)){
                 if((strtotime($order->orderDetail->scheduled_date_time) - strtotime($editlimit_datetime)) > 0){
                     $order->is_editable  = 1;
@@ -2090,9 +2063,7 @@ class OrderController extends BaseController
                 }
             }
             $order->is_long_term  =0;
-            if(checkColumnExists('orders','is_long_term')){
-                $order->is_long_term  = $order->orderDetail->is_long_term;
-            }
+            $order->is_long_term  = $order->orderDetail->is_long_term;
             $order->luxury_option_name = $luxury_option_name;
             $order->luxury_option_name = $luxury_option_name;
             $order->product_details = $product_details;

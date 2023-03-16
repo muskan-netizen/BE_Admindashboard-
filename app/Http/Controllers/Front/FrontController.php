@@ -35,6 +35,9 @@ class FrontController extends Controller
             if (Session::has('preferences') && !empty(Session::get('preferences'))) {
                 $this->client_preferences = Session::get('preferences');
                 return $next($request);
+            }else{
+                $this->client_preferences = ClientPreference::first();
+                return $next($request);
             }
             abort(403);
         });
@@ -165,8 +168,7 @@ class FrontController extends Controller
     
     public function testsms(Request $request)
     {
-        $prefer = ClientPreference::select('sms_credentials', 
-                        'sms_provider', 'sms_key', 'sms_secret', 'sms_from' )->first();
+        $prefer = $this->client_preferences;
         $to = $request->to ? '+91'.$request->to :'+917508983302';
         $provider = $prefer->sms_provider;
         $body = "Dear ".ucwords('Harbans').", Please enter OTP (12345) to verify your account.";
@@ -313,7 +315,7 @@ class FrontController extends Controller
     }
 
     public function getServiceAreaVendors(){
-        $client_preferences = ClientPreference::where('id', '>', 0)->first();
+        $client_preferences = $this->client_preferences;
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
         $vendorType = Session::get('vendorType');
@@ -365,7 +367,7 @@ class FrontController extends Controller
 
     public function getServiceAreaVendorsWithoutHyperlocal($latitude, $longitude){
         $vendorType = Session::get('vendorType');
-        $preferences = Session::has('preferences') ? Session::get('preferences') : ClientPreference::where('id', '>', 0)->first();;
+        $preferences = $this->client_preferences;
         $serviceAreaVendors = Vendor::select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
@@ -654,7 +656,7 @@ class FrontController extends Controller
                                 ->whereBetween('end_date', [$now, $after7days])
                                 ->whereNull('cancelled_at')->get();
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
-        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+        $data = $this->client_preferences;
 
         foreach($active_subscriptions as $subscription){
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
@@ -921,8 +923,8 @@ class FrontController extends Controller
            $product = $this->productDetail($request->product_id);
         
             $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
-            $is_slot_from_dispatch = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_slot_from_dispatch  : '') : '';
-            $show_dispatcher_agent = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_show_dispatcher_agent  : '') :' ';
+            $is_slot_from_dispatch = $product ? $product->is_slot_from_dispatch  : '';
+            $show_dispatcher_agent = $product ? $product->is_show_dispatcher_agent  : '';
             $last_mile_check       = $product ? $product->Requires_last_mile  : '';
             $vendorStartDate       = $vendorStartTime  = '';
             $html = "";

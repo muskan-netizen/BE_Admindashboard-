@@ -402,12 +402,8 @@ trait OrderTrait{
                             ->avg('averageRating');
         }
 
-        if($this->checkColumnExists('vendors', 'rating')){
-            Vendor::where('id', $vendor_id)->update(['rating' => $vendor_rating]);
-            return $vendor_rating;
-        }else{
-            return $vendor_rating;
-        }
+        Vendor::where('id', $vendor_id)->update(['rating' => $vendor_rating]);
+        return $vendor_rating;
     }
 
     /**
@@ -922,12 +918,10 @@ trait OrderTrait{
         $phoneCode = mt_rand(100000, 999999);
         $sendTime  = Carbon::now()->addMinutes(10)->toDateTimeString();
 
-        if(checkColumnExists('users','track_order_phone_token') && checkColumnExists('users','track_order_phone_token_valid_till')){
-            $user                                       = User::find($user['id']);
-            $user->track_order_phone_token              = $phoneCode;
-            $user->track_order_phone_token_valid_till   = $sendTime;
-            $user->save();
-        }
+        $user                                       = User::find($user['id']);
+        $user->track_order_phone_token              = $phoneCode;
+        $user->track_order_phone_token_valid_till   = $sendTime;
+        $user->save();
 
 
 

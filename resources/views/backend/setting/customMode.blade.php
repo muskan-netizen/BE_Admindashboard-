@@ -457,7 +457,7 @@
 </div>
 </div>
 
-@if (checkColumnExists('products', 'is_long_term_service'))
+
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_long_term_service_switch"
@@ -475,7 +475,7 @@
             name="is_long_term_service" id="is_long_term_service" />
     </div>
 </div>
-@endif
+
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
     <label for="is_gst_required_for_vendor_registration_switch"

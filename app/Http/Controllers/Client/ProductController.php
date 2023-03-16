@@ -275,9 +275,9 @@ class ProductController extends BaseController
         $configData          = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
         $configData->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
         $celebrities         = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
-        $tollPassOrigin      = (checkColumnExists('toll_pass_origin','toll_pass')) ? TollPassOrigin::select('id', 'toll_pass', 'desc')->get() : [];
-        $travelMode          = (checkColumnExists('travel_mode','travelmode')) ?TravelMode::select('id', 'travelmode', 'desc')->get() : [];
-        $vehicleEmissionType = (checkColumnExists('vehicle_emission_type','id')) ?VehicleEmissionType::select('id', 'emission_type', 'desc')->get() : [];
+        $tollPassOrigin      = TollPassOrigin::select('id', 'toll_pass', 'desc')->get();
+        $travelMode          = TravelMode::select('id', 'travelmode', 'desc')->get();
+        $vehicleEmissionType = VehicleEmissionType::select('id', 'emission_type', 'desc')->get();
 
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
@@ -322,10 +322,8 @@ class ProductController extends BaseController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-        $roles = [];
-        if(checkColumnExists('roles','is_enable_pricing')){
-            $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
-        }
+        
+        $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module']);
 
         $allRoles = Role::where('status',1)->get();
@@ -1463,11 +1461,9 @@ class ProductController extends BaseController
     {
         try{
             if($request->has('product_id') && $request->has('variant_id')){
-                $roles                = [];
+                
                 $productVariantByRole = [];
-                if(checkColumnExists('roles','is_enable_pricing')){
-                    $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
-                }
+                $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
                 if($roles){
                     foreach($roles as $_role){
                         $data = ProductVariantByRole::where('product_id', $request->product_id)->where('product_variant_id',$request->variant_id)->where('role_id',$_role->id)->first();

@@ -314,7 +314,6 @@ trait cartManager{
       {
         $processorProduct = [];
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $this->config();
         $address = [];
         $category_array = [];
@@ -563,7 +562,7 @@ trait cartManager{
                     $prod->product->ServicePeriods = [];
                     $prod->service_start_time = '';
                     $prod->is_long_term_service = 0;
-                    if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
+                    if($prod->product->is_long_term_service ==1){
                         $vendorData->is_long_term_service = 1;
                         $is_long_term_service = 1;
                         $LongTermProducts = $prod->product->LongTermProducts;
@@ -801,7 +800,7 @@ trait cartManager{
                                 $checkLastMile = 1;
                                 $lastMileDate['tags'] = $prod->product->tags;
                             } /** check lont term product product last mile  */
-                            else if( ($islongTermInDB ==1) && ($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
+                            else if(($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
 
                                 $checkLastMile = 1;
                                 $lastMileDate['tags'] = $prod->product->LongTermProduct->first()->tags;
@@ -880,8 +879,8 @@ trait cartManager{
                     }
                 }
 
-                $is_slot_from_dispatch =  checkColumnExists('products', 'is_slot_from_dispatch') ?  $prod->product->is_slot_from_dispatch : '';
-                $show_dispatcher_agent =  checkColumnExists('products', 'is_show_dispatcher_agent') ? $prod->product->is_show_dispatcher_agent  : '';
+                $is_slot_from_dispatch =  $prod->product->is_slot_from_dispatch;
+                $show_dispatcher_agent =  $prod->product->is_show_dispatcher_agent;
                 $last_mile_check       = $prod->product->Requires_last_mile  ;
                 $cateTypeId = $prod->product->productcategory ? $prod->product->productcategory->type_id : '';
 

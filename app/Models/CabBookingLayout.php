@@ -49,15 +49,11 @@ class CabBookingLayout extends Model
 
     public function scopeApp($query)
     {
-      if(checkColumnExists('cab_booking_layouts', 'type')){
-        return $query->where('type', 2);
-      }
+      return $query->where('type', 2);
     }
 
     public function scopeWeb($query)
     {
-      if(checkColumnExists('cab_booking_layouts', 'type')){
-        return $query->where('type', 1);
-      }
+      return $query->where('type', 1);
     }
 }

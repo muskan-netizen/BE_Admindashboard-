@@ -903,39 +903,35 @@ class BaseController extends Controller{
     /******************    ---- check Keys from order Panel keys -----   ******************/
     public function checkOrderPanelKeys(Request $request){
 
-        if(checkColumnExists('users', 'is_panel_auth_user')){
-            $user =  User::where('is_panel_auth_user', 1)->first();
-            if(!$user){
-                $user =  User::first();
-            }
-            
-            $token1 = new Token;
-            $token = $token1->make([
-                'key' => 'royoorders-jwt',
-                'issuer' => 'royoorders.com',
-                'expiry' => strtotime('+2 hour'),
-                'issuedAt' => time(),
-                'algorithm' => 'HS256',
-            ])->get();
-            $token1->setClaim('user_id', $user->id);
-
-            $device = UserDevice::updateOrCreate(
-                ['device_token' => 'dispather-login'],
-                [
-                    'user_id' => $user->id,
-                    'device_type' => 'web',
-                    'access_token' => $token,
-                    'is_vendor_app' => 0
-                ]
-            );
-            return response()->json([
-            'status' => 200,
-            'token' => $token,
-            'message' => 'Valid Order Panel API keys']);
+        $user =  User::where('is_panel_auth_user', 1)->first();
+        if(!$user){
+            $user =  User::first();
         }
+        
+        $token1 = new Token;
+        $token = $token1->make([
+            'key' => 'royoorders-jwt',
+            'issuer' => 'royoorders.com',
+            'expiry' => strtotime('+2 hour'),
+            'issuedAt' => time(),
+            'algorithm' => 'HS256',
+        ])->get();
+        $token1->setClaim('user_id', $user->id);
+
+        $device = UserDevice::updateOrCreate(
+            ['device_token' => 'dispather-login'],
+            [
+                'user_id' => $user->id,
+                'device_type' => 'web',
+                'access_token' => $token,
+                'is_vendor_app' => 0
+            ]
+        );
         return response()->json([
-            'status' => 401,
-            'message' => 'Authentication failed']);
+        'status' => 200,
+        'token' => $token,
+        'message' => 'Valid Order Panel API keys']);
+        
     }
     public function generateBarcodeNumber()
     {

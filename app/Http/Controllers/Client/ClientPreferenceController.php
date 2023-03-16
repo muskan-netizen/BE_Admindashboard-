@@ -141,17 +141,15 @@ class ClientPreferenceController extends BaseController{
         $accounting     = ThirdPartyAccounting::where('code','xero')->first();
         $staticDropoff  = StaticDropoffLocation::get();
 
-        //pr($facilties->first()->toArray() ); //
+        
         $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
         $roles = [];
-        if(checkColumnExists('roles','is_enable_pricing')){
-            $roles = Role::where('status',1)->get();
-        }
-        // dd($preference);
+        $roles = Role::where('status',1)->get();
+        
         return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles'));
     }
 

@@ -61,19 +61,9 @@ class CartController extends BaseController
             // }
             $user = Auth::user();
             if (!$user->id) {
-                if(checkColumnExists('carts','order_id'))
-                {
-                    $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
-                }else{
-                    $cart = Cart::where('unique_identifier', $user->system_user);
-                }
+                $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
             } else {
-                if(checkColumnExists('carts','order_id'))
-                {
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
-                }else{
-                    $cart = Cart::where('user_id', $user->id);
-                }
+                $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
             }
             $cart = $cart->first();
 
@@ -194,7 +184,7 @@ class CartController extends BaseController
             }
 
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
-            if(checkColumnExists('products','is_long_term_service') && $product->is_long_term_service !=1){
+            if($product->is_long_term_service !=1){
                 if ($product->category->categoryDetail->type_id == 8) {
                 } else {
                     if ( ($product->sell_when_out_of_stock == 0) && (($productVariant->quantity + $order_edit_qty) < $request->quantity && $product->has_inventory == 1) ) {
@@ -591,7 +581,6 @@ class CartController extends BaseController
     {
 
         try{
-        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -851,7 +840,7 @@ class CartController extends BaseController
 
                     if(isset($prod->product) && !empty($prod->product)){
                       //  pr($prod->product);
-                        if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
+                        if($prod->product->is_long_term_service ==1){
                             $vendorData->is_long_term_service = 1;
                             $LongTermProducts = $prod->product->LongTermProducts;
                             $is_long_term = 1;

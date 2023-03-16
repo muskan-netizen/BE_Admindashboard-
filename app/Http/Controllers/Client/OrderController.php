@@ -90,11 +90,8 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38]) // 1 for cod ,38 for offline manual by harbans
                     ->orWhere(function($q3) {
-                        if(checkColumnExists('orders', 'is_postpay'))
-                        {
-                            $q3->where('is_postpay', 1) // 1 for order is post pay.
+                        $q3->where('is_postpay', 1) // 1 for order is post pay.
                                ->whereNotIn('payment_option_id', [1, 38]);
-                        }
                     });
             });
         });
@@ -121,11 +118,8 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    if(checkColumnExists('orders', 'is_postpay'))
-                    {
-                        $q3->where('is_postpay', 1) // 1 for order is post pay.
+                    $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    }
                 });
             });
         });
@@ -151,11 +145,8 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    if(checkColumnExists('orders', 'is_postpay'))
-                    {
-                        $q3->where('is_postpay', 1) // 1 for order is post pay.
+                    $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    }
                 });
             });
         });
@@ -211,9 +202,7 @@ class OrderController extends BaseController
         $orders = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with(['vendors.products' => function ($q) {
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
-        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
-            $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
-        }
+        $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
 
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
@@ -227,11 +216,8 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    if(checkColumnExists('orders', 'is_postpay'))
-                    {
-                        $q3->where('is_postpay', 1) // 1 for order is post pay
+                    $q3->where('is_postpay', 1) // 1 for order is post pay
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    }
                 });
             });
         })->orderBy('id', 'asc');
@@ -263,10 +249,8 @@ class OrderController extends BaseController
                 $query->where('vendor_id', $request->get('vendor_id'));
             });
         }
-        if( checkColumnExists('orders', 'gift_card_id') ){
-            $HasGiftCard = 1;
-            $orders  = $orders->with(['giftCard']);
-        }
+        $HasGiftCard = 1;
+        $orders  = $orders->with(['giftCard']);
         //Search by keyword
         if (!empty($request->search_keyword)) {
             $order_count->whereHas('address', function ($query) use ($request) {
@@ -365,11 +349,8 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                     ->orWhere(function($q3) {
-                        if(checkColumnExists('orders', 'is_postpay'))
-                        {
-                            $q3->where('is_postpay', 1)
-                                ->whereNotIn('payment_option_id', [1, 38]);
-                        }
+                        $q3->where('is_postpay', 1)
+                            ->whereNotIn('payment_option_id', [1, 38]);
                     });
             });
         });
@@ -658,9 +639,7 @@ class OrderController extends BaseController
             'reports',
 
         ));
-        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
-            $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
-        }
+        $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
         $order = $order->findOrFail($order_id);
         //    return $order;
         // set payment option dynamic name
@@ -923,7 +902,7 @@ class OrderController extends BaseController
                     if ($orderData->shipping_delivery_type == 'D') {
                         //Create Shipping request for dispatcher
 
-                        if( checkColumnExists('orders','is_long_term') &&   $orderData->orderDetail->is_long_term ==1){
+                        if($orderData->orderDetail->is_long_term ==1){
                             $order_dispatch = $this->checkIfanyServiceProductLastMileon($request);
 
                         }else{
@@ -1266,7 +1245,6 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
-        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $order_dispatchs = 2;
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         // pr( $checkdeliveryFeeAdded);
@@ -1386,10 +1364,8 @@ class OrderController extends BaseController
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 $isNotLongTerm = 1;
-                if( $islongTermInDB = 1 ){
-                    if( $prod->product->is_long_term_service ==1 ){
-                        $isNotLongTerm = 0;
-                    }
+                if( $prod->product->is_long_term_service ==1 ){
+                    $isNotLongTerm = 0;
                 }
 
 
@@ -1441,16 +1417,10 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
+                if($order->is_postpay==1 && $order->payment_status == 0)
                 {
-                    if($order->is_postpay==1 && $order->payment_status == 0)
-                    {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    }else{
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -1608,16 +1578,10 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
+                if($order->is_postpay==1 && $order->payment_status == 0)
                 {
-                    if($order->is_postpay==1 && $order->payment_status == 0)
-                    {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    }else{
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -1744,16 +1708,10 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
+                if($order->is_postpay==1 && $order->payment_status == 0)
                 {
-                    if($order->is_postpay==1 && $order->payment_status == 0)
-                    {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    }else{
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2001,9 +1959,7 @@ class OrderController extends BaseController
                     $query->where('user_id', Auth::user()->id);
                 });
             }
-            if(checkColumnExists('order_return_requests', 'type')){
-                $orders_list = $orders_list->where('type', 1); // 1 = return , 2 = exchange
-            }
+            $orders_list = $orders_list->where('type', 1); // 1 = return , 2 = exchange
             if (!empty($request->search_keyword)) {
                 $orders_list->whereHas('order', function ($query)  use ($request) {
                     $query->whereHas('address', function ($q) use ($request) {
@@ -2133,16 +2089,10 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
+                if($order->is_postpay==1 && $order->payment_status == 0)
                 {
-                    if($order->is_postpay==1 && $order->payment_status == 0)
-                    {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    }else{
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
