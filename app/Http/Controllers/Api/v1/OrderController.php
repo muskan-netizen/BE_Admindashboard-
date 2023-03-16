@@ -980,7 +980,7 @@ class OrderController extends BaseController
             $request = $ov;
 
             DB::beginTransaction();
-            //try {
+          try {
 
             $request->order_id = $ov->order_id;
             $request->vendor_id = $ov->vendor_id;
@@ -1028,12 +1028,12 @@ class OrderController extends BaseController
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
                 $this->ProductVariantStock($order_id);
                 DB::commit();
-                // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
+               $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
             }
-            // } catch(\Exception $e){
-            // DB::rollback();
-            // Log::info($e->getMessage());
-            // }
+             } catch(\Exception $e){
+             DB::rollback();
+             Log::info($e->getMessage());
+            }
         }
     }
 
