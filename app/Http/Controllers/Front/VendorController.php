@@ -855,8 +855,8 @@ class VendorController extends FrontController
 
         $vendor_categories = collect(); // final data
         if( !$check_service_area || ( $check_service_area && in_array($vid, $vendors) ) ){
-
-            $products = Product::with(['media.image',
+            $type = Session::get('vendorType');
+            $products = Product::byProductCategoryServiceType($type)->with(['media.image',
                 'translation' => function($q) use($langId, $keyword){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     if($keyword){

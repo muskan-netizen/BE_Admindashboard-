@@ -184,7 +184,7 @@ class OrderController extends BaseController
         $request->merge(['response'=>2,'filter_order_status'=>'pending_orders']);
         $OrderFilterData = $this->postOrderFilter($request);
         $setWeekDate = $this->setWeekDate;
-       
+     //  pr(  $OrderFilterData );
         return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData','setWeekDate','returnFormRequestCount'));
     }
    public function geteEnabledLuxuryOptions($clientPreference){
@@ -511,7 +511,7 @@ class OrderController extends BaseController
             $orders = $orders->where('luxury_option_id', $lux_id);
         }
         $orders = $orders->paginate(20);
-
+      //  pr($orders->first()->vendors->toArray());
         // Pending orders count
         $pending_orders = $pending_orders->with('vendors', function ($query) use ($user) {
             $query->where('order_status_option_id', 1);
@@ -1012,16 +1012,18 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
+      
         $orderPlaced = true;
         $orderPlacedNo = '';
         $productIds = $request->productIds??[];
         $orderVendorProductIds = $request->order_vendor_product_id??[];
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-         try {
+         //try {
 
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
+          
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
             
             if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 2) { //$request->status_option_id == 3){
@@ -1067,6 +1069,7 @@ class OrderController extends BaseController
                
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
+                    
                     if ($orderData->shipping_delivery_type == 'D') {
                         //Create Shipping request for dispatcher
                         if( checkColumnExists('orders','is_long_term') &&   $orderData->orderDetail->is_long_term ==1){
@@ -1123,8 +1126,8 @@ class OrderController extends BaseController
                     $vendor_order_status->order_id = $request->order_id;
                     $vendor_order_status->vendor_id = $request->vendor_id;
                     // This below line is commented because the data in $request->order_vendor_id incorrect.
-                    // $vendor_order_status->order_vendor_id = $request->order_vendor_id;
-                    $vendor_order_status->order_vendor_id = $vendorOrderStatus->order_vendor_id;
+                    $vendor_order_status->order_vendor_id = $request->order_vendor_id;
+                    //$vendor_order_status->order_vendor_id = $vendorOrderStatus->order_vendor_id;
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
 
@@ -1225,13 +1228,17 @@ class OrderController extends BaseController
                     'message' => __('Order Status Updated Successfully.' . (($orderPlacedNo) ? ' Order No : ' . $orderPlacedNo : ''))
                 ]);
             }
-        } catch (\Exception $e) {
-            DB::rollback();
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' =>__('Order has already updated!!!')
             ]);
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
     }
 
     public function changeVendorProductStatus(Request $request, $domain = '')
@@ -1497,6 +1504,7 @@ class OrderController extends BaseController
                 }
             }
         }
+     
         if ($luxury_option_id == 6) { // only for on_demand type
             
             $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
