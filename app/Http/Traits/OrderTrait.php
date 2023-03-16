@@ -318,7 +318,7 @@ trait OrderTrait
          
             foreach( $order_vendor->products as $product){
                 
-                if( $product->dispatcher_status_option_id < 1){
+                if( $product->dispatcher_status_option_id < 2){
                     $allocation_type = 'a';
                     $agent = '';
                     if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
