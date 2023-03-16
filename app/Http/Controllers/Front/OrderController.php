@@ -114,6 +114,8 @@ class OrderController extends FrontController
         }   
         // dd($iconsArray);
         $checkLongTerm = checkColumnExists('orders', 'is_long_term');
+
+        //Past Orders Start Query
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->whereIn('order_status_option_id', [
@@ -139,6 +141,8 @@ class OrderController extends FrontController
         if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
             $pastOrders = $pastOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
         }
+
+
         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
             $pastOrders->whereHas('vendors.products', function ($q) {
                 $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
@@ -168,13 +172,21 @@ class OrderController extends FrontController
         $pastOrders = $pastOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
+        //End Past Orders Query
+
+        
+
+        //Active Orders Start Query
         $activeOrders = Order::with([
             'vendors' => function ($q) use($additionalPreference) {
-                $q->with(['products'=> function ($Pq) use ( $additionalPreference) {
+                $q->whereHas('products', function ($Pq) use ( $additionalPreference) {
                     if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
                             $Pq->where('dispatcher_status_option_id',2);
                     }
-                }, 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
+
+                    $Pq->with(['products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
+                });
+               
                 if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
                     $q->with('exchanged_of_order.orderDetail');
                 }
@@ -234,8 +246,11 @@ class OrderController extends FrontController
         }
         $activeOrders = $activeOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
+            // ->where('id','102')
             ->paginate(10);
-
+        //End Orders Active Query
+        // dd($activeOrders->get());
+      
         foreach ($activeOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
@@ -509,13 +524,19 @@ class OrderController extends FrontController
     public function pendingOrder(Request $request,$user,$langId,$iconsArray){
         $Orders = Order::with([
             'vendors' => function ($q) {
-                $q->with(['products'=> function ($Pq) {
-                    $Pq->where('dispatcher_status_option_id', 1);
-                }, 'products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
-                if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
-                    $q->with('exchanged_of_order.orderDetail');
-                }
-            },
+                $q->whereHas('products', function ($Pq)  {
+                            $Pq->whereIn('dispatcher_status_option_id',[
+                                1
+                            ]);
+                            // $Pq->orwhereNull('dispatcher_status_option_id');
+                    $Pq->with(['products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
+                });
+
+                // if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
+                //     $q->with('exchanged_of_order.orderDetail');
+                // }
+            }
+            ,
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
@@ -525,10 +546,7 @@ class OrderController extends FrontController
             'reqCancelOrder'
         ]);
 
-        $Orders->whereHas('vendors.products', function ($q1) {
-            $q1->where('dispatcher_status_option_id', 1); 
-        })
-            ->where(function ($q1) {
+            $Orders->where(function ($q1) {
             $q1->where('payment_status', 1)
                 ->whereNotIn('payment_option_id', [
                 1,
