@@ -1086,6 +1086,14 @@ class OrderController extends FrontController
         // $navCategories = $this->categoryNav($langId);
         // return view('frontend/orderPayment')->with(['navCategories' => $navCategories, 'first_name' => $request->first_name, 'last_name' => $request->last_name, 'email_address' => $request->email_address, 'phone' => $request->phone, 'total_amount' => $request->total_amount, 'address_id' => $request->address_id]);
         // }
+        
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+         if($request->payment_option_id=='52'){
+            if($primaryCurrency->currency->iso_code!='QAR'){
+                return $this->errorResponse("Currency does not Match", 400);
+            }
+         }   
+       
         $order_response = $this->orderSave($request, "1");
         $response = $order_response->getData();
         if ($response->status == 'Success') {
@@ -2299,7 +2307,8 @@ class OrderController extends FrontController
                 43,
                 44,
                 45,
-                47
+                47,
+                52
             ]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal
 
             if (! in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay == 1)) {

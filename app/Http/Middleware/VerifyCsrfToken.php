@@ -41,6 +41,7 @@ class VerifyCsrfToken extends Middleware
         'dispatch/customer/distance/notification/*',
         'dispatch/driver/bids/update/*',
         'dispatch/driver/bids/status/*',
-        'square/inventory/event/update'
+        'square/inventory/event/update',
+        'skipcash/webhook'
     ];
 }
