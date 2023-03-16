@@ -40,7 +40,6 @@
 .al_body_template_one .search_bar.menu-right .icon-nav {
     text-align: center;
 }
-
 .al_body_template_two .search_bar.menu-right .icon-nav {
     text-align: center;
 }
@@ -313,6 +312,7 @@ span.org_price.ml-1.font-14 {
     max-width: 50%;
     padding: 10px 0px;
 }
+
 .al_body_template_one .product-right .sold-by a b {
     font-size: 14px;
     font-weight: 400;
@@ -727,7 +727,8 @@ display: inline-block;
 }
 
 .al_body_template_eight .similar-products-vitamin img.blur-up.lazyloaded.pro_imgs.myimage1.dfasdfasdf {
-    height: 100%!important;
+    height: 300px!important;
+    min-height: 300px;
 }
 
 .al_body_template_eight .similar-products-vitamin .common-product-box {

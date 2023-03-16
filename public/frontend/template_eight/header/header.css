@@ -1178,11 +1178,26 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
     top: 0;
     align-items: center;
     height: 53px;
-    display: flex;
+    display: flex !important;
 }
 
 .al_body_template_eight .onhover-dropdown:before {
     display: none;
+}
+
+/*
+.menu-slider.slick-track:after, .slick-track:before {
+    content: "\f104";
+    display: table;
+    font-family: 'FontAwesome';
+    color:#000;
+}
+
+.menu-slider.slick-track:after {
+    content: "\f105" !important;
+    display: table;
+    font-family: 'FontAwesome' !important;
+    color:#000;
 }
 
 
