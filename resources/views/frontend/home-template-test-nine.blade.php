@@ -128,7 +128,7 @@
 
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
-@if(count($banners))
+@if(@$banners && count($banners))
 <section class="home-slider-wrapper pt-md-0 pb-0">
 
 	<div class="container-alFulid">
