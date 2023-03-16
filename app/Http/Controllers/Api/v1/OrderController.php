@@ -531,6 +531,8 @@ class OrderController extends BaseController
                             $order_product->created_by = $vendor_cart_product->created_by;
                             $order_product->user_product_order_form = $vendor_cart_product->user_product_order_form;
                             $order_product->variant_id = $vendor_cart_product->variant_id;
+                            $order_product->dispatcher_status_option_id =1;
+                            $order_product->order_status_option_id =1;
                             $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                             $product_variant_sets = '';
 
@@ -2169,11 +2171,11 @@ class OrderController extends BaseController
                 break;
             case 'active':
                 $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
-                if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                    $orders->whereHas('products', function ($q) {
-                        $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+                    $orders->whereHas('products', function ($q) use ($additionalPreference) {
+                         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                            $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+                         }
                     });
-                }
                 break;
             case 'past':
                 $orders->whereIn('order_status_option_id', [6, 3, 9]);

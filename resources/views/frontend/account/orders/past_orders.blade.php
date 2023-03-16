@@ -3,6 +3,13 @@
     <div class="row">
         @if ($pastOrders->isNotEmpty())
             @foreach ($pastOrders as $key => $order)
+
+            @php
+                if(count($order->vendors)==0)
+                    {
+                        continue;
+                    }
+                @endphp
                 <div class="col-12">
                     <div class="row no-gutters order_head">
                         <div class="col-md-3 alOrderStatus">

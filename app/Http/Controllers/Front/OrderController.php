@@ -118,20 +118,32 @@ class OrderController extends FrontController
         //Past Orders Start Query
         $pastOrders = Order::with([
             'vendors' => function ($q) {
-                $q->whereIn('order_status_option_id', [
-                    6,
-                    9
-                ]);
+
+                $q->whereHas('products', function ($Pq) use ( $additionalPreference) {
+                    if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                            $Pq->where('dispatcher_status_option_id',5);
+                    }
+                    $Pq->with(['products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
+                });
+
+                if($additionalPreference['is_service_product_price_from_dispatch'] ==0){
+                        $q->whereIn('order_status_option_id', [
+                            6,
+                            9
+                        ]);
+                }
+
+                
             },
             'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
             'vendors.dineInTable.category',
-            'vendors.products',
-            'vendors.products.product',
-            'vendors.products.media.image',
-            'vendors.products.pvariant.media.pimage.image',
+            // 'vendors.products',
+            // 'vendors.products.product',
+            // 'vendors.products.media.image',
+            // 'vendors.products.pvariant.media.pimage.image',
             'products.productRating',
             'user',
             'address',
@@ -181,7 +193,8 @@ class OrderController extends FrontController
             'vendors' => function ($q) use($additionalPreference) {
                 $q->whereHas('products', function ($Pq) use ( $additionalPreference) {
                     if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                            $Pq->where('dispatcher_status_option_id',2);
+                            // $Pq->where('dispatcher_status_option_id',2);
+                            $Pq->whereNotIn('dispatcher_status_option_id',[1,5,6]);
                     }
 
                     $Pq->with(['products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
@@ -1626,6 +1639,8 @@ class OrderController extends FrontController
                     $order_product->additional_increments_hrs_min = @$vendor_cart_product->additional_increments_hrs_min;
                     $order_product->start_date_time = $vendor_cart_product->start_date_time;
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
+                    $order_product->dispatcher_status_option_id =1;
+                    $order_product->order_status_option_id =1;
                     $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee) ? $vendor_cart_product->product_delivery_fee : 0;
                     if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
                         $order_product->is_price_buy_driver = $is_price_buy_driver;
