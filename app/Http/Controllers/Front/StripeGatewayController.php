@@ -945,7 +945,7 @@ class StripeGatewayController extends FrontController
             $secret_key = stripeDynamicPaymentCredentials('stripe_ideal')->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
            
-            $webhook_url = 'http://'.$domain.'/payment/webhook/stripe_ideal';
+            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_ideal';
             
             $webhook_exists = false;
 
