@@ -1126,17 +1126,25 @@ class OrderController extends BaseController
         }
     }
 
-    # if vendor selected auto accepted order
-    public function autoAcceptOrderIfOn($order_id)
+    # if vendor selected auto accepted order    
+    /**
+     * autoAcceptOrderIfOn
+     *
+     * @param  mixed $order_id
+     * @param  mixed $uncheck_vendor_status in case order update by driver
+     * @return void
+     */
+    public function autoAcceptOrderIfOn($order_id,$uncheck_vendor_status=0)
     {
         $order_vendors = OrderVendor::where('order_id', $order_id)->whereHas('vendor', function ($q) {
             $q->where('auto_accept_order', 1);
         })->get();
+     
         foreach ($order_vendors as $ov) {
             $request = $ov;
 
             DB::beginTransaction();
-            //try {
+            try {
 
             $request->order_id = $ov->order_id;
             $request->vendor_id = $ov->vendor_id;
@@ -1144,7 +1152,9 @@ class OrderController extends BaseController
             $request->status_option_id = 2;
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
-            if (!$vendor_order_status_check) {
+           
+            if (!$vendor_order_status_check || ($uncheck_vendor_status ==1)) {
+             
                 $vendor_order_status = new VendorOrderStatus();
                 $vendor_order_status->order_id = $request->order_id;
                 $vendor_order_status->vendor_id = $request->vendor_id;
@@ -1184,12 +1194,12 @@ class OrderController extends BaseController
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
                 $this->ProductVariantStock($order_id);
                 DB::commit();
-                // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
+                $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
             }
-            // } catch(\Exception $e){
-            // DB::rollback();
-            //// Log::info($e->getMessage());
-            // }
+            } catch(\Exception $e){
+            DB::rollback();
+            Log::info($e->getMessage());
+            }
         }
     }
 
@@ -1329,6 +1339,7 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
+        
         $order_dispatchs = 2;
         $AdditionalPreference = getAdditionalPreference(['is_place_order_delivery_zero','is_service_product_price_from_dispatch']);
         $is_place_order_delivery_zero =  $AdditionalPreference['is_place_order_delivery_zero'];
@@ -1336,7 +1347,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $luxury_option_id      = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_restricted         = $checkdeliveryFeeAdded->is_restricted;
-    
+       
         if ($luxury_option_id == 6) { // only for on_demand type
             
             $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
@@ -2330,6 +2341,7 @@ class OrderController extends BaseController
             $luxury_option_name = '';
             if ($order->orderDetail->luxury_option_id > 0) {
                 $luxury_option = LuxuryOption::where('id', $order->orderDetail->luxury_option_id)->first();
+                
                 if ($luxury_option->title == 'takeaway') {
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                 } elseif ($luxury_option->title == 'dine_in') {
@@ -2410,7 +2422,7 @@ class OrderController extends BaseController
             $order_item_count = 0;
             $language_id = $user->language;
             $order_id = $request->order_id;
-            $vendor_id = $request->vendor_id;
+            $vendor_id = $request->vendor_id ?? '';
             $preferences = ClientPreference::first();
 
             if ($vendor_id) {
@@ -2693,8 +2705,10 @@ class OrderController extends BaseController
                     $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
                 }
                 $luxury_option_name = '';
+                $order->luxury_option = [];
                 if ($order->luxury_option_id > 0) {
                     $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+                    $order->luxury_option = $luxury_option;
                     if ($luxury_option->title == 'takeaway') {
                         $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                     } elseif ($luxury_option->title == 'dine_in') {
@@ -2843,6 +2857,8 @@ class OrderController extends BaseController
 
     public function submitEditedOrder(Request $request)
     {
+
+      
         try {
             $rules = [
                 'cart_id' => 'required',
@@ -2855,7 +2871,7 @@ class OrderController extends BaseController
             $validator = Validator::make($request->all(), $rules, [
                 'cart_id.required' => __('Cart data is required'),
                 'address_id.required' => __('Address is required'),
-                'order_vendor_id.required' => __('Order data is required'),
+                 'order_vendor_id.required' => __('Order data is required'),
                 'total_payable_amount.required' => __('Invalid Amount')
                 // 'payment_option_id.required' => __('Payment Option is required')
             ]);
@@ -2868,7 +2884,13 @@ class OrderController extends BaseController
             $cart_id = $request->cart_id;
             $order_vendor_id = $request->order_vendor_id;
             $new_payable_amount = $request->total_payable_amount;
-
+            $action = ($request->has('type')) ? $request->type : 'delivery';
+            $additionalPreference =  getAdditionalPreference(['is_service_product_price_from_dispatch']);
+            $is_service_product_price_from_dispatch = 0;
+            if(($additionalPreference['is_service_product_price_from_dispatch'] ==1 )&& ($action == 'on_demand')){ // luxury_option_id for ondemand 
+                $is_service_product_price_from_dispatch = $additionalPreference['is_service_product_price_from_dispatch'];
+            }
+           
             DB::beginTransaction();
             if($status == 1){
                 ////// Edited Order accepted functionality /////
@@ -2882,6 +2904,7 @@ class OrderController extends BaseController
 
                 if ($user) {
                     $user_wallet_balance = $user->balanceFloat;
+                   
                     // if($user_wallet_balance < $new_payable_amount){
                     //     return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
                     // }
@@ -2919,9 +2942,10 @@ class OrderController extends BaseController
                     if (!$user_address) {
                         return $this->errorResponse(__('Invalid address id.'), 404);
                     }
-                    $action = ($request->has('type')) ? $request->type : 'delivery';
+                   
                     $luxury_option = LuxuryOption::where('title', $action)->first();
-                    $cart = TempCart::where('status', '0')->where('id', $cart_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', 1)->where('is_approved', 0)->first();
+                    $cart = TempCart::where('status', '0')->where('id', $cart_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', 1)->where('is_approved', 0)->first(); //
+                   
                     if ($cart) {
                         $loyalty_points_used = 0;
                         $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
@@ -2934,14 +2958,20 @@ class OrderController extends BaseController
                         $order = Order::whereHas('vendors', function($q) use($order_vendor_id){
                             $q->where('id', $order_vendor_id);
                         })->first();
-
-                        $order_vendor = $order->vendors->first();
+                    
+                       // $order_vendor = $order->vendors->first();
 
                         //Previous Order Total
-                        if($order->payable_amount > 0){
-                            $previous_order_total = $order->payable_amount;
-                        }else{
-                            $previous_order_total = $order->total_amount + $order->wallet_amount_used + $order->loyalty_amount_saved + $order->taxable_amount + $order->total_delivery_fee + $order->tip_amount + $order->total_service_fee - $order->total_discount;
+                        $payment_status =  @$order->payment_status ?? 0;
+                        // if($order->total_amount > 0){
+                             $previous_order_total = $order->total_amount;
+                        // }else{
+                            // $previous_order_total = $order->total_amount + $order->wallet_amount_used + $order->loyalty_amount_saved + $order->taxable_amount + $order->total_delivery_fee + $order->tip_amount + $order->total_service_fee - $order->total_discount;
+                       // }
+                        
+                        if( $payment_status ==1){
+                            $order->advance_amount = $previous_order_total ;
+                            $order->is_postpay =1;
                         }
 
                         // $order->user_id = $user->id;
@@ -2962,7 +2992,7 @@ class OrderController extends BaseController
                         foreach($order_products as $order_prod){
                             OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
                         }
-                        OrderProduct::where('order_id', $order->id)->delete();
+                      //  OrderProduct::where('order_id', $order->id)->delete();
                         OrderProductPrescription::where('order_id', $order->id)->delete();
                         OrderTax::where('order_id', $order->id)->delete();
 
@@ -2970,9 +3000,11 @@ class OrderController extends BaseController
                         $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
 
                         $cart_products = TempCartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+                      
                         $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
 
                         foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                   
                             $delivery_fee = 0;
                             $deliver_charge = $delivery_fee_charges = 0.00;
                             $delivery_count = 0;
@@ -2980,21 +3012,29 @@ class OrderController extends BaseController
                             $vendor_products_total_amount = 0;
                             $vendor_payable_amount = 0;
                             $vendor_discount_amount = 0;
-                            // $order_vendor = new OrderVendor;
-                            // $order_vendor->status = 0;
-                            // $order_vendor->user_id = $user->id;
-                            // $order_vendor->order_id = $order->id;
-                            // $order_vendor->vendor_id = $vendor_id;
-                            // $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
-                            // $order_vendor->save();
+                            
+                            $order_vendor = OrderVendor::where(['order_id'=>$order->id,'vendor_id'=>$vendor_id])->first() ;
+                        
+                            if(!$order_vendor){
+                                $order_vendor = new OrderVendor();
+                                $order_vendor->status = 0;
+                                $order_vendor->user_id = $user->id;
+                                $order_vendor->order_id = $order->id;
+                                $order_vendor->vendor_id = $vendor_id;
+                                $order_vendor->save();
+                            }
 
                             foreach ($vendor_cart_products as $vendor_cart_product)
                             {
+                              
                                 $variant = $vendor_cart_product->product->variants->where('id', $vendor_cart_product->variant_id)->first();
                                 $quantity_price = 0;
                                 $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                                 $price_in_currency = $variant->price / $divider;
                                 $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
+                                if($is_service_product_price_from_dispatch  ==1){
+                                    $price_in_dollar_compare = $vendor_cart_product->dispatch_agent_price;
+                                }
                                 $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
                                 $payable_amount = $payable_amount + $quantity_price;
                                 $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
@@ -3016,7 +3056,7 @@ class OrderController extends BaseController
                                     }
                                 }
 
-                                if ($action == 'delivery' || $action == 'on_demand') {
+                                if (($action == 'delivery' || $action == 'on_demand') && ( $is_service_product_price_from_dispatch!=1)) {
                                     if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
                                         $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
                                         //Log::info($delivery_fee);
@@ -3039,16 +3079,23 @@ class OrderController extends BaseController
                                 $vendor_taxable_amount += $taxable_amount;
                                 $total_amount += $vendor_cart_product->quantity * $variant->price;
                                 //need to sub markup price
-                                $order_product = new OrderProduct;
+                                
+                                $order_product = OrderProduct::where(['order_id'=>$order->id,'order_vendor_id'=>$order_vendor->id,'product_id'=>$vendor_cart_product->product_id])->first() ??  new OrderProduct;
                                 $order_product->order_vendor_id = $order_vendor->id;
                                 $order_product->order_id = $order->id;
                                 $order_product->price = $variant->price;
+                                if($is_service_product_price_from_dispatch  ==1){
+                                    $order_product->dispatch_agent_id = $vendor_cart_product->dispatch_agent_id;
+                                    $order_product->is_price_buy_driver = 1;
+                                    $order_product->price = $vendor_cart_product->dispatch_agent_price;
+                                }
                                 $order_product->taxable_amount = $product_taxable_amount;
                                 $order_product->quantity = $vendor_cart_product->quantity;
                                 $order_product->vendor_id = $vendor_cart_product->vendor_id;
                                 $order_product->product_id = $vendor_cart_product->product_id;
                                 $order_product->created_by = $vendor_cart_product->created_by;
                                 $order_product->variant_id = $vendor_cart_product->variant_id;
+                               
                                 $product_variant_sets = '';
                                 if (isset($vendor_cart_product->variant_id) && !empty($vendor_cart_product->variant_id)) {
                                     $var_sets = ProductVariantSet::where('product_variant_id', $vendor_cart_product->variant_id)->where('product_id', $vendor_cart_product->product->id)
@@ -3171,11 +3218,15 @@ class OrderController extends BaseController
                             $order_vendor->update();
 
                             $order_status = VendorOrderStatus::where('order_id', $order->id)->where('order_vendor_id', $order_vendor_id)->first();
-                            $order_status->order_id = $order->id;
-                            $order_status->vendor_id = $vendor_id;
-                            $order_status->order_status_option_id = 1;
-                            $order_status->order_vendor_id = $order_vendor->id;
-                            $order_status->update();
+                            if(!$order_status){
+                                $order_status = new VendorOrderStatus();
+                                $order_status->order_id = $order->id;
+                                $order_status->vendor_id = $vendor_id;
+                                $order_status->order_status_option_id = 1;
+                                $order_status->order_vendor_id = $order_vendor->id;
+                                $order_status->save();
+                            }
+                           
                         }
                         $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
                         if (in_array(1, $subscription_features)) {
@@ -3195,8 +3246,9 @@ class OrderController extends BaseController
                         // $payable_amount = $payable_amount - $loyalty_amount_saved;
 
                         $difference_to_be_paid = $payable_amount - $previous_order_total;
+                      
                         // dd($difference_to_be_paid);
-
+             
                         // If new amount is greater than previous amount then deduct from wallet
                         if($difference_to_be_paid > 0){
                             // deduct if payment method is not cash on delivery and offline mathod method
@@ -3260,7 +3312,43 @@ class OrderController extends BaseController
                         $res = $this->sendSuccessEmail($request, $order);
 
                         // $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
-                        $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26,38,30];
+                        $ex_gateways = [
+                            4,
+                            5,
+                            7,
+                            8,
+                            9,
+                            10,
+                            12,
+                            13,
+                            15,
+                            17,
+                            18,
+                            19,
+                            20,
+                            21,
+                            23,
+                            24,
+                            25,
+                            26,
+                            28,
+                            29,
+                            30,
+                            31,
+                            32,
+                            34,
+                            35,
+                            36,
+                            37,
+                            39,
+                            40,
+                            41,
+                            42,
+                            43,
+                            44,
+                            45,
+                            47
+                        ]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal
                         // if (!in_array($request->payment_option_id, $ex_gateways)) {
                         //     Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         //     CartCoupon::where('cart_id', $cart->id)->delete();
@@ -3281,6 +3369,7 @@ class OrderController extends BaseController
 
                         // if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                             $order_payment = Payment::where('order_id', $order->id)->first();
+                            
                             if($order_payment){
                                 $order_payment->date = date('Y-m-d');
                                 $order_payment->balance_transaction = $order->payable_amount;
@@ -3288,13 +3377,16 @@ class OrderController extends BaseController
                             }
                         // }
                         $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
-                        if (in_array($order->payment_option_id, $ex_gateways)) {
+                       
+                        if (! in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay == 1)) {
                             $code = $request->header('code');
+                        
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {
                                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
                                     $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
                                     $vendorDetail = $vendor_value->vendor;
+                                    
                                     if ($vendorDetail->auto_accept_order == 0 && $vendorDetail->auto_reject_time > 0) {
                                         $clientDetail = Client::on('mysql')->where(['code' => $client_preference->client_code])->first();
                                         AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path, 'database_name' => $clientDetail->database_name, 'database_username' => $clientDetail->database_username, 'database_password' => $clientDetail->database_password, 'order_vendor_id' => $vendor_value->id, 'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
@@ -3306,18 +3398,20 @@ class OrderController extends BaseController
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
                             $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
                         }
-
+                      
                         DB::commit();
 
                         // Send push notification to order specific driver
                         $this->sendEditOrderApprovalStatusNotification($order_vendor, 1);
-
+                      
                         # if payment type cash on delivery or payment status is 'Paid'
                         if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                             # if vendor selected auto accept
-                            $autoaccept = $this->autoAcceptOrderIfOn($order->id);
+                            # uncheck_vendor_statusin case of order edit by driver 
+                            $uncheck_vendor_status  =1;
+                            $autoaccept = $this->autoAcceptOrderIfOn($order->id,$uncheck_vendor_status); // 
                         }
-
+             
                         $this->sendSuccessSMS($request, $order);
 
                         return $this->successResponse($order, __('Order accepted successfully.'), 201);

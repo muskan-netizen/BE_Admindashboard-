@@ -40,7 +40,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
 
-        $payment_codes = array('cod','azul', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo','plugnpay','payway');
+        $payment_codes = array('cod','azul', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo','plugnpay','payway','skip_cash');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
         $payout_codes = array(
@@ -759,6 +759,20 @@ class PaymentOptionController extends BaseController
                                 'subscription_key' => $request->subscription_key,
                                 'reference_id' => $request->reference_id,
                                 'api_key' => $request->api_key
+                            ));
+                            break;
+                            case 'skip_cash':
+                            $validatedData = $request->validate([
+                                'skip_cash_client_id' => 'required',
+                                'skip_cash_key_id' => 'required',
+                                'skip_cash_api_secret' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'skip_cash_client_id' => $request->skip_cash_client_id,
+                                'skip_cash_key_id' => $request->skip_cash_key_id,
+                                'skip_cash_api_secret' => $request->skip_cash_api_secret,
+                                'skip_cash_testing_url' => $request->skip_cash_testing_url,
+                                'skip_cash_live_url' => $request->skip_cash_live_url,
                             ));
                             break;
                     }

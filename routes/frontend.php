@@ -147,6 +147,14 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
 
 
+	//Skip Cash
+
+	Route::post('payment/skipcash', 'Front\SkipCashController@showSkipCashPage')->name('payment.skipcash');
+	Route::get('order/success', 'Front\SkipCashController@successPage')->name('payment.skipcash.success');
+	Route::post('/skipcash/webhook', 'Front\SkipCashController@handleWebhook');
+
+
+	// Route::post('payment/skipcashpay', 'Front\SkipCashController@checkPayment')->name('payment.skipcash.pay');
 
 
 	//GCash

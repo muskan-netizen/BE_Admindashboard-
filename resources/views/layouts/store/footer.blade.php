@@ -383,6 +383,9 @@ if($showSubscriptionPlanPopUp == 1){
     var client_logo_url = "{{getClientDetail()->logo_image_url}}";
     var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
 
+//////////////Telr payment Routes
+    var skipcash = "{{route('payment.skipcash')}}";
+
 // is restricted
     var is_age_restricted ="{{$client_preference_detail->age_restriction}}";
     //user lat long
