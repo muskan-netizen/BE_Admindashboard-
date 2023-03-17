@@ -117,12 +117,12 @@ class VendorController extends Controller{
                 return decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->sum('service_fee_percentage_amount'));
             })
             ->addColumn('cash_collected_amount', function($vendors) {
-                return decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->where('payment_option_id', 1)->sum('payable_amount'));
+                return decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->where('payment_option_id', 1)->sum('payable_amount') + $vendors->orders->where('order_status_option_id', '!=', 3)->sum('taxable_amount') + $vendors->orders->where('order_status_option_id', '!=', 3)->sum('service_fee_percentage_amount'));
             })
             ->addColumn('admin_commission_amount', function($vendors) {
                 $admin_commission_fixed_amount = decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->sum('admin_commission_fixed_amount'));
                 $admin_commission_percentage_amount = decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->sum('admin_commission_percentage_amount'));
-                return $admin_commission_fixed_amount +  $admin_commission_percentage_amount;
+                return decimal_format($admin_commission_fixed_amount +  $admin_commission_percentage_amount);
             })
             ->addColumn('taxable_amount', function($vendors){
                 return decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->sum('taxable_amount'));
@@ -135,7 +135,7 @@ class VendorController extends Controller{
                 $admin_commission_fixed_amount = decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->sum('admin_commission_fixed_amount'));
                 $admin_commission_percentage_amount = decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->sum('admin_commission_percentage_amount'));
                 //$promo_admin_amount
-                return $order_value - $promo_vendor_amount  - $admin_commission_fixed_amount - $admin_commission_percentage_amount - $delivery_fee;
+                return decimal_format($order_value - $promo_vendor_amount  - $admin_commission_fixed_amount - $admin_commission_percentage_amount - $delivery_fee);
             })
 
             ->addIndexColumn()

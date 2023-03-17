@@ -945,7 +945,7 @@ class StripeGatewayController extends FrontController
             $secret_key = stripeDynamicPaymentCredentials('stripe_ideal')->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
            
-            $webhook_url = 'http://'.$domain.'/payment/webhook/stripe_ideal';
+            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_ideal';
             
             $webhook_exists = false;
 
@@ -1788,8 +1788,8 @@ class StripeGatewayController extends FrontController
                             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                        
                         }
-    
                         // Send Email
                         //   $this->successMail();
                     }
