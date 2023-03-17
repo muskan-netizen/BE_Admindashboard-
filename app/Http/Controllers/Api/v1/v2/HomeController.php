@@ -369,7 +369,7 @@ class HomeController extends BaseController{
             
             
             if (isset($langId) && !empty($langId))
-                $home_page_labels = $home_page_labels->with(['banner_images','translations' => function ($q) use ($langId) {
+                $home_page_labels = $home_page_labels->with(['banner_image','translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }]);
                 

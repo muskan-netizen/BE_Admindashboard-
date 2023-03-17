@@ -375,7 +375,9 @@ class VendorController extends BaseController
         else{
             $vendor->$single_vendor_type = 1;
         }
-
+        if($request->vendor_type){
+            $vendor->is_seller = 1;
+        }
         if ($update == 'false') {
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
@@ -884,7 +886,7 @@ class VendorController extends BaseController
 
         $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
 
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_admin_vendor_rating']);
 
         $roles = Role::get();
         if($getAdditionalPreference['is_price_by_role'] == 1){

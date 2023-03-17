@@ -1,38 +1,41 @@
  <!--- Left Sidebar filters -->
  <aside class="side_fillter mt-2">
 
-<div class="col-12 custom_filtter mt-3 mb-3">
-    <select name="order_type" id='order_type' class="form-control sortingFilter p-1 mb-0">
-        <option value="">{{__('Sort By')}}</option>
-        <option value="featured">{{_('Featured')}}</option>
-        <option value="a_to_z">{{_('A to Z')}}</option>
-        <option value="z_to_a">{{_('Z to A')}}</option>
-        <option value="low_to_high">{{_('Cost : Low to High')}}</option>
-        <option value="high_to_low">{{_('Cost : High to Low')}}</option>
-        <option value="rating">{{_('Avg. Customer Review')}}</option>
-        <option value="newly_added">{{_('Newest Arrivals')}}</option>
-    </select>
-</div>
-    
+@if($category->type_id != 13)
+    <div class="col-12 custom_filtter mt-3 mb-3">
+        <select name="order_type" id='order_type' class="form-control sortingFilter p-1 mb-0">
+            <option value="">{{__('Sort By')}}</option>
+            <option value="featured">{{_('Featured')}}</option>
+            <option value="a_to_z">{{_('A to Z')}}</option>
+            <option value="z_to_a">{{_('Z to A')}}</option>
+            <option value="low_to_high">{{_('Cost : Low to High')}}</option>
+            <option value="high_to_low">{{_('Cost : High to Low')}}</option>
+            <option value="rating">{{_('Avg. Customer Review')}}</option>
+            <option value="newly_added">{{_('Newest Arrivals')}}</option>
+        </select>
+    </div>
+@endif   
 <!-- side-bar colleps block stat -->
 <div class="collection-filter-block bg-transparent p-0 m-0 brand-left">
-    @if(@count($category->brands->first()->translation) && count($category->brands->first()->translation) > 0)
-    <div class="collection-collapse-block open mb-2">
-        <h3 class="collapse-block-title">{{__('Brand')}}</h3>
-        <div class="collection-collapse-block-content">
-            <div class="collection-brand-filter">
-                @foreach($category->brands as $key => $val)
-                    <div class="custom-control custom-checkbox collection-filter-checkbox">
-                        <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->id}}" used="brands" id="brd{{$val->id}}">
-                        @foreach($val->translation as $k => $v)
-                            <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
+  @if(@$category->brands)
+        @if(@count(@$category->brands->first()->translation) && count(@$category->brands->first()->translation) > 0)
+            <div class="collection-collapse-block open mb-2">
+                <h3 class="collapse-block-title">{{__('Brand')}}</h3>
+                <div class="collection-collapse-block-content">
+                    <div class="collection-brand-filter">
+                        @foreach($category->brands as $key => $val)
+                            <div class="custom-control custom-checkbox collection-filter-checkbox">
+                                <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->id}}" used="brands" id="brd{{$val->id}}">
+                                @foreach($val->translation as $k => $v)
+                                    <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
+                                @endforeach
+                            </div>
                         @endforeach
                     </div>
-                @endforeach
+                </div>
             </div>
-        </div>
-    </div>
-    @endif
+        @endif
+     @endif
     @if(!empty($variantSets) && count($variantSets) > 0)
     @foreach($variantSets as $key => $sets)
         <div class="collection-collapse-block border-0 mb-2 open">
@@ -165,12 +168,23 @@
                                         <div class="col-sm-12">
                                             @if( !empty($var->type) && $var->type == 1 )
                                             {{-- <select class="form-control " name="free_delivery_roles[]" data-toggle="select2" multiple="multiple" placeholder="Select role..."> --}}
-                                            <select name="" class="dropdown_select select2-multiple" data-key="{{$var->title}}" multiple>
-                                                @foreach($var->option as $key => $opt)
-                                                <option value="{{$opt->id}}">{{$opt->title}}</option>
-                                                @endforeach
-                                            </select>
-
+                                                @if($var->option->count() <= 6)
+                                                    <div class="flex-wrap checkbox checkbox-success form-check-inline">
+                                                        @foreach($var->option as $key => $opt)
+                                                            <div class="checkbox_filter">
+                                                                <input type="checkbox" name="" value="{{$opt->id}}" class="dynamic_checkbox" data-key="{{$var->title}}">
+                                                                {{-- <option value=""></option> --}}
+                                                                <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <select name="" class="dropdown_select select2-multiple" data-key="{{$var->title}}" multiple>
+                                                        @foreach($var->option as $key => $opt)
+                                                        <option value="{{$opt->id}}">{{$opt->title}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                @endif
                                             @else
                                             
                                             @foreach($var->option as $key => $opt)

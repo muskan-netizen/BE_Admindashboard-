@@ -150,6 +150,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//azulpay
 	Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
+	Route::match(['get','post'],'payment/get-cards','Front\AzulPaymentController@getUserCards')->name('payment.azulpay.getCards');
+	
 	//Square
 	Route::match(['get','post'],'payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square','Front\SquareController@createPayment')->name('payment.square.createPayment');
@@ -355,7 +357,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
 
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
-	Route::get('/homeTest', 'Front\UserhomeController@indexTest')->name('homeTest');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
 	//Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup')->name('page/driver-registration');
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
