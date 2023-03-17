@@ -87,6 +87,11 @@ class AzulPaymentController extends FrontController
         }
         return $time;
     }
+    
+    public function getCardList(Request $request, $domain = ''){
+        $cards = UserDataVault::where('user_id', Auth::user()->id)->orderBy('is_default','desc')->get();
+        return view('frontend/account/card-list')->with(['cards' => $cards]);
+    }
 
     public function beforePayment(Request $request)
     {
@@ -353,5 +358,26 @@ class AzulPaymentController extends FrontController
         
         $returnHTML = view('frontend.card-list')->with(['cards' => $listData])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
+    }
+    
+    public function setDefaultCard($domain = '', $id)
+    {
+        $user = Auth::user();
+        $address = UserDataVault::where('user_id', $user->id)->update(['is_default' => 0]);
+        $address = UserDataVault::where('user_id', $user->id)->where('id', $id)->update(['is_default' => 1]);
+        return redirect()->route('payment.user.cards')->with('success', __('Default Card Has Been Changed Successfully'));
+    }
+    
+    /**
+     * delete card of user
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteCard($domain = '', $id){
+        $card = UserDataVault::where('id', $id)->first();
+        if($card){
+            $this->deleteDatavault($card);
+        }
+        return redirect()->route('payment.user.cards')->with('success', __('Card Has Been Deleted Successfully'));
     }
 }

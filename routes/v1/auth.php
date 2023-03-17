@@ -139,6 +139,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         //azulpay
         Route::match(['get','post'],'payment/azulpay','Api\v1\AzulPaymentController@beforePayment');
         Route::get('user/get-user-cards','Api\v1\ProfileController@getUserCards');
+        Route::get('user/setDefaultCard','Api\v1\ProfileController@setDefaultCard');
+        Route::get('user/deleteCard','Api\v1\ProfileController@deleteCard');
+        
         Route::post('payment/place/order', 'Api\v1\PaymentOptionController@postPlaceOrder');
         Route::get('user/loyalty/info', 'Api\v1\LoyaltyController@index');
         Route::post('add/vendorTable/cart','Api\v1\CartController@addVendorTableToCart');
