@@ -55,7 +55,8 @@ trait AzulPaymentService
     public function payWithCard($card)
     {
         $phone_number = auth()->user()->phone_number;
-        $user_id = auth()->user()->id;        
+        $user_id = auth()->user()->id;         
+        $saveVault = 0;
         if(isset($card['card_id']) && !empty($card['card_id'])){
             $userCard = UserDataVault::where(['id' => $card['card_id']])->first();
             $request = [
@@ -85,6 +86,10 @@ trait AzulPaymentService
             if (isset($card['come_from']) && $card['come_from'] == 'app') {
                 $expiry = $card['dt'];
             }
+            if(isset($card['save_card']) && $card['save_card'] == 1){
+                $saveVault = 1;
+            }
+            
             $request = [
                 'Channel' => $this->PAYMENT_CHANNEL,
                 'Store' => $this->MERCHANT_ID,
@@ -104,11 +109,14 @@ trait AzulPaymentService
                 'OrderNumber' => $card['order_number'],
                 'ECommerceUrl' => $this->ECOMMERCE_URL,
                 'CustomOrderId' => $card['order_number'],
-                'SaveToDataVault' => '1',
+                'SaveToDataVault' => $saveVault,
                 'DataVaultToken' => '',
                 'ForceNo3DS' => '1'
             ];
-            $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
+            if($saveVault){
+                Log::info("card save");
+                $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
+            }
         }
         $response = $this->sendRequest($request);
         if ($response['code'] != 200) {
@@ -505,6 +513,7 @@ trait AzulPaymentService
         ]);
         
         if($datavault){
+            Log::info("save card new");
             UserDataVault::where('id','!=',$datavault->id)->update(['is_default' => 0]);
         }
         

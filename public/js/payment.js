@@ -3188,6 +3188,7 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
         cno = $('#azul-card-element').val();
         dt  = $('#azul-date-element').val();
         cv  = $('#azul-cvv-element').val();
+        sc  = $('#azul-save_card:checked').val();
         card_id  =$("input[type='radio'][name='azul_card_id']:checked").val();
         let total_amount    = 0;
         let cartElement     = $("input[name='cart_total_payable_amount']");
@@ -3209,7 +3210,8 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                     { name: 'cno', value: cno },
                     { name: 'dt', value: dt },
                     { name: 'cv', value: cv },
-                    { name: 'card_id', value: card_id }
+                    { name: 'card_id', value: card_id },
+                      { name: 'save_card', value: sc }
                 );
         
             // }
@@ -3231,7 +3233,8 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 { name: 'from', value: payment_from },
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
-                    { name: 'card_id', value: card_id }
+                { name: 'card_id', value: card_id },
+                { name: 'save_card', value: sc }
             );
         }
 
@@ -3246,7 +3249,8 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
                 { name: 'subsid', value: subscription_id.val() },
-                    { name: 'card_id', value: card_id }
+                { name: 'card_id', value: card_id },
+                { name: 'save_card', value: sc }
             );
            
         } 
@@ -3262,7 +3266,8 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
                 { name: 'reload_route', value: address_id },
-                    { name: 'card_id', value: card_id }
+                { name: 'card_id', value: card_id },
+                { name: 'save_card', value: sc }
             );
         }
         else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
@@ -3277,7 +3282,8 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
                 { name: 'from', value: payment_from },
                 { name: 'amt', value: total_amount },
                 { name: 'amount', value: total_amount },
-                { name: 'card_id', value: card_id }
+                { name: 'card_id', value: card_id },
+                { name: 'save_card', value: sc }
             );
         }
         if(creditCardValidation()){

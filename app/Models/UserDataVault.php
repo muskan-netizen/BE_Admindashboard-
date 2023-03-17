@@ -18,4 +18,8 @@ class UserDataVault extends Model
         'brand',
         'card_hint'
     ];
+    public function getExpirationAttribute()
+    {
+        return substr_replace($this->attributes['expiration'],"/",4,0);
+    }
 }

@@ -151,6 +151,12 @@
                                 <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" />
                             </div>
                         </div>
+<div class="row">
+<div class="col-md-4">
+                     <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
+                                    <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
+            </div>
+</div>
                         <span class="error text-danger" id="azul_card_error"></span>
   </div>
   <div id="Card-List" class="tabcontent">
