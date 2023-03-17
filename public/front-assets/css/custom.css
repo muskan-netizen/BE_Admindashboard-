@@ -1976,7 +1976,7 @@ label {
 /* Referral Modal Css Start From Here */
 
 .al_body_template_one .breadcrumb-section.bg-transparent {
-    padding: 10px 0 0 !important;
+    padding: 20px 0 0 !important;
 }
 
 .al_body_template_one .breadcrumb-section .breadcrumb {
@@ -10086,7 +10086,7 @@ body.al_body_template_two #page-container .small-slider .home-slider .home {
         height: auto
     }
     .product-image {
-        height: auto
+        height: auto !important;
     }
     .common-product-box,
     .suppliers-box {
@@ -10264,6 +10264,11 @@ body.al_body_template_two #page-container .small-slider .home-slider .home {
         font-size: 14px!important;
         line-height: 22px!important
     }
+
+    body.al_body_template_one.homeHeader .outter-fillter-data div#category_products_filter a.product-box.scale-effect {
+        height: auto !important;
+    }
+
 }
 
 @media (max-width: 576px) {
