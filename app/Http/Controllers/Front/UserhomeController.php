@@ -725,7 +725,7 @@ class UserhomeController extends FrontController
         } 
 
         if (in_array('banner', $enable_layout)) {  # if enable banner section in
-            $cab_booking_layouts = CabBookingLayout::with('banner_image')->whereIn('slug',['banner'])->get();
+            $cab_booking_layouts = CabBookingLayout::with('banner_image')->where('slug','banner')->get();
             // dd($cab_booking_layouts->toArray());
             foreach($cab_booking_layouts as $bkey => $bval){
                 if(count($bval->banner_image) > 0)

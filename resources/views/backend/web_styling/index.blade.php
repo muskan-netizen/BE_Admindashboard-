@@ -531,7 +531,7 @@
                                 @endif
                                 @if($home_page_label->slug == 'banner')
                                 <a class="action-icon " userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
-                                    <input required type="file" accept="video/*,image/*,.pdf,.doc" data-plugins="dropify" name="banner_image[{{$key}}][check]" class="dropify" data-default-file="" >
+                                    <input required type="file" accept="video/*,image/*,.pdf,.doc" data-plugins="dropify" name="banner_image[{{$home_page_label->id}}][check]" class="dropify" data-default-file="" >
                                 </a>
                                 @endif
                                 @if($home_page_label->slug == 'dynamic_page')

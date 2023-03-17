@@ -21,10 +21,6 @@ class CabBookingLayout extends Model
       return $this->belongsTo('App\Models\CabBookingLayoutTranslation', 'id', 'cab_booking_layout_id' );
     }
 
-    public function banner_images(){
-      return $this->hasMany('App\Models\CabBookingLayoutBanner', 'cab_booking_layout_id' );
-    }
-
     public function banner_image(){
       return $this->hasMany('App\Models\CabBookingLayoutBanner', 'cab_booking_layout_id' );
     }
