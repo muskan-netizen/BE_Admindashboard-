@@ -3813,3 +3813,8 @@ body.al_body_template_three .vender-icon {
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
+
+.al_body_template_three .product-description_list.border-bottom {
+    height: 60px;
+    overflow-y: auto;
+}
