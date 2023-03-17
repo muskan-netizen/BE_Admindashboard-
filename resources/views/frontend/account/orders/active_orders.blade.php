@@ -437,7 +437,7 @@
                                                                                                 @endif
                                                                                             @endif
                                                                                             {{-- Check if order is created only --}}
-                                                                                            @if ($vendor->status == 0)
+                                                                                            @if ($vendor->status == 0 && $clientPreference->business_type == 'laundry')
                                                                                                 @if ($vendor->order_status == 'placed')
                                                                                                     <button  data-toggle="modal" data-target="#orderModel{{$order->id}}" class="reschedule_order btn btn-solid" data-id="{{$order->id}}" data-order_vendor_id="{{ $vendor->id ?? 0 }}" data-vendor_id="{{$vendor->id}}">Reschedule</button>
                                                                                                 @endif
