@@ -1131,7 +1131,16 @@ body.al_body_template_nine.p2p-module .header-dropdown .onhover-dropdown a {
 body.al_body_template_nine.p2p-module  .header-dropdown li.search-b {
     padding-right: 5px!important;
 }
-
+body.al_body_template_nine .checkbox_filter {
+    display: flex;
+    margin-right: 15px;
+    margin-bottom: 5px;
+    min-width: 90px;
+}
+body.al_body_template_nine .checkbox_filter input {
+    width: 20px;
+    height: 20px;
+}
 
 
 /*----------media css--------------*/
