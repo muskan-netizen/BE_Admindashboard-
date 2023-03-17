@@ -717,13 +717,14 @@ span.filter-btn.btn.btn-theme i {
     border-radius: 12px;
     overflow: hidden;
     position: relative;
-    padding-bottom: 100%;
+    /*padding-bottom: 100%;*/
 }
 
 .product-wrapper-grid .product-image img {
-    position: absolute;
+    /*position: absolute;*/
     height: 100%;
     width: 100%;
+    max-width: 100%!important;
     object-fit: cover;
 }
 
@@ -1064,24 +1065,18 @@ h2.homepage-address {
 
 .al_body_template_three .img-outer-box.position-relative {
     border-radius: 12px;
-    padding-bottom: 100% !important;
+    padding: 0;
     background-color: #eee
 }
 
 .al_body_template_three .slick-slider .img-outer-box.position-relative {
     border-radius: 12px;
     position: relative;
-    padding-bottom: 100%;
+    /*padding-bottom: 100%;*/
+    padding: 0;
 }
 
-.al_body_template_three .img-outer-box.position-relative img {
-    left: 0;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 12px;
-}
+
 
 .al_body_template_three .add-to-fav {
     position: absolute;
@@ -1529,6 +1524,8 @@ button.close {
 .al_body_template_three .displayProducts .product-card-box {
     box-shadow: rgb(28 28 28 / 12%) 0 .4rem 1.8rem;
     box-sizing: border-box;
+    height: 350px;
+    min-height: 350px;
 }
 
 .al_body_template_three h2.category-head {
@@ -3775,4 +3772,44 @@ a.morelink.less {
 }
 .inner_spacing .border-product .product-icon #social-links ul li a {
     font-size: 20px;
+}
+
+.al_body_template_three .ratio_asos .collection-wrapper .my-banner img {
+    width: 100% !important;
+}
+
+.al_body_template_three .vendor-design_new {
+    margin-top: -14%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+    z-index: 9;
+    margin-left: 4%;
+}
+
+.al_body_template_three .vendor-description .profile_address h3 {
+    font-weight: 500;
+    font-size: 25px;
+    color: #fff;
+    padding-right: 10px;
+    display: inline-block;
+}
+
+.al_body_template_three .vendor-description .vendor-reviwes {
+    width: auto;
+    display: inline-block;
+    right: 0px;
+    position: inherit;
+    /* top: -4px; */
+}
+
+body.al_body_template_three .vender-icon {
+    margin-top: 0px;
+}
+
+.al_body_template_three .related-products .slick-track {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }

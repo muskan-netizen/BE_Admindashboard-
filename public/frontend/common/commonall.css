@@ -33,8 +33,14 @@
 .al_body_template_one .search_form button.btn svg {
     width: 16px;
 }
+.al_body_template_two .search_form button.btn svg {
+    width: 16px;
+}
 
 .al_body_template_one .search_bar.menu-right .icon-nav {
+    text-align: center;
+}
+.al_body_template_two .search_bar.menu-right .icon-nav {
     text-align: center;
 }
 
@@ -309,6 +315,7 @@ span.org_price.ml-1.font-14 {
     max-width: 50%;
     padding: 10px 0px;
 }
+
 .al_body_template_one .product-right .sold-by a b {
     font-size: 14px;
     font-weight: 400;
@@ -637,28 +644,7 @@ li.vendor-timing p{
 }
 
 
-.navscroll {
-    width: 1500px;
-    overflow-x: auto;
-}
- 
 
-
-.navscroll ul {
-    width: 100%;
-    display: flex;
-    flex-wrap: nowrap;
-}
-
-.navscroll ul li{
-    position: relative;
-}
-
-.navscroll ul li ul{
-    position: absolute;
-    position: fixed;
-    top: 198px !important;
-}
 .al_body_template_six .common-banner:after{
     position:inherit;
     background:transparent;
@@ -740,8 +726,23 @@ display: inline-block;
 .al_body_template_eight .categories_sliderEight .slick-track {
     margin-left: auto !important;
 }
-/* body.al_body_template_one .slick-slider .common-product-box{
-    min-height: 100% !important;
-    min-width: 100% !important;
-    max-width: 100% !important;
-} */
+/*------- SIMILAR PRODUCTS image changes*/
+
+.al_body_template_eight .similar-products-vitamin .slick-track {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.al_body_template_eight .similar-products-vitamin img.blur-up.lazyloaded.pro_imgs.myimage1.dfasdfasdf {
+    height: 300px!important;
+    min-height: 300px;
+}
+
+.al_body_template_eight .similar-products-vitamin .common-product-box {
+    height:inherit!important;
+}
+
+.al_body_template_eight .similar-products-vitamin .product-card-box .img-outer-box {
+    height: 300px !important;
+    min-height: 300px !important;
+}

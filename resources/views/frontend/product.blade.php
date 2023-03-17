@@ -853,7 +853,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
         </div>
     </div>
     <div class="container pb-md-4">
-        <div class="product-m  related-products pb-2 d-flex related-css">
+        <div class="product-m  related-products pb-2  related-css">
             @forelse($product->related_products as $related_product)
             <div>
                 <a class="common-product-box scale-effect text-center"
