@@ -109,7 +109,7 @@ body.al_body_template_three .al_custom_head_map_box {
     width: 100%;
 }
 .al_body_template_three .margin-res .media-body {
-    min-height: 180px;
+   min-height: 150px;
 }
 body.dark.al_body_template_three .al_count_tabs_new_design li a.nav-link{
     color: #fffcfc;
