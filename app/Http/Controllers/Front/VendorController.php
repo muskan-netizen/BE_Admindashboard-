@@ -759,7 +759,7 @@ class VendorController extends FrontController
                     });
 
         if(!empty($productIds)){
-            $products = $products->whereIn('id', $productIds);
+            $products = $products->whereIn('products.id', $productIds);
         }
         if($request->has('brands') && !empty($request->brands)){
             $products = $products->whereIn('products.brand_id', $request->brands);
