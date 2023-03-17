@@ -746,6 +746,21 @@
                             <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
                         </div>
                         <p class="sub-header">{{ __("View and update your SMS Gateway and it's API keys.") }}</p>
+                         <div class="d-flex align-items-center justify-content-between mt-3 mb-2">
+                            <h5 class="font-weight-normal m-0">{{ __('Send Static Otp ') }}</h5>
+                            
+                            <div class="custom-control custom-switch">
+     
+                                <input type="checkbox" class="custom-control-input"
+                                    id="cancelOrderCustomSwitch_static_otp"
+                                    name="static_otp"
+                                    {{ (isset( $sms_crendential->static_otp ) && $sms_crendential->static_otp == 1) ? 'checked' : '' }}>
+                                <label class="custom-control-label"
+                                    for="cancelOrderCustomSwitch_static_otp"></label>
+                                
+                            </div>
+                            
+                        </div>
                         <div class="row mb-0">
                             <div class="col-12">
                                 <div class="form-group mb-2">
