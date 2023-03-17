@@ -1,7 +1,7 @@
 {{-- Related Product  --}}
 @if( !empty($realted_produuct) && $realted_produuct->count() > 0)
 <h2>{{ __($title ?? '') }}</h2>
-<div class="category-related-product suggested-product">
+<div class="category-related-product similar-products-vitamin suggested-product">
     @foreach($realted_produuct as $scp)
     
     @if( !empty($scp->vendor->slug) && !empty($scp->url_slug) )

@@ -494,7 +494,7 @@ $pages = \App\Models\Page::with([
    <div class="menu-navigation alThreeMenu ">
        <div class="container-fluid">
            <div class="row">
-               <div class="col-12 navscroll">
+               <div class="col-12">
                   <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                      @foreach($navCategories as $cate)
                      @if($cate['name'])
