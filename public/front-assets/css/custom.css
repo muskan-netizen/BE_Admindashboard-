@@ -5734,8 +5734,12 @@ ul#main-nav-list {
     color: var(--theme-deafult);
     display: inline-block;
     position: absolute;
-    left: 0;
-    top: 6px
+    left: -4px;
+    top: 3px;
+}
+
+p.vendor_address, p.vendor_email {
+    margin-left: 30px !important;
 }
 
 .vendor-info li {
