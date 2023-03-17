@@ -489,7 +489,7 @@ $preference = $client_preference_detail;
                 </div>
             </section>
          @elseif($homePageLabel->slug == 'banner' && (count($homePageData['banners']) != 0))
-            @if(!empty($homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]))
+            @if(!empty(@$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]))
                <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
                   <div class="top-heading d-flex justify-content-between">
                      <h2 class="h2-heading"> @php
