@@ -726,6 +726,17 @@ display: inline-block;
 .al_body_template_eight .categories_sliderEight .slick-track {
     margin-left: auto !important;
 }
+/* body.al_body_template_one .slick-slider .common-product-box{
+    min-height: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+} */
+.custom_banner img{
+    border-radius: 50px;
+    min-height: 300px;
+    object-fit:cover;
+    object-position: center;
+}
 /*------- SIMILAR PRODUCTS image changes*/
 
 .al_body_template_eight .similar-products-vitamin .slick-track {

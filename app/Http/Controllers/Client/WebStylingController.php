@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, ClientPreferenceAdditional,OrderDeliveryStatusIcon, WebStyling,WebStylingOption, HomeProduct, Product};
-
+use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, ClientPreferenceAdditional,OrderDeliveryStatusIcon, WebStyling,WebStylingOption, HomeProduct, Product, CabBookingLayoutBanner};
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
@@ -469,10 +469,25 @@ class WebStylingController extends BaseController{
                 $cate->save();
             }
 
-
+            if(isset($request->banner_image[$value]) && !empty($request->banner_image[$value])){
+                $is_img =$request->banner_image[$value]['check'];
+                $del = CabBookingLayoutBanner::where('cab_booking_layout_id', $value)->delete();
+                $folderName='banner';
+                $filePath = $folderName . '/' . Str::random(40);
+                $file = $is_img;
+                
+                $orignal_name = $is_img->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                
+                $url = Storage::disk('s3')->url($file_name);
+                
+                $cate = new CabBookingLayoutBanner();
+                $cate->cab_booking_layout_id  =  $value;
+                $cate->banner_image_url  = $url;
+                $cate->type  = 1;
+                $cate->save();
+            }
         }
-
-
 
 
         return response()->json([
