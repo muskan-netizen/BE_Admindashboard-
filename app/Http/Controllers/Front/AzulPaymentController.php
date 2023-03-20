@@ -377,7 +377,9 @@ class AzulPaymentController extends FrontController
         $card = UserDataVault::where('id', $id)->first();
         if($card){
             $this->deleteDatavault($card);
+            return redirect()->route('payment.user.cards')->with('success', __('Card Has Been Deleted Successfully'));
+            
         }
-        return redirect()->route('payment.user.cards')->with('success', __('Card Has Been Deleted Successfully'));
+        return redirect()->route('payment.user.cards')->with('error', __('Card does\'nt exist'));
     }
 }

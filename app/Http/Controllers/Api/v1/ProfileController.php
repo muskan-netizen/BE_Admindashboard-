@@ -492,9 +492,13 @@ class ProfileController extends BaseController
         if ($card) {
             $azul = new AzulPaymentController();
             $azul->deleteDatavault($card);
+            return response()->json([
+                'message' => __('Card Has Been Deleted Successfully')
+            ]);
         }
         return response()->json([
-            'message' => __('Card Has Been Deleted Successfully')
+            'message' => __('Card does\'nt exist')
         ]);
+        
     }
 }
