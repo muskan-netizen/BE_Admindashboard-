@@ -812,7 +812,17 @@
                                             </div>
                                         </div>
                                     @endif
-
+                                    @if (@$product->vendor->service_charge_amount > 0)
+                                        <div class="row">
+                                            <div class="col-5 text-lg-right">
+                                                <label class="m-0 radio">{{ __('Service Fee') }} :</label>
+                                            </div>
+                                            <div class="col-7 text-right">
+                                                <p class="total_amt m-0">{{ Session::get('currencySymbol') }}
+                                                    {{ decimal_format($product->vendor->service_charge_amount) }}</p>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="row">
                                         {{-- @if ($cart_details->vendorCnt > 1) --}}
                                         <div class="col-5 text-lg-right">
