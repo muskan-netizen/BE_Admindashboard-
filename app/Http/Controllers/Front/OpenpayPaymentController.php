@@ -147,8 +147,8 @@ class OpenpayPaymentController extends FrontController
             }else{
                 $customer_id = $saved_payment_method->customerReference;
             }
-            Log::info('cystomer');
-            Log::info($customer_id);
+           // Log::info('cystomer');
+           // Log::info($customer_id);
             $openPayCustomer  = $openpay->customers->get($customer_id);
             $cart_number =  str_replace(' ', '', $request->number);
             $card_last_four_digit = substr(  $cart_number, -4); 
@@ -191,8 +191,8 @@ class OpenpayPaymentController extends FrontController
             } else {
                 $cart_id = $saved_payment_cart->cardReference;
             }
-            Log::info('cart_id');
-            Log::info($cart_id );
+           // Log::info('cart_id');
+           // Log::info($cart_id );
             $openPayCustomerCart = $openPayCustomer->cards->get($cart_id);
             //pr($openPayCustomerCart);
             // create charges tragi
@@ -237,7 +237,7 @@ class OpenpayPaymentController extends FrontController
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
             $errorMsg =$e->getMessage();
             if($payment_from == 'cart'){
                 $order = Order::where('order_number', $order_number)->first();
@@ -251,7 +251,7 @@ class OpenpayPaymentController extends FrontController
             }
             // $data = Session::get('opnepay_data');
             // unset($data['_token']);
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
            
             //return Redirect::to(route('payment.opnepay.beforePayment',$data))->with('error',$e->getMessage());
         }
@@ -331,8 +331,8 @@ class OpenpayPaymentController extends FrontController
             }else{
                 $customer_id = $saved_payment_method->customerReference;
             }
-            Log::info('cystomer');
-            Log::info($customer_id);
+           // Log::info('cystomer');
+           // Log::info($customer_id);
             $openPayCustomer  = $openpay->customers->get($customer_id);
             $cart_number =  str_replace(' ', '', $request->number);
             $card_last_four_digit = substr(  $cart_number, -4); 
@@ -375,8 +375,8 @@ class OpenpayPaymentController extends FrontController
             } else {
                 $cart_id = $saved_payment_cart->cardReference;
             }
-            Log::info('cart_id');
-            Log::info($cart_id );
+           // Log::info('cart_id');
+           // Log::info($cart_id );
             $openPayCustomerCart = $openPayCustomer->cards->get($cart_id);
             //pr($openPayCustomerCart);
             // create charges tragi
@@ -408,7 +408,7 @@ class OpenpayPaymentController extends FrontController
             
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
             $errorMsg =$e->getMessage();
             $returnUrl = url('payment/gateway/returnResponse');
             $returnUrlParams = '?status=200&gateway=openpay&action=' . $payment_from.'&error='.$errorMsg;
@@ -417,7 +417,7 @@ class OpenpayPaymentController extends FrontController
     }
     public function opnepayWebhook(Request $request, $domain = '')
     {
-        Log::info("openpay webhook worl");
+       // Log::info("openpay webhook worl");
        
         //Log::info($request->all());
         
@@ -437,7 +437,7 @@ class OpenpayPaymentController extends FrontController
                         //Log::info($payment_from);
                         if($payment_from == 'cart'){
                         
-                        // Log::info('in cart'.$payment_from);
+                        //// Log::info('in cart'.$payment_from);
                             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                             if ($order) {
                                 $order->payment_status = 1;
@@ -534,8 +534,8 @@ class OpenpayPaymentController extends FrontController
                 break;
             
             case 'verification':
-                Log::info('Verification Webhook works');
-                Log::info($request->all());
+               // Log::info('Verification Webhook works');
+               // Log::info($request->all());
                 
                 $openpay = PaymentOption::select('credentials', 'test_mode')->where('code', 'openpay')->first();
                 $creds_arr = json_decode($openpay->credentials);
@@ -553,7 +553,7 @@ class OpenpayPaymentController extends FrontController
                 PaymentOption::where('code', 'openpay')->update(['credentials'=>json_encode($cred)]);
                 break;
             case 'charge.failed':
-                    Log::info($request->all());
+                   // Log::info($request->all());
             break;
 
                 

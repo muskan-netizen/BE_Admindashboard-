@@ -9,6 +9,7 @@ use Auth, DB;
 use OwenIt\Auditing\Contracts\Auditable;
 use App\Models\{ProductVariant, CartProduct, UserWishlist};
 
+<<<<<<< HEAD
 class Product extends Model implements Auditable
 {
   use SoftDeletes;
@@ -16,6 +17,12 @@ class Product extends Model implements Auditable
 
 
   protected $fillable = ['sku', 'title', 'url_slug', 'description', 'body_html', 'vendor_id', 'category_id', 'type_id', 'country_origin_id', 'is_new', 'is_featured', 'is_live', 'is_physical', 'weight', 'weight_unit', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'publish_at', 'inquiry_only', 'has_variant', 'averageRating', 'tags', 'pharmacy_check', 'deleted_at', 'celebrity_id', 'brand_id', 'tax_category_id', 'need_price_from_dispatcher', 'mode_of_service', 'delay_order_hrs', 'delay_order_min', 'pickup_delay_order_hrs', 'pickup_delay_order_min', 'dropoff_delay_order_hrs', 'dropoff_delay_order_min', 'minimum_order_count', 'batch_count', 'service_charges_tax', 'delivery_charges_tax', 'container_charges_tax', 'fixed_fee_tax', 'service_charges_tax_id', 'delivery_charges_tax_id', 'container_charges_tax_id', 'fixed_fee_tax_id', 'global_product_id', 'import_from_inventory', 'markup_price', 'seats', 'seats_for_booking', 'available_for_pooling'];
+=======
+class Product extends Model implements Auditable{
+      use SoftDeletes;
+      use \OwenIt\Auditing\Auditable;
+    protected $fillable = ['sku', 'title', 'url_slug', 'description', 'body_html', 'vendor_id', 'category_id', 'type_id', 'country_origin_id', 'is_new', 'is_featured', 'is_live', 'is_physical', 'weight', 'weight_unit', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'publish_at', 'inquiry_only','has_variant','averageRating','tags', 'pharmacy_check', 'deleted_at', 'celebrity_id', 'brand_id', 'tax_category_id','need_price_from_dispatcher','mode_of_service','delay_order_hrs','delay_order_min','pickup_delay_order_hrs','pickup_delay_order_min','dropoff_delay_order_hrs','dropoff_delay_order_min','minimum_order_count','batch_count','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id','global_product_id','import_from_inventory','markup_price', 'seats', 'seats_for_booking', 'available_for_pooling', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery','is_recurring_booking', 'security_amount', 'square_item_id', 'square_item_version'];
+>>>>>>> pre_stage
 
   public function addOn()
   {
@@ -46,10 +53,24 @@ class Product extends Model implements Auditable
     return $this->hasMany('App\Models\ProductRelated')->select('product_id', 'related_product_id');
   }
 
+<<<<<<< HEAD
   public function celebrities()
   {
     return $this->hasMany('App\Models\ProductCelebrity')->select('product_id', 'celebrity_id');
   }
+=======
+    public function home_products_web(){
+      return $this->belongsTo('App\Models\HomeProduct','id','product_id')->where('type',0);
+    }
+
+    public function vendor(){
+      if(checkColumnExists('vendors', 'need_sync_with_order') && checkColumnExists('vendors', 'is_seller') && checkColumnExists('vendors', 'is_vendor_instant_booking')){
+        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude','need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'is_vendor_instant_booking', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time');
+      }
+
+      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id','add_markup_price','latitude','longitude',  'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code');
+    }
+>>>>>>> pre_stage
 
   public function upSell()
   {
@@ -62,6 +83,7 @@ class Product extends Model implements Auditable
   }
 
 
+<<<<<<< HEAD
   public function variant()
   {
     return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id', 'container_charges', 'markup_price', 'incremental_price', 'incremental_price_per_min')->where('status', 1);
@@ -72,6 +94,253 @@ class Product extends Model implements Auditable
     if ($langId > 0) {
       return $this->hasMany('App\Models\ProductTranslation')->where('language_id', $langId);
     } else {
+=======
+    public function variant(){
+      if(checkColumnExists('product_variants','square_variant_id')){
+        return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges','markup_price','incremental_price','incremental_price_per_min', 'square_variant_id', 'square_variant_version')->where('status', 1);
+      }else{
+        return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges','markup_price','incremental_price','incremental_price_per_min')->where('status', 1);
+      }
+    }
+
+    public function translation($langId = 0){
+      if($langId > 0){
+        return $this->hasMany('App\Models\ProductTranslation')->where('language_id', $langId);
+      }else{
+        return $this->hasMany('App\Models\ProductTranslation');
+      }
+    }
+    public function translation_one($langId = 0){
+        return $this->hasOne('App\Models\ProductTranslation');
+    }
+    public function primary(){
+
+      $langData = $this->hasOne('App\Models\ProductTranslation')->join('client_languages as cl', 'cl.language_id', 'product_translations.language_id')->select('product_translations.product_id', 'product_translations.title', 'product_translations.language_id', 'product_translations.body_html', 'product_translations.meta_title', 'product_translations.meta_keyword', 'product_translations.meta_description')->where('cl.is_primary', 1);
+
+      return $langData;
+
+    }
+
+  	public function category(){
+  	    return $this->hasOne('App\Models\ProductCategory')->select('product_id', 'category_id');
+  	}
+
+    public function categoryName(){
+      return $this->hasOne('App\Models\CategoryTranslation', 'category_id', 'category_id')->select('id', 'name', 'category_id');
+    }
+
+  	public function variantSet(){
+  	    return $this->hasMany('App\Models\ProductVariantSet')->select('product_id', 'product_variant_id', 'variant_type_id', 'variant_option_id')->groupBy('variant_type_id')->orderBy('product_variant_id');
+  	}
+
+    public function vatoptions(){
+        return $this->hasMany('App\Models\ProductVariantSet')->select('product_id', 'product_variant_id', 'variant_option_id')->groupBy('variant_option_id');
+    }
+
+    public function variantSets(){
+        return $this->hasMany('App\Models\ProductVariantSet');
+    }
+
+    public function media(){
+        return $this->hasMany('App\Models\ProductImage')->select('id','product_id', 'media_id', 'is_default');
+    }
+
+    public function pimage(){
+        return $this->hasMany('App\Models\ProductImage')->select('product_images.product_id', 'product_images.media_id', 'product_images.is_default', 'vendor_media.media_type', 'vendor_media.path')->join('vendor_media', 'vendor_media.id', 'product_images.media_id')->limit(1);
+    }
+
+    public function baseprice(){
+       return $this->hasMany('App\Models\ProductVariant')->select('id', 'product_id', 'price')->groupBy('product_id');
+    }
+
+    /* for app */
+
+    public function variants(){
+      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode','container_charges','markup_price','incremental_price','incremental_price_per_min');
+    }
+
+    public function reviews(){
+      return $this->hasMany('App\Models\OrderProductRating', 'product_id', 'id');
+    }
+
+    public function productVariantByRoles(){
+         return $this->hasMany('App\Models\ProductVariantByRole')->select('id', 'role_id','product_id', 'product_variant_id','amount','quantity');
+     }
+
+    public function variant_list(){
+       return $this->hasMany('App\Models\ProductVariantSet')
+       ->join('variants as pv', 'pv.id', 'product_variant_sets.variant_type_id')
+       ->select('product_id', 'title', 'type', 'position', 'status')
+       ->groupBy('product_variant_sets.variant_type_id')
+       ->orderBy('pv.position', 'asc');
+    }
+
+    public function variant1(){
+      return $this->hasMany('App\Models\ProductVariant', 'product_id', 'pro_id')->select('id', 'sku', 'product_id');
+    }
+
+    public function inwishlist(){
+       return $this->hasOne('App\Models\UserWishlist')->select('product_id','user_id');
+    }
+
+    public function taxCategory()
+    {
+        return $this->belongsTo('App\Models\TaxCategory', 'tax_category_id', 'id')->select('id', 'title', 'code');
+    }
+
+    public function tags(){
+      return $this->hasMany('App\Models\ProductTag', 'product_id', 'id');
+    }
+    public function all_tags(){
+      return $this->hasMany('App\Models\ProductTag', 'product_id', 'id');
+    }
+
+    public function getDelayOrderTimeAttribute()
+    {
+      $data = [];
+      $type = ((session()->get('vendorType'))?session()->get('vendorType'):'delivery');
+      if($type == 'dine_in'){
+        $data['delay_order_hrs'] = $this->attributes['delay_order_hrs_for_dine_in'];
+        $data['delay_order_min'] = $this->attributes['delay_order_min_for_dine_in'];
+      }elseif($type == 'takeaway'){
+        $data['delay_order_hrs'] = $this->attributes['delay_order_hrs_for_takeway'];
+        $data['delay_order_min'] = $this->attributes['delay_order_min_for_takeway'];
+      }else{
+        $data['delay_order_hrs'] = $this->attributes['delay_order_hrs'];
+        $data['delay_order_min'] = $this->attributes['delay_order_min'];
+      }
+      return $data;
+    }
+
+
+    public function getDelayHrsMinAttribute()
+    {
+      $data = $this->getDelayOrderTimeAttribute();
+      $delay_order_hrs = $data['delay_order_hrs'];
+      $delay_order_min = $data['delay_order_min'];
+
+       if(@$delay_order_hrs > 0 || @$delay_order_min > 0){
+         $total_minutues = ($delay_order_hrs * 60) + $delay_order_min;
+
+         $date = Carbon::now()
+              ->addMinutes($total_minutues)
+              ->format('Y-m-d\TH:i');
+        if(Auth::user()){
+                 $timezone = Auth::user()->timezone;
+                 $date = convertDateTimeInTimeZone($date, $timezone, 'Y-m-d\TH:i');
+                 }
+         return $date;
+       }
+       return 0;
+
+    }
+
+
+    public function getPickupDelayHrsMinAttribute()
+    {
+       $delay_order_hrs = $this->attributes['pickup_delay_order_hrs'];
+       $delay_order_min = $this->attributes['pickup_delay_order_min'];
+
+       if($delay_order_hrs > 0 || $delay_order_min > 0){
+         $total_minutues = ($delay_order_hrs * 60) + $delay_order_min;
+
+         $date = Carbon::now()
+              ->addMinutes($total_minutues)
+              ->format('Y-m-d\TH:i');
+        if(Auth::user()){
+                 $timezone = Auth::user()->timezone;
+                 $date = convertDateTimeInTimeZone($date, $timezone, 'Y-m-d\TH:i');
+                 }
+         return $date;
+       }
+       return 0;
+
+    }
+
+    public function getDropoffDelayHrsMinAttribute()
+    {
+       $delay_order_hrs = $this->attributes['dropoff_delay_order_hrs'];
+       $delay_order_min = $this->attributes['dropoff_delay_order_min'];
+
+       $delay_order_hrs_pick = $this->attributes['pickup_delay_order_hrs'];
+       $delay_order_min_pick = $this->attributes['pickup_delay_order_min'];
+
+       if($delay_order_hrs > 0 || $delay_order_min > 0){
+         $total_minutues = (($delay_order_hrs+$delay_order_hrs_pick) * 60) + ($delay_order_min+$delay_order_min_pick);
+
+         $date = Carbon::now()
+              ->addMinutes($total_minutues)
+              ->format('Y-m-d\TH:i');
+        if(Auth::user()){
+                 $timezone = Auth::user()->timezone;
+                 $date = convertDateTimeInTimeZone($date, $timezone, 'Y-m-d\TH:i');
+                 }
+         return $date;
+       }
+       return 0;
+
+    }
+
+    public function ProductFaq(){
+      return $this->hasMany('App\Models\ProductFaq', 'product_id', 'id');
+    }
+
+    public function checkIfInCartApp()
+    {
+        $user = Auth::user();
+        if ($user->id && $user->id > 0) {
+            $column = 'user_id';
+            $value = $user->id;
+        } else {
+            $column = 'unique_identifier';
+            $value = $user->system_user;
+        }
+
+        return $this->hasMany('App\Models\CartProduct', 'product_id', 'id')->whereHas('cart',function($qset)use($column,$value){
+            $qset->where($column,$value);
+        });
+    }
+    public function getByVendorId($vendor_id)
+    {
+      return self::where('vendor_id',$vendor_id)->with('addOn','category','celebrities','crossSell','media','related','all_tags','translation','upSell','variant','variantSets')->get();
+    }
+    public function getProductBySku($sku)
+    {
+      return self::where('sku',$sku)->first();
+    }
+    public function getProductByCategory($category_id)
+    {
+      return self::where('category_id',$category_id)->get();
+    }
+
+
+
+    public function variantPrice(){
+      return $this->hasOne('App\Models\ProductVariant')->select('*','price as variant_price')->first();
+    }
+
+    public function variantSingle(){
+      return $this->hasOne('App\Models\ProductVariant');
+    }
+
+
+
+    public function OrderProduct(){
+        return $this->hasMany('App\Models\OrderProduct')->where(function($q){
+            $q->groupBy('order_id ');
+        });
+    }
+
+    public function UserWishlist(){
+      return $this->hasMany('App\Models\UserWishlist')->where(function($q){
+          $q->groupBy('product_id');
+      });
+
+    }
+
+
+    public function productTranslation(){
+>>>>>>> pre_stage
       return $this->hasMany('App\Models\ProductTranslation');
     }
   }
@@ -236,6 +505,7 @@ class Product extends Model implements Auditable
       }
       return $date;
     }
+<<<<<<< HEAD
     return 0;
 
   }
@@ -278,6 +548,31 @@ class Product extends Model implements Auditable
     } else {
       $column = 'unique_identifier';
       $value = $user->system_user;
+=======
+    public function scopeByLongTermProductCategoryServiceType($query,$type)
+    {
+        $categoryTypesArray = getServiceTypesCategory($type);
+        return $query->whereHas('LongTermProducts.product.productcategory',function($q) use ($categoryTypesArray){
+          $q->whereIn('type_id',$categoryTypesArray);
+        });
+    }
+    // check product validate
+    public function scopeByProductWhereCheck($query)
+    {
+        $query = $query->where(['is_live'=>1]);
+        if(checkColumnExists('products','is_long_term_service')){
+          $query = $query->where('is_long_term_service',0);
+        }
+        return $query;
+    }
+    // check product validate
+    public function scopeByProductLongTerm($query)
+    {
+        $query = $query->where(['is_live'=>1]);
+        if(checkColumnExists('products','is_long_term_service')){
+          $query = $query->where('is_long_term_service',1);
+        }
+        return $query;
     }
 
     return $this->hasMany('App\Models\CartProduct', 'product_id', 'id')->whereHas('cart', function ($qset) use ($column, $value) {
@@ -425,6 +720,11 @@ class Product extends Model implements Auditable
       return $this->hasOne('App\Models\ProductByRole', 'product_id', 'id')->where('role_id', 1);
     }
   }
+    // in long term service
+    public function LongTermProducts(){
+        $langData = $this->hasOne('App\Models\LongTermServiceProducts','long_term_service_id','id');
+        return $langData;
+  }
 
   public function productByRoleForAdmin()
   {
@@ -510,5 +810,12 @@ class Product extends Model implements Auditable
     return $this->belongsTo('App\Models\VehicleEmissionType', 'emission_type_id', 'id')->select('id', 'emission_type', 'desc');
   }
 
+    public function syncProductDeliverySlot(){
+      return $this->belongsToMany('App\Models\DeliverySlot', 'delivery_slots_product', 'product_id', 'delivery_slot_id')->withTimestamps();
+    }
 
+    public function processor_product()
+    {
+        return $this->hasMany('App\Models\ProcessorProduct', 'product_id', 'id');
+    }
 }

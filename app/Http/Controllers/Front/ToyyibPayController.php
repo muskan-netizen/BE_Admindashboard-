@@ -222,7 +222,7 @@ class ToyyibPayController extends FrontController
     public function callback(Request $request){
 
        // http_response_code(200);
-      \Log::info($request->all());
+      //\Log::info($request->all());
      // dd($request->all());
     }
 

@@ -38,15 +38,15 @@ class OzowController extends FrontController
         {
             $data['come_from'] = 'web';
         }
-        Log::info("Square Before Payment");
-        Log::info($data);
+       // Log::info("Square Before Payment");
+       // Log::info($data);
     	// dd($data);
     	return view('frontend.payment_gatway.square_view')->with(['data' => $data]);
     }
     public function createPayment(Request $request)
     {
-        Log::info("Square Create Payment");
-        Log::info($request->all());
+       // Log::info("Square Create Payment");
+       // Log::info($request->all());
         if($request->come_from == "app")
         {
             $user = User::where('auth_token', $request->auth_token)->first();

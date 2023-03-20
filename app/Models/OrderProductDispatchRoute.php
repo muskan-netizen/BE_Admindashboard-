@@ -10,5 +10,8 @@ class OrderProductDispatchRoute extends Model
     use HasFactory;
     public function DispatchStatus(){
         return $this->hasMany('App\Models\VendorOrderProductDispatcherStatus', 'order_product_route_id', 'id')->orderBy('id','DESC');
-      }
+    }
+    public function order(){
+	    return $this->hasOne('App\Models\Order' , 'id', 'order_id'); 
+	}
 }

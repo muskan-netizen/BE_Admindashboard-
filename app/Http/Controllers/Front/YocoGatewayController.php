@@ -285,11 +285,11 @@ class YocoGatewayController extends FrontController
                 return $this->successResponse($result);
             } else {
                 // $this->yocoFailApp($request);
-                Log::info($result->errorMessage);
+               // Log::info($result->errorMessage);
                 return $this->errorResponse(__('Server Error'), 400);
             }
         } catch (\Exception $ex) {
-            Log::info($ex->getMessage());
+          Log::info($e->getMessage());
             return $this->errorResponse(__('Server Error'), 400);
         }
     }
