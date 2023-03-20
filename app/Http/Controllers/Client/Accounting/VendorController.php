@@ -117,7 +117,7 @@ class VendorController extends Controller{
                 return decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->sum('service_fee_percentage_amount'));
             })
             ->addColumn('fixed_fee', function($vendors){
-                return decimal_format($vendors->orders->sum('fixed_fee'));
+                return decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->sum('fixed_fee'));
             })
             ->addColumn('cash_collected_amount', function($vendors) {
                 return decimal_format($vendors->orders->where('order_status_option_id', '!=', 3)->where('payment_option_id', 1)->sum('payable_amount') + $vendors->orders->where('order_status_option_id', '!=', 3)->sum('taxable_amount') + $vendors->orders->where('order_status_option_id', '!=', 3)->sum('service_fee_percentage_amount'));
