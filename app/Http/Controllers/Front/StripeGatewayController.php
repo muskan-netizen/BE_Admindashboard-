@@ -1783,12 +1783,13 @@ class StripeGatewayController extends FrontController
                             $orderController->autoAcceptOrderIfOn($order->id);
     
                             // Remove cart
-                            // CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
-                            // Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-                            // CartAddon::where('cart_id', $cart_id)->delete();
-                            // CartCoupon::where('cart_id', $cart_id)->delete();
-                            // CartProduct::where('cart_id', $cart_id)->delete();
-                            // CartProductPrescription::where('cart_id', $cart_id)->delete();
+                            CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                            Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                            CartAddon::where('cart_id', $cart_id)->delete();
+                            CartCoupon::where('cart_id', $cart_id)->delete();
+                            CartProduct::where('cart_id', $cart_id)->delete();
+                            CartProductPrescription::where('cart_id', $cart_id)->delete();
+                            CartDeliveryFee::where('cart_id', $cart_id)->delete();
                   
                             // send sms 
                             $this->sendSuccessSMS($request, $order);
@@ -1803,11 +1804,12 @@ class StripeGatewayController extends FrontController
                             }
                             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                            $request = new Request(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                         
                         }
-                        // Send Email
-                        //   $this->successMail();
+                             //Send Email to customer
+                             $orderController->sendSuccessEmail($request, $order);
                     }
                 } elseif($payment_form == 'wallet'){
                     $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
