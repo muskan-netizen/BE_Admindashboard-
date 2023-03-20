@@ -55,7 +55,7 @@
                                 <div
                                     class="order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
                                     <ul class="alBtnsOnOrders d-flex justify-content-end">
-                                        @if (!Auth::user()->is_superadmin && $clientData->socket_url)
+                                        @if (!Auth::user()->is_superadmin && @$clientData->socket_url)
                                             <li>
                                                 <a data-toggle="tooltip" data-placement="top" title="Start Chat"
                                                     class="start_chat btn-info" data-vendor_order_id="{{ $vendor->id }}"
