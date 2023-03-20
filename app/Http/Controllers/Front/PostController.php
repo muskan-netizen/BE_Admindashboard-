@@ -142,7 +142,6 @@ class PostController extends FrontController
                     if( checkTableExists('product_attributes') ) {
                         $insert_arr = [];
                         $insert_count = 0;
-
                         foreach($request->attribute as $key => $value) {
                             if( !empty($value) && !empty($value['option'] && is_array($value) )) {
                                 

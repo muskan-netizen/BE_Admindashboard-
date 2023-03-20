@@ -686,6 +686,10 @@ class HomeController extends BaseController{
             $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
             $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $is_p2p = 0;
+            if(@$new_product_detail->category->categoryDetail->type_id && @$new_product_detail->category->categoryDetail->type_id == 13){
+                $is_p2p = 1;
+            }
             $new_products[] = array(
                 'id' => $new_product_detail->id,
                 'tag_title' => $new_products_title??0,
@@ -700,13 +704,18 @@ class HomeController extends BaseController{
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
-                'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
+                'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug,
+                'is_p2p' => $is_p2p
             );
         }
         foreach ($feature_product_details as  $feature_product_detail) {
             $multiply = $feature_product_detail->variant->first()->multiplier ?? 1;
             $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
             $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $is_p2p = 0;
+            if(@$feature_product_detail->category->categoryDetail->type_id && @$feature_product_detail->category->categoryDetail->type_id == 13){
+                $is_p2p = 1;
+            }
             $feature_products[] = array(
                 'id' => $feature_product_detail->id,
                 'tag_title' => $featured_products_title??'0',
@@ -721,7 +730,8 @@ class HomeController extends BaseController{
                 'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                 'vendor' => $feature_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply,',')),
-                'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
+                'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug,
+                'is_p2p' => $is_p2p
             );
         }
         foreach ($on_sale_product_details as  $on_sale_product_detail) {
@@ -731,6 +741,10 @@ class HomeController extends BaseController{
             $cat_name = '';
             if(@$on_sale_product_detail->category->categoryDetail->translation){
                 $cat_name =  $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug;
+            }
+            $is_p2p = 0;
+            if(@$on_sale_product_detail->category->categoryDetail->type_id && @$on_sale_product_detail->category->categoryDetail->type_id == 13){
+                $is_p2p = 1;
             }
             $on_sale_products[] = array(
                 'id' => $on_sale_product_detail->id,
@@ -746,7 +760,8 @@ class HomeController extends BaseController{
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
-                'category' => $cat_name
+                'category' => $cat_name,
+                'is_p2p' => $is_p2p
             );
         }
 
@@ -832,7 +847,7 @@ class HomeController extends BaseController{
 
 
         /** Respose data */
-
+        
         $data = [
             'brands' => $brands,
             'vendors' => $vendors,
