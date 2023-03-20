@@ -52,7 +52,7 @@
                             <div class="d-flex align-items-center justify-content-between al_clock pt-2">
                                 <b>{{showPriceWithCurrency($product->price_numeric)}} </b>
                             </div>
-                            @if($product['category_type'] == 13)
+                            @if(@$product->type_id == 13)
                             <div class="chat-button">
                                 @if(getAdditionalPreference(['chat_button'])['chat_button'])
                                     <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$product->vendor_id}}" data-orderid="" data-order_id="" data-product_id="{{$product->id}}"><i class="fa fa-comments" aria-hidden="true"></i></a>

@@ -16,7 +16,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
     <nav class="navbar navbar-expand-lg p-0 ">
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
-                <div class="col-lg-7 p-0 d-md-flex align-items-center justify-content-start" >
+                <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start" >
                     <a class="navbar-brand mr-3"  href="{{ route('userHome') }}">
                     <img class="logo-image" style="height:50px;" alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
@@ -44,7 +44,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 
                 </div>
 
-                <div class="col-lg-5 text-right ml-auto al_z_index p-0"  >
+                <div class="col-lg-6 text-right ml-auto al_z_index p-0"  >
                     <ul class="header-dropdown ml-auto">
                         @if($client_preference_detail->header_quick_link == 1)
                         @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )

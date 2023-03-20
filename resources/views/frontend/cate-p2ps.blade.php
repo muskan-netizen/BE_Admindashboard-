@@ -195,7 +195,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="displayProducts" id="category_products_filter">
+                                    <div id="category_products_filter">
                                         <div class="col-12 custom_filtter">
                                         <!-- <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Sort By')}}</option>
@@ -364,12 +364,12 @@
         $(this).prop('checked', true);
         
     });
-
+    
     $('.js-range-slider').ionRangeSlider({
         type: 'double',
         grid: false,
         min: 0,
-        max: 50000,
+        max: {{$maxPrice}},
         from: 0,
         to: 50000,
         prefix: " "

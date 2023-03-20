@@ -158,6 +158,7 @@ trait smsManager{
                 'to'      => $to,
                 'message' => $message
             ]);
+            \Log::info(json_encode($result));
             return $result;
         }catch(\Exception $e) {
             return response()->json(['data' => $e->getMessage()]);

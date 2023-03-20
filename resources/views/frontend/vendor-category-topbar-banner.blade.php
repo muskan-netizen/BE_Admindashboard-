@@ -1,6 +1,9 @@
  
 @if (@$vendor->banner)
-    <div class="common-banner my-banner"><img class="blur-up lazyload" alt="" data-src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" ></div>
+    <div class="common-banner my-banner"><img class="blur-up lazyload" alt="" data-src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" >
+
+
+</div>
 @elseif(@$brand)
     <div class="common-banner my-banner"><img class="blur-up lazyload" alt="" data-src="{{$brand->image_banner['image_fit'] . '1920/1080' . $brand->image_banner['image_path']}}" ></div>
 @elseif(@$celebrity)

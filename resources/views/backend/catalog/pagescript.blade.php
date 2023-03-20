@@ -157,7 +157,34 @@
     });
 
     $("#editVariantmodal").on('click', '.deleteCurRow', function() {
-        $(this).closest('tr').remove();
+         
+          Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete this variant option.')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                               $(this).closest('tr').remove();
+            
+                     var delete_opt_id = $(this).attr('data-id');
+            
+                $.ajax({
+            type: "POST",
+            url : "{{route('variant.delete.option')}}",
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "id": delete_opt_id
+            },
+            success: function (response) {
+                
+            }
+        });
+            }
+        });
+        return false;  
     });
 
     $(document).on('click', '.deleteVariant', function() {

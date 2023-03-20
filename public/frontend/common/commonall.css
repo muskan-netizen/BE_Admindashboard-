@@ -33,8 +33,14 @@
 .al_body_template_one .search_form button.btn svg {
     width: 16px;
 }
+.al_body_template_two .search_form button.btn svg {
+    width: 16px;
+}
 
 .al_body_template_one .search_bar.menu-right .icon-nav {
+    text-align: center;
+}
+.al_body_template_two .search_bar.menu-right .icon-nav {
     text-align: center;
 }
 
@@ -309,6 +315,7 @@ span.org_price.ml-1.font-14 {
     max-width: 50%;
     padding: 10px 0px;
 }
+
 .al_body_template_one .product-right .sold-by a b {
     font-size: 14px;
     font-weight: 400;
@@ -635,45 +642,22 @@ li.vendor-timing p{
     z-index: 9;
     width: 98.3%;
 }
-
-
-.navscroll {
-    width: 1500px;
-    overflow-x: auto;
-}
- 
-
-
-.navscroll ul {
-    width: 100%;
-    display: flex;
-    flex-wrap: nowrap;
-}
-
-.navscroll ul li{
-    position: relative;
-}
-
-.navscroll ul li ul{
-    position: absolute;
-    position: fixed;
-    top: 198px !important;
-}
-.al_body_template_six .common-banner:after{
-    position:inherit;
-    background:transparent;
-    }
-
-
-.common-banner:after {
+.al_body_template_nine .common-banner:after {
     content: "";
     position: absolute;
     background: #0e0c0c4f;
     z-index: 9;
-    width: 100%;
+    width:100%!important;
     height: 100%;
-    left: 0px;border-radius: 10px;
-    top:0;
+    left: 0px;
+    border-radius: 10px;
+    margin: 0 auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+.al_body_template_nine .common-banner:after{
+    width: calc(100% - 24px)!important;
 }
 .common-banner.my-banner{
 position: relative;
@@ -745,3 +729,32 @@ display: inline-block;
     min-width: 100% !important;
     max-width: 100% !important;
 } */
+.custom_banner img{
+    border-radius: 50px;
+    min-height: 300px;
+    object-fit:cover;
+    object-position: center;
+}
+/*------- SIMILAR PRODUCTS image changes*/
+
+.al_body_template_eight .similar-products-vitamin .slick-track {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.al_body_template_eight .similar-products-vitamin img.blur-up.lazyloaded.pro_imgs.myimage1.dfasdfasdf {
+    height: 300px!important;
+    min-height: 300px;
+}
+
+.al_body_template_eight .similar-products-vitamin .common-product-box {
+    height:inherit!important;
+}
+
+.al_body_template_eight .similar-products-vitamin .product-card-box .img-outer-box {
+    height: 300px !important;
+    min-height: 300px !important;
+}
+.al_body_template_three .product-image img .img-fluid.blur-up .lazyloaded {
+    height: 100%!important;
+}

@@ -73,7 +73,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 @php
 $category_name =  ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
   $img = '';
-  $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
+  $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency', 'add_to_cart_btn']);
 @endphp
 <!-- <div class="toast">
     <div class="toast-header">
@@ -220,7 +220,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @endif
                                             </ul>
                                         </div>
-                                        @if(count($product->media) > 1)
+                                        {{-- @if(count($product->media) > 1)
                                         <div class="exzoom_nav">
                                             @if(!empty($product->media))
                                             @foreach($product->media as $k => $image)
@@ -247,7 +247,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
                                             </a>
                                         </p>
-                                        @endif
+                                        @endif --}}
                                     </div>
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
@@ -398,11 +398,11 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                                 $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                                 ?>
                                                                     <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"> <span class="color_name ellipsis">{{$optn->title}}</span>
-                                                                        @if($variant->type == 2)
-                                                                            <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
-                                                                        @else
-                                                                            <span class="color_var radio_var" style="padding:8px; border: 1px dotted #CCC; background:#fff;"></span>
-                                                                        @endif
+                                                                      @if($variant->type == 2)
+                                                                    <span class="color_var var_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};" data-id="{{$var_id}}"></span>
+                                                                	@else
+                                                                    <span class="color_var radio_var radio_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:#fff;" data-id="{{$var_id}}"></span>
+                                                               	 	@endif
                                                                     <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                     <span class="checkround"></span>
                                                                 </label>
@@ -626,7 +626,8 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             else
                                                 $checkSlot = 0;
                                         @endphp
-                                        @if( !is_category_p2p($product->category) )
+
+                                        @if( $product->category->categoryDetail->type_id != 13 )
                                         <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
@@ -710,6 +711,17 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
                                                 {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
                                             </button>
+                                            @endif
+                                            @php
+                                                if($product->sell_when_out_of_stock == 1 && $product->variant[0]->quantity == 0){
+                                                    $product_quantity_in_cart = 1;
+                                                    $product->variant[0]->quantity = 2;
+                                                }
+                                                else
+                                                    $product_quantity_in_cart = $product_in_cart->quantity??0;
+                                                @endphp
+                                            @if($is_available == 1 && $additionalPreference['add_to_cart_btn'] == 1)
+                                                <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                             @endif
                                         </div>
                                         @endif
@@ -822,9 +834,13 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                     @if(!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9'))
                     <div class="row">
                         <div class="col-md-12">
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Similar Products in '. $category_name ])
+                            @php
+                                $similar_title = getNomenclatureName('Similar Product', true);
+                                $similar_title_label = ($similar_title=="Similar Product")?__('Similar Product'):__($similar_title);
+                            @endphp
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => $similar_title_label.' In '.$category_name ])
                             @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Related Product'])
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Similar Products by '. $product->vendor->name])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => $similar_title_label.' By '. $product->vendor->name])
                         </div>
                     </div>
                     @endif
@@ -969,7 +985,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
         </div>
     </div>
     <div class="container pb-md-4">
-        <div class="product-m  related-products pb-2 d-flex related-css">
+        <div class="product-m  related-products pb-2  related-css">
             @forelse($product->related_products as $related_product)
             <div>
                 <a class="common-product-box scale-effect text-center"
@@ -1346,11 +1362,13 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
         $(".color_var").click(function () {
-            $(".color_var").removeClass("var-active");
+        	var name  = $(this).attr("data-id");
+            $(".var_"+name).removeClass("var-active");
             $(this).toggleClass("var-active");
             });
         $(".radio_var").click(function () {
-            $(".radio_var").removeClass("radio-active");
+        	var name  = $(this).attr("data-id");
+            $(".radio_"+name).removeClass("radio-active");
             $(this).toggleClass("radio-active");
         });
     });

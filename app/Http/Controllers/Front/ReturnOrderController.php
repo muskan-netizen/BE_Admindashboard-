@@ -162,49 +162,41 @@ class ReturnOrderController extends FrontController
 
     /**
      * order details in for return order
-     */
-    public function getReplaceProducts(Request $request, $domain = '')
-    {
-        try {
-
+    */
+    public function getReplaceProducts(Request $request, $domain = ''){
+      try {
             $langId = Session::get('customerLanguage');
             $navCategories = $this->categoryNav($langId);
-            $reasons = ReturnReason::where('status', 'Active')->where('type', 2)->orderBy('order', 'asc')->get();
-            $order_details = Order::with([
-                'vendors.products' => function ($q1) use ($request) {
-                    $q1->where('id', $request->replace_id);
-                }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
-                'products' => function ($q1) use ($request) {
-                    $q1->where('product_id', $request->replace_ids);
-                }, 'products.productRating', 'user', 'address'
-            ])
-                ->whereHas('vendors.products', function ($q) use ($request) {
-                    $q->where('id', $request->replace_id);
-                })->where('orders.user_id', Auth::user()->id)->where('id', $request->order_id)->orderBy('orders.id', 'DESC')->first();
+            $reasons = ReturnReason::where('status','Active')->where('type', 2)->orderBy('order','asc')->get();
+            $order_details = Order::with(['vendors.products' => function ($q1)use($request){
+                $q1->where('id', $request->replace_id);
+            }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
+            'products' => function ($q1)use($request){
+                $q1->where('product_id', $request->replace_ids);
+            },'products.productRating', 'user', 'address','orderVendorProduct' =>function($q1) use($request){
+                $q1->where('product_id', $request->replace_ids);
+            }])
+            ->whereHas('vendors.products',function($q)use($request){
+                $q->where('id', $request->replace_id);
+            })->where('orders.user_id', Auth::user()->id)->where('id', $request->order_id)->orderBy('orders.id', 'DESC')->first();
 
             $vendor_id = 0;
-            if (isset($order_details)) {
-                foreach ($order_details->vendors as $key => $vendor) {
+            if(isset($order_details)){
+                foreach($order_details->vendors as $key => $vendor){
                     $vendor_id = $vendor->vendor_id;
-                    // dd($vendor_id);
-                    foreach ($vendor->products as $product) {
-                        if (@$product->pvariant->media && $product->pvariant->media->isNotEmpty()) {
-                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
-                        } elseif ($product->media->isNotEmpty()) {
-                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
-                        } else {
-                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                    foreach($vendor->products as $product){
+                        if(@$product->pvariant->media && $product->pvariant->media->isNotEmpty()){
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'];
+                        }elseif($product->media->isNotEmpty()){
+                            $product->image_url = $product->media->first()->image->path['image_fit'].'74/100'.$product->media->first()->image->path['image_path'];
+                        }else{
+                            $product->image_url = ($product->image) ? $product->image['image_fit'].'74/100'.$product->image['image_path'] : '';
                         }
                     }
                 }
-
-
-
-
-
+                $vendor_id = !empty($order_details->orderVendorProduct)?$order_details->orderVendorProduct->vendor_id:$vendor_id;
                 $user = Auth::user();
                 $p_id = $request->replace_ids;
-                // dd($p_id);
                 $product = Product::with([
                     'variant' => function ($sel) {
                         $sel->groupBy('product_id');
@@ -277,21 +269,15 @@ class ReturnOrderController extends FrontController
                     }
                 }
 
+                    $addresses = UserAddress::where('user_id', $user->id)->where('status',1)->orderBy('is_primary','Desc')->get();
 
-
-
-                $addresses = UserAddress::where('user_id', $user->id)->where('status', 1)->orderBy('is_primary', 'Desc')->get();
-
-
-                return view('frontend.account.replace-order')->with(['addresses' => $addresses, 'product' => $product, 'is_available' => $is_available, 'order' => $order_details, 'navCategories' => $navCategories, 'reasons' => $reasons]);
+                return view('frontend.account.replace-order')->with(['addresses' => $addresses, 'product' => $product,'is_available'=>$is_available,'order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
             }
             return $this->errorResponse('Invalid order', 404);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode());
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 400);
         }
     }
-
-
     /**
      * return  order product
      */
