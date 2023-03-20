@@ -193,7 +193,7 @@ class UserController extends FrontController{
             if ($user->phone_token != $request->verifyToken) {
                 return response()->json(['error' => __('OTP is not valid')], 404);
             }
-            if ($currentTime > $user->phone_token_valid_till) {
+            if (($currentTime > $user->phone_token_valid_till) && !isStaticOtpEnable()) {
                 return response()->json(['error' => __('OTP has been expired.')], 404);
             }
             $user->phone_token = NULL;
@@ -210,7 +210,7 @@ class UserController extends FrontController{
             if ($user->email_token != $request->verifyToken) {
                 return response()->json(['error' => __('OTP is not valid')], 404);
             }
-            if ($currentTime > $user->email_token_valid_till) {
+            if (($currentTime > $user->email_token_valid_till) && !isStaticOtpEnable() ) {
                 return response()->json(['error' => __('OTP has been expired.')], 404);
             }
             $user->email_token = NULL;

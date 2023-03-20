@@ -12,6 +12,7 @@
       background: #dddddd;
     }
 </style>
+
 <section class="wrapper-main mb-5 py-lg-5">
     <div class="container">
         <script type="text/template" id="email_verified_template">
@@ -52,11 +53,11 @@
                                 </div>
                                 <span class="invalid-feedback2 invalid_email_otp_error w-100 d-block text-center text-danger"></span>
                                 <div class="row text-center mt-2">
-                                @if(isStaticOtpEnable())
+                                 @if(isStaticOtpEnable())
                                     <div class="col-12">                                        
-                                            <div class="countdown text-success">Your otp is 123456</div>
+                                            <div class="text-success">Your otp is 123456</div>
                                     </div>
-                                @else
+                                @endif
                                     <div class="col-12 resend_txt">
                                         <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
                                         
@@ -64,7 +65,6 @@
                                         
                                         <a class="verifyEmail" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
                                     </div>
-                                    @endif
                                     <div class="col-md-12 mt-3">
                                         <button type="button" class="btn btn-solid" id="verify_email_token">{{__('VERIFY')}}</button>
                                     </div>
@@ -108,15 +108,14 @@
                         <div class="row text-center mt-2">
                          @if(isStaticOtpEnable())
                                     <div class="col-12">                                        
-                                            <div class="countdown text-success">Your otp is 123456</div>
+                                            <div class="text-success">Your otp is 123456</div>
                                     </div>
-                                @else
+                                @endif
                             <div class="col-12 resend_txt">
                                 <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
                                 <div class="phonecountdown text-danger"></div>
                                 <a class="verifyPhone" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
                             </div>
-                            @endif
                             <div class="col-md-12 mt-3">
                                 <button type="button" class="btn btn-solid" id="verify_phone_token">{{__('VERIFY')}}</button>
                             </div>

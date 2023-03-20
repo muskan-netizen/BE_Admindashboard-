@@ -413,7 +413,7 @@ class CustomerAuthController extends FrontController
                         $body = sendSmsTemplate('user-signup-sms',$keyData);              
                         $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
     
-                        if( $prefer->verify_phone == 1 ){
+                        if( $prefer->verify_phone == 1){
                             $response['send_otp'] = 1;
                             $to = '+'.$user->dial_code.$user->phone_number;
                             $provider = $prefer->sms_provider;
