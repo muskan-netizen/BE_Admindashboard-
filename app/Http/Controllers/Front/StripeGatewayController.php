@@ -1707,12 +1707,13 @@ class StripeGatewayController extends FrontController
 
     public function stripeIdealWebhook(Request $request)
     {
+        Log::info('start');
         $secret_key = stripeDynamicPaymentCredentials('stripe_ideal')->secret_key;
         \Stripe\Stripe::setApiKey($secret_key);
 
         $payload = @file_get_contents('php://input');
 
-        // \Log::info('in webhook');
+         \Log::info('in webhook');
         // \Log::info(json_encode($payload));
         $event = null;
         try {
@@ -1765,16 +1766,17 @@ class StripeGatewayController extends FrontController
                             $orderController->autoAcceptOrderIfOn($order->id);
     
                             // Remove cart
-                            // CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
-                            // Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-                            // CartAddon::where('cart_id', $cart_id)->delete();
-                            // CartCoupon::where('cart_id', $cart_id)->delete();
-                            // CartProduct::where('cart_id', $cart_id)->delete();
-                            // CartProductPrescription::where('cart_id', $cart_id)->delete();
-                  
+                            CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                            Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                            CartAddon::where('cart_id', $cart_id)->delete();
+                            CartCoupon::where('cart_id', $cart_id)->delete();
+                            CartProduct::where('cart_id', $cart_id)->delete();
+                            CartProductPrescription::where('cart_id', $cart_id)->delete();
+                            CartDeliveryFee::where('cart_id', $cart_id)->delete();
+                            //Send Email to customer
+                            $orderController->sendSuccessEmail($request, $order);
                             // send sms 
                             $this->sendSuccessSMS($request, $order);
-                        
                             // Send Notification
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {
@@ -1785,11 +1787,11 @@ class StripeGatewayController extends FrontController
                             }
                             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                            $request = new Request(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                        
                         }
-    
-                        // Send Email
-                        //   $this->successMail();
+                          
                     }
                 } elseif($payment_form == 'wallet'){
                     $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
