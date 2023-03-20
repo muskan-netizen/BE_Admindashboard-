@@ -2494,7 +2494,8 @@ div#test {
 }
 
 .inner_spacing h3,
-.inner_spacing h3 span {
+.inner_spacing h3 span,
+.inner_spacing h3 label {
     margin: 0;
     font-weight: 700;
     color: rgb(0, 0, 0 / 68%);
@@ -5734,8 +5735,12 @@ ul#main-nav-list {
     color: var(--theme-deafult);
     display: inline-block;
     position: absolute;
-    left: 0;
-    top: 6px
+    left: -4px;
+    top: 3px;
+}
+
+p.vendor_address, p.vendor_email {
+    margin-left: 30px !important;
 }
 
 .vendor-info li {

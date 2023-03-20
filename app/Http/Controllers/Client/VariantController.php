@@ -254,6 +254,13 @@ class VariantController extends BaseController
         $var->save();
         return redirect()->back()->with('success', 'Variant deleted successfully!');
     }
+    
+    public function deleteVariantOption(Request $request)
+    {
+        $var = VariantOption::where('id', $request->id)->first();
+        $var->delete();
+        return response()->json(array('success' => true));
+    }
 
     /**
      * save the order of variant.
