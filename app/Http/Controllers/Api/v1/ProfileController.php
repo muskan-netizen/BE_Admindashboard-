@@ -457,11 +457,8 @@ class ProfileController extends BaseController
 
     public function getUserCards(Request $request)
     {
-        $auth_user = auth()->user();
-        $listData = UserDataVault::where([
-            'user_id' => $auth_user->id
-        ])->orderBy('is_default', 'DESC')->get();
-
+        $azul = new AzulPaymentController();
+        $listData = $azul->getUserCards($request);
         return response()->json([
             'data' => $listData ?? []
         ]);
@@ -469,15 +466,14 @@ class ProfileController extends BaseController
 
     public function setDefaultCard(Request $request)
     {
-        $user = Auth::user();
-        UserDataVault::where('user_id', $user->id)->update([
-            'is_default' => 0
-        ]);
-        UserDataVault::where('user_id', $user->id)->where('id',  $request->id)->update([
-            'is_default' => 1
-        ]);
+        $isTrue =  UserDataVault::defaultCard($request->id);
+        if($isTrue){
+            return response()->json([
+                'message' => __('Default Card Has Been Changed Successfully')
+            ]);
+        }
         return response()->json([
-            'message' => __('Default Card Has Been Changed Successfully')
+            'message' => __('Card does\'nt exist')
         ]);
     }
 
@@ -488,10 +484,8 @@ class ProfileController extends BaseController
      */
     public function deleteCard(Request $request)
     {
-        $card = UserDataVault::where('id', $request->id)->first();
+        $card = UserDataVault::deleteCard($request->id);
         if ($card) {
-            $azul = new AzulPaymentController();
-            $azul->deleteDatavault($card);
             return response()->json([
                 'message' => __('Card Has Been Deleted Successfully')
             ]);

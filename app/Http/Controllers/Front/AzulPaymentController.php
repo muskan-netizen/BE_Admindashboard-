@@ -351,21 +351,19 @@ class AzulPaymentController extends FrontController
         }
     }
     
-    public function getUserCards(Request $request){
-        $auth_user = Auth::user();
-        
-        $listData = UserDataVault::where(['user_id' => $auth_user->id])->get();
-        
+    public function getUserCards(Request $request){        
+        $listData = $this->getUserCards();
         $returnHTML = view('frontend.card-list')->with(['cards' => $listData])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
     
     public function setDefaultCard($domain = '', $id)
     {
-        $user = Auth::user();
-        $address = UserDataVault::where('user_id', $user->id)->update(['is_default' => 0]);
-        $address = UserDataVault::where('user_id', $user->id)->where('id', $id)->update(['is_default' => 1]);
-        return redirect()->route('payment.user.cards')->with('success', __('Default Card Has Been Changed Successfully'));
+       $isTrue =  UserDataVault::defaultCard($id);    
+       if($isTrue){
+            return redirect()->route('payment.user.cards')->with('success', __('Default Card Has Been Changed Successfully'));
+       }
+       return redirect()->route('payment.user.cards')->with('error', __('Card not exist'));   
     }
     
     /**
@@ -374,11 +372,9 @@ class AzulPaymentController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function deleteCard($domain = '', $id){
-        $card = UserDataVault::where('id', $id)->first();
+        $card = UserDataVault::deleteCard($id);
         if($card){
-            $this->deleteDatavault($card);
             return redirect()->route('payment.user.cards')->with('success', __('Card Has Been Deleted Successfully'));
-            
         }
         return redirect()->route('payment.user.cards')->with('error', __('Card does\'nt exist'));
     }

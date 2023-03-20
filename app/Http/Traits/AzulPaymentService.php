@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\ClientException;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\UserDataVault;
+use Illuminate\Support\Collection;
 
 trait AzulPaymentService
 {
@@ -81,10 +82,12 @@ trait AzulPaymentService
                 'ForceNo3DS' => '1'
             ];
         }else{
-            $exp = explode('/', $card['dt']);
-            $expiry = $exp[1] . $exp[0];
+            
             if (isset($card['come_from']) && $card['come_from'] == 'app') {
                 $expiry = $card['dt'];
+            }else{
+                $exp = explode('/', $card['dt']);
+                $expiry = $exp[1] . $exp[0];
             }
             if(isset($card['save_card']) && $card['save_card'] == 1){
                 $saveVault = 1;
@@ -114,7 +117,6 @@ trait AzulPaymentService
                 'ForceNo3DS' => '1'
             ];
             if($saveVault){
-                Log::info("card save");
                 $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
             }
         }
@@ -505,17 +507,11 @@ trait AzulPaymentService
         }
         $datavault = UserDataVault::create([
             'user_id' => $user_id,
-            'is_default' => 1,
             'token' => $response['data']->DataVaultToken,
             'expiration' => $response['data']->Expiration,
             'brand' => $response['data']->Brand,
             'card_hint' => $response['data']->CardNumber
         ]);
-        
-        if($datavault){
-            Log::info("save card new");
-            UserDataVault::where('id','!=',$datavault->id)->update(['is_default' => 0]);
-        }
         
         return [
             'ok' => true,
@@ -527,9 +523,9 @@ trait AzulPaymentService
     /**
      * Retrieve user stored cards.
      */
-    public function getUserCards($user_id): Collection
+    public function getUserCards(): Collection
     {
-        // return UserDataVault::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+        return UserDataVault::where('user_id', auth()->user()->id)->orderBy('is_default', 'desc')->get();
     }
 
     /**
