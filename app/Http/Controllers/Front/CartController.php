@@ -15,16 +15,20 @@ use App\Models\EstimatedProductCart;
 use App\Models\EstimatedProductAddons;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait};
+use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait, CartManagerV2};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
 use Http\Message\Cookie;
 
+
 class CartController extends FrontController
 {
-    use ApiResponser,CartManager,KwikApi,BiddingCartTrait;
 
+    use ApiResponser,CartManager,KwikApi,BiddingCartTrait,CartManagerV2;
+    
+    
+    
 
     private function randomString()
     {
@@ -37,6 +41,7 @@ class CartController extends FrontController
 
     public function showCart(Request $request, $domain = '')
     {
+       
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
                 $order = Order::where('order_number', $request->order)->first();
@@ -209,8 +214,8 @@ class CartController extends FrontController
             $request->merge([
                 "addonoptID" => $addonsoptAr[$product->id]
             ]);
-            // \Log::info($request->addonID);
-            // \Log::info($request->addonoptID);
+            // //\Log::info($request->addonID);
+            // //\Log::info($request->addonoptID);
 
             $result = $this->postAddToCart($request);
             // echo $result;
@@ -296,7 +301,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-
+        
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -309,12 +314,14 @@ class CartController extends FrontController
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $user_id = $user ? $user->id : '';
             $variant_id = $request->variant_id;
+            $client_timezone = DB::table('clients')->first('timezone');
+            $timezone = $user ? $user->timezone : ($client_timezone->timezone ??  'Asia/Kolkata' );
             if ($user) {
                 $cart_detail['user_id'] = $user_id;
                 $cart_detail['created_by'] = $user_id;
             }
             $cart_detail = [
-                'is_gift' => 1,
+                'is_gift' => 0,
                 'status' => '0',
                 'item_count' => 0,
                 'currency_id' => $client_currency->currency_id,
@@ -359,7 +366,7 @@ class CartController extends FrontController
                 }
             }
 
-            //\Log::info($request->addon_id);
+            ////\Log::info($request->addon_id);
 
             $addonSets = $addon_ids = $addon_options = array();
 
@@ -370,15 +377,15 @@ class CartController extends FrontController
             if($request->has('addonoptID')){
                 $addon_options = $request->addonoptID;
             }
-            // \Log::info($addonSets);
+            // //\Log::info($addonSets);
             foreach($addon_options as $key => $opt){
                 if(isset($addon_ids[$key])){
                     $addonSets[$addon_ids[$key]][] = $opt;
                 }
             }
 
-            // \Log::info($addon_options);
-            // \Log::info($addonSets);
+            // //\Log::info($addon_options);
+            // //\Log::info($addonSets);
             // die;
 
             foreach($addonSets as $key => $value){
@@ -419,14 +426,14 @@ class CartController extends FrontController
             $isLongTermProduct =0;
             if( $request->has('service_start_time') && !empty($request->service_start_time)){
                 $isLongTermProduct  = 1;
-                $client_timezone = DB::table('clients')->first('timezone');
-                $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
+               
                 $time = '2022-10-27 '.$request->service_start_time; /**only need time */
                 $service_start_time = Carbon::parse($time, $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $start_date = $service_start_time ; /** we user start_date_time for long term order timing */
                 $service_start_date = carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
             }
 
+           
             $cart_product_detail = [
                 'status'            => '0',
                 'is_tax_applied'    => '1',
@@ -446,7 +453,23 @@ class CartController extends FrontController
                 'service_date'        => $request->has('service_date') ? $request->service_date : null,
                 'service_period'      => $request->has('service_period') ? $request->service_period : null,
                 'service_start_date'  => @$service_start_date,
+
+                'slot_id'  => $request->has('sele_slot_id') ? $request->sele_slot_id : null,
+                'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
+                'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
             ];
+             //Check if 
+            if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
+               
+                $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $slot    = $request->dispatcherAgentData['slot'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
+                $cart_product_detail['schedule_type'] = 'schedule';
+                $cart_product_detail['scheduled_date_time'] = @$dataTime;
+                $cart_product_detail['schedule_slot'] = @$slot ?? null;
+                $cart_product_detail['dispatch_agent_price'] = @$request->dispatcherAgentData['agent_price']??null;
+                $cart_product_detail['dispatch_agent_id'] = @$request->dispatcherAgentData['agent_id']??null;
+                $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], ['address_id'=>@$request->dispatcherAgentData['address_id']]);
+            }
 
             //Check if BidId and bid dicount coulmn exists in table
             if(checkColumnExists('cart_products','bid_number')){
@@ -454,6 +477,26 @@ class CartController extends FrontController
                 $cart_product_detail['bid_discount'] =@$request->bid_discount??null;
                 // dd($request->bid_number);
             }
+
+            $recurringformPost = '';
+            if(isset($request->recurringformPost) && !empty($request->recurringformPost))
+            {
+                //This Function Return objected array of recurring data
+                $recurringformPost = $this->recurringCalculationFunction($request);
+
+                 //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
+                if(checkColumnExists('cart_products','recurring_booking_type')){
+                    $cart_product_detail['recurring_booking_type']  =@$recurringformPost->action??null;
+                    $cart_product_detail['recurring_week_day']      =@$recurringformPost->weekTypes??null;
+                    $cart_product_detail['recurring_week_type']     =@$recurringformPost->weekTypes??null;
+                    $cart_product_detail['recurring_day_data']      =@$recurringformPost->selectedCustomdates??null;
+                    $cart_product_detail['recurring_booking_time']  =@$recurringformPost->schedule_time??null;
+                    
+                    // dd($request->bid_number);
+                }
+
+            }
+
 
 
             $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
@@ -512,6 +555,8 @@ class CartController extends FrontController
 
             if($isnew == 1){
                 $cartProduct = CartProduct::create($cart_product_detail);
+                // //\Log::info(json_encode($cart_product_detail));11
+
                 if(!empty($addon_ids) && !empty($addon_options)){
                     $saveAddons = array();
                     foreach ($addon_options as $key => $opts) {
@@ -541,7 +586,7 @@ class CartController extends FrontController
             }
             $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
 
-            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0]);
+            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0,'product_id' => $cartProduct->product_id]);
         } catch (Exception $e) {
             \Log::info($e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
@@ -1316,7 +1361,6 @@ class CartController extends FrontController
                         }
                     }
                 }
-                
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');
@@ -1383,7 +1427,7 @@ class CartController extends FrontController
                 $vendorData->discount_amount = decimal_format($discount_amount);
                 $vendorData->discount_percent = decimal_format($discount_percent);
                 $vendorData->taxable_amount = decimal_format($taxable_amount);
-                //\Log::info($taxable_amount);
+                ////\Log::info($taxable_amount);
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;
@@ -2030,7 +2074,8 @@ class CartController extends FrontController
      */
     public function getCartData($domain = '', Request $request)
     {
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable','is_service_product_price_from_dispatch','token_currency','advance_booking_amount', 'advance_booking_amount_percentage','is_file_cart_instructions']);
+                
 
         $cart_details = null;
         $user = Auth::user();
@@ -2044,10 +2089,10 @@ class CartController extends FrontController
             $cart = Cart::where('status', '0')->where('user_id', $user->id);
             if($getAdditionalPreference['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
 
-                $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id')->with('giftCard');
+                $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id','address_id')->with('giftCard');
             }else{
 
-                $cart = $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','order_id');
+                $cart = $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','order_id','address_id');
             }
 
             $cart = $cart->with(['coupon.promo','editingOrder'])->first();
@@ -2057,15 +2102,16 @@ class CartController extends FrontController
         } else {
             if(checkColumnExists('carts','order_id'))
             {
-                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             }else{
-                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type')->with(['coupon.promo'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','address_id')->with(['coupon.promo'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             }
 
         }
 
-        if (isset($request->address_id) && !empty($request->address_id)) {
-            $address_id = $request->address_id;
+        $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
+        if (isset( $address_id) && !empty( $address_id)) {
+           // $address_id $address_id = $request->address_id;
             $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
             $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
         }
@@ -2099,14 +2145,26 @@ class CartController extends FrontController
 
 
         if ($cart) {
-            $cart_details = $this->getCartsNew($cart, $address_id, $request->code, $schedule_datetime_del);
+            //$cart_details = $this->getCartsNew($cart, $address_id, $request->code, $schedule_datetime_del);
+            //v2 trait
+            $obj = [
+                 'cart' => $cart,
+                 'code'=> $request->code,
+                 'address_id'=> $address_id,
+                 'currency'=> $curId,
+                 'schedule_datetime_del'=> $schedule_datetime_del,
+                 'requestType'=>1,
+                 'type'=> $request->type,
+                 'language'=> $request->language
+            ];
+            $cart_details = $this->getCartsNewV2($obj,$request);
         }
 
         $client_preference_detail = ClientPreference::first();
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 
         $expected_vendors = [];
-    //    $expected_vendors = $this->searchProductExpection($cart_details);
+         //    $expected_vendors = $this->searchProductExpection($cart_details);
         $expected_vendor_html = '';
         // if(count($expected_vendors))
         // {
@@ -2137,8 +2195,7 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
 
-            //mohit sir brach code added by sohail
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage', 'is_token_currency_enable', 'token_currency']);
+           
 
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }
@@ -2321,7 +2378,7 @@ class CartController extends FrontController
                         $option = array_merge($option,$optionDunzo);
                     }
                 }
-                // \Log::info($vendorData->vendor->ahoy_location);
+                // //\Log::info($vendorData->vendor->ahoy_location);
                 if(isset($vendorData->vendor->ahoy_location)){
                     //getAhoy (Masa) Delivery fee changes code
                     $ahoy = new AhoyController();
@@ -2543,10 +2600,11 @@ class CartController extends FrontController
                     $time = Carbon::now()->format('Y-m-d H:i:s');
 
                 }else{
-                    if($request->schedule_dt){
+                    if($request->schedule_dt){   
                         if(isset($request->slot))
                         {
-                            $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                            //->setTimezone('UTC') (in case slot is comming then schedule_dt coming only date and we no need to convart date to ny UTC time  )
+                            $time = Carbon::parse($request->schedule_dt, $user->timezone)->format('Y-m-d H:i:s'); 
                             $slot = $request->slot;
                         }else{
 
@@ -2593,7 +2651,7 @@ class CartController extends FrontController
                 'schedule_dropoff' => $request->schedule_dropoff??null,
                 'payable_amount' => $request->payable_amount??0
                 ]);
-
+               
                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
 
                 DB::commit();
@@ -2705,7 +2763,6 @@ class CartController extends FrontController
 
     public function postAddToCartAddons(Request $request, $domain = '')
     {
-
         try {
 
             $user = Auth::user();
@@ -2915,4 +2972,123 @@ class CartController extends FrontController
         }
         return json_encode($today);
     }
+    
+
+    public function VendorTimeSlot(Request $request){
+        $user       = Auth::user();
+        $dates      = $request->dates;
+        $dates      = explode(",",$dates);
+        $userdates  = [];
+        $dayArr     = ['sunday'=>1,'monday'=>2,'tuesday'=>3,'wednesday'=>4,'thursday'=>5,'friday'=>6,'saturday'=>7];
+        if($dates){
+            foreach($dates as $date){
+                $day = GetDayFromDate($date);
+                $day = $dayArr[$day];
+                array_push($userdates,$day);
+            }
+        }
+        if ($user) {
+            $cart       = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $addresses  = UserAddress::where('user_id', $user->id)->where('status',1)->get();
+            $guest_user = false;
+        } else {
+            $cart       = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $addresses  = collect();
+        }
+        if ($cart) {
+            $cartData   = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        }
+
+        if($cartData){
+            foreach ($cartData as $key => $data) {
+                $vendorWeeklySlotDay = VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$data->vendor_id])->get()->toArray();
+                $checkAvailableSlots = $this->RecurringBookingAvailableSlots($vendorWeeklySlotDay,$userdates);
+                //pr($checkAvailableSlots);
+            }
+        }
+    }
+
+    public function RecurringBookingAvailableSlots($vendorWeeklySlotDay,$userdates){
+        $AvailableSlots = [];
+        if($vendorWeeklySlotDay){
+            foreach($vendorWeeklySlotDay as $slot){
+                if(in_array($slot['day'],$userdates)){
+                    $AvailableSlots[]=['start_time'=>convertDateTimeInTimeZone(date('Y-M-d')." ".$slot['start_time'], Auth()->user()->timezone, 'H:i'),'end_time'=>substr($slot['end_time'],0,-3)];
+                }
+            }
+            return $AvailableSlots;
+        }
+
+    }
+
+    public function recurringCalculationFunction($request)
+    {
+        $recurringformPost = (object)$request->recurringformPost;
+        $weekTypes ='';
+        $daysCnt ='';
+        if(!empty($recurringformPost->weekDay)){
+            $weekTypes = implode(',',$recurringformPost->weekDay);
+        }
+
+        $startDate = $recurringformPost->startDate;
+        $endDate = $recurringformPost->endDate;
+
+        $selectedCustomdates = [];
+        
+        if($recurringformPost->action=='2' || $recurringformPost->action=='1'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay);
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='3'){
+            $startDate = Carbon::now()->addDays(1);
+            $endDate = Carbon::now()->addDays(1);
+            $endDate = $endDate->addMonths($recurringformPost->month_number);
+            $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='4'){
+            if(!empty($recurringformPost->selectedCustomdates)){
+                $daysCnt =count($recurringformPost->selectedCustomdates);
+                $selectedCustomdates = implode(',',$recurringformPost->selectedCustomdates);
+            }
+        }elseif($recurringformPost->action=='6'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay,'A');
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }
+
+
+        if(empty($daysCnt)){
+            $days = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($days);
+        }
+
+            return (object)[
+                'weekTypes' => @$weekTypes,
+                'selectedCustomdates' => @$selectedCustomdates,
+                'startDate' => @$startDate,
+                'endDate' => @$endDate,
+                'action'  => @$recurringformPost->action,
+                'schedule_time'=>@$recurringformPost->schedule_time??'10:00',
+                'daysCnt'=>@$daysCnt??'1'
+            ];
+
+    }
+
+
 }

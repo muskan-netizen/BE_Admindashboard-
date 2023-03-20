@@ -43,6 +43,8 @@ if (Session::has('toaster')) {
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" ></script> --}}
 <script src="{{asset('assets/libs/datetimepicker/daterangepicker.min.js')}}" ></script>
 <script src="{{ asset('assets/js/alert/alert.js') }}"></script>
+<script src="{{asset('assets/js/backend/backend_common.js')}}"></script>
+
 
 {{-- <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" ></script> --}}
 {{-- add translation file  --}}

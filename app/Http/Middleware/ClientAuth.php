@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
-use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency,Permissions,UserVendor,Country};
+use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency,PermissionsOld,UserVendor,Country};
 
 class ClientAuth{
     /**
@@ -50,7 +50,7 @@ class ClientAuth{
                                         $sub_admin_per = false;
                                         $permission_exist = false;
                                         $url_path = $per_url[1];
-                                        $check_if_under_permision = Permissions::get()->pluck('slug')->toArray();
+                                        $check_if_under_permision = PermissionsOld::get()->pluck('slug')->toArray();
                                         if (in_array($url_path,$check_if_under_permision)){
                                             $permission_exist = true;
                                         }
@@ -75,8 +75,8 @@ class ClientAuth{
                 return $next($request);
              }
              else{
-                 Auth::logout();
-                 return redirect('login')->with(['account_blocked' => 'You are unauthorized user.']);
+                //  Auth::logout();
+                //  return redirect('login')->with(['account_blocked' => 'You are unauthorized user.']);
              }
 
              $cl = Client::first();
@@ -91,6 +91,8 @@ class ClientAuth{
 
               Session::put('default_country_code', $countryCode);
               Session::put('default_country_phonecode', $phoneCode);
+
+              return $next($request);
         }
         return redirect('user/login');
 

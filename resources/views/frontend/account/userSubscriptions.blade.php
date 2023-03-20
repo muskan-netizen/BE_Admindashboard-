@@ -358,8 +358,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                         <span class="error text-danger" id="plugnpay_card_error"></span>
                     </div>
                 <% } %>
-<% if(payment_option.slug == 'azulpay') { %>
-
+                <% if(payment_option.slug == 'azulpay') { %>
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
 
                         <div class="row no-gutters">

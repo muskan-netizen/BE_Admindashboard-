@@ -10,6 +10,6 @@ class UserPermissions extends Model
 
 
     public function permission(){
-        return $this->belongsTo('App\Models\Permissions', 'permission_id', 'id');
+        return $this->belongsTo('App\Models\PermissionsOld', 'permission_id', 'id');
     }
 }

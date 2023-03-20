@@ -59,7 +59,7 @@ trait AgeVerificationYoti{
         $err = curl_error($curl);
         curl_close($curl);
                 if ($err) {
-                    \Log::info($err);
+                    //\Log::info($err);
                     return false;
                 } else {
                     return $response;

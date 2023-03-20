@@ -23,7 +23,7 @@ class OrderDriverRatingRequest extends FormRequest{
     public function rules(){
         $id = Auth::id();
         return [
-            'rating' => 'required',
+           // 'rating' => 'required_without_all:rating_types,rating_types_Coming',
             'review' => 'max:500',            
             'order_id' => 'required|exists:orders,id',                        
         ];

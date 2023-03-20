@@ -116,7 +116,7 @@
 
                         <td class="lasttd">
                             @if($first > 0)
-                            <a href="#" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a>
+                            <a href="#" class="action-icon deleteCurRow" data-id="{{$opt->id}}"> <i class="mdi mdi-delete"></i></a>
                             @endif
                         </td>
                     </tr>

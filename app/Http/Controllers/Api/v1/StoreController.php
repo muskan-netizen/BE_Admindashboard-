@@ -955,7 +955,7 @@ class StoreController extends BaseController{
                                 else {
 									$value_arr = @$value['value'];
 									
-									// \Log::info($option['option_id']);
+									// //\Log::info($option['option_id']);
                                     foreach($value['option'] as $option_key => $option) {
                                         if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
 											$insert_arr[$insert_count]['product_id'] = $request->product_id;
@@ -2056,7 +2056,7 @@ class StoreController extends BaseController{
 			}
 		}
 		catch(\Exception $e) {
-			\Log::info($e);
+			//\Log::info($e);
 			return $this->errorResponse('Exception occured', 500);
 		}
 	}
@@ -2066,7 +2066,7 @@ class StoreController extends BaseController{
 	 */
 
 	 function addProductWithAttribute(Request $request) {
-		\Log::info($request->all());
+		//\Log::info($request->all());
 		try {
 			$validator = Validator::make($request->all(), [
 				// 'sku' => 'required|unique:products',
@@ -2277,7 +2277,7 @@ class StoreController extends BaseController{
 									else {
 										$value_arr = @$value['value'];
 										
-										// \Log::info($option['option_id']);
+										// //\Log::info($option['option_id']);
 										foreach($value['option'] as $option_key => $option) {
 											if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
 												$insert_arr[$insert_count]['product_id'] = $product->id;
@@ -2304,7 +2304,7 @@ class StoreController extends BaseController{
 	
 							
 							}
-							\Log::info($insert_arr);
+							//\Log::info($insert_arr);
 							if( !empty($insert_arr) ) {
 								ProductAttribute::where('product_id',$request->product_id)->delete();
 								ProductAttribute::insert($insert_arr);

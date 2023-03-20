@@ -220,4 +220,8 @@ class Category extends Model
         $q->whereIn('service_type',$categoryTypesArray);
       });
   }
+
+  public function categoryMobileBanner(){
+    return $this->hasMany('App\Models\MobileBanner', 'redirect_category_id', 'id')->where('status', 1);
+  }
 }

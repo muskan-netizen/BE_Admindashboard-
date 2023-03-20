@@ -277,10 +277,10 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                                             ?>
                                                             <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2">{{$optn->title}}
                                                                 @if($variant->type == 2)
-                                                                <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
-                                                                @else
-                                                                <span class="color_var radio_var" style="padding:8px; border: 1px dotted #CCC; background:#fff;"></span>
-                                                                @endif
+                                                                    <span class="color_var var_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};" data-id="{{$var_id}}"></span>
+                                                                	@else
+                                                                    <span class="color_var radio_var radio_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:#fff;" data-id="{{$var_id}}"></span>
+                                                               	 	@endif
                                                                 <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}} data-cartCheck="{{(($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($optn->quantity <= $product_quantity_in_cart && $product->has_inventory) || ($optn->quantity < $product->minimum_order_count)) ? 1 : 0}}">
                                                                 <span class="checkround"></span>
                                                             </label>
@@ -302,7 +302,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                         {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}
 
-                                        @if( p2p_module_status() )
+                                        @if( p2p_module_status() || is_attribute_enabled() )
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
                                                     <div class="container-badge">
@@ -868,11 +868,13 @@ $checkSlot = findSlot('',$product->vendor->id,'');
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
         $(".color_var").click(function () {
-            $(".color_var").removeClass("var-active");
+        	var name  = $(this).attr("data-id");
+            $(".var_"+name).removeClass("var-active");
             $(this).toggleClass("var-active");
             });
         $(".radio_var").click(function () {
-            $(".radio_var").removeClass("radio-active");
+        	var name  = $(this).attr("data-id");
+            $(".radio_"+name).removeClass("radio-active");
             $(this).toggleClass("radio-active");
         });
     });
