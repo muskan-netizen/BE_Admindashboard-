@@ -96,25 +96,29 @@ class UserController extends FrontController{
             }
             $message = __('An otp has been sent to your phone. Please check.');
             if ($user->is_phone_verified == 0) {
-                $otp = mt_rand(100000, 999999);
-                $user->phone_token = $otp;
-                $user->phone_token_valid_till = $newDateTime;
-                $provider = $data->sms_provider;
-                $to = '+'.$request->dial_code.str_replace(' ', '', $request->phone);
-               // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
-                $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp];
-                $body = sendSmsTemplate('verify-account',$keyData);
-                 if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
-                    $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
-                    if ($send) {
-                        $notified = 1;
+                 $otp = getUserToken()['otp'];
+                 $user->phone_token = $otp;
+                if(getUserToken()['status']){
+                    $user->phone_token_valid_till = $newDateTime;
+                    $provider = $data->sms_provider;
+                    $to = '+'.$request->dial_code.str_replace(' ', '', $request->phone);
+                   // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp];
+                    $body = sendSmsTemplate('verify-account',$keyData);
+                     if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
+                        $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                        if ($send) {
+                            $notified = 1;
+                        }
                     }
+                }else{
+                    $notified = 1;
                 }
             }
         }else{
             if ($user->is_email_verified == 0) {
                 $message = __('An otp has been sent to your email. Please check.');
-                $otp = mt_rand(100000, 999999);
+                $otp = getUserToken()['otp'];
                 $user->email_token = $otp;
                 $user->email_token_valid_till = $newDateTime;
                 if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
