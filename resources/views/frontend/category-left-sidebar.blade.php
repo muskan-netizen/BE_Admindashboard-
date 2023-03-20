@@ -168,12 +168,23 @@
                                         <div class="col-sm-12">
                                             @if( !empty($var->type) && $var->type == 1 )
                                             {{-- <select class="form-control " name="free_delivery_roles[]" data-toggle="select2" multiple="multiple" placeholder="Select role..."> --}}
-                                            <select name="" class="dropdown_select select2-multiple" data-key="{{$var->title}}" multiple>
-                                                @foreach($var->option as $key => $opt)
-                                                <option value="{{$opt->id}}">{{$opt->title}}</option>
-                                                @endforeach
-                                            </select>
-
+                                                @if($var->option->count() <= 6)
+                                                    <div class="flex-wrap checkbox checkbox-success form-check-inline">
+                                                        @foreach($var->option as $key => $opt)
+                                                            <div class="checkbox_filter">
+                                                                <input type="checkbox" name="" value="{{$opt->id}}" class="dynamic_checkbox" data-key="{{$var->title}}">
+                                                                {{-- <option value=""></option> --}}
+                                                                <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <select name="" class="dropdown_select select2-multiple" data-key="{{$var->title}}" multiple>
+                                                        @foreach($var->option as $key => $opt)
+                                                        <option value="{{$opt->id}}">{{$opt->title}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                @endif
                                             @else
                                             
                                             @foreach($var->option as $key => $opt)

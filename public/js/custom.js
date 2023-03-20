@@ -2165,7 +2165,7 @@ $(document).ready(function () {
         let cart_qty_total = 0;
         $(".shopping-cart li").each(function (index) {
             if ($(this).data('qty')) {
-                cart_qty_total = $(this).data('qty');
+                cart_qty_total += $(this).data('qty');
 
             }
         });

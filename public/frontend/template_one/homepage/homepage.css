@@ -5463,3 +5463,9 @@ body.dark .slick-slider .d-flex.align-items-center.justify-content-between.al_cl
     margin-right: 0px !important;
     padding: 0px 4px;
 }
+
+
+/*css for vendor section*/
+.product-m.render_vendors h6{
+    margin-top: 10px !important;
+}
