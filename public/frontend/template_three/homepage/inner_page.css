@@ -721,8 +721,8 @@ span.filter-btn.btn.btn-theme i {
 }
 
 .product-wrapper-grid .product-image img {
-    /*position: absolute;*/
-    height: 100%;
+   /* position: absolute;
+    height: 100%;*/
     width: 100%;
     max-width: 100%!important;
     object-fit: cover;
@@ -3789,6 +3789,11 @@ a.morelink.less {
     margin-left: 4%;
 }
 
+
+.al_body_template_three .ratio_asos .collection-wrapper .my-banner img {
+    width: 100% !important;
+}
+
 .al_body_template_three .vendor-description .profile_address h3 {
     font-weight: 500;
     font-size: 25px;
@@ -3805,11 +3810,43 @@ a.morelink.less {
     /* top: -4px; */
 }
 
-body.al_body_template_three .vender-icon {
-    margin-top: 0px;
+.al_body_template_three .vender-icon {
+    margin-top: 0;
 }
 
-.al_body_template_three .related-products .slick-track {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+.al_body_template_three .common-banner:after{
+    border-radius:50px !important;
+    height:300px;
+}
+
+.al_body_template_three .product-timing {
+    overflow-y: auto;
+    height: 20px;
+}
+
+.categories_img .product-image img {
+    width: 100%;
+    max-width: 100% !important;
+    padding: 0 !important;
+    height: 100%;
+}
+
+.categories_img .product-image {
+    text-align: center;
+    height: 200px;
+    min-height: 200px;
+}
+
+.displayProducts .inner_spacing h3 {
+    padding: 0;
+    margin: 0;
+}
+
+.product-image {
+    height: 200px;
+    min-width: 200px;
+}
+
+a.product-box .product-image img.img-fluid.blur-up.lazyloaded {
+    height: 100%!important;
 }
