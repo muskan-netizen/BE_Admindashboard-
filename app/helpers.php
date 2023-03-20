@@ -1654,12 +1654,22 @@ if( !function_exists('get_file_path') ) {
     }
 }
 
-if (!function_exists('getUserToken')) {
-    function getUserToken()
+if (!function_exists('isStaticOtpEnable')) {
+    function isStaticOtpEnable()
     {
         $client_preference_detail = getClientPreferenceDetail();
         $credentials = json_decode($client_preference_detail->sms_credentials);
         if (isset($credentials->static_otp) && $credentials->static_otp == '1') {
+            return true;
+        }
+        return false;
+    }
+}
+
+if (!function_exists('getUserToken')) {
+    function getUserToken()
+    {
+        if (isStaticOtpEnable()) {
             $data['otp'] = '123456';
             $data['status'] = false;
             return $data;
