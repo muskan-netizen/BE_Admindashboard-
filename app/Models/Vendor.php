@@ -33,7 +33,7 @@ class Vendor extends Model implements Auditable{
       $client = Client::first();
       $mytime = Carbon::now()->setTimezone($client->timezone);
       $current_time = $mytime->toTimeString();
-      return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id')->has('day')->where('start_time', '<', $current_time)->where('end_time', '>', ddddddddddd);
+      return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id')->has('day')->where('start_time', '<', $current_time)->where('end_time', '>', $current_time);
     }
 
     public function slots(){
