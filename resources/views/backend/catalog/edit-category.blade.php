@@ -123,8 +123,33 @@
                                 <textarea class="form-control" rows="3" name="cat_lang[meta_keywords]" id="cat-lang-meta-keywords" cols="50">{{$category->primary->meta_keywords}}</textarea>
                             </div>
                         </div>
+                    @else
+
+                        <div class="col-md-6">
+                            <div class="form-group" id="nameInputEdit">
+                                <label for="title" class="control-label">Name</label>
+                                    <input class="form-control" required="required" name="cat_lang[name]" id="cat-lang-name" type="text" value="">
+                                    <span class="invalid-feedback" role="alert"><strong></strong></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="control-label">Meta Description</label>
+                                <textarea class="form-control" rows="3" name="cat_lang[meta_description]" id="cat-lang-meta-description" cols="50"></textarea>
+                            </div>
+                        </div>
+                        <input name="cat_lang[language_id]" id="cat-lang-language-id" type="hidden" value="">
+                        <input name="cat_lang[trans_id]" id="cat-lang-trans-id" type="hidden" value="">
+                        <div class="col-md-6">
+                            <div class="form-group" id="meta_titleInput">
+                                <label for="title" class="control-label">Meta Title</label>
+                                <input class="form-control" name="cat_lang[meta_title]" id="cat-lang-meta-title" type="text" value="">
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="control-label">Meta Keywords</label>
+                                <textarea class="form-control" rows="3" name="cat_lang[meta_keywords]" id="cat-lang-meta-keywords" cols="50"></textarea>
+                            </div>
+                        </div>
+
                     @endif
-                    {{-- @endif --}}
                     {{-- @endforeach --}}
                 </div>
             </div>

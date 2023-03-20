@@ -54,7 +54,7 @@ class AppServiceProvider extends ServiceProvider
         $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
             foreach($payment_options as $option){
-                //\Log::info($option->code);
+          
                 $creds = json_decode($option->credentials);
                 if($option->code == 'stripe'){
                     $stripe_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';

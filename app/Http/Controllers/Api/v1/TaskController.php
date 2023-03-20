@@ -219,7 +219,7 @@ class TaskController extends BaseController
 
             $agent_id = null;
         }
-       
+
         $header = $request->header();
         if ($request->allocation_type === 'a' || $request->allocation_type === 'm') {
             $allocation = AllocationRule::where('id', 1)->first();
@@ -536,14 +536,14 @@ class TaskController extends BaseController
                             'device_type'         => $geoitem->agent->device_type,
                             'device_token'        => $geoitem->agent->device_token,
                             'detail_id'           => $randem,
-    
+
                         ];
                         array_push($data, $datas);
                         if ($allcation_type == 'N') {
                             break;
                         }
                     }
-    
+
                     if ($allcation_type == 'N') {
                         break;
                     }

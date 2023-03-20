@@ -13,14 +13,14 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
 use App\Http\Requests\OrderDriverRatingRequest;
 use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,Client,OrderVendor,OrderDriverRating,ClientPreference};
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{OrderTrait,Dispatcher,ApiResponser};
+
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Requests\Web\CheckImageRequest;
-use App\Http\Traits\OrderTrait;
 
 class RatingController extends BaseController{
 
-    use ApiResponser, OrderTrait;
+    use ApiResponser, OrderTrait ,Dispatcher;
     /**
      * update order product rating
 
@@ -79,6 +79,18 @@ class RatingController extends BaseController{
      */
     public function updateDriverRating(OrderDriverRatingRequest $request){
         try {
+
+            if($request->has('dispatch_traking_url') && !empty($request->dispatch_traking_url)){
+              
+                $postdata = $request->postdata;
+                
+               
+                $this->setDriverRatingDispatcher($postdata , $request->dispatch_traking_url);
+                $ratings = OrderDriverRating::updateOrCreate([
+                    'order_id' => $request->order_id,
+                    'user_id' => Auth::id()],['rating' => $request->Average_rating,'review' => $request->review]);
+               return $this->successResponse([],'Rating Submitted.');
+            }
             
             //return $request->all();
             $user = Auth::user();
@@ -241,16 +253,27 @@ class RatingController extends BaseController{
     */
     public function getDriverRating(Request $request){
         try {
-            //dd($request->all());
-            $rating_details = OrderDriverRating::where('id',$request->id)->first();
+            if($request->has('dispatch_traking_url') && !empty($request->dispatch_traking_url)){
+                $rating_response = $this->getRatingQuestingDispatcher($request->dispatch_traking_url); 
+                $rating_details = OrderDriverRating::where('id',$request->id)->first();
+                $rating_response['rating_details'] =   $rating_details;
+                return $this->successResponse($rating_response,'Rating Details.');
+            }
+        
             if(isset($rating_details)){
                 return $this->successResponse($rating_details,'Rating Details.');
             }
-            
             return $this->errorResponse('Invalid rating', 404);
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+
+    public function getAgentRatingQues(Request $request) {
+        $traking_url = 'http://192.168.102.65:8001/order/tracking/745e3f/YUCmbs';
+        $rating_response = $this->getRatingQuestingDispatcher($traking_url);
+       pr($rating_response);
+    }
+
 }

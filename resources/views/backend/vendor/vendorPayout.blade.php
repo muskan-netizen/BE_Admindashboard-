@@ -135,8 +135,8 @@
             </div>
             <div class="col-lg-9 col-xl-9">
                 <div>
-                @include('backend.vendor.topbar-tabs')
-    
+                    @include('backend.vendor.topbar-tabs')
+
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="card widget-inline">
