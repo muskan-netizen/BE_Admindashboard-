@@ -352,7 +352,7 @@ class AzulPaymentController extends FrontController
     }
     
     public function getUserCards(Request $request){        
-        $listData = $this->getCardList();
+        $listData = $this->getUserCardsList();
         $returnHTML = view('frontend.card-list')->with(['cards' => $listData])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }

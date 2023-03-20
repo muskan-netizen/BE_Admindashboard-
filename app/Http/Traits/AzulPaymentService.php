@@ -523,7 +523,7 @@ trait AzulPaymentService
     /**
      * Retrieve user stored cards.
      */
-    public function getCardList(): Collection
+    public function getUserCardsList(): Collection
     {
         return UserDataVault::where('user_id', auth()->user()->id)->orderBy('is_default', 'desc')->get();
     }

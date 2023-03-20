@@ -458,7 +458,7 @@ class ProfileController extends BaseController
     public function getUserCards(Request $request)
     {
         $azul = new AzulPaymentController();
-        $listData = $azul->getCardList($request);
+        $listData = $azul->getUserCardsList($request);
         return response()->json([
             'data' => $listData ?? []
         ]);
