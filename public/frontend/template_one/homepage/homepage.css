@@ -5506,6 +5506,10 @@ body.al_body_template_one .slick-slider .common-product-box, .slick-slider .supp
     min-height: auto !important;
     }
 
+    .img-service {
+        margin-top: 0 !important;
+    }
+
 }
 
 @media (max-width: 576px){
@@ -5539,6 +5543,13 @@ body.al_body_template_one .slick-slider .common-product-box, .slick-slider .supp
 
     #content-wrap .site-header .navbar-brand {
         width: 70% !important;
+    }
+
+}
+
+@media (max-width:575px){
+    i.fa.fa-user {
+        font-size: 20px!important;
     }
 
 }
