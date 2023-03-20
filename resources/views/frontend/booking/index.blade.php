@@ -1,52 +1,11 @@
 @extends('layouts.store', ['title' => 'Product'])
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/css/intlTelInput.css') }}">
+    <link href="{{asset('assets/css/azul.css')}}" rel="stylesheet" type="text/css" />
     {{-- <link rel="stylesheet" href="{{asset('assets/libs/jquery.datetimepicker.min.css')}}"> --}}
 @endsection
 @section('content')
     <style type="text/css">
-    
-    /* start tab*/
-
-    /* Style the tab */
-    .tab {
-      overflow: hidden;
-      border: 1px solid #ccc;
-      background-color: #f1f1f1;
-    }
-    
-    /* Style the buttons inside the tab */
-    .tab a {
-      background-color: inherit;
-      float: left;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      padding: 14px 16px;
-      transition: 0.3s;
-      font-size: 17px;
-    }
-    
-    /* Change background color of buttons on hover */
-    .tab a:hover {
-      background-color: #ddd;
-    }
-    
-    /* Create an active/current tablink class */
-    .tab a.active {
-      background-color: #ccc;
-    }
-    
-    /* Style the tab content */
-    .tabcontent {
-      display: none;
-      padding: 6px 12px;
-      border: 1px solid #ccc;
-      border-top: none;
-    }
-    
-    
-    /*end tab*/
         .option {
             background: #fff;
             height: 100%;
