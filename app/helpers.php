@@ -715,28 +715,35 @@ if (!function_exists('showSlot')) {
 if (!function_exists('showPriceWithCurrency')) {
 function showPriceWithCurrency($price = 0,$compare = 0)
     {
-            $multiply =  session()->get('currencyMultiplier') ?? 1;
-            $currencysymbol = session()->get('currencySymbol').' ';
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
-            if($additionalPreference['is_token_currency_enable'] == 1)
-            {
-                $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
-                $amount =  getInToken($price * $multiply);
-            }else{
-                $amount =  decimal_format($price * $multiply);
-            }
+        setUserCode();
+        $redis = Redis::connection();
+        $multiply =  session()->get('currencyMultiplier') ?? 1;
+        $currencysymbol = session()->get('currencySymbol').' ';
+        $is_token_currency = $redis->get("ifTCurrency_".session()->get('userCode'));
+        if($is_token_currency == null){
+            $is_token_currency = getAdditionalPreference(['is_token_currency_enable']);
+            $redis->set("ifTCurrency_".session()->get('userCode'), $is_token_currency, 'EX', 36000);
+        }
+        
+        if($is_token_currency == 1)
+        {
+            $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
+            $amount =  getInToken($price * $multiply);
+        }else{
+            $amount =  decimal_format($price * $multiply);
+        }
 
-            //check to compare price greater > 0 return
-            if($compare>0)
-            {
-                if($price>0){
-                    return '<del class="ml-2 compare_at_price">'.$currencysymbol.$amount.'</del>';
-                 }else{
-                    return '';
-                }
+        //check to compare price greater > 0 return
+        if($compare>0)
+        {
+            if($price>0){
+                return '<del class="ml-2 compare_at_price">'.$currencysymbol.$amount.'</del>';
+                }else{
+                return '';
             }
+        }
 
-            return $currencysymbol.$amount;
+        return $currencysymbol.$amount;
     }
 }
 

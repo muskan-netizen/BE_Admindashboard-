@@ -17,6 +17,10 @@ class CabBookingLayout extends Model
         return $langData;
     }
 
+    public function translation_one($langId = 0){
+        return $this->hasOne('App\Models\CabBookingLayoutTranslation');
+    }
+
     public function translation(){
       return $this->belongsTo('App\Models\CabBookingLayoutTranslation', 'id', 'cab_booking_layout_id' );
     }

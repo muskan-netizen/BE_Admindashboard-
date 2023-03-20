@@ -754,8 +754,9 @@ class HomeController extends BaseController{
 
          //get long term service 
          $long_term_service_products =[];
-         if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
-             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $language_id, $currency_id,'', $request->type,$p_dim);
+         $additionalPreference = getAdditionalPreference(['is_long_term_service', 'is_token_currency_enable', 'token_currency']);
+         if(@$additionalPreference['is_long_term_service'] == 1){
+             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
          }
           
         if($this->checkTemplateForAction(8)){

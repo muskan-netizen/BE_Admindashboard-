@@ -218,7 +218,7 @@ trait ProductActionTrait{
        
     }
 
-     public function longTermServiceProducts($long_term_vendors, $langId, $currency = '', $where = '', $type,$p_dim ='260/100',$requestFrom='web' )
+     public function longTermServiceProducts($long_term_vendors, $additionalPreference, $langId, $currency = '', $where = '', $type,$p_dim ='260/100',$requestFrom='web' )
     {
         $venderIds = $long_term_vendors->where('status', 1)
         ->whereHas('long_term_products')
@@ -262,7 +262,7 @@ trait ProductActionTrait{
                 }
                 return $products;
             }
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
+            
             foreach ($products as $key => $value) {
                 $multiply = Session::get('currencyMultiplier') ?? 1;
                 $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
@@ -321,18 +321,7 @@ trait ProductActionTrait{
     {
 
      
-        //$additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
-        // $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
-        //             $q->where('status',1);
-        //             $q->whereIn('id',$venderIds);
-        //             $q->where($type, 1);
-        //         });
-        //         if ($where == 'is_featured') {
-        //                  $products = $products->take(20);  
-        //             }else{
-        //                 $products = $products->take(10);  
-        //             }
-        //         $products = $products->inRandomOrder()->get();
+        
         $vendorWhereIN = ' ';
         $completeWhere = ' ';
         if(!empty($venderIds)){
@@ -436,5 +425,87 @@ trait ProductActionTrait{
        return $returnArray;
     }
     
-   
+    public function getVendorForHomePage($preferences, $vendor_title, $is_admin_vendor_rating = '', $latitude , $longitude)
+    {
+        $mytime = Carbon::now()->setTimezone($client->timezone);
+        $current_time = $mytime->toTimeString();
+
+        if($vendor_title == "trending_vendors"){
+            
+        }
+        $selectQuery = "SELECT `vendors`.`id`, 
+        `vendors`.`name`, 
+        `vendors`.`banner`, 
+        `vendors`.`address`, 
+        `vendors`.`order_pre_time`, 
+        `vendors`.`order_min_amount`, 
+        `vendors`.`logo`, 
+        `vendors`.`slug`, 
+        `vendors`.`latitude`, 
+        `vendors`.`longitude`, 
+        `vendors`.`show_slot`, 
+
+        ";
+        $mainQuery = "$selectQuery FROM vendors ";
+
+        $mainQuery .= " LEFT JOIN `vendor_slots` as `vendor_slots` ON `vendor_slots`.`vendor_id` = `vendors`.`id`
+                        LEFT JOIN `vendor_slots` as `vendor_slots` ON `vendor_slots`.`vendor_id` = `vendor_slots`.`id`";
+
+        $mainQuery .= " where status = 1 and `vendors`.`deleted_at` IS NULL ";
+
+        if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+        $mainQuery .= "and exists (select `id` from `service_areas` where `service_areas`.`vendor_id` = `vendors`.`id` and ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))";
+    }
+        if($is_admin_vendor_rating == 1){
+            $mainQuery.= " ORDER BY admin_rating desc";
+        }else{
+            $mainQuery.= " ORDER BY rand()";
+        }
+        $mainQuery .= " LIMIT 10";
+
+        /* $raw_query = "SELECT 
+            `vendors`.`id`, 
+            `vendors`.`name`, 
+            `vendors`.`banner`, 
+            `vendors`.`address`, 
+            `vendors`.`order_pre_time`, 
+            `vendors`.`order_min_amount`, 
+            `vendors`.`logo`, 
+            `vendors`.`slug`, 
+            `vendors`.`latitude`, 
+            `vendors`.`longitude`, 
+            `vendors`.`show_slot`, 
+
+            FROM 
+                `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
+                 LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
+                 LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 $vendorWhereIN
+                 LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
+                 LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id`
+                 LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
+                 LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id`
+                 LEFT JOIN   `product_attributes` as `product_attribute` ON `product_attribute`.`product_id` = `products`.`id` AND `product_attribute`.`key_name` = 'Location'
+                 
+            WHERE 
+                `products`.`deleted_at` IS NULL 
+                    AND `vendors`.`status` = 1 
+                    AND `products`.`is_live` = 1
+
+                    $completeWhere
+                                
+                    $vendorWhereIN 
+                
+                    GROUP BY `products`.`id`
+
+                    ORDER BY 
+                        RAND()
+            
+                    LIMIT 
+                        10"; */
+     
+       $products = DB::select( DB::raw($mainQuery));
+
+       $returnArray = $products;
+       return $returnArray;
+    }
 }
