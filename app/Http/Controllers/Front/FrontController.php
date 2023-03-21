@@ -205,11 +205,11 @@ class FrontController extends Controller
     }
     public function categoryNav($lang_id)
     {
-        $preferences = Session::get('preferences');
+        $preferences = $this->client_preferences;
         // get selected vendor type 
         $vendorType  = Session::get('vendorType');
         // set category layout by on behalf of vendor type
-        $categoryTypes = getServiceTypesCategory($vendorType);
+        $categoryTypes = getServiceTypesCategory($vendorType, $preferences);
        // pr($categoryTypes);
         $primary     = Session::get('customerLanguage');
        // DB::enableQueryLog();
@@ -336,11 +336,10 @@ class FrontController extends Controller
     }
 
     public function getServiceAreaVendors(){
-        $client_preferences = $this->client_preferences;
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
         $vendorType = Session::get('vendorType');
-        $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
+        $preferences = $this->client_preferences;
         $serviceAreaVendors = Vendor::select('id', 'show_slot');
         $vendors = [];
         if($vendorType){

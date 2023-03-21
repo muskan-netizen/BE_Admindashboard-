@@ -1203,10 +1203,11 @@ if (!function_exists('getServiceTypesCategory')) {
     /**
      * config('constants.ServiceTypes')
      */
-    function getServiceTypesCategory($vendorType) {
+    function getServiceTypesCategory($vendorType, $client_preference = NULL) {
         //echo $vendorType; exit();
         try {
             //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+            if($client_preference !=NULL)
             $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
             
 

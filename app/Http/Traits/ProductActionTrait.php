@@ -435,9 +435,9 @@ trait ProductActionTrait{
        return $returnArray;
     }
     
-    public function getVendorForHomePage($preferences, $vendor_title, $is_admin_vendor_rating = '', $latitude , $longitude)
+    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $latitude , $longitude)
     {
-        $mytime = Carbon::now()->setTimezone($client->timezone);
+        $mytime = Carbon::now()->setTimezone($timezone);
         $current_time = $mytime->toTimeString();
 
         if($vendor_title == "trending_vendors"){
@@ -459,9 +459,11 @@ trait ProductActionTrait{
         $mainQuery = "$selectQuery FROM vendors ";
 
         $mainQuery .= " LEFT JOIN `vendor_slots` as `vendor_slots` ON `vendor_slots`.`vendor_id` = `vendors`.`id`
-                        LEFT JOIN `vendor_slots` as `vendor_slots` ON `vendor_slots`.`vendor_id` = `vendor_slots`.`id`";
+                        ";
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
 
-        $mainQuery .= " where status = 1 and `vendors`.`deleted_at` IS NULL ";
+        }
+        $mainQuery .= " where status = 1";
 
         if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
         $mainQuery .= "and exists (select `id` from `service_areas` where `service_areas`.`vendor_id` = `vendors`.`id` and ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))";

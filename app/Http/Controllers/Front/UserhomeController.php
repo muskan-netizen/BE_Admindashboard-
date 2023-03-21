@@ -288,7 +288,7 @@ class UserhomeController extends FrontController
             if ($request->has('ref')) {
                 session(['referrer' => $request->query('ref')]);
             }
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating']);
+            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch']);
             $latitude = Session::get('latitude') ?? null;
             $longitude = Session::get('longitude') ?? null;
             $curId = Session::get('customerCurrency');
@@ -323,11 +323,12 @@ class UserhomeController extends FrontController
                 return redirect()->route('categoryDetail',$categoriesSlug);
             }
 
+            $carbon_now = Carbon::now();
             $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
-            ->where(function ($q) {
-                $q->whereNull('start_date_time')->orWhere(function ($q2) {
-                    $q2->whereDate('start_date_time', '<=', Carbon::now())
-                        ->whereDate('end_date_time', '>=', Carbon::now());
+            ->where(function ($q) use ($carbon_now) {
+                $q->whereNull('start_date_time')->orWhere(function ($q2) use ($carbon_now) {
+                    $q2->whereDate('start_date_time', '<=', $carbon_now)
+                        ->whereDate('end_date_time', '>=', $carbon_now);
                 });
             });
           
@@ -339,10 +340,10 @@ class UserhomeController extends FrontController
             $banners = $banners->orderBy('sorting', 'asc')->get();
             
             $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
-            ->where(function ($q) {
-                $q->whereNull('start_date_time')->orWhere(function ($q2) {
-                    $q2->whereDate('start_date_time', '<=', Carbon::now())
-                        ->whereDate('end_date_time', '>=', Carbon::now());
+            ->where(function ($q) use ($carbon_now) {
+                $q->whereNull('start_date_time')->orWhere(function ($q2) use ($carbon_now) {
+                    $q2->whereDate('start_date_time', '<=', $carbon_now)
+                        ->whereDate('end_date_time', '>=', $carbon_now);
                 });
             });
             if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
@@ -446,7 +447,7 @@ class UserhomeController extends FrontController
                 $is_service_product_price_from_dispatch_forOnDemand =1;
             }
             
-            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
+            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
             return view('frontend.'.$view_page)->with($homeData);
 
         } catch (Exception $e) {
@@ -495,7 +496,7 @@ class UserhomeController extends FrontController
         $long_term_service_products = [];
         $recently_viewed = [];
         $banners = [];
-        //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+        
         $p_dim = '260/260';
         if (isset($set_template)  && $set_template->template_id == 3){
             $p_dim = '300/300';
@@ -504,6 +505,7 @@ class UserhomeController extends FrontController
         }
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
+        $clientdata = Session::get('clientdata');
 
         //pr($latitude);
         if($request->has('latitude') ){
@@ -601,15 +603,15 @@ class UserhomeController extends FrontController
 
         $vendors = $vendors->where('status', 1);
         if(@$additionalPreference['is_admin_vendor_rating']=='1'){
-            $vendors = $vendors->where('status', 1);
+            $vendors = $vendors->orderBy('admin_rating', 'desc');
         }else{
             $vendors = $vendors->inRandomOrder();
         }
                     
         $vendors = $vendors->limit(10)->get();
 
-        //$vendors = $this->getVendorForHomePage($preferences, $additionalPreference['is_admin_vendor_rating']);
-//pr($vendors);
+        //$vendors = $this->getVendorForHomePage($preferences, "RANDOM", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $latitude, $longitude);
+        //pr($vendors);
 
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
