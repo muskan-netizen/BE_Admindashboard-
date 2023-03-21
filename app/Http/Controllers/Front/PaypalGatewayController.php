@@ -58,8 +58,6 @@ class PaypalGatewayController extends FrontController
                 'cancelUrl' => url($request->cancelUrl),
                 'returnUrl' => url($request->returnUrl . $returnUrlParams),
             ])->send();
-            Log::info(json_encode($request->all()));
-            
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());
             } elseif ($response->isRedirect()) {
