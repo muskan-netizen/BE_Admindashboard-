@@ -829,6 +829,15 @@ display: inline-block;
     .al_body_template_four .common-banner, .al_body_template_four .product-banner-img {
         height: auto;
     }
+    .al_body_template_four .vendor-design_new{
+        width: 100%;
+    }
+    .al_body_template_four .vendor-design_new .profile_address.vendor_icon-design {
+    width: 80%;
+}
+.al_body_template_four #al_four_design  .onhover-div:hover .show-div {
+    display: none;
+}
 }
 @media (max-width:576px){
     .al_body_template_four .dark #login-section::after, .al_body_template_four #login-section::after{
