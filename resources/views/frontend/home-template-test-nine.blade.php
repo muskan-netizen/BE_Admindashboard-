@@ -712,7 +712,7 @@
 			</div>
 			</div>
 		</section>
-		@elseif(isset($homePageData[$homePageLabel->slug]) && $homePageLabel->slug == 'selected_products' && (count($homePageData['selected_products']) != 0))
+		@elseif(isset($homePageData[$homePageLabel->slug]) && $homePageLabel->slug == 'selected_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="d-none main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
 			<div class="container">
 				<div class="top-heading d-flex justify-content-between">
