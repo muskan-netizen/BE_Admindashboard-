@@ -154,8 +154,11 @@ class ProductController extends BaseController
                         },
 
                     ]);
+                    $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking');
+                    
 
-                    $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking')->where('id', $pid)->first();
+                    $product = $product->where('id', $pid)
+                        ->first();
 
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
@@ -247,34 +250,26 @@ class ProductController extends BaseController
 
 
             $response['coupon_list'] = $coupon_list;
+            if($product->is_long_term_service == 1){
+                $product_id = $product->LongTermProducts->product_id;
+                $url_slug   = $product->LongTermProducts->product->url_slug;
+                $vendor_slug   = $product->vendor->slug;
 
-            $product_id = $product->LongTermProducts->product_id;
-            $url_slug   = $product->LongTermProducts->product->url_slug;
-            $vendor_slug   = $product->vendor->slug;
+                $LongTermProducts                    = $this->getProduct($product->LongTermProducts->product_id,$vendor_slug,$url_slug,$user,$langId);
+                $LongTermProducts->long_term_product = $product->LongTermProducts;
+                $addon =  $product->LongTermProducts->addons->pluck('option_id','addon_id')->toArray() ?? [];
+                if($product->ServicePeriod){
+                    $product->ServicePeriods = $product->ServicePeriod->pluck('service_period')->toArray();
+                }
+                $LongTermProducts->period =config('constants.Period');
 
-            $LongTermProducts                    = $this->getProduct($product->LongTermProducts->product_id,$vendor_slug,$url_slug,$user,$langId);
-            $LongTermProducts->long_term_product = $product->LongTermProducts;
-            $addon =  $product->LongTermProducts->addons->pluck('option_id','addon_id')->toArray() ?? [];
-            if($product->ServicePeriod){
-                $product->ServicePeriods = $product->ServicePeriod->pluck('service_period')->toArray();
+                $LongTermProducts->product_addon     =  $addon;
+                $product->longTermServiceProduct     = $LongTermProducts;
+                $response['products'] = $product;
+                return response()->json([
+                    'data' => $response,
+                ]);
             }
-            $LongTermProducts->period =config('constants.Period');
-
-            $LongTermProducts->product_addon     =  $addon;
-            $product->longTermServiceProduct     = $LongTermProducts;
-            $response['products'] = $product;
-            return response()->json([
-                'data' => $response,
-            ]);
-
-            $LongTermProducts->period =config('constants.Period');
-        
-            $LongTermProducts->product_addon     =  $addon;
-            $product->longTermServiceProduct     = $LongTermProducts;
-            $response['products'] = $product;
-            return response()->json([
-                'data' => $response,
-            ]);
             // Product Attribute
             $product_attr = [];
             if( !empty($product->ProductAttribute) ) {

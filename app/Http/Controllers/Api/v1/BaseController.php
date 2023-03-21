@@ -948,11 +948,11 @@ class BaseController extends Controller{
                 'is_vendor_app' => 0
             ]
         );
+
         return response()->json([
         'status' => 200,
         'token' => $token,
         'message' => 'Valid Order Panel API keys']);
-        
     }
     public function generateBarcodeNumber()
     {

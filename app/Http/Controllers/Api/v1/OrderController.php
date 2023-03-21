@@ -190,7 +190,6 @@ class OrderController extends BaseController
                     return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
                 }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
-                
                 $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
                 
                 if ($cart) {
@@ -296,12 +295,11 @@ class OrderController extends BaseController
                         }
                     }
                     $order->taxable_amount = $total_taxes;
-                    
                     $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
-                    
                     $order->save();
 
                     $is_long_term_order = 0;
+                    
                     /* Updating order prescription if any */
                     $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
                     foreach ($cart_prescriptions as $cart_prescription) {
@@ -396,8 +394,9 @@ class OrderController extends BaseController
                             $price_in_currency = $variant->price / $divider;
                              // change product price when is_service_product_price_from_dispatch on 
                             
-                            $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
-                            
+                            if(($action == 'on_demand') && $additionalPreferences->is_service_product_price_from_dispatch ==1 ){
+                                $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
+                            }
                             $container_charges_in_currency = $variant->container_charges / $divider;
                             $price_container_charges = $variant->container_charges;
                             $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
@@ -410,6 +409,7 @@ class OrderController extends BaseController
                                 $date       = count(explode(",",$vendor_cart_product->recurring_day_data));
                                 $daysCountRecurring =  $date;
                             }
+                            
 
 
                             $quantity_price = ($price_in_dollar_compare * $vendor_cart_product->quantity) * $daysCountRecurring;
@@ -529,8 +529,12 @@ class OrderController extends BaseController
                             $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee)?$vendor_cart_product->product_delivery_fee:0;
                             $product_variant_sets = '';
 
+                            
                             $order_product->is_price_buy_driver = $is_price_buy_driver;
+                            
+                            
                             $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
+                            
                             $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                             $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
                             $order_product->schedule_slot = !empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
@@ -576,10 +580,20 @@ class OrderController extends BaseController
                                 $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                             }
 
+                            
                             $order_product->slot_id = !empty($vendor_cart_product->slot_id) ? $vendor_cart_product->slot_id : null;
+                            
+        
+                            
                             $order_product->delivery_date = !empty($vendor_cart_product->delivery_date) ? $vendor_cart_product->delivery_date : null;
+                            
+        
+                            
                             $order_product->slot_price = !empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
+                            
+                            
                             $order_product->dispatch_agent_id = ! empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
+                            
                             $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                             $order_product->schedule_slot = ! empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
                             $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
@@ -588,40 +602,41 @@ class OrderController extends BaseController
 
 
             
-                            // Recurring Booking Functionity
-                            if(!empty($vendor_cart_product->recurring_booking_time)){
+            // Recurring Booking Functionity
+            
+                if(!empty($vendor_cart_product->recurring_booking_time)){
 
-                                $user_timezone          =   $timezone;
-                                $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                    $user_timezone          =   $timezone;
+                    $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
 
-                                    $RecurringServiceSchedule = array();
-                                    // No Nee other action
-                                    if(@$vendor_cart_product->recurring_booking_type){
-                                        $Recurring_quantity     = $vendor_cart_product->quantity;
-                                        $recurring_day_data     = $vendor_cart_product->recurring_day_data;
-                                        $recurring_day_data     = explode(",",$recurring_day_data);
+                        $RecurringServiceSchedule = array();
+                        // No Nee other action
+                        if(@$vendor_cart_product->recurring_booking_type){
+                            $Recurring_quantity     = $vendor_cart_product->quantity;
+                            $recurring_day_data     = $vendor_cart_product->recurring_day_data;
+                            $recurring_day_data     = explode(",",$recurring_day_data);
 
-                                        $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
-                                        $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
-                                        for ($x = 0; $x < count($recurring_day_data); $x++) {
-                                            $date           = $recurring_day_data[$x];
-                                            $newDate        = $date.' '. $recurring_booking_time;
-                                            $RecurringServiceSchedule [] = [
-                                                'order_vendor_product_id' => $order_product->id,
-                                                'schedule_date'           => $newDate,
-                                                'type'                    => 2,
-                                                'order_number'            => $order->order_number
-                                            ];
-                                        }
-                                    }
-                                    if (!empty($RecurringServiceSchedule)) {
-                                        OrderLongTermServiceSchedule::insert($RecurringServiceSchedule);
-                                    }
+                            $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
+                            $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                            for ($x = 0; $x < count($recurring_day_data); $x++) {
+                                $date           = $recurring_day_data[$x];
+                                $newDate        = $date.' '. $recurring_booking_time;
+                                $RecurringServiceSchedule [] = [
+                                    'order_vendor_product_id' => $order_product->id,
+                                    'schedule_date'           => $newDate,
+                                    'type'                    => 2,
+                                    'order_number'            => $order->order_number
+                                ];
                             }
+                        }
+                        if (!empty($RecurringServiceSchedule)) {
+                            OrderLongTermServiceSchedule::insert($RecurringServiceSchedule);
+                        }
+                }
+            
 
 
                             if($vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts){
-
                                 $is_long_term_order = 1;
                                 $service_start_date =  $vendor_cart_product->service_start_date ??   Carbon::now()->format('Y-m-d H:i:s');
                                 $service_end_date = Carbon::parse( $service_start_date )->addMonths($vendor_cart_product->product->service_duration)->setTimezone('UTC')->format('Y-m-d H:i:s');
@@ -757,7 +772,6 @@ class OrderController extends BaseController
                         $coupon_name = null;
 
                         
-                        
 
                         $actual_amount = $vendor_payable_amount;
                        
@@ -837,9 +851,10 @@ class OrderController extends BaseController
                         $subs_discount_admin            = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                         $subs_discount_vendor           = $subs_discount_arr['vendor'];
 
-                     
+                        
                         $order_vendor->subscription_discount_admin  = $subs_discount_admin;
                         $order_vendor->subscription_discount_vendor = $subs_discount_vendor;
+                        
                         $total_subscription_discount = $total_subscription_discount + $subs_discount_admin + $subs_discount_vendor;
 
                         $order_vendor->is_restricted = $is_restricted;
@@ -894,6 +909,7 @@ class OrderController extends BaseController
                             $total_amount   =  decimal_format($total_amount * $days_count);
                         }
                     }
+                    
            
                     $total_discount = $total_discount + $total_subscription_discount;
                     $order->total_amount = ($total_amount + $total_container_charges) - $Order_bid_discount??0;
@@ -976,21 +992,27 @@ class OrderController extends BaseController
                     }
                     
                     $order->is_long_term            = $is_long_term_order;
-                   
+                    
                     $order->bid_discount  = $Order_bid_discount??0;
 
+                    
                     if(!empty($vendor_cart_product->recurring_booking_time)){
                         $user_timezone          =   $timezone;
                         $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                        
                         $order->recurring_booking_type  = $vendor_cart_product->recurring_booking_type;
                         $order->recurring_week_day      = json_encode($vendor_cart_product->recurring_week_day);
                         $order->recurring_week_type     = $vendor_cart_product->recurring_week_type;
                         $order->recurring_day_data      = $vendor_cart_product->recurring_day_data;
                         $order->recurring_booking_time  = $recurring_booking_time;
+                        
                     }
+                    
 
                     $order->save();
+                    
                     OrderFiles::where('cart_id',$cart->id)->update(['order_id'=>$order->id,'cart_id'=>'']);
+                    
             
 
                     // pr($res);
@@ -1011,6 +1033,7 @@ class OrderController extends BaseController
                         CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
 
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL, 'order_id' => NULL]);
+                        
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
@@ -1471,6 +1494,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
+                
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
@@ -1479,7 +1503,6 @@ class OrderController extends BaseController
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
                 }
-                
             }
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id', 'asc')->first();
@@ -1615,6 +1638,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
+                
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
@@ -1750,6 +1774,7 @@ class OrderController extends BaseController
                  $cash_to_be_collected = 'Yes';
                  $payable_amount = $order->payable_amount;
              } else {
+                
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
@@ -2188,7 +2213,9 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
+            
             $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+            
             
             $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
             
@@ -2300,7 +2327,9 @@ class OrderController extends BaseController
                 }
             }
             $order->is_long_term  =0;
+            
             $order->is_long_term  = $order->orderDetail->is_long_term;
+            
             $order->luxury_option_name = $luxury_option_name;
             $order->luxury_option_name = $luxury_option_name;
             $order->product_details = $product_details;
@@ -2400,6 +2429,7 @@ class OrderController extends BaseController
                         $qry->where('language_id', $language_id);
                     }
                 ]);
+                
                 $order = $order->with(['OrderFiles']);
                 
                 $order = $order->where(function ($q1) {
@@ -2440,6 +2470,7 @@ class OrderController extends BaseController
                         }
                     ]
                 );
+                
                 $order = $order->with(['OrderFiles']);
                 
                 $order = $order->where(function ($q1) {
