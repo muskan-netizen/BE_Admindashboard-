@@ -1708,15 +1708,16 @@ class StripeGatewayController extends FrontController
 
     public function stripeIdealWebhook(Request $request)
     {
-        Log::info('start');
+       
+       
         $secret_key = stripeDynamicPaymentCredentials('stripe_ideal')->secret_key;
         \Stripe\Stripe::setApiKey($secret_key);
 
-        $payload = @file_get_contents('php://input');
+   
 
-         \Log::info('in webhook');
-        // \Log::info(json_encode($payload));
+        $payload = @file_get_contents('php://input');
         $event = null;
+    
         try {
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
@@ -1728,31 +1729,30 @@ class StripeGatewayController extends FrontController
         }
         Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent()??json_encode($payload)]);
         // Handle the event
-        switch ($event->type) {
+        switch (@$event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
 
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
-                $charges = $intent->charges->data;
+                $charges = $intent;
                 $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = 0;
-                if(count($charges)){
-                    $transactionId = $charges[0]->balance_transaction;
-                    $payment_form = $charges[0]->metadata->payment_form;
-                    $amount = $charges[0]->amount / 100;
-                    $user_id = $charges[0]->metadata->user_id;
+                if(@$charges){
+                    $transactionId = @$charges->id;
+                    $payment_form = @$charges->metadata->payment_form;
+                    $amount = @$charges->amount / 100;
+                    $user_id = @$charges->metadata->user_id;
                 }
-
                 if($payment_form == 'cart'){
-                    $order_number = $charges[0]->metadata->order_number;
-                    $cart_id = $charges[0]->metadata->cart_id ?? '';
+                    $order_number = @$charges->metadata->order_number;
+                    $cart_id = @$charges->metadata->cart_id ?? '';
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $order->payment_status = 1;
                         $order->save();
                         $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                        $orderController = new OrderController();
                         if (!$payment_exists) {
                             $payment = new Payment();
                             $payment->date = date('Y-m-d');
@@ -1763,8 +1763,10 @@ class StripeGatewayController extends FrontController
                             $payment->save();
     
                             // Auto accept order
-                            $orderController = new OrderController();
+                        
                             $orderController->autoAcceptOrderIfOn($order->id);
+                            $orderController->sendSuccessEmail($request, $order);
+                            $this->sendSuccessSMS($request, $order);
     
                             // Remove cart
                             CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
@@ -1774,10 +1776,10 @@ class StripeGatewayController extends FrontController
                             CartProduct::where('cart_id', $cart_id)->delete();
                             CartProductPrescription::where('cart_id', $cart_id)->delete();
                             CartDeliveryFee::where('cart_id', $cart_id)->delete();
-                            //Send Email to customer
-                            $orderController->sendSuccessEmail($request, $order);
+                  
                             // send sms 
-                            $this->sendSuccessSMS($request, $order);
+                            
+                        
                             // Send Notification
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {
@@ -1792,7 +1794,8 @@ class StripeGatewayController extends FrontController
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                         
                         }
-                          
+                             //Send Email to customer
+                      
                     }
                 } elseif($payment_form == 'wallet'){
                     $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
@@ -1815,10 +1818,10 @@ class StripeGatewayController extends FrontController
             
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
+                // //\Log::info($paymentIntent);
 
                 $meta = $paymentIntent->metadata;
-                // \Log::info($meta);
+                // //\Log::info($meta);
                 $user_id = $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){
@@ -1858,7 +1861,6 @@ class StripeGatewayController extends FrontController
         
         http_response_code(200);
     }
-
     public function paymentWebViewStripeFPX(Request $request, $domain='')
     {
         // try{
