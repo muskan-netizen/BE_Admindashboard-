@@ -1737,11 +1737,11 @@ class StripeGatewayController extends FrontController
                 }
         \Stripe\Stripe::setApiKey($secret_key);
 
-        $payload = @file_get_contents('php://input');
+   
 
-         \Log::info('in webhook');
-        \Log::info(json_encode($payload));
+        $payload = @file_get_contents('php://input');
         $event = null;
+    
         try {
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
@@ -1753,27 +1753,24 @@ class StripeGatewayController extends FrontController
         }
         Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent()??json_encode($payload)]);
         // Handle the event
-        switch ($event->type) {
+        switch (@$event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                \Log::info(json_decode($paymentIntent));
 
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
-                $charges = $intent->charges->data;
+                $charges = $intent;
                 $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = 0;
-                if(count($charges)){
-                    $transactionId = $charges[0]->balance_transaction;
-                    $payment_form = $charges[0]->metadata->payment_form;
-                    $amount = $charges[0]->amount / 100;
-                    $user_id = $charges[0]->metadata->user_id;
+                if(@$charges){
+                    $transactionId = @$charges->id;
+                    $payment_form = @$charges->metadata->payment_form;
+                    $amount = @$charges->amount / 100;
+                    $user_id = @$charges->metadata->user_id;
                 }
-
                 if($payment_form == 'cart'){
-                    \Log::info('in cart');
-                    $order_number = $charges[0]->metadata->order_number;
-                    $cart_id = $charges[0]->metadata->cart_id ?? '';
+                    $order_number = @$charges->metadata->order_number;
+                    $cart_id = @$charges->metadata->cart_id ?? '';
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $order->payment_status = 1;
