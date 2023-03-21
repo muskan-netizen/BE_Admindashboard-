@@ -782,8 +782,17 @@ class OrderController extends FrontController
                     if ($cart) {
                         $cartDetails = $this->getCart($cart,0,$user);
                     }
-                  
+
                     $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
+                    if($luxuryOptionTitle == 'payment_intent.succeeded') {
+                        $luxuryOptionTitle = 'Success';
+                    } elseif($luxuryOptionTitle == 'payment_intent.payment_failed'){
+                        $luxuryOptionTitle = 'Failed';
+                    } else {
+                        $luxuryOptionTitle = 'delivery';
+                    }
+
+                   
 
                     $email_template_content = $email_template->content;
                     //     if ($vendor_id == "") {
