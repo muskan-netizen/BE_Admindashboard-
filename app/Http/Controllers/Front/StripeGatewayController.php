@@ -1725,13 +1725,22 @@ class StripeGatewayController extends FrontController
     public function stripeIdealWebhook(Request $request)
     {
         Log::info('start');
+        if(\DB::connection()->getDatabaseName())
+            {
+                Log::info("1 Connected sucessfully to database ".\DB::connection()->getDatabaseName().".");
+            }
         $secret_key = stripeDynamicPaymentCredentials('stripe_ideal')->secret_key;
+
+        if(\DB::connection()->getDatabaseName())
+                {
+                    Log::info("2 Connected sucessfully to database ".\DB::connection()->getDatabaseName().".");
+                }
         \Stripe\Stripe::setApiKey($secret_key);
 
         $payload = @file_get_contents('php://input');
 
-         //\Log::info('in webhook');
-        // \Log::info(json_encode($payload));
+         \Log::info('in webhook');
+        \Log::info(json_encode($payload));
         $event = null;
         try {
             $event = \Stripe\Event::constructFrom(
@@ -1747,7 +1756,7 @@ class StripeGatewayController extends FrontController
         switch ($event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                // //\Log::info($paymentIntent);
+                \Log::info(json_decode($paymentIntent));
 
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
@@ -1762,6 +1771,7 @@ class StripeGatewayController extends FrontController
                 }
 
                 if($payment_form == 'cart'){
+                    \Log::info('in cart');
                     $order_number = $charges[0]->metadata->order_number;
                     $cart_id = $charges[0]->metadata->cart_id ?? '';
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
