@@ -287,8 +287,6 @@ trait CartManagerV2{
     
         $processorProduct = [];
         
-        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
-        $isRecurringBooking = checkColumnExists('products','is_recurring_booking') ;
         $this->configV2($obj);
         $address = [];
         $category_array = [];
@@ -383,11 +381,7 @@ trait CartManagerV2{
        //Get All Taxes    
 
 
-        if(checkColumnExists('cart_products','recurring_booking_type')){
-            $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','delivery_date', 'slot_price', 'slot_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        }else{
-            $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','delivery_date','slot_price','slot_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        }
+        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','delivery_date', 'slot_price', 'slot_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
 
 
        //Get All Taxes
@@ -571,14 +565,14 @@ trait CartManagerV2{
                     //if we required any additional price * multiply (Right now its for reccuring)
                     $prod->recurring_date_count = 1;
 
-                    if($isRecurringBooking ==1 && $prod->product->is_recurring_booking ==1){
+                    if($prod->product->is_recurring_booking ==1){
                         $prod->is_recurring_booking   = 1;
                         $prod->recurring_booking_time = convertDateTimeInTimeZone($prod->recurring_booking_time, $user_timezone, 'H:i');
                         $cnt = @count(explode(",",$prod->recurring_day_data));
                         $prod->recurring_date_count = $cnt != 0 ? $cnt : 1;
                         $is_recurring_booking         = 1;
                     }
-                    if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
+                    if($prod->product->is_long_term_service ==1){
                         $vendorData->is_long_term_service = 1;
                         $is_long_term_service = 1;
                         $LongTermProducts = $prod->product->LongTermProducts;
@@ -655,7 +649,7 @@ trait CartManagerV2{
                         // dd($security_amount);
                    // } ///// Notable
                     //  GET PRICE from driver
-                    if( checkColumnExists('cart_products', 'dispatch_agent_price') && ( $is_service_product_price_from_dispatch ==1 )){
+                    if($is_service_product_price_from_dispatch ==1){
                             $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
                         }
                         $totalMarkup += $prod->pvariant->markup_price * $prod->quantity??0;
@@ -1002,7 +996,7 @@ trait CartManagerV2{
                                 $checkLastMile = 1;
                                 $lastMileDate['tags'] = $prod->product->tags;
                             } /** check lont term product product last mile  */
-                            else if( ($islongTermInDB ==1) && ($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
+                            else if(($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
 
                                 $checkLastMile = 1;
                                 $lastMileDate['tags'] = $prod->product->LongTermProduct->first()->tags;
@@ -1083,8 +1077,8 @@ trait CartManagerV2{
                     }
                 }
 
-                $is_slot_from_dispatch =  checkColumnExists('products', 'is_slot_from_dispatch') ?  $prod->product->is_slot_from_dispatch : '';
-                $show_dispatcher_agent =  checkColumnExists('products', 'is_show_dispatcher_agent') ? $prod->product->is_show_dispatcher_agent  : '';
+                $is_slot_from_dispatch =  $prod->product->is_slot_from_dispatch;
+                $show_dispatcher_agent =  $prod->product->is_show_dispatcher_agent;
                 $last_mile_check       = $prod->product->Requires_last_mile  ;
                 $cateTypeId = $prod->product->productcategory ? $prod->product->productcategory->type_id : '';
 
@@ -1790,7 +1784,7 @@ trait CartManagerV2{
 
             $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
                 //  GET PRICE from driver
-            if( checkColumnExists('cart_products', 'dispatch_agent_price') && ( $this->is_service_product_price_from_dispatch ==1 )){
+            if($this->is_service_product_price_from_dispatch ==1){
                 $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
             }
             foreach ($prod->pvariant->vset as $variant_set_option) {
