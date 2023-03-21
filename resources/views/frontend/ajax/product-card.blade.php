@@ -39,7 +39,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                             @endif
                             </div>
                             @if(($data->inquiry_only == 0) && ($is_service_product_price_from_dispatch_forOnDemand !=1) )
-                                @if ($additionalPreference ['is_token_currency_enable'] )
+                                @if (@$additionalPreference['is_token_currency_enable'] )
                                 <i class='fa fa-money' aria-hidden='true'></i> {{ getInToken($data->variant_price * $data->variant_multiplier)}}
                                 @else
                                     <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
