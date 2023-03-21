@@ -1724,17 +1724,9 @@ class StripeGatewayController extends FrontController
 
     public function stripeIdealWebhook(Request $request)
     {
-        Log::info('start');
-        if(\DB::connection()->getDatabaseName())
-            {
-                Log::info("1 Connected sucessfully to database ".\DB::connection()->getDatabaseName().".");
-            }
+       
+       
         $secret_key = stripeDynamicPaymentCredentials('stripe_ideal')->secret_key;
-
-        if(\DB::connection()->getDatabaseName())
-                {
-                    Log::info("2 Connected sucessfully to database ".\DB::connection()->getDatabaseName().".");
-                }
         \Stripe\Stripe::setApiKey($secret_key);
 
    
