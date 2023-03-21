@@ -29,7 +29,7 @@ if($additionalPreference['is_service_product_price_from_dispatch'] == 1){
 @endphp
 @extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
-
+<link href="{{asset('assets/css/azul.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .main-menu .brand-logo {
         display: inline-block;
@@ -691,8 +691,8 @@ $timezone = Auth::user()->timezone;
     });
     var ajaxCall = 'ToCancelPrevReq';
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
-        var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";    
-   var payment_stripe_url = "{{ route('payment.stripe') }}";
+    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";    
+    var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
@@ -734,7 +734,7 @@ $timezone = Auth::user()->timezone;
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".order_response";
     var payment_option_list_url = "{{route('payment.option.list')}}";
-
+    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";        
      @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
     @else
@@ -742,7 +742,6 @@ $timezone = Auth::user()->timezone;
     @endif
 
 </script>
-
 <script type="text/javascript">
     localStorage.removeItem('check_pk_date_check');
     localStorage.removeItem('check_date_check');
@@ -754,7 +753,6 @@ $timezone = Auth::user()->timezone;
     $('.verifyPhone').click(function() {
         verifyUser('phone');
     });
-
     // Added by Ovi
     function checkDates(prevPickup, prevDropoff, reschedulingCharges, pickupCancellingCharges, newPickupClass, newDropoffClass) {
         // var pickup_schedule_datetime = $('.'+newPickupClass).val();
