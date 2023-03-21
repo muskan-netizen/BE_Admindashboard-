@@ -96,8 +96,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38]) // 1 for cod ,38 for offline manual by harbans
                     ->orWhere(function($q3) {
-                        $q3->where('is_postpay', 1) // 1 for order is post pay.
+                        
+                        
+                            $q3->where('is_postpay', 1) // 1 for order is post pay.
                                ->whereNotIn('payment_option_id', [1, 38]);
+                        
                     });
             });
         });
@@ -124,8 +127,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    $q3->where('is_postpay', 1) // 1 for order is post pay.
+                    
+                    
+                        $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
+                    
                 });
             });
         });
@@ -151,8 +157,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    $q3->where('is_postpay', 1) // 1 for order is post pay.
+                    
+                    
+                        $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
+                    
                 });
             });
         });
@@ -207,7 +216,11 @@ class OrderController extends BaseController
         $orders = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with(['vendors.products' => function ($q) {
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
+        
+        
         $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
+        
+        
 
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
@@ -221,8 +234,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    $q3->where('is_postpay', 1) // 1 for order is post pay
+                    
+                    
+                        $q3->where('is_postpay', 1) // 1 for order is post pay
                             ->whereNotIn('payment_option_id', [1, 38]);
+                    
                 });
             });
         })->orderBy('id', 'asc');
@@ -254,8 +270,10 @@ class OrderController extends BaseController
                 $query->where('vendor_id', $request->get('vendor_id'));
             });
         }
-        $HasGiftCard = 1;
-        $orders  = $orders->with(['giftCard']);
+        
+            $HasGiftCard = 1;
+            $orders  = $orders->with(['giftCard']);
+        
         //Search by keyword
         if (!empty($request->search_keyword)) {
             $order_count->whereHas('address', function ($query) use ($request) {
@@ -441,8 +459,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                     ->orWhere(function($q3) {
-                        $q3->where('is_postpay', 1)
-                            ->whereNotIn('payment_option_id', [1, 38]);
+                        
+                        
+                            $q3->where('is_postpay', 1)
+                                ->whereNotIn('payment_option_id', [1, 38]);
+                        
                     });
             });
         });
@@ -719,7 +740,9 @@ class OrderController extends BaseController
             },
             'vendors.products' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);
-                $query->with('order_product_status');
+                
+                    $query->with('order_product_status');
+                
             },
             'vendors.products.product',
             'vendors.products.addon',
@@ -738,7 +761,9 @@ class OrderController extends BaseController
             'reports',
 
         ));
-        $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
+        
+            $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
+        
         $order = $order->findOrFail($order_id);
         //    return $order;
         // set payment option dynamic name
@@ -1046,9 +1071,9 @@ class OrderController extends BaseController
                     
                     if ($orderData->shipping_delivery_type == 'D') {
                         //Create Shipping request for dispatcher
-
                         if($orderData->orderDetail->is_long_term ==1){
                             $order_dispatch = $this->checkIfanyServiceProductLastMileon($request);
+
                         }
                         else if($orderData->orderDetail->recurring_booking_type ==1){
                             $order_dispatch = $this->checkIfIsProductRecurringLastMileon($request);
@@ -1434,6 +1459,7 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
+        
         $order_dispatchs = 2;
         $AdditionalPreference  =  getAdditionalPreference(['is_place_order_delivery_zero','is_service_product_price_from_dispatch']);
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
@@ -1585,11 +1611,11 @@ class OrderController extends BaseController
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 $isNotLongTerm = 1;
-                if( $islongTermInDB = 1 ){
+                
                     if( $prod->product->is_long_term_service ==1 ){
                         $isNotLongTerm = 0;
                     }
-                }
+                
 
 
                 if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
@@ -1630,6 +1656,7 @@ class OrderController extends BaseController
 
     public function checkIfIsProductRecurringLastMileon($request)
     {
+        
         $order_dispatchs        = 2;
         $checkdeliveryFeeAdded  = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $luxury_option_id       = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
@@ -1751,9 +1778,11 @@ class OrderController extends BaseController
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 $isNotLongTerm = 1;
-                if( $prod->product->is_long_term_service ==1 ){
-                    $isNotLongTerm = 0;
-                }
+                
+                    if( $prod->product->is_long_term_service ==1 ){
+                        $isNotLongTerm = 0;
+                    }
+                
 
 
                 if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
@@ -1850,7 +1879,7 @@ class OrderController extends BaseController
             }
 
 
-            
+           
 
 
             $date       = explode(",",$order->recurring_day_data);
@@ -1972,102 +2001,9 @@ class OrderController extends BaseController
                     $recurring_data->save();
                     return 1;
                 }
-
             }
 
-            /* $tasks[] = array(
-                'task_type_id' => 1,
-                'latitude' => $vendor_details->latitude ?? '',
-                'longitude' => $vendor_details->longitude ?? '',
-                'short_name' => '',
-                'address' => $vendor_details->address ?? '',
-                'post_code' => '',
-                'barcode' => '',
-                'flat_no'     => null,
-                'email'       => $vendor_details->email ?? null,
-                'phone_number' => $vendor_details->phone_no ?? null,
-            );
-
-            $tasks[] = array(
-                'task_type_id' => 2,
-                'latitude' => $cus_address->latitude ?? '',
-                'longitude' => $cus_address->longitude ?? '',
-                'short_name' => '',
-                'address' => $cus_address->address ?? '',
-                'post_code' => $cus_address->pincode ?? '',
-                'barcode' => '',
-                'flat_no'     => $cus_address->house_number ?? null,
-                'email'       => $customer->email ?? null,
-                'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
-            );
-
-            if ($customer->dial_code == "971") {
-                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
-                $customerno = "0" . $customer->phone_number;
-            } else {
-                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
-                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
-            }
-            $client = CP::orderBy('id', 'asc')->first();
-            $postdata =  [
-                'order_number' =>  $order->order_number,
-                'customer_name' => $customer->name ?? 'Dummy Customer',
-                'customer_phone_number' => $customerno ?? rand(111111, 11111),
-                'customer_dial_code' => $customer->dial_code ?? null,
-                'customer_email' => $customer->email ?? null,
-                'recipient_phone' => $customerno ?? rand(111111, 11111),
-                'recipient_email' => $customer->email ?? null,
-                'task_description' => "Order From :" . $vendor_details->name,
-                'allocation_type' => 'a',
-                'task_type' => $task_type,
-                'schedule_time' => $schedule_time ?? null,
-                'cash_to_be_collected' => !empty($orderVendorDetails) ? ($orderVendorDetails->payable_amount + $orderVendorDetails->service_fee_percentage_amount) : 0.00,
-                'order_number' => $order->order_number,
-                'barcode' => '',
-                'order_team_tag' => $team_tag,
-                'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks,
-                'is_restricted' => $orderVendorDetails->is_restricted,
-                'vendor_id' => $vendor_details->id,
-                'order_vendor_id' => $orderVendorDetails->id,
-                'dbname' => $client->database_name,
-                'order_id' => $order->id,
-                'customer_id' => $order->user_id,
-                'user_icon' => $customer->image,
-                'vendor_name' => $vendor_details->name ?? null,
-                'tip_amount' => $order->tip_amount,
-                'payment_method' => $order->payment_method,
-            ];
-            //pr($postdata);
-            if ($orderVendorDetails->is_restricted == 1) {
-                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
-                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
-            }
-
-            $client = new Client([
-                'headers' => [
-                    'personaltoken' => $dispatch_domain->delivery_service_key,
-                    'shortcode' => $dispatch_domain->delivery_service_key_code,
-                    'content-type' => 'application/json'
-                ]
-            ]);
-
-            $url = $dispatch_domain->delivery_service_key_url;
-            // dd($url);
-            $res = $client->post(
-                $url . '/api/task/create',
-                ['form_params' => ($postdata)]
-            );
-
-            $response = json_decode($res->getBody(), true);
-            if ($response && $response['task_id'] > 0) {
-                $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
-                $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
-                    ->update(['web_hook_code' => $dynamic, 'dispatch_traking_url' => $dispatch_traking_url]);
-
-                return 1;
-            } */
-
+        
             return 2;
         } catch (\Exception $e) {
            // Log::info($e->getMessage());
@@ -2092,6 +2028,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
+                
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
@@ -2222,6 +2159,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
+                
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
@@ -2473,9 +2411,9 @@ class OrderController extends BaseController
                     $query->where('user_id', Auth::user()->id);
                 });
             }
-
+            
             $orders_list = $orders_list->whereIn('type', [1,3]); // 1 = return , 2 = exchange
-
+            
             if (!empty($request->search_keyword)) {
                 $orders_list->whereHas('order', function ($query)  use ($request) {
                     $query->whereHas('address', function ($q) use ($request) {

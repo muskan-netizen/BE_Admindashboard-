@@ -210,8 +210,8 @@ class FrontController extends Controller
         $vendorType  = Session::get('vendorType');
         // set category layout by on behalf of vendor type
         $categoryTypes = getServiceTypesCategory($vendorType, $preferences);
-       // pr($categoryTypes);
-        $primary     = Session::get('customerLanguage');
+        
+        $client_language_id     = Session::get('customerLanguage');
        // DB::enableQueryLog();
         $categories  = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
                                 ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id','cts.name','categories.type_id')
@@ -256,8 +256,8 @@ class FrontController extends Controller
                                 ->where('categories.is_core', 1)
                                 ->where('categories.status', '!=', $status)
                                 ->where('cts.language_id', $lang_id)
-                                ->where(function ($qrt) use($lang_id,$primary){
-                                    $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary);
+                                ->where(function ($qrt) use($lang_id,$client_language_id){
+                                    $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$client_language_id);
                                 })
                                 ->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
