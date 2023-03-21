@@ -1781,6 +1781,8 @@ class StripeGatewayController extends FrontController
                             // Auto accept order
                            
                             $orderController->autoAcceptOrderIfOn($order->id);
+                            $orderController->sendSuccessEmail($request, $order);
+                            $this->sendSuccessSMS($request, $order);
     
                             // Remove cart
                             CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
@@ -1809,8 +1811,7 @@ class StripeGatewayController extends FrontController
                         
                         }
                              //Send Email to customer
-                        $orderController->sendSuccessEmail($request, $order);
-                        $this->sendSuccessSMS($request, $order);
+                      
                     }
                 } elseif($payment_form == 'wallet'){
                     $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
