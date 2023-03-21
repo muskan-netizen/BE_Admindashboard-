@@ -712,8 +712,7 @@
 			</div>
 			</div>
 		</section>
-		</section>
-		@elseif(@$homePageLabel->slug == 'selected_products' && (count(@$homePageData[@$homePageLabel->slug]) != 0))
+		@elseif(isset($homePageData[$homePageLabel->slug]) && $homePageLabel->slug == 'selected_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="d-none main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
 			<div class="container">
 				<div class="top-heading d-flex justify-content-between">
@@ -735,7 +734,7 @@
 				</div>
 			</div>
 		</section>
-		@elseif($homePageLabel->slug == 'most_popular_products' && (count($homePageData[$homePageLabel->slug]) != 0))
+		@elseif(isset($homePageData[$homePageLabel->slug]) && $homePageLabel->slug == 'most_popular_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="d-none main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container">
 				<div class="top-heading d-flex justify-content-between">
