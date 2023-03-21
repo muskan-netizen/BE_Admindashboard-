@@ -235,7 +235,7 @@
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Service Fee') }}</label>
                                                         @if ($vendor['service_fee_percentage_amount'] !== null)
-                                                            <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['.service_fee_percentage_amount']) }}</span>
+                                                            <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['service_fee_percentage_amount']) }}</span>
                                                         @else
                                                             <span>{{ $clientCurrency->currency->symbol }}0.00</span>
                                                         @endif
