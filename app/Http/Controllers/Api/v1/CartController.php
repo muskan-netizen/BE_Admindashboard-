@@ -62,9 +62,9 @@ class CartController extends BaseController
             // }
             $user = Auth::user();
             if (!$user->id) {
-                $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
+                $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder','OrderFiles']);
             } else {
-                $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
+                $cart = Cart::where('user_id', $user->id)->with(['editingOrder','OrderFiles']);
             }
             $cart = $cart->first();
             $cartData = [];
@@ -327,85 +327,89 @@ class CartController extends BaseController
                 
             //Recurring Booking
             $recurring_days = '';
+            if($product->is_recurring_booking == 1){
 
-            if (empty($request->recurringformPost)) {
-                return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
+                if (empty($request->recurringformPost)) {
+                    return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
+                }
+
+               
+                $cartRecurringCall = new FrontCartController();
+                $recurringformPost = $cartRecurringCall->recurringCalculationFunction($request);
+                $action = '5';
+                //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
+               
+                   $start_date             = $recurringformPost->startDate;
+                   $end_date               = $recurringformPost->endDate;
+                   $recurring_days  = @$recurringformPost->selectedCustomdates??null;
+                   $weekTypes  = @$recurringformPost->weekTypes??null;
+                   $action = $recurringformPost->action??5;
+                   $schedule_time = $recurringformPost->schedule_time??null;
+               
+
+                //In case of on recurringformPost
+                if (!empty($request->recurringformPost)) {
+                    $cart_product_detail['recurring_booking_type'] = $action;
+                    $cart_product_detail['recurring_week_day'] = $weekTypes;
+                    $cart_product_detail['recurring_week_type'] = $weekTypes;
+                    $cart_product_detail['recurring_day_data'] = $recurring_days;
+                    $cart_product_detail['recurring_booking_time'] = $schedule_time;
+                }
+
             }
+           
 
-            
-            $cartRecurringCall = new FrontCartController();
-            $recurringformPost = $cartRecurringCall->recurringCalculationFunction($request);
-            $action = '5';
-            
-            $start_date             = $recurringformPost->startDate;
-            $end_date               = $recurringformPost->endDate;
-            $recurring_days  = @$recurringformPost->selectedCustomdates??null;
-            $weekTypes  = @$recurringformPost->weekTypes??null;
-            $action = $recurringformPost->action??5;
-            $schedule_time = $recurringformPost->schedule_time??null;
-            
+                if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData)){
+                  
+                    $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                    $slot = @$request->dispatcherAgentData['slot'] ?  @$request->dispatcherAgentData['slot'] : Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
+                    $cart_product_detail['schedule_type'] = 'schedule';
+                    $cart_product_detail['scheduled_date_time'] = @$dataTime;
+                    $cart_product_detail['schedule_slot'] = @$slot ?? null;
+                    $cart_product_detail['dispatch_agent_price'] = @$request->dispatcherAgentData['agent_price']??null;
+                    $cart_product_detail['dispatch_agent_id'] = @$request->dispatcherAgentData['agent_id']??null;
+                }
+                $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
+                    ->where('product_id', $product->id)
+                    ->where('variant_id', $productVariant->id)->first();
 
-            //In case of on recurringformPost
-            if (!empty($request->recurringformPost)) {
-                $cart_product_detail['recurring_booking_type'] = $action;
-                $cart_product_detail['recurring_week_day'] = $weekTypes;
-                $cart_product_detail['recurring_week_type'] = $weekTypes;
-                $cart_product_detail['recurring_day_data'] = $recurring_days;
-                $cart_product_detail['recurring_booking_time'] = $schedule_time;
-            }
-
-        
-
-            if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData)){
-                
-                $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                $slot = @$request->dispatcherAgentData['slot'] ?  @$request->dispatcherAgentData['slot'] : Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
-                $cart_product_detail['schedule_type'] = 'schedule';
-                $cart_product_detail['scheduled_date_time'] = @$dataTime;
-                $cart_product_detail['schedule_slot'] = @$slot ?? null;
-                $cart_product_detail['dispatch_agent_price'] = @$request->dispatcherAgentData['agent_price']??null;
-                $cart_product_detail['dispatch_agent_id'] = @$request->dispatcherAgentData['agent_id']??null;
-            }
-            $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
-                ->where('product_id', $product->id)
-                ->where('variant_id', $productVariant->id)->first();
-
-            if (!$cartProduct) {
-                $isnew = 1;
-            } else {
-                $checkaddonCount = CartAddon::where('cart_product_id', $cartProduct->id)->count();
-                if (count($addon_ids) != $checkaddonCount) {
+                if (!$cartProduct) {
                     $isnew = 1;
                 } else {
-                    foreach ($addon_options as $key => $opts) {
-                        $cart_addon = CartAddon::where('cart_product_id', $cartProduct->id)
-                            ->where('addon_id', $addon_ids[$key])
-                            ->where('option_id', $opts)->first();
-                        if (!$cart_addon) {
-                            $isnew = 1;
+                    $checkaddonCount = CartAddon::where('cart_product_id', $cartProduct->id)->count();
+                    if (count($addon_ids) != $checkaddonCount) {
+                        $isnew = 1;
+                    } else {
+                        foreach ($addon_options as $key => $opts) {
+                            $cart_addon = CartAddon::where('cart_product_id', $cartProduct->id)
+                                ->where('addon_id', $addon_ids[$key])
+                                ->where('option_id', $opts)->first();
+                            if (!$cart_addon) {
+                                $isnew = 1;
+                            }
                         }
                     }
                 }
-            }
-            if ($isnew == 1) {
-                $cartProduct = CartProduct::create($cart_product_detail);
-                if (!empty($addon_ids) && !empty($addon_options)) {
-                    $saveAddons = array();
-                    foreach ($addon_options as $key => $opts) {
-                        $saveAddons[] = [
-                            'option_id' => $opts,
-                            'cart_id' => $cart_detail->id,
-                            'addon_id' => $addon_ids[$key],
-                            'cart_product_id' => $cartProduct->id,
-                        ];
+                if ($isnew == 1) {
+                    $cartProduct = CartProduct::create($cart_product_detail);
+                    if (!empty($addon_ids) && !empty($addon_options)) {
+                        $saveAddons = array();
+                        foreach ($addon_options as $key => $opts) {
+                            $saveAddons[] = [
+                                'option_id' => $opts,
+                                'cart_id' => $cart_detail->id,
+                                'addon_id' => $addon_ids[$key],
+                                'cart_product_id' => $cartProduct->id,
+                            ];
+                        }
+                        if (!empty($saveAddons)) {
+                            CartAddon::insert($saveAddons);
+                        }
                     }
-                    if (!empty($saveAddons)) {
-                        CartAddon::insert($saveAddons);
-                    }
+                } else {
+                    $cartProduct->quantity = $cartProduct->quantity + $request->quantity;
+                    $cartProduct->save();
                 }
-            } else {
-                $cartProduct->quantity = $cartProduct->quantity + $request->quantity;
-                $cartProduct->save();
             }
             $cartData = $this->getCart($cart_detail, $user->language, $user->currency, $request->type);
             if ($cartData && !empty($cartData)) {
@@ -633,6 +637,7 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
+
         try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
