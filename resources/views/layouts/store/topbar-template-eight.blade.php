@@ -277,7 +277,7 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                             <span class="alAccount">{{__('My Account')}}</span>
                             <ul class="onhover-show-div">
                                 @if(Auth::user())
-                                    @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                                @if(@auth()->user()->can('dashboard-view') || Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
                                         <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
                                     </li>
@@ -546,7 +546,6 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                           </div>
                       </div>
 
-
                         <li class="onhover-div pl-0 shake-effect">
                                                 @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
                                                 <a class="btn btn-solid d-flex align-items-center p-0" href="{{route('showCart')}}">
@@ -668,6 +667,7 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
     </div>--}}
 </div>
 <div class="al_mobile_menu al_new_mobile_header">
+
                 <div class="al_new_cart">
                     @if($client_preference_detail->cart_enable == 1)
                     <div class="onhover-dropdown_al onhover-div mobile-cart">

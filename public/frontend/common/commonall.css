@@ -642,24 +642,22 @@ li.vendor-timing p{
     z-index: 9;
     width: 98.3%;
 }
-
-
-
-.al_body_template_six .common-banner:after{
-    position:inherit;
-    background:transparent;
-    }
-
-
-.common-banner:after {
+.al_body_template_nine .common-banner:after {
     content: "";
     position: absolute;
     background: #0e0c0c4f;
     z-index: 9;
-    width: 100%;
+    width:100%!important;
     height: 100%;
-    left: 0px;border-radius: 10px;
-    top:0;
+    left: 0px;
+    border-radius: 10px;
+    margin: 0 auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+.al_body_template_nine .common-banner:after{
+    width: calc(100% - 24px)!important;
 }
 .common-banner.my-banner{
 position: relative;
@@ -756,4 +754,7 @@ display: inline-block;
 .al_body_template_eight .similar-products-vitamin .product-card-box .img-outer-box {
     height: 300px !important;
     min-height: 300px !important;
+}
+.al_body_template_three .product-image img .img-fluid.blur-up .lazyloaded {
+    height: 100%!important;
 }

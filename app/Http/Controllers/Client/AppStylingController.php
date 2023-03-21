@@ -55,15 +55,13 @@ class AppStylingController extends BaseController
             $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->where('image','!=','bar_three.png')->get();
         }
 
+        $selected_ids=[];
+        //type = 1 for app products
+        $selected_ids= $this->getHomePageSelectedProducts(1);
 
         $client_preferences = ClientPreference::first();
-        $selected_ids=[];
-        $Selected_products= HomeProduct::get();
-        foreach ($Selected_products as $key => $value) {
-            $selected_ids[] = $value->product_id;
-        
-    }
         $AppStylingOption = AppStylingOption::whereNotIn('template_id',[1,2]);
+        
         switch($client_preferences->business_type){
             case "taxi":    # if business type is taxi
             $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
@@ -292,9 +290,10 @@ class AppStylingController extends BaseController
         }
 
         if(@$request->selected_products)
-{
-    $this->updateSelectedProductstoDb($home_translation->cab_booking_layout_id,$request);
-}        
+        {
+            //For Appside type = 1
+            $this->updateSelectedProductstoDb($home_translation->cab_booking_layout_id,$request,1);
+        }        
 
         foreach ($request->pickup_labels as $key => $value) {
 
@@ -317,11 +316,11 @@ class AppStylingController extends BaseController
 
             if(isset($request->categories[$key]) && !empty($request->categories[$key])){
                 $is_cat =  $request->categories[$key]['check'];
-            //    Log::info($is_cat);
+            //   // Log::info($is_cat);
             }
             else{
                 $is_cat =  0;
-            //    Log::info($is_cat);
+            //   // Log::info($is_cat);
             }
 
             if(isset($request->banner_image[$key]) && !empty($request->banner_image[$key])){
@@ -343,7 +342,7 @@ class AppStylingController extends BaseController
             }
 
             if($is_img != 0){
-                $del = CabBookingLayoutBanner::where('cab_booking_layout_id',$request->pickup_labels[$key])->delete();
+                $del = CabBookingLayoutBanner::where('cab_booking_layout_id',$request->pickup_labels[$key])->where('type', 1)->delete();
                     $folderName='banner';
                     $filePath = $folderName . '/' . Str::random(40);
                     $file = $is_img;
@@ -357,6 +356,7 @@ class AppStylingController extends BaseController
                 $cate = new CabBookingLayoutBanner();
                 $cate->cab_booking_layout_id  = $request->pickup_labels[$key];
                 $cate->banner_image_url  = $url;
+                $cate->type  = 2; //2 = App styling
                 $cate->save();
 
             }

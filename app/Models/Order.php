@@ -22,6 +22,11 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\OrderVendor', 'order_id', 'id')->select('*', 'dispatcher_status_option_id as dispatcher_status');
     }
+    
+    public function orderVendorProduct()
+    {
+        return $this->hasOne('App\Models\OrderVendorProduct', 'order_id', 'id')->select('*');
+    }
     public function vendors()
     {
         return $this->hasMany('App\Models\OrderVendor', 'order_id', 'id')->select('*', 'dispatcher_status_option_id as dispatcher_status');
@@ -50,6 +55,11 @@ class Order extends Model implements Auditable
     public function orderStatusVendor()
     {
         return $this->hasMany('App\Models\VendorOrderStatus', 'order_id', 'id');
+    }
+
+    public function order_product_status()
+    {
+        return $this->hasMany('App\Models\VendorOrderProductStatus', 'order_id');
     }
     public function scopeBetween($query, $from, $to)
     {
@@ -136,6 +146,10 @@ class Order extends Model implements Auditable
     public function editingInCart()
     {
         return $this->hasOne('App\Models\Cart', 'order_id', 'id');
+    }
+    public function OrderFiles()
+    {
+        return $this->hasMany('App\Models\OrderFiles'); //, 'order_id', 'id'
     }
     public function scopeOnlyEnabledLuxuryOptions($query,$EnabledLuxuryOptions=[])
     {

@@ -398,6 +398,6 @@ class PaylinkGatewayController extends FrontController
 
     public function paylinkNotify(Request $request)
     {
-        Log::info($request->all());
+       // Log::info($request->all());
     }
 }

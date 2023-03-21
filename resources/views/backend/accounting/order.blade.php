@@ -151,11 +151,14 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
             }
         });
         function getPercentageAmount(percent,amount){
-
             // var totalPercent = (percent/amount * 100);
-            var totalPercent = (percent * 100) / amount; // Added by ovi
-
-            return parseFloat(totalPercent).toFixed(2);
+           if(amount == 0.00){
+            	return amount;
+            }else{
+            	var totalPercent = (percent * 100) / amount; // Added by ovi
+            	return parseFloat(totalPercent).toFixed(2);
+            }
+            
         }
 
 

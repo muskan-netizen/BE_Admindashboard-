@@ -30,7 +30,7 @@ class AuthorizeGatewayController extends FrontController
 	public function beforePayment(Request $request)
     {
     	$data = $request->all();
-        Log::info($data);
+       // Log::info($data);
         $data['come_from'] = 'app';
         $data['login_id'] = $this->login_id;
         $data['client_key'] = $this->client_key;
@@ -39,14 +39,14 @@ class AuthorizeGatewayController extends FrontController
         {
             $data['come_from'] = 'web';
         }
-        Log::info("Before Payment");
-        Log::info($data);
+       // Log::info("Before Payment");
+       // Log::info($data);
     	return view('frontend.payment_gatway.authorize_view')->with(['data' => $data]);
     }
     public function createPayment(Request $request)
     {
-        Log::info("Create Payment");
-        Log::info($request->all());
+       // Log::info("Create Payment");
+       // Log::info($request->all());
         if($request->come_from == "app")
         {
             $user = User::where('auth_token', $request->auth_token)->first();
@@ -169,11 +169,19 @@ class AuthorizeGatewayController extends FrontController
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId; 
             }
-            Log::info("Return Url");
-            Log::info($returnUrl);
+           // Log::info("Return Url");
+           // Log::info($returnUrl);
             return $returnUrl;
+        }elseif($request->payment_from == 'pending_amount_form'){
+            $order_number = $request->order_number;
+            $order = Order::select('id')->where('order_number', $order_number)->first();
+            Order::where('id', $order->id)->update(['advance_amount' => null]);
+            $message = 'Pending has been submitted successfully';
+            $returnUrl = route('user.orders');
+            return $returnUrl;
+
         }
-        Log::info("Ending");
+       // Log::info("Ending");
         return Redirect::to(route('order.return.success'));
     }
     public function failedPayment($request, $pamyent)

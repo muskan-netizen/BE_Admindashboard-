@@ -288,6 +288,7 @@ class UserhomeController extends FrontController
             if ($request->has('ref')) {
                 session(['referrer' => $request->query('ref')]);
             }
+            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating']);
             $latitude = Session::get('latitude') ?? null;
             $longitude = Session::get('longitude') ?? null;
             $curId = Session::get('customerCurrency');
@@ -372,7 +373,7 @@ class UserhomeController extends FrontController
             $for_no_product_found_html = clone $CabBookingLayout;
             $enable_layout             = clone $CabBookingLayout;
             $enable_layout = $enable_layout->orderBy('order_by','asc')->pluck('slug')->toArray();
-            $homePageData = $this->postHomePageData($request, $set_template, $enable_layout);
+            $homePageData = $this->postHomePageData($request, $set_template, $enable_layout, $additionalPreference);
 
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData, $navCategories) {
                 if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
@@ -381,11 +382,8 @@ class UserhomeController extends FrontController
                 if( $da->slug == 'nav_categories'  ){
                     $da['nav_categories'] = $navCategories ?? '';
                 }
-
                 return $da;
-
             });
-
             
             $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
             if ($only_cab_booking == 1)
@@ -441,9 +439,14 @@ class UserhomeController extends FrontController
             elseif(isset($set_template)  && $set_template->template_id == 9){
                 $view_page = "home-template-test-nine";
             }
-           
-           
-            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData];
+
+            $is_service_product_price_from_dispatch_forOnDemand = 0;
+
+            if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+                $is_service_product_price_from_dispatch_forOnDemand =1;
+            }
+            
+            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
             return view('frontend.'.$view_page)->with($homeData);
 
         } catch (Exception $e) {
@@ -483,9 +486,8 @@ class UserhomeController extends FrontController
      * @param  mixed $request
      * @return void
      */
-    public function postHomePageData(Request $request,$set_template,$enable_layout)
+    public function postHomePageData(Request $request,$set_template,$enable_layout,$additionalPreference)
     {
-        $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating']);
         $vendor_ids = [];
         $new_products = [];
         $feature_products = [];
@@ -520,50 +522,35 @@ class UserhomeController extends FrontController
 
         $currency_id = $this->setCurrencyInSesion();
         
-        $featured_products_title = $vendors_title = $new_products_title = $on_sale_title = $brands_title = $best_sellers_title = $trending_vendors_title = $recent_orders_title = $banner_title = '';
+        $featured_products_title = $new_products_title = $on_sale_title = $trending_vendors_title = '';
 
-        $slugs = array("featured_products","vendors","new_products","on_sale","brands","best_sellers","trending","recent_orders","banner");
+        $slugs = array("featured_products","new_products","on_sale","trending");
         $CabBookingLayoutTranslation = CabBookingLayoutTranslation::where('language_id', $language_id)->with('layout')
                                        ->whereHas('layout', function($q) use ($slugs){
                                             $q->whereIn('slug', $slugs);
                                        })->whereNotNull('title')->select('title', 'cab_booking_layout_id')->get();
 
-        foreach($CabBookingLayoutTranslation as $translation){
-        switch ($translation->layout->slug) {
-            case "featured_products":
-                $featured_products_title = $translation->title;
-                break;
-            case "vendors":
-                $vendors_title = $translation->title;
-                break;
-            case "new_products":
-                $new_products_title = $translation->title;
-                break;
-            case "on_sale":
-                $on_sale_title = $translation->title;
-                break;
-            case "brands":
-                $brands_title = $translation->title;
-                break;
-            case "best_sellers":
-                $best_sellers_title = $translation->title;
-                break;
-            case "trending":
-                $trending_vendors_title = $translation->title;
-                break;
-            case "recent_orders":
-                $recent_orders_title = $translation->title;
-                break;
-            case "banner":
-                $banner_title = $translation->title;
-                break;
-            default:
-                break;
+        foreach($CabBookingLayoutTranslation as $translation)
+        {
+            switch ($translation->layout->slug) {
+                case "featured_products":
+                    $featured_products_title = $translation->title;
+                    break;
+                case "new_products":
+                    $new_products_title = $translation->title;
+                    break;
+                case "on_sale":
+                    $on_sale_title = $translation->title;
+                    break;
+                case "trending":
+                    $trending_vendors_title = $translation->title;
+                    break;
+                default:
+                    break;
+            }
         }
-    }
 
 
-       
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
             $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
@@ -611,6 +598,7 @@ class UserhomeController extends FrontController
          * put a limit to get vendors.
          */
         $long_term_vendors = $vendors;
+
         $vendors = $vendors->where('status', 1);
         if(@$additionalPreference['is_admin_vendor_rating']=='1'){
             $vendors = $vendors->where('status', 1);
@@ -622,6 +610,7 @@ class UserhomeController extends FrontController
 
         //$vendors = $this->getVendorForHomePage($preferences, $additionalPreference['is_admin_vendor_rating']);
 //pr($vendors);
+
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
 
@@ -658,7 +647,6 @@ class UserhomeController extends FrontController
                         }
 
                     }elseif($value->slot->isNotEmpty()){
-                        \Log::info( date('g:i A',strtotime($value->slot->first()->end_time)));
                         if($value->slot->first()->start_time && $value->slot->first()->end_time){
                             $value->opening_time = date('g:i A',strtotime($value->slot->first()->start_time));
                             $value->closing_time = date('g:i A',strtotime($value->slot->first()->end_time));
@@ -667,6 +655,11 @@ class UserhomeController extends FrontController
                 }
             }
         }
+        /**
+         * End get vendors.
+         */
+
+
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $vendors = $vendors->sortBy('lineOfSightDistance')->values()->all();
         }
@@ -744,7 +737,10 @@ class UserhomeController extends FrontController
         }    
 
         //get Most Selling Vendors
-        $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
+        $mostSellingVendors = []; //best_sellers
+        if (in_array('best_sellers', $enable_layout)) {
+         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
+        }
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
             $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'all', $request->type,$on_sale_title, $p_dim);
@@ -775,7 +771,6 @@ class UserhomeController extends FrontController
         if( in_array('long_term_service', $enable_layout) && @$additionalPreference['is_long_term_service'] == 1){ # if enable long_term_service section in 
             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
         }
-          
         if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'recent_viewed', $request->type, $featured_products_title,$p_dim);
             //$spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
@@ -860,11 +855,8 @@ class UserhomeController extends FrontController
         $data = [
             'brands' => $brands,
             'vendors' => $vendors,
-            'new_products' => $new_products,
             'homePageLabels' => $home_page_labels,
-            'feature_products' => $feature_products,
-            'on_sale_products' => $on_sale_products,
-            'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
+            'trending_vendors' => $trendingVendors,
             'active_orders' => $activeOrders,
             'long_term_service' => $long_term_service_products,
             'additionalPreference' => $additionalPreference,
@@ -875,20 +867,15 @@ class UserhomeController extends FrontController
             $data = [
                 'brands' => $brands,
                 'vendors' => $vendors,
-                'new_products' => $new_products,
-                'top_rated'       => $top_rated_products ?? '',
+                'top_rated'      => $top_rated_products ?? '',
+                'best_sellers'     => $mostSellingVendors ?? '',
                 'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
-                'featured_products' => $feature_products,
-                'on_sale' => $on_sale_products,
                 'cities' => $this->cities,
                 'long_term_service' => $long_term_service_products,
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
-                'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
-                'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
-                'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
                 'recent_orders' => $activeOrders,
                 'banners' => $banners,
                 'additionalPreference' => $additionalPreference,
@@ -896,9 +883,9 @@ class UserhomeController extends FrontController
             //pr( $data);
             return $data ;
         }
-
-
-
+        // if(count($dashboardProductsData)>0){
+        //     $data =  array_merge($data,$dashboardProductsData);
+        // }
         return $this->successResponse($data);
     }
   

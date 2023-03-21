@@ -53,18 +53,23 @@ trait WebStylingTrait
         }
         return true;
     }
-    public function updateSelectedProductstoDb($id, $request)
+    public function updateSelectedProductstoDb($id, $request,$type='')
     {
-      
-        $delete = HomeProduct::where('layout_id', $id)->delete();
+        $delete = HomeProduct::where('layout_id', $id);
+        
+        if(!empty($type))
+        $delete = $delete->where('type',$type);
+
+        $delete = $delete->delete();
         foreach($request->selected_products as $products){
-            $relatedArray[] = [
-                'slug' => 'selected_products',
-                'product_id' => $products,
-                'layout_id'=> $id
-            ];
-            HomeProduct::insert($relatedArray);
-        }
+
+        $relatedArray[] = [
+            'slug' => 'selected_products',
+            'product_id' => $products,
+            'layout_id'=> $id,
+            'type'      => $type??0
+        ];
+        HomeProduct::insert($relatedArray);
         return true;
     }
 
@@ -88,5 +93,37 @@ trait WebStylingTrait
             $product_ids = [];
         }
         return $product_ids;
+    }
+
+    public function getHomePageSelectedProducts($type=0)
+    {
+        //0 for web and 1 for App type
+        $selected_ids = [];
+        $selected_ids= HomeProduct::where('type',$type)->pluck('product_id')->toArray();
+        return $selected_ids;
+    }
+
+    public function getProducts($request = [],$all='')
+    {
+        $language_id = Session::get('customerLanguage') ?? 1;
+        $products = Product::with([
+        'translation' => function ($q) use ($language_id){
+            $q->select('product_id', 'title')->where('language_id', $language_id);
+        }]);
+
+        //If not need all product 
+        if(empty($all)){
+            if(@$request['category_id']){
+                $products->wherehas('category', function($q) use($request){
+                    $q->where('category_id', $request['category_id']);
+                });
+            }
+            if(@$request['products']){
+                $products->whereIn('id', $request['products']);
+            }
+        }
+
+        $products = $products->where('is_live', 1)->select('id', 'title')->get();
+        return $products;
     }
 }

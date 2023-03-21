@@ -120,8 +120,8 @@ class PagarmeController extends FrontController
                 // return Redirect::back()->with('error','Invalid Card Detail');
             }
         }catch(Exception $ex){
-            Log::info('Controller Error');
-            Log::info($ex);
+           // Log::info('Controller Error');
+           // Log::info($ex);
             return Redirect::to(route('payment.pagarme.beforePayment'))->with('error','Invalid Card Details.');
         }
         

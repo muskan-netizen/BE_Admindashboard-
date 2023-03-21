@@ -13,19 +13,23 @@ use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
 use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product};
+use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
+
 if (!function_exists('setUserCode')) {
-function setUserCode(){
-    $userCode = session()->has('userCode');
-    if(!$userCode){
-        $user = ClientData::first();
-        session()->put('userCode', $user->code);
+    function setUserCode(){
+        $userCode = session()->has('userCode');
+        if(!$userCode){
+            $user = ClientData::first();
+            session()->put('userCode', $user->code);
+        }
     }
 }
-}
+
+
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {
@@ -61,7 +65,7 @@ if (!function_exists('getAdditionalPreference')) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
             }
             $emp = array_diff($key, array_keys($dbreturn));
-            $emptyArr = array_fill_keys($emp, '');
+            $emptyArr = array_fill_keys($emp, 0);
             $return = array_merge($emptyArr, $dbreturn);
         }
         return $return;
@@ -105,12 +109,11 @@ if (!function_exists('getInToken')) {
 
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
-        if($tokenCurrency == null){
+        if(empty($tokenCurrency)){
             $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
             $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
         }
-
-        return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * ($tokenCurrency ?? 1));
+        return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * (!empty($tokenCurrency) ? $tokenCurrency : 1));
     }
 }
 
@@ -120,11 +123,11 @@ if (!function_exists('getJsToken')) {
         $redis = Redis::connection();
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
-        if($tokenCurrency == null){
+        if(empty($tokenCurrency)){
             $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
             $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
         }
-        return decimal_format($tokenCurrency ?? 1);
+        return decimal_format(!empty($tokenCurrency) ? $tokenCurrency : 1);
     }
 }
 
@@ -143,9 +146,11 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data ,$fcm_server_key = '')
     {
-        $client_preferences = ClientPreference::select('fcm_server_key')->first();
-        $fcm_server_key = ($fcm_server_key =='') ? $client_preferences->fcm_server_key :  $fcm_server_key ;
+   
+        $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
+
          if (!empty($fcm_server_key )) {
+           
             $headers = [
                 'Authorization: key='.$fcm_server_key ,
                 'Content-Type: application/json',
@@ -162,6 +167,7 @@ if (!function_exists('sendFcmCurlRequest')) {
             //     die('Oops! FCM Send Error: ' . curl_error($ch));
             // }
             curl_close($ch);
+       
             return $result;
         } else {
             return false;
@@ -1404,6 +1410,36 @@ if (!function_exists('sendSmsTemplate')) {
     }
 }
 
+
+
+if (!function_exists('inventorySyncOnOff')) {
+    function inventorySyncOnOff($vendor_id)
+    {
+        if (!empty($vendor_id)) {
+            $client_preferences = ClientPreference::first();
+
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'shortcode' => $client_preferences->inventory_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+            $url = $client_preferences->inventory_service_key_url;
+
+            $request = $client->get($url . '/api/v1/sync-status', [
+                'json' => ['royo_vendor_id' => $vendor_id]
+            ]);
+
+            $response = json_decode($request->getBody());
+
+            if ($response->status) {
+                return $response->msg;
+            }
+        } else {
+            return false;
+        }
+    }
+}
 // Returns the values of the additional preferences.
 if (!function_exists('checkTableExists')) {
     /** check if column exits in table
@@ -1419,30 +1455,26 @@ if (!function_exists('checkTableExists')) {
     }
 }
 if (!function_exists('inventorySyncOnOff')) {
-    function inventorySyncOnOff($vendor_id)
+    function inventorySyncOnOff($vendor_id, $client_preferences)
     {
-        if (!empty($vendor_id)) {
+        if (!empty($vendor_id)) 
+        {
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'shortcode' => $client_preferences->inventory_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+            $url = $client_preferences->inventory_service_key_url;
 
-            $client_preferences = ClientPreference::select('inventory_service_key_url', 'inventory_service_key_code')->first();
-            if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
+            $request = $client->get($url . '/api/v1/sync-status', [
+                'json' => ['royo_vendor_id' => $vendor_id]
+            ]);
 
-                $client = new \GuzzleHttp\Client([
-                    'headers' => [
-                        'shortcode' => $client_preferences->inventory_service_key_code,
-                        'content-type' => 'application/json'
-                    ]
-                ]);
-                $url = $client_preferences->inventory_service_key_url;
+            $response = json_decode($request->getBody());
 
-                $request = $client->get($url . '/api/v1/sync-status', [
-                    'json' => ['royo_vendor_id' => $vendor_id]
-                ]);
-
-                $response = json_decode($request->getBody());
-
-                if ($response->status) {
-                    return $response->msg;
-                }
+            if ($response->status) {
+                return $response->msg;
             }
             return false;
         } else {
@@ -1462,6 +1494,16 @@ if( !function_exists('p2p_module_status') ) {
     function p2p_module_status() {
         $additional_preference = getAdditionalPreference(['is_attribute']);
         if(clientPrefrenceModuleStatus('p2p_check') && $additional_preference['is_attribute']) {
+            return true;
+        }
+        return false;
+    }
+}
+
+if( !function_exists('is_attribute_enabled') ) {
+    function is_attribute_enabled() {
+        $additional_preference = getAdditionalPreference(['is_attribute']);
+        if($additional_preference['is_attribute']) {
             return true;
         }
         return false;
@@ -1641,6 +1683,126 @@ if( !function_exists('makeCartEmpty') ) {
         CartProductPrescription::where('cart_id', $cartid)->delete();
 
         return true;
+    }
+}
+if (!function_exists('GerenalSlot')) {
+    function GerenalSlot($myDate, $StartTime, $EndTime, $Duration="60",$delayMin=0)
+    {
+        $myDate  = date('Y-m-d',strtotime($myDate));
+        //pr($myDate);
+        $Duration = (($Duration==0)?'60':$Duration);
+
+        $user = Auth::user();
+        if (isset($user->timezone) && !empty($user->timezone)) {
+            $timezoneset = $user->timezone;
+        } else {
+            $client = ClientData::orderBy('id', 'desc')->select('id', 'timezone')->first();
+
+            if (isset($client->timezone) && !empty($client->timezone)) {
+                $timezoneset = $client->timezone;
+            } else {
+                $timezoneset = 'Asia/Kolkata';
+            }
+        }
+        $cr = Carbon::now()->addMinutes($delayMin);
+        $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+        $nowT = strtotime($now);
+        $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
+        $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
+        $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
+        if ($nowT > $nowE) {
+            return [];
+        } else {
+            $StartTime = date('H:i', strtotime($nowA));
+        }
+
+        $ReturnArray = array();
+        $StartTime = strtotime($StartTime); //Get Timestamp
+        $EndTime = strtotime($EndTime); //Get Timestamp
+        $AddMins = $Duration * 60;
+        $endtm = 0;
+        $key = 0;
+        while ($StartTime <= $EndTime) {
+            $endtm = $StartTime + $AddMins;
+            if ($endtm>$EndTime) {
+                $endtm = $EndTime;
+            }
+            if( $StartTime < $endtm){
+
+                if ($nowT>$nowS && $StartTime > $nowT ){
+                    $key++;
+                    //Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
+                  //  $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+                
+                    $ReturnArray[$key]['name'] = date('h:i A',$StartTime).' - '.date('h:i A', $endtm);
+                    $ReturnArray[$key]['value'] = date("G:i", $StartTime).'-'.date("G:i", $endtm);
+                }
+                if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
+                     $key++;
+                    //$ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+                    $ReturnArray[$key]['name'] = date('h:i A',$StartTime).' - '.date('h:i A', $endtm);
+                    $ReturnArray[$key]['value'] = date("G:i", $StartTime).'-'.date("G:i", $endtm);
+                }
+            }
+
+            $StartTime += $AddMins;
+            $endtm = 0;
+           
+        }
+        return $ReturnArray;
+    }
+}
+
+
+
+if (!function_exists('GetDayFromDate')) {
+    function GetDayFromDate($date)
+    {
+        return strtolower(date('l', strtotime($date)));
+    }
+}
+
+if (!function_exists('weekDaysArray')) {
+    function weekDaysArray($daysArray='')
+    {
+        $daysArray = explode(',',$daysArray);
+        $daysArrayName = [];
+        $days = ['0'=>'Sunday','1'=>'Monday','2'=>'Tuesday','3'=>'Wednesday','4'=>'Thursday','5'=>'Friday','6'=>'Saturday'];
+        foreach($days as $key=> $day)
+        {
+            if(in_array($key,$daysArray)){
+                $daysArrayName[] = $day; 
+            }
+        }
+        return implode(',',$daysArrayName);
+    }
+}
+
+if (!function_exists('getDaysArrayBetweenTwoDates')) {
+
+    function getDaysArrayBetweenTwoDates($sdate,$edate,$matchDays=[],$alternate = ''){
+      $period = CarbonPeriod::create($sdate, $edate);
+        // Iterate over the period
+        $periods = [];
+            foreach ($period as $k => $date) {
+                if($alternate){
+
+                    if($k%2==0)
+                        $periods[] =  $date->format('Y-m-d');
+
+
+                }elseif(count($matchDays)>0){
+                    $dayNumber = $date->dayOfWeek; // get day number
+                    if(in_array($dayNumber,$matchDays))
+                    {
+                        $periods[] =  $date->format('Y-m-d');
+                    }
+                }else{
+                    $periods[] =  $date->format('Y-m-d');
+                }
+            }
+        // Convert the period to an array of dates
+        return $periods;
     }
 }
 

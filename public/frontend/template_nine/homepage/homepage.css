@@ -1581,7 +1581,7 @@ body.al_body_template_nine  .product-description  h6.card_title{
 }
 body.al_body_template_nine .product-m .item {
     width: 16.33%;
-    padding: 0 5px;
+    padding: 0 10px;
     
 }
 body.al_body_template_nine .product-m .item  .product-card-box{
@@ -1662,7 +1662,7 @@ body.al_body_template_nine .product-m .item .media-body{
     }
     section.home-slider-wrapper .cardbanner,
     .al_desktop_banner {
-        height: 210px !important;
+        height: auto !important;
     }
     .al_custom_brand .col-md-3 {
         width: 50%;

@@ -231,7 +231,7 @@ class PayfastGatewayController extends FrontController
     {
         // Notify PayFast that information has been received
         //dd('sad');
-        \Log::info($request->all());
+        //\Log::info($request->all());
         header( 'HTTP/1.0 200 OK' );
         flush();
 
@@ -272,7 +272,7 @@ class PayfastGatewayController extends FrontController
                 $pickupDeliveryResponse = $pickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($pfData);
                 $response = $this->successResponse($pickupDeliveryResponse, '', 200)->getData();
                 // $response = response()->json(['status'=>'Success', 'message' => '', 'data'=> $pickupDeliveryResponse]);
-                \Log::info(json_encode($response));
+                //\Log::info(json_encode($response));
             }
 
             if($response->status == 'Success'){
@@ -298,7 +298,7 @@ class PayfastGatewayController extends FrontController
 
     public function payfastNotifyApp(Request $request, $domain = '')
     {
-        \Log::info($request->all());
+        //\Log::info($request->all());
         // Notify PayFast that information has been received
         header( 'HTTP/1.0 200 OK' );
         flush();
@@ -399,7 +399,7 @@ class PayfastGatewayController extends FrontController
                 $pickupDeliveryResponse = $pickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($pfData);
                 $response = $this->successResponse($pickupDeliveryResponse, '', 200)->getData();
                 // $response = response()->json(['status'=>'Success', 'message' => '', 'data'=> $pickupDeliveryResponse]);
-                \Log::info(json_encode($response));
+                //\Log::info(json_encode($response));
             }
 
             if($response->status == 'Success'){

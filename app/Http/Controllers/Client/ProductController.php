@@ -8,10 +8,13 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct};
+
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, RoleOld as Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct,DeliverySlot, Pincode};
+
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
+use App\Http\Traits\SquareInventoryManager;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
 use App\Imports\QrcodesImport;
@@ -19,7 +22,7 @@ use GuzzleHttp\Client as GCLIENT;
 use Carbon\Carbon;
 class ProductController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser, SquareInventoryManager;
     private $folderName = 'prods';
     private $slugIsUnique = true;
     public function __construct()
@@ -183,13 +186,16 @@ class ProductController extends BaseController
     public function edit($domain = '', $id)
     {
 
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
+
         if( checkTableExists('product_attributes') ) {
             $with_array[] = 'ProductAttribute';
         }
 
         $product = Product::with($with_array)->where('id', $id)->firstOrFail();
+
 
         $type = Type::all();
         $countries = Country::all();
@@ -267,17 +273,19 @@ class ProductController extends BaseController
                 }
             }
         }
+        
 
-        $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
-        $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
-        $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
-        $otherProducts       = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
-        $configData          = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
-        $configData->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
-        $celebrities         = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
-        $tollPassOrigin      = TollPassOrigin::select('id', 'toll_pass', 'desc')->get();
-        $travelMode          = TravelMode::select('id', 'travelmode', 'desc')->get();
-        $vehicleEmissionType = VehicleEmissionType::select('id', 'emission_type', 'desc')->get();
+
+        $otherProducts                      = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
+        $configData                         = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
+        $celebrities                        = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
+        $configData->is_cab_pooling         = $getAdditionalPreference['is_cab_pooling'];
+        $configData->is_one_push_book_enable= $getAdditionalPreference['is_one_push_book_enable'];
+        $celebrities                        = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
+        $tollPassOrigin                     = TollPassOrigin::select('id', 'toll_pass', 'desc')->get();
+        $travelMode                         = TravelMode::select('id', 'travelmode', 'desc')->get();
+        $vehicleEmissionType                = VehicleEmissionType::select('id', 'emission_type', 'desc')->get();
+
 
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
@@ -296,7 +304,13 @@ class ProductController extends BaseController
         if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 8) # if type is on demand
         {
             $vendor_id = $product->vendor_id;
-            $agent_dispatcher_on_demand_tags = $this->getDispatcherOnDemandTags($vendor_id);
+            $onDemandRes = $this->getDispatcherOnDemandTags($vendor_id);
+            if(  $getAdditionalPreference['is_service_product_price_from_dispatch'] ==1){
+                $product->is_onDemand_on = isset($onDemandRes['is_onDemand_enable']) ?  $onDemandRes['is_onDemand_enable'] : 0;
+            }
+
+           // pr($this->getDispatcherOnDemandTags($vendor_id));
+            $agent_dispatcher_on_demand_tags = isset($onDemandRes['tags']) ?  $onDemandRes['tags'] : '';// $this->getDispatcherOnDemandTags($vendor_id);
 
         }
         if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 12) # if type is on demand
@@ -322,9 +336,11 @@ class ProductController extends BaseController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-        
+
         $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module']);
+        
+
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role',  'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
 
         $allRoles = Role::where('status',1)->get();
 
@@ -336,10 +352,19 @@ class ProductController extends BaseController
             }
         }
 
+        $delivery_slots = [];
+        if(checkTableExists('delivery_slots')){
+            $delivery_slots = DeliverySlot::where(['status' => 0, 'parent_id' => 0])->get();
+        }
+
+        $pincodes = [];
+        if(checkTableExists('pincodes')){
+            $pincodes = Pincode::where('is_disabled', 0)->get();
+        }
         //mohit sir branch code added by sohail
         $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();
 
-        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude]);
+        return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude]);
     }
 
     /**
@@ -386,8 +411,7 @@ class ProductController extends BaseController
             foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id') as $k => $val) {
                 $product->{$k} = $val;
             }
-
-            if( clientPrefrenceModuleStatus('p2p_check') ) {
+            if( clientPrefrenceModuleStatus('p2p_check') || is_attribute_enabled() ) {
                 if( !empty($request->attribute) ) {
                     if( checkTableExists('product_attributes') ) {
                         $insert_arr = [];
@@ -454,6 +478,7 @@ class ProductController extends BaseController
             $product->is_featured               = ($request->has('is_featured') && $request->is_featured == 'on') ? 1 : 0;
             $product->is_physical               = ($request->has('is_physical') && $request->is_physical == 'on') ? 1 : 0;
             $product->pharmacy_check            = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
+            $product->validate_pharmacy_check            = ($request->has('validate_prescription_check') && $request->validate_prescription_check == 'on') ? 1 : 0;
             $product->individual_delivery_fee   = ($request->has('individual_delivery_fee') && $request->individual_delivery_fee == 'on') ? 1 : 0;
             $product->returnable        = ($request->has('returnable') && $request->returnable == 'on') ? 1 : 0;
             $product->spotlight_deals        = ($request->has('spotlight_deals') && $request->spotlight_deals == 'on') ? 1 : 0;
@@ -479,8 +504,10 @@ class ProductController extends BaseController
             $product->batch_count        = $request->batch_count??1;
             $product->return_days        = $request->return_days??0;
 
-
-
+            // product pickup date by vendor vendor FramMeat priyal by sohail
+            $product->product_pickup_date  = isset($request->product_pickup_date) ? $request->product_pickup_date : '';
+           
+            $product->is_product_instant_booking   = ($request->has('is_product_instant_booking') && $request->is_product_instant_booking == 'on') ? 1 : 0;
 
             $product->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;
             $product->service_charges_tax_id=$request->service_charges_tax_id != 0 && $product->service_charges_tax !=0 ? $request->service_charges_tax_id:0;
@@ -523,11 +550,23 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
+            
+            $product->security_amount = ($request->has('security_amount')) ? $request->security_amount : null;
+            $product->is_recurring_booking        = $request->is_recurring_booking == 'on' ? 1 : 0;
+            $product->get_price_from_dispatcher = ($request->has('get_price_from_dispatcher') && $request->get_price_from_dispatcher == 'on') ? 1 : 0;
+            
 
+            $product->same_day_delivery = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
+            
+            $product->next_day_delivery = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
+            $product->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
+            
             $product->is_slot_from_dispatch        = ($request->has('is_slot_from_dispatch') && $request->is_slot_from_dispatch == 'on') ? 1 : 0;
             $product->is_show_dispatcher_agent     = ($request->has('is_show_dispatcher_agent') && $request->is_show_dispatcher_agent == 'on') ? 1 : 0;
             $product->save();
-
+            if($request->has('slot_ids') && $request->slot_ids != ''){
+                $product->syncProductDeliverySlot()->sync($request->slot_ids);
+            }
             if ($product->id > 0) {
                 $trans = ProductTranslation::where('product_id', $product->id)->where('language_id', $request->language_id)->first();
                 if (!$trans) {
@@ -611,6 +650,28 @@ class ProductController extends BaseController
                     }
                     ProductCrossSell::insert($crossArray);
                 }
+
+                if ( $request->has('corporate_user_price') && $request->has('minimum_order_count_corporate_user')) {
+                    $corporate_user_price   = $request->corporate_user_price;
+                    $minimum_order_count    = $request->minimum_order_count_corporate_user;
+
+                    $product_variant_by_roles = [];
+                    foreach($corporate_user_price as $key => $val) {
+                        if($val != ''){
+                            $product_variant_by_roles[$key]['product_id'] = $product->id;
+                            $product_variant_by_roles[$key]['role_id'] = $request->role_id['corporate_user'];
+                            $product_variant_by_roles[$key]['amount'] = $val;
+                            $product_variant_by_roles[$key]['quantity'] = $minimum_order_count[$key];
+                        }
+                    }
+
+                    $delete = ProductVariantByRole::where('product_id', $product->id)->where('role_id', 3)->delete();
+                    foreach($product_variant_by_roles as $key => $data){
+                        ProductVariantByRole::create($data);
+                    }
+
+                }
+
                 if ($request->has('releted_product') && count($request->releted_product) > 0) {
                     foreach ($request->releted_product as $key => $value) {
                         $relatedArray[] = [
@@ -672,7 +733,8 @@ class ProductController extends BaseController
 
                     // Save Product Variant By Roles without product_variant_id and amount
                     // Product Variant By Roles (START)
-                    if($request->has('role_id')){
+
+                    if( $request->has('role_id') && !$request->has('corporate_user_price') && !$request->has('minimum_order_count_corporate_user')){
                         foreach ($request->role_id as $key => $value) {
                             $productVariantByRole = ProductVariantByRole::where('product_id', $product->id)->where('role_id',$value)->first();
                             if (!$productVariantByRole) {
@@ -732,14 +794,15 @@ class ProductController extends BaseController
 
             }
 
-
+            
             DB::commit();
+            $this->createOrUpdateProductInSquarePos($id);
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
             // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
             return redirect()->back()->with('toaster', $toaster);
         } catch (\Exception $e) {
             DB::rollback();
-
+            \Log::info($e->getMessage());
             $toaster = $this->errorToaster(__('ERROR'),$e->getMessage() );
             return redirect()->back()->with('toaster', $toaster);
 
@@ -757,6 +820,11 @@ class ProductController extends BaseController
         try{
 
             DB::beginTransaction();
+            $product = Product::find($id);
+            if(!empty($product) && isset($product->square_item_id) && !empty($product->square_item_id)){
+                $this->deleteBatchInSquarePos([$product->square_item_id]);
+            }
+            
             $productde = Product::productDelete($id);
             // $product = Product::find($id);
 
@@ -840,7 +908,7 @@ class ProductController extends BaseController
                 }
             }
         }
-        
+
         $makeHtml = $this->combinationHtml($combination, $multiArray, $variantNames, $product->id, $request->sku, $edit);
         return response()->json(array('success' => true, 'html' => $makeHtml));
     }
@@ -972,8 +1040,15 @@ class ProductController extends BaseController
     {
         $product_variant = ProductVariant::where('id', $request->product_variant_id)->where('product_id', $request->product_id)->first();
         $product_variant->status = 0;
+        if(isset($product_variant->square_variant_id) && !empty($product_variant->square_variant_id)){
+            $this->deleteBatchInSquarePos([$product_variant->square_variant_id]);
+        }
         $product_variant->save();
         if ($request->is_product_delete > 0) {
+            $product = Product::find($request->product_id);
+            if(!empty($product) && isset($product->square_item_id) && !empty($product->square_item_id)){
+                $this->deleteBatchInSquarePos([$product->square_item_id]);
+            }
             Product::where('id', $request->product_id)->delete();
         }
         return response()->json(array('success' => true, 'msg' => 'Product variant deleted successfully.'));
@@ -1221,10 +1296,15 @@ class ProductController extends BaseController
 
       # get dispatcher on demand tags from dispatcher panel
       public function getDispatcherOnDemandTags($vendor_id){
+        $retResponse = [
+            'is_onDemand_enable' =>0,
+            'tags' =>'',
+        ];
         try {
             $dispatch_domain = $this->checkIfOnDemandOn();
+            
                 if ($dispatch_domain && $dispatch_domain != false) {
-
+                    $retResponse['is_onDemand_enable'] = 1;
                     $unique = Auth::user()->code;
                     $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
 
@@ -1236,13 +1316,15 @@ class ProductController extends BaseController
                             $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
                             $response = json_decode($res->getBody(), true);
                             if($response && $response['message'] == 'success'){
-                                return $response['tags'];
+                                
+                                $retResponse['tags'] = $response['tags'];
                             }
-            //                Log::info($response);
+            //               // Log::info($response);
                 }
+                return $retResponse;
             }
             catch(\Exception $e){
-                // Log::info($e->getMessage());
+                return $retResponse;
             }
     }
     # get dispatcher Appointment tags from dispatcher panel
@@ -1266,11 +1348,11 @@ class ProductController extends BaseController
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }
-            //                Log::info($response);
+            //               // Log::info($response);
                 }
             }
             catch(\Exception $e){
-                // Log::info($e->getMessage());
+                //// Log::info($e->getMessage());
             }
     }
     # check if last mile delivery on
@@ -1338,14 +1420,22 @@ class ProductController extends BaseController
                     $update_product = ProductVariant::whereIn('product_id',$request->product_id)->update(['markup_price' => $request->markup_price]);
 
                 break;
+                case "is_recurring_booking":
+                    $update_product = Product::whereIn('id',$request->product_id)->update(['is_recurring_booking' => 1]);
+                break;
+
                 case "for_sell_when_out_of_stock":
                     $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
                 break;
                 case "delete":
                     // delete product harrry
                     $products = Product::whereIn('id',$request->product_id)->get();
+                    $batch_square_ids = array();
                     foreach($products as $product){
                         DB::beginTransaction();
+                        if(isset($product->square_item_id) && !empty($product->square_item_id)){
+                            $batch_square_ids[] = $product->square_item_id;
+                        }
                         Product::productDelete($product->id);
                         // $dynamic = time();
 
@@ -1365,6 +1455,7 @@ class ProductController extends BaseController
 
                         DB::commit();
                     }
+                    $this->deleteBatchInSquarePos($batch_square_ids);
                 break;
                 default:
                 '';
@@ -1436,6 +1527,7 @@ class ProductController extends BaseController
     {
         try{
             if($request->has('role_id')){
+
                 foreach ($request->role_id as $key => $value) {
                     $productVariantByRole = ProductVariantByRole::where('product_id', $request->product_id)->where('product_variant_id',$request->variant_id)->where('role_id',$value)->first();
                     if (!$productVariantByRole) {

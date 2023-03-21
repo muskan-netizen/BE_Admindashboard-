@@ -324,6 +324,7 @@ trait ProductActionTrait{
         
         $vendorWhereIN = ' ';
         $completeWhere = ' ';
+        $whereProductType = ' ';
         if(!empty($venderIds)){
             $venid = implode(',',$venderIds);
             $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
@@ -345,6 +346,13 @@ trait ProductActionTrait{
                     $completeWhere = ' AND `products`.'.$where.' = 1';
                     //die($where);
                 }
+        }
+        //Check product of selected category type
+        $whereProductType = '';
+        $categoryTypesArray = @getServiceTypesCategory($type);
+        if(!empty($categoryTypesArray)){
+            $categoryTypesArray = implode(',',$categoryTypesArray);
+            $whereProductType = ' and `categories`.`type_id`  IN ('.$categoryTypesArray.')';
         }
 
         $raw_query = "SELECT 
@@ -410,6 +418,8 @@ trait ProductActionTrait{
                     $completeWhere
                                 
                     $vendorWhereIN 
+
+                    $whereProductType
                 
                     GROUP BY `products`.`id`
 

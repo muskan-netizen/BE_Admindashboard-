@@ -153,7 +153,7 @@ class PaymentController extends FrontController{
     {
         if($gateway == 'mycash'){
             $data = $request->all();
-            // \Log::info($data);
+            // //\Log::info($data);
             return view('frontend.payment_gatway.mycash_otp_verify', compact('data'));
         }
     }
