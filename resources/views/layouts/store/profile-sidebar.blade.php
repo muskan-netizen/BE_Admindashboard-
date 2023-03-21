@@ -80,7 +80,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
             <li class="last {{ (request()->is('user/notification')) ? 'active' : '' }}"><a href="{{route('user.notification')}}">{{ __('Notification') }}</a></li>
             <li class="last {{ (request()->is('user/my-ads')) ? 'active' : '' }}"><a href="{{route('user.productList')}}">{{__('My Ads')}}</a></li>
             @if(is_p2p_vendor())
-                <li class=""><a href="{{route('vendor.index')}}">{{ __('Add Post') }}</a></li>
+                <li class=""><a href="{{route('posts.index', ['fullPage'=>1])}}">{{ __('Add Post') }}</a></li>
             @endif
             @if(@getAdditionalPreference(['is_gift_card'])['is_gift_card']==1)
                 <li class="{{ (request()->is('user/giftCard')) ? 'active' : '' }}"><a href="{{route('giftCard.index')}}">{{ __('Gift Card') }}</a></li>

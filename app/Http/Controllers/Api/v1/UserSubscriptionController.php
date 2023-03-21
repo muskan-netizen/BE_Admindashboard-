@@ -166,6 +166,7 @@ class UserSubscriptionController extends BaseController
      */
     public function purchaseSubscriptionPlan(Request $request, $slug = '')
     {
+
         try{
             $validator = Validator::make($request->all(), [
                 // 'amount'            => 'required|not_in:0',
@@ -179,7 +180,10 @@ class UserSubscriptionController extends BaseController
             }
             DB::beginTransaction();
             $user = Auth::user();
+
+
             $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
+
             if( ($user) && ($subscription_plan) ){
                 $last_subscription = SubscriptionInvoicesUser::with(['plan', 'features.feature'])
                     ->where('user_id', $user->id)

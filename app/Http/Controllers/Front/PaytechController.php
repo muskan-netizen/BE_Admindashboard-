@@ -112,7 +112,7 @@ class PaytechController extends FrontController
         curl_setopt ( $ch , CURLOPT_HTTPHEADER , array_merge ( $header , [ 'Content-Type: application/x-www-form-urlencoded;charset=utf-8' , 'Content-Length: ' .mb_strlen ( $strPostField ) ])) ;  
         
         $result = curl_exec ($ch);
-        \Log::info($result);
+        //\Log::info($result);
         return $result; 
     }
 

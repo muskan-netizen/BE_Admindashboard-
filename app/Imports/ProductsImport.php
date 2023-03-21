@@ -307,7 +307,7 @@ class ProductsImport implements ToCollection{
 
 
 
-                            \Log::info(json_encode([
+                            //\Log::info(json_encode([
                                 'type_id' => 1,
                                 'sku' => $da[0],
                                 'is_featured' => 0,
@@ -655,7 +655,7 @@ class ProductsImport implements ToCollection{
                 }
             } catch(\Exception $ex){
                 $error[] = "Other: " .$ex->getMessage();
-                \Log::info($ex->getMessage()."".$ex->getLine());
+                //\Log::info($ex->getMessage()."".$ex->getLine());
             }
             $vendor_csv = CsvProductImport::where('vendor_id', $this->vendor_id)->where('id', $this->csv_product_import_id)->first();
             if (!empty($error)) {
@@ -667,7 +667,7 @@ class ProductsImport implements ToCollection{
             $vendor_csv->save();
         } catch(\Exception $ex){
             $error[] = "Other: " .$ex->getMessage();
-            \Log::info($ex->getMessage()."".$ex->getLine());
+            //\Log::info($ex->getMessage()."".$ex->getLine());
         }
     }
     private function generateBarcodeNumber(){

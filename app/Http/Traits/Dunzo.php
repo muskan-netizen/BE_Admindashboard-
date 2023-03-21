@@ -76,7 +76,7 @@ trait Dunzo{
 
     $response = curl_exec($curl);
     //dd($response);
-    \Log::info(json_encode($response));
+    //\Log::info(json_encode($response));
     $err = curl_error($curl);
 
     curl_close($curl);
@@ -119,7 +119,7 @@ public function createOrder($data)
 
     $response = curl_exec($curl);
     $err = curl_error($curl);
-    \Log::info($response);
+    //\Log::info($response);
     curl_close($curl);
     if ($err) {
     return  $err;

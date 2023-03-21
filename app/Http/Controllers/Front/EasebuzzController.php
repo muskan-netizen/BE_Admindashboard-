@@ -161,7 +161,7 @@ class EasebuzzController  extends FrontController
             }
             else{
              
-                Log::info(json_encode($data));
+               // Log::info(json_encode($data));
                 if($request->udf1 == 'cart'){
                     $order = Order::where('order_number', $request->order_id)->first();
                     if($order){
@@ -261,8 +261,8 @@ class EasebuzzController  extends FrontController
             $result = $easebuzzObj->easebuzzResponse($request->all());
             $response = json_decode($result);
            
-             Log::info('result from easebuzz:=');
-            Log::info($result);
+            // Log::info('result from easebuzz:=');
+           // Log::info($result);
             $status = $response->status;
             if ($status == 1){  
 
@@ -343,7 +343,7 @@ class EasebuzzController  extends FrontController
                 }
                 else{
                     $user = User::find($user_id);
-                    Log::info(json_encode($data));
+                   // Log::info(json_encode($data));
                     if($payment_form == 'cart'){
                         $order = Order::where('order_number', $order_number)->first();
                         if($order){
@@ -363,7 +363,7 @@ class EasebuzzController  extends FrontController
            
         }
         catch(Exception $ex){
-            \Log::info($ex->getMessage());
+            //\Log::info($ex->getMessage());
         }
         http_response_code(200);
     }

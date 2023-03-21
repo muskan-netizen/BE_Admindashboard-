@@ -266,19 +266,6 @@
 
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-    <label for="third_party_accounting"
-        class="mr-2 mb-0">{{ __('Xero Integration') }}<small
-            class="d-block pr-5">{{ __('Enable to use xero integration for accounting.') }}</small></label>
-    <span> <input type="checkbox" data-plugin="switchery"
-            name="third_party_accounting" id="third_party_accounting"
-            class="form-control" data-color="#43bee1"
-            @if (isset($preference) && $preference->third_party_accounting == '1') checked='checked' @endif>
-    </span>
-</div>
-</div>
-
-<div class="col-md-4">
-<div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
     <label for="hide_order_prepare_time"
         class="mr-2 mb-0">{{ __('Hide Order Preparation Time') }}<small
             class="d-block pr-5">{{ __('Enable to hide order preparation time.') }}</small></label>
@@ -310,7 +297,6 @@
     </div>
 </div> -->
 
-@if (isset($preference) && $preference->business_type == 'taxi')
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="book_for_friend"
@@ -322,7 +308,7 @@
         </span>
     </div>
 </div>
-@endif
+
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
     <label for="is_static_dropoff"
@@ -692,29 +678,62 @@
    <input type="hidden"  @if($getAdditionalPreference['is_place_order_delivery_zero'] == 1) value="1" @else value="0" @endif  name="is_place_order_delivery_zero"  id="is_place_order_delivery_zero"/>
 </div>
 </div>
-
-<div class="col-md-4">
-<div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-   <label for="is_cust_success_signup_email_switch" class="mr-2 mb-0">{{__('Customer Successfull Signup Email')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
-  <span> <input type="checkbox" data-plugin="switchery" name="is_cust_success_signup_email_switch" id="is_cust_success_signup_email_switch" class="form-control checkbox_change" data-className="is_cust_success_signup_email"  data-color="#43bee1" @if($getAdditionalPreference['is_cust_success_signup_email'] == '1') checked='checked' @endif>
-   </span>
-   <input type="hidden"  @if($getAdditionalPreference['is_cust_success_signup_email'] == 1) value="1" @else value="0" @endif  name="is_cust_success_signup_email"  id="is_cust_success_signup_email"/>
-</div>
-</div>
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-        <label for="is_influencer_refer_and_earn_switch" class="mr-2 mb-0">{{__('Influencer Module')}}<small class="d-block pr-5">{{__("Enable to allow influencer module.")}}</small></label>
-    <span> <input type="checkbox" data-plugin="switchery" name="is_influencer_refer_and_earn_switch" id="is_influencer_refer_and_earn_switch" class="form-control checkbox_change" data-className="is_influencer_refer_and_earn" data-color="#43bee1" @if(@getAdditionalPreference(['is_influencer_refer_and_earn'])['is_influencer_refer_and_earn'] == 1) checked='checked'  @endif>
-        </span>
-        <input type="hidden"  @if(@getAdditionalPreference(['is_influencer_refer_and_earn'])['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif  name="is_influencer_refer_and_earn"  id="is_influencer_refer_and_earn"/>
-    </div>
-</div>
-
-<div class="col-md-4">
-    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-       <label for="is_admin_vendor_rating" class="mr-2 mb-0">{{__('Admin Vendor Rating')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
-      <span> <input type="checkbox" data-plugin="switchery" name="is_admin_vendor_rating_switch" id="is_admin_vendor_rating_switch" class="form-control checkbox_change" data-className="is_admin_vendor_rating"  data-color="#43bee1" @if($getAdditionalPreference['is_admin_vendor_rating'] == 1) checked='checked' @endif>
+    <label for="is_service_product_price_from_dispatch_switch" class="mr-2 mb-0">{{__('Freelancer Mod for Service Booking')}}<small class="d-block pr-5">{{__("To view list of agents on booking")}}</small></label>
+      <span> <input type="checkbox" data-plugin="switchery" name="is_service_product_price_from_dispatch_switch" id="is_service_product_price_from_dispatch_switch" class="form-control checkbox_change" data-className="is_service_product_price_from_dispatch"  data-color="#43bee1" @if(   $getAdditionalPreference ['is_service_product_price_from_dispatch'] == '1') checked='checked' @endif>
        </span>
-       <input type="hidden"  @if($getAdditionalPreference['is_admin_vendor_rating'] == 1) value="1" @else value="0" @endif  name="is_admin_vendor_rating"  id="is_admin_vendor_rating"/>
+       <input type="hidden"  @if(   $getAdditionalPreference['is_service_product_price_from_dispatch'] == '1')  value="1" @else value="0" @endif  name="is_service_product_price_from_dispatch"  id="is_service_product_price_from_dispatch"/>
+    </div>
+</div>
+
+
+  
+ <div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_user_kyc_for_registration_switch" class="mr-2 mb-0">{{ __('Enable to save kyc details for user registration') }}<small class="d-block pr-5">{{ __('Enable to save kyc details for user registration.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_user_kyc_for_registration_switch" id="is_user_kyc_for_registration_switch" class="form-control checkbox_change" data-className="is_user_kyc_for_registration" data-color="#43bee1" @if ($getAdditionalPreference['is_user_kyc_for_registration'] == '1') checked='checked' @endif>
+        </span>
+        <input type="hidden" @if ($getAdditionalPreference['is_user_kyc_for_registration'] == 1) value="1" @else value="0" @endif name="is_user_kyc_for_registration" id="is_user_kyc_for_registration" />
+    </div>
+ </div>
+ <div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+       <label for="is_cust_success_signup_email_switch" class="mr-2 mb-0">{{__('Customer Successfull Signup Email')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
+      <span> <input type="checkbox" data-plugin="switchery" name="is_cust_success_signup_email_switch" id="is_cust_success_signup_email_switch" class="form-control checkbox_change" data-className="is_cust_success_signup_email"  data-color="#43bee1" @if($getAdditionalPreference['is_cust_success_signup_email'] == '1') checked='checked' @endif>
+       </span>
+       <input type="hidden"  @if($getAdditionalPreference['is_cust_success_signup_email'] == 1) value="1" @else value="0" @endif  name="is_cust_success_signup_email"  id="is_cust_success_signup_email"/>
     </div>
     </div>
+    <div class="col-md-4">
+        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="is_file_cart_instructions_switch"
+                class="mr-2 mb-0">{{ __('Upload file In instructions') }}<small
+                    class="d-block pr-5">{{ __("Enable to show price by role on edit's vendor screen.") }}</small></label>
+            <span>
+                <input type="checkbox" data-plugin="switchery" name="is_file_cart_instructions_switch"
+                    id="is_file_cart_instructions_switch" class="form-control checkbox_change"
+                    data-className="is_file_cart_instructions" data-color="#43bee1"
+                    @if ($getAdditionalPreference['is_file_cart_instructions'] == '1') checked='checked' @endif>
+                <input type="hidden"
+                    @if ($getAdditionalPreference['is_file_cart_instructions'] == 1) value="1" @else value="0" @endif
+                    name="is_file_cart_instructions" id="is_file_cart_instructions" />
+            </span>
+    </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="is_influencer_refer_and_earn_switch" class="mr-2 mb-0">{{__('Influencer Module')}}<small class="d-block pr-5">{{__("Enable to allow influencer module.")}}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_influencer_refer_and_earn_switch" id="is_influencer_refer_and_earn_switch" class="form-control checkbox_change" data-className="is_influencer_refer_and_earn" data-color="#43bee1" @if(@getAdditionalPreference(['is_influencer_refer_and_earn'])['is_influencer_refer_and_earn'] == 1) checked='checked'  @endif>
+            </span>
+            <input type="hidden"  @if(@getAdditionalPreference(['is_influencer_refer_and_earn'])['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif  name="is_influencer_refer_and_earn"  id="is_influencer_refer_and_earn"/>
+        </div>
+        </div>
+    <div class="col-md-4">
+        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+            <label for="is_admin_vendor_rating" class="mr-2 mb-0">{{__('Admin Vendor Rating')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
+           <span> <input type="checkbox" data-plugin="switchery" name="is_admin_vendor_rating_switch" id="is_admin_vendor_rating_switch" class="form-control checkbox_change" data-className="is_admin_vendor_rating"  data-color="#43bee1" @if($getAdditionalPreference['is_admin_vendor_rating'] == 1) checked='checked' @endif>
+            </span>
+            <input type="hidden"  @if($getAdditionalPreference['is_admin_vendor_rating'] == 1) value="1" @else value="0" @endif  name="is_admin_vendor_rating"  id="is_admin_vendor_rating"/>
+         </div>
+        </div>
