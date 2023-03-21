@@ -1,6 +1,12 @@
+<?php 
+use App\Models\PaymentOption;
+
+
+?>
 @php
 $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
 $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
+$azulExist =  PaymentOption::where('code', 'azul')->where('status', 1)->first();
 $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_currency_enable']);
 @endphp
 @switch($client_preference_detail->business_type)
@@ -50,6 +56,14 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
             <li class="{{ (request()->is('user/addressBook')) ? 'active' : '' }}"><a href="{{route('user.addressBook')}}">
                 {{ __('Address Book') }}
             </a></li>
+            @if(!empty($azulExist))
+            
+            <li class="{{ (request()->is('payment/get-user-cards')) ? 'active' : '' }}"><a href="{{route('payment.user.cards')}}">
+                {{ __('Saved Cards') }}
+            </a></li>
+            @endif
+            
+            
             <li class="{{ (request()->is('user/orders*')) ? 'active' : '' }}"><a href="{{route('user.orders')}}">{{ __('My '.getNomenclatureName($ordertitle, true) )}}</a></li>
             <li class="{{ (request()->is('user/wishlists')) ? 'active' : '' }}"><a href="{{route('user.wishlists')}}">{{ __(getNomenclatureName('Wishlist', true) )}}</a></li>
             <li class="{{ (request()->is('user/loyalty')) ? 'active' : '' }}"><a href="{{route('user.loyalty')}}">{{ __('My Loyalty') }}</a></li>

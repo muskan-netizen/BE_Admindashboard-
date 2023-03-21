@@ -177,6 +177,9 @@ Route::group(['middleware' => ['domain']], function () {
 	//azulpay
 	Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
 	Route::match(['get','post'],'payment/get-cards','Front\AzulPaymentController@getUserCards')->name('payment.azulpay.getCards');
+	Route::get('payment/get-user-cards','Front\AzulPaymentController@getCardList')->name('payment.user.cards');
+	Route::get('payment/setDefaultCard/{id}','Front\AzulPaymentController@setDefaultCard')->name('setDefaultCard');
+	Route::get('payment/deleteCard/{id}','Front\AzulPaymentController@deleteCard')->name('delete.azul.card');
 	
 	//Square
 	Route::match(['get', 'post'], 'payment/square/page', 'Front\SquareController@beforePayment')->name('payment.square.beforePayment');
