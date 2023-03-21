@@ -1768,6 +1768,7 @@ class StripeGatewayController extends FrontController
                         $order->payment_status = 1;
                         $order->save();
                         $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                        $orderController = new OrderController();
                         if (!$payment_exists) {
                             $payment = new Payment();
                             $payment->date = date('Y-m-d');
@@ -1778,7 +1779,7 @@ class StripeGatewayController extends FrontController
                             $payment->save();
     
                             // Auto accept order
-                            $orderController = new OrderController();
+                           
                             $orderController->autoAcceptOrderIfOn($order->id);
     
                             // Remove cart
@@ -1791,7 +1792,7 @@ class StripeGatewayController extends FrontController
                             CartDeliveryFee::where('cart_id', $cart_id)->delete();
                   
                             // send sms 
-                            $this->sendSuccessSMS($request, $order);
+                            
                         
                             // Send Notification
                             if (!empty($order->vendors)) {
@@ -1808,7 +1809,8 @@ class StripeGatewayController extends FrontController
                         
                         }
                              //Send Email to customer
-                             $orderController->sendSuccessEmail($request, $order);
+                        $orderController->sendSuccessEmail($request, $order);
+                        $this->sendSuccessSMS($request, $order);
                     }
                 } elseif($payment_form == 'wallet'){
                     $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
