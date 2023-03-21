@@ -15,50 +15,8 @@ $timezone = $user->timezone;
 $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurrency->doller_compare ?? 1) ) : 0;
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
 @endphp
-
+<link href="{{asset('assets/css/azul.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
-/* start tab*/
-
-/* Style the tab */
-.tab {
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-}
-
-/* Style the buttons inside the tab */
-.tab a {
-  background-color: inherit;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
-  font-size: 17px;
-}
-
-/* Change background color of buttons on hover */
-.tab a:hover {
-  background-color: #ddd;
-}
-
-/* Create an active/current tablink class */
-.tab a.active {
-  background-color: #ccc;
-}
-
-/* Style the tab content */
-.tabcontent {
-  display: none;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-top: none;
-}
-
-
-/*end tab*/
-
     .productVariants .firstChild {
         min-width: 150px;
         text-align: left !important;
@@ -500,11 +458,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
 
 <div class="tab">
-    <a class="tablinks" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
+    <a class="tablinks active" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
     <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
   </div>
 
-  <div id="Add-Card" class="tabcontent">
+  <div id="Add-Card" class="tabcontent show" style="display:block">
      <div class="row no-gutters">
                             <div class="col-6">
                                 <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" />
@@ -515,9 +473,16 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                             <div class="col-3">
                                 <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" />
                             </div>
-                        </div>
 
+                        </div>
+<div class="row">
+<div class="col-md-4">
+                     <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
+                                    <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
+            </div>
+</div>
                         <span class="error text-danger" id="azul_card_error"></span>
+
   </div>
 
   <div id="Card-List" class="tabcontent">
@@ -606,7 +571,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
 
     var inline='';
     $('#wallet_amount').keypress(function(event) {

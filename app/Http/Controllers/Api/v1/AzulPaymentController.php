@@ -47,6 +47,7 @@ use App\Models\ {
     CaregoryKycDoc
 };
 use App\Http\Traits\AzulPaymentService;
+use App\Models\UserDataVault;
 
 class AzulPaymentController extends BaseController
 {
@@ -138,7 +139,7 @@ class AzulPaymentController extends BaseController
         }
         // //\Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
-        //\Log::info(json_encode($dataResponse));
+        // \Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         // dd($dataResponse);
         if ($dataResponse['ok'] === false && $this->mode) {

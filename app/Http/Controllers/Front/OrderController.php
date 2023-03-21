@@ -747,8 +747,11 @@ class OrderController extends FrontController
             $user = User::find($request->user_id);
         } elseif ((isset($request->auth_token)) && (! empty($request->auth_token))) {
             $user = User::where('auth_token', $request->auth_token)->first();
-        } else {
+        } elseif(Auth::user()) {
             $user = Auth::user();
+        }else{
+             $user_id = $order->user_id;
+             $user = User::find($user_id);
         }
         $client = CP::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
@@ -757,9 +760,11 @@ class OrderController extends FrontController
             $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
+           
             try {
                 $email_template_content = '';
                 $address = '';
+                $cartDetails = '';
                 $email_template = EmailTemplate::where('id', 5)->first();
                 if (! empty($email_template)) {
                     if ($user) {
@@ -773,15 +778,16 @@ class OrderController extends FrontController
                             ->where('unique_identifier', session()->get('_token'))
                             ->first();
                     }
+                 
                     if ($cart) {
-                        $cartDetails = $this->getCart($cart);
+                        $cartDetails = $this->getCart($cart,0,$user);
                     }
-
+                  
                     $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
 
                     $email_template_content = $email_template->content;
                     //     if ($vendor_id == "") {
-                    $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                    $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     //     } else {
                     //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     // }
@@ -808,6 +814,7 @@ class OrderController extends FrontController
                         'cartData' => $cartDetails,
                         'user_address' => $address
                     ];
+               
                     if (! empty($data['admin_email'])) {
                         $email_data['admin_email'] = $data['admin_email'];
                     }
@@ -817,10 +824,12 @@ class OrderController extends FrontController
                     $vendor = Vendor::where('id', $vendor_id)->first();
                     if (! empty($vendor)) {
                         $email_data['email'] = $vendor->email;
+                        \Log::info('email_data3');
                         dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                     }
 
                     /* -- Sending email to customer -- */
+
                     $email_data['email'] = $user->email;
                     dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 }
@@ -873,10 +882,15 @@ class OrderController extends FrontController
     /**
      * Get Cart Items
      */
-    public function getCart($cart, $address_id = 0)
+    public function getCart($cart, $address_id = 0,$user=array())
     {
         $cart_id = $cart->id;
-        $user = Auth::user();
+        if($user) {
+            $user = $user;
+        }else{
+            $user = Auth::user();
+        }
+        //$user = Auth::user();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $pharmacy = ClientPreference::first();
