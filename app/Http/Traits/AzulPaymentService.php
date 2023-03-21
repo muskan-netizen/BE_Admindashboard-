@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\ClientException;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\UserDataVault;
+use Illuminate\Support\Collection;
 
 trait AzulPaymentService
 {
@@ -55,7 +56,8 @@ trait AzulPaymentService
     public function payWithCard($card)
     {
         $phone_number = auth()->user()->phone_number;
-        $user_id = auth()->user()->id;        
+        $user_id = auth()->user()->id;         
+        $saveVault = 0;
         if(isset($card['card_id']) && !empty($card['card_id'])){
             $userCard = UserDataVault::where(['id' => $card['card_id']])->first();
             $request = [
@@ -80,11 +82,17 @@ trait AzulPaymentService
                 'ForceNo3DS' => '1'
             ];
         }else{
-            $exp = explode('/', $card['dt']);
-            $expiry = $exp[1] . $exp[0];
+            
             if (isset($card['come_from']) && $card['come_from'] == 'app') {
                 $expiry = $card['dt'];
+            }else{
+                $exp = explode('/', $card['dt']);
+                $expiry = $exp[1] . $exp[0];
             }
+            if(isset($card['save_card']) && $card['save_card'] == 1){
+                $saveVault = 1;
+            }
+            
             $request = [
                 'Channel' => $this->PAYMENT_CHANNEL,
                 'Store' => $this->MERCHANT_ID,
@@ -104,11 +112,13 @@ trait AzulPaymentService
                 'OrderNumber' => $card['order_number'],
                 'ECommerceUrl' => $this->ECOMMERCE_URL,
                 'CustomOrderId' => $card['order_number'],
-                'SaveToDataVault' => '1',
+                'SaveToDataVault' => $saveVault,
                 'DataVaultToken' => '',
                 'ForceNo3DS' => '1'
             ];
-            $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
+            if($saveVault){
+                $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
+            }
         }
         $response = $this->sendRequest($request);
         if ($response['code'] != 200) {
@@ -497,16 +507,11 @@ trait AzulPaymentService
         }
         $datavault = UserDataVault::create([
             'user_id' => $user_id,
-            'is_default' => 1,
             'token' => $response['data']->DataVaultToken,
             'expiration' => $response['data']->Expiration,
             'brand' => $response['data']->Brand,
             'card_hint' => $response['data']->CardNumber
         ]);
-        
-        if($datavault){
-            UserDataVault::where('id','!=',$datavault->id)->update(['is_default' => 0]);
-        }
         
         return [
             'ok' => true,
@@ -518,9 +523,9 @@ trait AzulPaymentService
     /**
      * Retrieve user stored cards.
      */
-    public function getUserCards($user_id): Collection
+    public function getUserCardsList(): Collection
     {
-        // return UserDataVault::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+        return UserDataVault::where('user_id', auth()->user()->id)->orderBy('is_default', 'desc')->get();
     }
 
     /**
