@@ -372,11 +372,8 @@ class UserhomeController extends FrontController
                 if( $da->slug == 'nav_categories'  ){
                     $da['nav_categories'] = $navCategories ?? '';
                 }
-
                 return $da;
-
             });
-
             
             $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
             if ($only_cab_booking == 1)
@@ -432,10 +429,15 @@ class UserhomeController extends FrontController
             elseif(isset($set_template)  && $set_template->template_id == 9){
                 $view_page = "home-template-test-nine";
             }
-           
-            //pr($set_template->toArray());exit();
-            //pr(Session::get('latitude'));
-            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData];
+            $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+            $is_service_product_price_from_dispatch_forOnDemand = 0;
+
+            if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+                $is_service_product_price_from_dispatch_forOnDemand =1;
+            }
+            
+            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
+
             return view('frontend.'.$view_page)->with($homeData);
 
         } catch (Exception $e) {
@@ -485,6 +487,7 @@ class UserhomeController extends FrontController
         $on_sale_products = [];
         $long_term_service_products = [];
         $recently_viewed = [];
+        $banners = [];
         //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
         $p_dim = '260/260';
         if (isset($set_template)  && $set_template->template_id == 3){
@@ -527,7 +530,10 @@ class UserhomeController extends FrontController
         $trending_vendors_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','trending');})->value('title');
 
         $recent_orders_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
+        
+        $banner_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','banner');})->value('title');
 
+        $selected_products_title = $CabBookingLayoutTranslation->whereHas('layout',function($q){$q->where('slug','selected_products');})->value('title');
         //$enable_layout = CabBookingLayout::where('is_active',1)->web()->pluck('slug')->toArray();
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
@@ -581,8 +587,6 @@ class UserhomeController extends FrontController
         $vendors = $vendors->where('status', 1)
                     ->inRandomOrder()
                     ->limit(10)->get();
-        // dd($vendors);
-
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
             // $value->vendorRating = $this->vendorRating($value->products);
@@ -620,7 +624,6 @@ class UserhomeController extends FrontController
                         }
 
                     }elseif($value->slot->isNotEmpty()){
-                        \Log::info( date('g:i A',strtotime($value->slot->first()->end_time)));
                         if($value->slot->first()->start_time && $value->slot->first()->end_time){
                             $value->opening_time = date('g:i A',strtotime($value->slot->first()->start_time));
                             $value->closing_time = date('g:i A',strtotime($value->slot->first()->end_time));
@@ -629,6 +632,11 @@ class UserhomeController extends FrontController
                 }
             }
         }
+        /**
+         * End get vendors.
+         */
+
+
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $vendors = $vendors->sortBy('lineOfSightDistance')->values()->all();
         }
@@ -706,7 +714,10 @@ class UserhomeController extends FrontController
         }    
 
         //get Most Selling Vendors
-        $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
+        $mostSellingVendors = []; //best_sellers
+        if (in_array('best_sellers', $enable_layout)) {
+         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
+        }
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
             $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'all', $request->type,$on_sale_title, $p_dim);
@@ -717,11 +728,18 @@ class UserhomeController extends FrontController
         }
         $feature_product_details = $feature_products = [];
       
-        if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in 
+        if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in
             $feature_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type, $featured_products_title,$p_dim);
         } 
-        
-     
+
+        if (in_array('banner', $enable_layout)) {  # if enable banner section in
+            $cab_booking_layouts = CabBookingLayout::with('banner_image')->where('slug','banner')->get();
+            // dd($cab_booking_layouts->toArray());
+            foreach($cab_booking_layouts as $bkey => $bval){
+                if(count($bval->banner_image) > 0)
+                $banners[$bval->banner_image[0]->cab_booking_layout_id] = $bval->banner_image[0]->banner_image_url;
+            }
+        } 
         
         $top_rated_products = '';
 
@@ -730,7 +748,6 @@ class UserhomeController extends FrontController
         if( in_array('long_term_service', $enable_layout) && @$additionalPreference['is_long_term_service'] == 1){ # if enable long_term_service section in 
             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $language_id, $currency_id,'', $request->type,$p_dim);
         }
-          
         if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'recent_viewed', $request->type, $featured_products_title,$p_dim);
             //$spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
@@ -816,11 +833,8 @@ class UserhomeController extends FrontController
         $data = [
             'brands' => $brands,
             'vendors' => $vendors,
-            'new_products' => $new_products,
             'homePageLabels' => $home_page_labels,
-            'feature_products' => $feature_products,
-            'on_sale_products' => $on_sale_products,
-            'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
+            'trending_vendors' => $trendingVendors,
             'active_orders' => $activeOrders,
             'long_term_service' => $long_term_service_products,
             
@@ -830,28 +844,24 @@ class UserhomeController extends FrontController
             $data = [
                 'brands' => $brands,
                 'vendors' => $vendors,
-                'new_products' => $new_products,
-                'top_rated'       => $top_rated_products ?? '',
+                'top_rated'      => $top_rated_products ?? '',
+                'best_sellers'     => $mostSellingVendors ?? '',
                 'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
-                'featured_products' => $feature_products,
-                'on_sale' => $on_sale_products,
                 'cities' => $this->cities,
                 'long_term_service' => $long_term_service_products,
                 'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
-                'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
-                'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
-                'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
                 'recent_orders' => $activeOrders,
+                'banners' => $banners,
             ];
             //pr( $data);
             return $data ;
         }
-
-
-
+        // if(count($dashboardProductsData)>0){
+        //     $data =  array_merge($data,$dashboardProductsData);
+        // }
         return $this->successResponse($data);
     }
   

@@ -27,6 +27,7 @@
                     <p class="border-bottom pb-1 d-none">
                         <span>{{__('In ') . $product->category_name}} </span>
                     </p>
+                    @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                     <div class="d-flex align-items-center justify-content-between al_clock"> 
                         {{-- <b>{!!$product->price_numeric ?? ''!!}</b> --}}
                         <b> {{ showPriceWithCurrency($product->price_numeric) }} </b>
@@ -39,6 +40,7 @@
                             {!!showPriceWithCurrency($product->compare_price_numeric,'1') !!}
                         @endif
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{AddonOption, AddonSet, AddonOptionTranslation, AddonSetTranslation, ClientLanguage};
 use Illuminate\Support\Facades\Storage;
+use App\Http\Traits\SquareInventoryManager;
 
 class AddonSetController extends BaseController
 {
+    use SquareInventoryManager;
     /**
      * Store a newly created resource in storage.
      *
@@ -64,7 +66,7 @@ class AddonSetController extends BaseController
             }
 
             AddonOptionTranslation::insert($optTrans);
-
+            $this->createOrUpdateModifiersSquare($addOn->id);
             return redirect()->back()->with('success', 'Variant added successfully!');
         }else{
             return redirect()->back()->with('error', 'Something went wrong!');
@@ -173,6 +175,7 @@ class AddonSetController extends BaseController
                 }
             }
         }
+        $this->createOrUpdateModifiersSquare($addon->id);
         return redirect()->back()->with('success', 'Addon set updated successfully!');
     }
     

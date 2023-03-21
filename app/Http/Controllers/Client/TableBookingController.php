@@ -75,7 +75,7 @@ class TableBookingController extends BaseController
 
     public function destroyCategory($domain = "", Request $request, $vid)
     {
-        VendorDineinCategory::where('vendor_dinein_category_id', $request->vendor_table_category_id)->where('vendor_id', $vid)->delete();
+        VendorDineinCategory::where('id', $request->vendor_table_category_id)->where('vendor_id', $vid)->delete();
         return redirect()->back()->with('success', 'Deleted Successfully!');
     }
 

@@ -2494,7 +2494,8 @@ div#test {
 }
 
 .inner_spacing h3,
-.inner_spacing h3 span {
+.inner_spacing h3 span,
+.inner_spacing h3 label {
     margin: 0;
     font-weight: 700;
     color: rgb(0, 0, 0 / 68%);
@@ -5734,8 +5735,12 @@ ul#main-nav-list {
     color: var(--theme-deafult);
     display: inline-block;
     position: absolute;
-    left: 0;
-    top: 6px
+    left: -4px;
+    top: 3px;
+}
+
+p.vendor_address, p.vendor_email {
+    margin-left: 30px !important;
 }
 
 .vendor-info li {
@@ -7341,11 +7346,11 @@ body.al_body_template_one  section.tab-product.custom-tabs {
 }
 
 body.dark .navigation-tab.nav-tabs .nav-link {
-    color: #fff;
+    color: #cfd4da;
 }
 
 body.dark .navigation-tab.nav-tabs .nav-link.active {
-    color: #fff;
+    color: #cfd4da;
 }
 
 body.dark .al_count_tabs_new_design .nav-tabs .nav-link.active {
@@ -7353,9 +7358,14 @@ body.dark .al_count_tabs_new_design .nav-tabs .nav-link.active {
 }
 
 .dark .al_custom_brand .brand-box h6 {
-    color: #fff
+    color: #cfd4da
 }
-
+body.dark .search_bar  svg g {
+    fill: #cfd4da;
+}
+body.dark .search_bar.menu-right .icon-nav a span{
+    color: #cfd4da;
+}
 body .fav-button,
 body .icon-nav .btn.btn-solid,
 body .radius-bar {

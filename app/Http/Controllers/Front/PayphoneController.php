@@ -41,7 +41,7 @@ class PayphoneController extends FrontController
       $this->app_url = 'https://pay.payphonetodoesposible.com/api/button/Prepare';
       $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD1';
-        \Log::info($primaryCurrency->currency->iso_code);
+        //\Log::info($primaryCurrency->currency->iso_code);
    }
 
 
@@ -427,11 +427,11 @@ class PayphoneController extends FrontController
       $result = curl_exec($ch);
       if (curl_errno($ch)) {
           // echo 'Error:' . curl_error($ch);
-          \Log::info(curl_error($ch));
+          //\Log::info(curl_error($ch));
       }
       curl_close($ch);
-      \Log::info('result==');
-      \Log::info(json_encode($result));
+      //\Log::info('result==');
+      //\Log::info(json_encode($result));
       return json_decode($result); 
   }
 

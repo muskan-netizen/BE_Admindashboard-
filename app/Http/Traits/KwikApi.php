@@ -74,7 +74,7 @@ trait KwikApi{
         $end_url = '/vendor_login';
         $ch = curl_init();
 
-        $data = ["domain_name"=> $this->api_domain,
+        $data = ["domain_name"=> !empty($this->api_domain) ? $this->api_domain : '',
             "email"=> $this->api_email,
             "password"=> $this->api_pass,
             "api_login"=> 1];
@@ -117,10 +117,10 @@ public function getPriceEstimation($dataRec)
         $end_url = '/send_payment_for_task';
       $data = [      
         "custom_field_template"=> "pricing-template",
-        "access_token"=> $this->access_token,
-        "domain_name"=> $this->api_domain,
+        "access_token"=> !empty($this->access_token) ? $this->access_token : '',
+        "domain_name"=> !empty($this->api_domain) ? $this->api_domain : '',
         "timezone"=> -330,  //For IST : -330
-        "vendor_id"=> $this->vendor_id,
+        "vendor_id"=> !empty($this->vendor_id) ? $this->vendor_id : '',
         "sareaId"=> 3,
         "is_multiple_tasks"=> 1,
         "layout_type"=> 0,
@@ -173,8 +173,8 @@ public function getPriceEstimation($dataRec)
       if (curl_errno($ch)) {
           $httpCode =  curl_error($ch);
       }
-      \Log::info('Kwick Response--');
-      \Log::info($result);
+      //\Log::info('Kwick Response--');
+      //\Log::info($result);
       curl_close($ch);
       $result = json_decode($result);
       return $result;
@@ -188,9 +188,10 @@ public function createKwikOrder($dataRec)
 {
     $end_url = '/create_task_via_vendor';
     $data = [
-        "domain_name"=> $this->api_domain,
-        "access_token"=> $this->access_token,
-        "vendor_id"=> $this->vendor_id,
+        "domain_name"=> !empty($this->api_domain) ? $this->api_domain : '',
+        "access_token"=> !empty($this->access_token) ? $this->access_token : '',
+        "vendor_id"=> !empty($this->vendor_id) ? $this->vendor_id : '',
+        "sareaId"=> 3,
         "is_multiple_tasks"=> 1,
         "sareaId"=> 3,
         "timezone"=> 60,
@@ -225,7 +226,7 @@ public function createKwikOrder($dataRec)
         // "delivery_images"=> "https://s3.ap-south-1.amazonaws.com/kwik-project/task_images/wPqj1603886372690-stripeconnect.png",
         //"vehicle_id"=> 4
         ];
-    // \Log::info(json_encode($data));
+    // //\Log::info(json_encode($data));
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $this->app_url.$end_url);
@@ -244,8 +245,8 @@ public function createKwikOrder($dataRec)
     }
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    \Log::info('Kwick create order Response--');
-    \Log::info($result);
+    //\Log::info('Kwick create order Response--');
+    //\Log::info($result);
     return json_decode($result);
 }
 
@@ -257,9 +258,9 @@ public function createKwikOrder($dataRec)
     $end_url = '/cancel_vendor_task';
     
     $data = [      
-        "domain_name"=> $this->api_domain,
-        "access_token"=> $this->access_token,
-        "vendor_id"=> $this->vendor_id,
+        "domain_name"=> !empty($this->api_domain) ? $this->api_domain : '',
+        "access_token"=> !empty($this->access_token) ? $this->access_token : '',
+        "vendor_id"=> !empty($this->vendor_id) ? $this->vendor_id : '',
         "job_id"=> $dataRec->pickups[0]->job_id, //fetch this id from order cancel
         "job_status"=> 9 // for cancel order
         ];

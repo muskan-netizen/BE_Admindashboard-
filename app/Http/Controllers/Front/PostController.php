@@ -100,9 +100,7 @@ class PostController extends FrontController
     {
         try {
             // dd($request->all());
-            // $request->sku = "adfasdf".time();
-
-            // $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            
 
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
             // $product = Product::where('id', $id)->firstOrFail();
@@ -324,9 +322,12 @@ class PostController extends FrontController
                 $proVariant->save();
                 ProductTranslation::insert($datatrans);
                 
-            }
 
-            return $product;
+                return $product;
+            }
+            else{
+                throw new \ErrorException('Sorry, You are not a vendor.', 400);
+            }
         }else{
             throw new \ErrorException('Sorry, You are not a vendor.', 400);
         }

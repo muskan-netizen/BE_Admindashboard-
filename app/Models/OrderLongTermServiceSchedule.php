@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrderLongTermServiceSchedule extends Model
 {
     use HasFactory;
-    protected $fillable = ['order_long_term_services_id', 'schedule_date'];
+    protected $fillable = ['order_long_term_services_id', 'schedule_date','type','order_vendor_product_id'];
 
     public function OrderService(){
         return $this->hasOne('App\Models\OrderLongTermServices', 'id', 'order_long_term_services_id');

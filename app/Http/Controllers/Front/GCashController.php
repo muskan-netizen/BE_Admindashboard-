@@ -22,8 +22,8 @@ class GCashController extends Controller
     // }
     public function createPayment(Request $request)
     {
-        Log::info("gcash Create Payment");
-        Log::info($request->all());
+       // Log::info("gcash Create Payment");
+       // Log::info($request->all());
         if($request->come_from == "app")
         {
             $user = User::where('auth_token', $request->auth_token)->first();

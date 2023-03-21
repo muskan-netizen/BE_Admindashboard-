@@ -38,7 +38,7 @@
                                 </ul>
                                     @if (!empty($vendor->desc))
                                         <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
-                                        <?xml version="1.0" encoding="UTF-8"?>
+                                        {{--
                                         <svg width="29px" height="40px" viewBox="0 0 29 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                         <title>location</title>
                                         <g id="design-update" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -49,18 +49,19 @@
                                         </g>
                                         </g>
                                         </g>
-                                        </svg> {{ substr($vendor->desc, 0, 80) . '...' }}</h4>
+                                        </svg>  --}}
+                                        {{ $vendor->desc }}</h4>
                                     @endif
                                 <p>{!! $vendor->short_desc !!}</p>
                                 <ul class="vendor-info">
 
                                 @if ($vendor->is_show_vendor_details == 1)
                                     <li class="d-block vendor-location">
-                                        <i class="icon-location"></i> {{ $vendor->address }}
+                                        <i class="icon-location"></i> <p class="vendor_address">{{ $vendor->address }}</p>
                                     </li>
                                     @if ($vendor->email)
                                         <li class="d-block vendor-email">
-                                            <i class="fa fa-envelope"></i> {{ $vendor->email }}
+                                            <i class="fa fa-envelope"></i> <p class="vendor_email">{{ $vendor->email }}</p>
                                         </li>
                                     @endif
                                     @if ($vendor->website)

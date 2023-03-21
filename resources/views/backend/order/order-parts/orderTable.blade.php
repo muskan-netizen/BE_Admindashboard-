@@ -55,7 +55,7 @@
                                 <div
                                     class="order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
                                     <ul class="alBtnsOnOrders d-flex justify-content-end">
-                                        @if (!Auth::user()->is_superadmin && $clientData->socket_url)
+                                        @if (!Auth::user()->is_superadmin && @$clientData->socket_url)
                                             <li>
                                                 <a data-toggle="tooltip" data-placement="top" title="Start Chat"
                                                     class="start_chat btn-info" data-vendor_order_id="{{ $vendor->id }}"
@@ -292,7 +292,7 @@
                                                     data-single_div="#single-order-div{{ $k . $ve }}"
                                                     data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="2"
-                                                    data-order_vendor_id="{{ $vendor->order_vendor_id }}"
+                                                    data-order_vendor_id="{{ $vendor->id }}"
                                                     data-is_alert="{{ $vendor->isAlert }}"
                                                     data-alert_message="{{ $vendor->alertMessage }}">{{ __('Exchange Accept') }}</button>
                                             @else
@@ -302,7 +302,7 @@
                                                     data-count="{{ $ve }}"
                                                     data-order_id="{{ $order->id }}"
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="2"
-                                                    data-order_vendor_id="{{ $vendor->order_vendor_id }}"
+                                                    data-order_vendor_id="{{ $vendor->id }}"
                                                     data-is_alert="{{ $vendor->isAlert }}"
                                                     data-alert_message="{{ $vendor->alertMessage }}">{{ __('Accept') }}</button>
                                             @endif
@@ -312,7 +312,7 @@
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
                                                 data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="4"
-                                                data-order_vendor_id="{{ $vendor->order_vendor_id }}"
+                                                data-order_vendor_id="{{ $vendor->id }}"
                                                 data-order_luxury_option="{{ $order->luxury_option_id }}">{{ __('Processing') }}</button>
                                         @elseif($vendor->order_status_option_id == 4)
                                             <button class="update-status btn-success"
@@ -320,7 +320,7 @@
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
                                                 data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="5"
-                                                data-order_vendor_id="{{ $vendor->order_vendor_id }}">
+                                                data-order_vendor_id="{{ $vendor->id }}">
                                                 @if ($order->luxury_option_id == 2 || $order->luxury_option_id == 3)
                                                     {{ __('Order Prepared') }}
                                                 @else
@@ -333,7 +333,7 @@
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
                                                 data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="6"
-                                                data-order_vendor_id="{{ $vendor->order_vendor_id }}">{{ __('Delivered') }}</button>
+                                                data-order_vendor_id="{{ $vendor->id }}">{{ __('Delivered') }}</button>
                                         @else
                                         @endif
                                         @if (
@@ -348,7 +348,7 @@
                                                     data-count="{{ $ve }}"
                                                     data-order_id="{{ $order->id }}"
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="3"
-                                                    data-order_vendor_id="{{ $vendor->order_vendor_id }}">{{ __('Exchange Reject') }}</button>
+                                                    data-order_vendor_id="{{ $vendor->id }}">{{ __('Exchange Reject') }}</button>
                                             @else
                                                 <button class="update-status btn-danger" id="reject"
                                                     data-full_div="#full-order-div{{ $k }}"
@@ -356,7 +356,7 @@
                                                     data-count="{{ $ve }}"
                                                     data-order_id="{{ $order->id }}"
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="3"
-                                                    data-order_vendor_id="{{ $vendor->order_vendor_id }}">{{ __('Reject') }}</button>
+                                                    data-order_vendor_id="{{ $vendor->id }}">{{ __('Reject') }}</button>
                                             @endif
                                         @endif
 

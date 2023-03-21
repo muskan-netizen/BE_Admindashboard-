@@ -44,11 +44,20 @@ Route::get('admin/wrong/url', 'Auth\LoginController@wrongurl')->name('wrong.clie
 
 // ADMIN LANGUAGE SWITCH
 Route::group(['middleware' => 'adminLanguageSwitch'], function () {
-    Route::group(['middleware' => ['ClientAuth', 'database'], 'prefix' => '/client'], function () {
+    Route::group(['middleware' => ['ClientAuth', 'database','permission'], 'prefix' => '/client'], function () {
 
         Route::post('/webhook/set','AhoyController@setWebhook')->name('setWebhook');
         Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
         Route::get('profile', 'Client\UserController@profile')->name('client.profile');
+        
+        Route::get('notifications/list', 'Client\DashBoardController@notificationList')->name('noti.list');
+        Route::get('role/add', 'Client\RolePermissionController@indexRole')->name('roles');
+        Route::post('role/save', 'Client\RolePermissionController@saveRole')->name('save.roles');
+        Route::POST('role/getRole', 'Client\RolePermissionController@getRole')->name('get.role');
+        Route::get('permission/add', 'Client\RolePermissionController@indexPermission')->name('permissions');
+        Route::post('permission/save', 'Client\RolePermissionController@savePermission')->name('save.permission');
+        Route::post('permission/assign', 'Client\RolePermissionController@assignPermission')->name('assign.permissions');
+        
         Route::get('dashboard', 'Client\DashBoardController@index')->name('client.dashboard');
         Route::get('dashboard_old', 'Client\DashBoardController@dashboard_old')->name('client.dashboard_old');
         Route::get('dashboard/filter', 'Client\DashBoardController@postFilterData')->name('client.dashboard.filter');
@@ -118,12 +127,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/loyalty/filter', [LoyaltyController::class, 'filter'])->name('account.loyalty.filter');
         Route::get('account/loyalty/export', [LoyaltyController::class, 'export'])->name('account.loyalty.export');
         Route::get('account/order/export', [OrderController::class, 'export'])->name('account.order.export');
-        Route::get('configure', 'Client\ClientPreferenceController@index')->name('configure.index')->middleware('onlysuperadmin');
+        Route::get('configure', 'Client\ClientPreferenceController@index')->name('configure.index');
         Route::post('nomenclature/add', 'Client\NomenclatureController@store')->name('nomenclature.store');
         Route::post('cleanSoftDeleted', 'Client\ManageContentController@deleteAllSoftDeleted')->name('config.cleanSoftDeleted');
         Route::post('importDemoContent', 'Client\ManageContentController@importDemoContent')->name('config.importDemoContent');
         Route::post('hardDeleteEverything', 'Client\ManageContentController@hardDeleteEverything')->name('config.hardDeleteEverything');
-        Route::get('customize', 'Client\ClientPreferenceController@getCustomizePage')->name('configure.customize')->middleware('onlysuperadmin');
+        Route::get('customize', 'Client\ClientPreferenceController@getCustomizePage')->name('configure.customize');
         Route::post('configUpdate/{code}', 'Client\ClientPreferenceController@update')->name('configure.update');
         Route::post('configUpdate', 'Client\ClientPreferenceController@updateTaxInclusivePrice')->name('configure.taxinclusive');
         Route::post('additionalUpdate', 'Client\ClientPreferenceController@additionalupdate')->name('additional.update');
@@ -134,17 +143,17 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::post('referandearnUpdate/{code}', 'Client\ClientPreferenceController@referandearnUpdate')->name('referandearn.update');
         Route::post('updateDomain/{code}', 'Client\ClientPreferenceController@postUpdateDomain')->name('client.updateDomain');
-        Route::resource('banner', 'Client\BannerController')->middleware('onlysuperadmin');
+        Route::resource('banner', 'Client\BannerController');
         Route::post('banner/saveOrder', 'Client\BannerController@saveOrder');
         Route::post('banner/changeValidity', 'Client\BannerController@validity');
         Route::post('vendor/saveLocation/{id}', 'Client\VendorController@updateLocation')->name('vendor.config.pickuplocation');
         Route::post('vendor/ahoyLocation/{id}', 'Client\VendorController@updateAhoyLocation')->name('vendor.config.ahoy.pickuplocation');
         Route::post('banner/toggle', 'Client\BannerController@toggleAllBanner')->name('banner.toggle');
-        Route::resource('mobilebanner', 'Client\MobileBannerController')->middleware('onlysuperadmin');
+        Route::resource('mobilebanner', 'Client\MobileBannerController');
         Route::post('mobilebanner/saveOrder', 'Client\MobileBannerController@saveOrder');
         Route::post('mobilebanner/changeValidity', 'Client\MobileBannerController@validity');
         Route::post('mobilebanner/toggle', 'Client\MobileBannerController@toggleAllBanner')->name('mobilebanner.toggle');
-        Route::get('web-styling', 'Client\WebStylingController@index')->name('webStyling.index')->middleware('onlysuperadmin');
+        Route::get('web-styling', 'Client\WebStylingController@index')->name('webStyling.index');
         Route::post('web-styling/updateWebStyles', 'Client\WebStylingController@updateWebStyles')->name('styling.updateWebStyles');
         Route::post('web-styling/updateOrderIcon', 'Client\WebStylingController@updateOrderStatusIcons')->name('styling.updateOrderStatusIcons');
         Route::post('web-styling/updatePaymentMethods', 'Client\WebStylingController@updatePaymentMethods')->name('styling.updatePaymentMethods');
@@ -165,7 +174,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('web-styling/updateHomePageStyle', 'Client\WebStylingController@updateHomePageStyle')->name('web.styling.updateHomePageStyle');
         Route::post('web-styling/update-contact-up', 'Client\WebStylingController@updateContactUs')->name('web.styling.update_contact_up');
         Route::post('web-styling/update-single-category-products', 'Client\WebStylingController@updateSingleCategoryProducts')->name('web.styling.update_single_category_products');
-        Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index')->middleware('onlysuperadmin');
+        Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index');
         Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
         Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');
         Route::post('app-styling/updateTabBar', 'Client\AppStylingController@updateTabBar')->name('styling.updateTabBar');
@@ -182,6 +191,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('category/delete/{id}', 'Client\CategoryController@destroy');
         Route::resource('variant', 'Client\VariantController');
         Route::post('variant/order', 'Client\VariantController@updateOrders')->name('variant.order');
+        Route::post('variant/delete-option', 'Client\VariantController@deleteVariantOption')->name('variant.delete.option');        
         Route::get('variant/cate/{cid}', 'Client\VariantController@variantbyCategory');
         Route::resource('brand', 'Client\BrandController');
         Route::post('brand/order', 'Client\BrandController@updateOrders')->name('brand.order');
@@ -257,6 +267,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('payment', 'Client\PaymentController');
         Route::resource('accounting', 'Client\AccountController');
         Route::get('vendor/filterdata', 'Client\VendorController@getFilterData')->name('vendor.filterdata');
+        Route::POST('vendor/assignManager', 'Client\VendorController@assignManager')->name('assign.manager');
         Route::POST('vendor/importglobalproducts', 'Client\VendorController@importGlobalProducts')->name('import.global.product');
         Route::post('vendor/status/update', 'Client\VendorController@postUpdateStatus')->name('vendor.status');
         Route::get('user/filterdata', 'Client\UserController@getFilterData')->name('user.filterdata');
@@ -267,6 +278,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/permissionsForUserViaVendor', 'Client\VendorController@permissionsForUserViaVendor')->name('permissionsForUserViaVendor');
         Route::DELETE('vendor/vendor-permission-del/{id}', 'Client\VendorController@userVendorPermissionDestroy')->name('user.vendor.permission.destroy');
         Route::get('vendor/catalogs/{id}', 'Client\VendorController@vendorCatalog')->name('vendor.catalogs');
+        Route::get('vendor/dashboard/{id}', 'Client\VendorController@vendorDashboard')->name('vendor.dashboard');
         Route::get('vendor/product/export/{id}', 'Client\VendorController@vendorProductExport')->name('vendor.product.export');
         Route::get('vendor/product/list/{id}', 'Client\VendorController@VendorProductFilter')->name('vendor.product');
         Route::get('seller/product/list/{id}', 'Client\SellerController@SellerProductFilter')->name('seller.product');
@@ -300,6 +312,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('seller/filterdata', 'Client\SellerController@getFilterData')->name('seller.filterdata');
         Route::resource('seller', 'Client\SellerController');
         Route::get('seller/catalogs/{id}', 'Client\SellerController@sellerCatalog')->name('seller.catalogs');
+
+        Route::resource('pincode', 'Client\PincodeController');
+        
+        Route::get('pincodeData', 'Client\PincodeController@pincodeData')->name('pincode.pincodeData');
+
+        Route::resource('delivery-slot', 'Client\DeliverySlotController');
 
         Route::get('calender/pickup/data/{id}', 'Client\Laundry\PickupSlotController@returnJson')->name('vendor.calender.pickup'); // Added by Ovi
         Route::post('calender/pickup/slot/{id}', 'Client\Laundry\PickupSlotController@store')->name('vendor.pickup.saveSlot'); // Added by Ovi
@@ -335,8 +353,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('order-edit/{order_id}/{vendor_id}', 'Client\OrderController@getOrderDetailEdit')->name('order.edit.detail');
         Route::post('order/update/product/price', 'Client\OrderController@updateOrderProductPriceByVendor')->name('update.product.price');
         Route::post('order/updateStatus', 'Client\OrderController@changeStatus')->name('order.changeStatus');
+        Route::post('order/updateVendorProductStatus', 'Client\OrderController@changeVendorProductStatus')->name('order.changeVendorProductStatus');
         Route::post('order/create-dispatch-request', 'Client\OrderController@createDispatchRequest')->name('create.dispatch.request'); # create dispatch request
-        Route::resource('customer', 'Client\UserController')->middleware('onlysuperadmin');
+        Route::resource('customer', 'Client\UserController');
         Route::get('customer/account/{user}/{action}', 'Client\UserController@deleteCustomer')->name('customer.account.action');
         Route::get('customer/edit/{id}', 'Client\UserController@newEdit')->name('customer.new.edit');
         Route::post('customer/import', 'Client\UserController@importCsv')->name('customer.import');
@@ -344,6 +363,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('customer/pay-receive', 'Client\UserController@payReceive')->name('customer.pay.receive');
         Route::post('order/updateReport', 'Client\OrderController@uploadReport')->name('order.upload.report');
         Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
+
+        Route::get('rental-return-modal/get-rental-return-product-modal', 'Client\OrderController@getRentalReturnProductModal')->name('get-rental-return-product-modal');
+        Route::post('order/update-product-rental-return-client', 'Client\OrderController@updateProductRentalReturn')->name('update.order.rental.return.client');
 
         Route::put('newUpdate/edit/{id}', 'Client\UserController@newUpdate')->name('customer.new.update');
         Route::put('profile/{id}', 'Client\UserController@updateProfile')->name('client.profile.update');
@@ -398,13 +420,13 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');
 
-        Route::get('subscription/plans/user', 'Client\SubscriptionPlansUserController@getSubscriptionPlans')->name('subscription.plans.user')->middleware('onlysuperadmin');
+        Route::get('subscription/plans/user', 'Client\SubscriptionPlansUserController@getSubscriptionPlans')->name('subscription.plans.user');
         Route::post('subscription/plan/save/user/{slug?}', 'Client\SubscriptionPlansUserController@saveSubscriptionPlan')->name('subscription.plan.save.user');
         Route::get('subscription/plan/edit/user/{slug}', 'Client\SubscriptionPlansUserController@editSubscriptionPlan')->name('subscription.plan.edit.user');
         Route::get('subscription/plan/delete/user/{slug}', 'Client\SubscriptionPlansUserController@deleteSubscriptionPlan')->name('subscription.plan.delete.user');
         Route::post('subscription/plan/updateStatus/user/{slug}', 'Client\SubscriptionPlansUserController@updateSubscriptionPlanStatus')->name('subscription.plan.updateStatus.user');
         Route::post('show/subscription/plan/customer', 'Client\SubscriptionPlansUserController@showSubscriptionPlanCustomer')->name('show.subscription.plan.customer');
-        Route::get('subscription/plans/vendor', 'Client\SubscriptionPlansVendorController@getSubscriptionPlans')->name('subscription.plans.vendor')->middleware('onlysuperadmin');
+        Route::get('subscription/plans/vendor', 'Client\SubscriptionPlansVendorController@getSubscriptionPlans')->name('subscription.plans.vendor');
         Route::post('subscription/plan/save/vendor/{slug?}', 'Client\SubscriptionPlansVendorController@saveSubscriptionPlan')->name('subscription.plan.save.vendor');
         Route::get('subscription/plan/edit/vendor/{slug}', 'Client\SubscriptionPlansVendorController@editSubscriptionPlan')->name('subscription.plan.edit.vendor');
         Route::get('subscription/plan/delete/vendor/{slug}', 'Client\SubscriptionPlansVendorController@deleteSubscriptionPlan')->name('subscription.plan.delete.vendor');
@@ -462,6 +484,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
         Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
         Route::post('cancel-order/request/status/update', 'Client\OrderCancelRequestsController@updateStatus')->name('cancel-order.request.status.update');
+
+
+        Route::get('return/dispatcher_requests', 'Client\RentalProductDispatchReturnController@index')->name('return.dispatcher.form');
 
         /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
@@ -570,6 +595,14 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('long_term_service/index/{vendor_id}',  'Client\LongTermServiceController@index')->name("long_term_service.index");
         Route::get('long_term_service/edit/{id}',          'Client\LongTermServiceController@edit')->name('long_term_service.edit');
         Route::get('long_term_service/delete/{id}',        'Client\LongTermServiceController@destroy')->name("long_term_service.destroy");
+
+
+        /***
+         *  Mtn momo payment gateway configation
+         */
+
+        Route::post('mtn-mom-api-key', 'Client\PaymentOptionController@MtnmomoApiKey')->name('payoption.mtn_momo_api_key');
+
         Route::post('long_term_service/updateBooking',     'Client\LongTermServiceController@updateBooking')->name("long_term_service.updateBooking");
 
         /**
