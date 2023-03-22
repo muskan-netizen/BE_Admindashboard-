@@ -1101,7 +1101,7 @@ if (!function_exists('stripeOXXOPaymentCredentials')) {
 if (!function_exists('stripeDynamicPaymentCredentials')) {
     function stripeDynamicPaymentCredentials($name){
         $stripe_creds = PaymentOption::select('credentials')->where('code', $name)->where('status', 1)->first();
-        $creds_arr = json_decode($stripe_creds->credentials);
+        $creds_arr = @json_decode(@$stripe_creds->credentials);
         $response = collect();
         $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
         $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
