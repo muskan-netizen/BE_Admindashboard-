@@ -105,7 +105,6 @@ class PromoCodeController extends Controller{
             // $order_vendor_coupon_list = OrderVendor::whereNotNull('coupon_id')->where('user_id', $user->id)->get([DB::raw('coupon_id'),  DB::raw('sum(coupon_id) as total')]);
             $now = Carbon::now()->toDateTimeString();
             $now = convertDateTimeInClientTimeZone($now);
-
             $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
             $cart_products = CartProduct::with(['product.variant' => function($q){
                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
@@ -120,7 +119,7 @@ class PromoCodeController extends Controller{
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
             }
             ])->where('vendor_id', $request->vendor_id)->where('cart_id', $request->cart_id)->get();
-            $total_minimum_spend = 0;
+          // $total_minimum_spend = 0;
             foreach ($cart_products as $cart_product) {
                 $total_price = 0;
                 if(isset($cart_product->product->variant) && !empty($cart_product->product->variant->first()))
@@ -205,11 +204,9 @@ class PromoCodeController extends Controller{
                     $result2->where(['promo_visibility' => 'public']);
                 }
                 $result2 = $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
-
                 $promo_codes = $promo_codes->merge($result2);
             }
-            
-
+                        
             foreach ($promo_codes as $key => $promo_code) {
                 $minimum_spend = 0;
                 if (isset( $promo_code->minimum_spend)) {
@@ -224,7 +221,6 @@ class PromoCodeController extends Controller{
                     $promo_codes->forget($key);
                 }
             }
-            //dd($promo_codes);
             return $this->successResponse($promo_codes, '', 200);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

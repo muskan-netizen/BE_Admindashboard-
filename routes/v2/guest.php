@@ -22,6 +22,11 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
         
         Route::get('getP2pCategories', 'Api\v1\v2\P2PController@getP2pCategories');
 
+        // new cart route
+        Route::get('cart/list', 'Api\v1\v2\CartController@index');
+
+//------------------get all data (category, banner, vendor, products) based on category type
+        Route::get('getCategoryAllData/{id?}', 'Api\v1\v2\CategoryController@getCategoryAllData');
     });
     Route::group(['middleware' => ['dbCheck','systemAuth']], function() {
         

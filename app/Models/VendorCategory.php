@@ -15,6 +15,11 @@ class VendorCategory extends Model
 		return $this->hasOne('App\Models\Category', 'id', 'category_id');
 	}
 
+	public function vendor()
+	{
+		return $this->hasOne('App\Models\Vendor', 'id', 'vendor_id');
+	}
+
 	public function products(){
 		return $this->hasMany('App\Models\Product', 'category_id', 'category_id');
 	}

@@ -137,7 +137,7 @@ class EstimationController extends FrontController
 
              // Make Array from (estimate_option_id) string
             // $estimate_option_ids = explode(',',$request->get('estimate_option_id'));
-            \Log::info($request->estimate_option_id);
+            //\Log::info($request->estimate_option_id);
             //Delete previous added addons
             EstimatedProductAddons::where('estimated_product_id', $estimatedProduct->id)->delete();
             // Loop through the (estimate_option_ids)

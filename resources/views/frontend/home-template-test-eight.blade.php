@@ -711,7 +711,7 @@
 								@foreach ( $homePageLabel->nav_categories as $category )
 									@include('frontend.home_page_8.category')
 								@endforeach
-							</div>
+							<!-- </div> -->
 						</div>
 					</div>
 				</div>
@@ -757,9 +757,9 @@
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 			<div class="top-heading d-flex justify-content-between">
-				<h2 class="col h2-heading mb-3"> @php
-					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
-					@endphp </h2>
+			<h2 class="col h2-heading mb-3"> @php
+				echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+				@endphp </h2>
 					<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
 			</div>
 			<div class="row">
@@ -776,7 +776,7 @@
 			</div>
 		</section>
 		</section>
-		@elseif($homePageLabel->slug == 'selected_products' && (count($homePageData[$homePageLabel->slug]) != 0))
+		@elseif(@$homePageLabel->slug == 'selected_products' && (@count(@$homePageData[@$homePageLabel->slug]) != 0))
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
@@ -819,6 +819,38 @@
 				</div>
 			</div>
 		</section>
+		@elseif($homePageLabel->slug == 'banner' && (count($homePageData['banners']) != 0))
+		@if(!empty(@$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]))
+			<section class="mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
+				<div class="container p2p-full-width">
+					<div class="top-heading d-flex justify-content-between">
+						<h2 class="h2-heading"> @php
+							echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+						@endphp </h2>
+					</div>
+					<div class="custom_banner">
+						<div class="container">
+							<div class="text-center">
+								@php
+									$url = $homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]; // replace with your URL
+									$extension = pathinfo($url, PATHINFO_EXTENSION);
+									$image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']; // list of image extensions
+									$video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
+								@endphp
+								@if(in_array($extension, $image_extensions))
+									<img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+								@elseif (in_array($extension, $video_extensions))
+									<video id="video1" width="100%" controls autoplay muted>
+										<source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
+									</video>
+								@else
+								@endif
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		@endif
 		@else
 		@if(!empty($homePageData[$homePageLabel->slug]) && count($homePageData[$homePageLabel->slug]) != 0)
 		<!-- <section class="home-headings">

@@ -1,10 +1,9 @@
 @extends('layouts.store', ['title' => __('Cart')])
-
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
-
+<link href="{{asset('assets/css/azul.css')}}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 
 <style type="text/css">
@@ -89,7 +88,7 @@ display: flex;align-items: center;justify-content: center;border: 1px solid#eee;
 .new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
 justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
 .cart-checkout_btn button{width:100%;}
-.cart-checkout_btn #order_placed_btn {padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
+.cart-checkout_btn #order_placed_btn{padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .cart_delivery a i {font-weight: 600;font-size: 16px;}
 .schedule_btn ul li label.taskschedulebtn {padding: 6px 10px !important;font-size: 10px !important;}
 .cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;}
@@ -121,7 +120,6 @@ font-size: 12px;padding: 6.7px 10px;}
 .login-form #schedule_div input{display:block;width: 100% !important;}
 .login-form #schedule_div input::-webkit-calendar-picker-indicator{color: rgba(0, 0, 0, 0);opacity: 1}
 /*------cart page css end here------ */
-
 @media (max-width:576px){
 .al_body_template_two .show-prescription-doc {width:100%;}
 .item-show-cart h4 {font-size:14px !important;}
@@ -147,49 +145,6 @@ font-size: 12px;padding: 6.7px 10px;}
 .cart-design .alFourTemplateCartButtons a.shoping i{font-size:10px;vertical-align: middle;}
 }
 
-
-
-/* start tab*/
-
-/* Style the tab */
-.tab {
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-}
-
-/* Style the buttons inside the tab */
-.tab a {
-  background-color: inherit;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
-  font-size: 17px;
-}
-
-/* Change background color of buttons on hover */
-.tab a:hover {
-  background-color: #ddd;
-}
-
-/* Create an active/current tablink class */
-.tab a.active {
-  background-color: #ccc;
-}
-
-/* Style the tab content */
-.tabcontent {
-  display: none;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-top: none;
-}
-
-
-/*end tab*/
 </style>
 
 @endsection
@@ -592,6 +547,9 @@ $client_preferences = \App\Models\ClientPreference::first();
                         <% if(payment_option.slug == 'plugnpay') { %>
                             <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
                                 <div class="row no-gutters">
+                                    <div class="col-12">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-name-element" placeholder="Enter card holder name" />
+                                    </div>
                                     <div class="col-6">
                                         <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" />
                                     </div>
@@ -601,20 +559,38 @@ $client_preferences = \App\Models\ClientPreference::first();
                                     <div class="col-3">
                                         <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" />
                                     </div>
+                                     <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-addr1-element" placeholder="Enter address"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-addr2-element" placeholder="Enter alternate address (optional)" />
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-zip-element" placeholder="Enter zip code"/>
+                                    </div>
+<div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-city-element" placeholder="Enter city name"/>
+                                    </div>
+<div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-state-element" placeholder="Enter state code e.g. NY"/>
+                                    </div>
+<div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-country-element" placeholder="Enter country code e.g. US"/>
+                                    </div>
                                 </div>
 
                                 <span class="error text-danger" id="plugnpay_card_error"></span>
                             </div>
                         <% } %>
-
- <% if(payment_option.slug == 'azulpay') { %>
+                      
+                <% if(payment_option.slug == 'azulpay') { %>
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
                         <div class="tab">
-    <a class="tablinks" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
+    <a class="tablinks active" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
     <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
   </div>
 
-  <div id="Add-Card" class="tabcontent">
+  <div id="Add-Card" class="tabcontent show" style="display:block">
      <div class="row no-gutters">
                             <div class="col-6">
                                 <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" />
@@ -626,17 +602,18 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" />
                             </div>
                         </div>
-
+<div class="row">
+<div class="col-md-4">
+                     <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
+                                    <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
+            </div>
+</div>
                         <span class="error text-danger" id="azul_card_error"></span>
   </div>
-
   <div id="Card-List" class="tabcontent">
   </div>
-
                     </div>
                 <% } %>
-
-
                     </div>
                 <% }); %>
                 {{-- <div class="" id="" role="tabpanel">
@@ -899,14 +876,15 @@ $client_preferences = \App\Models\ClientPreference::first();
                         <div class="col-sm-12 position-relative" id="imageInput">
                             <input type="hidden" id="vendor_idd" name="vendor_idd" value="" />
                             <input type="hidden" id="product_id" name="product_id" value="" />
-                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" class="dropify uploaded-prescription-img" multiple />
+                            <input type="hidden" id="uploaded_pres_count" name="uploaded_pres_count" value="" />
+                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" id="prescription_file" class="dropify uploaded-prescription-img" multiple />
                             <!-- <img id="uploaded-prescription" style="margin-top: 9px;display:none;" src="#"/> -->
                             <div class="uploaded-prescription"></div>
                             <p class="text-muted text-center mt-2 mb-0">{{__('Uploaded Prescription(s)')}}</p>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
-
+                            <span class="validate-file-error text-danger"></span>
                         </div>
 
                     </div>
@@ -961,6 +939,8 @@ $client_preferences = \App\Models\ClientPreference::first();
       </div>
     </div>
   </div>
+
+
 @endsection
 
 @section('script')
@@ -1066,8 +1046,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var business_type = "<?= $client_preferences->business_type; ?>";
     var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
     var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
-        var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-        var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
+    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 </script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
@@ -1167,7 +1147,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
-    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
     var error_unchanged_schedule_date = "{{__('Schedule date can not be changed, Because order being edited is scheduled order. In case of multi vendor, order can not be edited.')}}";
     var discard_order_editing_url = "{{route('user.discardeditorder')}}";
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
@@ -1862,6 +1841,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     $(document).delegate('#view_all_address', 'click', function() {
 
         $("#view_all_address").addClass("d-none");
+        $("#view_all_address").removeClass("d-block");
         $("#view_all_address_div").removeClass("d-none");
 
     });
@@ -1871,6 +1851,12 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
+
+
+
+
+
+
 
 </script>
 @if(in_array('kongapay',$client_payment_options))

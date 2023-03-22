@@ -36,8 +36,18 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     background-color: transparent;
     border: 1px solid;
 }
-</style>
 
+
+.rental_filter_tab {
+    position: absolute;
+    left: 0;
+    width: 100%;
+}
+.rental_filter_tab li.nav-item {
+    width: auto;
+    display: inline-block;
+}
+</style>
 
 <div class="container-fluid order-page">
     <div class="row ">
@@ -112,6 +122,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                             </b>
                         </a>
                         @endif
+                        @if ($client_preferences->business_type == 'rental' || $client_preferences->business_type == 'super_app')
+                        <a class="return-btn" href="{{route('return.dispatcher.form')}}">
+                            <b>{{ __("Rental Return Order Form") }} <sup class="total-items">({{$returnFormRequestCount}})</sup>
+                                <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
+                            </b>
+                        </a>
+                        @endif
                     </div>
                 </div>
 
@@ -138,18 +155,50 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     </a>
                     <div class="material-border"></div>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
-                        <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
-                    </a>
-                    <div class="material-border"></div>
-                </li>
+                
+                
+                @if ($client_preferences->business_type == 'rental')
+                    <li class="nav-item">
+                        <a class="nav-link" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="true" data-rel="rental_pending_delivery">
+                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                        </a>
+                        <div class="material-border"></div>
+                        <ul class="nav nav-tabs nav-material rental_filter_tab" id="top-tab" role="tablist" style="display:none;">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="false" data-rel="rental_pending_delivery">
+                                    <i class="icofont icofont-man-in-glasses"></i>{{ __('Rental Pending Delivery') }} <sup class="total-items" id="rental-pending-delivery"></sup>
+                                </a>
+                                <div class="material-border"></div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="rental_running_product-tab" data-toggle="tab" href="#rental_running_product" role="tab" aria-selected="false" data-rel="rental_running_product">
+                                    <i class="icofont icofont-man-in-glasses"></i>{{ __('Running Product') }} <sup class="total-items" id="rental-running-product"></sup>
+                                </a>
+                                <div class="material-border"></div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="rental_pending_return-tab" data-toggle="tab" href="#rental_pending_return" role="tab" aria-selected="true" data-rel="rental_pending_return">
+                                    <i class="icofont icofont-ui-home"></i>{{ __('Rental Pending Returns') }} <sup class="total-items" id="rental-pending-return"></sup>
+                                </a>
+                                <div class="material-border"></div>
+                            </li>
+                        </ul>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
+                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                        </a>
+                        <div class="material-border"></div>
+                    </li> 
+                @endif
                 <li class="nav-item">
                     <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
                         <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
                     </a>
                     <div class="material-border"></div>
                 </li>
+               
             </ul>
         </div>
         <div class="pl-2 pr-2">
@@ -413,12 +462,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             $(this).remove();
         });
         $(".nav-link").click(function() {
+            console.log("asdf");
             $('#order_list_order').show();
             var rel = $(this).data('rel');
             var url = "{{ route('orders.filter') }}";
             $("#search_via_keyword").val("");
             // $(".tab-pane").html('');
             init(rel, url, '', false);
+            
         });
         // $(function() {
         //     var url = window.location.href;
@@ -446,7 +497,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         })
 
 
-        function openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id) {
+        function openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id, order_luxury_option_id) {
             var cancelled_by = "{{Auth::user()->id}}";
             // var that = document.getElementById('reject');
             //     var count = that.data("count");
@@ -484,6 +535,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         status_option_id: status_option_id,
                         order_vendor_id: order_vendor_id,
                         cancelled_by: cancelled_by,
+                        order_luxury_option_id: order_luxury_option_id,
                     },
 
                     success: function(response) {
@@ -533,10 +585,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         }
 
-
-
-
-
         // update status
         $(document).on("click", ".update-status", function() {
 
@@ -551,83 +599,163 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var order_id = that.data("order_id");
             var vendor_id = that.data("vendor_id");
             var count = that.data("count");
+            var order_luxury_option_id = that.data("order_luxury_option");
             var alertMessage = "";
+            var productIds = [];
+            $('.productIdsCheck_'+order_id+':checked').each(function(i){
+                productIds[i] = $(this).val();
+            });
+            order_vendor_product_id = [];
+            $('.productIdsCheck_'+order_id+':checked').each(function(i){
+                order_vendor_product_id[i] = $(this).data('order_vendor_product_id');
+            });
             if(status_option_id == 2 && that.data('is_alert'))
             {
                 alertMessage = that.data('alert_message');
             }
             if (status_option_id == 3) {
-                return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id);
+                return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id, order_luxury_option_id);
             } else {
-                Swal.fire({
-                  title: "{{__('Are you Sure?')}}",
-                  // icon: 'info',
-                  text: alertMessage,
-                  showCancelButton: true,
-                  confirmButtonText: 'Ok',
-                }).then((result) => {
-                    if (result.value) {
-                        $.ajax({
-                            url: "{{ route('order.changeStatus') }}",
-                            type: "POST",
-                            data: {
-                                order_id: order_id,
-                                vendor_id: vendor_id,
-                                "_token": "{{ csrf_token() }}",
-                                status_option_id: status_option_id,
-                                order_vendor_id: order_vendor_id,
-                            },
-                            success: function(response) {
+                if(productIds.length === 0 && order_luxury_option_id == 4 && status_option_id == 2){
+                    Swal.fire({ 
+                    title: "{{__('Error')}}",
+                    icon: 'warning',
+                    text: "Please select atleast one product",
+                    showCancelButton: true,
+                    confirmButtonText: 'Ok',
+                    });
+                }else{
+                    Swal.fire({
+                    title: "{{__('Are you Sure?')}}",
+                    // icon: 'info',
+                    text: alertMessage,
+                    showCancelButton: true,
+                    confirmButtonText: 'Ok',
+                    }).then((result) => {
+                        if (result.value) {
+                            $.ajax({
+                                url: "{{ route('order.changeStatus') }}",
+                                type: "POST",
+                                data: {
+                                    order_id: order_id,
+                                    vendor_id: vendor_id,
+                                    "_token": "{{ csrf_token() }}",
+                                    status_option_id: status_option_id,
+                                    order_vendor_id: order_vendor_id,
+                                    productIds: productIds,
+                                    order_vendor_product_id: order_vendor_product_id,
+                                    order_luxury_option_id: order_luxury_option_id
+                                },
+                                success: function(response) {
 
-                                if(response.status=='error'){
-                                    if (count == 0) {
-                                        $(full_div).slideUp(1000, function() {
-                                            $(this).remove();
-                                        });
+                                    if(response.status=='error'){
+                                        if (count == 0) {
+                                            $(full_div).slideUp(1000, function() {
+                                                $(this).remove();
+                                            });
 
-                                    } else {
-                                        $(single_div).slideUp(1000, function() {
-                                            $(this).remove();
-                                        });
+                                        } else {
+                                            $(single_div).slideUp(1000, function() {
+                                                $(this).remove();
+                                            });
 
-                                    }
-                                    $.NotificationApp.send('{{__("Error")}}', response.message, "top-right", "#ff0808", "error");
-                                    return 0;
-                                }
-
-                                if (status_option_id == 4 || status_option_id == 5) {
-                                    if (status_option_id == 4){
-                                        if((luxury_option == 2) || (luxury_option == 3)){
-                                            var next_status = "{{ __('Order Prepared') }}";
-                                        }else{
-                                            var next_status = "{{ __('Out For Delivery') }}";
                                         }
-                                    }else{
-                                        var next_status = "{{ __('Delivered') }}";
+                                        $.NotificationApp.send('{{__("Error")}}', response.message, "top-right", "#ff0808", "error");
+                                        return 0;
                                     }
-                                    that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
-                                    return false;
-                                } else {
 
-                                    if (count == 0) {
-                                        $(full_div).slideUp(1000, function() {
-                                            $(this).remove();
-                                        });
-
+                                    if (status_option_id == 4 || status_option_id == 5) {
+                                        if (status_option_id == 4){
+                                            if((luxury_option == 2) || (luxury_option == 3)){
+                                                var next_status = "{{ __('Order Prepared') }}";
+                                            }else{
+                                                var next_status = "{{ __('Out For Delivery') }}";
+                                            }
+                                        }else{
+                                            var next_status = "{{ __('Delivered') }}";
+                                        }
+                                        that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
+                                        return false;
                                     } else {
-                                        $(single_div).slideUp(1000, function() {
-                                            $(this).remove();
-                                        });
 
+                                        if (count == 0) {
+                                            $(full_div).slideUp(1000, function() {
+                                                $(this).remove();
+                                            });
+
+                                        } else {
+                                            $(single_div).slideUp(1000, function() {
+                                                $(this).remove();
+                                            });
+
+                                        }
                                     }
-                                }
-                                if (status_option_id == 2)
-                                    $.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
-                            },
-                        });
-                    }
-                });
+                                    if (status_option_id == 2)
+                                        $.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
+                                },
+                            });
+                        }
+                    });       
+                }
             }
+        });
+
+        // update vendor Product status
+        $(document).on("click", ".updateVendorProdStatus", function(e) {
+            e.preventDefault()
+            let that = $(this);
+            var count = that.data("count");
+            var status_option_id = that.data("status_option_id");
+            var luxury_option = that.data("order_luxury_option");
+            var order_vendor_id = that.data("order_vendor_id");
+            var order_id = that.data("order_id");
+            var vendor_id = that.data("vendor_id");
+            var count = that.data("count");
+            var order_product_id = that.data("vendor_product_id");
+            var order_vendor_product_id = that.data("order_vendor_product_id");
+            var alertMessage = "";
+            
+            Swal.fire({
+                title: "{{__('Are you Sure?')}}",
+                // icon: 'info',
+                text: alertMessage,
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: "{{ route('order.changeVendorProductStatus') }}",
+                        type: "POST",
+                        data: {
+                            order_id: order_id,
+                            vendor_id: vendor_id,
+                            vendor_id: vendor_id,
+                            "_token": "{{ csrf_token() }}",
+                            status_option_id: status_option_id,
+                            order_vendor_id: order_vendor_id,
+                            order_product_id: order_product_id,
+                            order_vendor_product_id: order_vendor_product_id,
+                        },
+                        success: function(response) {
+                            if(response.status=='error'){
+                                Swal.fire({
+                                    icon: 'warning',
+                                    text: response.message,
+                                    showCancelButton: false,
+                                    confirmButtonText: 'Ok',
+                                }) 
+                            }else if(response.status=='success'){
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: response.message,
+                                    showCancelButton: false,
+                                    confirmButtonText: 'Ok',
+                                })
+                            }                            
+                        },
+                    });
+                }
+            });
         });
     });
 </script>

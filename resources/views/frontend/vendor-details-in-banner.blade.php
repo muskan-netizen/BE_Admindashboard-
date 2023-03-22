@@ -38,7 +38,7 @@
                                 </ul>
                                     @if (!empty($vendor->desc))
                                         <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
-                                        <?xml version="1.0" encoding="UTF-8"?>
+                                        {{--
                                         <svg width="29px" height="40px" viewBox="0 0 29 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                         <title>location</title>
                                         <g id="design-update" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -49,26 +49,19 @@
                                         </g>
                                         </g>
                                         </g>
-                                        </svg> {{ substr($vendor->desc, 0, 80) . '...' }}</h4>
+                                        </svg>  --}}
+                                        {{ $vendor->desc }}</h4>
                                     @endif
                                 <p>{!! $vendor->short_desc !!}</p>
                                 <ul class="vendor-info">
 
                                 @if ($vendor->is_show_vendor_details == 1)
                                     <li class="d-block vendor-location">
-                                    <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M100 59.6318L50 20.8227L0 59.6318V43.8182L50 5L100 43.8091V59.6318ZM87.5 58.2227V95.7273H62.5V70.7273H37.5V95.7273H12.5V58.2273L50 30.1045L87.5 58.2227Z" fill="#ffffff"/>
-</svg>
-
-                                         {{ $vendor->address }}
+                                        <i class="icon-location"></i> <p class="vendor_address">{{ $vendor->address }}</p>
                                     </li>
                                     @if ($vendor->email)
                                         <li class="d-block vendor-email">
-                                        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M0 16.7266L50.0001 61.7268L99.9999 16.7268L100 90H0.000136158L0 16.7266ZM92.5255 10L50.0001 48.27L7.47421 10H92.5255Z" fill="#ffffff"/>
-</svg>
-
-                                             {{ $vendor->email }}
+                                            <i class="fa fa-envelope"></i> <p class="vendor_email">{{ $vendor->email }}</p>
                                         </li>
                                     @endif
                                     @if ($vendor->website)

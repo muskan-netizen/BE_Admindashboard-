@@ -39,16 +39,32 @@ class ProductBookingController extends FrontController
           }else{
             $product_variant_id[]=$request->variant_id;
           }
+
+          $variant_product_detail = ProductVariant::select('product_id', 'quantity')->whereIn('id', $product_variant_id)->first();
         
-          $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
-                              ->where(function ($query) use ($start_time , $end_time ){
-                                  $query->where('start_date_time', '<=', $end_time)
-                                        ->where('end_date_time', '>=', $start_time);
-                              })->pluck('variant_id')->toArray();
-          $available_product_variant = array_values(array_diff($product_variant_id, $ProductBooking));
-          if(isset($available_product_variant[0])){
-            $product_variant_data =  ProductVariant::where('id',$available_product_variant[0])->with(['product','checkIfInCart'])->first();
+          // $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
+          //                     ->where(function ($query) use ($start_time , $end_time ){
+          //                         $query->where('start_date_time', '<=', $end_time)
+          //                               ->where('end_date_time', '>=', $start_time);
+          //                     })->pluck('variant_id')->toArray();
+
+          $ProductBooking  = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)->where('on_rent', 1)
+          ->where(function ($query) use ($start_time , $end_time ){
+            $query->where('start_date_time', '<=', $end_time)
+            ->where('end_date_time', '>=', $start_time);
+          })->count('product_id');
+
+          // $available_product_variant = array_values(array_diff($product_variant_id, $ProductBooking));
+
+          $available_product_variant = [];
+          if($variant_product_detail->quantity > $ProductBooking){
+            $product_variant_data =  ProductVariant::where('id',$product_variant_id)->with(['product','checkIfInCart'])->first();
+            $available_product_variant = $product_variant_id;
           }
+          // dd($available_product_variant);
+          // if(isset($available_product_variant[0])){
+          //   $product_variant_data =  ProductVariant::where('id',$available_product_variant[0])->with(['product','checkIfInCart'])->first();
+          // }
           $returnarr =  array();
           $returnarr['available_product_variant'] =  @$available_product_variant[0];
           $returnarr['product_variant_data'] = $product_variant_data;

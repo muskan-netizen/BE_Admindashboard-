@@ -3,6 +3,7 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/css/azul.css')}}" rel="stylesheet" type="text/css" />
 
 @endsection
 
@@ -358,31 +359,36 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                         <span class="error text-danger" id="plugnpay_card_error"></span>
                     </div>
                 <% } %>
-<% if(payment_option.slug == 'azulpay') { %>
-
+                <% if(payment_option.slug == 'azulpay') { %>
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
 
-                        <div class="row no-gutters">
+                         <div class="tab">
+    <a class="tablinks active" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
+    <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
+  </div>
 
+  <div id="Add-Card" class="tabcontent show" style="display:block">
+     <div class="row no-gutters">
                             <div class="col-6">
-
-                                <input type="text" maxlength="16" style=" border-right: none;" class="form-control" id="azul-card-element" placeholder="Enter Card Number" required />
-
+                                <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" />
                             </div>
-
                             <div class="col-3">
-
-                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
-
-                           </div>
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" />
+                            </div>
                             <div class="col-3">
-
-                               <input type="password" max="4" style=" border-left: none;"  class="form-control" id="azul-cvv-element" placeholder="CVV" required />
-
-                           </div>
-
-                       </div>
-                      <span class="error text-danger" id="azul_card_error"></span>
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" />
+                            </div>
+                        </div>
+<div class="row">
+<div class="col-md-4">
+                     <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
+                                    <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
+            </div>
+</div>
+                        <span class="error text-danger" id="azul_card_error"></span>
+  </div>
+  <div id="Card-List" class="tabcontent">
+  </div>
                    </div>
                <% } %>
 
@@ -433,6 +439,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var stripe_fpx = '';
     var fpxBank = '';
     var idealBank = {};
+      var ajaxCall = 'ToCancelPrevReq';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
@@ -463,6 +470,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

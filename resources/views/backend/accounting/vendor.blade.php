@@ -80,6 +80,7 @@
                                     <th>{{ __("Promo [Vendor]") }}</th>
                                     <th>{{ __("Promo [Admin]") }}</th>
                                     <th>{{ __("Service Fee") }}</th>
+                                    <th>{{ __("Fixed Fee") }}</th>
                                     <th>{{ __("Cash Collected") }}</th>
                                     <th>{{ __("Payment Gateway") }}</th>
                                     <th>{{ __("Vendor Earning") }}</th>
@@ -154,6 +155,7 @@
                     {data: 'promo_vendor_amount', name: 'promo_vendor_amount', orderable: false, searchable: false},
                     {data: 'promo_admin_amount', name: 'promo_admin_amount', orderable: false, searchable: false},
                     {data: 'service_fee', name: 'service_fee', orderable: false, searchable: false},
+                    {data: 'fixed_fee', name: 'fixed_fee', orderable: false, searchable: false},
                     {data: 'cash_collected_amount', name: 'cash_collected_amount', orderable: false, searchable: false},
                     {data: 'payment_method', name: 'payment_method', orderable: false, searchable: false},
                     {data: 'vendor_earning', name: 'vendor_earning', orderable: false, searchable: false},

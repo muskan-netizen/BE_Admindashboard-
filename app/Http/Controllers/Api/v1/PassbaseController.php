@@ -23,8 +23,8 @@ class PassbaseController extends BaseController
 	}
     public function storeAuthkey(Request $request) 
     {
-        Log::info('Passbase Data');
-        Log::info($request->all());
+       // Log::info('Passbase Data');
+       // Log::info($request->all());
     	$response = $this->getIdentity($request->identityAccessKey);
         $user = User::where('auth_token',$request->header('authorization'))->first();
     	$add = $this->userVerificationObj->addVerification([

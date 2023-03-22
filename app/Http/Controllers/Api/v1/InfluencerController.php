@@ -48,7 +48,7 @@ class InfluencerController extends Controller
     }
     function save(Request $request) {
         try {
-            \Log::info($request->all());
+            //\Log::info($request->all());
             if(@$request->kyc){
                 $validator = Validator::make($request->all(), [
                     'adhar_front' => 'required',

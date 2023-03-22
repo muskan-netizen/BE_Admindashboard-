@@ -1,4 +1,4 @@
-          
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">       
 @foreach($productAttributes as $vk => $var)
 @php $counter = 0; @endphp
     <div class="form-group">
@@ -81,6 +81,37 @@
                         </span>
                     </div>
                 @endforeach
+                @elseif( !empty($var->type) && $var->type == 7 )
+                        
+                @foreach($var->option as $key => $opt)
+                    <div class="form-group mb-3 w-100" id="addressInput">
+                        <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                        <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
+                        {{-- <input class="form-control" type="text" name="attribute[{{$var->id}}][option][{{$counter}}][value]" placeholder="Enter {{$var->title??null}}" 
+                        
+                        @if(in_array($opt->id, $attribute_value))  
+                        value="{{$attribute_key_value[$opt->id]}}"
+                        @else
+                        value=""
+                        @endif> --}}
+                        {{-- @dd($attribute_latitude) --}}
+                        <div class="form-check-inline w-100">
+                            <input type="text" name="attribute[{{$var->id}}][option][{{$counter}}][value]" placeholder="" class="form-control datepicker" @if(in_array($opt->id, $attribute_value))  
+                            value="{{$attribute_key_value[$opt->id]}}"
+                            @else
+                            value=""
+                            @endif>
+                            {{-- <div class="input-group-append">
+                                <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="add"> <i class="mdi mdi-map-marker-radius"></i></button>
+                            </div> --}}
+                        </div>
+                        <span class="invalid-feedback" role="alert">
+                            <strong></strong>
+                        </span>
+                    </div>
+                @endforeach
             @else
             @foreach($var->option as $key => $opt)
                 <div class="checkbox checkbox-success form-check-inline pr-3">
@@ -98,7 +129,12 @@
     </div>
 
 @endforeach
-
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script>
+    $( function() {
+      $( ".datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
+    } );
+</script>
 <script>
 var autocomplete = {};
     var autocompletesWraps = [];

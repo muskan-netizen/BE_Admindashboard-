@@ -108,7 +108,31 @@
                             </div>
                         </div>
 
+                        @if(auth()->user()->can('user-add-role-permission') || auth()->user()->is_superadmin)
+                      
                         <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="password" class="control-label">{{ __("User Role") }}</label>
+                                    <select name="role" class="form-control">
+                                        <option value="" >Select Role</option>
+                                        @foreach($rolesNew as $role)
+                                        <option value="{{$role->id}}" @if($role->id==$userRole) selected @endif>{{$role->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                    <div class="form-group">
+                                    {!! Form::label('title', __('Select Geo Fence Regions'),['class' => 'control-label'],['placeholder'=>'Search']) !!}
+                                    <select class="permissoin-multiple selectToGeo" name="geo_ids[]" multiple="multiple">
+                                        @foreach($serviceArea as $perm)
+                                        <option value="{{$perm->id}}" @if(in_array($perm->id,$geoIds)) selected @endif >{{$perm->name}}</option>
+                                        @endforeach
+                                    </select>
+                                    </div>
+                            </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="password" class="control-label">{{ __("Status") }}</label>
@@ -148,7 +172,22 @@
                                     </div>
                                 @endif
                             @endif
-
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    {!! Form::label('title', __('Email Verified'),['class' => 'control-label']) !!}
+                                    <div>
+                                        <input type="checkbox" data-plugin="switchery" name="is_email_verified" class="form-control email_verify_add" @if($subadmin->is_email_verified == 1) checked @endif>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    {!! Form::label('title', __('Phone Verified'),['class' => 'control-label']) !!}
+                                    <div>
+                                        <input type="checkbox" data-plugin="switchery" name="is_phone_verified" class="form-control phone_verify_add" @if($subadmin->is_phone_verified == 1) checked @endif>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
 
@@ -222,7 +261,7 @@
                                         }
                                     }
                                 @endphp
-                                <table class="table table-borderless table-nowrap table-hover table-centered m-0">
+                                <table class="table table-borderless table-nowrap table-hover table-centered m-0 d-none">
 
                                     <thead class="thead-light">
                                         <tr>
@@ -340,6 +379,7 @@
                             </div>
 
                         </div>
+                        @endif
 
                         <div class="row mb-2 mt-4">
                             <div class="col-12">
@@ -568,6 +608,7 @@
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-ui.css') }}">
     <script>
+         $('.permissoin-multiple').select2();
          $(".all_vendor_check").click(function() {
             if ($(this).is(':checked')) {
                 $('.vendor_permission_check').prop('checked', true);
