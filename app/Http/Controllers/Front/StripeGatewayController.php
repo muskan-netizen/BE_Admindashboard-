@@ -1877,7 +1877,6 @@ class StripeGatewayController extends FrontController
         
         http_response_code(200);
     }
-
     public function paymentWebViewStripeFPX(Request $request, $domain='')
     {
         // try{

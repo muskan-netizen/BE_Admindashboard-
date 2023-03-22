@@ -887,6 +887,7 @@ class OrderController extends BaseController
                 $luxury_option_name = $this->getNomenclatureName($luxury_option->title, $langId, false);
             }
         }
+        $fixedFee = $this->fixedFee($langId);
         $order->luxury_option_name = $luxury_option_name;
         $order_status_options = OrderStatusOption::where('type', 1)->get();
         $dispatcher_status_options = DispatcherStatusOption::with(['vendorOrderDispatcherStatus' => function ($q) use ($order_id, $vendor_id) {
@@ -944,6 +945,7 @@ class OrderController extends BaseController
             'clientCurrency' => $clientCurrency,
             'user_docs' => $user_docs,
             'vendor_data' => $vendor_data,
+            'fixedFee'=>$fixedFee,
             "category_KYC_document" => $category_KYC_document,
             'driver_data' => (($driver_data) ? json_decode($driver_data) : ''),
             'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
