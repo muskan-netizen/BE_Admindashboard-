@@ -16,7 +16,7 @@ trait HomePageTrait
     {
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
-        $mostSellingVendors = Vendor::with('slot.day', 'slotDate')->select('vendors.*', DB::raw('count(vendor_id) as max_sales'))->join('order_vendors', 'vendors.id', '=', 'order_vendors.vendor_id')->whereIn('vendors.id', $vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'), 'desc');
+        $mostSellingVendors = Vendor::with('slot.day', 'slotDate', 'products')->select('vendors.*', DB::raw('count(vendor_id) as max_sales'))->join('order_vendors', 'vendors.id', '=', 'order_vendors.vendor_id')->whereIn('vendors.id', $vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'), 'desc');
 
         // add hyperlocal check to get vendors
         if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {

@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Traits;
-use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating};
+use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating, VendorCategory};
 use Illuminate\Support\Str;
 use Auth;
 use Session;
@@ -435,15 +435,29 @@ trait ProductActionTrait{
        return $returnArray;
     }
     
-    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $latitude , $longitude)
+    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $latitude , $longitude)
     {
         $mytime = Carbon::now()->setTimezone($timezone);
         $current_time = $mytime->toTimeString();
 
-        if($vendor_title == "trending_vendors"){
-            
+        if( (empty($latitude)) && (empty($longitude)) ){
+            $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
+            $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
         }
-        $selectQuery = "SELECT `vendors`.`id`, 
+
+        //------ ids of subscription vendors in case of vendor_title is "trending_vendors"
+        $trending_vendors = [];
+        if($vendor_title == "trending_vendors"){
+            $now = Carbon::now()->toDateTimeString();
+            $trending_vendors = SubscriptionInvoicesVendor::whereHas('features', function ($query) {
+                $query->where(['subscription_invoice_features_vendor.feature_id' => 1]);
+            })
+            ->select('id', 'vendor_id', 'subscription_id')
+            ->where('end_date', '>=', $now)
+            ->pluck('vendor_id')->toArray();
+        }
+        
+        $selectQuery = "`vendors`.`id`, 
         `vendors`.`name`, 
         `vendors`.`banner`, 
         `vendors`.`address`, 
@@ -453,71 +467,113 @@ trait ProductActionTrait{
         `vendors`.`slug`, 
         `vendors`.`latitude`, 
         `vendors`.`longitude`, 
-        `vendors`.`show_slot`, 
-
+        `vendors`.`show_slot`,
+        `vendors`.`admin_rating`,
+        (SELECT count(`order_vendors`.`id`) FROM `order_vendors` WHERE `order_vendors`.`vendor_id` = `vendors`.`id`) AS `selling_count`,
+        (SELECT CONCAT(`vendor_slot_dates`.`start_time`, '##', `vendor_slot_dates`.`end_time`) FROM `vendor_slot_dates` WHERE `vendor_slot_dates`.`vendor_id` = `vendors`.`id` LIMIT 0,1) AS `slotdate_start_end_time`,
+        (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND `vendor_slots`.`start_time` < CAST('".$current_time."' AS time) AND `vendor_slots`.`end_time` > CAST('".$current_time."' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
+        6371 * acos(cos(radians(" . $latitude . ")) 
+                                    * cos(radians(`vendors`.`latitude`)) 
+                                    * cos(radians(`vendors`.`longitude`) - radians(" . $longitude . ")) 
+                                    + sin(radians(" .$latitude. ")) 
+                                    * sin(radians(`vendors`.`latitude`))) AS `lineOfSightDistance`
         ";
-        $mainQuery = "$selectQuery FROM vendors ";
+        $mainQuery = "SELECT $selectQuery FROM vendors ";
 
-        $mainQuery .= " LEFT JOIN `vendor_slots` as `vendor_slots` ON `vendor_slots`.`vendor_id` = `vendors`.`id`
-                        ";
-        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+        $mainQuery .= " where `vendors`.`status` = 1 ";
 
+        if(count($trending_vendors) > 0)
+        {
+            $mainQuery .= " where `vendors`.`id` IN (".implode(',',$trending_vendors).") ";
         }
-        $mainQuery .= " where status = 1";
+        
 
+        //------based on hyper location------------
         if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-        $mainQuery .= "and exists (select `id` from `service_areas` where `service_areas`.`vendor_id` = `vendors`.`id` and ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))";
-    }
-        if($is_admin_vendor_rating == 1){
-            $mainQuery.= " ORDER BY admin_rating desc";
-        }else{
-            $mainQuery.= " ORDER BY rand()";
+
+            $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+            $unit_abbreviation = ($distance_unit == 'mile') ? 'miles' : 'km';
+            $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;
+
+             $mainQuery .= " AND EXISTS (SELECT `service_areas`.`id` FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) ";
         }
+
+
+        if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude) && $vendor_title == "trending_vendors") {
+            $mainQuery.= " ORDER BY rand(), `lineOfSightDistance` DESC";
+        }else{
+            //-------------if admin rating is on otherwise random---------------
+            if($is_admin_vendor_rating == 1){
+                $mainQuery.= " ORDER BY admin_rating DESC";
+            }else{
+                $mainQuery.= " ORDER BY rand()";
+            }
+        }
+        
         $mainQuery .= " LIMIT 10";
 
-        /* $raw_query = "SELECT 
-            `vendors`.`id`, 
-            `vendors`.`name`, 
-            `vendors`.`banner`, 
-            `vendors`.`address`, 
-            `vendors`.`order_pre_time`, 
-            `vendors`.`order_min_amount`, 
-            `vendors`.`logo`, 
-            `vendors`.`slug`, 
-            `vendors`.`latitude`, 
-            `vendors`.`longitude`, 
-            `vendors`.`show_slot`, 
-
-            FROM 
-                `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
-                 LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
-                 LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 $vendorWhereIN
-                 LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
-                 LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id`
-                 LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
-                 LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id`
-                 LEFT JOIN   `product_attributes` as `product_attribute` ON `product_attribute`.`product_id` = `products`.`id` AND `product_attribute`.`key_name` = 'Location'
-                 
-            WHERE 
-                `products`.`deleted_at` IS NULL 
-                    AND `vendors`.`status` = 1 
-                    AND `products`.`is_live` = 1
-
-                    $completeWhere
-                                
-                    $vendorWhereIN 
-                
-                    GROUP BY `products`.`id`
-
-                    ORDER BY 
-                        RAND()
-            
-                    LIMIT 
-                        10"; */
      
-       $products = DB::select( DB::raw($mainQuery));
+        $vendors = DB::select( DB::raw($mainQuery));
 
-       $returnArray = $products;
-       return $returnArray;
+        $vendor_ids = [];
+
+        foreach ($vendors as $key => $value) {
+            $vendor_ids[] = $value->id;
+            $value->img_path = get_file_path($value->logo,'FILL_URL','200','200');
+            // get or update rating
+            $value->vendorRating = $this->getVendorRating($value->id);
+
+            if(($preferences) && ($preferences->is_hyperlocal == 1)) 
+            {
+                if($type == 'delivery')
+                {
+                    $pretime =  number_format(floatval($value->order_pre_time), 0, '.', '') + number_format(($value->lineOfSightDistance * $distance_to_time_multiplier), 0, '.', '');
+                }else{
+                    $pretime =  number_format(floatval($value->order_pre_time), 0, '.', '') + 0;
+                }
+                $value->timeofLineOfSightDistance = $pretime;
+                $value->lineOfSightDistance = $value->lineOfSightDistance.' '.$unit_abbreviation;
+            }
+            $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
+            $categoriesList = '';
+            foreach ($vendorCategories as $key => $category) {
+                if ($category->category) {
+                    $categoriesList = $categoriesList . @$category->category->translation_one->name ?? '';
+                    if ($key !=  $vendorCategories->count() - 1) {
+                        $categoriesList = $categoriesList . ', ';
+                    }
+                }
+            }
+            $value->categoriesList = $categoriesList;
+            $value->type_title = $categoriesList;
+
+            $value->is_vendor_closed = 0;
+            if($value->show_slot == 0){
+                if(empty($value->slotdate_start_end_time) && empty($value->slot_start_end_time)){
+                    $value->is_vendor_closed = 1;
+                }else{
+                    $value->is_vendor_closed = 0;
+                    if(!empty($value->slotdate_start_end_time)){
+                        $slotdate_start_end_time = explode('##', $value->slotdate_start_end_time);
+                        if($slotdate_start_end_time[0]!='' && $slotdate_start_end_time[1]!=''){
+                            $value->opening_time  = date('g:i A',strtotime($slotdate_start_end_time[0]));
+                            $value->closing_time = date('g:i A',strtotime($slotdate_start_end_time[1]));
+                        }
+
+                    }elseif(!empty($value->slot_start_end_time)){
+                        $slot_start_end_time = explode('##', $value->slot_start_end_time);
+                        if($slot_start_end_time[0]!='' && $slot_start_end_time[1]!=''){
+                            $value->opening_time  = date('g:i A',strtotime($slot_start_end_time[0]));
+                            $value->closing_time = date('g:i A',strtotime($slot_start_end_time[1]));
+                        }
+                    }
+                }
+            }
+        }
+        if (($latitude) && ($longitude)) {
+            Session::put('vendors', $vendor_ids);
+        }
+        $returnArray = ['vendor_ids' => $vendor_ids, 'vendors' => $vendors];
+        return $returnArray;
     }
 }

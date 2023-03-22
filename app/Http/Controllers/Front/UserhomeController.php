@@ -569,8 +569,6 @@ class UserhomeController extends FrontController
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
       
-        $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
-      
         if ($preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
@@ -584,8 +582,11 @@ class UserhomeController extends FrontController
                     Session::put('selectedAddress', $preferences->Default_location_name);
                 }
             }
+        }
 
-
+        /* $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
+      
+        if ($preferences) {
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                 if (!empty($latitude) && !empty($longitude)) {
                     $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
@@ -594,12 +595,12 @@ class UserhomeController extends FrontController
                     });                                                                     
                 }
             }
-        }
-
+        } */
+ 
         /**
          * put a limit to get vendors.
          */
-        $long_term_vendors = $vendors;
+        /* $long_term_vendors = $vendors;
 
         $vendors = $vendors->where('status', 1);
         if(@$additionalPreference['is_admin_vendor_rating']=='1'){
@@ -608,12 +609,12 @@ class UserhomeController extends FrontController
             $vendors = $vendors->inRandomOrder();
         }
                     
-        $vendors = $vendors->limit(10)->get();
-
-        //$vendors = $this->getVendorForHomePage($preferences, "RANDOM", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $latitude, $longitude);
+        $vendors = $vendors->limit(10)->get(); */
+        $vendorData = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $latitude, $longitude);
+        $vendors = $vendorData['vendors'];
         //pr($vendors);
 
-        foreach ($vendors as $key => $value) {
+        /* foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
 
             // get or update rating
@@ -656,24 +657,21 @@ class UserhomeController extends FrontController
                     }
                 }
             }
-        }
+        } */
         /**
          * End get vendors.
          */
 
 
-        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+        /* if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $vendors = $vendors->sortBy('lineOfSightDistance')->values()->all();
-        }
-        $now = Carbon::now()->toDateTimeString();
+        } */
+        //$now = Carbon::now()->toDateTimeString();
        
-        if (($latitude) && ($longitude)) {
-
-            Session::put('vendors', $vendor_ids);
-        }
+        
         $trendingVendors = [];
         if (in_array('trending_vendors', $enable_layout)) {  # if enable trending_vendors section in 
-            $subscribed_vendors_for_trending = SubscriptionInvoicesVendor::with('features')->whereHas('features', function ($query) {
+            /* $subscribed_vendors_for_trending = SubscriptionInvoicesVendor::with('features')->whereHas('features', function ($query) {
                 $query->where(['subscription_invoice_features_vendor.feature_id' => 1]);
             })
             ->select('id', 'vendor_id', 'subscription_id')
@@ -735,13 +733,17 @@ class UserhomeController extends FrontController
             }
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
-            }
+            } */
+            $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $latitude, $longitude);
         }    
 
+        $vendor_ids = $vendorData['vendor_ids'];
         //get Most Selling Vendors
         $mostSellingVendors = []; //best_sellers
         if (in_array('best_sellers', $enable_layout)) {
-         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
+            $mostSellingVendors = collect($vendors);
+            $mostSellingVendors = $mostSellingVendors->sortByDesc('selling_count');
+            //$mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
         }
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
@@ -811,7 +813,6 @@ class UserhomeController extends FrontController
                         ->orderBy('orders.id', 'DESC')->get();
                         foreach ($activeOrders as $order) {
                             foreach ($order->vendors as $vendor) {
-                                // dd($vendor->toArray());
                                 $vendor->tag_title = $vendor_title??'0';
                                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';

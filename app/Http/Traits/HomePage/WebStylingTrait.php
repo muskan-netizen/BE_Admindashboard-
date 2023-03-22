@@ -62,13 +62,13 @@ trait WebStylingTrait
 
         $delete = $delete->delete();
         foreach($request->selected_products as $products){
-
-        $relatedArray[] = [
-            'slug' => 'selected_products',
-            'product_id' => $products,
-            'layout_id'=> $id,
-            'type'      => $type??0
-        ];
+            $relatedArray[] = [
+                'slug' => 'selected_products',
+                'product_id' => $products,
+                'layout_id'=> $id,
+                'type'      => $type??0
+            ];
+        }
         HomeProduct::insert($relatedArray);
         return true;
     }
@@ -85,6 +85,7 @@ trait WebStylingTrait
     public function getSelectedProducts()
     {
         $product_ids = [];
+        
         $single_category_products = HomeProduct::whereSlug('selected_products')->first();
         if (!empty($single_category_products->products)) {
 
@@ -92,13 +93,13 @@ trait WebStylingTrait
         } else {
             $product_ids = [];
         }
+        
         return $product_ids;
     }
 
     public function getHomePageSelectedProducts($type=0)
     {
         //0 for web and 1 for App type
-        $selected_ids = [];
         $selected_ids= HomeProduct::where('type',$type)->pluck('product_id')->toArray();
         return $selected_ids;
     }
