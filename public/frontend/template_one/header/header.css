@@ -1222,12 +1222,12 @@ ul.header-dropdown.d-none.d-sm-inline li {
 .al_template_one .homepage-address{
     color: var(--theme-deafult) !important;
 }
-.top-header .header-dropdown li{
+/* .top-header .header-dropdown li{
     color: var(--theme-deafult) !important;
-}
+} */
 
 .top-header .header-dropdown li a{
-    color: var(--theme-deafult) !important;
+    /* color: var(--theme-deafult) !important; */
 }
 .site-topbar .location-bar span{
     color: var(--theme-deafult) !important;
