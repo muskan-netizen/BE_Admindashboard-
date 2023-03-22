@@ -1093,7 +1093,7 @@ if (!function_exists('stripeOXXOPaymentCredentials')) {
 if (!function_exists('stripeDynamicPaymentCredentials')) {
     function stripeDynamicPaymentCredentials($name){
         $stripe_creds = PaymentOption::select('credentials')->where('code', $name)->where('status', 1)->first();
-        $creds_arr = json_decode($stripe_creds->credentials);
+        $creds_arr = @json_decode(@$stripe_creds->credentials);
         $response = collect();
         $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
         $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
@@ -1816,3 +1816,17 @@ if( !function_exists('get_file_path') ) {
     }
 }
 
+if (!function_exists('getUserToken')) {
+    function getUserToken($credential)
+    {
+        $credentials = json_decode($credential->sms_credentials);
+        if (isset($credentials->static_otp) && $credentials->static_otp == '1') {
+            $data['otp'] = '123456';
+            $data['status'] = false;
+            return $data;
+        }
+        $data['otp'] = rand(100000, 999999);
+        $data['status'] = true;
+        return $data;
+    }
+}
