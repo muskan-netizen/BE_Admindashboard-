@@ -1779,7 +1779,7 @@ class StripeGatewayController extends FrontController
                             $payment->save();
     
                             // Auto accept order
-                           
+                        
                             $orderController->autoAcceptOrderIfOn($order->id);
                             $orderController->sendSuccessEmail($request, $order);
                             $this->sendSuccessSMS($request, $order);
