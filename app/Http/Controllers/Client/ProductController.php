@@ -1437,6 +1437,12 @@ class ProductController extends BaseController
                 case "for_sell_when_out_of_stock":
                     $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
                 break;
+                case "sync_for_square_post":
+                    foreach ($request->product_id as $key => $product_id) {
+                        $this->createOrUpdateProductInSquarePos($product_id);
+                    }
+                break;
+
                 case "delete":
                     // delete product harrry
                     $products = Product::whereIn('id',$request->product_id)->get();

@@ -530,5 +530,33 @@ trait SquareInventoryManager{
       } 
     }
   }
+
+  public function retrieveCatalogVersionData($merchant_id){
+    try{
+      //-----init square client--------
+      $client = $this->init();
+
+      $api_response = $client->getCatalogApi()->retrieveCatalogObject(
+        $merchant_id
+      );
+    
+      if ($api_response->isSuccess()) {
+        $result = $api_response->getResult();
+        Log::info("#### Api Response ####");
+        Log::info($result);
+      } else {
+        $errors = $api_response->getErrors();
+        Log::info("#### Api errors ####");
+        Log::info($errors);
+      }
+    }catch (ApiException $e)
+    {
+      return response()->json([
+        'status'  => 'error',
+        'result'  => [],
+        'message' => $e->getMessage()
+      ]);
+    } 
+  }
   
 }

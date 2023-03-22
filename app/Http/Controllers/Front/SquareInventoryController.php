@@ -10,10 +10,11 @@ use Session;
 use DB, Log;
 use App\Http\Traits\ApiResponser;
 use App\Models\{ProductVariant, Product, Variant, ClientPreference};
+use App\Http\Traits\SquareInventoryManager;
 
 class SquareInventoryController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser, SquareInventoryManager;
     
 
     /******************    ---- order status update from dispatch (Need to dispatcher_status_option_id ) -----   ******************/
@@ -38,6 +39,12 @@ class SquareInventoryController extends FrontController
                     }
                 }
                 
+            }
+
+            if($request->type == 'catalog.version.updated' && $getAdditionalPreference['square_enable_status'] == 1)
+            {
+                // Log::info($request->data['object']);
+                $res = $this->retrieveCatalogVersionData($request->merchant_id, $request->event_id);
             }
            
 
