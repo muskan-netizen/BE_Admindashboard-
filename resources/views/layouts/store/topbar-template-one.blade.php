@@ -20,7 +20,7 @@ $preference = $client_preference_detail;
 </style>
 
 <!-- shimmer_effect end -->
-<div class="top-header site-topbar al_template_one">
+<div class="top-header site-topbar al_template_one border-bottom">
     <div class="container">
         <div class="row align-items-center justify-content-between">
             <div class="col-sm-6">
