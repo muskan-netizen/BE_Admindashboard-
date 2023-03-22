@@ -1230,11 +1230,11 @@ if (!function_exists('getServiceTypesCategory')) {
             ];
             
             if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p') {
-            $service_types = $alltypes[$vendorType];
+                $service_types = $alltypes[$vendorType];
             }
 
             if ($client_preference->business_type == 'taxi' || $client_preference->business_type == 'laundry' || $client_preference->business_type == 'home_service' || $client_preference->business_type == 'p2p') {
-            $service_types = $alltypes[$client_preference->business_type];
+                $service_types = $alltypes[$client_preference->business_type];
             }
             /* if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
                 $service_types = ['products_service'];
