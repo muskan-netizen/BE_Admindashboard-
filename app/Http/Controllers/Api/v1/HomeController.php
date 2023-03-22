@@ -287,7 +287,7 @@ class HomeController extends BaseController
                 $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
             $homeData['domain_link'] = $domain_link;
 
-           
+            $homeData['profile']->preferences->static_otp =  (getUserToken($preferences->preferences)['status'])?false:true;
             $homeData['profile']->preferences->is_postpay_enable    = (int) $getAdditionalPreference['is_postpay_enable'];
             $homeData['profile']->preferences->is_order_edit_enable = (int) $getAdditionalPreference['is_order_edit_enable'];
             $homeData['profile']->preferences->is_bid_enable        = (int) $getAdditionalPreference['is_bid_enable'];
