@@ -7821,9 +7821,14 @@ body .status_box label {
     margin-top: 2px !important
 }
 
-body .suppliers-img-outer,
+/* body .suppliers-img-outer,
 body .img-outer-box {
     height: 150px
+} */
+
+body .suppliers-img-outer, body .img-outer-box {
+    height: 260px;
+    min-height: 260px;
 }
 
 .cab-booking-header .top-header .header-dropdown li a,
