@@ -64,6 +64,12 @@ class Category extends Model
                 ->select('brand_categories.category_id', 'brand_categories.brand_id', 'brands.id', 'brands.image');
     }
 
+    public function cateBrands()
+    {
+      return $this->belongsToMany(Brand::class,'brand_categories','category_id','brand_id')
+      ->select('brands.id', 'brands.image', 'brands.title');
+    }
+
     public function childs()
     {
         return $this->hasMany(Category::class, 'parent_id', 'id')->join('types', 'types.id', 'categories.type_id')
