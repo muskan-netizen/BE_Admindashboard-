@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\InfluencerTrait;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\SignupRequest;
 use Illuminate\Support\Facades\Hash;
@@ -23,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, VendorAdditionalInfo};
+use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,PermissionsOld, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, VendorAdditionalInfo};
 
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
@@ -35,7 +36,7 @@ use App\Http\Traits\ProductActionTrait;
 class CustomerAuthController extends FrontController
 {
     use ApiResponser;
-    use ProductActionTrait;
+    use ProductActionTrait, InfluencerTrait;
 
     private $folderName = '/vendor/extra_docs';
 
@@ -248,8 +249,8 @@ class CustomerAuthController extends FrontController
             $user = new User();
             $county = Country::where('code', strtoupper($req->countryData))->first();
             $client_timezone = Client::where('id', '>', 0)->value('timezone');
-            $phoneCode = mt_rand(100000, 999999);
-            $emailCode = mt_rand(100000, 999999);
+            $phoneCode = getUserToken($preferences)['otp'];
+            $emailCode = getUserToken($preferences)['otp'];
             $sendTime = \Carbon\Carbon::now()->addMinutes(10)->toDateTimeString();
             $email = (!empty($req->email)) ? $req->email : '';//('ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com');
             $user->type = 1;
@@ -269,6 +270,12 @@ class CustomerAuthController extends FrontController
             $user->timezone = $client_timezone;
             $user->password = Hash::make($req->password);
             $user->save();
+
+            // Save User Kyc Details
+            if(@$req->kyc){
+                InfluencerTrait::saveKycData($req, $user->id);
+            }
+
             $wallet = $user->wallet;
             $userRefferal = new UserRefferal();
             $userRefferal->refferal_code = $this->randomData("user_refferals", 8, 'refferal_code');
@@ -370,7 +377,7 @@ class CustomerAuthController extends FrontController
                     $vendor->slug = Str::slug($user->name, "-");
                     $vendor->save();
 
-                    $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+                    $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
 
                     UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
 
@@ -395,32 +402,33 @@ class CustomerAuthController extends FrontController
                 }
 
                 Session::forget('referrer');
-                $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
+                $prefer = ClientPreference::select('sms_credentials','mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
                         'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from',
                         'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider',
                         'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
-                
-                if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
-                    if ($user->dial_code == "971") {
-                        $to = '+' . $user->dial_code . "0" . $user->phone_number;
-                    } else {
-                        $to = '+' . $user->dial_code . $user->phone_number;
-                    }
-                    $provider = $prefer->sms_provider;
-                  //  $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
-                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:''); 
-                    $keyData = ['{user_name}'=>ucwords($user->name)];
-                    $body = sendSmsTemplate('user-signup-sms',$keyData);              
-                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-
-                    if( $prefer->verify_phone == 1 ){
-                        $response['send_otp'] = 1;
-                        $to = '+'.$user->dial_code.$user->phone_number;
+                if(getUserToken($prefer)['status']){
+                    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                        if ($user->dial_code == "971") {
+                            $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                        } else {
+                            $to = '+' . $user->dial_code . $user->phone_number;
+                        }
                         $provider = $prefer->sms_provider;
-                        //$body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
-                        $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
-                        $body = sendSmsTemplate('verify-account',$keyData); 
+                      //  $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
+                        // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:''); 
+                        $keyData = ['{user_name}'=>ucwords($user->name)];
+                        $body = sendSmsTemplate('user-signup-sms',$keyData);              
                         $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+    
+                        if( $prefer->verify_phone == 1){
+                            $response['send_otp'] = 1;
+                            $to = '+'.$user->dial_code.$user->phone_number;
+                            $provider = $prefer->sms_provider;
+                            //$body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
+                            $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
+                            $body = sendSmsTemplate('verify-account',$keyData); 
+                            $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                        }
                     }
                 }
                 if(!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)){
@@ -558,13 +566,15 @@ class CustomerAuthController extends FrontController
                         return response()->json($errors, 422);
                     }
                 }
-
+                $prefer = ClientPreference::select('sms_credentials','mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
+                    'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+                
                 $phone_number = preg_replace('/\D+/', '', $username);
                 $dialCode = $request->dialCode;
                 $fullNumber = $request->full_number;
                 // $fullNumberWithoutPlus = str_replace('+', '', $fullNumber);
                 // $phone_number = substr($fullNumberWithoutPlus, strlen($dialCode));
-                $phoneCode = mt_rand(100000, 999999);
+                $phoneCode = getUserToken($prefer)['otp'];
                 $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
                 $request->request->add(['is_phone'=>1, 'phone_number'=>$phone_number, 'phoneCode'=>$phoneCode, 'sendTime'=>$sendTime, 'codeSent'=>0]);
 
@@ -587,9 +597,7 @@ class CustomerAuthController extends FrontController
                     $user->save();
                 }
 
-                $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
-                            'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
-
+                
                 if($dialCode == "971"){
                     $to = '+'.$dialCode."0".$phone_number;
                 } else {
@@ -600,8 +608,11 @@ class CustomerAuthController extends FrontController
                 $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
                 $body = sendSmsTemplate('verify-account',$keyData);
                 if(!empty($provider) ){
-                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-
+                    if(getUserToken($prefer)['status']){
+                        $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    }else{
+                        $send = 1;
+                    }
                     if($send ==1){
                         $request->request->add(['codeSent' => 1]);
                         $message = __('An otp has been sent to your phone. Please check.');
@@ -1008,9 +1019,9 @@ class CustomerAuthController extends FrontController
             $vendor->is_seller = $request->vendor_type ?? 0;
             $vendor->save();
             if($request->vendor_type == 0){
-                $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21]);    
+                $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21]);    
             }else{
-                $permission_details = Permissions::whereIn('id', [1,2,12,17,18,19,20,21,28]);
+                $permission_details = PermissionsOld::whereIn('id', [1,2,12,17,18,19,20,21,28]);
             }
             $permission_details = $permission_details->get();   
             if ($vendor_registration_documents->count() > 0) {

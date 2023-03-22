@@ -96,9 +96,9 @@ class SocialController extends BaseController{
         if($request->has('phone_number')){
             $customer->phone_number = $request->phone_number;
         }
-        Log::info('$customer->phone_number');
-        Log::info($customerOldPhoneNumber);
-        Log::info('$customer->phone_number');
+       // Log::info('$customer->phone_number');
+       // Log::info($customerOldPhoneNumber);
+       // Log::info('$customer->phone_number');
         $customer->phone_number = $customerOldPhoneNumber;
         $customer->status = 1;
         $customer->is_email_verified = 1;

@@ -37,6 +37,12 @@ class AppStylingSeeder extends Seeder{
         ]);
         $app_styling_option = AppStylingOption::insert([
             'app_styling_id' => $app_styling,
+            'name' => 'Poppins-Regular',
+            'is_selected' => '0'
+        ]);
+
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
             'name' => 'Eina02-Regular',
             'is_selected' => '0'
         ]);
@@ -99,7 +105,13 @@ class AppStylingSeeder extends Seeder{
         ]);
         $app_styling_option = AppStylingOption::insert([
             'app_styling_id' => $app_styling,
-            'name' => 'Eina02-Bold',
+            'name' => 'Poppins-Bold',
+            'is_selected' => '0'
+        ]);
+
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'SFProText-Bold',
             'is_selected' => '0'
         ]);
 
@@ -264,10 +276,18 @@ class AppStylingSeeder extends Seeder{
 
         $app_styling_option = AppStylingOption::insert([
             'app_styling_id' => $app_styling,
+            'name' => 'Home Page 10',
+            'image' => 'home_ten.png',
+            'is_selected' => '0',
+            'template_id' => '9',
+        ]);
+
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
             'name' => 'Home Page 11',
             'image' => 'home_eleven.png',
             'is_selected' => '0',
-            'template_id' => '10'
+            'template_id' => '10',
         ]);
 
         $app_styling = AppStyling::insertGetId([

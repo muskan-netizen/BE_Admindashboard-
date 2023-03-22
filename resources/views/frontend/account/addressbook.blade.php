@@ -487,7 +487,13 @@
         if(lngs==''){
             lngs="{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
         }
-
+        if(lats==0){
+            lats=userLatitude;
+        }
+        if(lngs==0){
+            lngs=userLongitude;
+        }
+      
         var myLatlng = new google.maps.LatLng(lats, lngs);
 
         var infowindow = new google.maps.InfoWindow();

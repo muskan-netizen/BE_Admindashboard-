@@ -2188,7 +2188,7 @@ class SellerController extends BaseController
                 DB::commit();
 
             } catch (\PDOException $e) {
-                Log::info($e->getMessage());
+               // Log::info($e->getMessage());
                 DB::rollBack();
 
             }
@@ -2282,7 +2282,7 @@ class SellerController extends BaseController
 
             foreach($estimate_products as $k => $product)
             {
-                \Log::info($product->primary);
+                //\Log::info($product->primary);
                     //Product added
                     $productId = Product::updateOrCreate(
                     [

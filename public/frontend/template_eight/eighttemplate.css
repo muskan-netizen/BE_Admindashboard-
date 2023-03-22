@@ -2393,7 +2393,7 @@ body.al_body_template_eight ul#header_cart_main_ul li {
 }
 
 body.al_body_template_eight .qty-box .input-group .form-control {
-    width: 40px !important;
+    width: 169px !important;
     height: 40px;
 }
 
@@ -2649,6 +2649,11 @@ body.al_body_template_eight .p2p-full-width {
 
 
 
+
+/*=====   20-02-2023  css chnages    =======*/
+.al_body_template_eight .al_new_ipad_view .search_bar  .shake-effect {
+    display: none!important;
+}
 body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span{
     padding: 20px 10px 10px;
 }
@@ -2673,6 +2678,130 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
 }
 
 
+
+
+
+.product-4-selected_products .slick-slide > div {
+    margin: 0!important;
+}
+.product-4-selected_products .slick-slide > div .col{
+    padding: 0!important;
+}
+.al_body_template_eight  .product-m .al_clock b{
+    font-size: 15px!important;
+}
+
+
+/* 22-02-2023 */
+.al_body_template_eight .alSingleProducts .slick-track{
+    margin-left: 0!important;
+    margin-right: 0!important;
+}
+.al_body_template_eight .alSingleProducts .recurring_booking_warpper {
+    margin-left: 0;
+    padding: 10px;
+}
+.al_body_template_eight .alSingleProducts .recurring_booking_warpper .col-md-2, .al_body_template_eight .alSingleProducts .recurring_booking_warpper .col-md-3 {
+    padding-left: 0!important;
+    padding-right: 5px!important;
+    width: 100%!important;
+    max-width: 100%!important;
+    min-width: 50px!important;
+}
+.al_body_template_eight .alSingleProducts .recurring_booking_warpper  label.check_recurring {
+    position: relative;
+    margin-right: 0px!important;
+    width: auto;
+    display: inline-block;
+    align-items: center;
+}
+.al_body_template_eight .alSingleProducts .recurring_booking_warpper  label.check_recurring  input:checked ~ .checkmark {
+    background-color: var(--theme-deafult);
+    border-color: var(--theme-deafult);
+}
+.al_body_template_eight .alSingleProducts .recurring_booking_warpper  label.check_recurring .checkmark{
+    width: 18px;
+    height: 18px;
+}
+.al_body_template_eight .alSingleProducts .recurring_booking_warpper  label.check_recurring  .checkmark:after {
+    top: 3px;
+    left: 3.2px;
+    width: 10px;
+    height: 6px;
+    border-radius: unset;
+    background: transparent;
+    border-bottom: 2px solid #fff;
+    border-left: 2px solid #fff;
+    transform: rotate(-45deg);
+}
+.al_body_template_eight .alSingleProducts .recurring_booking_warpper  label.check_recurring span {
+    font-size: 14px;
+    font-weight: 400;
+}
+.al_body_template_eight .alSingleProducts .recurring_booking_warpper  label.check_recurring input{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+}
+.al_body_template_eight img.blur-up.brand-logo.lazyloaded{
+    width: 100%!important;
+}
+.al_body_template_eight #al_new_design .pixelstrap li a{
+    font-size: 14px!important;
+}
+.al_body_template_eight .Popular_Brands .slick-slide div {
+    text-align: center;
+}
+.Popular_Brands.slick-slider .slick-next{
+    right: 0!important;
+}
+.Popular_Brands.slick-slider{
+    padding:0 20px!important;
+}
+.render_full_new_products .media-body .product-description del, .main-product .media-body .product-description del {
+    font-size: 10px;
+}
+.al_body_template_eight .Popular_Brands .slick-track {
+    margin: 0 auto!important;
+}
+.al_body_template_eight .home-slider-wrapper .banner-img-outer img{
+    height: auto!important;
+    object-fit: contain!important;
+}
+.dark .cutom_add_wishlist .fav-button span{
+    color:#fff;
+}
+
+/* body.al_body_template_eight ul.exzoom_img_ul.img-sidebar img {
+    min-height: auto;
+    object-fit: contain;
+    height: auto;
+} */
+/* body.al_body_template_eight ul.exzoom_img_ul {
+    padding-top: 100%;
+}
+body.al_body_template_eight ul.exzoom_img_ul.img-sidebar img {
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+} */
+.al_body_template_eight img.blur-up.brand-logo.lazyloaded {
+    padding: 0 10px!important;
+}
+.dark .cutom_add_wishlist .fav-button  i {
+    color: var(--theme-deafult );
+}
+
 /*----------laptop view----------*/
 
 @media(max-width:1440px) {
@@ -2685,7 +2814,17 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
 
 /*-------------ipad css--------*/
 
+@media(max-width:1199px) {
+    .al_body_template_eight .cardbanner, .al_body_template_eight .al_desktop_banner{
+        height: auto!important;
+    }
+}
+
 @media(max-width:991px) {
+    .al_body_template_eight section.home-slider-wrapper .cardbanner, .al_body_template_eight .al_desktop_banner{
+        height: auto!important;
+    }
+
     body.al_body_template_eight .recet-pw .login_img img {
         border-radius: 10px 10px 0 0 !important;
     }
@@ -2855,6 +2994,9 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
 /*-------------------mobile view css----------*/
 
 @media(max-width:767px) {
+    body.al_body_template_eight .home-slider-wrapper .banner-img-outer img, body.al_body_template_eight  .al_mobile_banner{
+        height: auto !important;
+    }
     body.al_body_template_eight ul.exzoom_img_ul.img-sidebar img {
         height: 300px;
     }

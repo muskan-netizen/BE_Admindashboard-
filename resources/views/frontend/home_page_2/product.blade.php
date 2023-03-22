@@ -14,7 +14,8 @@
                             @endif 
                         @endif 
                 </div>
-                <p>{{ $product->vendor_name }}</p>
+                <p>{{  $product->vendor_name  }}</p>
+                @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                 <h4>
                     <b> {{ showPriceWithCurrency($product->price_numeric) }} </b>
 
@@ -26,6 +27,7 @@
                             {!!showPriceWithCurrency($product->compare_price_numeric,'1') !!}
                         @endif
                 </h4>
+                @endif
             </div>
         </div>
     </a>

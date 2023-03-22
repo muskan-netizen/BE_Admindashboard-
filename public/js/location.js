@@ -1240,7 +1240,7 @@ function initMap() {
         });
 
         setTimeout(function(){
-            $(".pac-container").appendTo("#edit-address .address-input-group");
+            //$(".pac-container").appendTo("#edit-address .address-input-group");
         }, 300);
     }
 }

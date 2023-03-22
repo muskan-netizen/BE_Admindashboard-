@@ -145,7 +145,7 @@ class PayUGatewayController extends FrontController
             return $this->successResponse($data);
         }
         catch(\Exception $ex){
-            \Log::info($ex->getMessage());
+            //\Log::info($ex->getMessage());
             return $this->errorResponse('Server Error', 400);
         }
     }
@@ -154,7 +154,7 @@ class PayUGatewayController extends FrontController
     {
         // Notify PayFast that information has been received
         //dd('sad');
-        \Log::info($request->all());
+        //\Log::info($request->all());
         header( 'HTTP/1.0 200 OK' );
         flush();
 
@@ -212,7 +212,7 @@ class PayUGatewayController extends FrontController
 
     public function payfastNotifyApp(Request $request, $domain = '')
     {
-        \Log::info($request->all());
+        //\Log::info($request->all());
         // Notify PayFast that information has been received
         header( 'HTTP/1.0 200 OK' );
         flush();

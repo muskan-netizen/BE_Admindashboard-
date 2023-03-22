@@ -53,6 +53,11 @@
                                 </div>
                                 <span class="invalid-feedback2 invalid_email_otp_error w-100 d-block text-center text-danger"></span>
                                 <div class="row text-center mt-2">
+                                 @if($staticOtpEnable)
+                                    <div class="col-12">                                        
+                                            <div class="text-success">Your otp is 123456</div>
+                                    </div>
+                                @endif
                                     <div class="col-12 resend_txt">
                                         <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
                                         
@@ -101,6 +106,11 @@
                         </div>
                         <span class="invalid_phone_otp_error invalid-feedback2 w-100 d-block text-center text-danger"></span>
                         <div class="row text-center mt-2">
+                         @if($staticOtpEnable)
+                                    <div class="col-12">                                        
+                                            <div class="text-success">Your otp is 123456</div>
+                                    </div>
+                                @endif
                             <div class="col-12 resend_txt">
                                 <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
                                 <div class="phonecountdown text-danger"></div>

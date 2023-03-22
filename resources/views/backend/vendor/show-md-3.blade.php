@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
 <style>
     a.deleteMultiBanner {
         color: #fff;
@@ -269,6 +270,11 @@ body .rating-form .btn-reset {
     </div>
 </div> -->
 
+{{-- @if(auth()->user()->can('vendor-setting') || auth()->user()->is_superadmin) --}}
+@php
+    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
+@endphp
+@if( !p2p_module_status() )
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -280,6 +286,7 @@ body .rating-form .btn-reset {
                     </div>
                 </div>
                 <div class="row mb-2">
+                   
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12">
                         <div class="form-group" id="order_pre_timeInput">
@@ -350,7 +357,7 @@ body .rating-form .btn-reset {
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-                    
+               
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
@@ -373,6 +380,36 @@ body .rating-form .btn-reset {
                         {!! Form::label('title', __('Return Auto Approve'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="return_auto_approve" class="form-control" data-color="#43bee1" @if($vendor->return_auto_approve == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    
+                    @if(isset($getAdditionalPreference['is_same_day_delivery']) && $getAdditionalPreference['is_same_day_delivery'] == '1')
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Same Day Delivery'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="same_day_delivery" class="form-control" data-color="#43bee1" @if($vendor->same_day_delivery == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    @endif
+
+                    @if(isset($getAdditionalPreference['is_next_day_delivery']) && $getAdditionalPreference['is_next_day_delivery'] == '1')
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Next Day Delivery'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="next_day_delivery" class="form-control" data-color="#43bee1" @if($vendor->next_day_delivery == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    @endif
+
+                    @if(isset($getAdditionalPreference['is_hyper_local_delivery']) && $getAdditionalPreference['is_hyper_local_delivery'] == '1')
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Hyper Local Delivery'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="hyper_local_delivery" class="form-control" data-color="#43bee1" @if($vendor->hyper_local_delivery == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    @endif
+                    
+                    @if($getAdditionalPreference['is_same_day_delivery'] == '1' || $getAdditionalPreference['is_next_day_delivery'] == '1')                    
+                        <div class="col-md-12" id="cutOff_timeInput">
+                            <div class="form-group">
+                                {!! Form::label('title', __('Cut Off Time'),['class' => 'control-label']) !!}
+                                <input class="form-control timepicker" name="cutoff_time" type="text" placeholder="Cut off time" value="" min="0" {{$vendor->status == 1 ? '' : 'disabled'}} >
+                            </div>
+                        </div>
+                    @endif
 
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
@@ -466,7 +503,14 @@ body .rating-form .btn-reset {
                             </textarea>
                         </div>
                     </div> --}}
-
+                    @if(checkColumnExists('vendors', 'is_vendor_instant_booking'))
+                        @if(Auth::user()->is_superadmin == 1 && $client_preferences->is_one_push_book_enable == 1 && $vendor->pick_drop == 1)
+                            <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                                {!! Form::label('title', __('Instant Booking'),['class' => 'control-label']) !!}
+                                <input type="checkbox" data-plugin="switchery" name="is_vendor_instant_booking" class="form-control" data-color="#43bee1" @if($vendor->is_vendor_instant_booking == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                            </div>
+                        @endif
+                    @endif
 
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
@@ -476,6 +520,7 @@ body .rating-form .btn-reset {
         </div>
     </div>
 </div>
+@endif
 @if(isset($getAdditionalPreference['is_admin_vendor_rating']) && $getAdditionalPreference['is_admin_vendor_rating'] == '1')
 <button class="add_edit_driver_review">Vendor Rating</button>
 <input type="hidden" value="{{$vendor->id}}" id="vendor_id">
@@ -875,7 +920,7 @@ aria-hidden="true">
     }
 </style>
 
-
+@if(auth()->user()->can('vendor-add-users') || auth()->user()->is_superadmin)
  <div class="card-box">
     <h4 class="header-title mb-0 mt-2 d-inline-block align-middle">{{ __('Users') }}</h4>
     <h4 class="header-title mb-0 float-right"><a class="btn addUsersBtn" dataid="0" href="javascript:void(0);"><i class="mdi mdi-plus-circle mr-1" ></i> {{ __("Add Users") }}
@@ -906,7 +951,7 @@ aria-hidden="true">
         @endforeach
     </div>
 </div>
-
+@endif
 <div id="manageSocialMedia" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg social_manage">
         <div class="modal-content">
@@ -1110,6 +1155,7 @@ aria-hidden="true">
     </div>
 </div>
 {{-- <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script> --}}
+<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 <script type="text/javascript">
 
 $('.addUsersBtn').click(function() {
@@ -1118,6 +1164,14 @@ $('.addUsersBtn').click(function() {
     });
 });
 
+$('.timepicker').timepicker({
+    timeFormat: 'h:mm p',
+    interval: 60,
+    defaultTime: '12 AM',
+    dynamic: false,
+    dropdown: true,
+    scrollbar: true
+}).val("{{$vendor->cutOff_time??''}}");
 
 $( document ).ready(function() {
     @if($client_preference_detail->business_type != 'taxi')
