@@ -1217,22 +1217,8 @@ ul.header-dropdown.d-none.d-sm-inline li {
 }
 
 
-
 /*header color var css start here---*/
 .al_template_one .homepage-address{
     color: var(--theme-deafult) !important;
 }
-/* 
-.top-header .header-dropdown li{
-    color: var(--theme-deafult) !important;
-} */
-/* 
-.top-header .header-dropdown li a{
-    color: var(--theme-deafult) !important;
-}
-.site-topbar .location-bar span{
-    color: var(--theme-deafult) !important;
-} */
-/* .site-topbar .map-icon svg path{
-    fill:var(--theme-deafult) !important;
-} */
+
