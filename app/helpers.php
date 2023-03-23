@@ -1631,11 +1631,13 @@ if( !function_exists('makeCartEmpty') ) {
 if (!function_exists('getUserToken')) {
     function getUserToken($credential)
     {
-        $credentials = json_decode($credential->sms_credentials);
-        if (isset($credentials->static_otp) && $credentials->static_otp == '1') {
-            $data['otp'] = '123456';
-            $data['status'] = false;
-            return $data;
+        if(!empty($credential) && isset($credential->sms_credentials)){
+            $credentials = json_decode($credential->sms_credentials);
+            if (isset($credentials->static_otp) && $credentials->static_otp == '1') {
+                $data['otp'] = '123456';
+                $data['status'] = false;
+                return $data;
+            }
         }
         $data['otp'] = rand(100000, 999999);
         $data['status'] = true;
