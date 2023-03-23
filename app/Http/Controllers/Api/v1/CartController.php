@@ -985,7 +985,7 @@ class CartController extends BaseController
                             $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
-                                    $rate = round($tax_value->tax_rate);
+                                    $rate = $tax_value->tax_rate;
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
                                     if(!$additionalPreferences->is_tax_price_inclusive){
                                         $product_tax = ($quantity_price) * $rate / 100;
@@ -1006,7 +1006,6 @@ class CartController extends BaseController
                                     );
                                 }
                             }
-                            //dd($prod->product->toArray());
                             $prod->taxdata = $taxData;
                             if ($action == 'delivery' || $action == 'on_demand') {
                                 $checkLastMile = 0;
@@ -1236,7 +1235,7 @@ class CartController extends BaseController
                 $vendorData->vendor_gross_total = $payable_amount;
                 $vendorData->discount_amount = $discount_amount;
                 $vendorData->discount_percent = $discount_percent;
-                $vendorData->taxable_amount = $taxable_amount;
+                $vendorData->taxable_amount = decimal_format($taxable_amount);
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
                 $vendorData->isDeliverable = 1;
                 $total_paying = $total_paying + $payable_amount ;
