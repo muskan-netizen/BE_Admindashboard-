@@ -422,6 +422,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('paginateValue', 'Front\UserhomeController@changePaginate')->name('changePaginate');
 	Route::get('{vendor?}/product/{id?}', 'Front\ProductController@index')->name('productDetail');
 	Route::post('/product/variant/{id}', 'Front\ProductController@getVariantData')->name('productVariant');
+	Route::post('product/compare', 'Front\ProductController@getProductCompare')->name('compare.product');
 	Route::get('product/faq/{id}', 'Front\ProductController@getProductFaq')->name('getProductFaq');
 	Route::post('cart/product/lastAdded', 'Front\CartController@getLastAddedProductVariant')->name('getLastAddedProductVariant');
 	Route::post('cart/product/variant/different-addons', 'Front\CartController@getProductVariantWithDifferentAddons')->name('getProductVariantWithDifferentAddons');

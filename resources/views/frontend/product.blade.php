@@ -61,6 +61,12 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         display: none;
     }
    
+    .select2-results__option{
+    width:100%;
+   }
+   .select2-container{
+    width:100%!important;
+   }
     </style>
 
 @endsection
@@ -769,11 +775,15 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                             class="icofont icofont-man-in-glasses"></i>Details</a>
                                                     <div class="material-border"></div>
                                                 </li> -->
-                                                @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                                                <li class="nav-item {{(count($rating_details)>0)?'':'hide'}}"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
+                                                @if($client_preference_detail && $client_preference_detail->rating_check == 1 && count($rating_details)>0)
+                                                <li class="nav-item "><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
                                                     <div class="material-border"></div>
                                                 </li>
                                                 @endif
+
+                                                <li class="nav-item ml-3"><a class="nav-link {{(count($rating_details)>0)?'':'active'}}" id="compare-product-tab" data-toggle="tab" href="#compare-product" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Compare products')}}</a>
+                                                    <div class="material-border"></div>
+                                                </li>
                                             </ul>
                                             <div class="tab-content nav-material" id="top-tabContent">
                                                 {{-- <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
@@ -818,6 +828,8 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     <p>{{__('No Reviews Yet')}}</p>
                                                     @endforelse
                                                 </div>
+                                                @include('frontend.compare-product-table')
+
                                             </div>
                                         </div>
                                     </div>
@@ -1145,6 +1157,39 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var recurringformPost = '';
     var maximumquantitylert = "{{__('Quantity is not available in stock')}}";
     var minimumquantitylert = "{{__('Minimum Quantity count is')}}";
+
+    $('.select2-multiple-search').on("select2:close", function (e) { 
+        $('.compare-button').trigger("click"); 
+    });
+
+    $('.select2-multiple-search').select2({
+            placeholder: 'Select Compare Products',
+            // allowClear: true
+    });
+    
+    $(document).on('click', '.compare-button', function(e) {
+        e.preventDefault();
+        var formData = new FormData(document.getElementById("compare-form"));
+        var submit_url = "{{ route('compare.product') }}";
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "post",
+            url: submit_url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                $('#htmlAppend').html(response.html);
+            }
+        });
+       
+    });
+
+
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();
         var formData = new FormData(document.getElementById("inquiry-form"));
