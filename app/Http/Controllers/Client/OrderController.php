@@ -1887,7 +1887,7 @@ class OrderController extends BaseController
             }
 
 
-            if(checkColumnExists('orders', 'recurring_booking_type')&& ($order->recurring_day_data != ""))
+            if(checkColumnExists('orders', 'recurring_booking_type') && ($order->recurring_day_data != ""))
             {
 
 
