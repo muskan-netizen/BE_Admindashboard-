@@ -538,7 +538,7 @@ class DashBoardController extends BaseController
             $range = range(1,12,1); 
             # Month wise revenue total
             $month_revenue = $month_revenue->select(DB::raw('SUM(payable_amount) as total_amount, MONTH( created_at ) as month'))->whereYear('created_at', date('Y'))
-            ->whereIn(DB::raw('MONTH(created_at)'),$range)->groupBy(DB::raw('MONTH(created_at) ASC'))->get();
+            ->whereIn(DB::raw('MONTH(created_at)'),$range)->groupBy(DB::raw('MONTH(created_at)'))->orderBy(DB::raw('MONTH(created_at)'),'ASC')->get();
             $monthwise_revenue = [];
             $monthData = $month_revenue->mapWithKeys(function($item) {
                 return [$item['month'] => $item['total_amount']];
