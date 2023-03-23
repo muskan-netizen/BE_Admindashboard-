@@ -399,7 +399,7 @@ class DashBoardController extends BaseController
 
             # Revenue sum
             $orders = new Order;
-            $total_revenue = clone $orders;
+            $order_revenue = $total_revenue = clone $orders;
             if (Auth::user()->is_superadmin == 0) {
                 $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);

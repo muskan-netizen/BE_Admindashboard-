@@ -61,19 +61,20 @@ class HomeController extends BaseController
                         $vendorMode[] = $vendorData;
                     }
             }
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo']);
+    
             //pr($vendorMode);
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
 
-            $homeData['profile']->preferences->is_cab_pooling = (int) getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
-            $homeData['profile']->preferences->chat_button = (int) getAdditionalPreference(['chat_button'])['chat_button'];
-            $homeData['profile']->preferences->call_button = (int) getAdditionalPreference(['call_button'])['call_button'];
-            $homeData['profile']->preferences->is_user_kyc_for_registration = (int) getAdditionalPreference(['is_user_kyc_for_registration'])['is_user_kyc_for_registration'];
+            $homeData['profile']->preferences->is_cab_pooling = (int) $getAdditionalPreference['is_cab_pooling'];
+            $homeData['profile']->preferences->chat_button = (int) $getAdditionalPreference['chat_button'];
+            $homeData['profile']->preferences->call_button = (int) $getAdditionalPreference['call_button'];
+            $homeData['profile']->preferences->is_user_kyc_for_registration = (int) $getAdditionalPreference['is_user_kyc_for_registration'];
             //dd($homeData['profile']);
 
 
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions']);
-    
+            
 
             $homeData['profile']->preferences->advance_booking_amount = 0;
             $homeData['profile']->preferences->advance_booking_amount_percentage = 0;
@@ -129,8 +130,8 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->want_to_tip_nomenclature = $want_to_tip;
             $homeData['profile']->preferences->referral_code = $referral_code;
 
-            $homeData['profile']->preferences->seller_sold_title = (int) getAdditionalPreference(['seller_sold_title'])['seller_sold_title'];
-            $homeData['profile']->preferences->seller_platform_logo = (int) getAdditionalPreference(['seller_platform_logo'])['seller_platform_logo'];
+            $homeData['profile']->preferences->seller_sold_title = (int) $getAdditionalPreference['seller_sold_title'];
+            $homeData['profile']->preferences->seller_platform_logo = (int) $getAdditionalPreference['seller_platform_logo'];
             $homeData['profile']->preferences->account_name = $account_name;
             $homeData['profile']->preferences->bank_name = $bank_name;
             $homeData['profile']->preferences->account_number = $account_number;
