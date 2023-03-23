@@ -145,7 +145,10 @@
 .al_body_template_four .vendor-info li a  {
     color: #fff;
 }
-
+.al_body_template_three .img-outer-box{
+    height: 260px;
+    min-height: 260px;
+}
 .al_body_template_one .vendor-info i,
 .al_body_template_four .vendor-info i {
     color: #fff;
@@ -829,6 +832,15 @@ display: inline-block;
     .al_body_template_four .common-banner, .al_body_template_four .product-banner-img {
         height: auto;
     }
+    .al_body_template_four .vendor-design_new{
+        width: 100%;
+    }
+    .al_body_template_four .vendor-design_new .profile_address.vendor_icon-design {
+    width: 80%;
+}
+.al_body_template_four #al_four_design  .onhover-div:hover .show-div {
+    display: none;
+}
 }
 @media (max-width:576px){
     .al_body_template_four .dark #login-section::after, .al_body_template_four #login-section::after{

@@ -819,7 +819,6 @@ class OrderController extends FrontController
                     $vendor = Vendor::where('id', $vendor_id)->first();
                     if (! empty($vendor)) {
                         $email_data['email'] = $vendor->email;
-                        \Log::info('email_data3');
                         dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                     }
 
