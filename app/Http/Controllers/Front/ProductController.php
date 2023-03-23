@@ -483,6 +483,30 @@ class ProductController extends FrontController{
         }
         return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'data' => $data));
     }
+
+      # get product faq
+      public function getProductCompare(Request $request){
+        $comIds = [];
+        $idsUnque = $request->compareItems;
+        $productId[] = $request->productId;
+        if(isset($request->compareItems) && count($request->compareItems)>0)
+        {
+            $idsUnque = array_merge($request->compareItems,$productId);
+        }else{
+            $idsUnque[] = $request->productId;
+        }
+       
+
+        $compareProducts = Product::with(['media.image', 'vendor', 'translation', 'variant','reviews'])->where('category_id', $request->category_id)
+        ->whereIn('id', $idsUnque)
+        ->orderby('id', 'desc')->get();
+        $html ='';
+        if(isset($compareProducts)){
+            $html = view('frontend.compare-product-table')->with(['compareProducts'=>$compareProducts,'ajax'=>1])->render();
+        }     
+        return response()->json(['ids'=>$idsmerge??$request->compareItems,'html'=>$html]);
+}
+
     # get product faq
     public function getProductFaq(Request $request,$domain = '',$product_id){
             $langId = Session::get('customerLanguage');

@@ -271,8 +271,8 @@ class OrderController extends BaseController
             });
         }
         
-            $HasGiftCard = 1;
-            $orders  = $orders->with(['giftCard']);
+        $HasGiftCard = 1;
+        $orders  = $orders->with(['giftCard']);
         
         //Search by keyword
         if (!empty($request->search_keyword)) {
@@ -741,7 +741,7 @@ class OrderController extends BaseController
             'vendors.products' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);
                 
-                    $query->with('order_product_status');
+                $query->with('order_product_status');
                 
             },
             'vendors.products.product',
@@ -762,7 +762,7 @@ class OrderController extends BaseController
 
         ));
         
-            $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
+        $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
         
         $order = $order->findOrFail($order_id);
         //    return $order;
@@ -1461,7 +1461,6 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
-        
         $order_dispatchs = 2;
         $AdditionalPreference  =  getAdditionalPreference(['is_place_order_delivery_zero','is_service_product_price_from_dispatch']);
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
@@ -1835,14 +1834,16 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if($order->is_postpay==1 && $order->payment_status == 0)
-                {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address','order_pre_time')->first();
@@ -1881,131 +1882,231 @@ class OrderController extends BaseController
             }
 
 
-           
+            if(checkColumnExists('orders', 'recurring_booking_type') && ($order->recurring_day_data != ""))
+            {
 
 
-            $date       = explode(",",$order->recurring_day_data);
-            $start_date = $end_date = '';
-            if(isset($date[0])){
-                $start_date = $date[0];
-            }
-            if(isset($date[1])){
-                $end_date   = $date[1];
-            }
-            $days_count     = 0;
-            if(!empty($start_date) && !empty($end_date)){
-                $days_count = Carbon::parse( $start_date )->diffInDays( $end_date );
-                $startDate  = Carbon::createFromFormat('Y-m-d', $start_date);
-                $endDate    = Carbon::createFromFormat('Y-m-d', $end_date);
-                $dateRange  = CarbonPeriod::create($startDate, $endDate);
-                $dates      = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($dateRange));
-                $date      = $dates[0];
-            }
-            if($days_count > 0){
-                    $recurring_data = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number])->first();
-                    $schedule_time = $recurring_data->schedule_date;
-                    $tasks[] = array(
-                                    'task_type_id' => 1,
-                                    'latitude' => $vendor_details->latitude ?? '',
-                                    'longitude' => $vendor_details->longitude ?? '',
-                                    'short_name' => '',
-                                    'address' => $vendor_details->address ?? '',
-                                    'post_code' => '',
-                                    'barcode' => '',
-                                    'flat_no'     => null,
-                                    'email'       => $vendor_details->email ?? null,
-                                    'phone_number' => $vendor_details->phone_no ?? null,
-                                );
-
-                    $tasks[] = array(
-                                    'task_type_id' => 2,
-                                    'latitude' => $cus_address->latitude ?? '',
-                                    'longitude' => $cus_address->longitude ?? '',
-                                    'short_name' => '',
-                                    'address' => $cus_address->address ?? '',
-                                    'post_code' => $cus_address->pincode ?? '',
-                                    'barcode' => '',
-                                    'flat_no'     => $cus_address->house_number ?? null,
-                                    'email'       => $customer->email ?? null,
-                                    'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
-                                );
-
-                    if ($customer->dial_code == "971") {
-                        // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
-                        $customerno = "0" . $customer->phone_number;
-                    } else {
-                        // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
-                        $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
-                    }
-                    $client = CP::orderBy('id', 'asc')->first();
-                    $postdata =  [
-                        'order_number' =>  $order->order_number,
-                        'customer_name' => $customer->name ?? 'Dummy Customer',
-                        'customer_phone_number' => $customerno ?? rand(111111, 11111),
-                        'customer_dial_code' => $customer->dial_code ?? null,
-                        'customer_email' => $customer->email ?? null,
-                        'recipient_phone' => $customerno ?? rand(111111, 11111),
-                        'recipient_email' => $customer->email ?? null,
-                        'task_description' => "Order From :" . $vendor_details->name,
-                        'allocation_type' => 'a',
-                        'task_type' => $task_type,
-                        'schedule_time' => $schedule_time ?? null,
-                        'cash_to_be_collected' => $payable_amount ?? 0.00,
-                        'order_number' => $order->order_number,
-                        'barcode' => '',
-                        'order_team_tag' => $team_tag,
-                        'call_back_url' => $call_back_url ?? null,
-                        'task' => $tasks,
-                        'is_restricted' => $orderVendorDetails->is_restricted,
-                        'vendor_id' => $vendor_details->id,
-                        'order_vendor_id' => $orderVendorDetails->id,
-                        'dbname' => $client->database_name,
-                        'order_id' => $order->id,
-                        'customer_id' => $order->user_id,
-                        'user_icon' => $customer->image,
-                        'vendor_name' => $vendor_details->name ?? null,
-                        'tip_amount' => $order->tip_amount,
-                        'payment_method' => $order->payment_method,
-                        'order_pre_time'=>$vendor_details->order_pre_time
-
-                    ];
-                    //pr($postdata);
-                    if ($orderVendorDetails->is_restricted == 1) {
-                        $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
-                        $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
-                    }
-
-                    $client = new Client([
-                        'headers' => [
-                            'personaltoken' => $dispatch_domain->delivery_service_key,
-                            'shortcode' => $dispatch_domain->delivery_service_key_code,
-                            'content-type' => 'application/json'
-                        ]
-                    ]);
-
-                    $url = $dispatch_domain->delivery_service_key_url;
-
-                    $res = $client->post(
-                        $url . '/api/task/create',
-                        ['form_params' => ($postdata)]
-                    );
-
-
-
-
-                $response = json_decode($res->getBody(), true);
-                if ($response && $response['task_id'] > 0) {
-                    $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
-                    $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
-                        ->update(['web_hook_code' => $dynamic, 'dispatch_traking_url' => $dispatch_traking_url]);
-                    $recurring_data->web_hook_code          = $dynamic;
-                    $recurring_data->dispatch_traking_url   = $dispatch_traking_url;
-                    $recurring_data->save();
-                    return 1;
+                $date       = explode(",",$order->recurring_day_data);
+                $start_date = $end_date = '';
+                if(isset($date[0])){
+                    $start_date = $date[0];
                 }
+                if(isset($date[1])){
+                    $end_date   = $date[1];
+                }
+                $days_count     = 0;
+                if(!empty($start_date) && !empty($end_date)){
+                    $days_count = Carbon::parse( $start_date )->diffInDays( $end_date );
+                    $startDate  = Carbon::createFromFormat('Y-m-d', $start_date);
+                    $endDate    = Carbon::createFromFormat('Y-m-d', $end_date);
+                    $dateRange  = CarbonPeriod::create($startDate, $endDate);
+                    $dates      = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($dateRange));
+                    $date      = $dates[0];
+                }
+                if($days_count > 0){
+                        $recurring_data = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number])->first();
+                        $schedule_time = $recurring_data->schedule_date;
+                        $tasks[] = array(
+                                        'task_type_id' => 1,
+                                        'latitude' => $vendor_details->latitude ?? '',
+                                        'longitude' => $vendor_details->longitude ?? '',
+                                        'short_name' => '',
+                                        'address' => $vendor_details->address ?? '',
+                                        'post_code' => '',
+                                        'barcode' => '',
+                                        'flat_no'     => null,
+                                        'email'       => $vendor_details->email ?? null,
+                                        'phone_number' => $vendor_details->phone_no ?? null,
+                                    );
+
+                        $tasks[] = array(
+                                        'task_type_id' => 2,
+                                        'latitude' => $cus_address->latitude ?? '',
+                                        'longitude' => $cus_address->longitude ?? '',
+                                        'short_name' => '',
+                                        'address' => $cus_address->address ?? '',
+                                        'post_code' => $cus_address->pincode ?? '',
+                                        'barcode' => '',
+                                        'flat_no'     => $cus_address->house_number ?? null,
+                                        'email'       => $customer->email ?? null,
+                                        'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
+                                    );
+
+                        if ($customer->dial_code == "971") {
+                            // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                            $customerno = "0" . $customer->phone_number;
+                        } else {
+                            // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                            $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
+                        }
+                        $client = CP::orderBy('id', 'asc')->first();
+                        $postdata =  [
+                            'order_number' =>  $order->order_number,
+                            'customer_name' => $customer->name ?? 'Dummy Customer',
+                            'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                            'customer_dial_code' => $customer->dial_code ?? null,
+                            'customer_email' => $customer->email ?? null,
+                            'recipient_phone' => $customerno ?? rand(111111, 11111),
+                            'recipient_email' => $customer->email ?? null,
+                            'task_description' => "Order From :" . $vendor_details->name,
+                            'allocation_type' => 'a',
+                            'task_type' => $task_type,
+                            'schedule_time' => $schedule_time ?? null,
+                            'cash_to_be_collected' => $payable_amount ?? 0.00,
+                            'order_number' => $order->order_number,
+                            'barcode' => '',
+                            'order_team_tag' => $team_tag,
+                            'call_back_url' => $call_back_url ?? null,
+                            'task' => $tasks,
+                            'is_restricted' => $orderVendorDetails->is_restricted,
+                            'vendor_id' => $vendor_details->id,
+                            'order_vendor_id' => $orderVendorDetails->id,
+                            'dbname' => $client->database_name,
+                            'order_id' => $order->id,
+                            'customer_id' => $order->user_id,
+                            'user_icon' => $customer->image,
+                            'vendor_name' => $vendor_details->name ?? null,
+                            'tip_amount' => $order->tip_amount,
+                            'payment_method' => $order->payment_method,
+                            'order_pre_time'=>$vendor_details->order_pre_time
+
+                        ];
+                        //pr($postdata);
+                        if ($orderVendorDetails->is_restricted == 1) {
+                            $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                            $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+                        }
+
+                        $client = new Client([
+                            'headers' => [
+                                'personaltoken' => $dispatch_domain->delivery_service_key,
+                                'shortcode' => $dispatch_domain->delivery_service_key_code,
+                                'content-type' => 'application/json'
+                            ]
+                        ]);
+
+                        $url = $dispatch_domain->delivery_service_key_url;
+
+                        $res = $client->post(
+                            $url . '/api/task/create',
+                            ['form_params' => ($postdata)]
+                        );
+
+
+
+
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['task_id'] > 0) {
+                        $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
+                        $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
+                            ->update(['web_hook_code' => $dynamic, 'dispatch_traking_url' => $dispatch_traking_url]);
+                        $recurring_data->web_hook_code          = $dynamic;
+                        $recurring_data->dispatch_traking_url   = $dispatch_traking_url;
+                        $recurring_data->save();
+                        return 1;
+                    }
+
+                }
+
+            }else{
+
+
+            $tasks[] = array(
+                'task_type_id' => 1,
+                'latitude' => $vendor_details->latitude ?? '',
+                'longitude' => $vendor_details->longitude ?? '',
+                'short_name' => '',
+                'address' => $vendor_details->address ?? '',
+                'post_code' => '',
+                'barcode' => '',
+                'flat_no'     => null,
+                'email'       => $vendor_details->email ?? null,
+                'phone_number' => $vendor_details->phone_no ?? null,
+            );
+
+            $tasks[] = array(
+                'task_type_id' => 2,
+                'latitude' => $cus_address->latitude ?? '',
+                'longitude' => $cus_address->longitude ?? '',
+                'short_name' => '',
+                'address' => $cus_address->address ?? '',
+                'post_code' => $cus_address->pincode ?? '',
+                'barcode' => '',
+                'flat_no'     => $cus_address->house_number ?? null,
+                'email'       => $customer->email ?? null,
+                'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
+            );
+
+            if ($customer->dial_code == "971") {
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
+            } else {
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
+            }
+            $client = CP::orderBy('id', 'asc')->first();
+            $postdata =  [
+                'order_number' =>  $order->order_number,
+                'customer_name' => $customer->name ?? 'Dummy Customer',
+                'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
+                'customer_email' => $customer->email ?? null,
+                'recipient_phone' => $customerno ?? rand(111111, 11111),
+                'recipient_email' => $customer->email ?? null,
+                'task_description' => "Order From :" . $vendor_details->name,
+                'allocation_type' => 'a',
+                'task_type' => $task_type,
+                'schedule_time' => $schedule_time ?? null,
+                'cash_to_be_collected' => !empty($orderVendorDetails) ? ($orderVendorDetails->payable_amount + $orderVendorDetails->service_fee_percentage_amount) : 0.00,
+                'order_number' => $order->order_number,
+                'barcode' => '',
+                'order_team_tag' => $team_tag,
+                'call_back_url' => $call_back_url ?? null,
+                'task' => $tasks,
+                'is_restricted' => $orderVendorDetails->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $orderVendorDetails->id,
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image,
+                'vendor_name' => $vendor_details->name ?? null,
+                'tip_amount' => $order->tip_amount,
+                'payment_method' => $order->payment_method,
+            ];
+            //pr($postdata);
+            if ($orderVendorDetails->is_restricted == 1) {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
             }
 
-        
+            $client = new Client([
+                'headers' => [
+                    'personaltoken' => $dispatch_domain->delivery_service_key,
+                    'shortcode' => $dispatch_domain->delivery_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+
+            $url = $dispatch_domain->delivery_service_key_url;
+            // dd($url);
+            $res = $client->post(
+                $url . '/api/task/create',
+                ['form_params' => ($postdata)]
+            );
+
+            $response = json_decode($res->getBody(), true);
+            if ($response && $response['task_id'] > 0) {
+                $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
+                $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
+                    ->update(['web_hook_code' => $dynamic, 'dispatch_traking_url' => $dispatch_traking_url]);
+
+                return 1;
+            }
+
+
+
+        }
             return 2;
         } catch (\Exception $e) {
            // Log::info($e->getMessage());
@@ -2031,14 +2132,15 @@ class OrderController extends BaseController
                 $payable_amount = $order->payable_amount;
             } else {
                 
-                if($order->is_postpay==1 && $order->payment_status == 0)
-                {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
@@ -2162,14 +2264,15 @@ class OrderController extends BaseController
                 $payable_amount = $order->payable_amount;
             } else {
                 
-                if($order->is_postpay==1 && $order->payment_status == 0)
-                {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                
             }
 
 
@@ -2413,7 +2516,6 @@ class OrderController extends BaseController
                     $query->where('user_id', Auth::user()->id);
                 });
             }
-            
             $orders_list = $orders_list->whereIn('type', [1,3]); // 1 = return , 2 = exchange
             
             if (!empty($request->search_keyword)) {
@@ -2636,14 +2738,16 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if($order->is_postpay==1 && $order->payment_status == 0)
-                {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
