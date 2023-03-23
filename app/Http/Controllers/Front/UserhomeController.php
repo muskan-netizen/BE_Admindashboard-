@@ -338,9 +338,7 @@ class UserhomeController extends FrontController
                 });
             }
             $banners = $banners->orderBy('sorting', 'asc')->get();
-            //pr($banners->toArray());
-            //$banners = $this->getBannersForHomePage($client_preferences, $latitude, $longitude);
-            //pr($banners);
+            
             $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
             ->where(function ($q) use ($carbon_now) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) use ($carbon_now) {
