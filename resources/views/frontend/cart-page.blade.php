@@ -905,8 +905,10 @@
                             </div>
                         </div>
                     @endforeach
-                    @if ($vendor_product->recurring_booking_type == 1 || $vendor_product->recurring_booking_type == 2 || $vendor_product->recurring_booking_type == 3 || $vendor_product->recurring_booking_type == 4)
-                        @include('frontend.cart.recurrentBooking')
+                    @if(checkColumnExists('cart_products','recurring_booking_type'))
+                        @if ($vendor_product->recurring_booking_type == 1 || $vendor_product->recurring_booking_type == 2 || $vendor_product->recurring_booking_type == 3 || $vendor_product->recurring_booking_type == 4)
+                            @include('frontend.cart.recurrentBooking')
+                        @endif
                     @endif
                 </div>
                 <div class="row m-0">
@@ -938,11 +940,13 @@
                         <input type="hidden" name="without_category_kyc"
                             value="{{ $cart_details->without_category_kyc }}">
 
-                            @if ($vendor_product->recurring_booking_type == 1)
-                                <input type="hidden" id="is_recurring_booking" value="{{ $vendor_product->recurring_booking_type }}" />
+                            @if(checkColumnExists('cart_products','recurring_booking_type'))
+                                @if ($vendor_product->recurring_booking_type == 1)
+                                    <input type="hidden" id="is_recurring_booking" value="{{ $vendor_product->recurring_booking_type }}" />
+                                @endif
+                                @else
+                                <input type="hidden" id="is_recurring_booking" value="0" />
                             @endif
-                            @else
-                            <input type="hidden" id="is_recurring_booking" value="0" />
 
 
 
