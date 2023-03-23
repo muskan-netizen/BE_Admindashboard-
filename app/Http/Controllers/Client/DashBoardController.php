@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use DB;
 use Session;
+use Log;
 use \DateTimeZone;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -399,8 +400,13 @@ class DashBoardController extends BaseController
             # Revenue sum
             $orders = new Order;
             $total_revenue = clone $orders;
-            $order_revenue = clone $orders;
-            if (Auth::user()->is_superadmin == 0 || $request->manager_id) {
+            if (Auth::user()->is_superadmin == 0) {
+                $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
+                });
+            }   
+            $month_revenue =clone $orders;
+            if (Auth::user()->is_superadmin == 0) {
                 $total_revenue = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
                 });
@@ -471,7 +477,6 @@ class DashBoardController extends BaseController
 
             # Current week revenue sum
             $revenueCurrentWeek = $revenueCurrentWeek->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
-
             # Previous week revenue sum
             $revenueLastWeek = $revenueLastWeek->whereBetween('created_at', [Carbon::now()->startOfWeek()->subWeek(), Carbon::now()->endOfWeek()->subWeek()])->sum('payable_amount');
         
@@ -587,14 +592,17 @@ class DashBoardController extends BaseController
             if ($products_decrease != '') {
                 $products_decrease = round($products_decrease, 2);
             }
-            // dd($sale->sum('payable_amount'));
+            $range = range(1,12,1); 
             # Month wise revenue total
+            $month_revenue = $month_revenue->select(DB::raw('SUM(payable_amount) as total_amount, MONTH( created_at ) as month'))->whereYear('created_at', date('Y'))
+            ->whereIn(DB::raw('MONTH(created_at)'),$range)->groupBy(DB::raw('MONTH(created_at)'))->orderBy(DB::raw('MONTH(created_at)'),'ASC')->get();
             $monthwise_revenue = [];
-            for ($i = 1; $i <= 12; $i++) {
-                $saleSum = $sale->whereYear('created_at', date('Y'))->whereMonth('created_at', date($i))->sum('payable_amount');
-                $monthwise_revenue[] = round($saleSum);
+            $monthData = $month_revenue->mapWithKeys(function($item) {
+                return [$item['month'] => $item['total_amount']];
+            });
+            foreach($range as $value) {
+                $monthwise_revenue[] = isset($monthData[$value])?round($monthData[$value]):0;
             }
-
             # Previous week day wise revenue total
             $previousweek_startdate = Carbon::now()->startOfWeek()->subWeek()->format('Y-m-d');
             $previousweek_revenue_daywise = [];
