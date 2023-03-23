@@ -855,3 +855,7 @@ display: inline-block;
         margin:40px 0 30px!important;
     }
 }
+body .suppliers-img-outer, body .img-outer-box {
+    height: 260px;
+    min-height: 260px;
+}
