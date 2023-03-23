@@ -92,6 +92,39 @@
             </tr>
             @endforeach
         @endif
-
-
 @endif
+@section('script-bottom-js')
+<script>
+
+    $('.select2-multiple-search').on("select2:close", function (e) { 
+        $('.compare-button').trigger("click"); 
+    });
+
+    $('.select2-multiple-search').select2({
+            placeholder: 'Select Compare Products',
+            // allowClear: true
+    });
+    
+    $(document).on('click', '.compare-button', function(e) {
+        e.preventDefault();
+        var formData = new FormData(document.getElementById("compare-form"));
+        var submit_url = "{{ route('compare.product') }}";
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "post",
+            url: submit_url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                $('#htmlAppend').html(response.html);
+            }
+        });
+       
+    });
+</script>
+@endsection
