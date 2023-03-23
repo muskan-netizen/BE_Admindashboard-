@@ -711,3 +711,8 @@ display: inline-block;
 .al_body_template_three .product-image img .img-fluid.blur-up .lazyloaded {
     height: 100%!important;
 }
+
+body .suppliers-img-outer, body .img-outer-box {
+    height: 260px;
+    min-height: 260px;
+}
