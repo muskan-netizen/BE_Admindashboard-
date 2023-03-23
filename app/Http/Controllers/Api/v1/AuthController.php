@@ -1121,14 +1121,36 @@ class AuthController extends BaseController
                         return response()->json($errors, 422);
                     }
                 }
-                
-                $prefer = ClientPreference::select('sms_credentials','mail_type','mail_driver','mail_host','mail_port','mail_username','mail_password','mail_encryption','mail_from','sms_provider','sms_key','sms_secret','sms_from','theme_admin','distance_unit','map_provider','date_format','time_format','map_key','sms_provider','verify_email','verify_phone','app_template_id','web_template_id'
+                $prefer = ClientPreference::select(
+                    'sms_credentials',
+                    'mail_type',
+                    'mail_driver',
+                    'mail_host',
+                    'mail_port',
+                    'mail_username',
+                    'mail_password',
+                    'mail_encryption',
+                    'mail_from',
+                    'sms_provider',
+                    'sms_key',
+                    'sms_secret',
+                    'sms_from',
+                    'theme_admin',
+                    'distance_unit',
+                    'map_provider',
+                    'date_format',
+                    'time_format',
+                    'map_key',
+                    'sms_provider',
+                    'verify_email',
+                    'verify_phone',
+                    'app_template_id',
+                    'web_template_id'
                     )->first();
-                
                 $phone_number = preg_replace('/\D+/', '', $username);
                 $dialCode = $request->dialCode;
                 $fullNumber = $request->full_number;
-                $phoneCode = getUserToken($prefer)['otp'];
+                $phoneCode =  getUserToken($prefer)['otp'];
                 $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
                 $request->request->add(['is_phone' => 1, 'phone_number' => $phone_number, 'phoneCode' => $phoneCode, 'sendTime' => $sendTime, 'codeSent' => 0]);
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
