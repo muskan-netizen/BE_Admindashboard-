@@ -338,7 +338,9 @@ class UserhomeController extends FrontController
                 });
             }
             $banners = $banners->orderBy('sorting', 'asc')->get();
-            
+            //pr($banners->toArray());
+            //$banners = $this->getBannersForHomePage($client_preferences, $latitude, $longitude);
+            //pr($banners);
             $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
             ->where(function ($q) use ($carbon_now) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) use ($carbon_now) {
@@ -489,7 +491,7 @@ class UserhomeController extends FrontController
      */
     public function postHomePageData(Request $request,$set_template,$enable_layout,$additionalPreference)
     {
-        $vendor_ids = [];
+        $vendor_ids = $vendors = [];
         $new_products = [];
         $feature_products = [];
         $on_sale_products = [];
@@ -555,13 +557,7 @@ class UserhomeController extends FrontController
 
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
-            $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
-                $q->where('language_id', $language_id);
-            }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
-            foreach ($brands as $brand) {
-                $brand->redirect_url = route('brandDetail', $brand->id);
-                $brand->translation_title = $brand->translation->first() ? $brand->translation->first()->title : $brand->title;
-            }
+            $brands = $this->getBrandsForHomePage($language_id, $this->field_status);
         }else{
             $brands = [];
         }
@@ -584,166 +580,34 @@ class UserhomeController extends FrontController
             }
         }
 
-        /* $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
-      
-        if ($preferences) {
-            if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                if (!empty($latitude) && !empty($longitude)) {
-                    $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                        $query->select('vendor_id')
-                        ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                    });                                                                     
-                }
-            }
-        } */
- 
-        /**
-         * put a limit to get vendors.
-         */
-        /* $long_term_vendors = $vendors;
-
-        $vendors = $vendors->where('status', 1);
-        if(@$additionalPreference['is_admin_vendor_rating']=='1'){
-            $vendors = $vendors->orderBy('admin_rating', 'desc');
-        }else{
-            $vendors = $vendors->inRandomOrder();
+        if (in_array('vendors', $enable_layout)) {  # if enable trending_vendors section in
+            $vendorData = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude);
+            $vendors = $vendorData['vendors'];
         }
-                    
-        $vendors = $vendors->limit(10)->get(); */
-        $vendorData = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $latitude, $longitude);
-        $vendors = $vendorData['vendors'];
-        //pr($vendors);
-
-        /* foreach ($vendors as $key => $value) {
-            $vendor_ids[] = $value->id;
-
-            // get or update rating
-            $value->vendorRating = $this->getVendorRating($value->id);
-
-            // $value->name = Str::limit($value->name, 15, '..');
-            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
-            }
-            $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
-            $categoriesList = '';
-            foreach ($vendorCategories as $key => $category) {
-                if ($category->category) {
-                    $categoriesList = $categoriesList . @$category->category->translation_one->name ?? '';
-                    if ($key !=  $vendorCategories->count() - 1) {
-                        $categoriesList = $categoriesList . ', ';
-                    }
-                }
-            }
-            $value->categoriesList = $categoriesList;
-            $value->type_title = $categoriesList;
-
-            $value->is_vendor_closed = 0;
-            if($value->show_slot == 0){
-                if( ($value->slotDate->isEmpty()) && ($value->slot->isEmpty()) ){
-                    $value->is_vendor_closed = 1;
-                }else{
-                    $value->is_vendor_closed = 0;
-                    if($value->slotDate->isNotEmpty()){
-                        if($value->slotDate->first()->start_time!='' && $value->slotDate->first()->end_time!=''){
-                            $value->opening_time  = date('g:i A',strtotime($value->slotDate->first()->start_time));
-                            $value->closing_time = date('g:i A',strtotime($value->slotDate->first()->end_time));
-                        }
-
-                    }elseif($value->slot->isNotEmpty()){
-                        if($value->slot->first()->start_time && $value->slot->first()->end_time){
-                            $value->opening_time = date('g:i A',strtotime($value->slot->first()->start_time));
-                            $value->closing_time = date('g:i A',strtotime($value->slot->first()->end_time));
-                        }
-                    }
-                }
-            }
-        } */
-        /**
-         * End get vendors.
-         */
-
-
-        /* if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-            $vendors = $vendors->sortBy('lineOfSightDistance')->values()->all();
-        } */
-        //$now = Carbon::now()->toDateTimeString();
+        
        
         
         $trendingVendors = [];
         if (in_array('trending_vendors', $enable_layout)) {  # if enable trending_vendors section in 
-            /* $subscribed_vendors_for_trending = SubscriptionInvoicesVendor::with('features')->whereHas('features', function ($query) {
-                $query->where(['subscription_invoice_features_vendor.feature_id' => 1]);
-            })
-            ->select('id', 'vendor_id', 'subscription_id')
-            ->where('end_date', '>=', $now)
-            ->pluck('vendor_id')->toArray();
-
-       
-
-            $trendingVendors = Vendor::with('slot.day', 'slotDate')->whereIn('id', $subscribed_vendors_for_trending)->where('status', 1)->inRandomOrder();
-
-            // add hyperlocal check to get vendors
-            if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-
-                if (!empty($latitude) && !empty($longitude)) {
-                    $trendingVendors = $trendingVendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                        $query->select('vendor_id')
-                        ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                    });
-                }
-            }
-
-            $trendingVendors = $trendingVendors->get();
-
-            if ((!empty($trendingVendors) && count($trendingVendors) > 0)) {
-                foreach ($trendingVendors as $key => $value) {
-                    $value->tag_title = $trending_vendors_title??'0';
-                    $value->vendorRating = $this->vendorRating($value->products);
-                    
-                    if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                        $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
-                    }
-                    $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
-                    $categoriesList = '';
-                    foreach ($vendorCategories as $key => $category) {
-                        if ($category->category) {
-                            $categoriesList = $categoriesList . @$category->category->translation_one->name;
-                            if ($key !=  $vendorCategories->count() - 1) {
-                                $categoriesList = $categoriesList . ', ';
-                            }
-                        }
-                    }
-                    $value->categoriesList = $categoriesList;
-                    $value->is_vendor_closed = 0;
-                    if($value->show_slot == 0){
-                        if( ($value->slotDate->isEmpty()) && ($value->slot->isEmpty()) ){
-                            $value->is_vendor_closed = 1;
-                        }else{
-                            $value->is_vendor_closed = 0;
-                            if($value->slotDate->isNotEmpty()){
-                                $value->opening_time = Carbon::parse($value->slotDate->first()->start_time)->format('g:i A');
-                                $value->closing_time = Carbon::parse($value->slotDate->first()->end_time)->format('g:i A');
-                            }elseif($value->slot->isNotEmpty()){
-                                $value->opening_time = Carbon::parse($value->slot->first()->start_time)->format('g:i A');
-                                $value->closing_time = Carbon::parse($value->slot->first()->end_time)->format('g:i A');
-                            }
-                        }
-                    }
-                }
-            }
-            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
-            } */
-            $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $latitude, $longitude);
+            $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude);
         }    
 
         $vendor_ids = $vendorData['vendor_ids'];
         //get Most Selling Vendors
         $mostSellingVendors = []; //best_sellers
         if (in_array('best_sellers', $enable_layout)) {
-            $mostSellingVendors = collect($vendors);
-            $mostSellingVendors = $mostSellingVendors->sortByDesc('selling_count');
-            //$mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
+            if(!empty($vendors)){
+                $mostSellingVendors = collect($vendors);
+                $mostSellingVendors = $mostSellingVendors->sortByDesc('selling_count');
+            }else{
+                $vendorData            = $this->getVendorForHomePage($preferences, "best_sellers", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude);
+                $mostSellingVendors    = $vendorData['vendors'];
+                $vendor_ids            = $vendorData['vendor_ids'];
+            }
+        }
+
+        if(count($vendor_ids) == 0 && !isset($vendorData)){
+            $vendor_ids = $this->getVendorForHomePage($preferences, "vendor_ids", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude);
         }
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
@@ -761,7 +625,7 @@ class UserhomeController extends FrontController
 
         if (in_array('banner', $enable_layout)) {  # if enable banner section in
             $cab_booking_layouts = CabBookingLayout::with('banner_image')->where('slug','banner')->get();
-            // dd($cab_booking_layouts->toArray());
+            
             foreach($cab_booking_layouts as $bkey => $bval){
                 if(count($bval->banner_image) > 0)
                 $banners[$bval->banner_image[0]->cab_booking_layout_id] = $bval->banner_image[0]->banner_image_url;

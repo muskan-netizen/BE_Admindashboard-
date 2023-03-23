@@ -403,7 +403,7 @@ trait ProductActionTrait{
             FROM 
                 `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
                  LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
-                 LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 $vendorWhereIN
+                 LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
                  LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
                  LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id`
                  LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
@@ -435,7 +435,7 @@ trait ProductActionTrait{
        return $returnArray;
     }
     
-    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $latitude , $longitude)
+    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude)
     {
         $mytime = Carbon::now()->setTimezone($timezone);
         $current_time = $mytime->toTimeString();
@@ -457,36 +457,47 @@ trait ProductActionTrait{
             ->pluck('vendor_id')->toArray();
         }
         
-        $selectQuery = "`vendors`.`id`, 
-        `vendors`.`name`, 
-        `vendors`.`banner`, 
-        `vendors`.`address`, 
-        `vendors`.`order_pre_time`, 
-        `vendors`.`order_min_amount`, 
-        `vendors`.`logo`, 
-        `vendors`.`slug`, 
-        `vendors`.`latitude`, 
-        `vendors`.`longitude`, 
-        `vendors`.`show_slot`,
-        `vendors`.`admin_rating`,
-        (SELECT count(`order_vendors`.`id`) FROM `order_vendors` WHERE `order_vendors`.`vendor_id` = `vendors`.`id`) AS `selling_count`,
-        (SELECT CONCAT(`vendor_slot_dates`.`start_time`, '##', `vendor_slot_dates`.`end_time`) FROM `vendor_slot_dates` WHERE `vendor_slot_dates`.`vendor_id` = `vendors`.`id` LIMIT 0,1) AS `slotdate_start_end_time`,
-        (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND `vendor_slots`.`start_time` < CAST('".$current_time."' AS time) AND `vendor_slots`.`end_time` > CAST('".$current_time."' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
-        6371 * acos(cos(radians(" . $latitude . ")) 
-                                    * cos(radians(`vendors`.`latitude`)) 
-                                    * cos(radians(`vendors`.`longitude`) - radians(" . $longitude . ")) 
-                                    + sin(radians(" .$latitude. ")) 
-                                    * sin(radians(`vendors`.`latitude`))) AS `lineOfSightDistance`
-        ";
-        $mainQuery = "SELECT $selectQuery FROM vendors ";
-
-        $mainQuery .= " where `vendors`.`status` = 1 ";
-
-        if(count($trending_vendors) > 0)
-        {
-            $mainQuery .= " where `vendors`.`id` IN (".implode(',',$trending_vendors).") ";
-        }
+        $selectQuery = "`vendors`.`id`";
         
+        if($vendor_title != "vendor_ids")
+        {
+            $selectQuery.= " , 
+            `vendors`.`name`, 
+            `vendors`.`banner`, 
+            `vendors`.`address`, 
+            `vendors`.`order_pre_time`, 
+            `vendors`.`order_min_amount`, 
+            `vendors`.`logo`, 
+            `vendors`.`slug`, 
+            `vendors`.`latitude`, 
+            `vendors`.`longitude`, 
+            `vendors`.`show_slot`,
+            `vendors`.`admin_rating`,
+            GROUP_CONCAT(DISTINCT `category_translations`.`name` SEPARATOR ', ') AS `categoriesList`,
+            (SELECT count(`order_vendors`.`id`) FROM `order_vendors` WHERE `order_vendors`.`vendor_id` = `vendors`.`id`) AS `selling_count`,
+            (SELECT CONCAT(`vendor_slot_dates`.`start_time`, '##', `vendor_slot_dates`.`end_time`) FROM `vendor_slot_dates` WHERE `vendor_slot_dates`.`vendor_id` = `vendors`.`id` LIMIT 0,1) AS `slotdate_start_end_time`,
+            (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND `vendor_slots`.`start_time` < CAST('".$current_time."' AS time) AND `vendor_slots`.`end_time` > CAST('".$current_time."' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
+            6371 * acos(cos(radians(" . $latitude . ")) 
+                                        * cos(radians(`vendors`.`latitude`)) 
+                                        * cos(radians(`vendors`.`longitude`) - radians(" . $longitude . ")) 
+                                        + sin(radians(" .$latitude. ")) 
+                                        * sin(radians(`vendors`.`latitude`))) AS `lineOfSightDistance`
+            ";
+        
+            $joinQuery  = " LEFT JOIN `vendor_categories` ON `vendor_categories`.`vendor_id`= `vendors`.`id` ";
+            $joinQuery .= " LEFT JOIN `categories` ON `categories`.`id`= `vendor_categories`.`category_id` ";
+            $joinQuery .= " LEFT JOIN `category_translations` ON `category_translations`.`category_id`= `categories`.`id` AND `category_translations`.`language_id` = $language_id ";
+            $whereQuery  = " where `vendors`.`status` = 1 AND `vendor_categories`.`status` = 1";
+
+            $whereInQuery = '';
+            if(count($trending_vendors) > 0)
+            {
+                $whereInQuery = " AND `vendors`.`id` IN (".implode(',',$trending_vendors).") ";
+            }
+            $mainQuery = "SELECT $selectQuery FROM `vendors` $joinQuery $whereQuery $whereInQuery";
+        }else{
+            $mainQuery = "SELECT $selectQuery FROM `vendors` where `vendors`.`status` = 1 ";
+        }
 
         //------based on hyper location------------
         if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -495,10 +506,15 @@ trait ProductActionTrait{
             $unit_abbreviation = ($distance_unit == 'mile') ? 'miles' : 'km';
             $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;
 
-             $mainQuery .= " AND EXISTS (SELECT `service_areas`.`id` FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) ";
+            $mainQuery .= " AND EXISTS (SELECT `service_areas`.`id` FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) ";
+        
         }
+        
+        $mainQuery .= " GROUP BY `vendors`.`id` ";
 
-
+        if ($vendor_title == "best_sellers") {
+            $mainQuery.= " ORDER BY `selling_count` DESC";
+        }
         if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude) && $vendor_title == "trending_vendors") {
             $mainQuery.= " ORDER BY rand(), `lineOfSightDistance` DESC";
         }else{
@@ -517,6 +533,13 @@ trait ProductActionTrait{
 
         $vendor_ids = [];
 
+        if($vendor_title == "vendor_ids")
+        {
+            $vendors = collect($vendors);
+            $vendor_ids = $vendors->pluck('id');
+            return $vendor_ids;
+        }
+
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
             $value->img_path = get_file_path($value->logo,'FILL_URL','200','200');
@@ -531,21 +554,16 @@ trait ProductActionTrait{
                 }else{
                     $pretime =  number_format(floatval($value->order_pre_time), 0, '.', '') + 0;
                 }
-                $value->timeofLineOfSightDistance = $pretime;
+                $pretime = $this->getEvenOddTime($pretime);
+                if($pretime >= 60){
+                    $value->timeofLineOfSightDistance =  '~ '.$this->vendorTime($pretime) .' '. __('hour');
+                }else{
+                    $value->timeofLineOfSightDistance = $pretime . '-' . (intval($pretime) + 5).' '. __('min');
+                }
                 $value->lineOfSightDistance = $value->lineOfSightDistance.' '.$unit_abbreviation;
             }
-            $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
-            $categoriesList = '';
-            foreach ($vendorCategories as $key => $category) {
-                if ($category->category) {
-                    $categoriesList = $categoriesList . @$category->category->translation_one->name ?? '';
-                    if ($key !=  $vendorCategories->count() - 1) {
-                        $categoriesList = $categoriesList . ', ';
-                    }
-                }
-            }
-            $value->categoriesList = $categoriesList;
-            $value->type_title = $categoriesList;
+            
+            $value->type_title = $value->categoriesList;
 
             $value->is_vendor_closed = 0;
             if($value->show_slot == 0){
@@ -573,7 +591,68 @@ trait ProductActionTrait{
         if (($latitude) && ($longitude)) {
             Session::put('vendors', $vendor_ids);
         }
+        //pr($vendors);
         $returnArray = ['vendor_ids' => $vendor_ids, 'vendors' => $vendors];
         return $returnArray;
     }
+
+    public function getBrandsForHomePage($language_id, $field_status)
+    {
+        $redirect_url = route('brandDetail', "brands_id");
+        $mainQuery = "SELECT `brands`.`id`,
+         `brands`.`image`, 
+         `brands`.`title`, 
+         REPLACE('".$redirect_url."', 'brands_id', `brands`.`id`) AS `redirect_url`,
+         (CASE WHEN `brand_translations`.`title` IS NULL THEN `brands`.`title` ELSE `brand_translations`.`title` END) AS `translation_title`,
+         `brand_translations`.`brand_id`, 
+         `brand_translations`.`language_id` 
+         FROM brands
+
+        LEFT JOIN `brand_translations` ON `brand_translations`.`brand_id` = `brands`.`id` AND `brand_translations`.`language_id` = $language_id 
+
+        WHERE `brands`.`status` !=$field_status
+        GROUP BY `brands`.`id`";
+     
+        $brands = DB::select( DB::raw($mainQuery));
+        return $brands;
+    }
+
+
+    public function getBannersForHomePage($client_preferences, $latitude, $longitude)
+    {
+        $carbon_now = Carbon::now();
+        $mainQuery = "SELECT `banners`.`id`,
+            `banners`.`name`, 
+            `banners`.`status`,
+            `banners`.`validity_on`,
+            `banners`.`image`,
+            `banners`.`start_date_time`,
+            `banners`.`end_date_time`,
+            `banners`.`redirect_category_id`,
+            `banners`.`link`, 
+            `banners`.`redirect_vendor_id`, 
+            `banners`.`link_url`, 
+            `banners`.`image_mobile`, 
+            `banners`.`sorting`,
+            `categories`.`id`, 
+            `categories`.`slug` AS `category_slug`, 
+            `vendors`.`id`, 
+            `vendors`.`slug` AS `vendor_slug`
+            FROM banners";
+
+        $joinQuery = "LEFT JOIN `categories` ON `categories`.`id` = `banners`.`redirect_category_id` AND `categories`.`deleted_at` IS NULL ";
+        $joinQuery.= "LEFT JOIN `vendors` ON `vendors`.`id` = `banners`.`redirect_vendor_id` ";
+
+        $mainQuery.= " $joinQuery WHERE `banners`.`status` =1 AND `banners`.`validity_on` = 1 AND (`banners`.`start_date_time` is null or (date(`banners`.`start_date_time`) <= '".$carbon_now."' and date(`banners`.`end_date_time`) >= '".$carbon_now."'))  ";
+
+        if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
+            $mainQuery .= " AND EXISTS (SELECT `id`, `banner_id` FROM `banner_service_areas` where `banners`.`id` = `banner_service_areas`.`banner_id` and exists (select `id` from `service_area_for_banners` where `banner_service_areas`.`service_area_id` = `service_area_for_banners`.`id` and ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(30.718784900000 76.810374100000)')) and `type` = 1)) ";
+        }
+        $mainQuery.= " ORDER BY `banners`.`sorting` ASC";
+        
+     
+        $banners = DB::select( DB::raw($mainQuery));
+        return $banners;
+    }
+    
 }

@@ -727,7 +727,7 @@ function showPriceWithCurrency($price = 0,$compare = 0)
         $currencysymbol = session()->get('currencySymbol').' ';
         $is_token_currency = $redis->get("ifTCurrency_".session()->get('userCode'));
         if($is_token_currency == null){
-            $is_token_currency = getAdditionalPreference(['is_token_currency_enable']);
+            $is_token_currency = getAdditionalPreference(['is_token_currency_enable'])['is_token_currency_enable'];
             $redis->set("ifTCurrency_".session()->get('userCode'), $is_token_currency, 'EX', 36000);
         }
         
