@@ -237,9 +237,9 @@ class OrderController extends FrontController
             });
         })
             ->where('orders.user_id', $user->id);
-        if ($checkLongTerm) {
+        
             $activeOrders->where('orders.is_long_term', 0);
-        }
+        
         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
             $activeOrders =  $activeOrders->whereHas('vendors.products', function ($q) {
                 $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
