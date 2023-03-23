@@ -500,12 +500,11 @@ class ProductController extends FrontController{
         $compareProducts = Product::with(['media.image', 'vendor', 'translation', 'variant','reviews'])->where('category_id', $request->category_id)
         ->whereIn('id', $idsUnque)
         ->orderby('id', 'desc')->get();
-        
+        $html ='';
         if(isset($compareProducts)){
             $html = view('frontend.compare-product-table')->with(['compareProducts'=>$compareProducts,'ajax'=>1])->render();
-
-            return response()->json(['ids'=>$idsmerge??$request->compareItems,'html'=>$html]);
         }     
+        return response()->json(['ids'=>$idsmerge??$request->compareItems,'html'=>$html]);
 }
 
     # get product faq
