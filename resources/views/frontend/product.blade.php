@@ -1329,6 +1329,15 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 $(this).find('img').addClass("active");
             });
         });
+        
+        
+        $(document).on("click",".color_name",function(){
+        	if($(this).hasClass("ellipsis")){
+        		$(this).removeClass("ellipsis");
+        	}else{
+        		$(this).addClass("ellipsis");
+        	}
+        });
 
         </script>
 

@@ -369,8 +369,8 @@ class AuthController extends BaseController
         }
         $country_detail = Country::where('code', $signReq->country_code)->first();
         $email = (!empty($signReq->email)) ? $signReq->email : ''; //('ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com');
-        $phoneCode = mt_rand(100000, 999999);
-        $emailCode = mt_rand(100000, 999999);
+        $phoneCode = getUserToken($preferences)['otp'];
+        $emailCode = getUserToken($preferences)['otp'];
         $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
         $user->password = Hash::make($signReq->password);
         $user->type = 1;
@@ -658,11 +658,11 @@ class AuthController extends BaseController
             }
             $notified = 1;
             $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
-            $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+            $data = ClientPreference::select('sms_credentials','sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
             $newDateTime = Carbon::now()->addMinutes(10)->toDateTimeString();
             if ($request->type == "phone") {
                 if ($user->is_phone_verified == 0 || $request->sendSms == 1) {
-                    $otp = mt_rand(100000, 999999);
+                    $otp = getUserToken($data)['otp'];
                     $user->phone_token = $otp;
                     $user->phone_token_valid_till = $newDateTime;
                     $user->save();
@@ -672,7 +672,11 @@ class AuthController extends BaseController
                     $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp]; 
                     $body = sendSmsTemplate('verify-account',$keyData);
                     if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
-                        $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                        if(getUserToken($data)['status']){
+                            $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                        }else{
+                            $send=1;
+                        }
                         if ($send ==1) {
                             $message = __('An otp has been sent to your phone. Please check.');
                             return $this->successResponse([], $message);
@@ -683,7 +687,7 @@ class AuthController extends BaseController
                 }
             } else {
                 if ($user->is_email_verified == 0) {
-                    $otp = mt_rand(100000, 999999);
+                    $otp = getUserToken($data)['otp'];
                     $user->email_token = $otp;
                     $user->email_token_valid_till = $newDateTime;
                     $user->save();
@@ -1077,30 +1081,8 @@ class AuthController extends BaseController
                         return response()->json($errors, 422);
                     }
                 }
-                $phone_number = preg_replace('/\D+/', '', $username);
-                $dialCode = $request->dialCode;
-                $fullNumber = $request->full_number;
-                $phoneCode = mt_rand(100000, 999999);
-                $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
-                $request->request->add(['is_phone' => 1, 'phone_number' => $phone_number, 'phoneCode' => $phoneCode, 'sendTime' => $sendTime, 'codeSent' => 0]);
-                $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
-               // pr($user->toArray());
-                if (!$user) {
-                    //return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
-
-                    $registerUser = $this->registerViaPhone($request)->getData();
-                    if ($registerUser->status == 'Success') {
-                        $user = $registerUser->data;
-                    } else {
-                        return $this->errorResponse(__('Invalid data'), 404);
-                    }
-                } else {
-                    $user->phone_token = $phoneCode;
-                    $user->phone_token_valid_till = $sendTime;
-                    $user->save();
-                }
-
                 $prefer = ClientPreference::select(
+                    'sms_credentials',
                     'mail_type',
                     'mail_driver',
                     'mail_host',
@@ -1124,7 +1106,29 @@ class AuthController extends BaseController
                     'verify_phone',
                     'app_template_id',
                     'web_template_id'
-                )->first();
+                    )->first();
+                $phone_number = preg_replace('/\D+/', '', $username);
+                $dialCode = $request->dialCode;
+                $fullNumber = $request->full_number;
+                $phoneCode =  getUserToken($prefer)['otp'];
+                $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
+                $request->request->add(['is_phone' => 1, 'phone_number' => $phone_number, 'phoneCode' => $phoneCode, 'sendTime' => $sendTime, 'codeSent' => 0]);
+                $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
+               // pr($user->toArray());
+                if (!$user) {
+                    //return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
+
+                    $registerUser = $this->registerViaPhone($request)->getData();
+                    if ($registerUser->status == 'Success') {
+                        $user = $registerUser->data;
+                    } else {
+                        return $this->errorResponse(__('Invalid data'), 404);
+                    }
+                } else {
+                    $user->phone_token = $phoneCode;
+                    $user->phone_token_valid_till = $sendTime;
+                    $user->save();
+                }
 
                 if ($dialCode == "971") {
                     $to = '+' . $dialCode . "0" . $phone_number;
@@ -1139,7 +1143,11 @@ class AuthController extends BaseController
                 $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
                 $body = sendSmsTemplate('verify-account',$keyData);
                 if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
-                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    if(getUserToken($prefer)['status']){
+                        $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    }else{
+                        $send = 1;
+                    }
                     if ($send) {
                         $request->request->add(['codeSent' => 1]);
                         $message = __('An otp has been sent to your phone. Please check.');
