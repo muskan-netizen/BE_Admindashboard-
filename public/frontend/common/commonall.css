@@ -525,7 +525,7 @@ body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded{
     box-shadow: none;
     transition: ease-in 3s ease;
 }
-.al_body_template_one .vendor_first .product-image {
+.al_body_template_one .vendor_first .product-image, .al_body_template_one .homepageSix .outter-fillter-data .common-product-box .img-outer-box {
     height: 234px;
 }
 .al_body_template_one .vendor_first .product-image img {
@@ -712,7 +712,18 @@ display: inline-block;
     height: 100%!important;
 }
 
-body .suppliers-img-outer, body .img-outer-box {
-    height: 260px;
-    min-height: 260px;
+@media (max-width:576px){
+    .al_body_template_four  .dark #login-section::after,  .al_body_template_four  #login-section::after{
+        opacity:0;
+        visibility: hidden;
+        display: none;
+    }
+    .al_body_template_four   img.LoginAreaBG{
+        opacity:0;
+        visibility: hidden;
+        display: none;
+    }
+    .al_body_template_four .LogoInArea h3 {
+        margin: 40px 0 20px!important;
+    }
 }
