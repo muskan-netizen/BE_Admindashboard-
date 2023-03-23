@@ -504,7 +504,7 @@ class ProductController extends FrontController{
         if(isset($compareProducts)){
             $html = view('frontend.compare-product-table')->with(['compareProducts'=>$compareProducts,'ajax'=>1])->render();
 
-            return response()->json(['ids'=>$idsmerge??$request->compareItems,'html'=>$html]);
+            return response()->json(['ids'=>$idsmerge??$request->compareItems,'html'=>$html??[]]);
         }     
 }
 
