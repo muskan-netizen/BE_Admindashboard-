@@ -790,6 +790,11 @@ display: inline-block;
 .al_body_template_three .product-image img .img-fluid.blur-up .lazyloaded {
     height: 100%!important;
 }
+body.dark .pasStepBoxOuter::before {
+    border-color: #2B2B2B!important;
+    transition: all 0.1s;
+}
+
 
 @media (max-width:991px){
     .al_body_template_four .vender-icon img {
