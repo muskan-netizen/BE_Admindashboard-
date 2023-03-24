@@ -670,11 +670,12 @@ li.vendor-timing p{
 }
 .top-banner-content.small-section {
     position: absolute;
-    top: 36%;
+    top: 50%;
     z-index: 9;
     width: 98.3%;
+    transform: translateY(-50%);
 }
-.al_body_template_nine .common-banner:after {
+.al_body_template_one .common-banner:after, .al_body_template_nine .common-banner:after {
     content: "";
     position: absolute;
     background: #0e0c0c4f;
@@ -689,7 +690,7 @@ li.vendor-timing p{
     bottom: 0;
 }
 .al_body_template_nine .common-banner:after{
-    width: calc(100% - 24px)!important;
+    width: 100%!important;
 }
 .common-banner.my-banner{
 position: relative;
