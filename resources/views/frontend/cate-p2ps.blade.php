@@ -222,7 +222,7 @@
                                             </ul>
                                         </div>
                                       <div class="displayProducts main_category" id="category_products_filter">
-                                                                          @include('frontend.ajax.product-p2p')
+                                                                          @include('frontend.ajax.product-card')
                                         </div>
                                         <div class="pagination pagination-rounded justify-content-end mb-0">
                                             @if(!empty($listData))
@@ -408,8 +408,7 @@
             "dynamic_options" : dynamic_options,
             "filter_type" : 1,
             "latitude" : latitude,
-            "longitude" : longitude,
-            "p2p" : 1
+            "longitude" : longitude
         };
 
         if(limit != ''){
