@@ -3856,6 +3856,12 @@ a.morelink.less {
     min-width: 200px;
 }
 
-a.product-box .product-image img.img-fluid.blur-up.lazyloaded {
-    height: 100%!important;
+.al_body_template_three .related-products .slick-track {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.al_body_template_three .product-description_list.border-bottom {
+    height: 60px;
+    overflow-y: auto;
 }

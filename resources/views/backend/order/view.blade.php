@@ -1342,7 +1342,7 @@ $timezone = Auth::user()->timezone;
                                     "#5ba035", "success");
                             //location.reload();
                             setTimeout(function() {
-                              //  location.reload();
+                                location.reload();
                             }, 3000);
                         },
                         beforeSend: function() {

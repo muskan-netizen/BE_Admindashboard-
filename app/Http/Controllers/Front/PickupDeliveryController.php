@@ -70,7 +70,7 @@ class PickupDeliveryController extends FrontController{
                         }
                         $date = Carbon::parse($order['order_detail']['scheduled_date_time'], 'UTC');
                         $date->setTimezone( $user->timezone);
-                        $schudelDate =  $date->format('d M ,y H:i A');; //$date->isoFormat('d.m.Y, H:i A');
+                        $schudelDate =  $date->format('d M,Y | h:i A'); //$date->isoFormat('d.m.Y, H:i A');
                        //date("F j, Y, g:i a"); //dateTimeInUserTimeZone($order['order_detail']['scheduled_date_time'], $user->timezone)
                         $order['dispatcher_status'] = __('You have successfully scheduled your ride for:') . $schudelDate   ;
                     }
@@ -475,6 +475,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
+       
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -482,10 +483,11 @@ class PickupDeliveryController extends FrontController{
                 $timezone = $request->time_zone;
                 $given = new DateTime($request->schedule_datetime, new DateTimeZone($timezone));
                 $given->setTimezone(new DateTimeZone("UTC"));
-                $request->schedule_time = $given->format("Y-m-d H:i:s");
+                $request->merge(['schedule_time' => $given->format("Y-m-d H:i:s")]);
+
             }
 
-
+           // pr($request->all());
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
@@ -647,9 +649,9 @@ class PickupDeliveryController extends FrontController{
                 $order->is_postpay          = ($request->postpay_enable)?$request->postpay_enable:0;
                 $schedule_datetime_del      = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del  = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                    $schedule_datetime_del  =$request->schedule_time ;// Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-
+               
                 $order->scheduled_date_time = $schedule_datetime_del;
                 /*book for a friend*/
                 $order->type                = $request->type;
