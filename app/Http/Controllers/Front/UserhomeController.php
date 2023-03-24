@@ -324,7 +324,7 @@ class UserhomeController extends FrontController
             }
 
             $carbon_now = Carbon::now();
-            $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            /* $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
             ->where(function ($q) use ($carbon_now) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) use ($carbon_now) {
                     $q2->whereDate('start_date_time', '<=', $carbon_now)
@@ -337,9 +337,11 @@ class UserhomeController extends FrontController
                     $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
                 });
             }
-            $banners = $banners->orderBy('sorting', 'asc')->get();
-            
-            $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            $banners = $banners->orderBy('sorting', 'asc')->get(); */
+
+            $banners = $this->getBannersForHomePage($client_preferences, $latitude, $longitude);
+//pr($banners);
+            /* $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
             ->where(function ($q) use ($carbon_now) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) use ($carbon_now) {
                     $q2->whereDate('start_date_time', '<=', $carbon_now)
@@ -351,8 +353,10 @@ class UserhomeController extends FrontController
                     $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
                 });
             }
-            $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
+            $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get(); */
 
+            $mobile_banners = $this->getMobileBannersForHomePage($client_preferences, $latitude, $longitude);
+//pr($banners);
 
             $home_page_labels = CabBookingLayout::where('is_active', 1)->web()->where('for_no_product_found_html',0)->orderBy('order_by');
 
@@ -551,8 +555,7 @@ class UserhomeController extends FrontController
                     break;
             }
         }
-
-
+        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $additionalPreference['is_admin_vendor_rating'], $latitude, $longitude);
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
             $brands = $this->getBrandsForHomePage($language_id, $this->field_status);
@@ -579,18 +582,16 @@ class UserhomeController extends FrontController
         }
 
         if (in_array('vendors', $enable_layout)) {  # if enable trending_vendors section in
-            $vendorData = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude);
-            $vendors = $vendorData['vendors'];
+            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids);
         }
         
        
         
         $trendingVendors = [];
         if (in_array('trending_vendors', $enable_layout)) {  # if enable trending_vendors section in 
-            $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude);
+            $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $clientdata->timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
         }    
 
-        $vendor_ids = $vendorData['vendor_ids'];
         //get Most Selling Vendors
         $mostSellingVendors = []; //best_sellers
         if (in_array('best_sellers', $enable_layout)) {
@@ -598,14 +599,8 @@ class UserhomeController extends FrontController
                 $mostSellingVendors = collect($vendors);
                 $mostSellingVendors = $mostSellingVendors->sortByDesc('selling_count');
             }else{
-                $vendorData            = $this->getVendorForHomePage($preferences, "best_sellers", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude);
-                $mostSellingVendors    = $vendorData['vendors'];
-                $vendor_ids            = $vendorData['vendor_ids'];
+                $mostSellingVendors = $this->getVendorForHomePage($preferences, "best_sellers", $clientdata->timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
             }
-        }
-
-        if(count($vendor_ids) == 0 && !isset($vendorData)){
-            $vendor_ids = $this->getVendorForHomePage($preferences, "vendor_ids", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude);
         }
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 

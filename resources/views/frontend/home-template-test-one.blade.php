@@ -293,11 +293,10 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
       <div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
          <div class="carousel-inner">
             @foreach($banners as $key => $banner)
-            @php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
+            @php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
             <div class="carousel-item @if($key == 0) active @endif">
                <a class="banner-img-outer" href="{{$url??'#'}}" target="_blank">
-                  <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
-                  <img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+                  <img alt="" title="" class="blur blurload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1370','300') }}" src="{{ get_file_path($banner->image,'IMG_URL1','137','30') }}">
                </a>
             </div>
             @endforeach
@@ -314,11 +313,10 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
       <div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
          <div class="carousel-inner">
             @foreach($mobile_banners as $key => $banner)
-            @php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+            @php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}@endphp
             <div class="carousel-item @if($key == 0) active @endif">
                <a class="banner-img-outer" href="{{$url??'#'}}">
-                  <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
-                  <img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+                  <img alt="" title="" class="blur blurload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1370','300') }}" src="{{ get_file_path($banner->image,'IMG_URL1','137','30') }}">
                </a>
             </div>
             @endforeach
@@ -332,12 +330,6 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
          <span class="sr-only">{{__('Next')}}</span>
          </a>
       </div>
-      <!-- <div class="shimmer_effect">
-         <div class="loading"></div>
-         </div>
-         <div class="home-banner-slider">
-         @foreach($banners as $banner) @php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp @if($url) <a class="banner-img-outer" href="{{$url}}"> @endif <img alt="" title="" class="blur-up lazyload" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}"> @if($url) </a> @endif @endforeach
-         </div> -->
    </div>
 </section>
 @endif
@@ -513,7 +505,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                               $video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
                            @endphp
                            @if(in_array($extension, $image_extensions))
-                              <img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+                              <img alt="" title="" class="blur blurload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
                            @elseif (in_array($extension, $video_extensions))
                               <video id="video1" width="100%" controls autoplay muted>
                                  <source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
@@ -555,7 +547,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
    <div class="container">
       @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
       <div class="row">
-         <div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
+         <div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur blurload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
       </div>
       <div class="row">
          <div class="col-12 text-center mt-2">
@@ -569,7 +561,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
          <div class="modal-body text-center">
-            <img style="height: 150px;" class="blur-up lazyload" data-src="{{getImageUrl(asset('assets/images/age-img.svg'),'150/150')}}" alt="" title="">
+            <img style="height: 150px;" class="blur blurload" data-src="{{getImageUrl(asset('assets/images/age-img.svg'),'150/150')}}" alt="" title="">
             <p class="mb-0 mt-3">{{$client_preference_detail ? $client_preference_detail->age_restriction_title : __('Are you 18 or older?')}}</p>
             <p class="mb-0">{{__('Are you sure you want to continue?')}}</p>
          </div>
@@ -606,7 +598,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
 			 <a class="banner-img-outer" href="<%= url %>">
 				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>" />
-				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>">
+				<img alt="" title="" class="blur blurload w-100" data-src="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>">
 			 </a>
 		  </div>
 	   <% }); %>
@@ -640,7 +632,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
 			 <a class="banner-img-outer" href="<%= url %>">
 				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>" />
-				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>">
+				<img alt="" title="" class="blur blurload w-100" data-src="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>">
 			 </a>
 		  </div>
 	   <% }); %>
@@ -660,8 +652,8 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
    	<div class="product-card-box position-relative ">
    		<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
    			<div class="suppliers-img-outer position-relative">
-   				<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
-   					<%}else{%> <img class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+   				<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur blurload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+   					<%}else{%> <img class="fluid-img mx-auto blur blurload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
    						<%}%>
    							<% if(vendor.timeofLineOfSightDistance !=undefined){%>
    								<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
@@ -685,7 +677,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
    	<div>
    		<a class="brand-box d-block black-box" href="<%=brand.redirect_url %>">
    			<div class="brand-ing">
-   				<img class="blur-up lazyload" data-src="<%=brand.image.image_fit %>260/260<%=brand.image.image_path %>" alt="" title="">
+   				<img class="blur blurload" data-src="<%=brand.image.image_fit %>260/260<%=brand.image.image_path %>" alt="" title="">
    			</div>
    			<h6><%=brand.translation_title %></h6>
    		</a>
@@ -716,7 +708,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
    			<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
    		</div>
    		<a class="common-product-box text-center" href="<%=product.vendor.slug %>/product/<%=product.url_slug %>">
-   			<div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="<%=product.image_url %>" alt="" title="">
+   			<div class="img-outer-box position-relative"> <img class="blur blurload" data-src="<%=product.image_url %>" alt="" title="">
    				<div class="pref-timing"> </div>
    			</div>
    			<div class="media-body align-self-center">
@@ -750,8 +742,8 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
    	<div class="product-card-box position-relative">
    		<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
    			<div class="suppliers-img-outer position-relative">
-   				<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
-   					<%}else{%> <img class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+   				<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur blurload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+   					<%}else{%> <img class="fluid-img mx-auto blur blurload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
    						<%}%>
    							<% if(vendor.timeofLineOfSightDistance !=undefined){%>
    								<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
