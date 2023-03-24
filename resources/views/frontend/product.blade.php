@@ -357,7 +357,6 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             {{-- Chat Button --}}
                                             <hr>
                                                 <h6 class="sold-by">
-                                            @if( !is_attribute_enabled() && $category->type_id != 13)
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
 
 
@@ -371,21 +370,6 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
                                                 {{-- {{__('Call Button')}} --}}
                                             @endif
-                                            @else
-                                             <div class="prod-details">
-                                    <div class="chat-button">
-                                        @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
-                                            <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$product->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$product->id}}" style="margin-right: 5px !important;"><i class="fa fa-comments" aria-hidden="true"></i></button>
-                                                    
-                                                @endif
-                                                @if(getAdditionalPreference(['call_button'])['call_button'])
-                                                    <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></button>
-                                                    
-                                                @endif
-                                            </div>
-                                        </div>
-                                            @endif
-                                            
                                                 </h6>
                                     @endif
 
