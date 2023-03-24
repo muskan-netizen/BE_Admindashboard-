@@ -374,7 +374,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @else
                                              <div class="prod-details">
                                     <div class="chat-button">
-                                        @if(getAdditionalPreference(['chat_button'])['chat_button'])
+                                        @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
                                             <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$product->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$product->id}}" style="margin-right: 5px !important;"><i class="fa fa-comments" aria-hidden="true"></i></button>
                                                     
                                                 @endif
