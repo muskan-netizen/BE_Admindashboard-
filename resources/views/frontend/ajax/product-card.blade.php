@@ -39,15 +39,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                             @endif
                             </div>
                             
-                            @if($category->type_id != 13)
-                                @if(($data->inquiry_only == 0) && ($is_service_product_price_from_dispatch_forOnDemand !=1) )
-                                    @if (@$additionalPreference['is_token_currency_enable'] )
-                                    <i class='fa fa-money' aria-hidden='true'></i> {{ getInToken($data->variant_price * $data->variant_multiplier)}}
-                                    @else
-                                        <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
-                                    @endif
-                                @endif
-                           @else
+                            @if(@$category->type_id == 13)
                              @if(!empty($data->ProductAttribute))
                                 @foreach ($data->ProductAttribute as $attribute) 
                                     @if(@$attribute && $attribute->key_name == "Location") 
@@ -67,16 +59,24 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                 <div class="prod-details">
                                     <div class="chat-button">
                                         @if(getAdditionalPreference(['chat_button'])['chat_button'])
-                                            <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$data->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$data->id}}" style="margin-right: 5px !important;"><i class="fa fa-comments" aria-hidden="true"></i></button>
-                                                    
-                                                @endif
-                                                @if(getAdditionalPreference(['call_button'])['call_button'])
-                                                    <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></button>
-                                                    
-                                                @endif
-                                            </div>
+                                        <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$data->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$data->id}}" style="margin-right: 5px !important;"><i class="fa fa-comments" aria-hidden="true"></i></button>
+                                                
+                                            @endif
+                                            @if(getAdditionalPreference(['call_button'])['call_button'])
+                                                <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></button>
+                                                
+                                            @endif
                                         </div>
-                                    </div> 
+                                    </div>
+                                </div> 
+                           @else
+                           		@if(($data->inquiry_only == 0) && ($is_service_product_price_from_dispatch_forOnDemand !=1) )
+                                    @if (@$additionalPreference['is_token_currency_enable'] )
+                                    <i class='fa fa-money' aria-hidden='true'></i> {{ getInToken($data->variant_price * $data->variant_multiplier)}}
+                                    @else
+                                        <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
+                                    @endif
+                                @endif
                         	@endif
                     </div>
                 </div>
