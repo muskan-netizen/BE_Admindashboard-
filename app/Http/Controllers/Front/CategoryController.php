@@ -614,10 +614,10 @@ class CategoryController extends FrontController{
             }else{
                 //
             }
+           $p2p =  isset($request->p2p)?true:false;
             // $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
 
             $products = $products->groupBy('products.id')->paginate($limit, $page);
-// dd($products);
         if(!empty($products)){
             foreach ($products as $key => $value) {
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
@@ -634,7 +634,7 @@ class CategoryController extends FrontController{
         }
         $listData = $products;
 
-        $returnHTML = view('frontend.ajax.productList')->with(['data'=>$request->all(),'listData' => $listData])->render();
+        $returnHTML = view('frontend.ajax.productList')->with(['data'=>$request->all(),'listData' => $listData,'p2p'=>$p2p])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 

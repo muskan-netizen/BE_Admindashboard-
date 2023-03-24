@@ -7,8 +7,11 @@
     }
 @endphp
 
-@include('frontend.ajax.product-card')
-
+@if($p2p)
+	@include('frontend.ajax.product-p2p')
+@else
+	@include('frontend.ajax.product-card')
+@endif
 @if(count($listData))
 <div class="pagination pagination-rounded justify-content-end mb-0 page-m-20">
     {{ $listData->links() }}
