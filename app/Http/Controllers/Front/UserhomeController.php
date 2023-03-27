@@ -555,7 +555,7 @@ class UserhomeController extends FrontController
                     break;
             }
         }
-        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $additionalPreference['is_admin_vendor_rating'], $latitude, $longitude);
+        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $additionalPreference['is_admin_vendor_rating'], $latitude, $longitude);
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
             $brands = $this->getBrandsForHomePage($language_id, $this->field_status);

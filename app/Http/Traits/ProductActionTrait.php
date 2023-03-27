@@ -657,9 +657,9 @@ trait ProductActionTrait{
         return $banners;
     }
 
-    public function getRandomVendorIdsForHomePage($preferences, $is_admin_vendor_rating = 0, $latitude, $longitude)
+    public function getRandomVendorIdsForHomePage($preferences, $type, $is_admin_vendor_rating = 0, $latitude, $longitude)
     {
-        $vendors = Vendor::select('id')->where('status', 1);
+        $vendors = Vendor::select('id')->where('status', 1)->where($type, 1);
         if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
             $vendors = $vendors->havingRaw(" HAVING (SELECT COUNT(`service_areas`.`id`) FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) > 0 ");
