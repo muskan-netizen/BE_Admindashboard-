@@ -585,10 +585,14 @@ class OrderController extends FrontController
      * Get Cart Items
      *
      */
-    public function getCart($cart, $address_id = 0)
+    public function getCart($cart, $address_id = 0,$user=array())
     {
         $cart_id = $cart->id;
-        $user = Auth::user();
+        if(!empty($user)) {
+            $user = $user;
+        }else{
+            $user = Auth::user();
+        }
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $pharmacy = ClientPreference::first();
