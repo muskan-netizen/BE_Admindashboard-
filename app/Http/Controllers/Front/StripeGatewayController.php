@@ -868,7 +868,7 @@ class StripeGatewayController extends FrontController
             // }
 
             $user_address = '';
-            if($request->has('address_id')){
+            if($request->has('address_id') && isset($request->address_id)){
                 $address_id = $request->address_id;
                 $user_address = UserAddress::where('id', $address_id)->first();
             }else{
