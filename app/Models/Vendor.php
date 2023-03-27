@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 //use Laravel\Scout\Searchable;
+use DB;
 
 class Vendor extends Model implements Auditable{
 
@@ -27,7 +28,7 @@ class Vendor extends Model implements Auditable{
     public function long_term_products(){
         return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_long_term_service',1);
     }
-    public function productsLive(){
+    public function productsLive(){ 
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_live','1');
     }
 
@@ -136,7 +137,11 @@ class Vendor extends Model implements Auditable{
     public function currentlyWorkingOrders(){
       return $this->hasMany('App\Models\OrderVendor', 'vendor_id', 'id')->select('id', 'vendor_id')
              ->whereIn('order_status_option_id',[2,4,5]);
-   }
+    }
+    public function CompletedOrders(){
+      return $this->hasMany('App\Models\OrderVendor', 'vendor_id', 'id')->select('id', 'vendor_id')
+             ->where('order_status_option_id',5);
+    }
 
 
   public function getAllCategory(){
@@ -145,22 +150,8 @@ class Vendor extends Model implements Auditable{
   public function getCustomCategory(){
     return $this->hasMany('App\Models\Category','vendor_id','id');
   }
+ 
 
-  // public function getTaxFixedFee(){
-  //   return $this->hasOne('App\Models\TaxRate', 'id', 'fixed_fee_tax_id');
-  // }
-
-  // public function getTaxContainerCharges(){
-  //   return $this->hasOne('App\Models\TaxRate', 'id', 'container_charges_tax_id');
-  // }
-
-  // public function getTaxServiceCharges(){
-  //   return $this->hasOne('App\Models\TaxRate', 'id', 'service_charges_tax_id');
-  // }
-
-  // public function getTaxDeliveryCharges(){
-  //   return $this->hasOne('App\Models\TaxRate', 'id', 'delivery_charges_tax_id');
-  // }
 
   public function getById($id){
     return self::where('id',$id)->first();
@@ -194,7 +185,7 @@ class Vendor extends Model implements Auditable{
 
     public function getVendorContactJsonAttribute()
     {
-          return json_decode($this->razorpay_contact_json)->id;
+        return json_decode($this->razorpay_contact_json)->id;
     }
 
     public function getVendorBankJsonAttribute()
@@ -208,7 +199,28 @@ class Vendor extends Model implements Auditable{
 
     public function bids()
     {
-        return $this->hasMany(Bid::class, 'vendor_id');
+      return $this->hasMany(Bid::class, 'vendor_id');
     }
+    public function  getOrdersInSubscriptionAttribute(){
+    //   $self = self::class;
+    //  pr( $self->id);
+      $query = "select  SUM(order_count) as total_order from `subscription_invoices_vendor` WHERE `vendor_id`='".$this->id."' and GROUP by vendor_id";
+   
+      // $order_count = DB::select( DB::raw($query));
+      return $order_count;
+    }
+    public function scopeVendorBySubscriptionRule($query,$preference)
+    {
+       pr($this->sumIfOrdersInSubscription());
+       return $query;
+    }
+    public function activeSubscription(){
+      $now = Carbon::now()->toDateTimeString();
+      return $this->hasOne('App\Models\SubscriptionInvoicesVendor','vendor_id','id')->where('end_date', '>=', $now);
+  }
+  public function activeSubscriptions(){
+    $now = Carbon::now()->toDateTimeString();
+    return $this->hasOne('App\Models\SubscriptionInvoicesVendor','vendor_id','id')->where('end_date', '>=', $now);
+}
 
 }

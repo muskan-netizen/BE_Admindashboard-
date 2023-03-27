@@ -5,20 +5,22 @@ namespace App\Http\Controllers\Front;
 use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,VendorTrait};
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, ClientCurrency, Category_translation, ProductTranslation};
 
 class SearchController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,VendorTrait;
     public function postAutocompleteSearch(Request $request)
     {
         $response = [];
         $keyword = $request->input('keyword');
         $language_id = Session::get('customerLanguage');
-        $preferences = getClientPreferenceDetail();
+       // $preferences = getClientPreferenceDetail();
+        $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
+   
         $latitude = session('latitude');
         $longitude = session('longitude');
         $selectedAddress = session('selectedPlaceId');
@@ -28,6 +30,11 @@ class SearchController extends FrontController
         $vendors = Vendor::select('id', 'name', 'logo', 'slug', 'show_slot');
         if (count($allowed_vendors) > 0) {
             $vendors = $vendors->whereIn('id', $allowed_vendors);
+        }
+        if(@$preferences->subscription_mode ==1 ){
+            if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
+                $vendors =   $vendors->whereIn('id',$this->getSubscriptionVendorId());
+            }
         }
 
         if (@$preferences) {
@@ -162,10 +169,16 @@ class SearchController extends FrontController
         $mapViewVendorList = [];
         $keyword = $keyword;
         $language_id = Session::get('customerLanguage');
-        $preferences = Session::get('preferences');
+      // $preferences = Session::get('preferences');
+        $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
         $vendorType = Session::get('vendorType');
         $vendorMapView = '';
         $vendors = Vendor::select('id', 'name', 'logo', 'slug', 'latitude', 'longitude', 'address', 'dial_code', 'phone_no')->where($vendorType, 1);
+        if(@$preferences->subscription_mode ==1 ){
+            if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
+                $vendors =   $vendors->whereIn('id',$this->getSubscriptionVendorId());
+            }
+        }
         if (@$preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = @$preferences->Default_location_name;

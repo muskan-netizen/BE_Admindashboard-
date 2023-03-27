@@ -111,6 +111,7 @@ class SubscriptionPlansVendorController extends BaseController
         }
         $plan->title = $request->title;
         $plan->price = $request->price;
+        $plan->order_count = $request->order_count;
         // $plan->period = $request->period;
         $plan->frequency = $request->frequency;
         // $plan->sort_order = $request->sort_order;

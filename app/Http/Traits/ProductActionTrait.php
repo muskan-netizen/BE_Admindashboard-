@@ -342,14 +342,17 @@ trait ProductActionTrait{
         //                 $products = $products->take(10);  
         //             }
         //         $products = $products->inRandomOrder()->get();
+        if(empty($venderIds)){
+            return [];
+        }
         $vendorWhereIN = ' ';
         $completeWhere = ' ';
         $whereProductType = ' ';
-        if(!empty($venderIds)){
-            $venid = implode(',',$venderIds);
-            $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
+       
+        $venid = implode(',',$venderIds);
+        $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
 
-        }
+        
         if($where!=='all'){
             
                 if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){

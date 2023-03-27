@@ -6,7 +6,7 @@ use App\Http\Controllers\AhoyController;
 use DB;
 use Carbon\{Carbon,CarbonPeriod};
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,OrderTrait,CartManager,DispatcherSlot};
+use App\Http\Traits\{ApiResponser,OrderTrait,CartManager,DispatcherSlot,VendorTrait};
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
@@ -27,7 +27,7 @@ use App\Models\AutoRejectOrderCron;
 use App\Models\{VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
-    use ApiResponser,CartManager,OrderTrait,DispatcherSlot;
+    use ApiResponser,CartManager,OrderTrait,DispatcherSlot,VendorTrait;
     /**
      * Display a listing of the resource.
      *
@@ -167,7 +167,7 @@ class OrderController extends BaseController
                 $client_preference = ClientPreference::first();
 
                 $editlimit_datetime = Carbon::now()->toDateTimeString();
-                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','order_edit_before_hours','is_service_product_price_from_dispatch']);
+                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','order_edit_before_hours','is_service_product_price_from_dispatch','is_show_vendor_on_subcription']);
                 $order_edit_before_hours =  @$additionalPreferences->order_edit_before_hours;
                 $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
                 // if ($client_preference->verify_email == 1) {
@@ -359,11 +359,21 @@ class OrderController extends BaseController
                         }else{
                             $order_vendor = new OrderVendor();
                         }
+                        $vendor_subcription_lnvoices_id = '';
+                       
+                        if($client_preference->subscription_mode == '1' &&  $additionalPreferences->is_show_vendor_on_subcription == 1){
+                            $vendor_on_subcription = $this->getVendorActiveSubscription($vendor_id);
+                            if( $vendor_on_subcription)
+                            { 
+                                $vendor_subcription_lnvoices_id =   $vendor_on_subcription->id ;
+                            }
+                        }
                         
                         $order_vendor->status = 0;
                         $order_vendor->user_id = $user->id;
                         $order_vendor->order_id = $order->id;
                         $order_vendor->vendor_id = $vendor_id;
+                        $OrderVendor->subscription_invoices_vendor_id = $vendor_subcription_lnvoices_id;
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
