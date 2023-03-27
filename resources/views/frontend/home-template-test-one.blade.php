@@ -296,6 +296,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
             @php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
             <div class="carousel-item @if($key == 0) active @endif">
                <a class="banner-img-outer" href="{{$url??'#'}}" target="_blank">
+                  <link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','1370','300') }}" />
                   <img alt="" title="" class="blur blurload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1370','300') }}" src="{{ get_file_path($banner->image,'IMG_URL1','137','30') }}">
                </a>
             </div>
@@ -316,6 +317,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
             @php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}@endphp
             <div class="carousel-item @if($key == 0) active @endif">
                <a class="banner-img-outer" href="{{$url??'#'}}">
+                  <link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','1370','300') }}" />
                   <img alt="" title="" class="blur blurload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1370','300') }}" src="{{ get_file_path($banner->image,'IMG_URL1','137','30') }}">
                </a>
             </div>
