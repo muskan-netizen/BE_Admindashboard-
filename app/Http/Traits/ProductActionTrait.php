@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Traits;
-use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating, VendorCategory, Vendor};
+use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating, VendorCategory, Vendor, SubscriptionInvoicesVendor};
 use Illuminate\Support\Str;
 use Auth;
 use Session;
