@@ -434,6 +434,7 @@ trait ProductActionTrait{
        return $returnArray;
     }
     
+    
     public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [])
     {
         $mytime = Carbon::now()->setTimezone($timezone);
@@ -468,6 +469,7 @@ trait ProductActionTrait{
             `vendors`.`longitude`, 
             `vendors`.`show_slot`,
             `vendors`.`admin_rating`,
+            `vendors`.`rating`,
             GROUP_CONCAT(DISTINCT `category_translations`.`name` SEPARATOR ', ') AS `categoriesList`,
             (SELECT count(`order_vendors`.`id`) FROM `order_vendors` WHERE `order_vendors`.`vendor_id` = `vendors`.`id`) AS `selling_count`,
             (SELECT CONCAT(`vendor_slot_dates`.`start_time`, '##', `vendor_slot_dates`.`end_time`) FROM `vendor_slot_dates` WHERE `vendor_slot_dates`.`vendor_id` = `vendors`.`id` LIMIT 0,1) AS `slotdate_start_end_time`,
@@ -532,7 +534,7 @@ trait ProductActionTrait{
             $vendor_ids[] = $value->id;
             $value->img_path = get_file_path($value->logo,'FILL_URL','200','200');
             // get or update rating
-            $value->vendorRating = $this->getVendorRating($value->id);
+            $value->vendorRating = ($value->rating == null) ? $this->getVendorRating($value->id) : number_format($value->rating, 1);
 
             if(($preferences) && ($preferences->is_hyperlocal == 1)) 
             {

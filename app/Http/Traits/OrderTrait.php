@@ -594,7 +594,7 @@ trait OrderTrait
     {
         $vendor_rating = 0;
 
-        $vendor = Vendor::find($vendor_id);
+        $vendor = Vendor::select('id', 'rating')->where('id', $vendor_id)->first();
 
         if ($vendor && $vendor->rating == null) {
 
