@@ -39,9 +39,17 @@ class CcavenueController extends Controller
       $this->merchant_id = $json->merchant_id;
     if($payOpt->test_mode =='1')
     {
+      if($json->custom_url=='ae'){
         $this->url = 'https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction';
+      }else{
+        $this->url = 'https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
+      } 
     }else{
+      if($json->custom_url=='ae'){
         $this->url = 'https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction';
+      }else{
+        $this->url='https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
+      }
     }
 
    }
