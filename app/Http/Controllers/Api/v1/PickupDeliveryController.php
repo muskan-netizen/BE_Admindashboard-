@@ -663,15 +663,11 @@ class PickupDeliveryController extends BaseController{
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
-                if(isset($request->task_type) && !empty($request->task_type))
-                {
-                    $request->task_type = $request->task_type;
-                    $schedule_datetime_del = null;
-                    $request->order_time = $schedule_datetime_del;
-                }else{
-                    $request->task_type = 'schedule';
-                    $request->scheduled_date_time = $schedule_datetime_del;
-                    $request->order_time = $schedule_datetime_del;
+                $task_type = 'now';
+                if($request->has('task_type')){
+                    $task_type = $request->task_type;
+                }elseif(!empty($order->scheduled_date_time)){
+                    $task_type = 'schedule';
                 }
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
@@ -715,7 +711,7 @@ class PickupDeliveryController extends BaseController{
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
                             'allocation_type' => 'a',
-                            'task_type' => $request->task_type,
+                            'task_type' => $task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
                             'barcode' => '',
