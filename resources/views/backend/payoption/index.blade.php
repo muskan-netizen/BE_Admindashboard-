@@ -301,9 +301,9 @@
 							<div class="col-12">
 								<label>{{__('Custom Url')}}</label>
 								<select class="form-control" name="custom_url" id="url">
-									<option value="com">com</option>
+									<option value="com">.com</option>
 
-									<option value="ae" @if($custom_url=="ae")selected @endif >ae</option>
+									<option value="ae" @if($custom_url=="ae")selected @endif >.ae</option>
 								</select>
 							</div>
 						</div>
