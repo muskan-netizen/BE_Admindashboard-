@@ -15,12 +15,12 @@ use Illuminate\Support\Str;
 use DateTimeZone;
 use App\Http\Traits\HomePage\HomePageTrait;
 use Session;
-use App\Http\Traits\{OrderTrait,ProductActionTrait};
+use App\Http\Traits\{OrderTrait,ProductActionTrait,VendorTrait};
 /**
  * HomeController
  */
 class HomeController extends BaseController{
-    use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait;
+    use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait,VendorTrait;
     public $cities = [];
     private $curLang = 0;
     private $field_status = 2;    
@@ -102,7 +102,7 @@ class HomeController extends BaseController{
             $langId = $user->language;
             $currency_id = $user->currency;
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners')->first();
+            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners','subscription_mode')->first();
             $latitude = $request->latitude;
             $longitude = $request->longitude;
             $paginate = $request->has('limit') ? $request->limit : 12;
@@ -125,7 +125,11 @@ class HomeController extends BaseController{
                 $q->whereIn('type_id',$categoryTypes);
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
-
+            if($preferences->subscription_mode ==1){
+                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
+                    $vendorData =   $vendorData->whereIn('id',$this->getSubscriptionVendorId());
+                }
+            }
         
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {

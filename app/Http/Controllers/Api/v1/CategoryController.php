@@ -7,7 +7,7 @@ use Validation;
 use Carbon\Carbon;
 // use Client;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,VendorTrait};
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User,Cart, Product,ClientLanguage, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference,CategoryKycDocuments,CaregoryKycDoc};
@@ -15,7 +15,7 @@ use App\Models\{User,Cart, Product,ClientLanguage, Category, ProductVariantSet, 
 class CategoryController extends BaseController
 {
     private $field_status = 2;
-    use ApiResponser;
+    use ApiResponser,VendorTrait;
     /**     * Get Company ShortCode     *     */
     public function categoryData(Request $request, $cid = 0)
     {
@@ -80,7 +80,7 @@ class CategoryController extends BaseController
 
     public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1)
     {
-        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
+        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area','subscription_mode')->where('id', '>', 0)->first();
 
         if ($type == 'vendor' && $product_list == 'false') {
          
@@ -97,6 +97,11 @@ class CategoryController extends BaseController
             //return $vendor_categories;
 
             $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
+            if($preferences->subscription_mode ==1){
+                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
+                    $vendorData =   $vendorData->whereIn('id',$this->getSubscriptionVendorId());
+                }
+            }
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
@@ -170,7 +175,13 @@ class CategoryController extends BaseController
             }
             return $vendorData;
         } elseif ($type == 'vendor' && $product_list == 'true') {
-            $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
+            $vendor_ids = Vendor::where('status', 1);
+            if($preferences->subscription_mode ==1){
+                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
+                    $vendor_ids =   $vendor_ids->whereIn('id',$this->getSubscriptionVendorId());
+                }
+            }
+            $vendor_ids =  $vendor_ids->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
                 'category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {
@@ -243,6 +254,11 @@ class CategoryController extends BaseController
                 }
             }
             $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
+            if($preferences->subscription_mode ==1){
+                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
+                    $vendorData =   $vendorData->whereIn('id',$this->getSubscriptionVendorId());
+                }
+            }
             if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
 
                 if (!empty($pickup_latitude) && !empty($pickup_longitude)) {
@@ -285,7 +301,14 @@ class CategoryController extends BaseController
             }
             return $category_details;
         } elseif ($type == 'product' || $type == 'Product' || $type == 'on demand service' || $type == 'laundry' || $type == 'Laundry') {
-            $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
+            $vendor_ids = Vendor::where('status', 1);
+            if($preferences->subscription_mode ==1){
+                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
+                    $vendor_ids =   $vendor_ids->whereIn('id',$this->getSubscriptionVendorId());
+                }
+            }
+            $vendor_ids =  $vendor_ids->pluck('id')->toArray();
+
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
                 'category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {
