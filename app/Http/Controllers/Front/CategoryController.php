@@ -520,6 +520,7 @@ class CategoryController extends FrontController{
             $productIds[] = $value->product_id;
         }*/
        // print_r($variantIds);die;
+        $category = Category::where('id',$cid)->first();
         $order_type = $request->has('order_type') ? $request->order_type : '';
         $products = Product::with(['media.image', 'ProductAttribute',
                         'translation' => function($q) use($langId){
@@ -617,7 +618,6 @@ class CategoryController extends FrontController{
             // $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
 
             $products = $products->groupBy('products.id')->paginate($limit, $page);
-// dd($products);
         if(!empty($products)){
             foreach ($products as $key => $value) {
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
@@ -634,7 +634,7 @@ class CategoryController extends FrontController{
         }
         $listData = $products;
 
-        $returnHTML = view('frontend.ajax.productList')->with(['data'=>$request->all(),'listData' => $listData])->render();
+        $returnHTML = view('frontend.ajax.productList')->with(['data'=>$request->all(),'listData' => $listData,'category'=>$category])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 
