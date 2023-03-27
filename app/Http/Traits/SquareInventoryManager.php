@@ -4,7 +4,7 @@ use Square\SquareClient;
 use Square\Environment;
 use Square\Exceptions\ApiException;
 use Ramsey\Uuid\Uuid;
-use App\Models\{Product, Variant, TaxCategory, Client, ProductVariantSet, ClientPreference, ProductTranslation, ClientLanguage, ProductVariant, ClientCurrency, TaxRate, AddonSet, AddonOption};
+use App\Models\{Product, Variant, TaxCategory, Client, ProductVariantSet, ClientPreference, ProductTranslation, ClientLanguage, ProductVariant, ClientCurrency, TaxRate, AddonSet, AddonOption, SquareTimestamp};
 use Auth, Log, DB;
 use Carbon\Carbon;
 trait SquareInventoryManager{
@@ -457,7 +457,7 @@ trait SquareInventoryManager{
       $physical_count->setState($state);
       $physical_count->setLocationId($this->location_id);
       $physical_count->setQuantity($quantity);
-      $physical_count->setOccurredAt(Carbon::now()->toIso8601ZuluString());
+      $physical_count->setOccurredAt(Carbon::now()->toIso8601ZuluString());//set timestamp as per square format
 
       $inventory_change = new \Square\Models\InventoryChange();
       $inventory_change->setType($type);
@@ -531,32 +531,80 @@ trait SquareInventoryManager{
     }
   }
 
-  public function retrieveCatalogVersionData($merchant_id){
+  public function searchCatalogObjects($timestamp_version_update ='')
+  {
+    //-----init square client--------
+    $client = $this->init();
     try{
-      //-----init square client--------
-      $client = $this->init();
+      $last_begin_timestamp = SquareTimestamp::orderBy('id', 'desc')->first();
+      $object_types = ['ITEM', 'TAX', 'ITEM_VARIATION', 'MODIFIER', 'MODIFIER_LIST'];
+      $body = new \Square\Models\SearchCatalogObjectsRequest();
+      $body->setObjectTypes($object_types);
+      $body->setIncludeDeletedObjects(true);
+      $body->setBeginTime(Carbon::parse($last_begin_timestamp->created_at)->toIso8601ZuluString());
 
-      $api_response = $client->getCatalogApi()->retrieveCatalogObject(
-        $merchant_id
-      );
-    
+      $api_response = $client->getCatalogApi()->searchCatalogObjects($body);
       if ($api_response->isSuccess()) {
         $result = $api_response->getResult();
-        Log::info("#### Api Response ####");
-        Log::info($result);
+        
+        foreach($result->getObjects() as $getobjects){
+
+          if($getobjects->getType() == "ITEM"){
+            // pr($getobjects->getItemData());
+            $square_item_id = $getobjects->getId();
+            $square_item_name = $getobjects->getItemData()->getName();
+            $productdata = Product::where('square_item_id', '=', $square_item_id)->first();
+            $ProductTranslation = ProductTranslation::where('product_id', '=', $productdata->id)->update(['title' => $square_item_name]);
+            // pr($productdata);
+          }
+          if(@$getobjects->getItemData() && @$getobjects->getItemData()->getVariations()){
+
+          
+          foreach($getobjects->getItemData()->getVariations() as $getvariation){
+            if($getvariation->getType() == "ITEM_VARIATION"){
+              $square_variation_id = $getvariation->getId();
+              $square_variation_name = $getvariation->getItemVariationData()->getName();
+              // pr($square_variation_name);
+              $square_price = $getvariation->getItemVariationData()->getPriceMoney()->getAmount() / 100;
+              $variantdata = ProductVariant::where('square_variant_id', '=', $square_variation_id)->update(['price' => $square_price]);
+              // pr($square_variation_name);
+            }
+          }
+        }
+
+        }
+        
+        if($timestamp_version_update != ''){
+           $timestamp_version_update = Carbon::parse($timestamp_version_update)->toTimeString();
+        }else{
+          $timestamp_version_update = Carbon::now()->toIso8601ZuluString();
+        }
+
+        SquareTimestamp::create(array(
+          'created_at' => $timestamp_version_update,
+          'updated_at'  => $timestamp_version_update
+        ));
+        // return response()->json([
+        //   'status' => 'success',
+        //   'result' => $result,
+        //   'message' => __('Batch deleted in Square.')
+        // ]);
       } else {
         $errors = $api_response->getErrors();
-        Log::info("#### Api errors ####");
-        Log::info($errors);
+        return response()->json([
+          'status' => 'error',
+          'result' => [],
+          'message' => __('Something went wrong, Please try again later.')
+        ]);
       }
-    }catch (ApiException $e)
+    }
+    catch (ApiException $e)
     {
       return response()->json([
-        'status'  => 'error',
-        'result'  => [],
+        'status' => 'error',
+        'result' => [],
         'message' => $e->getMessage()
       ]);
-    } 
+    }
   }
-  
 }

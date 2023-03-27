@@ -43,8 +43,8 @@ class SquareInventoryController extends FrontController
 
             if($request->type == 'catalog.version.updated' && $getAdditionalPreference['square_enable_status'] == 1)
             {
-                // Log::info($request->data['object']);
-                $res = $this->retrieveCatalogVersionData($request->merchant_id, $request->event_id);
+                $timestamp_version_update = $request->data['object']['catalog_version']['updated_at'];
+                $res = $this->searchCatalogObjects($timestamp_version_update);
             }
            
 

@@ -745,7 +745,7 @@ pr($products->toArray());
                                 @endif
                                   <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock')}}</option>
                                 @if(@getAdditionalPreference(['square_enable_status'])['square_enable_status'] == 1)
-                                  <option value="sync_for_square_post">{{__('Sync For Square post')}}</option>
+                                  <option value="sync_for_square_post">{{__('Sync For Square POS')}}</option>
                                 @endif
                                   <option value="delete">{{__('Delete')}}</option>
                              </select>
