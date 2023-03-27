@@ -330,14 +330,11 @@ class HomeController extends BaseController
             $categoryTypes = getServiceTypesCategory($type);
 
 
-            $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
-            if($preferences->subscription_mode ==1){
-                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                    $vendorData =   $vendorData->whereIn('id',$this->getSubscriptionVendorId());
-                }
-            }
+           
+           
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
 
@@ -957,14 +954,10 @@ class HomeController extends BaseController
                     $response[] = $brand;
                 }
                 $categoryTypes = getServiceTypesCategory($action);
-                $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                $vendors = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                     $q->whereIn('type_id',$categoryTypes);
                 })->select('id', 'name  as dataname', 'logo', 'slug', 'address', 'show_slot')->where($action, 1);
-                if($preferences->subscription_mode ==1){
-                    if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                        $vendors =   $vendors->whereIn('id',$this->getSubscriptionVendorId());
-                    }
-                }
+               
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
                     if (!empty($latitude) && !empty($longitude)) {

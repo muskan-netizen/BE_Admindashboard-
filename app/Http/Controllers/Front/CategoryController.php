@@ -108,13 +108,8 @@ class CategoryController extends FrontController{
             $vendorIds = $vendors;
         }else{
             $vendorIds = array();
-            $vendorList = Vendor::select('id', 'name')->where('status', '!=', $this->field_status);
-            if(@$preferences->subscription_mode ==1 ){
-                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                    $vendorList =   $vendorList->whereIn('id',$this->getSubscriptionVendorId());
-                }
-            }
-    
+            $vendorList = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
+           
             $vendorList = $vendorList->get();
             if(!empty($vendorList)){
                 foreach ($vendorList as $key => $value) {
@@ -238,12 +233,8 @@ class CategoryController extends FrontController{
         if(strtolower($type) == 'vendor'){
             //$preferences= ClientPreference::first();
             $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();;
-            $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
-            if(@$preferences->subscription_mode ==1 ){
-                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                    $vendorData =   $vendorData->whereIn('id',$this->getSubscriptionVendorId());
-                }
-            }
+            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
+           
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
                 $longitude = Session::get('longitude') ?? $preferences->Default_longitude;

@@ -96,12 +96,8 @@ class CategoryController extends BaseController
           
             //return $vendor_categories;
 
-            $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
-            if($preferences->subscription_mode ==1){
-                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                    $vendorData =   $vendorData->whereIn('id',$this->getSubscriptionVendorId());
-                }
-            }
+            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
+            
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
@@ -175,12 +171,8 @@ class CategoryController extends BaseController
             }
             return $vendorData;
         } elseif ($type == 'vendor' && $product_list == 'true') {
-            $vendor_ids = Vendor::where('status', 1);
-            if($preferences->subscription_mode ==1){
-                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                    $vendor_ids =   $vendor_ids->whereIn('id',$this->getSubscriptionVendorId());
-                }
-            }
+            $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
+           
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
@@ -253,12 +245,8 @@ class CategoryController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
-            $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
-            if($preferences->subscription_mode ==1){
-                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                    $vendorData =   $vendorData->whereIn('id',$this->getSubscriptionVendorId());
-                }
-            }
+            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
+         
             if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
 
                 if (!empty($pickup_latitude) && !empty($pickup_longitude)) {
@@ -301,12 +289,8 @@ class CategoryController extends BaseController
             }
             return $category_details;
         } elseif ($type == 'product' || $type == 'Product' || $type == 'on demand service' || $type == 'laundry' || $type == 'Laundry') {
-            $vendor_ids = Vendor::where('status', 1);
-            if($preferences->subscription_mode ==1){
-                if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                    $vendor_ids =   $vendor_ids->whereIn('id',$this->getSubscriptionVendorId());
-                }
-            }
+            $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
+            
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
 
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();

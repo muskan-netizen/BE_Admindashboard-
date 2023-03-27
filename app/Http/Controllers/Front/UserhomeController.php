@@ -551,16 +551,14 @@ class UserhomeController extends FrontController
 
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
-        $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
+        $vendors = Vendor::byVendorSubscriptionRule($preferences)->with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
         if(@$additionalPreference['is_admin_vendor_rating']=='1'){
             $vendors =   $vendors->orderBy('admin_rating','desc');
         }
 
         if ($preferences) {
             // check vendor Subscription0
-            if($preferences->subscription_mode ==1 && $additionalPreference['is_show_vendor_on_subcription'] == 1){
-                $vendors =   $vendors->whereIn('id',$this->getSubscriptionVendorId());
-            }
+           
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
                 $latitude = $preferences->Default_latitude??null;

@@ -27,15 +27,11 @@ class SearchController extends FrontController
         $vendorType = Session::get('vendorType');
         $allowed_vendors = $this->getServiceAreaVendors();
 
-        $vendors = Vendor::select('id', 'name', 'logo', 'slug', 'show_slot');
+        $vendors = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name', 'logo', 'slug', 'show_slot');
         if (count($allowed_vendors) > 0) {
             $vendors = $vendors->whereIn('id', $allowed_vendors);
         }
-        if(@$preferences->subscription_mode ==1 ){
-            if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                $vendors =   $vendors->whereIn('id',$this->getSubscriptionVendorId());
-            }
-        }
+      
 
         if (@$preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
@@ -173,12 +169,8 @@ class SearchController extends FrontController
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
         $vendorType = Session::get('vendorType');
         $vendorMapView = '';
-        $vendors = Vendor::select('id', 'name', 'logo', 'slug', 'latitude', 'longitude', 'address', 'dial_code', 'phone_no')->where($vendorType, 1);
-        if(@$preferences->subscription_mode ==1 ){
-            if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                $vendors =   $vendors->whereIn('id',$this->getSubscriptionVendorId());
-            }
-        }
+        $vendors = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name', 'logo', 'slug', 'latitude', 'longitude', 'address', 'dial_code', 'phone_no')->where($vendorType, 1);
+        
         if (@$preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = @$preferences->Default_location_name;

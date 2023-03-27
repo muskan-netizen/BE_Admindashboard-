@@ -2007,22 +2007,8 @@ class VendorController extends BaseController{
         $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
         $type = $request->has('type') ? $request->type : 'delivery';
-        $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
-        // if ($request->has('type')) {
-        //     if (empty($request->type)) {
-        //         $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
-        //     } else {
-        //         $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($request->type, 1);
-        //         $type = $request->type;
-        //     }
-        // } else {
-        //     $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
-        // }
-        if($preferences->subscription_mode ==1){
-            if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1){
-                $vendorData =   $vendorData->whereIn('id',$this->getSubscriptionVendorId());
-            }
-        }
+        $vendorData = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+  
 
         $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
 
