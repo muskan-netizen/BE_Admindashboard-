@@ -51,7 +51,8 @@ use App\Models\ {
     ReturnReason,
     OrderDeliveryStatusIcon,
     UserGiftCard,
-    OrderFiles 
+    OrderFiles,
+    SubscriptionInvoicesVendor
 };
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -61,7 +62,8 @@ use App\Models\ClientPreference;
 use App\Http\Traits\ {
     ApiResponser,
     CartManager,
-    SquareInventoryManager
+    SquareInventoryManager,
+    VendorTrait
 };
 use App\Models\AddonOption;
 use App\Models\ {
@@ -83,7 +85,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait;
     use \App\Http\Traits\OrderTrait;
 
     /**
@@ -1184,14 +1186,14 @@ class OrderController extends FrontController
             $fixed_fee_amount = $request->total_fixed_fee_amount ?? 0.00;
             DB::beginTransaction();
 
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area', 'stop_order_acceptance_for_users')->first();
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area', 'stop_order_acceptance_for_users','subscription_mode')->first();
             $editlimit_datetime = Carbon::now()->toDateTimeString();
             $order_edit_before_hours = 0;
            
-            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours']);
+            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours','is_show_vendor_on_subcription']);
 
             $order_edit_before_hours = $additionalPreferences->order_edit_before_hours;
-
+            
             $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
@@ -1240,7 +1242,7 @@ class OrderController extends FrontController
             $loyalty_points_used = $loyaltyCheck->loyalty_points_used ?? 0;
 
             // check gift card
-            if(($additionalPreferences->is_gift_card ==1) && checkColumnExists('carts', 'gift_card_id') ){
+            if(($additionalPreferences->is_gift_card ==1) ){
 
                 if(isset($cart->giftCard) && !empty($cart->giftCard)){
 
@@ -1464,7 +1466,14 @@ class OrderController extends FrontController
                 }else{
                     $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
                 }
-
+                $vendor_subcription_lnvoices_id = '';
+                if($preferences->subscription_mode == '1' && $additionalPreferences->is_show_vendor_on_subcription == 1){
+                    $vendor_on_subcription = $this->getVendorActiveSubscription($vendor_id);
+                    if( $vendor_on_subcription)
+                    { 
+                        $vendor_subcription_lnvoices_id =   $vendor_on_subcription->id ;
+                    }
+                }
 
                 /* Update details related to order vendor */
                 if (isset($cart->editingOrder) && ! empty($cart->editingOrder)) {
@@ -1482,6 +1491,7 @@ class OrderController extends FrontController
                 $OrderVendor->user_id = $user->id;
                 $OrderVendor->order_id = $order->id;
                 $OrderVendor->vendor_id = $vendor_id;
+                $OrderVendor->subscription_invoices_vendor_id = $vendor_subcription_lnvoices_id;
                 $OrderVendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                 $OrderVendor->save();
 

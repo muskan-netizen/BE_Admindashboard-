@@ -20,12 +20,12 @@ use Redirect;
 use DB;
 use Illuminate\Http\Response;
 use Cookie;
-use App\Http\Traits\{OrderTrait,ProductActionTrait};
+use App\Http\Traits\{OrderTrait,ProductActionTrait,VendorTrait};
 use App\Http\Traits\HomePage\{HomePageTrait};
 
 class UserhomeController extends FrontController
 {
-    use ApiResponser, OrderTrait,ProductActionTrait, HomePageTrait;
+    use ApiResponser, OrderTrait,ProductActionTrait, HomePageTrait,VendorTrait;
     private $field_status = 2;
     public $cities = [];
     public $additionalPreference =[];
@@ -479,8 +479,9 @@ class UserhomeController extends FrontController
      */
     public function postHomePageData(Request $request,$set_template,$enable_layout)
     {
+     
         //pr($enable_layout);
-        $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating']);
+        $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating','is_show_vendor_on_subcription']);
         $vendor_ids = [];
         $new_products = [];
         $feature_products = [];
@@ -550,12 +551,14 @@ class UserhomeController extends FrontController
 
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
-      if(@$additionalPreference['is_admin_vendor_rating']=='1'){
-        $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1)->orderBy('admin_rating','desc');
-      }else{
-        $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
-      }
+        $vendors = Vendor::byVendorSubscriptionRule($preferences)->with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
+        if(@$additionalPreference['is_admin_vendor_rating']=='1'){
+            $vendors =   $vendors->orderBy('admin_rating','desc');
+        }
+
         if ($preferences) {
+            // check vendor Subscription0
+           
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
                 $latitude = $preferences->Default_latitude??null;
