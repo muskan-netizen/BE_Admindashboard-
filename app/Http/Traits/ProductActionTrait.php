@@ -604,16 +604,29 @@ trait ProductActionTrait{
     }
 
 
-    public function getBannersForHomePage($client_preferences, $latitude, $longitude)
+    public function getBannersForHomePage($client_preferences, $banner_type, $latitude, $longitude)
     {
         $carbon_now = Carbon::now();
+
+        if($banner_type == 'banners'){
+            $banner_table                   = 'banners';
+            $banner_service_areas_table     = 'banner_service_areas';
+            $service_area_for_banners_table = 'service_area_for_banners';
+            $type                           = 1;
+        }else{
+            $banner_table                   = 'mobile_banners';
+            $banner_service_areas_table     = 'mobile_banner_service_areas';
+            $service_area_for_banners_table = 'service_area_for_banners';
+            $type                           = 2;
+        }
+
         $mainQuery = "SELECT 
             `ba`.`image`,
             `ba`.`link`, 
             `ba`.`link_url`, 
             `ct`.`slug` AS `category_slug`, 
             `vn`.`slug` AS `vendor_slug`
-            FROM `banners` AS `ba`";
+            FROM $banner_table AS `ba`";
 
         $joinQuery = "LEFT JOIN `categories` AS `ct` ON `ct`.`id` = `ba`.`redirect_category_id` AND `ct`.`deleted_at` IS NULL ";
         $joinQuery.= "LEFT JOIN `vendors` AS `vn` ON `vn`.`id` = `ba`.`redirect_vendor_id` ";
@@ -621,36 +634,10 @@ trait ProductActionTrait{
         $mainQuery.= " $joinQuery WHERE `ba`.`status` =1 AND `ba`.`validity_on` = 1 AND (`ba`.`start_date_time` is null or (date(`ba`.`start_date_time`) <= '".$carbon_now."' and date(`ba`.`end_date_time`) >= '".$carbon_now."'))  ";
 
         if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
-            $mainQuery .= " HAVING (SELECT `id` FROM `banner_service_areas` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` HAVING (select `id` from `service_area_for_banners` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)')) and `type` = 1) > 0) > 0 ";
+            $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` HAVING (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)')) and `type` = $type) > 0) > 0 ";
         }
         
         $mainQuery.= " ORDER BY `ba`.`sorting` ASC";
-        
-     
-        $banners = DB::select( DB::raw($mainQuery));
-        return $banners;
-    }
-
-    public function getMobileBannersForHomePage($client_preferences, $latitude, $longitude)
-    {
-        $carbon_now = Carbon::now();
-        $mainQuery = "SELECT 
-            `mb`.`image`,
-            `mb`.`link`, 
-            `mb`.`link_url`, 
-            `ct`.`slug` AS `category_slug`, 
-            `vn`.`slug` AS `vendor_slug`
-            FROM `mobile_banners` AS `mb`";
-
-        $joinQuery = "LEFT JOIN `categories` AS `ct` ON `ct`.`id` = `mb`.`redirect_category_id` AND `ct`.`deleted_at` IS NULL ";
-        $joinQuery.= "LEFT JOIN `vendors` AS `vn` ON `vn`.`id` = `mb`.`redirect_vendor_id` ";
-
-        $mainQuery.= " $joinQuery WHERE `mb`.`status` =1 AND `mb`.`validity_on` = 1 AND (`mb`.`start_date_time` is null or (date(`mb`.`start_date_time`) <= '".$carbon_now."' and date(`mb`.`end_date_time`) >= '".$carbon_now."'))  ";
-
-        if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
-            $mainQuery .= " HAVING (SELECT `id` FROM `mobile_banner_service_areas` AS `mbsa` WHERE `mb`.`id` = `mbsa`.`banner_id` HAVING (SELECT `id` FROM `service_area_for_banners` AS `safb` WHERE `mbsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)')) AND `type` = 2) > 0) > 0 ";
-        }
-        $mainQuery.= " ORDER BY `mb`.`sorting` ASC";
         
      
         $banners = DB::select( DB::raw($mainQuery));

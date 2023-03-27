@@ -324,39 +324,12 @@ class UserhomeController extends FrontController
             }
 
             $carbon_now = Carbon::now();
-            /* $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
-            ->where(function ($q) use ($carbon_now) {
-                $q->whereNull('start_date_time')->orWhere(function ($q2) use ($carbon_now) {
-                    $q2->whereDate('start_date_time', '<=', $carbon_now)
-                        ->whereDate('end_date_time', '>=', $carbon_now);
-                });
-            });
-          
-            if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
-                $banners = $banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
-                    $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                });
-            }
-            $banners = $banners->orderBy('sorting', 'asc')->get(); */
 
-            $banners = $this->getBannersForHomePage($client_preferences, $latitude, $longitude);
-//pr($banners);
-            /* $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
-            ->where(function ($q) use ($carbon_now) {
-                $q->whereNull('start_date_time')->orWhere(function ($q2) use ($carbon_now) {
-                    $q2->whereDate('start_date_time', '<=', $carbon_now)
-                        ->whereDate('end_date_time', '>=', $carbon_now);
-                });
-            });
-            if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
-                $mobile_banners = $mobile_banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
-                    $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                });
-            }
-            $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get(); */
+            $banners = $this->getBannersForHomePage($client_preferences, 'banners', $latitude, $longitude);
 
-            $mobile_banners = $this->getMobileBannersForHomePage($client_preferences, $latitude, $longitude);
-//pr($banners);
+
+            $mobile_banners = $this->getBannersForHomePage($client_preferences, 'mobile_banners', $latitude, $longitude);
+
 
             $home_page_labels = CabBookingLayout::where('is_active', 1)->web()->where('for_no_product_found_html',0)->orderBy('order_by');
 
@@ -527,10 +500,10 @@ class UserhomeController extends FrontController
         $language_id = Session::get('customerLanguage');
 
         $currency_id = $this->setCurrencyInSesion();
-        
-        $featured_products_title = $new_products_title = $on_sale_title = $trending_vendors_title = '';
 
-        $slugs = array("featured_products","new_products","on_sale","trending");
+        $featured_products_title = $vendors_title = $new_products_title = $on_sale_title = $brands_title = $best_sellers_title = $recent_orders_title = $banner_title = $selected_products_title = $trending_vendors_title = '';
+
+        $slugs = array("featured_products", "vendors", "new_products", "on_sale", "brands", "best_sellers", "recent_orders", "banner", "selected_products", "trending");
         $CabBookingLayoutTranslation = CabBookingLayoutTranslation::where('language_id', $language_id)->with('layout')
                                        ->whereHas('layout', function($q) use ($slugs){
                                             $q->whereIn('slug', $slugs);
@@ -542,11 +515,29 @@ class UserhomeController extends FrontController
                 case "featured_products":
                     $featured_products_title = $translation->title;
                     break;
+                case "vendors":
+                    $vendors_title = $translation->title;
+                    break;
                 case "new_products":
                     $new_products_title = $translation->title;
                     break;
                 case "on_sale":
                     $on_sale_title = $translation->title;
+                    break;
+                case "brands":
+                    $brands_title = $translation->title;
+                    break;
+                case "best_sellers":
+                    $best_sellers_title = $translation->title;
+                    break;
+                case "recent_orders":
+                    $recent_orders_title = $translation->title;
+                    break;
+                case "banner":
+                    $on_sale_title = $translation->title;
+                    break;
+                case "selected_products":
+                    $selected_products_title = $translation->title;
                     break;
                 case "trending":
                     $trending_vendors_title = $translation->title;
