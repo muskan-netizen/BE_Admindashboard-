@@ -1097,7 +1097,6 @@ class CartController extends BaseController
                                     );
                                 }
                             }
-                            //dd($prod->product->toArray());
                             $prod->taxdata = $taxData;
                             if ( (in_array($action,['delivery','on_demand']) )  && ( $is_service_product_price_from_dispatch !=1 )) {
                                 $checkLastMile = 0;
