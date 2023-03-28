@@ -403,9 +403,9 @@ trait ProductActionTrait{
                     LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
                     LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
                     LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
-                    LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id`
+                    LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id` AND `product_translation`.`language_id` = $langId
                     LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
-                    LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id`
+                    LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id` AND `category_translation`.`language_id` = $langId
                     LEFT JOIN   `product_attributes` as `product_attribute` ON `product_attribute`.`product_id` = `products`.`id` AND `product_attribute`.`key_name` = 'Location'
                     
                 WHERE 
@@ -487,7 +487,6 @@ trait ProductActionTrait{
             $mainQuery = "SELECT $selectQuery FROM `vendors` $joinQuery $whereQuery $whereInQuery";
             
 
-            
             
             $mainQuery .= " GROUP BY `vendors`.`id` ";
 
