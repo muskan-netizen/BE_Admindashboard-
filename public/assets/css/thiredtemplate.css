@@ -611,11 +611,11 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
     }
 
     .al_desktop_banner {
-        display: block;
+        display: none;
     }
 
     .al_mobile_banner {
-        display: none !important;
+        display: block !important;
         height: 120px;
         overflow: hidden;
         border-radius: 20px;

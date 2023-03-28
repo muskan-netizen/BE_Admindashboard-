@@ -473,6 +473,16 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
     background-color: transparent;
 }
 
+.al_body_template_two .search_bar.menu-right .icon-nav span {
+    color: #777;
+    font-weight: 600;
+    display: inline-block;
+    line-height: 17px;
+    font-size:12px;
+}
+.al_body_template_two .search_bar.menu-right .icon-nav{
+    font-size:12px; 
+}
 /*hotfix product page css*/
 @media (max-width:767px) {
     .product_tag_filter {
