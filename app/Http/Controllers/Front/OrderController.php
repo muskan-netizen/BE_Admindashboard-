@@ -2439,7 +2439,7 @@ class OrderController extends FrontController
             ])
                 ->where('order_number', $order->order_number)
                 ->first();
-            if (! in_array($request->payment_option_id, $ex_gateways) && (isset($request->is_postpay) && $request->is_postpay == 1)) {
+            if (! in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay == 1)) {
                 if (! empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {
                         $vendorDetail = $vendor_value->vendor;
@@ -2543,6 +2543,8 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
+
+        \Log::info($user_ids);
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')
             ->whereIn('user_id', $user_ids)
             ->pluck('device_token')
