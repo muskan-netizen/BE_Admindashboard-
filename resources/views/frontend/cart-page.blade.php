@@ -236,9 +236,9 @@
                         </div>
 
                         <div class="col-12 cart-heading mt-2 px-0">
-                            <h5 class="my-1"><b>{{ @$product->vendor->name }}</b></h5>
+                            <h5 class="my-1"><b>{{ $product->vendor ? @$product->vendor->name : '' }}</b></h5>
                             <input type="hidden" name="category_name" id="category_name"
-                                value="{{ @$product->vendor->name }}" />
+                                value="{{ $product->vendor ? @$product->vendor->name : '' }}" />
                         </div>
 
 
@@ -268,7 +268,7 @@
                                         <div class="row align-items-md-center">
                                             <div class="col-md-3 order-md-1">
                                                 <h4 class="cart_product_name">
-                                                    {{ @$vendor_product->product->category_name->name }}</h4>
+                                                    {{ $vendor_product->product->category_name ? @$vendor_product->product->category_name->name : ''}}</h4>
                                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px">
                                                     <strong>{{ @$vendor_product->product->translation_one ? @$vendor_product->product->translation_one->title : @$vendor_product->product->sku }}</strong>
                                                 </h4>
@@ -556,7 +556,7 @@
                                                                     @foreach ($product->slots as $slot)
                                                                         <option value="{{ $slot->value }}"
                                                                             {{ $slot->value == $product->schedule_slot ? 'selected' : '' }}>
-                                                                            {{ @$slot->name }}</option>
+                                                                            {{ @$slot->name ?? '' }}</option>
                                                                     @endforeach
                                                                 </select>
                                                             @else
@@ -664,7 +664,7 @@
                                                     data-src="{{ asset('assets/images/discount_icon.svg') }}">
                                                 <label class="mb-0 ml-2">
                                                     @if ($product->coupon)
-                                                        {{ $product->coupon->promo->name }}
+                                                        {{  $product->coupon->promo ? @$product->coupon->promo->name : '' }}
                                                     @else
                                                         <a href="javascript:void(0)" class="promo_code_list_btn ml-1"
                                                             data-vendor_id="{{ $product->vendor->id }}"
@@ -702,7 +702,7 @@
                                                     {{ __('Processor Name') }} :</label>
                                             </div>
                                             <div class="col-7">
-                                                {!! $product->processor_product->name !!}
+                                                {!! ($product->processor_product ? $product->processor_product->name : '') !!}
                                             </div>
                                         </div>
                                         <div class="row mb-1 d-flex align-items-center">
