@@ -29,15 +29,15 @@ class FrontController extends Controller
 
     
     
-    public function __construct(Request $request)
+    public function __construct()
     {
-        $this->middleware(function ($request, $next) {
+        $this->middleware(function () {
             if (Session::has('preferences') && !empty(Session::get('preferences'))) {
                 $this->client_preferences = Session::get('preferences');
-                return $next($request);
+                return '';
             }else{
                 $this->client_preferences = ClientPreference::first();
-                return $next($request);
+                return '';
             }
             abort(403);
         });
