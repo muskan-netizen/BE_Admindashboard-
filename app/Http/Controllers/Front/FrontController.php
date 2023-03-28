@@ -34,6 +34,7 @@ class FrontController extends Controller
         $this->middleware(function () {
             if (Session::has('preferences') && !empty(Session::get('preferences'))) {
                 $this->client_preferences = Session::get('preferences');
+                
                 return '';
             }else{
                 $this->client_preferences = ClientPreference::first();
