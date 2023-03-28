@@ -798,7 +798,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'most_popular_products' && (count($homePageData[$homePageLabel->slug]) != 0))
-		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+		{{-- <section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="col pl-0 h2-heading mb-3"> @php
@@ -806,19 +806,15 @@
 						@endphp </h2>
 						<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i></a>  -->
 				</div>
-				<div class="row">
-					<div class="col-12">
-						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="row selling_product_eight">
-								@foreach ($homePageData[$homePageLabel->slug] as $product )
-								@include('frontend.home_page_8.most_popular_products')
-								@endforeach
-							</div>
-						</div>
+				<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+					<div class=" selling_product_eight">
+						@foreach ($homePageData[$homePageLabel->slug] as $product )
+						@include('frontend.home_page_8.most_popular_products')
+						@endforeach
 					</div>
 				</div>
 			</div>
-		</section>
+		</section> --}}
 		@elseif($homePageLabel->slug == 'banner' && (count($homePageData['banners']) != 0))
 		@if(!empty(@$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]))
 			<section class="mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >

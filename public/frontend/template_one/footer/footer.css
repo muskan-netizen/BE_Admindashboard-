@@ -12,7 +12,7 @@ footer#footer{position:absolute;bottom:0;width:100%}
 .homepage-address.text-left h2{text-transform:capitalize}
 @media(max-width:767px){
 .footer-title{border-bottom:0}.footer-mobile-contant{display:block!important;text-align:left;margin-bottom:10px}.payment-card.mobile-border .footer-mobile-contant{margin-bottom:0}span.according-menu{display:none}
-footer#footer{position:relative;margin-bottom:80px;margin-top: 20px;}
+footer#footer{position:relative;/*margin-bottom:80px;*/margin-top: 20px;}
 .al_body_template_one .footer-theme .sub-title .contact-list li{height: 30px;line-height: 30px;}
 .footer-title {
     display: block !important;

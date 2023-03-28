@@ -1059,7 +1059,7 @@ if (!function_exists('stripePaymentCredentials')) {
     function stripePaymentCredentials(){
         $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
-        $response = $creds_arr;
+        $response = collect();
         $response->secret_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
         $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
         return $response;
@@ -1070,7 +1070,7 @@ if (!function_exists('stripeFPXPaymentCredentials')) {
     function stripeFPXPaymentCredentials(){
         $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_fpx')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
-        $response = $creds_arr;
+        $response = collect();
         $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
         $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
         return $response;
@@ -1082,7 +1082,7 @@ if (!function_exists('stripeOXXOPaymentCredentials')) {
     function stripeOXXOPaymentCredentials(){
         $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_oxxo')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
-        $response = $creds_arr;
+        $response = collect();
         $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
         $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
         return $response;
@@ -1093,8 +1093,8 @@ if (!function_exists('stripeOXXOPaymentCredentials')) {
 if (!function_exists('stripeDynamicPaymentCredentials')) {
     function stripeDynamicPaymentCredentials($name){
         $stripe_creds = PaymentOption::select('credentials')->where('code', $name)->where('status', 1)->first();
-        $creds_arr = json_decode($stripe_creds->credentials);
-        $response = $creds_arr;
+        $creds_arr = @json_decode(@$stripe_creds->credentials);
+        $response = collect();
         $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
         $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
         return $response;
@@ -1815,3 +1815,19 @@ if( !function_exists('get_file_path') ) {
     }
 }
 
+if (!function_exists('getUserToken')) {
+    function getUserToken($credential)
+    {
+        $data['otp'] = rand(100000, 999999);
+        $data['status'] = true;
+        if(!empty($credential) && isset($credential->sms_credentials)){
+            
+            $credentials = json_decode($credential->sms_credentials);
+            if (isset($credentials->static_otp) && $credentials->static_otp == '1') {
+                $data['otp'] = '123456';
+                $data['status'] = false;
+            }
+        } 
+            return $data;
+    }
+}

@@ -409,12 +409,14 @@ class PaymentOptionController extends BaseController
                             $validatedData = $request->validate([
                                 'ccavenue_enc_key' => 'required',
                                 'ccavenue_access_code' => 'required',
-                                'ccavenue_merchant_id' => 'required'
+                                'ccavenue_merchant_id' => 'required',
+                                'custom_url'=>   'required' 
                             ]);
                             $json_creds = json_encode(array(
                                 'enc_key' => $request->ccavenue_enc_key,
                                 'access_code' => $request->ccavenue_access_code,
-                                'merchant_id' => $request->ccavenue_merchant_id
+                                'merchant_id' => $request->ccavenue_merchant_id,
+                                'custom_url'=>  $request->custom_url
                             ));
                             break;
 

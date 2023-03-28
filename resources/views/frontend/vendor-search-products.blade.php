@@ -71,7 +71,7 @@ $add_to_cart =  route('addToCart') ;
     <section class="scrolling_section" id="{{ str_replace(' ', '-', $data->category->slug) }}">
         @if (!empty($data->products))
             <h2 class="category-head mt-0 mb-3">
-                {{ $data->category->translation_one->name }}
+                {{ @$data->category->translation_one->name }}
                 ({{ $data->products_count }})
             </h2>
             @forelse($data->products as $prod)
