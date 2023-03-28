@@ -1478,7 +1478,7 @@ body.al_body_template_six .theme-card.custom-inner-card::-webkit-scrollbar-thumb
 }
 
 body.al_body_template_six .theme-card.custom-inner-card {
-    height: 370px;
+    /* height: 370px; */
     overflow-y: scroll;
     border: 1px solid#ccc;
     padding: 20px;
