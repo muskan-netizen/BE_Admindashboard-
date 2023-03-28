@@ -45,9 +45,9 @@ trait SquareInventoryManager{
     {
       DB::beginTransaction();
       try{
-        $product         = Product::with(['media.image', 'primary', 'category.cat', 'vendor','brand','variant', 'variant.set', 'variantSets', 'taxCategory.taxRate', 
-                            'sets.addOnName'])->select('id', 'sku', 'is_live', 'has_variant', 'tax_category_id', 'square_item_id', 'square_item_version')
-                            ->where('id', $product_id)->where('is_live', 1)->first();
+        $product = Product::with(['media.image', 'primary', 'category.cat', 'vendor','brand','variant', 'variant.set', 'variantSets', 'taxCategory.taxRate', 
+        'sets.addOnName'])->select('id', 'sku', 'is_live', 'has_variant', 'tax_category_id', 'square_item_id', 'square_item_version')
+        ->where('id', $product_id)->where('is_live', 1)->first();
         if(!empty($product))
         {
           
@@ -546,49 +546,35 @@ trait SquareInventoryManager{
       $api_response = $client->getCatalogApi()->searchCatalogObjects($body);
       if ($api_response->isSuccess()) {
         $result = $api_response->getResult();
-        
-        foreach($result->getObjects() as $getobjects){
-
-          if($getobjects->getType() == "ITEM"){
-            // pr($getobjects->getItemData());
-            $square_item_id = $getobjects->getId();
-            $square_item_name = $getobjects->getItemData()->getName();
-            $productdata = Product::where('square_item_id', '=', $square_item_id)->first();
-            $ProductTranslation = ProductTranslation::where('product_id', '=', $productdata->id)->update(['title' => $square_item_name]);
-            // pr($productdata);
-          }
-          if(@$getobjects->getItemData() && @$getobjects->getItemData()->getVariations()){
-
-          
-          foreach($getobjects->getItemData()->getVariations() as $getvariation){
-            if($getvariation->getType() == "ITEM_VARIATION"){
-              $square_variation_id = $getvariation->getId();
-              $square_variation_name = $getvariation->getItemVariationData()->getName();
-              // pr($square_variation_name);
-              $square_price = $getvariation->getItemVariationData()->getPriceMoney()->getAmount() / 100;
-              $variantdata = ProductVariant::where('square_variant_id', '=', $square_variation_id)->update(['price' => $square_price]);
-              // pr($square_variation_name);
+        if(@$result && @$result->getObjects()){
+          foreach($result->getObjects() as $getobjects){
+            if($getobjects->getType() == "ITEM"){
+              $square_item_id = $getobjects->getId();
+              $square_item_name = $getobjects->getItemData()->getName();
+              $productdata = Product::where('square_item_id', '=', $square_item_id)->first();
+              ProductTranslation::where('product_id', '=', $productdata->id)->update(['title' => $square_item_name]);
+            }
+            if(@$getobjects->getItemData() && @$getobjects->getItemData()->getVariations()){
+              foreach($getobjects->getItemData()->getVariations() as $getvariation){
+                if($getvariation->getType() == "ITEM_VARIATION"){
+                  $square_variation_id = $getvariation->getId();
+                  $square_variation_name = $getvariation->getItemVariationData()->getName();
+                  $square_price = $getvariation->getItemVariationData()->getPriceMoney()->getAmount() / 100;
+                  $variantdata = ProductVariant::where('square_variant_id', '=', $square_variation_id)->update(['price' => $square_price]);
+                }
+              }
             }
           }
         }
-
-        }
-        
         if($timestamp_version_update != ''){
            $timestamp_version_update = Carbon::parse($timestamp_version_update)->toTimeString();
         }else{
           $timestamp_version_update = Carbon::now()->toIso8601ZuluString();
         }
-
         SquareTimestamp::create(array(
           'created_at' => $timestamp_version_update,
           'updated_at'  => $timestamp_version_update
         ));
-        // return response()->json([
-        //   'status' => 'success',
-        //   'result' => $result,
-        //   'message' => __('Batch deleted in Square.')
-        // ]);
       } else {
         $errors = $api_response->getErrors();
         return response()->json([
