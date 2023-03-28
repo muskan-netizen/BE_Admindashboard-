@@ -185,7 +185,8 @@ if (Session::has('toaster')) {
             dataType: "JSON",
             data: {
                 filter_order_status: "pending_orders",
-                search_keyword: order_number
+                search_keyword: order_number,
+                className : 'col-xl-12'
             },
             success: function(response) {
                 if (response.status == 'Success') {
