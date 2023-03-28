@@ -497,7 +497,9 @@ class CartController extends FrontController
             $checkLongTermService = CartProduct::where('cart_id', $cart_detail->id)->with('product')->first();
             $isLongTermService  = 0;
 
-            $isLongTermService = $checkLongTermService->product->is_long_term_service ;
+            if($checkLongTermService && isset($checkLongTermService->product) ){
+                $isLongTermService = $checkLongTermService->product->is_long_term_service ;
+            }
 
             if (@$luxury_option && $luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
