@@ -1204,7 +1204,7 @@ if (!function_exists('getServiceTypesCategory')) {
      * config('constants.ServiceTypes')
      */
     function getServiceTypesCategory($vendorType, $client_preference = NULL) {
-        //try {
+        try {
             if($client_preference ==NULL){
                 $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
             }
@@ -1273,9 +1273,9 @@ if (!function_exists('getServiceTypesCategory')) {
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
             return $types_id ;
-        /* } catch (\Throwable $th) {
+        } catch (\Throwable $th) {
            return [];
-        } */
+        }
 
     }
 }
