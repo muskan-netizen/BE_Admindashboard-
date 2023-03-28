@@ -347,7 +347,35 @@ span.org_price.ml-1.font-14 {
     max-width: 50%;
     padding: 10px 0px;
 }
-
+.al_body_template_four  .categories_img .product-image img{
+    object-fit: contain;
+}
+.al_body_template_six .ratio_asos .outter-fillter-data .displayProducts .card-product .product-image img {
+    object-fit: contain;
+}
+.al_body_template_six .ratio_asos .outter-fillter-data .displayProducts .card-product h3 label {
+    font-size: 18px;
+    font-weight: 700;
+    display: block;
+    text-align: center;
+}
+body.al_body_template_eight .vendor_onetem .outter-fillter-data .displayProducts .card-product .product-image img {
+    height: auto;
+}
+body.al_body_template_eight  .vendor_onetem .outter-fillter-data .displayProducts .card-product .product-image {
+    padding-top: 10px;
+}
+.al_body_template_nine .vendor_onetem .outter-fillter-data .displayProducts .card-product h3 label {
+    font-size: 18px;
+    font-weight: 700;
+}
+.al_body_template_nine .vendor_onetem .main-fillter .theme-card .card-header h2 button.btn {
+    background: transparent;
+    border: unset;
+}
+.al_body_template_nine .vendor_onetem .main-fillter .theme-card .card-header h2 button.btn h5 {
+    margin: 0;
+}
 .al_body_template_one .product-right .sold-by a b {
     font-size: 14px;
     font-weight: 400;
@@ -916,7 +944,7 @@ body.al_body_template_two .vendor-design_new  .product-bottom-bar {
 .al_body_template_three .rating-text-box.ml-sm-auto{
     padding: 0 6px!important;
 }
-.al_body_template_six  .pixelstrap ul{
+.menu-navigation .pixelstrap ul , .menu_navigation_al_four .pixelstrap .alMainMenu ul, .menu-navigation_al .pixelstrap .al_main_category_list {
     max-height: 40vh;
     overflow-y: scroll;
 }   
