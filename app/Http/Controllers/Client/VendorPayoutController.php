@@ -36,7 +36,7 @@ class VendorPayoutController extends BaseController{
         }
 
         //stripe connected account details
-        $codes = ['cash', 'stripe', 'pagarme','razorpay'];
+        $codes = paymentOptionArray('payout');
         $payout_creds = PayoutOption::whereIn('code', $codes)->where('status', 1)->get();
         if ($payout_creds) {
             foreach ($payout_creds as $creds) {

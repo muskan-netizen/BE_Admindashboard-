@@ -87,7 +87,7 @@ class UserSubscriptionController extends BaseController
             else{
                 return response()->json(["status"=>"Error", "message" => "Invalid Data"]);
             }
-            $code = array('stripe','azul', 'stripe_fpx', 'dpo', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay','ccavenue', 'cashfree','easebuzz','vnpay','paytab','toyyibpay','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet', 'mycash','stripe_ideal','openpay','userede','khalti','plugnpay','razorpay');
+            $code = paymentOptionArray('Subscription');
             $ex_codes = array('cod');
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
             foreach ($payment_options as $k => $payment_option) {

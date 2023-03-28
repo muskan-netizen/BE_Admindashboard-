@@ -40,15 +40,10 @@ class PaymentOptionController extends BaseController
     public function index()
     {
 
-        $payment_codes = array('cod','azul', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo','plugnpay','payway','skip_cash');
+        $payment_codes = paymentOptionArray('payment_codes');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
-        $payout_codes = array(
-            'cash',
-            'stripe',
-            'pagarme',
-            'razorpay'
-        );
+        $payout_codes = paymentOptionArray('payout');
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
 
         return view('backend/payoption/index')->with([
