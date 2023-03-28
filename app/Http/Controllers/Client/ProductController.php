@@ -557,10 +557,6 @@ class ProductController extends BaseController
             
             $product->security_amount = ($request->has('security_amount')) ? $request->security_amount : null;
             $product->is_recurring_booking        = $request->is_recurring_booking == 'on' ? 1 : 0;
-            if(checkColumnExists('products','get_price_from_dispatcher')){
-              //pr(($request->has('get_price_from_dispatcher') && $request->get_price_from_dispatcher == 'on') ? 1 : 0);
-                $product->get_price_from_dispatcher = ($request->has('get_price_from_dispatcher') && $request->get_price_from_dispatcher == 'on') ? 1 : 0;
-            }
 
             if(checkColumnExists('products', 'same_day_delivery')){
                 $product->same_day_delivery = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
