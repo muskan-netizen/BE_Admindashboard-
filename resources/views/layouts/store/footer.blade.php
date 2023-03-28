@@ -307,11 +307,11 @@ if($showSubscriptionPlanPopUp == 1){
     var session_vendor_type = "{{Session::get('vendorType')}}";
     var delete_cart_url = "{{ route('emptyCartData') }}";
     var user_checkout_url= "{{ route('user.checkout') }}";
-    //var cart_product_url= "{{ route('getCartProducts') }}";
+    var cart_product_url= "{{ route('getCartProducts') }}";
     var delete_cart_product_url= "{{ route('deleteCartProduct') }}";
     var change_primary_data_url = "{{ route('changePrimaryData') }}";
     var url1 = "{{ route('config.update') }}";
-    //var url2 = "{{ route('config.get') }}";
+    var url2 = "{{ route('config.get') }}";
     var razorpay_complete_payment_url = "{{ route('payment.razorpayCompletePurchase') }}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var featured_product_language = "{{ __('Featured Product') }}";
@@ -365,7 +365,7 @@ if($showSubscriptionPlanPopUp == 1){
 
     var client_primary_currency = "{{ session()->get('client_primary_currency') }}";
     var default_country_code = "{{ session()->get('default_country_code') }}";
-{{dd($client_preference_detail)}}
+
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";
     var logged_in_user_email = "{{Auth::user()->email??''}}";
