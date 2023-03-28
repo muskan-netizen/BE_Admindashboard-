@@ -1,7 +1,7 @@
     @if(count($orders['orders']) > 0)
     @foreach ($orders['orders'] as $k => $order)
 
-        <div class="col-xl-6 al_order_sec" id="full-order-div{{ $k }}">
+        <div class="{{$ClassName}} al_order_sec" id="full-order-div{{ $k }}">
             <div class="row no-gutters order_head mb-2">
                 <div class="col-md-3 alOrderStatus">
                     <h4>{{ __('Order ID') }}</h4>

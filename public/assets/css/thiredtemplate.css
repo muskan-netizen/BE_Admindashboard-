@@ -611,7 +611,7 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
     }
 
     .al_desktop_banner {
-        display: none
+        display: none;
     }
 
     .al_mobile_banner {

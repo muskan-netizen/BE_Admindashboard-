@@ -670,11 +670,12 @@ li.vendor-timing p{
 }
 .top-banner-content.small-section {
     position: absolute;
-    top: 36%;
+    top: 50%;
     z-index: 9;
     width: 98.3%;
+    transform: translateY(-50%);
 }
-.al_body_template_nine .common-banner:after {
+.al_body_template_one .common-banner:after, .al_body_template_nine .common-banner:after {
     content: "";
     position: absolute;
     background: #0e0c0c4f;
@@ -689,7 +690,7 @@ li.vendor-timing p{
     bottom: 0;
 }
 .al_body_template_nine .common-banner:after{
-    width: calc(100% - 24px)!important;
+    width: 100%!important;
 }
 .common-banner.my-banner{
 position: relative;
@@ -794,8 +795,149 @@ body.dark .pasStepBoxOuter::before {
     border-color: #2B2B2B!important;
     transition: all 0.1s;
 }
+.dark.al_body_template_three  .displayProducts .inner_spacing h3 label b{
+    color: #cfd4da;
+}
+.al_template_two_content .product-image{
+    height: 260px!important;
+}
+.al_template_two_content .vendors .product-detail {
+    padding: 20px 5px;
+}
+.al_body_template_two .vendor-design_new .row.vendor-details-left {
+    margin-top: 20px;
+    width:100%;
+    padding:0 25px;
+}
+body.al_body_template_two .vendor-design_new .row.vendor-details-left .vender-icon {
+    margin-top: 0!important;
+}
+body.al_body_template_two .vendor-design_new  .product-bottom-bar {
+    padding-top: 0;
+    margin: 0;
+}
+.al_body_template_two .vendor-design_new .row.vendor-details-left .vendor-reviwes {
+    right: 0;
+    left: unset;
+}
+.al_body_template_two .alProductCategories .container .row .vendor-design_new {
+    width: 100%;
+}
+.al_body_template_two .vendor-design_new .row.vendor-details-left .vendor_icon-design {
+    width: auto;
+    padding-right: 75px;
+    padding-left: 15px;
+}
+.al_body_template_two .vendor-design_new .row.vendor-details-left .vendor_icon-design ul.vendor-info li.vendor-timing {
+    color: #000;
+}
+.al_body_template_two .vendor-design_new .row.vendor-details-left .vendor_icon-design ul.vendor-info li.vendor-timing svg g {
+    fill: #000;
+}
+.al_body_template_four  .product-m .slick-slide>div{
+    margin:0;
+}
+.al_body_template_four .product-m .slick-slide{
+    margin:0 10px;
+}
+.al_body_template_four   .slick-slider .img-outer-box{
+    height: 260px;
+    border-radius: 12px 12px 0 0;
+}
+.al_body_template_four  .al_box_third_template{
+    border:1px solid #ccc;
+    padding:0;
+}
+.al_body_template_four  .al_box_third_template:hover{
+    border-color: transparent;
+}
+.al_body_template_four  .al_box_third_template .inner_spacing{
+    padding: 0!important;
+}
+.al_body_template_four .al_box_third_template span.rating-number {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--theme-deafult);
+    color: #fff;
+    line-height: 1;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.al_body_template_four .al_box_third_template  .product-description {
+    padding: 10px;
+    min-height: 125px;
+}
+.al_body_template_four .al_box_third_template .product-description p {
+    display: block;
+    text-align: left;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+.al_body_template_four .al_box_third_template .product-description .al_clock b{
+    right: -11px;
+}
+.al_body_template_four .suppliers-img-outer{
+    height: 200px!important;
+}
+.al_body_template_four  .al_boxSeeAll{
+    height: 100%;
+}
+.al_body_template_four  .al_boxSeeAll .al_boxSeeAllArea{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height:92.5%;
+}
+.al_body_template_four  .brand-ing{
+    width: 260px;
+    height: 260px;
+}
+.al_body_template_four a.suppliers-box.d-block span.rating-number {
+    background: var(--theme-deafult);
+    color: #fff;
+    top: 10px;
+    right: 10px;
+    border-radius: 5px;
+}
+.al_body_template_four  .al_boxSeeAllArea i {
+    color: var(--theme-deafult);
+}
+.al_body_template_four a.suppliers-box.d-block h6{
+    font-size: 18px;
+    font-weight:600;
+}
+.al_body_template_four      .brand-ing img{
+    background-color: #fff;
+}
+.al_body_template_three .rating-text-box.ml-sm-auto{
+    padding: 0 6px!important;
+}
+.al_body_template_six  .pixelstrap ul{
+    max-height: 40vh;
+    overflow-y: scroll;
+}   
+.al_body_template_four .pixelstrap ul.alInnerMenu li a span.new-tag{
+    font-weight: 400;
+}
+.al_body_template_six .slick-slide .inner_spacing p {
+    display: block;
+    text-align: left;
+    margin-bottom: 10px;
+}
+.al_body_template_two .scale-effect .media-body {
+    min-height: 85px;
+}
+@media (max-width:1400px){
+    .al_body_template_four  .brand-ing {
+        width: 180px;
+        height: 180px;
+    }
 
-
+}
 @media (max-width:991px){
     .al_body_template_four .vender-icon img {
         width: 70px;
@@ -846,6 +988,18 @@ body.dark .pasStepBoxOuter::before {
 .al_body_template_four #al_four_design  .onhover-div:hover .show-div {
     display: none;
 }
+.al_template_two_content .product-image {
+    height: 170px!important;
+}
+.al_body_template_four .slick-slider .img-outer-box{
+    height:200px;
+}
+.al_body_template_four .suppliers-img-outer{
+    height: 160px!important;
+}
+.al_body_template_four .al_box_third_template .product-description{
+    min-height: 115px;
+}
 }
 @media (max-width:576px){
     .al_body_template_four  .dark #login-section::after,  .al_body_template_four  #login-section::after{
@@ -860,5 +1014,24 @@ body.dark .pasStepBoxOuter::before {
     }
     .al_body_template_four .LogoInArea h3 {
         margin: 40px 0 20px!important;
+    }
+    .al_body_template_two  .profile_address h3{
+        font-size: 18px!important;    
+    }
+    .al_body_template_two .vendor-design_new .row.vendor-details-left .vendor_icon-design .rating-text-box{
+        padding: 2px 5px 0!important;
+    }
+    .al_template_two_content .product-tag{
+        font-size: 12px;
+    }
+    .product-m .slick-slide>div {
+        margin: 0 5px;
+    }
+    .al_body_template_four  .brand-ing {
+        width: 130px;
+        height: 130px;
+    }
+    .al_body_template_four .suppliers-img-outer {
+        height: 130px!important;
     }
 }

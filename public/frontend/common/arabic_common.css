@@ -462,39 +462,14 @@ body[dir=rtl] ul.order-detail.row {
 body[dir=rtl]  span.order_reject {
     display: inline-block;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#accounting_vendor_datatable_wrapper .dataTables_scroll table.table.table-striped {
+    table-layout: fixed;;
+    }
+    
+    #accounting_vendor_datatable_wrapper .dataTables_scroll table.table.table-striped td,th {
+    width: 160px !important;
+    overflow: hidden;
+    }
 
 @media screen and (max-width:992px){
     body[dir="rtl"] .al_mobile_menu{left: 0;}
