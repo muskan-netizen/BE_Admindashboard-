@@ -893,12 +893,11 @@ class OrderController extends FrontController
     public function getCart($cart, $address_id = 0,$user=array())
     {
         $cart_id = $cart->id;
-        if($user) {
+        if(!empty($user)) {
             $user = $user;
         }else{
             $user = Auth::user();
         }
-        //$user = Auth::user();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $pharmacy = ClientPreference::first();

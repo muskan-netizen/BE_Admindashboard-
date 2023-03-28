@@ -159,7 +159,6 @@ if (Session::has('toaster')) {
     });
     
     function get_latest_order_socket(order_number){
-        console.log(order_number);
         Audio.prototype.play = (function(play) {
             return function() {
                 var audio = this,
@@ -191,13 +190,10 @@ if (Session::has('toaster')) {
             success: function(response) {
                 if (response.status == 'Success') {
                     //console.log(response);
-                    if (response.data.orders.data.length != 0) {
+                    if (response.data.html != '') {
                         $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());
-                        $("#received_new_orders").find(".modal-body").append(latest_order_template({
-                            Helper: NumberFormatHelper,
-                            orders: response.data.orders.data
-                        }));
+                        $("#received_new_orders").find(".modal-body").append(response.data.html);
                         $("#received_new_orders").modal('show');
                     }
                 }
@@ -253,8 +249,7 @@ if (Session::has('toaster')) {
 
     initFirebaseMessagingRegistration();
     messaging.onMessage( async function(payload) {
-        console.log("payload");
-        console.log(payload);
+    
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
         }
