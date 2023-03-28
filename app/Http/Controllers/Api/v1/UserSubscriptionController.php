@@ -6,7 +6,7 @@ use DB;
 use Validation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,PaymentTrait};
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +17,7 @@ use App\Models\{User, UserAddress, ClientPreference, Client, ClientCurrency, Sub
 
 class UserSubscriptionController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser,PaymentTrait;
 
     /**
      * get user subscriptions.
@@ -87,7 +87,7 @@ class UserSubscriptionController extends BaseController
             else{
                 return response()->json(["status"=>"Error", "message" => "Invalid Data"]);
             }
-            $code = paymentOptionArray('Subscription');
+            $code = $this->paymentOptionArray('Subscription');
             $ex_codes = array('cod');
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
             foreach ($payment_options as $k => $payment_option) {

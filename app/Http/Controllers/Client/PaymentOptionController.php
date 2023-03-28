@@ -5,8 +5,7 @@ use Session;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Traits\ToasterResponser;
-use App\Http\Traits\MtnMomoPaymentManager;
+use App\Http\Traits\{ToasterResponser,MtnMomoPaymentManager,PaymentTrait};
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
@@ -21,8 +20,7 @@ use Log;
 
 class PaymentOptionController extends BaseController
 {
-    use ToasterResponser;
-    use MtnMomoPaymentManager;
+    use ToasterResponser,MtnMomoPaymentManager,PaymentTrait;
 
     private $folderName = 'payoption';
 
@@ -40,10 +38,10 @@ class PaymentOptionController extends BaseController
     public function index()
     {
 
-        $payment_codes = paymentOptionArray('payment_codes');
+        $payment_codes = $this->paymentOptionArray('payment_codes');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
-        $payout_codes = paymentOptionArray('payout');
+        $payout_codes = $this->paymentOptionArray('payout');
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
 
         return view('backend/payoption/index')->with([

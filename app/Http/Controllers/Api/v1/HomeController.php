@@ -12,7 +12,7 @@ use Carbon\CarbonPeriod;
 use ConvertCurrency;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,ProductActionTrait,VendorTrait};
+use App\Http\Traits\{ApiResponser,ProductActionTrait,VendorTrait,PaymentTrait};
 use App\Http\Traits\HomePage\HomePageTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -27,7 +27,7 @@ use DateTimeZone;
 
 class HomeController extends BaseController
 {
-    use ApiResponser,ProductActionTrait, HomePageTrait,VendorTrait;
+    use ApiResponser,ProductActionTrait, HomePageTrait,VendorTrait,PaymentTrait;
 
     private $curLang = 0;
     private $field_status = 2;
@@ -237,7 +237,7 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = paymentOptionArray('homepage');
+            $payment_codes = $this->paymentOptionArray('homepage');
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {

@@ -7,7 +7,7 @@ use Session;
 use Timezonelist;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,PaymentTrait};
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
@@ -17,7 +17,7 @@ use App\Models\{User, UserAddress, ClientPreference, Client, ClientCurrency, Sub
 
 class UserSubscriptionController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,PaymentTrait;
 
     /**
      * Handle the incoming request.
@@ -105,7 +105,7 @@ class UserSubscriptionController extends FrontController
         else{
             return response()->json(["status"=>"Error", "message" => __("Subscription plan not active")]);
         }
-        $code = paymentOptionArray('Subscription');
+        $code = $this->paymentOptionArray('Subscription');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {
