@@ -1006,7 +1006,6 @@ class CartController extends BaseController
                                     );
                                 }
                             }
-                            //dd($prod->product->toArray());
                             $prod->taxdata = $taxData;
                             if ($action == 'delivery' || $action == 'on_demand') {
                                 $checkLastMile = 0;
