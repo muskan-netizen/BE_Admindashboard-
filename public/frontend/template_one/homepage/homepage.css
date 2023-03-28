@@ -4695,8 +4695,8 @@ body.al_body_template_one .top-banner-wrapper {
 
 @media(max-width:767px) {
     .al_body_template_one .home-slider-wrapper .banner-img-outer img {
-        max-height: 407px;
-        height: 150px;
+        max-height: inherit;
+        height: auto;
     }
     .al_body_template_one .step-indicator {
         margin-top: 0;
@@ -4900,7 +4900,7 @@ body.al_body_template_one .top-banner-wrapper {
         padding-right: 27px;
     }
     .al_body_template_one .home-slider-wrapper .banner-img-outer img {
-        max-height: 150px !important;
+        max-height: inherit !important;
     }
     .al_body_template_one .slick-slide .inner_spacing p {
         margin: 0;
@@ -5527,7 +5527,7 @@ body.al_body_template_one .slick-slider .common-product-box, .slick-slider .supp
     }
 
     .al_body_template_one .home-slider-wrapper .banner-img-outer img {
-        max-height: 100px !important;
+        max-height: inherit !important;
     }
 
     .laundry-img h3 {
@@ -5563,7 +5563,7 @@ body.al_body_template_one .slick-slider .common-product-box, .slick-slider .supp
 
 
     .al_body_template_one .home-slider-wrapper .banner-img-outer img {
-        max-height: 80px !important;
+        max-height: inherit!important;
     }
 
     .al_body_template_one .site-topbar .location-bar h2:after {
