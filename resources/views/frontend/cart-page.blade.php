@@ -236,9 +236,9 @@
                         </div>
 
                         <div class="col-12 cart-heading mt-2 px-0">
-                            <h5 class="my-1"><b>{{ $product->vendor->name }}</b></h5>
+                            <h5 class="my-1"><b>{{ @$product->vendor->name }}</b></h5>
                             <input type="hidden" name="category_name" id="category_name"
-                                value="{{ $product->vendor->name }}" />
+                                value="{{ @$product->vendor->name }}" />
                         </div>
 
 
@@ -556,7 +556,7 @@
                                                                     @foreach ($product->slots as $slot)
                                                                         <option value="{{ $slot->value }}"
                                                                             {{ $slot->value == $product->schedule_slot ? 'selected' : '' }}>
-                                                                            {{ $slot->name }}</option>
+                                                                            {{ @$slot->name }}</option>
                                                                     @endforeach
                                                                 </select>
                                                             @else
@@ -771,7 +771,7 @@
                                                             @foreach ($product->slots as $slot)
                                                                 <option value="{{ $slot->value }}"
                                                                     {{ $slot->value == $product->selected_slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
+                                                                    {{ @$slot->name }}</option>
                                                             @endforeach
                                                         </select>
                                                         {{-- onchange="checkSlotAvailability(this);" --}}
@@ -949,7 +949,7 @@
                                                             @foreach ($cart_details->slotsForPickup as $slot)
                                                                 <option value="{{ $slot->value }}"
                                                                     {{ $slot->value == $cart_details->scheduled->slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
+                                                                    {{ @$slot->name }}</option>
                                                             @endforeach
                                                         @endif
                                                     </select>
@@ -981,7 +981,7 @@
                                                             @foreach ($cart_details->slotsForDropoff as $slot)
                                                                 <option value="{{ $slot->value }}"
                                                                     {{ $slot->value == $cart_details->scheduled->slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
+                                                                    {{ @$slot->name }}</option>
                                                             @endforeach
                                                         @endif
                                                     </select>
