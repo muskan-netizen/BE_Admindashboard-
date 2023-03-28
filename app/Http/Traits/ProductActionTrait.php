@@ -651,7 +651,7 @@ trait ProductActionTrait{
         $vendors = Vendor::select('id')->where('status', 1)->where($type, 1);
         if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
-            $vendors = $vendors->havingRaw(" HAVING (SELECT COUNT(`service_areas`.`id`) FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) > 0 ");
+            $vendors = $vendors->havingRaw(" (SELECT COUNT(`service_areas`.`id`) FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) > 0 ");
             
         }
 
