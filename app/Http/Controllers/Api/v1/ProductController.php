@@ -277,8 +277,8 @@ class ProductController extends BaseController
                     if( !empty($value->attribute) && !empty($value->attribute->status) && $value->attribute->status == 1 ) {
                         $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
                         $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
-
-                        if( !empty($value->attribute) && $value->attribute->type != 4) {
+                        
+                        if( !empty($value->attribute) && $value->attribute->type != 4 && $value->attribute->type != 6) {
                             $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
                         }
                         else {
@@ -287,7 +287,7 @@ class ProductController extends BaseController
                     }
                 }
             }
-
+            
             $attr_id = '';
             $attr_array = [];
             foreach($product_attr as $pro_att_key => $pro_att_val) {

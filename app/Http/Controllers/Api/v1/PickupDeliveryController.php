@@ -657,7 +657,6 @@ class PickupDeliveryController extends BaseController{
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
-                
                 $task_type = 'now';
                 if($request->has('task_type')){
                     $task_type = $request->task_type;

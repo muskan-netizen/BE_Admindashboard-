@@ -12,8 +12,8 @@
 												</div>
 												<div class="supplier-rating">
 													<h6 class="mb-1 ellips">{{ $vendor->name }}</h6>
-														@if($vendor->timeofLineOfSightDistance != 0)
-															<div class="pref-timing"> <span>{{$vendor->timeofLineOfSightDistance}}</span> </div>
+														@if(@$vendor['timeofLineOfSightDistance'] != 0)
+															<div class="pref-timing"> <span>{{@$vendor['timeofLineOfSightDistance']}}</span> </div>
 														@endif
 												</div>
 												@if($client_preference_detail && $client_preference_detail->rating_check==1)

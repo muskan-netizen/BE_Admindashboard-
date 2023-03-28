@@ -185,7 +185,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-
+        // $this->searchCatalogObjects();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
@@ -1425,6 +1425,12 @@ class ProductController extends BaseController
                 case "for_sell_when_out_of_stock":
                     $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
                 break;
+                case "sync_for_square_post":
+                    foreach ($request->product_id as $key => $product_id) {
+                        $this->createOrUpdateProductInSquarePos($product_id);
+                    }
+                break;
+
                 case "delete":
                     // delete product harrry
                     $products = Product::whereIn('id',$request->product_id)->get();
