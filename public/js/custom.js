@@ -5397,17 +5397,9 @@ $(document).ready(function () {
                 }
                 else{
                     return false;
-                }
-               case '50':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViazulpay(address_id, payment_option_id,order);
-                }
-                else{
-                    return false;
-                }
-            break;
-            
+                }     
+              break; 
+
             case '50':
 				if(creditCardValidation()){
 	                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);

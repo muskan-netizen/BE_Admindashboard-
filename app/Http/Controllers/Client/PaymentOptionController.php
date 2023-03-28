@@ -754,20 +754,30 @@ class PaymentOptionController extends BaseController
                                 'api_key' => $request->api_key
                             ));
                             break;
-                            case 'skip_cash':
+                        case 'skip_cash':
+                        $validatedData = $request->validate([
+                            'skip_cash_client_id' => 'required',
+                            'skip_cash_key_id' => 'required',
+                            'skip_cash_api_secret' => 'required',
+                        ]);
+                        $json_creds = json_encode(array(
+                            'skip_cash_client_id' => $request->skip_cash_client_id,
+                            'skip_cash_key_id' => $request->skip_cash_key_id,
+                            'skip_cash_api_secret' => $request->skip_cash_api_secret,
+                            'skip_cash_testing_url' => $request->skip_cash_testing_url,
+                            'skip_cash_live_url' => $request->skip_cash_live_url,
+                        ));
+                        break;
+                        case 'nmi':
                             $validatedData = $request->validate([
-                                'skip_cash_client_id' => 'required',
-                                'skip_cash_key_id' => 'required',
-                                'skip_cash_api_secret' => 'required',
+                                'nmi_client_id' => 'required',
+                                'nmi_key_id' => 'required',
                             ]);
                             $json_creds = json_encode(array(
-                                'skip_cash_client_id' => $request->skip_cash_client_id,
-                                'skip_cash_key_id' => $request->skip_cash_key_id,
-                                'skip_cash_api_secret' => $request->skip_cash_api_secret,
-                                'skip_cash_testing_url' => $request->skip_cash_testing_url,
-                                'skip_cash_live_url' => $request->skip_cash_live_url,
+                                'nmi_client_id' => $request->nmi_client_id,
+                                'nmi_key_id' => $request->nmi_key_id,
                             ));
-                            break;
+                        break;
                     }
                 }
             }
