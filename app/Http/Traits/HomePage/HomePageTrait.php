@@ -208,6 +208,10 @@ trait HomePageTrait
                     $multiply =  Session::get('currencyMultiplier') ?? 1;
                     $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
                     $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                    $is_p2p = 0;
+                    if(@$product->category->categoryDetail->type_id && @$product->category->categoryDetail->type_id == 13){
+                        $is_p2p = 1;
+                    }
                     $productFiltered[] = array(
                         'id' => $product->id,
                         'tag_title' => $spotlight_products_title ?? 'Single Category Products',
@@ -227,7 +231,8 @@ trait HomePageTrait
                         'compare_price_numeric' =>@$product->variant->first()->compare_at_price * $multiply,
                         'price_numeric' =>@$product->variant->first()->price * $multiply,
                         'categoryDetail' => (@$product->category->categoryDetail) ? @$product->category->categoryDetail: [],
-                        'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
+                        'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug,
+                        'is_p2p' => $is_p2p
                     );
                 }
             }
