@@ -594,9 +594,10 @@ class HomeController extends BaseController
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
             // long term service
             $long_term_service_products =[];
-            if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
+            $additionalPreference = etAdditionalPreference(['is_long_term_service', 'is_token_currency_enable']);
+            if($additionalPreference['is_long_term_service'] == 1){
                 $requestFrom='app';
-                $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $langId, $clientCurrency,'', $type,'', $requestFrom);
+                $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $additionalPreference, $langId, $clientCurrency,'', $type,'', $requestFrom);
             }
             $homeData['long_term_service'] = $long_term_service_products;
           
