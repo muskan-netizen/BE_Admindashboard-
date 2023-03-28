@@ -1825,5 +1825,5 @@
 
 @section('script-bottom-js')
     <script defer type="text/javascript" src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
-    <script src="https://secure.nmi.com/token/Collect.js" data-tokenization-key="77j8w7-n4PE3H-JPQetE-J8eH52" data-variant="inline"></script>
+
 @endsection

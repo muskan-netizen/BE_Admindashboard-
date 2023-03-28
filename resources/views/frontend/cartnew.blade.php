@@ -614,6 +614,25 @@ $client_preferences = \App\Models\ClientPreference::first();
   </div>
                     </div>
                 <% } %>
+
+            <% if(payment_option.slug == 'nmi') { %>
+            <div class="col-md-12 mt-3 mb-3 nmi_element_wrapper option-wrapper d-none">
+                <div class="row no-gutters">
+                    <div class="col-6">
+                    <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="card-element-nmi" placeholder="Enter Card Number" />
+                    </div>
+                    <div class="col-3">
+                    <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="date-element-nmi" placeholder="MM/YYYY" />
+                    </div>
+                    <div class="col-3">
+                    <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="cvv-element-nmi" placeholder="CVV" />
+                    </div>
+                    <span class="error text-danger" id="card_error_nmi"></span>
+                </div>
+            </div>
+            <% } %>
+
+
                     </div>
                 <% }); %>
                 {{-- <div class="" id="" role="tabpanel">
