@@ -663,8 +663,8 @@
                                                 <img class="blur-up lazyload"
                                                     data-src="{{ asset('assets/images/discount_icon.svg') }}">
                                                 <label class="mb-0 ml-2">
-                                                    @if ($product->coupon)
-                                                        {{  $product->coupon->promo ? @$product->coupon->promo->name : '' }}
+                                                    @if ($product->coupon && $product->coupon->promo )
+                                                        {{  @$product->coupon->promo->name ?? '' }}
                                                     @else
                                                         <a href="javascript:void(0)" class="promo_code_list_btn ml-1"
                                                             data-vendor_id="{{ $product->vendor->id }}"
@@ -673,10 +673,10 @@
                                                     @endif
                                                 </label>
                                             </div>
-                                            @if ($product->coupon)
+                                            @if ($product->coupon && $product->coupon->promo )
                                                 <label class="p-1 m-0"><a href="javascript:void(0)"
                                                         class="remove_promo_code_btn ml-1"
-                                                        data-coupon_id="{{ $product->coupon ? $product->coupon->promo->id : '' }}"
+                                                        data-coupon_id="{{ @$product->coupon->promo->id ?? '' }}"
                                                         data-cart_id="{{ $cart_details->id }}">Remove</a></label>
                                             @endif
                                         @endif
