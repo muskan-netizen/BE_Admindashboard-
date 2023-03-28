@@ -573,14 +573,25 @@ class UserhomeController extends FrontController
         }
 
         if (in_array('vendors', $enable_layout)) {  # if enable trending_vendors section in
-            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+            if(count($vendor_ids) > 0){
+                $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+            }
         }
         
        
         
         $trendingVendors = [];
         if (in_array('trending_vendors', $enable_layout)) {  # if enable trending_vendors section in 
-            $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $clientdata->timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+            $now = Carbon::now()->toDateTimeString();
+            $trending_vendors = SubscriptionInvoicesVendor::whereHas('features', function ($query) {
+                $query->where(['subscription_invoice_features_vendor.feature_id' => 1]);
+            })
+            ->select('id', 'vendor_id', 'subscription_id')
+            ->where('end_date', '>=', $now)
+            ->pluck('vendor_id')->toArray();
+            if(count($trending_vendors) > 0){
+                $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $clientdata->timezone, 0, $request->type, $language_id, $latitude, $longitude, $trending_vendors);
+            }
         }    
 
         //get Most Selling Vendors
@@ -590,7 +601,9 @@ class UserhomeController extends FrontController
                 $mostSellingVendors = collect($vendors);
                 $mostSellingVendors = $mostSellingVendors->sortByDesc('selling_count');
             }else{
-                $mostSellingVendors = $this->getVendorForHomePage($preferences, "best_sellers", $clientdata->timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+                if(count($vendor_ids) > 0){
+                    $mostSellingVendors = $this->getVendorForHomePage($preferences, "best_sellers", $clientdata->timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+                }
             }
         }
         $on_sale_product_details =$on_sale_products = [];
