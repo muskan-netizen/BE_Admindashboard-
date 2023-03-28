@@ -1415,7 +1415,8 @@ if (!function_exists('inventorySyncOnOff')) {
             ]);
 
             $response = json_decode($request->getBody());
-
+            // \Log::info('Response Data');
+            // \Log::info(json_encode($response));
             if ($response->status) {
                 return $response->msg;
             }

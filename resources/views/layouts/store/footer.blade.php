@@ -150,6 +150,8 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 
                 },
             });
+                        console.log("token");
+
             console.log(token);
 
         }).catch(function(err) {
@@ -160,6 +162,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     initFirebaseMessagingRegistration();
     @endif
     messaging.onMessage(function(payload) {
+        console.log(payload);
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
         } else if (Notification.permission === "granted") {

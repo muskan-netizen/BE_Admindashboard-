@@ -9357,12 +9357,12 @@ body.al_body_template_two #page-container .small-slider .home-slider .home {
             font-size: 16px;
         }
         /*-------template one-----------*/
-        body.al_body_template_one .al_desktop_banner {
+        /* body.al_body_template_one .al_desktop_banner {
             display: block !important;
         }
         body.al_body_template_one .al_mobile_banner {
             display: none !important;
-        }
+        } */
         body.al_body_template_one .menu-navigation {
             overflow: unset !important;
         }
