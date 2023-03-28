@@ -185,7 +185,8 @@ if (Session::has('toaster')) {
             dataType: "JSON",
             data: {
                 filter_order_status: "pending_orders",
-                search_keyword: order_number
+                search_keyword: order_number,
+                className : 'col-xl-12'
             },
             success: function(response) {
                 if (response.status == 'Success') {
@@ -239,6 +240,7 @@ if (Session::has('toaster')) {
                 },
             });
             console.log(token);
+            console.log("token");
 
         }).catch(function(err) {
             console.log(`Token Error :: ${err}`);
@@ -249,11 +251,13 @@ if (Session::has('toaster')) {
 
     initFirebaseMessagingRegistration();
     messaging.onMessage( async function(payload) {
-    
+
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
         }
         else if (Notification.permission === "granted") {
+            console.log(payload);
+            console.log("payload");
             if(payload && payload.data && payload.data.data){
                 if(payload.data.type && payload.data.type=="order_created"){
                     var payload_data = JSON.parse(payload.data.data);

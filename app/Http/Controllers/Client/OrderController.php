@@ -213,6 +213,8 @@ class OrderController extends BaseController
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $HasGiftCard = 0;
+        $ClassName = $request->has('className') ? $request->className : 'col-xl-6';
+
         $orders = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with(['vendors.products' => function ($q) {
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
@@ -666,6 +668,7 @@ class OrderController extends BaseController
         $response2['appointment_orders'] = $appointment_orders??0;
         $response2['p2p_orders'] = $p2p_orders??0;
         $response2['pagination'] ='';
+        $response2['ClassName'] =$ClassName;
        
         if(!empty($response2['next_page_url'])){
            // $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']); 
@@ -686,7 +689,7 @@ class OrderController extends BaseController
             $response2['pagination'] = $pagination;
         }
         $response2['count_resp'] = count($orders);
-        $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee))->render();
+        $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('ClassName'=>$ClassName,'orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee))->render();
         if($request->response ==2){
             return $response2;
         }

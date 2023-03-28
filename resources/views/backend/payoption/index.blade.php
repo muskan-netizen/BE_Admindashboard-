@@ -187,6 +187,23 @@
 						@endif
 					</div>
 
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="ccavenue_merchant" class="mr-3">{{ __("Encryption Key") }}</label>
+                                    <input type="text" name="ccavenue_enc_key" id="ccavenue_enc_key" class="form-control" value="{{$enc_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							<div class="col-12">
+									<label>{{__('Custom Url')}}</label>
+										<select class="form-control" name="custom_url" id="url">
+											<option value="com">com</option>
+		
+											<option value="ae" @if($custom_url=="ae")selected @endif >ae</option>
+								</select>
+							</div>
+                        </div>
+                    </div>
+                    @endif
 
 					@if ( (strtolower($opt->code) == 'cod') )
 					<div class="mt-2" id="cod_fields_wrapper" @if($opt->
