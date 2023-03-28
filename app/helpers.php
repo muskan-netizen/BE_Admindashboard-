@@ -1204,11 +1204,11 @@ if (!function_exists('getServiceTypesCategory')) {
      * config('constants.ServiceTypes')
      */
     function getServiceTypesCategory($vendorType, $client_preference = NULL) {
-        //echo $vendorType; exit();
-        try {
-            //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-            if($client_preference !=NULL)
-            $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
+        //try {
+            if($client_preference ==NULL){
+                $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
+            }
+            
             
 
             $types =   Type::query();
@@ -1273,9 +1273,9 @@ if (!function_exists('getServiceTypesCategory')) {
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
             return $types_id ;
-        } catch (\Throwable $th) {
+        /* } catch (\Throwable $th) {
            return [];
-        }
+        } */
 
     }
 }
