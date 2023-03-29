@@ -31,10 +31,10 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
             <!-- page title start here -->
             <div class="page-title-box mb-2">
                 <!-- page title right side here -->
-                <div class="col-md-6 float-right">
+                <div class="col-md-6 float-right d-none">
                     <form class="d-flex">
                         @if(auth()->user()->is_superadmin)
-                          <div class="input-group mr-2">
+                          <div class="input-group mr-2 ">
                             <select name="app_managers" class="form-control select2-single mr-2" id="app_managers">
                             <option value="" >Select Manager</option>
                             @foreach($managers as $mng)
