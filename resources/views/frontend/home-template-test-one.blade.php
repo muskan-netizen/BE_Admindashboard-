@@ -297,7 +297,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
             <div class="carousel-item @if($key == 0) active @endif">
                <a class="banner-img-outer" href="{{$url??'#'}}" target="_blank">
                   <link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','1370','300') }}" />
-                  <img alt="" title="" class="blur blurload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1370','300') }}" src="{{ get_file_path($banner->image,'IMG_URL1','137','30') }}">
+                  <img alt="" title="" class="blur-up lazyload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1370','300') }}" >
                </a>
             </div>
             @endforeach
