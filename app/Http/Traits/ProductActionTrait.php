@@ -317,7 +317,7 @@ trait ProductActionTrait{
         return $product_ids;
     }
 
-    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type, $Products_title, $p_dim)
+    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '')
     {
         try 
         {

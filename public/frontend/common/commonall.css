@@ -341,15 +341,43 @@ span.org_price.ml-1.font-14 {
 }
 .categories_img .product-image {
     text-align: center;
-    height: 100%;
-    min-height: 140px;
+    height: 220px;
+    min-height: 220px;
 }
 .categories_img .product-image img {
     width: 100%;
-    max-width: 50%;
+    max-width:90%;
     padding: 10px 0px;
 }
-
+.al_body_template_four  .categories_img .product-image img{
+    object-fit: contain;
+}
+.al_body_template_six .ratio_asos .outter-fillter-data .displayProducts .card-product .product-image img {
+    object-fit: contain;
+}
+.al_body_template_six .ratio_asos .outter-fillter-data .displayProducts .card-product h3 label {
+    font-size: 18px;
+    font-weight: 700;
+    display: block;
+    text-align: center;
+}
+body.al_body_template_eight .vendor_onetem .outter-fillter-data .displayProducts .card-product .product-image img {
+    height: auto;
+}
+body.al_body_template_eight  .vendor_onetem .outter-fillter-data .displayProducts .card-product .product-image {
+    padding-top: 10px;
+}
+.al_body_template_nine .vendor_onetem .outter-fillter-data .displayProducts .card-product h3 label {
+    font-size: 18px;
+    font-weight: 700;
+}
+.al_body_template_nine .vendor_onetem .main-fillter .theme-card .card-header h2 button.btn {
+    background: transparent;
+    border: unset;
+}
+.al_body_template_nine .vendor_onetem .main-fillter .theme-card .card-header h2 button.btn h5 {
+    margin: 0;
+}
 .al_body_template_one .product-right .sold-by a b {
     font-size: 14px;
     font-weight: 400;
@@ -533,6 +561,29 @@ ul.exzoom_img_ul img {
 /*category design height set*/
 .categories_img .inner_spacing {
     min-height: auto !important;
+}
+.listing-categories ul li a {
+    font-size: 12px;
+    padding: 6px 0px;
+    display: inline-block;
+    font-weight: 400;
+    color: #4c4545;
+    letter-spacing: 0.2px;
+}
+.listing-categories ul li {
+    margin: 0px 0px !important;
+    padding: 0px 0px !important;
+    font-weight: 200;
+    border-bottom: 1px solid#b5acac2e;
+}
+.listing-categories ul {
+    margin: 10px 0px !important;
+    padding: 0px;
+}
+.listing-categories ul li a:hover {
+    padding-left: 10px;
+    transition: all .9s;
+    color: var(--theme-deafult);
 }
 /**/
 .al_body_template_eight .displayProducts .categories_img .inner_spacing{
@@ -924,7 +975,7 @@ body.al_body_template_two .vendor-design_new  .product-bottom-bar {
 .al_body_template_three .rating-text-box.ml-sm-auto{
     padding: 0 6px!important;
 }
-.al_body_template_six  .pixelstrap ul{
+.menu-navigation .pixelstrap ul , .menu_navigation_al_four .pixelstrap .alMainMenu ul, .menu-navigation_al .pixelstrap .al_main_category_list {
     max-height: 40vh;
     overflow-y: scroll;
 }   
