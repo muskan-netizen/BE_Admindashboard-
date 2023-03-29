@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use App\Http\Traits\SquareInventoryManager;
-use App\Http\Traits\RoadieManager;
+// use App\Http\Traits\RoadieManager;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
 use App\Imports\QrcodesImport;
@@ -23,7 +23,7 @@ use GuzzleHttp\Client as GCLIENT;
 use Carbon\Carbon;
 class ProductController extends BaseController
 {
-    use ApiResponser, SquareInventoryManager, RoadieManager;
+    use ApiResponser, SquareInventoryManager;
     private $folderName = 'prods';
     private $slugIsUnique = true;
     public function __construct()
@@ -186,7 +186,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        $this->testfun1();
+        // $this->testfun1();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];

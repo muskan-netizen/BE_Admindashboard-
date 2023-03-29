@@ -301,7 +301,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-        
+        dd($request->all());
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
