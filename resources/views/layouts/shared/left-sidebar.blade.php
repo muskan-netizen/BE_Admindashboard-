@@ -21,7 +21,10 @@
             $styling_permissions = array("app_styling", "web_styling");
             $order_permissions = array("dashboard", "orders", "vendors", "accounting_orders","accounting_loyality", "accounting_promo_codes", "accounting_taxes","accounting_vendors", "subscriptions_customers", "subscriptions_vendors", "customers");
             $accounting_permissions = array("accounting_orders", "accounting_loyality", "accounting_promo_codes", "accounting_taxes", "accounting_vendors");
-        @endphp
+            $Vendors = getNomenclatureName('Vendors', true);
+            $VendorsTrans = ($Vendors=="Vendors")?__('Vendors'):$Vendors;
+
+    @endphp
         <a href="{{route('client.dashboard')}}" class="logo logo-dark text-center">
             <span class="logo-sm">
                 <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="50">
@@ -186,10 +189,7 @@
                                             @endif
                                             @if(@auth()->user()->can('accounting-vendors') || Auth::user()->is_superadmin == 1)
                                                 <li>
-                                                    @php
-                                                    $Vendors = getNomenclatureName('Vendors', true);
-                                                    $VendorsTrans = ($Vendors=="Vendors")?__('Vendors'):$Vendors;
-                                                @endphp
+                                                  
                                                     <a href="{{route('account.vendor')}}">{{ __($VendorsTrans) }}</a>
                                                 </li>
                                             @endif

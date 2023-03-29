@@ -190,7 +190,6 @@ if (Session::has('toaster')) {
             },
             success: function(response) {
                 if (response.status == 'Success') {
-                    //console.log(response);
                     if (response.data.html != '') {
                         $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());
@@ -263,7 +262,10 @@ if (Session::has('toaster')) {
                     var payload_data = JSON.parse(payload.data.data);
                     console.log('firepase msg order number');
                     console.log(payload_data.order_number);
-                    get_latest_order_socket(payload_data.order_number);
+                    setTimeout(()=>{
+                         get_latest_order_socket(payload_data.order_number);
+                    },3000);
+                   
                 }
                 else if(payload.data.type=="order_cancellation_request"){
                     var notificationTitle = payload.notification.title;
