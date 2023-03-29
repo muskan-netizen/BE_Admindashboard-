@@ -590,52 +590,6 @@
 </div>
 </div>
 
-<div class="col-md-4">
-<div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-    <label for="add_to_cart_btn_switch"
-        class="mr-2 mb-0">{{ __('Add to Cart') }}<small
-            class="d-block pr-5">{{ __('Enable to allow customers to add to cart.') }}</small></label>
-    <span> <input type="checkbox" data-plugin="switchery"
-            name="add_to_cart_btn_switch" id="add_to_cart_btn_switch"
-            class="form-control checkbox_change" data-className="add_to_cart_btn"
-            data-color="#43bee1"
-            @if ($getAdditionalPreference['add_to_cart_btn'] == 1) checked='checked' @endif>
-    </span>
-    <input type="hidden"
-        @if ($getAdditionalPreference['add_to_cart_btn'] == 1) value="1" @else value="0" @endif
-        name="add_to_cart_btn" id="add_to_cart_btn" />
-</div>
-</div>
-
-<div class="col-md-4">
-<div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-    <label for="chat_button_switch" class="mr-2 mb-0">{{ __('Chat Button') }}<small
-            class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
-    <span> <input type="checkbox" data-plugin="switchery" name="chat_button_switch"
-            id="chat_button_switch" class="form-control checkbox_change"
-            data-className="chat_button" data-color="#43bee1"
-            @if ($getAdditionalPreference['chat_button'] == 1) checked='checked' @endif>
-    </span>
-    <input type="hidden"
-        @if ($getAdditionalPreference['chat_button'] == 1) value="1" @else value="0" @endif
-        name="chat_button" id="chat_button" />
-</div>
-</div>
-
-<div class="col-md-4">
-<div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-    <label for="call_button_switch" class="mr-2 mb-0">{{ __('Call Button') }}<small
-            class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
-    <span> <input type="checkbox" data-plugin="switchery" name="call_button_switch"
-            id="call_button_switch" class="form-control checkbox_change"
-            data-className="call_button" data-color="#43bee1"
-            @if ($getAdditionalPreference['call_button'] == 1) checked='checked' @endif>
-    </span>
-    <input type="hidden"
-        @if ($getAdditionalPreference['call_button'] == 1) value="1" @else value="0" @endif
-        name="call_button" id="call_button" />
-</div>
-</div>
 
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
@@ -736,4 +690,12 @@
             </span>
             <input type="hidden"  @if($getAdditionalPreference['is_admin_vendor_rating'] == 1) value="1" @else value="0" @endif  name="is_admin_vendor_rating"  id="is_admin_vendor_rating"/>
          </div>
+        </div>
+        <div class="col-md-4 d-none">
+            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                <label for="is_enable_compare_product" class="mr-2 mb-0">{{__('Compare Product')}}<small class="d-block pr-5">{{__("Enable Compare Product Option in Product Details Recomended For ECommerce.")}}</small></label>
+                <span> <input type="checkbox" data-plugin="switchery" name="is_enable_compare_product" id="is_enable_compare_product_switch" class="form-control checkbox_change" data-className="is_enable_compare_product"  data-color="#43bee1" @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] == 1) checked='checked' @endif>
+                </span>
+                <input type="hidden"  @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] == 1) value="1" @else value="0" @endif  name="is_enable_compare_product"  id="is_enable_compare_product"/>
+            </div>
         </div>
