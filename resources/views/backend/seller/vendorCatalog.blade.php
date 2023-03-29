@@ -1115,7 +1115,6 @@
             if(action_for == 0){
                 return false;
             }
-
             $.ajax({
                 type: "post",
                 url: '{{route("product.update.action")}}',

@@ -2135,7 +2135,7 @@ class OrderController extends FrontController
             $order->total_amount = $total_amount - $Order_bid_discount??0;
 
             if(checkColumnExists('cart_products','recurring_booking_type')){
-                if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                if(@$vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
                     $date       = explode(",",$vendor_cart_product->recurring_day_data);
                     if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
                         $days_count                         =  count($date);
@@ -2439,7 +2439,7 @@ class OrderController extends FrontController
             ])
                 ->where('order_number', $order->order_number)
                 ->first();
-            if (! in_array($request->payment_option_id, $ex_gateways) && (isset($request->is_postpay) && $request->is_postpay == 1)) {
+            if (! in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay == 1)) {
                 if (! empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {
                         $vendorDetail = $vendor_value->vendor;
@@ -2543,6 +2543,8 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
+
+        \Log::info($user_ids);
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')
             ->whereIn('user_id', $user_ids)
             ->pluck('device_token')
