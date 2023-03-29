@@ -318,6 +318,13 @@ trait HomePageTrait
         return $result2;
      }
 
+     public function getRefrenceWisePromoCodes($frence_ids){
+        $now = Carbon::now()->toDateTimeString();
+        $vendor_promo_code_details = PromoCodeDetail::whereIn('refrence_id', $frence_ids)->pluck('promocode_id');
+        $result = Promocode::whereIn('id', $vendor_promo_code_details->toArray())->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
+        return $result;
+     }
+
      public function vendorProducts_v2($venderIds, $langId, $currency = 'USD', $where = '', $type)
      {
          $products = Product::byProductCategoryServiceType($type)->with([

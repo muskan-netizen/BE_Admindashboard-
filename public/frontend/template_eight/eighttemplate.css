@@ -2185,7 +2185,7 @@ body.al_body_template_eight span.rating.main-rating {
 
 body.al_body_template_eight .listing-categories ul li {
     display: block;
-    padding-left: 10px;
+    padding-left: 10px !important;
 }
 
 body.al_body_template_eight .listing-categories ul li a {
