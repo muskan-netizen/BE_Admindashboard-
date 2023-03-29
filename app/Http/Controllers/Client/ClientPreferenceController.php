@@ -214,11 +214,11 @@ class ClientPreferenceController extends BaseController{
             //  }
         // try {
         //     $this->updatePreferenceAdditional($request);
-
-            if($request->has('apply_free_del')){
+           ProductDeliveryFeeByRole::where('is_free_delivery', 1)->delete();
+           // if($request->has('apply_free_del')){
                 // dd($request->all());
                 $this->updateFreeDeliveryForRoles($request->apply_free_del);
-            }
+           // }
             return redirect()->back()->with('success', 'Client settings updated successfully!');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Something went wrong!!');
