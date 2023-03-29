@@ -341,12 +341,12 @@ span.org_price.ml-1.font-14 {
 }
 .categories_img .product-image {
     text-align: center;
-    height: 100%;
-    min-height: 140px;
+    height: 220px;
+    min-height: 220px;
 }
 .categories_img .product-image img {
     width: 100%;
-    max-width: 50%;
+    max-width:90%;
     padding: 10px 0px;
 }
 
@@ -533,6 +533,29 @@ ul.exzoom_img_ul img {
 /*category design height set*/
 .categories_img .inner_spacing {
     min-height: auto !important;
+}
+.listing-categories ul li a {
+    font-size: 12px;
+    padding: 6px 0px;
+    display: inline-block;
+    font-weight: 400;
+    color: #4c4545;
+    letter-spacing: 0.2px;
+}
+.listing-categories ul li {
+    margin: 0px 0px !important;
+    padding: 0px 0px !important;
+    font-weight: 200;
+    border-bottom: 1px solid#b5acac2e;
+}
+.listing-categories ul {
+    margin: 10px 0px !important;
+    padding: 0px;
+}
+.listing-categories ul li a:hover {
+    padding-left: 10px;
+    transition: all .9s;
+    color: var(--theme-deafult);
 }
 /**/
 .al_body_template_eight .displayProducts .categories_img .inner_spacing{
