@@ -2373,7 +2373,9 @@ class OrderController extends FrontController
                 44,
                 45,
                 47,
-                52
+                52,
+                53,
+                54
             ]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal
 
             if (! in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay == 1)) {

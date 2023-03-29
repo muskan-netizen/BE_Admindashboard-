@@ -1107,6 +1107,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+    var payment_nmi_url = "{{route('nmi.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";

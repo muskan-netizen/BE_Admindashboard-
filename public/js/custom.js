@@ -5440,7 +5440,7 @@ $(document).ready(function () {
             if(cardValidation(cardJson)){
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
-                    paymentNmipay(address_id, payment_option_id,order);
+                    paymentNmipay(address_id, payment_option_id,order,cardJson);
                 }
                 else{
                     return false;

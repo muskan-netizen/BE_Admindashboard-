@@ -2,6 +2,9 @@
 
 namespace App\Http\Traits;
 
+use App\Http\Controllers\Api\v1\OrderController;
+use App\Http\Controllers\Front\PickupDeliveryController;
+use App\Http\Controllers\Front\UserSubscriptionController;
 use DB;
 use Auth;
 use HttpRequest;
@@ -15,7 +18,7 @@ use App\Http\Traits\{ValidatorTrait, ApiResponser, SquareInventoryManager};
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
-use App\Models\{Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, OrderProductPrescription, CartProductPrescription,VendorOrderProductStatus};
+use App\Models\{CaregoryKycDoc, Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, CartCoupon, OrderProductPrescription, CartProductPrescription, UserVendor, VendorOrderProductStatus};
 
 trait OrderTrait
 {
@@ -1498,4 +1501,260 @@ trait OrderTrait
              ]);
          }
      }
+
+
+     public function completeOrderCart($request, $payment)
+    {
+       $order = Order::where('order_number', $payment->transaction_id)->first();
+       if (isset($request['response']) && $request['response'] == 1) 
+       {
+                $order->payment_status = '1';
+                $order->save();
+
+                $this->orderSuccessCartDetail($order);
+
+                $returnUrl = route('order.return.success');
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Order.';
+                $response['payment_from'] = 'cart';
+                $response['route'] = $returnUrl;
+
+                return $response;
+                
+
+       } else {
+
+                $this->failedOrderWalletRefund($order);
+
+                if (isset($request->auth_token) && ! empty($request->auth_token)) {
+                    $returnUrl = route('order.return.success');
+                    $response['status'] = 'Fail';
+                    $response['msg'] = 'Failed Order.';
+                    $response['payment_from'] = 'cart';
+                    $response['route'] = $returnUrl;
+
+                    return $response;
+                } else {
+
+                    $returnUrl = route('order.return.success');
+                    $response['status'] = 'Fail';
+                    $response['msg'] = 'Failed Order.';
+                    $response['payment_from'] = 'cart';
+                    $response['route'] = $returnUrl;
+
+                    return $response;
+                }
+       }
+   }
+
+   public function completeOrderWallet($request, $payment)
+   {
+       if (isset($request['response']) && $request['response'] == 1) {
+            $user = auth()->user();
+            $wallet = $user->wallet;
+            $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->order_id . '</b>']);
+
+           if ($request->come_from == 'app') {
+               $returnUrl = route('payment.gateway.return.response') . '/?gateway=azulpay' . '&status=200&transaction_id=' . $payment->transaction_id;
+               $response['route'] = $returnUrl;
+           } else {
+               $returnUrl = route('user.wallet');
+               $response['route'] = $returnUrl;
+           }
+           return $response;
+       }
+   }
+
+   public function completeOrderTip($request, $payment,$amount,$requestdata)
+   {
+       if (isset($request['response']) && $request['response'] == 1) {
+           $data['tip_amount'] = $amount;
+           $data['order_number'] = $requestdata->order_number;
+           $data['transaction_id'] = $payment->transaction_id;
+
+           $request = new \Illuminate\Http\Request($data);
+
+           $orderController = new OrderController();
+           $orderController->tipAfterOrder($request);
+           if ($request['from'] == 'app') {
+               $returnUrl = route('payment.gateway.return.response') . '/?gateway=azulpay' . '&status=200&transaction_id=' . $payment->transaction_id;
+               $response['route'] = $returnUrl;
+           } else {
+               $returnUrl = route('user.orders');
+               $response['route'] = $returnUrl;
+           }
+           return $response;
+       }
+   }
+
+   public function completeOrderSubs($request, $payment, $requestdata)
+   {
+       if (isset($request['response']) && $request['response'] == 1) {
+
+           $data['transaction_id'] = $payment->transaction_id;
+           $data['payment_option_id'] = 50;
+           $data['subsid'] = $requestdata['subsid'];
+           $data['subscription_id'] = $requestdata['subsid'];
+           $data['amount'] = $requestdata['amt'];
+
+           $request = new \Illuminate\Http\Request($data);
+
+           $subscriptionController = new UserSubscriptionController();
+           $subscriptionController->purchaseSubscriptionPlan($request, '', $requestdata->subsid);
+
+
+           if ($request['from'] == 'app') {
+               $returnUrl = route('payment.gateway.return.response') . '/?gateway=nmi' . '&status=200&transaction_id=' . $payment->transaction_id;
+               $response['route'] = $returnUrl;
+           } else {
+               $returnUrl = route('user.subscription.plans');
+               $response['route'] = $returnUrl;
+           }
+           return $response;
+       }
+   }
+
+   public function completePickupDelivery($request, $payment, $requestdata)
+   {
+       if (isset($request['response']) && $request['response'] == 1) {
+
+           $data['payment_option_id'] = 53;
+           $data['transaction_id'] = $payment->transaction_id;
+           $data['amount'] = $requestdata['amt'];
+           $data['order_number'] = $requestdata['order_number'];
+           $data['reload_route'] = $requestdata['reload_route'];
+           $request = new \Illuminate\Http\Request($data);
+           $plaseOrderForPickup = new PickupDeliveryController();
+           $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+           $returnUrl = $request->reload_route;
+           $response['route'] = $returnUrl;
+           if ($request->come_from == 'app') {
+               $returnUrl = route('payment.gateway.return.response') . '/?gateway=nmi' . '&status=200&transaction_id=' . $payment->transaction_id;
+               $response['route'] = $returnUrl;
+           }
+
+           return $response;
+       }
+   }
+
+
+     public function orderSuccessCartDetail($order)
+        {
+
+            try {
+                        // Auto accept order
+                    $orderController = new OrderController();
+                    $orderController->autoAcceptOrderIfOn($order->id);
+
+                    $cart = Cart::where('user_id', auth()->id())->select('id')->first();
+                    $cartid = $cart->id;
+                    Cart::where('id', $cartid)->update([
+                        'schedule_type' => null,
+                        'scheduled_date_time' => null,
+                        'comment_for_pickup_driver' => null,
+                        'comment_for_dropoff_driver' => null,
+                        'comment_for_vendor' => null,
+                        'schedule_pickup' => null,
+                        'schedule_dropoff' => null,
+                        'specific_instructions' => null
+                    ]);
+                    CaregoryKycDoc::where('cart_id', $cartid)->update([
+                        'ordre_id' => $order->id,
+                        'cart_id' => ''
+                    ]);
+                    CartAddon::where('cart_id', $cartid)->delete();
+                    CartCoupon::where('cart_id', $cartid)->delete();
+                    CartProduct::where('cart_id', $cartid)->delete();
+                    CartProductPrescription::where('cart_id', $cartid)->delete();
+
+
+                    // Send Notification
+                    if (! empty($order->vendors)) {
+                        foreach ($order->vendors as $vendor_value) {
+                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                            $user_vendors = UserVendor::where([
+                                'vendor_id' => $vendor_value->vendor_id
+                            ])->pluck('user_id');
+                            $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                        }
+                    }
+
+                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                    $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+                        // send sms
+                        $this->sendOrderSuccessSMS($order);
+                }catch(\Exception $e)
+                {
+                    \Log::info('orderSuccessCartDetail error :-'.$e->getMessage());
+                    return true;
+                }
+                return true;
+        }
+
+
+
+    public function sendOrderSuccessSMS($order)
+    {
+        try {
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
+            $customerCurrency = ClientCurrency::with('currency')->where('is_primary', '1')->first();
+            $currSymbol =$customerCurrency->currency->symbol;
+            $user = User::where('id', $order->user_id)->first();
+            if ($user) {
+                if ($user->dial_code == "971") {
+                    $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                } else {
+                    $to = '+' . $user->dial_code . $user->phone_number;
+                }
+                
+                $provider = $prefer->sms_provider;
+                $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
+
+                $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
+                if(!empty($smsTemplates)){
+                    $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
+                    $smsTemplates = str_replace("{amount}", $currSymbol . $order->payable_amount, $smsTemplates);
+                    $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
+                }else{
+                    $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
+                }
+                if (!empty($prefer->sms_provider)) {
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                }
+            }
+        }catch(\Exception $e)
+        {
+            \Log::info('sendSuccessSMS error :-'.$e->getMessage());
+            return true;
+        }
+        return true;
+
+    }
+
+    public function failedOrderWalletRefund($order)
+    {
+        try{
+                if (isset($order->wallet_amount_used)) 
+                {
+                    $user = auth()->user();
+                    $wallet = $user->wallet;  
+                        $wallet->depositFloat($order->wallet_amount_used, [
+                            'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number
+                        ]);
+                }
+
+            }catch(\Exception $e)
+            {
+                \Log::info('failedOrderWalletRefund error :-'.$e->getMessage());
+                return true;
+            }
+            return true;
+
+    }
+     
+
+
+
 }

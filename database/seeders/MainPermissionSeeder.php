@@ -159,6 +159,8 @@ class MainPermissionSeeder extends Seeder{
 
                 //Role Permission page
                 array('name' => 'role-permission','controller'=>'RolePermissionController'),
+                array('name' => 'vendor-subscription','controller'=>'VendorSubscriptionController'),
+
 
         );
 
