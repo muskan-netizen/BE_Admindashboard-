@@ -34,7 +34,7 @@
                 @endif
                 <div class="row mt-3">
                     <div class="col-md-6">
-                        <h3 class="page-title">{{ getNomenclatureName(__('Slots'), true) }}</h3>
+                        <h3 class="page-title">{{ getNomenclatureName(__('Same Day Delivery Slots'), true) }}</h3>
                     </div>
                     <div class="col-md-6">
                         <div class="al_new_export_table royo_customber_btn table_customber_add">
