@@ -223,8 +223,8 @@
                                         <div class="col-md-6 mb-3" id="nameInput">
                                             <label for="vendortype">{{__('Vendor Type')}}</label>
                                             <select name="vendor_type" id="vendor_type" class="form-control">
-                                                <option value="1">Seller</option>
-                                                <option value="0">Shopper</option>
+                                                <option value="0">{{getNomenclatureName('Vendor', true)}}</option>
+                                                <option value="1">{{getNomenclatureName('Seller', true)}}</option>
                                             </select>
                                         </div>
                                     @endif
