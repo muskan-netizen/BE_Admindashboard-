@@ -712,6 +712,40 @@ display: inline-block;
     height: 100%!important;
 }
 
+/*======== first template css gagandeep 29-03-2023 start ========*/
+.al_body_template_one  .al_new_wrapper_design .displayProducts .media-body .prod_location .loction {
+    font-weight: 500;
+    font-size: 14px;
+}
+.al_body_template_one  .al_new_wrapper_design .displayProducts .media-body  .prod_location {
+    display: block!important;
+}
+.al_body_template_one  .al_new_wrapper_design .displayProducts .media-body .update_year {
+    padding-top: 10px!important;
+}
+.al_body_template_one  .al_new_wrapper_design .displayProducts .media-body .update_year b {
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+.al_body_template_one  .al_new_wrapper_design .displayProducts .media-body  .product-price-chat-sec {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    flex-wrap: wrap;
+}
+.al_body_template_one .al_new_wrapper_design .displayProducts .media-body .product-price-chat-sec h4 {
+    font-weight: 600;
+}
+.al_body_template_one .alSingleProducts .buy_details .product-right .container-badge {
+    display: flex;
+    flex-wrap: wrap;
+}
+/*======== first template css gagandeep 29-03-2023 end ========*/
+
 @media (max-width:576px){
     .al_body_template_four  .dark #login-section::after,  .al_body_template_four  #login-section::after{
         opacity:0;
