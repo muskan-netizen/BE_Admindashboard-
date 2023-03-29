@@ -341,13 +341,43 @@ span.org_price.ml-1.font-14 {
 }
 .categories_img .product-image {
     text-align: center;
+    height: 220px;
+    min-height: 220px;
 }
 .categories_img .product-image img {
     width: 100%;
-    max-width: 50%;
+    max-width:90%;
     padding: 10px 0px;
 }
-
+.al_body_template_four  .categories_img .product-image img{
+    object-fit: contain;
+}
+.al_body_template_six .ratio_asos .outter-fillter-data .displayProducts .card-product .product-image img {
+    object-fit: contain;
+}
+.al_body_template_six .ratio_asos .outter-fillter-data .displayProducts .card-product h3 label {
+    font-size: 18px;
+    font-weight: 700;
+    display: block;
+    text-align: center;
+}
+body.al_body_template_eight .vendor_onetem .outter-fillter-data .displayProducts .card-product .product-image img {
+    height: auto;
+}
+body.al_body_template_eight  .vendor_onetem .outter-fillter-data .displayProducts .card-product .product-image {
+    padding-top: 10px;
+}
+.al_body_template_nine .vendor_onetem .outter-fillter-data .displayProducts .card-product h3 label {
+    font-size: 18px;
+    font-weight: 700;
+}
+.al_body_template_nine .vendor_onetem .main-fillter .theme-card .card-header h2 button.btn {
+    background: transparent;
+    border: unset;
+}
+.al_body_template_nine .vendor_onetem .main-fillter .theme-card .card-header h2 button.btn h5 {
+    margin: 0;
+}
 .al_body_template_one .product-right .sold-by a b {
     font-size: 14px;
     font-weight: 400;
@@ -370,7 +400,7 @@ span.org_price.ml-1.font-14 {
 
 .al_body_template_one .product-right .border-product {
     padding-top: 8px;
-    padding-bottom: 20px;
+    padding-bottom: 20px;position: relative;z-index: -1;
 }
 
 .al_body_template_one .org_price {
@@ -426,8 +456,9 @@ span.org_price.ml-1.font-14 {
 .al_body_template_one .accordion .card-header button {
     margin-bottom: 0px;
 }
-.al_body_template_one .top-banner-wrapper .top-banner-content h4 {
-    font-size: 40px;font-weight: 500 !important;
+
+.top-banner-wrapper .top-banner-content h4 {
+    font-size: 30px;font-weight: 500 !important;
 }
 .al_body_template_eight .top-banner-wrapper .top-banner-content h4 {
     font-size: 40px;font-weight: 500 !important;
@@ -522,11 +553,39 @@ ul.exzoom_img_ul img {
     height: auto;
 }
 .al_body_template_eight .margin-res .inner_spacing{
-    min-height: 108px;
+    min-height: inherit;
 }
 .al_body_template_one .margin-res .inner_spacing {
-    min-height:122px;
+    min-height:inherit;
 }
+/*category design height set*/
+.categories_img .inner_spacing {
+    min-height: auto !important;
+}
+.listing-categories ul li a {
+    font-size: 12px;
+    padding: 6px 0px;
+    display: inline-block;
+    font-weight: 400;
+    color: #4c4545;
+    letter-spacing: 0.2px;
+}
+.listing-categories ul li {
+    margin: 0px 0px !important;
+    padding: 0px 0px !important;
+    font-weight: 200;
+    border-bottom: 1px solid#b5acac2e;
+}
+.listing-categories ul {
+    margin: 10px 0px !important;
+    padding: 0px;
+}
+.listing-categories ul li a:hover {
+    padding-left: 10px;
+    transition: all .9s;
+    color: var(--theme-deafult);
+}
+/**/
 .al_body_template_eight .displayProducts .categories_img .inner_spacing{
     min-height: auto;
 }
@@ -910,13 +969,13 @@ body.al_body_template_two .vendor-design_new  .product-bottom-bar {
     font-size: 18px;
     font-weight:600;
 }
-.al_body_template_four      .brand-ing img{
+.al_body_template_four .brand-ing img{
     background-color: #fff;
 }
 .al_body_template_three .rating-text-box.ml-sm-auto{
     padding: 0 6px!important;
 }
-.al_body_template_six  .pixelstrap ul{
+.menu-navigation .pixelstrap ul , .menu_navigation_al_four .pixelstrap .alMainMenu ul, .menu-navigation_al .pixelstrap .al_main_category_list {
     max-height: 40vh;
     overflow-y: scroll;
 }   
@@ -928,8 +987,21 @@ body.al_body_template_two .vendor-design_new  .product-bottom-bar {
     text-align: left;
     margin-bottom: 10px;
 }
-.al_body_template_two .scale-effect .media-body {
-    min-height: 85px;
+.al_body_template_three .al_new_wrapper_design .alSingleProducts .buy_details .product-right  span.rating {
+    right: 0;
+}
+.al_body_template_three .al_new_wrapper_design .alSingleProducts .buy_details .product-right h2 {
+    padding-right: 60px;
+}
+
+body.dark.al_body_template_three .cart-design .cart-summary .login-form #schedule_div input::-webkit-calendar-picker-indicator {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23fff" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
+}
+.dark.al_body_template_three .order-success-sec h3 {
+    color: #dee2e6;
+}
+.dark.al_body_template_three .order-success-sec li span {
+    color: #dee2e6;
 }
 @media (max-width:1400px){
     .al_body_template_four  .brand-ing {
@@ -1001,6 +1073,40 @@ body.al_body_template_two .vendor-design_new  .product-bottom-bar {
     min-height: 115px;
 }
 }
+/*======== first template css gagandeep 29-03-2023 start ========*/
+.al_body_template_one  .al_new_wrapper_design .displayProducts .media-body .prod_location .loction {
+    font-weight: 500;
+    font-size: 14px;
+}
+.al_body_template_one  .al_new_wrapper_design .displayProducts .media-body  .prod_location {
+    display: block!important;
+}
+.al_body_template_one  .al_new_wrapper_design .displayProducts .media-body .update_year {
+    padding-top: 10px!important;
+}
+.al_body_template_one  .al_new_wrapper_design .displayProducts .media-body .update_year b {
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+.al_body_template_one  .al_new_wrapper_design .displayProducts .media-body  .product-price-chat-sec {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    flex-wrap: wrap;
+}
+.al_body_template_one .al_new_wrapper_design .displayProducts .media-body .product-price-chat-sec h4 {
+    font-weight: 600;
+}
+.al_body_template_one .alSingleProducts .buy_details .product-right .container-badge {
+    display: flex;
+    flex-wrap: wrap;
+}
+/*======== first template css gagandeep 29-03-2023 end ========*/
+
 @media (max-width:576px){
     .al_body_template_four  .dark #login-section::after,  .al_body_template_four  #login-section::after{
         opacity:0;

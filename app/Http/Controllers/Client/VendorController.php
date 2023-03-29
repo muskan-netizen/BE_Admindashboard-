@@ -2708,7 +2708,7 @@ class VendorController extends BaseController
     {
 // dd("asdf");
         $preference = InventoryService::checkIfInventoryOn();
-        if($preference){
+        if(@$preference && @$preference->inventory_service_key_url){
             $email = Auth::user()->email;
 
             $response = Http::get($preference->inventory_service_key_url."/admin/generate_inventory_login_token", [
