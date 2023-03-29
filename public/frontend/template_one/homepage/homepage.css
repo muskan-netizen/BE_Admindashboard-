@@ -1572,7 +1572,14 @@ li.close-window i {
     box-shadow: 0 4px 25px 0 rgb(138 129 124 / 3%);
     padding: 10px 16px 15px
 }
-
+.al_body_template_one .theme-card h5.title-border {
+    border-bottom: 1px solid #ddd;
+    display: block !important;
+    padding: 10px 10px!important;
+}
+.theme-card.custom-inner-card .card-header .collapsed h5 {
+    border-bottom: none !important;
+}
 .dashboard-left .block-content ul li:hover {
     padding-left: 0
 }
