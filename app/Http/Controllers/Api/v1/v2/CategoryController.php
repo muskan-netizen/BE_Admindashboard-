@@ -549,11 +549,11 @@ class CategoryController extends BaseController
             if ($cid == 0) {
                 return response()->json(['error' => 'No record found.'], 404);
             }
+            $p_ids = [];
             $v_ids = [];
             $promo = [];
             $cateVendors = [];
             $uniqVendors = [];
-            $refrence_ids = []; 
             $user = Auth::user();
             $langId = $user->language;
 
@@ -593,18 +593,17 @@ class CategoryController extends BaseController
             // Collection of refrence_ids for promocode
             if(!empty($category)){
                 foreach($category as $cst){
-                    $refrence_ids = array_merge($refrence_ids,$cst->vendorCategory->pluck('vendor_id')->toArray(), $cst->products->pluck('id')->toArray());
+                    $p_ids = array_merge($p_ids, $cst->products->pluck('id')->toArray());
                     $v_ids = array_merge($v_ids, $cst->vendorCategory->pluck('vendor_id')->toArray());
                     $cateVendors[] = $cst->vendorCategory->toArray();
                 }
             }
 
             // Remove duplicate ids and get promocode
-            if(!empty($refrence_ids)){
+                $p_ids = array_unique($p_ids);
                 $v_ids = array_unique($v_ids);
-                $refrence_ids = array_unique($refrence_ids);
-                $promo = $this->getRefrenceWisePromoCodes($refrence_ids);
-            }
+                $promo = $this->getRefrenceWisePromoCodes($v_ids, $p_ids);
+   
 
             // Get popular & top_rated products
             $popular_products = array_map(function($v){ $v->path = get_file_path($v->path,'FILL_URL','260','260'); return $v;},$this->vendorProducts($v_ids, $langId, '', 'popular_products'));
