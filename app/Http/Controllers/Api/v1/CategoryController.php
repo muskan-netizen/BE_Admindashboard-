@@ -575,14 +575,4 @@ class CategoryController extends BaseController
        
     }
 
-    public function getProductsByCategory(Request $request, $id){
-        try {
-      $products=Category::with(['products','products.media.image','products.translation','products.variants'])->where('id',$id)->first();
-      return $this->successResponse($products);
-    } catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(), $e->getCode());
-    }
-
-    }
-
 }

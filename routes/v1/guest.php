@@ -74,7 +74,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('cms/page/list', 'Api\v1\CMSPageController@getPageList');
         Route::get('brand/{id?}', 'Api\v1\BrandController@productsByBrand');
         Route::get('category/{id?}', 'Api\v1\CategoryController@categoryData');
-        Route::get('category_product/{id?}','Api\v1\CategoryController@getProductsByCategory');
         // get Category kyc document
         Route::post('category_kyc_document', 'Api\v1\CategoryController@getcategoryKycDocument');
         Route::post('submit_category_kyc', 'Api\v1\CartController@updateCartCategoryKyc');
