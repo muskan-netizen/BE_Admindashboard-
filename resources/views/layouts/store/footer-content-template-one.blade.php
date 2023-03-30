@@ -165,7 +165,7 @@ $company_name = \App\Models\ClientPreferenceAdditional::where('key_name','bottom
                                 <ul>
                                 @foreach($paymentMethod as $payment_method)
                                     <li>
-                                        <a href="#"><img  src="{{ $payment_method->image_url }}"></a>
+                                        <a href="#"><img alt="{{ $payment_method->name}}"  src="{{ $payment_method->image_url }}"></a>
                                     </li>
                                     @endforeach
                                         <!-- <li>
