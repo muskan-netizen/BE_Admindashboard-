@@ -409,7 +409,10 @@ body.al_body_template_eight .vendor_onetem .outter-fillter-data .displayProducts
 
 .al_body_template_one .product-right .border-product {
     padding-top: 8px;
-    padding-bottom: 20px;position: relative;z-index: -1;
+    padding-bottom: 20px;position: relative;
+}
+.add_overlay .product-description span.input-group-prepend{
+    z-index: -1;
 }
 
 .al_body_template_one .org_price {
