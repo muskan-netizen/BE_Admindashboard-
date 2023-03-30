@@ -59,6 +59,7 @@
     color: #000;
     font-weight: 400;
     text-transform: capitalize;
+    margin-right:0!important;
 }
 
 .al_body_template_one .vendor-design_new {
@@ -410,9 +411,7 @@ body.al_body_template_eight .vendor_onetem .outter-fillter-data .displayProducts
 .al_body_template_one .product-right .border-product {
     padding-top: 8px;
     padding-bottom: 20px;position: relative;
-}
-.add_overlay .product-description span.input-group-prepend{
-    z-index: -1;
+    /* z-index: -1; */
 }
 
 .al_body_template_one .org_price {
@@ -1040,12 +1039,74 @@ body.dark.al_body_template_three .cart-design .cart-summary .login-form #schedul
 .order-page #orders_wrapper li.nav-item {
     padding: 0 10px;
 }
+.order-page .dashboard-right #orders_wrapper .nav li.nav-item {
+    padding: 0 10px;
+}
+.order-page #orders_wrapper .price_box_bottom li:last-child {
+    flex-wrap: wrap;
+}   
+body.al_body_template_one .product-right .product-description .qty-box .input-group .form-control {
+    border-right: 1px solid #ced4da;
+}
+body.al_body_template_one .daterangepicker {
+    z-index: 1;
+}
+.order-page #orders_wrapper .price_box_bottom .grand_total label, .order-page #orders_wrapper .price_box_bottom .grand_total span {
+    font-size: 15px;
+    font-weight: 500;
+    color: #777;
+}
+.order-page #orders_wrapper .price_box_bottom .grand_total label {
+    padding-right: 5px;
+    display: inline-block;
+}
+.order-page #orders_wrapper .price_box_bottom li:last-child button {
+    margin-left: auto;
+    margin-top: 10px;
+    display: block;
+    width: 100%!important;
+    max-width: 100%;
+}
+.order-page #orders_wrapper ul.price_box_bottom li span, .order-page #orders_wrapper ul.price_box_bottom li label {
+    font-weight: 500;
+    font-size: 15px;
+    color: #777;
+}   
+body.al_body_template_nine.p2p-module .img-outer-box.position-relative{
+    height: 280px;
+}
+body.al_body_template_nine .product-card-box.position-relative.al_box_third_template.al img{
+    height: 100%;
+}
+.al_body_template_nine.p2p-module .category-related-product .slick-prev{
+    left: 13px;
+}
+.al_body_template_nine.p2p-module .category-related-product .slick-next{
+    right: 0;
+}
+.al_body_template_nine.p2p-module section.section-b-space.alSingleProducts.product_ddetails_page .product-card-box.position-relative.al_box_third_template.al{
+    width: 96%!important;
+}
+.al_body_template_nine .alSingleProducts .product-card-box .product-description span.flag-discount {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--theme-deafult);
+    padding: 4px 10px;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+}
+body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule_div input::-webkit-calendar-picker-indicator {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23fff" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
+}
 @media (max-width:1400px){
     .al_body_template_four  .brand-ing {
         width: 180px;
         height: 180px;
     }
-
+    
 }
 @media (max-width:991px){
     .al_body_template_four .vender-icon img {
