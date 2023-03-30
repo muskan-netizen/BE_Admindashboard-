@@ -927,7 +927,6 @@ class StripeGatewayController extends FrontController
                 $postdata['shipping']['address']['country'] = $user_address->country;
                 $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
             }
-
             $payment_intent = $stripe = $stripe->paymentIntents->create($postdata);
 
             if($request->payment_form == 'cart'){
@@ -943,7 +942,6 @@ class StripeGatewayController extends FrontController
             return $this->successResponse($payment_intent);
         }
         catch (\Exception $ex) {
-          Log::info($e->getMessage());
             return $this->errorResponse('Server Error', $ex->getCode());
         }
     }

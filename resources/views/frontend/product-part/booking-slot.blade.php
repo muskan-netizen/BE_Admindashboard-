@@ -297,6 +297,11 @@
                 var data = response.data.variant_data;
 
                 if(response.data.success){
+                  if(!data.variant_product_quantity){
+                  $("a#add_to_cart_btn").removeClass("addToCart");
+                  await sweetAlert.error('',_language.getLanString('Not available yet!')); 
+                  return false;
+                  }
 
                   var available_product_variant = data.available_product_variant;
                   var end_time = data.end_time;
