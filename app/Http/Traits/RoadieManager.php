@@ -8,71 +8,71 @@ trait RoadieManager
     public function testfun1()
     {
 
-        // $postData = [
-        //     "items" => [
-        //         [
-        //             "length" => 1.0,
-        //             "width" => 1.0,
-        //             "height" => 1.0,
-        //             "weight" => 1.0,
-        //             "value" => 20.00,
-        //             "quantity" => 1
-        //         ],
-        //         [
-        //             "length" => 1.0,
-        //             "width" => 1.0,
-        //             "height" => 1.0,
-        //             "weight" => 1.0,
-        //             "value" => 20.00,
-        //             "quantity" => 1
-        //         ]
-        //     ],
-        //     "pickup_location" => [
-        //         "address" => [
-        //             "name" => "Origin Location",
-        //             "store_number" => "12324",
-        //             "street1" => "123 Main Street",
-        //             "street2" => null,
-        //             "city" => "Atlanta",
-        //             "state" => "GA",
-        //             "zip" => "30305",
-        //             "latitude" => 33.74903,
-        //             "longitude" => -85.38803
-        //         ]
-        //     ],
-        //     "delivery_location" => [
-        //         "address" => [
-        //             "name" => "Destination Location",
-        //             "store_number" => null,
-        //             "street1" => "456 Central Ave.",
-        //             "street2" => null,
-        //             "city" => "Atlanta",
-        //             "state" => "GA",
-        //             "zip" => "30308",
-        //             "latitude" => 33.04131,
-        //             "longitude" => -84.18303
-        //         ]
-        //     ],
-        //     "pickup_after" => "2023-03-28T13:00:00Z",
-        //     "deliver_between" => [
-        //         "start" => "2023-03-30T21:00:00Z",
-        //         "end" => "2023-04-01T23:00:00Z"
-        //     ]
-        // ];
+        $postData = [
+            "items" => [
+                [
+                    "length" => 1.0,
+                    "width" => 1.0,
+                    "height" => 1.0,
+                    "weight" => 1.0,
+                    "value" => 20.00,
+                    "quantity" => 1
+                ],
+                [
+                    "length" => 1.0,
+                    "width" => 1.0,
+                    "height" => 1.0,
+                    "weight" => 1.0,
+                    "value" => 20.00,
+                    "quantity" => 1
+                ]
+            ],
+            "pickup_location" => [
+                "address" => [
+                    "name" => "Ambala Cantt, Haryana, India",
+                    "store_number" => null,
+                    "street1" => "Ambala Cantt, Haryana, India",
+                    "street2" => null,
+                    "city" => "Ambala Cantt, Haryana, India",
+                    "state" => "Ambala Cantt, Haryana, India",
+                    "zip" => "56009",
+                    "latitude" => "30.361031400000",
+                    "longitude" => "76.848546800000"
+                ]
+            ],
+            "delivery_location" => [
+                "address" => [
+                    "name" => "Sector 17, Chandigarh, India",
+                    "store_number" => null,
+                    "street1" => "Sector 17, Chandigarh, India",
+                    "street2" => null,
+                    "city" => "Sector 17, Chandigarh, India",
+                    "state" => "Sector 17, Chandigarh, India",
+                    "zip" => "56009",
+                    "latitude" => "30.733314800000",
+                    "longitude" => "76.779417900000"
+                ]
+            ],
+            "pickup_after" => "2023-03-28T13:00:00Z",
+            "deliver_between" => [
+                "start" => "2023-03-30T21:00:00Z",
+                "end" => "2023-04-01T23:00:00Z"
+            ]
+        ];
 
 
-        // $response = Http::withHeaders([
-        //     'Content-Type' => 'application/json',
-        //     'Authorization' => 'Bearer e12005b2acd50631664dc802675883c8bfbddd2e'
-        // ])->post('https://connect-sandbox.roadie.com/v1/estimates', $postData);
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer e12005b2acd50631664dc802675883c8bfbddd2e'
+        ])->post('https://connect-sandbox.roadie.com/v1/estimates', $postData);
 
-        // $statusCode = $response->getStatusCode();
-        // pr(json_decode($response));
-        // if ($statusCode == 200) {
+        $statusCode = $response->getStatusCode();
+        pr(json_decode($response));
+        if ($statusCode == 200) {
            
-        // } else {
+        } else {
 
-        // }
+        }
 
         $postData = [
             "reference_id" => "sdfsdsfsdfds123",

@@ -1168,7 +1168,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                         <div class="col-sm-4">
                             {!! Form::label('title', 'Width (In Inches)',['class' => 'control-label']) !!}
-                            {!! Form::text('width', $product->width,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
+                            {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
                         </div>
 
                         <div class="col-sm-4">
