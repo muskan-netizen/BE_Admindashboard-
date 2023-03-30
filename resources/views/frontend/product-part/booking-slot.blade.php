@@ -299,7 +299,7 @@
                 if(response.data.success){
                   if(!data.variant_product_quantity){
                   $("a#add_to_cart_btn").removeClass("addToCart");
-                  await sweetAlert.error('','Not available yet!'); 
+                  await sweetAlert.error('',_language.getLanString('Not available yet!')); 
                   return false;
                   }
 
