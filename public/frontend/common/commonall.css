@@ -355,6 +355,11 @@ span.org_price.ml-1.font-14 {
 .al_body_template_four  .categories_img .product-image img{
     object-fit:cover;
 }
+.al_body_template_four .categories_img .inner_spacing h3 label{
+    display: block;
+    text-align: center;
+    width: 100%;
+}
 .al_body_template_six .ratio_asos .outter-fillter-data .displayProducts .card-product .product-image img {
     object-fit: cover;
 }
