@@ -299,11 +299,7 @@
                 if(response.data.success){
                   if(!data.variant_product_quantity){
                   $("a#add_to_cart_btn").removeClass("addToCart");
-                  await Swal.fire(
-                    'Oops...',
-                    'Not available yet!',
-                    'type..'
-                    );
+                  await sweetAlert.error('','Not available yet!'); 
                   return false;
                   }
 
