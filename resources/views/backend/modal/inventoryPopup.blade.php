@@ -34,7 +34,7 @@ if(empty($preference)){
         }
     });
     $.ajax({
-      url: "{{route('getInvetoryToken')}}",
+      url: "/client/getInvetoryToken",
       type: "GET",
       data: {
         email: ""

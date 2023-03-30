@@ -201,6 +201,16 @@ class CartController extends BaseController
                 $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
                 $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
             }
+            $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+            if( ($luxury_option->id == 6) && ($additionalPreference['is_service_product_price_from_dispatch'] ==1) ){
+                $CartProduct = CartProduct::where(['cart_id' => $cart_detail->id])->select('id','dispatch_agent_id')->first();
+                $dispatcherAgentData= $request->has('dispatcherAgentData') ? $request->dispatcherAgentData : [];
+                $request_dispatch_agent_id = isset($dispatcherAgentData['agent_id'] ) ?  $dispatcherAgentData['agent_id']: "";
+              
+                if($CartProduct &&  ( $CartProduct->dispatch_agent_id != $request_dispatch_agent_id)){
+                    return $this->errorResponse('Please select the service of same provider', 404);
+                }
+            }
 
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
             if(checkColumnExists('products','is_long_term_service') && $product->is_long_term_service !=1){
@@ -718,7 +728,7 @@ class CartController extends BaseController
             }, 'vendorProducts.product.taxCategory.taxRate',
         ]);
 
-        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
 
         $taxes=TaxRate::all();
         $taxRates=array();

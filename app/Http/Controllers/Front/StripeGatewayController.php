@@ -1209,6 +1209,8 @@ class StripeGatewayController extends FrontController
         }
 
         Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent() ?? json_encode($payload)]);
+        \Log::info('stripeWebhook event');
+        \Log::info($event);
         // Handle the event
         switch ($event->type) {
             case 'payment_intent.succeeded':

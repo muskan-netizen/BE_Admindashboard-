@@ -20,7 +20,8 @@ class AppStylingAddOptionTableSeeder extends Seeder
             array('app_styling_id' => '7', 'name' => 'Tab 6', 'image' => 'bar_six.png', 'template_id' => '6', 'is_selected' => '0'),
             array('app_styling_id' => '8', 'name' => 'Home Page 9', 'image' => 'home_nine.png', 'template_id' => '8', 'is_selected' => '0'),
             array('app_styling_id' => '8', 'name' => 'Home Page 10', 'image' => 'home_ten.png', 'template_id' => '9', 'is_selected' => '0'),
-            array('app_styling_id' => '8', 'name' => 'Home Page 11', 'image' => 'home_eleven.png', 'template_id' => '10', 'is_selected' => '0')
+            array('app_styling_id' => '8', 'name' => 'Home Page 11', 'image' => 'home_eleven.png', 'template_id' => '10', 'is_selected' => '0'),
+            array('app_styling_id' => '8', 'name' => 'Home Page 12', 'image' => 'home_twelve.png', 'template_id' => '11', 'is_selected' => '0')
         );
 
       
