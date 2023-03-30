@@ -927,7 +927,6 @@ class StripeGatewayController extends FrontController
                 $postdata['shipping']['address']['country'] = $user_address->country;
                 $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
             }
-
             $payment_intent = $stripe = $stripe->paymentIntents->create($postdata);
 
             if($request->payment_form == 'cart'){
@@ -943,7 +942,6 @@ class StripeGatewayController extends FrontController
             return $this->successResponse($payment_intent);
         }
         catch (\Exception $ex) {
-          Log::info($e->getMessage());
             return $this->errorResponse('Server Error', $ex->getCode());
         }
     }
@@ -1218,20 +1216,18 @@ class StripeGatewayController extends FrontController
                
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
-               
-                $charges = $intent->charges->data;
+                $charges = $intent;
                 $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = 0;
-                if(count($charges)){
-                    $transactionId = $charges[0]->balance_transaction;
-                    $payment_form = $charges[0]->metadata->payment_form;
-                    $amount = $charges[0]->amount / 100;
-                    $user_id = $charges[0]->metadata->user_id;
+                if(@$charges){
+                    $transactionId = @$charges->id;
+                    $payment_form = @$charges->metadata->payment_form;
+                    $amount = @$charges->amount / 100;
+                    $user_id = @$charges->metadata->user_id;
                 }
-
                 if($payment_form == 'cart'){
-                    $order_number = $charges[0]->metadata->order_number;
-                    $cart_id = $charges[0]->metadata->cart_id ?? '';
+                    $order_number = @$charges->metadata->order_number;
+                    $cart_id = @$charges->metadata->cart_id ?? '';
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $order->payment_status = 1;
@@ -1309,20 +1305,20 @@ class StripeGatewayController extends FrontController
                     $walletController->creditWallet($request);
                 }
                 elseif($payment_form == 'tip'){
-                    $order_number = $charges[0]->metadata->order_number;
+                    $order_number = @$charges->metadata->order_number;
                     $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
                 }
                 elseif($payment_form == 'subscription'){
-                    $subscription = $charges[0]->metadata->subscription_id;
+                    $subscription = @$charges->metadata->subscription_id;
                     $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
                 }
                 elseif($payment_form == 'giftCard'){
-                    $gift_card_id = $charges[0]->metadata->gift_card_id;
-                    $senderData =  $charges[0]->metadata->senderData;
+                    $gift_card_id = @$charges->metadata->gift_card_id;
+                    $senderData =  @$charges->metadata->senderData;
                     $request->request->add([ 'payment_option_id' => 4, 'user_id' => $user_id,  'amount' => $amount, 'transaction_id' => $transactionId,'senderData'=>$senderData]);
                     $subscriptionController = new GiftcardController();
                     $subscriptionController->purchaseGiftCard($request, '', $gift_card_id);
@@ -1597,19 +1593,18 @@ class StripeGatewayController extends FrontController
 
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
-                $charges = $intent->charges->data;
+                $charges = $intent;
                 $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = 0;
-                if(count($charges)){
-                    $transactionId = $charges[0]->balance_transaction;
-                    $payment_form = $charges[0]->metadata->payment_form;
-                    $amount = $charges[0]->amount / 100;
-                    $user_id = $charges[0]->metadata->user_id;
+                if(@$charges){
+                    $transactionId = @$charges->id;
+                    $payment_form = @$charges->metadata->payment_form;
+                    $amount = @$charges->amount / 100;
+                    $user_id = @$charges->metadata->user_id;
                 }
-
                 if($payment_form == 'cart'){
-                    $order_number = $charges[0]->metadata->order_number;
-                    $cart_id = $charges[0]->metadata->cart_id ?? '';
+                    $order_number = @$charges->metadata->order_number;
+                    $cart_id = @$charges->metadata->cart_id ?? '';
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $order->payment_status = 1;
@@ -1661,13 +1656,13 @@ class StripeGatewayController extends FrontController
                     $walletController->creditWallet($request);
                 }
                 elseif($payment_form == 'tip'){
-                    $order_number = $charges[0]->metadata->order_number;
+                    $order_number = @$charges->metadata->order_number;
                     $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
                 }
                 elseif($payment_form == 'subscription'){
-                    $subscription = $charges[0]->metadata->subscription_id;
+                    $subscription = @$charges->metadata->subscription_id;
                     $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
@@ -1818,13 +1813,13 @@ class StripeGatewayController extends FrontController
                     $walletController->creditWallet($request);
                 }
                 elseif($payment_form == 'tip'){
-                    $order_number = $charges[0]->metadata->order_number;
+                    $order_number = @$charges->metadata->order_number;
                     $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
                 }
                 elseif($payment_form == 'subscription'){
-                    $subscription = $charges[0]->metadata->subscription_id;
+                    $subscription = @$charges->metadata->subscription_id;
                     $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
