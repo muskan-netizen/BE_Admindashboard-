@@ -153,8 +153,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                                     <th class="text-center">{{ __('Products') }}</th>
                                                     <th class="text-center">{{ __('Orders') }}</th>
                                                     <th class="text-center">{{ __('Active') }} <br> {{ __('Orders') }}</th>
-                                                    <th class="text-center">{{ __('Manager') }}</th>
-
+                                                    {{-- <th class="text-center">{{ __('Manager') }}</th> --}}
                                                     <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
@@ -189,7 +188,8 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                                     <th class="text-center">{{ __('Products') }}</th>
                                                     <th class="text-center">{{ __('Orders') }}</th>
                                                     <th class="text-center">{{ __('Active') }} <br> {{ __('Orders') }}</th>
-                                                    <th class="text-center">{{ __('Manager') }}</th><th class="text-center">{{ __('Action') }}</th>
+                                                    {{-- <th class="text-center">{{ __('Manager') }}</th> --}}
+                                                    <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="post_list"></tbody>
@@ -222,7 +222,8 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                                     <th class="text-center">{{ __("Products") }}</th>
                                                     <th class="text-center">{{ __('Orders') }}</th>
                                                     <th class="text-center">{{ __("Active") }} <br> {{ __("Orders") }}</th>
-                                                    <th class="text-center">{{ __('Manager') }}</th><th class="text-center">{{ __('Action') }}</th>
+                                                    {{-- <th class="text-center">{{ __('Manager') }}</th> --}}
+                                                    <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="post_list"></tbody>
