@@ -320,6 +320,7 @@ class HomeController extends BaseController
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+            $spotlight= $request->has('is_spotlight') && $request->is_spotlight ? $request->is_spotlight : null;
 
             $type = $request->has('type') ? $request->type : 'delivery';
            
@@ -462,7 +463,10 @@ class HomeController extends BaseController
             $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
             $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
             $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type);
-            $spotlight_products=$this->getSpotlightProducts();
+            if($spotlight && ($spotlight == 1) ){
+                $spotlight_products=$this->getSpotlightProducts();
+            }
+           
             // foreach ($new_product_details as  $new_product_detail) {
             //     $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
             //     $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
@@ -579,7 +583,7 @@ class HomeController extends BaseController
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
-            $homeData['spotlight_deals']=$spotlight_products;
+            $homeData['spotlight_deals']=$spotlight_products ?? '';
 
             $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
                 $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
@@ -628,6 +632,7 @@ class HomeController extends BaseController
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+          
 
             $type = $request->has('type') ? $request->type : 'delivery';
             $cid = $request->category_id;
