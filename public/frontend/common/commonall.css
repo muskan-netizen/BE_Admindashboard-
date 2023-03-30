@@ -1037,6 +1037,9 @@ body.dark.al_body_template_three .cart-design .cart-summary .login-form #schedul
 .dark.al_body_template_three .order-success-sec li span {
     color: #dee2e6;
 }
+.order-page #orders_wrapper li.nav-item {
+    padding: 0 10px;
+}
 @media (max-width:1400px){
     .al_body_template_four  .brand-ing {
         width: 180px;
