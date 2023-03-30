@@ -220,8 +220,8 @@ trait ProductActionTrait{
 
      public function longTermServiceProducts($long_term_vendors, $additionalPreference, $langId, $currency = '', $where = '', $type,$p_dim ='260/100',$requestFrom='web' )
     {
-        $venderIds = $long_term_vendors->where('status', 1)
-        ->whereHas('long_term_products')->whereIn('id', $long_term_vendors)->get()->pluck('id');
+        $venderIds = Vendor::where('status', 1)->whereIn('id', $long_term_vendors)
+        ->whereHas('long_term_products')->pluck('id');
         $products = Product::byLongTermProductCategoryServiceType($type)->byProductLongTerm()->with([
             'vendor','LongTermProducts.product',
             'media' => function ($q) {
