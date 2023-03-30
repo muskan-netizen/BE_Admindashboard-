@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Alata&family=Jost:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Alata&family=Jost:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap'); */
  :root{--alBodyTemplateThreeFont: 'Jost', sans-serif;}
 
  .al_body_template_three,a,b,body,div,h1,h2,h3,h4,h5,h6,html,label,p,section,span,strong{font-family:var(--alBodyTemplateThreeFont)!important}body,html{scroll-behavior:smooth}
