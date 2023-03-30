@@ -174,7 +174,7 @@ $applocale = session()->get('applocale');
                                 <ul>
                                     @foreach($paymentMethod as $payment_method)
                                     <li>
-                                        <a href="#"><img class="blur-up lazyload" alt="{{ $payment_method->name}}"  src="{{ $payment_method->image_url }}"></a>
+                                        <a href="#" aria-label="{{ $payment_method->name}}"><img class="blur-up lazyload" alt="{{ $payment_method->name}}"  src="{{ $payment_method->image_url }}"></a>
                                     </li>
                                     @endforeach
                                     <!-- <li>
