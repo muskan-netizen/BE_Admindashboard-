@@ -723,7 +723,7 @@ span.filter-btn.btn.btn-theme i {
 }
 
 .product-wrapper-grid .product-image {
-    border-radius: 12px;
+    /* border-radius: 12px; */
     overflow: hidden;
     position: relative;
     /*padding-bottom: 100%;*/
@@ -3797,8 +3797,6 @@ a.morelink.less {
     z-index: 9;
     margin-left: 4%;
 }
-
-
 .al_body_template_three .ratio_asos .collection-wrapper .my-banner img {
     width: 100% !important;
 }
@@ -3832,10 +3830,12 @@ a.morelink.less {
     overflow-y: auto;
     height: 20px;
 }
-
+.categories_img .product-box {
+    padding: 0px 0px !important;
+}
 .categories_img .product-image img {
     width: 100%;
-    max-width: 80% !important;
+    /* max-width: 80% !important; */
     padding: 0 !important;
     height: 100%;
 }
@@ -3848,7 +3848,7 @@ a.morelink.less {
 
 .displayProducts .inner_spacing h3 {
     padding: 0;
-    margin: 0;
+    margin: 0;  
 }
 
 .product-image {

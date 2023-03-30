@@ -1209,6 +1209,8 @@ class StripeGatewayController extends FrontController
         }
 
         Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent() ?? json_encode($payload)]);
+        \Log::info('stripeWebhook event');
+        \Log::info($event);
         // Handle the event
         switch ($event->type) {
             case 'payment_intent.succeeded':
@@ -1216,8 +1218,10 @@ class StripeGatewayController extends FrontController
                
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
-               
+                \Log::info('stripeWebhook paymentIntent');
+                \Log::info($paymentIntent);
                 $charges = $intent->charges->data;
+                
                 $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = 0;
                 if(count($charges)){
