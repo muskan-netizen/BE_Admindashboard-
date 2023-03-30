@@ -294,9 +294,7 @@ $order_is_long_term = $order->is_long_term;
                                 <ul class="order-detail row">
                                     <li class="col-12 col-md-4"><span>{{__('Order Total')}}:</span><span> {{Session::get('currencySymbol')}}{{decimal_format($total_amount)}}
                                     <li class="col-12 col-md-4"><span>{{__('Order Total')}}:</span><span>@if( $additionalPreference["is_token_currency_enable"])
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total_amount))}}@else{{Session::get('currencySymbol').decimal_format($total_amount)}}@endif
-                                        $order->is_postpay = 0;
-                                        
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total_amount))}}@else{{Session::get('currencySymbol').decimal_format($total_amount)}}@endif                                      
 
                                         @if($order->payment_option_id != 1 && $order->payment_status!=1 && $order->is_postpay==1)
                                         <span style="color:var(--theme-deafult);">Unpaid</span>
