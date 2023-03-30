@@ -307,6 +307,7 @@ class HomeController extends BaseController
             $vends = [];
             $venderIds = [];
             $homeData = [];
+            $spotlight_products=[];
             $user = Auth::user();
             $langId = $user->language;
             $currency_id = $user->currency;
@@ -320,6 +321,7 @@ class HomeController extends BaseController
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+            $spotlight= $request->has('is_spotlight') && $request->is_spotlight ? $request->is_spotlight : null;
 
             $type = $request->has('type') ? $request->type : 'delivery';
            
@@ -459,6 +461,62 @@ class HomeController extends BaseController
             $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
             $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type);
 
+            if($spotlight && ($spotlight == 1) ){
+                $spotlight_products=$this->getSpotlightProducts();
+            }
+           
+            // foreach ($new_product_details as  $new_product_detail) {
+            //     $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
+            //     $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
+            //     $image_url = $new_product_detail->media->first() && !is_null($new_product_detail->media->first()->image) ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
+            //     $vprice1 = (isset($new_product_detail->variant->first()->price)?$new_product_detail->variant->first()->price * $multiply:0);
+            //     $new_products[] = array(
+            //         'image_url' => $image_url,
+            //         'sku' => $new_product_detail->sku,
+            //         'title' => $title,
+            //         'url_slug' => $new_product_detail->url_slug,
+            //         'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
+            //         'inquiry_only' => $new_product_detail->inquiry_only,
+            //         'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
+            //         'price' => decimal_format($vprice1),
+            //         'category' => ($new_product_detail->category->categoryDetail->translation->first()) ? $new_product_detail->category->categoryDetail->translation->first()->name : $new_product_detail->category->categoryDetail->slug
+            //     );
+            // }
+            // foreach ($feature_product_details as  $feature_product_detail) {
+            //     $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
+            //     $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
+            //     $image_url = $feature_product_detail->media->first() &&  !is_null($feature_product_detail->media->first()->image)? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
+            //     $vprice = (isset($feature_product_detail->variant->first()->price)?$feature_product_detail->variant->first()->price * $multiply:0);
+            //     $feature_products[] = array(
+            //         'image_url' => $image_url,
+            //         'sku' => $feature_product_detail->sku,
+            //         'title' => $title,
+            //         'url_slug' => $feature_product_detail->url_slug,
+            //         'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
+            //         'inquiry_only' => $feature_product_detail->inquiry_only,
+            //         'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
+            //         'price' => decimal_format($vprice),
+            //         'category' => ($feature_product_detail->category->categoryDetail->translation->first()) ? $feature_product_detail->category->categoryDetail->translation->first()->name : $feature_product_detail->category->categoryDetail->slug
+            //     );
+            // }
+            // foreach ($on_sale_product_details as  $on_sale_product_detail) {
+            //     $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
+            //     $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
+            //     $image_url = $on_sale_product_detail->media->first() && !is_null($on_sale_product_detail->media->first()->image) ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
+            //     $vprice2 = (isset($on_sale_product_detail->variant->first()->price)?$on_sale_product_detail->variant->first()->price * $multiply:0);
+            //     $on_sale_products[] = array(
+            //         'image_url' => $image_url,
+            //         'sku' => $on_sale_product_detail->sku,
+            //         'title' => $title,
+            //         'url_slug' => $on_sale_product_detail->url_slug,
+            //         'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
+            //         'inquiry_only' => $on_sale_product_detail->inquiry_only,
+            //         'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
+            //         'price' => decimal_format($vprice2),
+            //         'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
+            //     );
+            // }
+
 
             $isVendorArea = 0;
 
@@ -523,6 +581,7 @@ class HomeController extends BaseController
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
+            $homeData['spotlight_deals']=$spotlight_products;
 
             $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
                 $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
@@ -572,6 +631,7 @@ class HomeController extends BaseController
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+          
 
             $type = $request->has('type') ? $request->type : 'delivery';
             $cid = $request->category_id;
