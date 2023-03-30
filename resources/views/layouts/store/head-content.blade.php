@@ -1,7 +1,7 @@
 
 <link defer type="text/css" rel="stylesheet" media="all" href="{{asset('front-assets/css/icons-style.css')}}">
 <link defer type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
-<link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">
+<link defer type="text/css" rel="stylesheet" media="all" href="{{asset('front-assets/css/color1-style.css')}}">
 
 
 @if(Route::currentRouteName() != "userHome")
