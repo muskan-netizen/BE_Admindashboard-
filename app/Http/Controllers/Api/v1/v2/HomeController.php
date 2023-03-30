@@ -552,11 +552,11 @@ class HomeController extends BaseController{
         /**
          * put a limit to get vendors.
          */
-        $long_term_vendors = $vendors;
+        $long_term_vendors = $vendors->pluck('id')->toArray();
+        
         $vendors = $vendors->where('status', 1)
                     ->inRandomOrder()
                     ->limit(10)->get();
-// dd("sdfg");
 
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;

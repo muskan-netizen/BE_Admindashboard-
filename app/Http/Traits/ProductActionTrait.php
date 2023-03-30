@@ -221,9 +221,7 @@ trait ProductActionTrait{
      public function longTermServiceProducts($long_term_vendors, $additionalPreference, $langId, $currency = '', $where = '', $type,$p_dim ='260/100',$requestFrom='web' )
     {
         $venderIds = $long_term_vendors->where('status', 1)
-        ->whereHas('long_term_products')
-        ->inRandomOrder()
-        ->limit(10)->get()->pluck('id');
+        ->whereHas('long_term_products')->whereIn('id', $vendor_ids)->get()->pluck('id');
         $products = Product::byLongTermProductCategoryServiceType($type)->byProductLongTerm()->with([
             'vendor','LongTermProducts.product',
             'media' => function ($q) {
@@ -568,9 +566,6 @@ trait ProductActionTrait{
                     }
                 }
             }
-            if (($latitude) && ($longitude)) {
-                Session::put('vendors', $vendor_ids);
-            }
             
             return $vendors;
         }
@@ -667,7 +662,7 @@ trait ProductActionTrait{
             }else{
                 $vendors = $vendors->inRandomOrder();
             }
-            return $vendors->limit(10)->pluck('id')->toArray();
+            return $vendors->pluck('id')->toArray();
         }
         catch (\Exception $e) {
             return [];

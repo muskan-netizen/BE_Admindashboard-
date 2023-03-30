@@ -572,10 +572,9 @@ class UserhomeController extends FrontController
             }
         }
 
-        if (in_array('vendors', $enable_layout)) {  # if enable trending_vendors section in
-            if(count($vendor_ids) > 0){
-                $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids);
-            }
+        
+        if(count($vendor_ids) > 0){
+            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids);
         }
         
        
@@ -592,8 +591,12 @@ class UserhomeController extends FrontController
             if(count($trending_vendors) > 0){
                 $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $clientdata->timezone, 0, $request->type, $language_id, $latitude, $longitude, $trending_vendors);
             }
-        }    
-
+        } 
+        
+        if (($latitude) && ($longitude)) {
+            Session::put('vendors', $vendor_ids);
+        }
+        
         //get Most Selling Vendors
         $mostSellingVendors = []; //best_sellers
         if (in_array('best_sellers', $enable_layout)) {
@@ -630,11 +633,10 @@ class UserhomeController extends FrontController
         } 
         
         $top_rated_products = '';
-
          //get long term service 
         $long_term_service_products =[];
-        if( in_array('long_term_service', $enable_layout) && @$additionalPreference['is_long_term_service'] == 1){ # if enable long_term_service section in 
-            $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
+        if( in_array('long_term_service', $enable_layout) && @$additionalPreference['is_long_term_service'] == 1 && count($vendor_ids) > 0){ # if enable long_term_service section in 
+            $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
         }
         if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'recent_viewed', $request->type, $featured_products_title,$p_dim);
