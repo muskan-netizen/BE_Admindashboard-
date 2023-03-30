@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use App\Http\Traits\SquareInventoryManager;
-// use App\Http\Traits\RoadieManager;
+use App\Http\Traits\RoadieManager;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
 use App\Imports\QrcodesImport;
@@ -23,7 +23,7 @@ use GuzzleHttp\Client as GCLIENT;
 use Carbon\Carbon;
 class ProductController extends BaseController
 {
-    use ApiResponser, SquareInventoryManager;
+    use ApiResponser, SquareInventoryManager, RoadieManager;
     private $folderName = 'prods';
     private $slugIsUnique = true;
     public function __construct()

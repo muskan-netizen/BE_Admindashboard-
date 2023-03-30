@@ -15,30 +15,48 @@ trait RoadieManager
         //             "width" => 1.0,
         //             "height" => 1.0,
         //             "weight" => 1.0,
-        //             "quantity" => 1,
-        //             "value" => 20
+        //             "value" => 20.00,
+        //             "quantity" => 1
+        //         ],
+        //         [
+        //             "length" => 1.0,
+        //             "width" => 1.0,
+        //             "height" => 1.0,
+        //             "weight" => 1.0,
+        //             "value" => 20.00,
+        //             "quantity" => 1
         //         ]
         //     ],
         //     "pickup_location" => [
         //         "address" => [
+        //             "name" => "Origin Location",
+        //             "store_number" => "12324",
         //             "street1" => "123 Main Street",
+        //             "street2" => null,
         //             "city" => "Atlanta",
         //             "state" => "GA",
-        //             "zip" => "30305"
+        //             "zip" => "30305",
+        //             "latitude" => 33.74903,
+        //             "longitude" => -85.38803
         //         ]
         //     ],
         //     "delivery_location" => [
         //         "address" => [
+        //             "name" => "Destination Location",
+        //             "store_number" => null,
         //             "street1" => "456 Central Ave.",
+        //             "street2" => null,
         //             "city" => "Atlanta",
         //             "state" => "GA",
-        //             "zip" => "30308"
+        //             "zip" => "30308",
+        //             "latitude" => 33.04131,
+        //             "longitude" => -84.18303
         //         ]
         //     ],
         //     "pickup_after" => "2023-03-28T13:00:00Z",
         //     "deliver_between" => [
-        //         "start" => "2023-03-29T21:00:00Z",
-        //         "end" => "2023-03-30T23:00:00Z"
+        //         "start" => "2023-03-30T21:00:00Z",
+        //         "end" => "2023-04-01T23:00:00Z"
         //     ]
         // ];
 
@@ -49,7 +67,7 @@ trait RoadieManager
         // ])->post('https://connect-sandbox.roadie.com/v1/estimates', $postData);
 
         // $statusCode = $response->getStatusCode();
-        // pr(json_decode($response)->price);
+        // pr(json_decode($response));
         // if ($statusCode == 200) {
            
         // } else {
@@ -120,10 +138,10 @@ trait RoadieManager
                 ],
                 "notes" => null
             ],
-            "pickup_after" => "2023-03-29T13:00:00Z",
+            "pickup_after" => "2023-03-28T13:00:00Z",
             "deliver_between" => [
-                "start" => "2023-03-29T21:00:00Z",
-                "end" => "2023-03-31T23:00:00Z"
+                "start" => "2023-03-30T21:00:00Z",
+                "end" => "2023-04-01T23:00:00Z"
             ],
             "options" => [
                 "signature_required" => true,
@@ -142,10 +160,10 @@ trait RoadieManager
 
         $statusCode = $response->getStatusCode();
         pr(json_decode($response));
-        // if ($statusCode == 200) {
+        if ($statusCode == 200) {
            
-        // } else {
+        } else {
 
-        // }
+        }
     }
 }
