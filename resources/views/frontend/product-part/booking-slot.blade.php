@@ -297,6 +297,15 @@
                 var data = response.data.variant_data;
 
                 if(response.data.success){
+                  if(!data.variant_product_quantity){
+                  $("a#add_to_cart_btn").removeClass("addToCart");
+                  await Swal.fire(
+                    'Oops...',
+                    'Not available yet!',
+                    'type..'
+                    );
+                  return false;
+                  }
 
                   var available_product_variant = data.available_product_variant;
                   var end_time = data.end_time;
