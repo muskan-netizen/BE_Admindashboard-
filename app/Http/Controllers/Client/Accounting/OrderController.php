@@ -99,14 +99,8 @@ class OrderController extends Controller{
                 return number_format($vendor_orders->subtotal_amount - $vendor_orders->total_markup_price??0, 2);
             })
             ->addColumn('vendor_amount', function($vendor_orders) {
-                $vendor_amount = $vendor_orders->subtotal_amount;
-                $discount = 0;
-                if($vendor_orders->coupon_paid_by == 0){
-                    $discount = $vendor_orders->discount_amount;
-                }
-                $tip = !empty($vendor_orders->orderDetail)?number_format($vendor_orders->orderDetail->tip_amount, 2):0.00;
-                $vendor_amount += $tip;
-                return number_format($vendor_amount - $discount - $vendor_orders->admin_commission_percentage_amount);
+               
+                return $vendor_orders->vendor_amount;
             })
             ->addColumn('admin_commission', function($vendor_orders) {
                 // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
@@ -171,7 +165,7 @@ class OrderController extends Controller{
                     });
                 }
             })
-            ->rawColumns(['payment_option_title','vendor_amount'])
+            ->rawColumns(['payment_option_title'])
             ->make(true);
     }
 
