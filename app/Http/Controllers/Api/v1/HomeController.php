@@ -150,7 +150,7 @@ class HomeController extends BaseController
                 $homeData['profile']->preferences->passbase_check = 0;
             }
 
-
+            $homeData['parent_category'] = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->where('parent_id', 1)->where('is_visible', 1)->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1)->pluck('id', 'slug')->toArray();
 
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
             $banners = Banner::select("id", "name", "description", "image", "image_mobile", "link", 'redirect_category_id', 'redirect_vendor_id')
@@ -307,6 +307,7 @@ class HomeController extends BaseController
             $vends = [];
             $venderIds = [];
             $homeData = [];
+            $spotlight_products=[];
             $user = Auth::user();
             $langId = $user->language;
             $currency_id = $user->currency;
@@ -320,6 +321,7 @@ class HomeController extends BaseController
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+            $spotlight= $request->has('is_spotlight') && $request->is_spotlight ? $request->is_spotlight : null;
 
             $type = $request->has('type') ? $request->type : 'delivery';
            
@@ -463,6 +465,10 @@ class HomeController extends BaseController
             $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
             $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
             $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type);
+            if($spotlight && ($spotlight == 1) ){
+                $spotlight_products=$this->getSpotlightProducts();
+            }
+           
             // foreach ($new_product_details as  $new_product_detail) {
             //     $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
             //     $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
@@ -579,6 +585,7 @@ class HomeController extends BaseController
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
+            $homeData['spotlight_deals']=$spotlight_products;
 
             $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
                 $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
@@ -627,6 +634,7 @@ class HomeController extends BaseController
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+          
 
             $type = $request->has('type') ? $request->type : 'delivery';
             $cid = $request->category_id;

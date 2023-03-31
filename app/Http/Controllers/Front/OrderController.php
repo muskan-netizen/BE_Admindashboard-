@@ -125,7 +125,7 @@ class OrderController extends FrontController
                     if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
                             $Pq->where('dispatcher_status_option_id',5);
                     }
-                    $Pq->with(['products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
+                   
                 });
 
                 if($additionalPreference['is_service_product_price_from_dispatch'] ==0){
@@ -142,10 +142,12 @@ class OrderController extends FrontController
                 $qry->where('language_id', $langId);
             },
             'vendors.dineInTable.category',
-            // 'vendors.products',
-            // 'vendors.products.product',
-            // 'vendors.products.media.image',
-            // 'vendors.products.pvariant.media.pimage.image',
+            'vendors.products',
+            'vendors.products.product',
+            'vendors.products.media.image',
+            'vendors.products.pvariant.media.pimage.image',
+            'vendors.products.Routes', 
+            'vendors.products.order_product_status',
             'products.productRating',
             'user',
             'address',
@@ -186,6 +188,7 @@ class OrderController extends FrontController
         $pastOrders = $pastOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
+           
         //End Past Orders Query
 
         
@@ -800,7 +803,7 @@ class OrderController extends FrontController
                     //     if ($vendor_id == "") {
                     $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     //     } else {
-                    //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
+                    //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails,'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     // }
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
