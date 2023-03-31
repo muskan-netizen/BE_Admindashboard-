@@ -1490,14 +1490,13 @@ trait CartManagerV2{
             $cart->vendorCnt = $cartData->count();
             $cart->scheduled = $scheduled;
             $cart->is_recurring_booking = $is_recurring_booking;
-            $cart->schedule_type =  $cart->schedule_type;
             $cart->closed_store_order_scheduled =  0;
             $myDate = date('Y-m-d');
             if($cart->vendorCnt==1){
                 $vendorId = $cartData[0]->vendor_id;
                 $cart->scheduled->scheduled_date_time = $cartData[0]->scheduled_date_time;
                 $cart->scheduled->slot = $cartData[0]->schedule_slot;
-
+                $cart->is_vendor_closed = $cartData[0]->is_vendor_closed;
                 //type must be a : delivery , takeaway,dine_in
                 $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
                 $closed_store_order_scheduled = (($slotsDate)?$duration->closed_store_order_scheduled:0);
