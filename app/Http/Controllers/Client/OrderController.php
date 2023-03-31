@@ -1583,7 +1583,7 @@ class OrderController extends BaseController
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
-
+            
 
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
@@ -1861,6 +1861,7 @@ class OrderController extends BaseController
             {
                 $dynamic = $orderVendorDetails->web_hook_code;
             }
+            dd("stop");
             $call_back_url = route('dispatch-order-update', $dynamic);
 
             $tasks = array();
@@ -1948,6 +1949,7 @@ class OrderController extends BaseController
                             $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                         }
                         $client = CP::orderBy('id', 'asc')->first();
+                        dd($vendor_details->order_pre_time);
                         Log::info("order Pre Time is ".$vendor_details->order_pre_time);
                         $postdata =  [
                             'order_number' =>  $order->order_number,
@@ -2082,6 +2084,7 @@ class OrderController extends BaseController
                 'vendor_name' => $vendor_details->name ?? null,
                 'tip_amount' => $order->tip_amount,
                 'payment_method' => $order->payment_method,
+                'order_pre_time'=>$vendor_details->order_pre_time
             ];
             //pr($postdata);
             if ($orderVendorDetails->is_restricted == 1) {
