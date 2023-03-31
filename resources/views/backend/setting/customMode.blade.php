@@ -373,17 +373,17 @@
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
    <label for="update_order_product_price" class="mr-2 mb-0">{{__('Order Update By Vendor')}}<small class="d-block pr-5">{{__("Enable to show edit button on order detail for vendor.")}}</small></label>
-  <span><input type="checkbox" data-plugin="switchery" name="update_order_product_price_switch" id="update_order_product_price_switch" class="form-control checkbox_change" data-className="update_order_product_price"  data-color="#43bee1" @if( @getAdditionalPreference(['update_order_product_price'])['update_order_product_price'] == '1') checked='checked' @endif>
+  <span><input type="checkbox" data-plugin="switchery" name="update_order_product_price_switch" id="update_order_product_price_switch" class="form-control checkbox_change" data-className="update_order_product_price"  data-color="#43bee1" @if( @$getAdditionalPreference['update_order_product_price'] == '1') checked='checked' @endif>
    </span>
-   <input type="hidden"  @if(@getAdditionalPreference(['update_order_product_price'])['update_order_product_price'] == 1) value="1" @else value="0" @endif  name="update_order_product_price"  id="update_order_product_price"/>
+   <input type="hidden"  @if(@$getAdditionalPreference['update_order_product_price'] == 1) value="1" @else value="0" @endif  name="update_order_product_price"  id="update_order_product_price"/>
 </div>
 </div>
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
     <label for="is_order_bid_switch" class="mr-2 mb-0">{{__('Enable Bidding')}}<small class="d-block pr-5">{{__("Enable to allow customers to bid on orders.")}}</small></label>
-    <span> <input type="checkbox" data-plugin="switchery" name="is_order_bid_switch" id="is_order_bid_switch" class="form-control checkbox_change" data-className="is_bid_enable" data-color="#43bee1" @if(@getAdditionalPreference(['is_bid_enable'])['is_bid_enable']==1) checked='checked' @endif>
+    <span> <input type="checkbox" data-plugin="switchery" name="is_order_bid_switch" id="is_order_bid_switch" class="form-control checkbox_change" data-className="is_bid_enable" data-color="#43bee1" @if(@$getAdditionalPreference['is_bid_enable']==1) checked='checked' @endif>
     </span>
-    <input type="hidden" @if(@getAdditionalPreference(['is_bid_enable'])['is_bid_enable']==1) value="1" @else value="0" @endif name="is_bid_enable" id="is_bid_enable" />
+    <input type="hidden" @if(@$getAdditionalPreference['is_bid_enable']==1) value="1" @else value="0" @endif name="is_bid_enable" id="is_bid_enable" />
 </div>
 </div>
 
@@ -444,10 +444,10 @@
                 name="is_long_term_service_switch" id="is_long_term_service_switch"
                 class="form-control checkbox_change"
                 data-className="is_long_term_service" data-color="#43bee1"
-                @if (@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == '1') checked='checked' @endif>
+                @if (@$getAdditionalPreference['is_long_term_service'] == '1') checked='checked' @endif>
         </span>
         <input type="hidden"
-            @if (@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1) value="1" @else value="0" @endif
+            @if (@$getAdditionalPreference['is_long_term_service'] == 1) value="1" @else value="0" @endif
             name="is_long_term_service" id="is_long_term_service" />
     </div>
 </div>
@@ -665,7 +665,6 @@
             </span>
     </div>
     </div>
-
     <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="is_admin_vendor_rating" class="mr-2 mb-0">{{__('Admin Vendor Rating')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
@@ -677,8 +676,8 @@
         <div class="col-md-4 ">
             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                 <label for="is_enable_compare_product" class="mr-2 mb-0">{{__('Compare Product')}}<small class="d-block pr-5">{{__("Enable Compare Product Option in Product Details Recomended For ECommerce.")}}</small></label>
-                <span> <input type="checkbox" data-plugin="switchery" name="is_enable_compare_product" id="is_enable_compare_product_switch" class="form-control checkbox_change" data-className="is_enable_compare_product"  data-color="#43bee1" @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] == 1) checked='checked' @endif>
+                <span> <input type="checkbox" data-plugin="switchery" name="is_enable_compare_product" id="is_enable_compare_product_switch" class="form-control checkbox_change" data-className="is_enable_compare_product"  data-color="#43bee1" @if($getAdditionalPreference['is_enable_compare_product'] == 1) checked='checked' @endif>
                 </span>
-                <input type="hidden"  @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] == 1) value="1" @else value="0" @endif  name="is_enable_compare_product"  id="is_enable_compare_product"/>
+                <input type="hidden"  @if($getAdditionalPreference['is_enable_compare_product'] == 1) value="1" @else value="0" @endif  name="is_enable_compare_product"  id="is_enable_compare_product"/>
             </div>
         </div>

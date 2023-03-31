@@ -70,6 +70,9 @@ class ClientPreferenceController extends BaseController{
         $accounting     = ThirdPartyAccounting::where('code','xero')->first();
 
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
+
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_influencer_refer_and_earn']);
+
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
                                                 'slots'=>$slots,
@@ -86,7 +89,9 @@ class ClientPreferenceController extends BaseController{
                                                 'file_types_driver' => $file_types_driver,
                                                 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
                                                 'productDeliveryFeeByRole'=> $productDeliveryFeeByRole,
-                                                'accounting'=> $accounting
+                                                'accounting'=> $accounting,
+                                                'getAdditionalPreference'=> $getAdditionalPreference,
+                                                
                                             ]);
     }
 

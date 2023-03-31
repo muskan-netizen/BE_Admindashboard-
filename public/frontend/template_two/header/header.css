@@ -479,6 +479,7 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
     line-height: 17px;
     font-size: 12px;
     text-transform: capitalize;
+    margin-right: 0!important;
 }
 .al_body_template_two .search_bar.menu-right .icon-nav{
     font-size:12px; 
