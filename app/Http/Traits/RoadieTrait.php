@@ -36,7 +36,6 @@ trait RoadieTrait{
   }
 
   public function createShipmentRoadie($data){
-    // dd($data);
     $this->configDetails();
     $path = '/v1/shipments';
     $response = Http::withHeaders([

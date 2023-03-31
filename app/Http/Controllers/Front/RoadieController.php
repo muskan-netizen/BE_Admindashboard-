@@ -86,7 +86,7 @@ class RoadieController extends Controller
     }
 
     public function createShipmentRequestRoadie($orderVendor, $checkOrderData){
-        $randomReferenceId = Str::random(4).$orderVendor->orderDetail->order_number;
+        $reference_id = "Refr".$orderVendor->orderDetail->order_number;
         $items = [];
         foreach($orderVendor->products as $vendorProduct){
             $items[] = [
@@ -100,7 +100,7 @@ class RoadieController extends Controller
             ];
         }
         $postData = [
-            "reference_id" => $randomReferenceId,
+            "reference_id" => $reference_id,
             "items" => $items,
             "pickup_location" => [
                 "address" => [
