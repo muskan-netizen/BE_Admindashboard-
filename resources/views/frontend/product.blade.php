@@ -70,6 +70,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     </style>
 
 @endsection
+@section('css-compare')
+@endsection
 
 @section('content')
 

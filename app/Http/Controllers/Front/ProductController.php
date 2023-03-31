@@ -261,7 +261,6 @@ class ProductController extends FrontController{
                 }
             }
 
-
             if( !empty($product->brand_id) ) {
                 $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
                 $suggested_brand_products = $suggested_product->where('brand_id', $product->brand_id)->orderby('id', 'desc')->limit(20)->get();

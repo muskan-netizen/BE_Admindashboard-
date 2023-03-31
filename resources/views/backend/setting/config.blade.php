@@ -1999,7 +1999,7 @@
 
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
                 @csrf
-
+                <input type="hidden" name="influencer_mode" value="1">
                 <div class="card-box h-100">
                     <div class="row">
                         <div class="col-12">
