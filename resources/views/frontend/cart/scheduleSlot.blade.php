@@ -24,11 +24,11 @@
                                 <input type="radio"
                                     class="custom-control-input check taskschedulebtn"
                                     id="taskschedule" name="tasktype" value=""
-                                    {{( $cart_details->schedule_type == 'schedule' && $cart_details->is_vendor_closed != 1 ) ? 'checked' : '' }}
-                                    style="{{ ( $cart_details->schedule_type == 'schedule' && $cart_details->is_vendor_closed != 1 ) ? '' : 'display:none!important' }}">
+                                    {{( $cart_details->schedule_type == 'schedule' || $cart_details->is_vendor_closed != 1 ) ? 'checked' : '' }}
+                                    style="{{ ( $cart_details->schedule_type == 'schedule' || $cart_details->is_vendor_closed != 1 ) ? '' : 'display:none!important' }}">
                                 <label class="btn btn-solid mb-0 taskschedulebtn"
                                     for="taskschedule"
-                                    style="{{ ( $cart_details->schedule_type == 'schedule' && $cart_details->is_vendor_closed != 1 ) ? '' : 'display:none!important' }}">{{ __('Schedule') }}</label>
+                                    style="{{ ( $cart_details->schedule_type == 'schedule' || $cart_details->is_vendor_closed != 1 ) ? '' : 'display:none!important' }}">{{ __('Schedule') }}</label>
                             </li>
                             @if ($cart_details->closed_store_order_scheduled != 1 && $cart_details->deliver_status == 0)
                                 <li class="close-window">
