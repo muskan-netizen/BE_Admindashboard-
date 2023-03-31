@@ -2384,7 +2384,7 @@ class CartController extends FrontController
                     $deliver_roadie_fee = $roadie->getEstimate($vendorData,$address);
                     if($deliver_roadie_fee['price'] > 0){
                         $deliver_charge_roadie = decimal_format($deliver_roadie_fee['price']);
-                        $optionDunzo[] = array(
+                        $optionRoadie[] = array(
                             'type'=>'RO',
                             'courier_name'=>__('Roadie'),
                             'rate' => $deliver_charge_roadie,
@@ -2395,7 +2395,7 @@ class CartController extends FrontController
                             'estimated_delivery_days' => 0,
                             'code' => 'RO_0'
                         );
-                        $option = $optionDunzo;
+                        $option = array_merge($option,$optionRoadie);
                     }
                 }
 

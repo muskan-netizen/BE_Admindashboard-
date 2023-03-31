@@ -44,9 +44,9 @@ class OrderProduct extends Model{
     }
     public function product(){
       if(checkColumnExists('products', 'returnable')){
-        return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id','minimum_duration_min','is_long_term_service', 'returnable', 'replaceable', 'return_days');
+        return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id','minimum_duration_min','is_long_term_service', 'returnable', 'replaceable', 'return_days', 'height', 'breadth', 'length', 'description');
       }else{
-        return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id','minimum_duration_min','is_long_term_service');
+        return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id','minimum_duration_min','is_long_term_service', 'height', 'breadth', 'length', 'description');
       }
     }
      public function variant(){

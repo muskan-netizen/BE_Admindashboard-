@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Stmt\TryCatch;
 use Log,DB;
+use Illuminate\Support\Str;
 
 class RoadieController extends Controller
 {
@@ -37,25 +38,18 @@ class RoadieController extends Controller
     }
 
     public function getEstimate($vendorData,$address){  
+        $items = [];
+        foreach($vendorData->vendorProducts as $vendorProduct){
+            $items[] = [
+                'weight' => $vendorProduct->product->weight,
+                'length' => $vendorProduct->product->length,
+                'width' => $vendorProduct->product->breadth,
+                'height' => $vendorProduct->product->height,
+                'quantity' => $vendorProduct->quantity
+            ];
+        }
         $postData = [
-            "items" => [
-                [
-                    "length" => 1.0,
-                    "width" => 1.0,
-                    "height" => 1.0,
-                    "weight" => 1.0,
-                    "value" => 20.00,
-                    "quantity" => 1
-                ],
-                [
-                    "length" => 1.0,
-                    "width" => 1.0,
-                    "height" => 1.0,
-                    "weight" => 1.0,
-                    "value" => 20.00,
-                    "quantity" => 1
-                ]
-            ],
+            "items" => $items,
             "pickup_location" => [
                 "address" => [
                     "name" => $vendorData->vendor->address,
@@ -86,77 +80,78 @@ class RoadieController extends Controller
                 "end" => date('Y-m-d H:i:s', strtotime('+5 days'))
             ]
         ];
-        // pr($postData);
+        // dd($postData);
         $quotation = $this->getQuotations($postData);
         return $quotation;
     }
 
-
-    public function quotation(Request $request)
-    {
-    	$data = (object) array(
-            "pick_lat"=> "3.115825684565",
-            "pick_lng"=> "101.666775521484",
-            "pick_address"=> "Malaysia",
-            "vendor_name"=> "General Electric",
-            "vendor_contact"=> "8965745236",
-            "drop_lat"=> "3.229537972256",
-            "drop_lng"=> "101.730552380616",
-            "drop_address"=> "6PHJ+R6 Kuala Lumpur, Federal Territory of Kuala Lumpur, Malaysia",
-            "user_name"=> "Xavier Ross",
-            "user_phone"=> "+41767250736",
-            "remarks"=> "Delivery vendor message remarks"
-        );
-        $quotation = $this->getQuotations($data);
-        return $quotation;
-    }
-
-
-    public function getDeliveryFeeLalamove($vendor_id)
-    {
-        try{    
-
-                $customer = User::find(Auth::id());
-                $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
-                if ($cus_address && $this->lalamove_status==1){
-
-                    $vendor_details = Vendor::find($vendor_id);
-                    $data = (object) array(
-                        'pick_lat' => $vendor_details->latitude,
-                        'pick_lng' => $vendor_details->longitude,
-                        'pick_address' => $vendor_details->address,
-                        'vendor_name' => $vendor_details->name,
-                        // 'vendor_contact' => $vendor_details->phone_no,
-                        'vendor_contact' => '3768865552',
-                        'drop_lat' => $cus_address->latitude,
-                        'drop_lng' => $cus_address->longitude,
-                        'drop_address' => $cus_address->address,
-                        'user_name' => $customer->name,
-                        'user_phone' => $customer->phone_number,
-                        'remarks' => 'Delivery vendor message remarks'
-                    );
-            
-                    $quotation = $this->getQuotations($data);
-                    $actualAmount=0;
-                    if($quotation['code']!='409')
-                    { 
-                        $json = json_decode($quotation['response']);
-                        $distance =  round($json->distance->value/1000);
-                        if($this->base_price > 0)
-                        {
-                            $actualAmount = getBaseprice($distance);
-                         }else{
-                            $actualAmount = $json->totalFee;
-                        }
-                    }
-                    //dd($actualAmount);
-                    return $actualAmount;
-                }
-            
-        }catch(\Exception $e)
-        {
-            return 0;
+    public function createShipmentRequestRoadie($orderVendor, $checkOrderData){
+        $randomReferenceId = Str::random(4).$orderVendor->orderDetail->order_number;
+        $items = [];
+        foreach($orderVendor->products as $vendorProduct){
+            $items[] = [
+                "description" => $vendorProduct->product->description??"Item description",
+                'weight' => $vendorProduct->product->weight,
+                'length' => $vendorProduct->product->length,
+                'width' => $vendorProduct->product->breadth,
+                'height' => $vendorProduct->product->height,
+                'quantity' => $vendorProduct->quantity,
+                'value' => $vendorProduct->price
+            ];
         }
-
+        $postData = [
+            "reference_id" => $randomReferenceId,
+            "items" => $items,
+            "pickup_location" => [
+                "address" => [
+                    "name" => $orderVendor->vendor->name??'',
+                    "street1" => $orderVendor->vendor->address??'',
+                    "street2" => null,
+                    "city" => $orderVendor->vendor->city??'',
+                    "state" => $orderVendor->vendor->state??'',
+                    "zip" => $orderVendor->vendor->pincode??'',
+                    "latitude"=> $orderVendor->vendor->latitude??'',
+                    "longitude"=> $orderVendor->vendor->longitude??''
+                ],
+                "contact" => [
+                    "name" => $orderVendor->vendor->name,
+                    "phone" => $orderVendor->vendor->phone_no
+                ],
+                "notes" => null
+            ],
+            "delivery_location" => [
+                "address" => [
+                    "name" => $checkOrderData->address->house_number,
+                    "store_number" => null,
+                    "street1" => $checkOrderData->address->address,
+                    "street2" => null,
+                    "city" => $checkOrderData->address->city,
+                    "state" => $checkOrderData->address->state,
+                    "zip" => $checkOrderData->address->pincode,
+                    "latitude"=> $checkOrderData->address->latitude,
+                    "longitude"=> $checkOrderData->address->longitude
+                ],
+                "contact" => [
+                    "name" => $checkOrderData->user->name,
+                    "phone" => $checkOrderData->user->phone_number
+                ],
+                "notes" => null
+            ],
+            "pickup_after" => date('Y-m-d H:i:s'),
+            "deliver_between" => [
+                "start" => date('Y-m-d H:i:s', strtotime('+1 days')),
+                "end" => date('Y-m-d H:i:s', strtotime('+5 days'))
+            ],
+            "options" => [
+                "signature_required" => true,
+                "notifications_enabled" => false,
+                "over_21_required" => false,
+                "extra_compensation" => 5.0,
+                "trailer_required" => false,
+                "decline_insurance" => true
+            ]
+        ];
+        $response = $this->createShipmentRoadie($postData);
+        return $response;
     }    
 }

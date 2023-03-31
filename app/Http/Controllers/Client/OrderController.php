@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
+use App\Http\Controllers\Front\RoadieController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
@@ -1023,7 +1024,7 @@ class OrderController extends BaseController
         $orderVendorProductIds = $request->order_vendor_product_id??[];
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-         try {
+        //  try {
 
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
@@ -1111,6 +1112,9 @@ class OrderController extends BaseController
                     } elseif ($orderData->shipping_delivery_type == 'SH') {
                         //Create Shipping place order request for Shippo Masa
                         $orderPlaced = $this->placeOrderRequestShippo($request);
+                    }elseif ($orderData->shipping_delivery_type == 'RO') {
+                        //Create Roadies place order request for Roadies
+                        $orderPlaced = $this->placeOrderRequestRoadies($request);
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
@@ -1236,13 +1240,13 @@ class OrderController extends BaseController
                 'status' => 'error',
                 'message' =>__('Order has already updated!!!')
             ]);
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
     }
 
     public function changeVendorProductStatus(Request $request, $domain = '')
@@ -1343,6 +1347,18 @@ class OrderController extends BaseController
         }
 
         return 2;
+    }
+
+    public function placeOrderRequestRoadies($request){
+        $roadie = new RoadieController();
+        $checkdeliveryFeeAdded = OrderVendor::with(['vendor', 'products.product', 'orderDetail'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        // dd($checkdeliveryFeeAdded);
+        $checkOrderData = Order::with(['vendors.products.product', 'user', 'address'])->findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 )) {
+            $order_ship_roadie = $roadie->createShipmentRequestRoadie($checkdeliveryFeeAdded, $checkOrderData);
+            return $order_ship_roadie;
+        }
+        return false;
     }
 
     public function placeOrderRequestKwikApi($request)
