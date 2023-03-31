@@ -1583,7 +1583,7 @@ class OrderController extends BaseController
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
-
+            
 
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
@@ -2082,6 +2082,7 @@ class OrderController extends BaseController
                 'vendor_name' => $vendor_details->name ?? null,
                 'tip_amount' => $order->tip_amount,
                 'payment_method' => $order->payment_method,
+                'order_pre_time'=>$vendor_details->order_pre_time
             ];
             //pr($postdata);
             if ($orderVendorDetails->is_restricted == 1) {
@@ -3165,7 +3166,6 @@ class OrderController extends BaseController
                 // ->where('user_id', 2)
                 ->where('id', 11)
                 ->get();
-                dd($orders->toArray());
                 $cart_details = Cart::with('cartProducts')->where('user_id', 2)->first();
         // dd($orders->toArray());
         $product_details = [];
@@ -3238,7 +3238,6 @@ class OrderController extends BaseController
         $order_vendor = OrderVendor::where('order_id', 47)->first();
         $order_vendor->order_status_option_id = rand();
         $order_vendor->save();
-        dd($order_vendor);
     }
 
 
