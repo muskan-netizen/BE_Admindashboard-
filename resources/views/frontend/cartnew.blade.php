@@ -119,6 +119,14 @@ font-size: 12px;padding: 6.7px 10px;}
 .dark .coupon_box img.blur-up.lazyloaded{background-color: #fff;opacity: 1;padding: 0 4px;border-radius: 25px;}
 .login-form #schedule_div input{display:block;width: 100% !important;}
 .login-form #schedule_div input::-webkit-calendar-picker-indicator{color: rgba(0, 0, 0, 0);opacity: 1}
+.cart_login_popop .modal-header h5 {font-size: 18px;font-weight: 600;text-transform: capitalize;}
+.cart_login_popop input{border-radius: 3px;}
+.cart_login_popop .new-user{text-align: center;padding: 30px 0px 0px 0px;}
+.cart_login_popop .login_continue_btn{border-radius: 3px !important;}
+.cart_login_popop  .login-button{font-size: 16px;}
+.cart_login_popop .login_continue_btn{font-size: 16px;}
+
+
 /*------cart page css end here------ */
 @media (max-width:576px){
 .al_body_template_two .show-prescription-doc {width:100%;}
@@ -741,7 +749,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
                     <input type="hidden" id="countryData" name="countryData" value="{{ strtolower(Session::get('default_country_code','US')) }}">
 
-                    <div class="login-with-username">
+                    <div class="login-with-username cart_login_popop">
                         <div class="modal-header px-0 pt-0">
                             <h5 class="modal-title">{{ __('Log in') }}</h5>
                             <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
@@ -799,8 +807,8 @@ $client_preferences = \App\Models\ClientPreference::first();
                         @endif
                         @endif
 
-                        <div class="divider-line mb-2"></div>
-                        <p class="new-user mb-0">New to {{getClientDetail()->company_name}}? <a href="{{route('customer.register')}}">Create an
+                        {{-- <div class="divider-line mb-2"></div> --}}
+                        <p class="new-user mb-0"><a href="{{route('customer.register')}}">Create an
                                 account</a></p>
                     </div>
                     {{-- <div class="login-with-mail">

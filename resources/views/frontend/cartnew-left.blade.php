@@ -10,10 +10,12 @@
     }
 @endphp
 <div class="row mb-sm-2 mb-1">
-    <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
+    <div @if (Auth::check()) user_id={{Auth::user()->id}}
+        
+      @endif class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
         <h4 class="page-title m-0">{{ __($label)  }} {{ __('Address') }}</h4>
         @if(!in_array($action , ['dine_in','takeaway','appointment']))
-            <a class="add-address ml-auto" href="#add_new_address_form" data-toggle="modal" data-target="#add_new_address_form_modal">
+            <a class="add-address ml-auto" href="#add_new_address_form">
                 <i class="fa fa-plus mr-1" aria-hidden="true"></i>
                 <!-- {{__('Add New Address')}} -->
             </a>
@@ -121,7 +123,7 @@
                 <div class="delivery_box cart_delivery p-2 mb-sm-3 mb-1 position-relative">
 
                      @if(!empty(Auth::user()))
-                        <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                        <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil-square-o" aria-  n="true"></i></a>
                         <!-- <span>{{ __('Edit') }} {{( __('Address') }}</span> -->
                         @endif
                     <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
