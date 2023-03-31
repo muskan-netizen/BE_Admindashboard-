@@ -1861,7 +1861,6 @@ class OrderController extends BaseController
             {
                 $dynamic = $orderVendorDetails->web_hook_code;
             }
-            dd("stop");
             $call_back_url = route('dispatch-order-update', $dynamic);
 
             $tasks = array();
@@ -1949,7 +1948,6 @@ class OrderController extends BaseController
                             $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                         }
                         $client = CP::orderBy('id', 'asc')->first();
-                        dd($vendor_details->order_pre_time);
                         Log::info("order Pre Time is ".$vendor_details->order_pre_time);
                         $postdata =  [
                             'order_number' =>  $order->order_number,
@@ -3168,7 +3166,6 @@ class OrderController extends BaseController
                 // ->where('user_id', 2)
                 ->where('id', 11)
                 ->get();
-                dd($orders->toArray());
                 $cart_details = Cart::with('cartProducts')->where('user_id', 2)->first();
         // dd($orders->toArray());
         $product_details = [];
@@ -3241,7 +3238,6 @@ class OrderController extends BaseController
         $order_vendor = OrderVendor::where('order_id', 47)->first();
         $order_vendor->order_status_option_id = rand();
         $order_vendor->save();
-        dd($order_vendor);
     }
 
 
