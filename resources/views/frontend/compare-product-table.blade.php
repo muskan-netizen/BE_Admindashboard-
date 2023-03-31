@@ -21,10 +21,10 @@
         <table class="table table-border" id="compare_table">
                 <thead>
                         <tr>
-                            <td>#S.No</td>
+                            {{-- <td>S.No</td> --}}
                             <td>Image</td>
-                            <td>Rating</td>
                             <td>Name</td>
+                            <td>Rating</td>
                             <td>Amount</td>
                             <td>Description</td>
                             <td>Seller Name</td>
@@ -41,16 +41,16 @@
                                 $product_image = $image_fit . '50/50' . $image_path;
                             }
                         @endphp
-                        <td>#1</td>
+                        {{-- <td>#1</td> --}}
                         <td><a target="_blank"
                             href="{{ route('productDetail', [$product->vendor->slug, $product->url_slug]) }}"><img src="{{$product_image??'N/A'}}" style="width:50px" /></a></td>
-                        <td><span>{{ number_format($product->averageRating, 1, '.', '') }}
-                            </span>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                        </td>
+                        
                         <td>{{(($product->translation->first())?$product->translation->first()->title:$product->title)}}</td>
+                        <td><span>{{ number_format($product->averageRating, 1, '.', '') }}
+                        </span>
+                            <i class="fa fa-star" aria-hidden="true"></i>
+                        </td>
                         <td>{{decimal_format($product->variant->first()->price * $product->variant->first()->multiplier)}}</td>
-
                         <td> {!!
                             $product->translation->first()->body_html?? 'N/A'
                             !!}</td>
@@ -74,17 +74,17 @@
                         $product_image = $image_fit . '50/50' . $image_path;
                     }
                 @endphp
-                <td>#{{$key+1}}</td>
+                {{-- <td>#{{$key+1}}</td> --}}
                 <td><a target="_blank"
                     href="{{ route('productDetail', [$cproduct->vendor->slug, $cproduct->url_slug]) }}"><img src="{{$product_image??'N/A'}}" style="width:50px" /></a></td>
-                <td><span>{{ number_format($cproduct->averageRating, 1, '.', '') }}
+                    <td>{{(($cproduct->translation->first())?$cproduct->translation->first()->title:$cproduct->title)}}</td>
+                    <td><span>{{ number_format($cproduct->averageRating, 1, '.', '') }}
                     </span>
                         <i class="fa fa-star" aria-hidden="true"></i>
-                </td>
-                <td>{{(($cproduct->translation->first())?$cproduct->translation->first()->title:$cproduct->title)}}</td>
-                <td>{{decimal_format($cproduct->variant->first()->price * $cproduct->variant->first()->multiplier)}}</td>
+                    </td>
+                    <td>{{decimal_format($cproduct->variant->first()->price * $cproduct->variant->first()->multiplier)}}</td>
 
-                <td> {!!
+                    <td> {!!
                     $cproduct->translation->first()->body_html?? 'N/A'
                     !!}</td>
                     <td><a href="{{route('vendorDetail',[$cproduct->vendor->slug])}}"> {{$cproduct->vendor->name}}</a></td>

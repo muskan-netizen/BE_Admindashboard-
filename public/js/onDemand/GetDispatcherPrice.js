@@ -72,8 +72,7 @@ $(document).on('click','#search_Driver_fee',async function(e){
    await getDiverPrice(Driver_price_formData)
 })
 async function getDiverPrice(formData){
-    
-    
+    formData._token =  $('meta[name="csrf-token"]').attr('content');
      axios.post(`/get_price_from_dispatcher`, formData)
         .then(async response => {
          console.log(response.data);
@@ -165,6 +164,7 @@ $(document).on('change','#onDemandBookingdate',function(e){
 })
 
 async function getGerenalSlot(formData){
+    formData._token =  $('meta[name="csrf-token"]').attr('content');
     axios.post(`/get_gerenal_slot`, formData)
     .then(async response => {
         if(response.data.status == "Success"){
@@ -203,6 +203,18 @@ $(document).on('click','.dispatcherAgent',function(e){
     var address_id      = OrderSessionStorage.getStorage('address_id');
     var slot            = OrderSessionStorage.getStorage('slot');
     let that            = JSON.parse(OrderSessionStorage.getStorage('this'));
+    var cart_agent_id    = OrderSessionStorage.getStorage('dispatcher_agent_id');
+    console.log(agent_id);
+    console.log(cart_agent_id);
+    if(cart_agent_id && (agent_id != cart_agent_id)){
+        Swal.fire({
+            title: _language.getLanString('Warning!'),
+            text: _language.getLanString('Please select the service of same provider'),
+            icon: 'warning',
+          });
+          return false;
+    }
+    
     var dispatcherAgentData ={
         "agent_price"     : agent_price,
         "agent_id"        : agent_id,

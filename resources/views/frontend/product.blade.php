@@ -777,9 +777,11 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </li>
                                                 @endif
 
+                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
                                                 <li class="nav-item ml-3"><a class="nav-link {{(count($rating_details)>0)?'':'active'}}" id="compare-product-tab" data-toggle="tab" href="#compare-product" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Compare products')}}</a>
                                                     <div class="material-border"></div>
                                                 </li>
+                                @endif
                                             </ul>
                                             <div class="tab-content nav-material" id="top-tabContent">
                                                 {{-- <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
@@ -824,8 +826,11 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     <p>{{__('No Reviews Yet')}}</p>
                                                     @endforelse
                                                 </div>
-                                                @include('frontend.compare-product-table')
 
+                                                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
+                                                    @include('frontend.compare-product-table')
+                                                @endif
+                                                
                                             </div>
                                         </div>
                                     </div>
