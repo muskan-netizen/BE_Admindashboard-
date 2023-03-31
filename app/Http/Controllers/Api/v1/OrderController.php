@@ -451,7 +451,7 @@ class OrderController extends BaseController
                                     if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
                                         $tax_category_ids[] = $tax_rate_detail->id;
                                     }
-                                    $rate = round($tax_rate_detail->tax_rate);
+                                    $rate = $tax_rate_detail->tax_rate;
                                     $tax_amount = ($price_in_dollar_compare * $rate) / 100;
                                     $product_tax = ($quantity_price+$productAddon_price) * $rate / 100;
                                     $taxable_amount = $taxable_amount + $product_tax;
@@ -499,7 +499,7 @@ class OrderController extends BaseController
                            
 
                             //$taxable_amount += $product_taxable_amount;
-                            $vendor_taxable_amount += $taxable_amount;
+                            $vendor_taxable_amount += decimal_format($taxable_amount);
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $variant_price = $variant->price;
                             // change variant_price price when is_service_product_price_from_dispatch on 

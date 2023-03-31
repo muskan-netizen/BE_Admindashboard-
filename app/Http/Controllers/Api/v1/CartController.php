@@ -155,7 +155,7 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
-     
+        
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
@@ -200,6 +200,16 @@ class CartController extends BaseController
             } else {
                 $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
                 $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+            }
+            $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+            if( ($luxury_option->id == 6) && ($additionalPreference['is_service_product_price_from_dispatch'] ==1) ){
+                $CartProduct = CartProduct::where(['cart_id' => $cart_detail->id])->select('id','dispatch_agent_id')->first();
+                $dispatcherAgentData= $request->has('dispatcherAgentData') ? $request->dispatcherAgentData : [];
+                $request_dispatch_agent_id = isset($dispatcherAgentData['agent_id'] ) ?  $dispatcherAgentData['agent_id']: "";
+              
+                if($CartProduct &&  ( $CartProduct->dispatch_agent_id != $request_dispatch_agent_id)){
+                    return $this->errorResponse('Please select the service of same provider', 404);
+                }
             }
 
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
@@ -718,7 +728,7 @@ class CartController extends BaseController
             }, 'vendorProducts.product.taxCategory.taxRate',
         ]);
 
-        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
 
         $taxes=TaxRate::all();
         $taxRates=array();
@@ -1076,7 +1086,7 @@ class CartController extends BaseController
 
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
-                                    $rate = round($tax_value->tax_rate);
+                                    $rate = $tax_value->tax_rate;
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
                                     if(!$additionalPreferences->is_tax_price_inclusive){
                                         $product_tax = ($quantity_price) * $rate / 100;
@@ -1084,8 +1094,8 @@ class CartController extends BaseController
                                         $product_tax = (($quantity_price)  * $rate) / (100 + $rate);
                                     }
                                     $taxData[$tckey]['rate'] = $rate;
-                                    $taxData[$tckey]['tax_amount'] = $tax_amount;
-                                    $taxData[$tckey]['product_tax'] = $product_tax;
+                                    $taxData[$tckey]['tax_amount'] = decimal_format($tax_amount);
+                                    $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
                                     $taxable_amount = $taxable_amount + $product_tax;
                                     $taxData[$tckey]['sku'] = ucfirst($prod->pvariant->sku);
                                     $taxData[$tckey]['identifier'] = $tax_value->identifier;
@@ -1333,7 +1343,7 @@ class CartController extends BaseController
                 $vendorData->vendor_gross_total = $payable_amount;
                 $vendorData->discount_amount = $discount_amount;
                 $vendorData->discount_percent = $discount_percent;
-                $vendorData->taxable_amount = $taxable_amount;
+                $vendorData->taxable_amount = decimal_format($taxable_amount);
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
                 $vendorData->isDeliverable = 1;
                 $total_paying = $total_paying + $payable_amount ;
@@ -1637,7 +1647,7 @@ class CartController extends BaseController
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = $total_paying - ($total_disc_amount + $loyalty_amount_saved);
+            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) - ($total_disc_amount + $loyalty_amount_saved);
         }
         //Log::info("total_payable_amount 1".$total_taxable_amount);
         /* if($total_taxable_amount>0){
