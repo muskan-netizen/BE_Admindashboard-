@@ -94,6 +94,7 @@ class RoadieController extends Controller
 
     public function createShipmentRequestRoadie($orderVendor, $checkOrderData){
         try {
+            $date = $checkOrderData->scheduled_date_time ?? date('Y-m-d H:i:s');
             $reference_id = "Refr".$orderVendor->orderDetail->order_number;
             $items = [];
             foreach($orderVendor->products as $vendorProduct){
@@ -145,10 +146,10 @@ class RoadieController extends Controller
                     ],
                     "notes" => null
                 ],
-                "pickup_after" => date('Y-m-d H:i:s'),
+                "pickup_after" => $date,
                 "deliver_between" => [
-                    "start" => date('Y-m-d H:i:s', strtotime('+1 days')),
-                    "end" => date('Y-m-d H:i:s', strtotime('+5 days'))
+                    "start" => date('Y-m-d H:i:s', strtotime($date. '+1days')),
+                    "end" => date('Y-m-d H:i:s', strtotime($date. ' +5days'))
                 ],
                 "options" => [
                     "signature_required" => true,

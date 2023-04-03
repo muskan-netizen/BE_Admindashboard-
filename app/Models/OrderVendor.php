@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OrderVendor extends Model{
     use HasFactory;
     const CANCEL_STATUS = 'Cancelled';
-	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url','delivery_response'];
+	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url','delivery_response', 'roadie_tracking_url'];
 	
 	public function orderDetail(){
 	    return $this->hasOne('App\Models\Order' , 'id', 'order_id'); 

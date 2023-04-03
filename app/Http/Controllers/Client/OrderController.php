@@ -1356,7 +1356,14 @@ class OrderController extends BaseController
         $checkOrderData = Order::with(['vendors.products.product', 'user', 'address'])->findOrFail($request->order_id);
         if (@$checkOrderData) {
             $order_ship_roadie = $roadie->createShipmentRequestRoadie($orderData, $checkOrderData);
-            return $order_ship_roadie;
+            if ($order_ship_roadie) {
+                $roadie_tracking_url = "https://www.roadie.com/tracking?tracking_number=".$order_ship_roadie->tracking_number;
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrderData->id, 'vendor_id' => $request->vendor_id])
+                    ->update([
+                        'roadie_tracking_url' => $roadie_tracking_url
+                    ]);
+                return 1;
+            }
         }
         return false;
     }
