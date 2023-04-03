@@ -2843,8 +2843,7 @@ $(document).ready(function () {
         $('#add_new_address_form').hide();
     });
     $(document).on("click", "#add_new_address_btn", function () {
-        var id= $(this).attr('user_id');
-        if(id!=null){
+        if(auth){
         $(this).hide();
         initialize();
         $("#add_new_address_form_modal").modal('show');
