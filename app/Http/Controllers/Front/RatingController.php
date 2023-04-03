@@ -103,7 +103,7 @@ class RatingController extends FrontController{
                 if($n != 0 && $max != 0 ){
                     $Average_rating = $max / $n;
                 }
-             
+                $rating['rating'] =  $Average_rating;
                 $postdata['attribute']  = $attribute;
                 $postdata['Rating_types']  =$rating_type;
                 $postdata['Rating']  = $rating;

@@ -1994,7 +1994,7 @@ class VendorController extends BaseController{
         $langId = $user->language;
         $currency_id = $user->currency;
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude','subscription_mode')->first();
         $latitude = $request->latitude;
         $longitude = $request->longitude;
         $limit = $request->has('limit') ? $request->limit : 12;
@@ -2007,16 +2007,8 @@ class VendorController extends BaseController{
         $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
         $type = $request->has('type') ? $request->type : 'delivery';
-        if ($request->has('type')) {
-            if (empty($request->type)) {
-                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
-            } else {
-                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($request->type, 1);
-                $type = $request->type;
-            }
-        } else {
-            $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
-        }
+        $vendorData = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+  
 
         $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
 

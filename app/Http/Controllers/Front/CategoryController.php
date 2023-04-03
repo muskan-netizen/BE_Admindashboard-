@@ -16,9 +16,10 @@ use App\Http\Controllers\Front\FrontController;
 use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order,CaregoryKycDoc,Rider, Attribute};
 use Redirect;
 use Log;
+use \App\Http\Traits\{VendorTrait};
 class CategoryController extends FrontController{
     private $field_status = 2;
-    use \App\Http\Traits\DispatcherSlot;
+    use \App\Http\Traits\DispatcherSlot,VendorTrait;
 
     /**
      * Display product and vendor list By Category id
@@ -27,7 +28,8 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0)
     {
-        $preferences = Session::get('preferences');
+        //$preferences = Session::get('preferences');
+        $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $category = Category::with(['tags', 'brands.translation' => function($q) use($langId){
@@ -106,7 +108,9 @@ class CategoryController extends FrontController{
             $vendorIds = $vendors;
         }else{
             $vendorIds = array();
-            $vendorList = Vendor::select('id', 'name')->where('status', '!=', $this->field_status)->get();
+            $vendorList = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
+           
+            $vendorList = $vendorList->get();
             if(!empty($vendorList)){
                 foreach ($vendorList as $key => $value) {
                     $vendorIds[] = $value->id;
@@ -227,8 +231,10 @@ class CategoryController extends FrontController{
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
 
         if(strtolower($type) == 'vendor'){
-            $preferences= ClientPreference::first();
-            $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
+            //$preferences= ClientPreference::first();
+            $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();;
+            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
+           
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
                 $longitude = Session::get('longitude') ?? $preferences->Default_longitude;
@@ -671,8 +677,8 @@ class CategoryController extends FrontController{
             $product = $this->productDetail($request->product_id);
           
             $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
-            $is_slot_from_dispatch = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_slot_from_dispatch  : '') : '';
-            $show_dispatcher_agent = checkColumnExists('products', 'is_show_dispatcher_agent') ? ($product ? $product->is_show_dispatcher_agent  : '') :' ';
+            $is_slot_from_dispatch = $product ? $product->is_slot_from_dispatch  : '';
+            $show_dispatcher_agent = $product ? $product->is_show_dispatcher_agent  : '';
           
             $last_mile_check       = $product ? $product->Requires_last_mile  : '';
             $vendorStartDate       = $vendorStartTime  = '';

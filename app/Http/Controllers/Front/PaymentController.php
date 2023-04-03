@@ -71,14 +71,11 @@ class PaymentController extends FrontController{
             // }
         }
         $checkCod = '';
-        $payCoulmn = checkColumnExists('carts','payable_amount');
-        if($payCoulmn){
-            $codMinAmount = PaymentOption::select('credentials')->where('code','cod')->value('credentials');
-            $cod = json_decode($codMinAmount);
-            if(isset($cod->cod_min_amount) && ($cod->cod_min_amount>0 && $cart->payable_amount < $cod->cod_min_amount))
-            {
-                $checkCod = 'cod';
-            }
+        $codMinAmount = PaymentOption::select('credentials')->where('code','cod')->value('credentials');
+        $cod = json_decode($codMinAmount);
+        if(isset($cod->cod_min_amount) && ($cod->cod_min_amount>0 && $cart->payable_amount < $cod->cod_min_amount))
+        {
+            $checkCod = 'cod';
         }
         $ex_codes = ['cod'];
         //mohit sir branch code added by sohail

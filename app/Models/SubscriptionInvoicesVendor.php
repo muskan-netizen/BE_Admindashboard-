@@ -29,4 +29,7 @@ class SubscriptionInvoicesVendor extends Model
     public function payment(){
         return $this->hasOne('App\Models\Payment', 'vendor_subscription_invoice_id', 'id'); 
     }
+    public function orders(){
+        return $this->hasMany('App\Models\OrderVendor', 'subscription_invoices_vendor_id', 'id')->where('order_status_option_id',5);
+    }
 }

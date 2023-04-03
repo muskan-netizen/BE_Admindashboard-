@@ -343,7 +343,7 @@ class CartController extends FrontController
             //items already ordered in case order is being edit in cart
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
              /** if product is not lonf term */
-            if(checkColumnExists('products','is_long_term_service') && $productDetail->is_long_term_service !=1){
+            if($productDetail->is_long_term_service !=1){
                 /** if product type is not equal to on demand and appointment
                  **/
 
@@ -458,7 +458,9 @@ class CartController extends FrontController
                 'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
             ];
              //Check if 
+
             if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) ){
+
                
                 $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $slot    = $request->dispatcherAgentData['slot'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
@@ -471,11 +473,9 @@ class CartController extends FrontController
             }
 
             //Check if BidId and bid dicount coulmn exists in table
-            if(checkColumnExists('cart_products','bid_number')){
-                $cart_product_detail['bid_number'] =@$request->bid_number??null;
-                $cart_product_detail['bid_discount'] =@$request->bid_discount??null;
-                // dd($request->bid_number);
-            }
+            
+            $cart_product_detail['bid_number'] =@$request->bid_number??null;
+            $cart_product_detail['bid_discount'] =@$request->bid_discount??null;
 
             $recurringformPost = '';
             if(isset($request->recurringformPost) && !empty($request->recurringformPost))
@@ -484,16 +484,11 @@ class CartController extends FrontController
                 $recurringformPost = $this->recurringCalculationFunction($request);
 
                  //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
-                if(checkColumnExists('cart_products','recurring_booking_type')){
-                    $cart_product_detail['recurring_booking_type']  =@$recurringformPost->action??null;
-                    $cart_product_detail['recurring_week_day']      =@$recurringformPost->weekTypes??null;
-                    $cart_product_detail['recurring_week_type']     =@$recurringformPost->weekTypes??null;
-                    $cart_product_detail['recurring_day_data']      =@$recurringformPost->selectedCustomdates??null;
-                    $cart_product_detail['recurring_booking_time']  =@$recurringformPost->schedule_time??null;
-                    
-                    // dd($request->bid_number);
-                }
-
+                $cart_product_detail['recurring_booking_type']  =@$recurringformPost->action??null;
+                $cart_product_detail['recurring_week_day']      =@$recurringformPost->weekTypes??null;
+                $cart_product_detail['recurring_week_type']     =@$recurringformPost->weekTypes??null;
+                $cart_product_detail['recurring_day_data']      =@$recurringformPost->selectedCustomdates??null;
+                $cart_product_detail['recurring_booking_time']  =@$recurringformPost->schedule_time??null;
             }
 
 
@@ -503,7 +498,7 @@ class CartController extends FrontController
             $checkLongTermService = CartProduct::where('cart_id', $cart_detail->id)->with('product')->first();
             $isLongTermService  = 0;
 
-            if(checkColumnExists('products','is_long_term_service') && !empty($checkLongTermService->product)){
+            if($checkLongTermService && isset($checkLongTermService->product) ){
                 $isLongTermService = $checkLongTermService->product->is_long_term_service ;
             }
 
@@ -576,10 +571,8 @@ class CartController extends FrontController
                 $cartProduct->quantity = $cartProduct->quantity + $request->quantity;
 
                  //Check if BidId and bid dicount coulmn exists in table
-                if(checkColumnExists('cart_products','bid_number')){
-                    $cartProduct->bid_number = @$request->bid_number??null;
-                    $cartProduct->bid_discount = @$request->bid_discount??null;
-                }
+                $cartProduct->bid_number = @$request->bid_number??null;
+                $cartProduct->bid_discount = @$request->bid_discount??null;
 
                 $cartProduct->save();
             }
@@ -1986,18 +1979,10 @@ class CartController extends FrontController
         if(!empty($cartProd)){
             $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
             if($cartpro_count == 0){
-                if(checkColumnExists('carts','order_id'))
-                {
-                    Cart::where('id', $cartProd->cart_id)->update([
+                Cart::where('id', $cartProd->cart_id)->update([
                         'schedule_type' => null, 'scheduled_date_time' => null,
                         'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null, 'order_id' => NULL
                     ]);
-                }else{
-                    Cart::where('id', $cartProd->cart_id)->update([
-                        'schedule_type' => null, 'scheduled_date_time' => null,
-                        'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
-                    ]);
-                }
             }
         }
 
@@ -2086,7 +2071,7 @@ class CartController extends FrontController
         $schedule_datetime_del = '';
         if ($user) {
             $cart = Cart::where('status', '0')->where('user_id', $user->id);
-            if($getAdditionalPreference['is_gift_card']==1 && checkColumnExists('carts', 'gift_card_id') ){
+            if($getAdditionalPreference['is_gift_card']==1){
 
                 $cart =  $cart->select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','gift_card_id','order_id','address_id')->with('giftCard');
             }else{
@@ -2099,13 +2084,7 @@ class CartController extends FrontController
             //pr($cart->toArray());
 
         } else {
-            if(checkColumnExists('carts','order_id'))
-            {
-                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
-            }else{
-                $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type','address_id')->with(['coupon.promo'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
-            }
-
+            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
 
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;

@@ -137,11 +137,10 @@ class VendorController extends BaseController
                 return $offers ;
             })
             ->addColumn('instant_booking_level', function ($row) use ($getAdditionalPreference) {
-                if(checkColumnExists('vendors', 'is_vendor_instant_booking')){
-                    if($getAdditionalPreference['is_one_push_book_enable'] == 1 && $row->is_vendor_instant_booking == 1){
-                        return __("Instant Booking");
-                    }
+                if($getAdditionalPreference['is_one_push_book_enable'] == 1 && $row->is_vendor_instant_booking == 1){
+                    return __("Instant Booking");
                 }
+            
                 return '';
             })
             ->addIndexColumn()
@@ -977,9 +976,7 @@ class VendorController extends BaseController
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
          $need_sync_with_order = 0;
-        if(checkColumnExists('vendors', 'need_sync_with_order')){
-            $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
-        }
+        $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
 
         // pr($product->get()->toArray());
         $datatable = Datatables::of($product)
@@ -1007,11 +1004,10 @@ class VendorController extends BaseController
                     $live_status = __('Blocked');
                 }
                 
-                if(checkColumnExists('vendors', 'is_vendor_instant_booking') && checkColumnExists('products', 'is_product_instant_booking')){
-                    if($getAdditionalPreference['is_one_push_book_enable'] == 1 && $product->is_product_instant_booking == 1 && $product->vendor->is_vendor_instant_booking == 1){
-                        $live_status.= "<br/><span class='badge bg-success text-white'>".__('Instant Booking')."</span>";
-                    }
+                if($getAdditionalPreference['is_one_push_book_enable'] == 1 && $product->is_product_instant_booking == 1 && $product->vendor->is_vendor_instant_booking == 1){
+                    $live_status.= "<br/><span class='badge bg-success text-white'>".__('Instant Booking')."</span>";
                 }
+                
                 return $live_status;
             })
             ->addColumn('action', function ($product) use ($request) {
@@ -1465,19 +1461,14 @@ class VendorController extends BaseController
 
 
         // Set order limit - By Ovi
-        if(checkColumnExists('vendors', 'same_day_delivery')){
-            $vendor->same_day_delivery   = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
-        }
+        $vendor->same_day_delivery   = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
+        
+        $vendor->next_day_delivery   = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
+        
+        $vendor->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
 
-        if(checkColumnExists('vendors', 'next_day_delivery')){
-            $vendor->next_day_delivery   = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
-        }
 
-        if (checkColumnExists('vendors', 'hyper_local_delivery')) {
-            $vendor->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
-        }
-
-        if (checkColumnExists('vendors', 'cutOff_time') && $request->has('cutoff_time') && $request->cutoff_time != '') {
+        if ($request->has('cutoff_time') && $request->cutoff_time != '') {
             $vendor->cutoff_time = $request->cutoff_time;
         }
 

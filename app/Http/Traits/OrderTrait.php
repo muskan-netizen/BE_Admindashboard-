@@ -312,8 +312,8 @@ trait OrderTrait
             $schedule_time = '';
             $return_response = 2;
             $paymentSentAlready = 0;
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
-
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
+            Log::info("this is the id of vendor".$vendor_details->order_pre_time);
             $order_vendor = OrderVendor::with(['products.product.categoryName', 'products.order_product_status'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
          
             foreach( $order_vendor->products as $product){
@@ -411,9 +411,7 @@ trait OrderTrait
                         }
                         $category_name = isset($product->product->categoryName) ? @$product->product->categoryName->name : 'na' ;
                         $driverCost  = 0;
-                        if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
-                            $driverCost  =($product->is_price_buy_driver ==1) ?  $product->price :0;
-                        }
+                        $driverCost  =($product->is_price_buy_driver ==1) ?  $product->price :0;
                         $specific_instruction = (isset($product->specific_instruction) && ($product->specific_instruction !='')) ? $product->specific_instruction : $order->specific_instruction;
                         $client = CP::orderBy('id', 'asc')->first();
                         for ($x = 1; $x <= $product->quantity; $x++) {
@@ -432,7 +430,8 @@ trait OrderTrait
                                 $call_back_url = "https://" . $client->custom_domain . "/dispatch-order-product-status-update/" . $dynamic;
                             else
                                 $call_back_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/dispatch-order-product-status-update/" . $dynamic;
-    
+                                Log::info("order Pre Time is ".$vendor_details->order_pre_time);
+
                             $postdata =  [
                                 'order_number'  =>  $order->order_number,
                                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -464,7 +463,9 @@ trait OrderTrait
                                 'rejectable_order' =>  $rejectable_order,
                                 'category_name' =>  $category_name,
                                 'specific_instruction' =>  $specific_instruction,
-                                'driverCost' =>  $driverCost 
+                                'driverCost' =>  $driverCost,
+                                'order_pre_time'=>$vendor_details->order_pre_time
+ 
                             ];
                           
                             if($order_vendor->is_restricted == 1)
@@ -583,12 +584,9 @@ trait OrderTrait
                 ->avg('averageRating');
         }
 
-        if ($this->checkColumnExists('vendors', 'rating')) {
-            Vendor::where('id', $vendor_id)->update(['rating' => $vendor_rating]);
-            return $vendor_rating;
-        } else {
-            return $vendor_rating;
-        }
+        Vendor::where('id', $vendor_id)->update(['rating' => $vendor_rating]);
+        return $vendor_rating;
+        
     }
 
     /**
@@ -599,7 +597,7 @@ trait OrderTrait
     {
         $vendor_rating = 0;
 
-        $vendor = Vendor::find($vendor_id);
+        $vendor = Vendor::select('id', 'rating')->where('id', $vendor_id)->first();
 
         if ($vendor && $vendor->rating == null) {
 
@@ -800,7 +798,7 @@ trait OrderTrait
             $schedule_time = '';
             $return_response = 2;
             $paymentSentAlready = 0;
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
 
             $order_vendor = OrderVendor::with('products.product', 'products.LongTermService.schedule')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
             $product = $order_vendor->products->first();
@@ -869,7 +867,7 @@ trait OrderTrait
             $client = CP::orderBy('id', 'asc')->first();
 
             //  send all payment to fist order
-
+            Log::info("order Pre Time is ".$vendor_details->order_pre_time);
 
             $postdata =  [
                 'order_number'  =>  $order->order_number,
@@ -897,7 +895,9 @@ trait OrderTrait
                 'user_icon' => $customer->image,
                 'agent'     => $agent,
                 'task_type_id' => $task_type_id, //  for add agent booking in case of appointment
-                'service_time' =>  $service_time
+                'service_time' =>  $service_time,
+                'order_pre_time'=>$vendor_details->order_pre_time
+
             ];
 
 
@@ -1092,12 +1092,10 @@ trait OrderTrait
         $phoneCode = mt_rand(100000, 999999);
         $sendTime  = Carbon::now()->addMinutes(10)->toDateTimeString();
 
-        if (checkColumnExists('users', 'track_order_phone_token') && checkColumnExists('users', 'track_order_phone_token_valid_till')) {
-            $user                                       = User::find($user['id']);
-            $user->track_order_phone_token              = $phoneCode;
-            $user->track_order_phone_token_valid_till   = $sendTime;
-            $user->save();
-        }
+        $user                                       = User::find($user['id']);
+        $user->track_order_phone_token              = $phoneCode;
+        $user->track_order_phone_token_valid_till   = $sendTime;
+        $user->save();
 
 
 
@@ -1315,17 +1313,12 @@ trait OrderTrait
                     $is_order_amount_send_to_dispatcher = 1;
                   
                 } else {
-                    if(checkColumnExists('orders', 'is_postpay'))
+                    
+                    if($order->is_postpay==1 && ($order->payment_status == 0)  && ($order->is_order_amount_send_to_dispatcher ==0))
                     {
-                        if($order->is_postpay==1 && ($order->payment_status == 0)  && ($order->is_order_amount_send_to_dispatcher ==0))
-                        {
-                            $cash_to_be_collected = 'Yes';
-                            $payable_amount = $order->payable_amount;
-                            $is_order_amount_send_to_dispatcher = 1;
-                        }else{
-                            $cash_to_be_collected = 'No';
-                            $payable_amount = 0.00;
-                        }
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                        $is_order_amount_send_to_dispatcher = 1;
                     }else{
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
