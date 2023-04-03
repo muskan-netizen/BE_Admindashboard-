@@ -12,7 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
-use App\Http\Controllers\Front\RoadieController;
+use App\Http\Controllers\RoadieController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
@@ -1045,7 +1045,7 @@ class OrderController extends BaseController
                 }
 
 
-                $orderData = OrderVendor::with('orderDetail')->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
+                $orderData = OrderVendor::with(['vendor', 'products.product', 'orderDetail'])->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 if(@$orderData->exchanged_of_order){
                     $return = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->first();
                     if (@$return && $request->status_option_id == 2) { //accept exchange
@@ -1114,7 +1114,9 @@ class OrderController extends BaseController
                         $orderPlaced = $this->placeOrderRequestShippo($request);
                     }elseif ($orderData->shipping_delivery_type == 'RO') {
                         //Create Roadies place order request for Roadies
-                        $orderPlaced = $this->placeOrderRequestRoadies($request);
+                        if ($orderData && ($orderData->delivery_fee > 0.00 )) {
+                            $orderPlaced = $this->placeOrderRequestRoadies($request, $orderData);
+                        }
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
@@ -1349,13 +1351,11 @@ class OrderController extends BaseController
         return 2;
     }
 
-    public function placeOrderRequestRoadies($request){
+    public function placeOrderRequestRoadies($request, $orderData){
         $roadie = new RoadieController();
-        $checkdeliveryFeeAdded = OrderVendor::with(['vendor', 'products.product', 'orderDetail'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-        // dd($checkdeliveryFeeAdded);
         $checkOrderData = Order::with(['vendors.products.product', 'user', 'address'])->findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 )) {
-            $order_ship_roadie = $roadie->createShipmentRequestRoadie($checkdeliveryFeeAdded, $checkOrderData);
+        if (@$checkOrderData) {
+            $order_ship_roadie = $roadie->createShipmentRequestRoadie($orderData, $checkOrderData);
             return $order_ship_roadie;
         }
         return false;

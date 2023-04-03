@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use App\Http\Traits\SquareInventoryManager;
-use App\Http\Traits\RoadieManager;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
 use App\Imports\QrcodesImport;
@@ -23,7 +22,7 @@ use GuzzleHttp\Client as GCLIENT;
 use Carbon\Carbon;
 class ProductController extends BaseController
 {
-    use ApiResponser, SquareInventoryManager, RoadieManager;
+    use ApiResponser, SquareInventoryManager;
     private $folderName = 'prods';
     private $slugIsUnique = true;
     public function __construct()
@@ -413,7 +412,7 @@ class ProductController extends BaseController
             // foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height', 'packaging_weight', 'packaging_weight_unit', 'packaging_length', 'packaging_breadth', 'packaging_height') as $k => $val) {
             //     $product->{$k} = $val;
             // }
-            foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height') as $k => $val) {
+            foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height', 'packaging_weight', 'packaging_weight_unit', 'packaging_length', 'packaging_breadth', 'packaging_height') as $k => $val) {
                 $product->{$k} = $val;
             }
             if( clientPrefrenceModuleStatus('p2p_check') || is_attribute_enabled() ) {
