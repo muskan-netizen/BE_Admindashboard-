@@ -1995,7 +1995,6 @@ class OrderController extends BaseController
                         ]);
 
                         $url = $dispatch_domain->delivery_service_key_url;
-
                         $res = $client->post(
                             $url . '/api/task/create',
                             ['form_params' => ($postdata)]
@@ -2113,9 +2112,6 @@ class OrderController extends BaseController
 
                 return 1;
             }
-
-
-
         }
             return 2;
         } catch (\Exception $e) {
@@ -3238,6 +3234,40 @@ class OrderController extends BaseController
         $order_vendor = OrderVendor::where('order_id', 47)->first();
         $order_vendor->order_status_option_id = rand();
         $order_vendor->save();
+    }
+
+    public function addExtraPrepTimeToOrder(Request $request){
+        $postdata= [
+            'order_id'=>$request->order_id,
+            'vendor_id'=>$request->vendor_id,
+            'extra_time'=>$request->time,
+        ];
+        $order=  OrderVendor::where($postdata)->first();
+        $order->extra_time = $request->time;
+        $order->save();
+        $dispatch_domain = $this->getDispatchDomain();
+        $client = new Client([
+            'headers' => [
+                'personaltoken' => $dispatch_domain->delivery_service_key,
+                'shortcode' => $dispatch_domain->delivery_service_key_code,
+                'content-type' => 'application/json'
+            ]
+        ]);
+        $url = $dispatch_domain->delivery_service_key_url;    
+               $res = $client->post(
+            $url . '/api/task/update_order_prepration_time',
+            ['form_params' => ($postdata)]
+        );
+        $response = json_decode($res->getBody(), true);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Time Added Success Fully.',
+            'data' => [
+                'time' => $response,
+            ]
+        ], 200);
+        
+
     }
 
 

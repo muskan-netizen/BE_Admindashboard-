@@ -368,6 +368,9 @@ $timezone = Auth::user()->timezone;
 
                             {{ __("Exchange To") }}<a href="{{$order->vendors[0]->exchanged_to_order->vendor_detail_url }}"><span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span></a>
                             @endIf
+                            <input type="number" value="{{$order->vendors->first()->extra_time}}" id="buffer_time">
+                            <button class="buffer_time_btn  badge badge-info" data-order_id={{$order->id}} data-vendor_id={{$vendor_id}} '>{{ __('Add Delay Time') }} <img src=""> </button>
+
                             @if(@$order->vendors[0]->exchanged_of_order)
                             {{ __("Exchange Of") }}
                             <a href="{{$order->vendors[0]->exchanged_of_order->vendor_detail_url }}"><span># {{$order->vendors[0]->exchanged_of_order->orderDetail->order_number}}</span></a>
@@ -1544,5 +1547,48 @@ $timezone = Auth::user()->timezone;
                 newWin.close();
             }, 10);
         }
+
+        $(document).on('click', '.buffer_time_btn', function(e) {
+            var time = $("#buffer_time").val();
+            //alert(time);
+            var order_id = $(this).data('order_id');
+              var vendor_id = $(this).data('vendor_id');
+            alert(vendor_id);
+            if(time <=0 || time >60){
+                alert("Time Should Be Between 0 and 60 minutes");
+                return false;
+            }
+            $.ajax({
+                        type: "POST",
+                        data: {
+                            order_id: order_id,
+                            vendor_id: vendor_id,
+                            time:time
+                        },
+                        url: "{{ route('order.delay_time') }}",
+                        headers: {
+                            Accept: "application/json"
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            if (response.status == 'success') {
+                                $.NotificationApp.send("Success", response.message, "top-right",
+                                    "#5ba035", "success");
+                               
+                            }
+                        },
+                        error: function(response) {
+                            let error = response.responseJSON;
+                            Swal.fire({
+                                text: error.message,
+                                icon: "error",
+                                button: "OK",
+                            });
+                            return false;
+                        }
+                    });
+        });
+
+
     </script>
     @endsection
