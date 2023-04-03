@@ -14,14 +14,14 @@ use Log;
 class SkipCashController extends Controller
 {
 
-    public function showSkipCashPage(Request $request){
+    public function showSkipCashPage(Request $request,$app=''){
         $data = $request->all();
         $creds = PaymentOption::where('code', 'skip_cash')
         ->where('status', 1)
         ->first();
         $creds_arr = json_decode($creds->credentials);
         $skipCashClientId=$creds_arr->skip_cash_client_id;
-        if($creds->test_mode==0){
+        if($creds->test_mode==1){
             $url = $creds_arr->skip_cash_testing_url;
         }else{
             $url = $creds_arr->skip_cash_live_url;  
@@ -38,6 +38,7 @@ class SkipCashController extends Controller
             'FirstName' => Auth::user()->name,
             'LastName' =>  Auth::user()->name,
             'Phone' => Auth::user()->phone_number,
+
             'Email' =>  Auth::user()->email,
             'Street' => '123',
             'City' => 'Anytown',
@@ -48,13 +49,13 @@ class SkipCashController extends Controller
         
         ];
         $signatureString = '';
-        foreach ($fields as $key => $value) {
-            if (!empty($value)) {
-                $signatureString .= "$key=$value,";
-            }
-        }
-        $signatureString = rtrim($signatureString, ',');
-
+        // foreach ($fields as $key => $value) {
+        //     if (!empty($value)) {
+        //         $signatureString .= "$key=$value,";
+        //     }
+        // }
+        // $signatureString = rtrim($signatureString, ',');
+        $signatureString = http_build_query($fields,'',', ');
         // Encrypt the signature string using HMACSHA256 with the secret key
         $signature = hash_hmac('sha256', $signatureString, $secretKey, true);
         
@@ -83,22 +84,18 @@ class SkipCashController extends Controller
         $error = curl_error($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
-        if ($error) {
-        //     //  dd($info);
-        $message = 'Payment error';
-        
-        $this->failedPayment($request);
-        return redirect()->back()->with('success', $message);   
-           
-        } elseif ($info['http_code'] !== 200) {
+        if ($error && $info['http_code'] !== 200) {
             $message = 'Payment error';
-            $this->failedPayment($request);
-            return redirect()->back()->with('success', $message);   
+            
+            if($app)
+                $response['message'] = $message??'';
+
+                return redirect()->back()->with('success', $message);   
 
         } else {
             $responseObj = json_decode($response);  
+            dd($responseObj);
             $payUrl = $responseObj->resultObj->payUrl;
-            //  dd($payUrl);
             $user = auth()->user();
             if ($request->isMethod('post')) {
                 $data['come_from'] = 'web';
@@ -125,7 +122,8 @@ class SkipCashController extends Controller
                         'order_id' => $order->id??0,
                         'type' => 'cart',
                         'user_id' => $user->id,
-                        'date' => date('Y-m-d')
+                        'date' => date('Y-m-d'),
+                        'payment_from'=>$app??'web'
                     ]);
                 } elseif ($request->payment_from == 'pickup_delivery') {
                     $request->amt = $amt;
@@ -137,7 +135,9 @@ class SkipCashController extends Controller
                         'balance_transaction' => $amt,
                         'type' => 'pickup_delivery',
                         'date' => date('Y-m-d'),
-                        'user_id' => auth()->id()
+                        'user_id' => auth()->id(),
+                        'payment_from'=>$app??'web'
+
                     ]);
                 } elseif ($request->payment_from == 'wallet') {
                     $time = ($request->transaction_id) ?? time();
@@ -148,7 +148,9 @@ class SkipCashController extends Controller
                         'balance_transaction' => $amt,
                         'type' => 'wallet',
                         'date' => date('Y-m-d'),
-                        'user_id' => $user->id
+                        'user_id' => $user->id,
+                        'payment_from'=>$app??'web'
+
                     ]);
                 } elseif ($request->payment_from == 'tip') {
                     $time =  ($request->transaction_id) ?? time();
@@ -161,7 +163,9 @@ class SkipCashController extends Controller
                         'type' => 'tip',
                         'order_id' => $order->id??0,
                         'date' => date('Y-m-d'),
-                        'user_id' => $user->id
+                        'user_id' => $user->id,
+                        'payment_from'=>$app??'web'
+
                     ]);
                 } elseif ($request->payment_from == 'subscription') {
                     $time =  time();
@@ -172,12 +176,31 @@ class SkipCashController extends Controller
                         'balance_transaction' => $amt,
                         'type' => 'subscription',
                         'date' => date('Y-m-d'),
-                        'user_id' => $user->id
+                        'user_id' => $user->id,
+                        'payment_from'=>$app??'web'
+
                     ]);
                 }
                 $data['order_number'] = $time;
             }
-           return redirect($payUrl);
+
+            if($app){
+                $response['message'] = $message??'';
+                $response['url'] = $payUrl??'';
+            }else{
+                return redirect($payUrl);
+            }
+
+            return $response;
+        }
+    }
+
+    public function mobilePay(Request $request)
+    {
+       $data =  $this->showSkipCashPage($request,'app');
+       if(isset($data) && !empty($data))
+        {
+            return $data;
         }
     }
     
@@ -188,13 +211,10 @@ class SkipCashController extends Controller
     public function successPage(Request $request)
     {
         if (isset($_POST['response'])) {
-           
-          
             $payment = Payment::where('transaction_id', $request->get('transId'))->first();
             if ($payment->type == 'cart') {
                 $this->completeOrderCart($request, $payment);
             } elseif ($payment->type == 'wallet') {
-                \Log::info("Wallet type");
                $this->completeOrderWallet($request, $payment);
             } elseif ($payment->type == 'tip') {
                 $order = Order::find($payment->order_id);
@@ -207,16 +227,11 @@ class SkipCashController extends Controller
         }
         
         if(auth()->user()){
-        //   dd($request->get('transId'));
-            \Log::info("user ".json_encode(auth()->user()->id));
-            //  dd(auth()->user()->id);
             $payment = Payment::select('*')->where('user_id',auth()->user()->id)->where(['transaction_id' => $request->get('transId')])->orderBy('id','DESC')->first();
-            //  dd($payment);
             if($payment){
                 if ($payment->type == 'cart') {   
                     $message = 'Order has been placed successfully';
                     Session::put('success', $message);
-                    \Log::info("payment order id : ".$payment->order_id);
                     $this->completeOrderCart($request, $payment);
                     return redirect()->route('order.success',['order_id' => $payment->order_id]);                  
                 } elseif (in_array($payment->type,[ 'wallet','wallet_topup'])) {
@@ -350,25 +365,25 @@ class SkipCashController extends Controller
     }
 
 
-    public function failedPayment($request)
-    {
-    	if($request->payment_from == 'cart'){
-            $order_number = $request->order_number;
-            $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-            $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-            foreach ($order_products as $order_prod) {
-                OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
-            }
-            OrderProduct::where('order_id', $order->id)->delete();
-            OrderProductPrescription::where('order_id', $order->id)->delete();
-            VendorOrderStatus::where('order_id', $order->id)->delete();
-            OrderVendor::where('order_id', $order->id)->delete();
-            OrderTax::where('order_id', $order->id)->delete();
-            Order::where('id', $order->id)->delete();
+    // public function failedPayment($request)
+    // {
+    // 	if($request->payment_from == 'cart'){
+    //         $order_number = $request->order_number;
+    //         $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+    //         $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+    //         foreach ($order_products as $order_prod) {
+    //             OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+    //         }
+    //         OrderProduct::where('order_id', $order->id)->delete();
+    //         OrderProductPrescription::where('order_id', $order->id)->delete();
+    //         VendorOrderStatus::where('order_id', $order->id)->delete();
+    //         OrderVendor::where('order_id', $order->id)->delete();
+    //         OrderTax::where('order_id', $order->id)->delete();
+    //         Order::where('id', $order->id)->delete();
             
-        }
+    //     }
       
-    }
+    // }
 
 
 

@@ -112,14 +112,12 @@ class NmiPaymentController extends Controller
        $number = $this->orderNumber($request);
 
        if ($request->from == 'wallet') {
-           $number = $this->orderNumber($request);
            $request->request->add([
                'order_number' => $number,
                'amount' => $request->amount
            ]);
        }
        if ($request->from == 'subscription') {
-           $number = $this->orderNumber($request);
            $request->request->add([
                'order_number' => $number,
                'amount' => $request->amount
@@ -135,8 +133,7 @@ class NmiPaymentController extends Controller
        $this->setShipping($user->name,$user->name,$user->name,$address->address,$address->address,$address->city, $address->state,$address->pincode,$address->country,$user->email);
        $this->setOrder($number,"Royo Order",0, 0,$user->phone_number,$this->ip);
        $dataResponse = $this->doSale($request->amount??$request->amt,$request->cno,$expDate);
-    //    $dataResponse = $this->responses;
-    \Log::info($dataResponse);
+
        if ($dataResponse['response'] == 3) {
            $response['status'] = 'Fail';
            $response['msg'] = $dataResponse['responsetext'];
@@ -154,7 +151,6 @@ class NmiPaymentController extends Controller
                $payment = Payment::where('transaction_id', $request->order_number)->first();
            }
 
-           // //\Log::info(json_encode($request->all()));
            if ($payment) {
                $payment->viva_order_id = $dataResponse['transactionid'];
                $payment->save();
@@ -182,48 +178,5 @@ class NmiPaymentController extends Controller
        }
    }
 
-   
-
-
-       
-//         $gw = new NmiPaymentController();
-// $gw->setLogin("zC4Wr4g4A3UGdd7MWpe88buJdHt5SDPN");
-// $gw->setBilling("John","Smith","Acme, Inc.","123 Main St","Suite 200", "Beverly Hills",
-//         "CA","90210","US","555-555-5555","555-555-5556","support@example.com",
-//         "www.example.com");
-// $gw->setShipping("Mary","Smith","na","124 Shipping Main St","Suite Ship", "Beverly Hills",
-//         "CA","90210","US","support@example.com");
-// $gw->setOrder("1234","Big Order",1, 2, "PO1234","65.192.14.10");
-
-// $r = $gw->doSale("50.00","4111111111111111","1010");
-// dd($gw->responses);
-
-// "response" => "3"
-//   "responsetext" => "Duplicate transaction REFID:1206192251"
-//   "authcode" => ""
-//   "transactionid" => ""
-//   "avsresponse" => ""
-//   "cvvresponse" => ""
-//   "orderid" => "1234"
-//   "type" => "sale"
-//   "response_code" => "300"
-//   "amount_authorized" => ""
-//   "first_name" => "John"
-//   "last_name" => "Smith"
-//   "address_1" => "123 Main St"
-//   "city" => "Beverly Hills"
-//   "postal_code" => "90210"
-//   "state" => "CA"
-//   "phone" => "555-555-5555"
-//   "shipping_address_1" => "124 Shipping Main St"
-//   "shipping_city" => "Beverly Hills"
-//   "shipping_postal_code" => "90210"
-//   "shipping_state" => "CA"
-//   "shipping_country" => "US"
-//   "shipping_amount" => "2.00"
-//   "shipping_company" => "na"
-//   "shipping_email" => "support@example.com"
-//   "date" => ""
-//   "currency" => "USD"
 
 }

@@ -514,7 +514,6 @@ class OrderController extends FrontController
             $pendingOrder = $this->pendingOrder( $request,$user,$langId,$iconsArray);
         }
       
-        
         return view('frontend.account.orders')->with([
             'payments' => $payments,
             'rejectedOrders' => $rejectedOrders,

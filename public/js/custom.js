@@ -5442,7 +5442,8 @@ $(document).ready(function () {
             if(cardValidation(cardJson)){
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
-                    paymentNmipay(address_id, payment_option_id,order,cardJson);
+                    p
+                    aymentNmipay(address_id, payment_option_id,order,cardJson);
                 }
                 else{
                     return false;
@@ -5676,6 +5677,19 @@ $(document).ready(function () {
             case 50:
                 paymentViazulpay('',payment_option_id,'');
                 break;
+            
+            case 53:
+                cardJson = {
+                    'cno': $('#card-element-nmi').val(),
+                    'dt': $('#date-element-nmi').val(),
+                    'cv': $('#cvv-element-nmi').val(),
+                    'name':'nmi',
+                }
+                if(cardValidation(cardJson)){
+                    paymentNmipay('', payment_option_id,'',cardJson);
+                }
+                break; 
+
         }
     }
 

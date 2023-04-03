@@ -14,15 +14,15 @@ use App\Models\Client as CP;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use App\Http\Traits\{ValidatorTrait, ApiResponser, SquareInventoryManager};
+use App\Http\Traits\{ValidatorTrait, ApiResponser, SquareInventoryManager,smsManager};
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
-
 use App\Models\{CaregoryKycDoc, Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, CartCoupon, OrderProductPrescription, CartProductPrescription, UserVendor, VendorOrderProductStatus};
 
 trait OrderTrait
 {
-    use ValidatorTrait, ApiResponser, SquareInventoryManager;
+    use ValidatorTrait, ApiResponser, SquareInventoryManager,smsManager;
+
 
     public function ProductVariantStock($order_id, $request='')
     {
@@ -1518,7 +1518,7 @@ trait OrderTrait
 
                 $this->orderSuccessCartDetail($order);
 
-                $returnUrl = route('order.return.success');
+                $returnUrl = route('order.success',[$order->id]);
                 $response['status'] = 'Success';
                 $response['msg'] = 'Success Order.';
                 $response['payment_from'] = 'cart';
@@ -1557,9 +1557,9 @@ trait OrderTrait
        if (isset($request['response']) && $request['response'] == 1) {
             $user = auth()->user();
             $wallet = $user->wallet;
-            $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->order_id . '</b>']);
+            $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $payment->transaction_id . '</b>']);
 
-           if ($request->come_from == 'app') {
+           if ($payment->payment_from == 'app') {
                $returnUrl = route('payment.gateway.return.response') . '/?gateway=azulpay' . '&status=200&transaction_id=' . $payment->transaction_id;
                $response['route'] = $returnUrl;
            } else {
@@ -1726,7 +1726,7 @@ trait OrderTrait
                     $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
                 }
                 if (!empty($prefer->sms_provider)) {
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }
             }
         }catch(\Exception $e)

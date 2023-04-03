@@ -17,6 +17,7 @@ use App\Http\Controllers\Front\KongapayController;
 use App\Http\Controllers\Front\MpesaController;
 use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\PayphoneController;
+use App\Http\Controllers\Front\SkipCashController;
 use App\Http\Controllers\Front\ToyyibPayController;
 use App\Http\Controllers\Front\VivawalletController;
 use App\Http\Controllers\Front\WindcaveController;
@@ -37,6 +38,8 @@ class PaymentOptionController extends BaseController{
         }else{
         //Till here
             $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
+        // dd(DB::connection()->getDatabaseName());
+            // dd($payment_options->toArray());
             foreach($payment_options as $option){
                 if($option->code == 'stripe'){
                     $option->title = __('Credit/Debit Card (Stripe)');
@@ -93,11 +96,16 @@ class PaymentOptionController extends BaseController{
             return $this->errorResponse("Invalid Gateway Request", 400);
         }
     }
+
+    public function postPaymentVia_skip_cash(Request $request){
+        $gateway = new SkipCashController();
+          return $gateway->beforePayment($request);
+    }
     
     public function postPaymentVia_azul(Request $request){
              $gateway = new AzulPaymentController();
                return $gateway->beforePayment($request);
-  }
+    }
 
     public function postPaymentVia_dpo(Request $request){
         $gateway = new DpoController();
