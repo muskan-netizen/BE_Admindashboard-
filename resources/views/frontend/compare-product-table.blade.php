@@ -22,12 +22,12 @@
                             <ul class="cd-features-list">
                                 <li>Price</li>
                                 <li>Rating</li>
-                                <li>Description</li>
+                                <li class="compare_pro_discription">Description</li>
                                 <li>Seller</li>
                             </ul>
                         </div> <!-- .features -->
                         
-                        <div class="cd-products-wrapper">
+                        <div class="cd-products-wrapper custom_scroll-compare">
                             <ul class="cd-products-columns">
 
                             @foreach($suggested_category_products as $compare)
@@ -52,7 +52,7 @@
                                     <ul class="cd-features-list">
                                         <li>{{showPriceWithCurrency($compare->variant->first()->price)}}</li>
                                         <li class="rate{{round($compare->averageRating)}}"><span>{{ number_format($compare->averageRating, 1, '.', '')}}</span></li>
-                                        <li>{!!  $compare->translation->first()->body_html?? 'N/A' !!}
+                                        <li class="compare_pro_discription">{!!  $compare->translation->first()->body_html?? 'N/A' !!}
                                         </li>
                                         <li><a href="{{route('vendorDetail',[$compare->vendor->slug])}}"> {{$compare->vendor->name}}</a></li>
                                     </ul>

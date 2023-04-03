@@ -315,6 +315,12 @@ span.org_price.ml-1.font-14 {
 }
 .al_body_template_one .inner_spacing h4 {
     color: #000;
+    font-size: 14px;
+    font-weight: 600;
+}
+.al_body_template_one .inner_spacing h4 small {
+    font-size: 14px;
+    font-weight: 300;
 }
 .al_body_template_one .main-fillter .side_fillter {
     border: none;margin-top: 0px !important;
