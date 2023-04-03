@@ -146,7 +146,7 @@ class RoadieController extends Controller
                 "signature_required" => true,
                 "notifications_enabled" => false,
                 "over_21_required" => false,
-                "extra_compensation" => 5.0,
+                "extra_compensation" => 0.0,
                 "trailer_required" => false,
                 "decline_insurance" => true
             ]
