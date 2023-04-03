@@ -541,7 +541,8 @@ trait SquareInventoryManager{
       $body = new \Square\Models\SearchCatalogObjectsRequest();
       $body->setObjectTypes($object_types);
       $body->setIncludeDeletedObjects(true);
-      $body->setBeginTime(Carbon::parse($last_begin_timestamp->created_at)->toIso8601ZuluString());
+      $last_timestamp = (!empty($last_begin_timestamp) && isset($last_begin_timestamp->created_at)) ? Carbon::parse($last_begin_timestamp->created_at)->toIso8601ZuluString() : Carbon::now()->subDays(1)->toIso8601ZuluString();
+      $body->setBeginTime($last_timestamp);
 
       $api_response = $client->getCatalogApi()->searchCatalogObjects($body);
       if ($api_response->isSuccess()) {

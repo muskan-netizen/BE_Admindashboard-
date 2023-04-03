@@ -10,7 +10,7 @@ $vendor_total_discount = 0;
 $serviceType =  Session::get('vendorType');
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 $timezone = Auth::user()->timezone;
-$order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_long_term : 0;
+$order_is_long_term = $order->is_long_term;
 @endphp
 @section('customcss')
 <style>
@@ -250,7 +250,7 @@ $order_is_long_term = checkColumnExists('orders','is_long_term')  ? $order->is_l
                                         <li>{{$additionalPreference ['is_token_currency_enable'] ? __('Used Token') : __('Wallet Amount')}} <span> @if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
-                                    @if( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                    @if($order->gift_card_amount > 0)
                                         <li>{{__('Gift Card Amount')}} <span> {{Session::get('currencySymbol')}}{{decimal_format($order->gift_card_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if($order->tip_amount > 0)
