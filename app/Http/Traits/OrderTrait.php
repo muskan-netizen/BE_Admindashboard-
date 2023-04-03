@@ -411,9 +411,7 @@ trait OrderTrait
                         }
                         $category_name = isset($product->product->categoryName) ? @$product->product->categoryName->name : 'na' ;
                         $driverCost  = 0;
-                        if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
-                            $driverCost  =($product->is_price_buy_driver ==1) ?  $product->price :0;
-                        }
+                        $driverCost  =($product->is_price_buy_driver ==1) ?  $product->price :0;
                         $specific_instruction = (isset($product->specific_instruction) && ($product->specific_instruction !='')) ? $product->specific_instruction : $order->specific_instruction;
                         $client = CP::orderBy('id', 'asc')->first();
                         for ($x = 1; $x <= $product->quantity; $x++) {
@@ -586,12 +584,9 @@ trait OrderTrait
                 ->avg('averageRating');
         }
 
-        if ($this->checkColumnExists('vendors', 'rating')) {
-            Vendor::where('id', $vendor_id)->update(['rating' => $vendor_rating]);
-            return $vendor_rating;
-        } else {
-            return $vendor_rating;
-        }
+        Vendor::where('id', $vendor_id)->update(['rating' => $vendor_rating]);
+        return $vendor_rating;
+        
     }
 
     /**
@@ -602,7 +597,7 @@ trait OrderTrait
     {
         $vendor_rating = 0;
 
-        $vendor = Vendor::find($vendor_id);
+        $vendor = Vendor::select('id', 'rating')->where('id', $vendor_id)->first();
 
         if ($vendor && $vendor->rating == null) {
 
@@ -1097,12 +1092,10 @@ trait OrderTrait
         $phoneCode = mt_rand(100000, 999999);
         $sendTime  = Carbon::now()->addMinutes(10)->toDateTimeString();
 
-        if (checkColumnExists('users', 'track_order_phone_token') && checkColumnExists('users', 'track_order_phone_token_valid_till')) {
-            $user                                       = User::find($user['id']);
-            $user->track_order_phone_token              = $phoneCode;
-            $user->track_order_phone_token_valid_till   = $sendTime;
-            $user->save();
-        }
+        $user                                       = User::find($user['id']);
+        $user->track_order_phone_token              = $phoneCode;
+        $user->track_order_phone_token_valid_till   = $sendTime;
+        $user->save();
 
 
 
@@ -1320,17 +1313,12 @@ trait OrderTrait
                     $is_order_amount_send_to_dispatcher = 1;
                   
                 } else {
-                    if(checkColumnExists('orders', 'is_postpay'))
+                    
+                    if($order->is_postpay==1 && ($order->payment_status == 0)  && ($order->is_order_amount_send_to_dispatcher ==0))
                     {
-                        if($order->is_postpay==1 && ($order->payment_status == 0)  && ($order->is_order_amount_send_to_dispatcher ==0))
-                        {
-                            $cash_to_be_collected = 'Yes';
-                            $payable_amount = $order->payable_amount;
-                            $is_order_amount_send_to_dispatcher = 1;
-                        }else{
-                            $cash_to_be_collected = 'No';
-                            $payable_amount = 0.00;
-                        }
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                        $is_order_amount_send_to_dispatcher = 1;
                     }else{
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;

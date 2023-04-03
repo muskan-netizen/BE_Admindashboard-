@@ -363,7 +363,6 @@ class HomeController extends BaseController
             }
             
             $allVendorData = clone $vendorData;
-            $long_term_vendors = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
@@ -458,13 +457,11 @@ class HomeController extends BaseController
 
             $vendorData =   $vendorData->take(5);
 
-            // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-            //     $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
-            // }
 
             $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
             $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
             $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type);
+
             if($spotlight && ($spotlight == 1) ){
                 $spotlight_products=$this->getSpotlightProducts();
             }
@@ -602,9 +599,10 @@ class HomeController extends BaseController
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
             // long term service
             $long_term_service_products =[];
-            if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
+            $additionalPreference = getAdditionalPreference(['is_long_term_service', 'is_token_currency_enable']);
+            if($additionalPreference['is_long_term_service'] == 1){
                 $requestFrom='app';
-                $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $langId, $clientCurrency,'', $type,'', $requestFrom);
+                $long_term_service_products = $this->longTermServiceProducts($ses_vendors, $additionalPreference, $langId, $clientCurrency,'', $type,'', $requestFrom);
             }
             $homeData['long_term_service'] = $long_term_service_products;
           

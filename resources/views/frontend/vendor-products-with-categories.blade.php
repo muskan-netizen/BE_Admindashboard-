@@ -238,7 +238,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                                 </a>
                                                                                             @endif
                                                                                                 
-                                                                                            @if(isset($data->category_type_id) && (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus))) )
+                                                                                            @if(isset($data->category_type_id) && (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus))) 
                                                                                                 <div class="number"
                                                                                                     id="show_plus_minus{{ $cartProductId }}">
                                                                                                     <span
