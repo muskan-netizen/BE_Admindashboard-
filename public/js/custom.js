@@ -2842,9 +2842,14 @@ $(document).ready(function () {
         $('#add_new_address_form').hide();
     });
     $(document).on("click", "#add_new_address_btn", function () {
+        if(auth){
         $(this).hide();
         initialize();
+        $("#add_new_address_form_modal").modal('show');
         $('#add_new_address_form').show();
+        }else{
+          $('#login_modal').modal('show');
+        }
     });
     $(document).on("click", "#save_address", function () {
         let city = $('#add_new_address_form #city').val();
