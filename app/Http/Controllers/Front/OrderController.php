@@ -125,7 +125,7 @@ class OrderController extends FrontController
                     if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
                             $Pq->where('dispatcher_status_option_id',5);
                     }
-                    $Pq->with(['products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
+                   
                 });
 
                 if($additionalPreference['is_service_product_price_from_dispatch'] ==0){
@@ -142,10 +142,12 @@ class OrderController extends FrontController
                 $qry->where('language_id', $langId);
             },
             'vendors.dineInTable.category',
-            // 'vendors.products',
-            // 'vendors.products.product',
-            // 'vendors.products.media.image',
-            // 'vendors.products.pvariant.media.pimage.image',
+            'vendors.products',
+            'vendors.products.product',
+            'vendors.products.media.image',
+            'vendors.products.pvariant.media.pimage.image',
+            'vendors.products.Routes', 
+            'vendors.products.order_product_status',
             'products.productRating',
             'user',
             'address',
@@ -186,6 +188,7 @@ class OrderController extends FrontController
         $pastOrders = $pastOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
             ->paginate(10);
+           
         //End Past Orders Query
 
         
@@ -800,7 +803,7 @@ class OrderController extends FrontController
                     //     if ($vendor_id == "") {
                     $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     //     } else {
-                    //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
+                    //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails,'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     // }
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
@@ -895,12 +898,11 @@ class OrderController extends FrontController
     public function getCart($cart, $address_id = 0,$user=array())
     {
         $cart_id = $cart->id;
-        if($user) {
+        if(!empty($user)) {
             $user = $user;
         }else{
             $user = Auth::user();
         }
-        //$user = Auth::user();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $pharmacy = ClientPreference::first();
@@ -2146,7 +2148,7 @@ class OrderController extends FrontController
             $order->total_amount = $total_amount - $Order_bid_discount??0;
 
             if(checkColumnExists('cart_products','recurring_booking_type')){
-                if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                if(@$vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
                     $date       = explode(",",$vendor_cart_product->recurring_day_data);
                     if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
                         $days_count                         =  count($date);
@@ -2452,7 +2454,7 @@ class OrderController extends FrontController
             ])
                 ->where('order_number', $order->order_number)
                 ->first();
-            if (! in_array($request->payment_option_id, $ex_gateways) && (isset($request->is_postpay) && $request->is_postpay == 1)) {
+            if (! in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay == 1)) {
                 if (! empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {
                         $vendorDetail = $vendor_value->vendor;
@@ -2556,6 +2558,8 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
+
+        \Log::info($user_ids);
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')
             ->whereIn('user_id', $user_ids)
             ->pluck('device_token')
@@ -3054,7 +3058,7 @@ class OrderController extends FrontController
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
             $order_vendor = OrderVendor::where([
                 'order_id' => $order->id,
                 'vendor_id' => $vendor
@@ -3109,7 +3113,7 @@ class OrderController extends FrontController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            Log::info("order Pre Time is ".$vendor_details->order_pre_time);
             $client = CP::orderBy('id', 'asc')->first();
             $postdata = [
                 'order_number' => $order->order_number,
@@ -3134,7 +3138,8 @@ class OrderController extends FrontController
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'order_pre_time'=>$vendor_details->order_pre_time
             ];
             if ($order_vendor->is_restricted == 1) {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && ! is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;

@@ -94,6 +94,7 @@
                 $mobile_server_key = (isset($creds->mobile_server_key)) ? $creds->mobile_server_key : '';
                 $access_code = (isset($creds->access_code)) ? $creds->access_code : '';
                 $enc_key = (isset($creds->enc_key)) ? $creds->enc_key : '';
+				$custom_url= (isset($creds->custom_url)) ? $creds->custom_url : '';
                 $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
                 $toyyibpay_api_key = (isset($creds->toyyibpay_api_key)) ? $creds->toyyibpay_api_key : '';
                 $toyyibpay_redirect_uri = (isset($creds->toyyibpay_redirect_uri)) ? $creds->toyyibpay_redirect_uri : '';
@@ -300,6 +301,14 @@
 										id="ccavenue_enc_key" class="form-control"
 										value="{{$enc_key}}" @if($opt->status == 1) required @endif>
 								</div>
+							</div>
+							<div class="col-12">
+								<label>{{__('Custom Url')}}</label>
+								<select class="form-control" name="custom_url" id="url">
+									<option value="com">.com</option>
+
+									<option value="ae" @if($custom_url=="ae")selected @endif >.ae</option>
+								</select>
 							</div>
 						</div>
 					</div>

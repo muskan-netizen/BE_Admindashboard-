@@ -669,16 +669,13 @@ class PickupDeliveryController extends BaseController{
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
-                if(isset($request->task_type) && !empty($request->task_type))
-                {
-                    $request->task_type = $request->task_type;
-                    $schedule_datetime_del = null;
-                    $request->order_time = $schedule_datetime_del;
-                }else{
-                    $request->task_type = 'schedule';
-                    $request->scheduled_date_time = $schedule_datetime_del;
-                    $request->order_time = $schedule_datetime_del;
+                $task_type = 'now';
+                if($request->has('task_type')){
+                    $task_type = $request->task_type;
+                }elseif(!empty($order->scheduled_date_time)){
+                    $task_type = 'schedule';
                 }
+                $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
@@ -710,7 +707,7 @@ class PickupDeliveryController extends BaseController{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-
+                Log::info("order Pre Time is ".$vendor_details->order_pre_time);
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -721,7 +718,7 @@ class PickupDeliveryController extends BaseController{
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
                             'allocation_type' => (isset($request->agent_id) && !empty($request->agent_id)) ? 'm' : 'a',
-                            'task_type' => $request->task_type,
+                            'task_type' => $task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
                             'barcode' => '',
@@ -747,7 +744,8 @@ class PickupDeliveryController extends BaseController{
                             'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                             'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
                             'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
-                            'agent' => $request->agent_id ?? null
+                            'agent' => $request->agent_id ?? null,
+                            'order_pre_time'=>$vendor_details->order_pre_time
                         ];
                 if($request->has('bid_task_type')){
                     $postdata['bid_task_type']    = $request->bid_task_type;

@@ -300,7 +300,7 @@ body.al_body_template_nine.p2p-module .top-banner-wrapper {
 }
 
 body.al_body_template_nine.p2p-module .common-banner {
-    min-height: 450px;
+    min-height: 400px;
     margin-bottom: 0;
     object-fit: cover;
 }
@@ -312,6 +312,7 @@ body.al_body_template_nine.p2p-module section.section-b-space.ratio_asos.al_vend
 
 body.al_body_template_nine.p2p-module .ratio_asos .top-banner-wrapper .top-banner-content h4 {
     padding: 0;
+    font-size: 45px;
 }
 
 body.al_body_template_nine .alPostBoxOuter .breadcrumb-item {
@@ -975,8 +976,8 @@ body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.s
 
 /*============== 06-02-2023===================*/
 .al_body_template_nine .menu-slider .al_main_category a {
-    font-size: 18px!important;
-    font-weight: 700;
+    font-size: 16px!important;
+    font-weight: 500;
 }
 .al_body_template_nine .buy_details .product-right .sold-by a{
     padding:3px 4px!important;
@@ -1555,7 +1556,7 @@ body.al_body_template_nine .collection-content .product-wrapper-grid .media-body
         text-align: center !important;
     }
     body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dropdown {
-        color: #000 !important;
+        color: #fff  !important;
         position: relative;
         top: 0;
         left: 0;
@@ -1738,6 +1739,7 @@ body.al_body_template_nine .collection-content .product-wrapper-grid .media-body
     body.al_body_template_nine.p2p-module .col-lg-5 .navbar-brand{order: 1;}
     body.al_body_template_nine.p2p-module .col-lg-5 .al_custom_head_map_box {order: 3;width:100%;}
     body.al_body_template_nine.p2p-module .col-lg-5 .al_toggle-menu{order: 2;margin-left: auto;}
+    body.al_body_template_nine.p2p-module .ratio_asos .top-banner-wrapper .top-banner-content h4{font-size: 25px;}
 }
 
 

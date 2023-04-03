@@ -32,8 +32,10 @@ class OrderVendorObserver
         {
             if(!empty($client_preferences->inventory_service_key_url) && !empty($client_preferences->inventory_service_key_code))
             {
-                if($orderVendor->order_status_option_id == 6 && inventorySyncOnOff($orderVendor->vendor_id, $client_preferences))  // 6 = marked as delivered
+                if($orderVendor->order_status_option_id == 6 && inventorySyncOnOff($orderVendor->vendor_id))  // 6 = marked as delivered
                 {
+                    Log::info('@@@ sync status @@@');
+                    Log::info('Inside if condition');
                     $orders = Order::with(['vendors.products'=>function($q){
                         $q->withoutAppends();
                     }, 'vendors.status', 'orderStatusVendor', 'address', 'user', 'vendors.products.product', 'vendors.vendor'])
@@ -109,9 +111,7 @@ class OrderVendorObserver
                     $url = $client_preferences->inventory_service_key_url;
                     // $url = '127.0.0.1:9002';
                     // $base_url = $url.'/api/v1/log-order';
-
-                    //// Log::info('## base_url ##');
-                    //// Log::info($base_url);
+                    
                     $request = $client->get($url.'/api/v1/log-order', [
                         'json' => ['product_details' => $product_details]
                     ]);

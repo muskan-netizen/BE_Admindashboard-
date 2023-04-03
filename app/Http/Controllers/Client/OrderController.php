@@ -213,6 +213,8 @@ class OrderController extends BaseController
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $HasGiftCard = 0;
+        $ClassName = $request->has('className') ? $request->className : 'col-xl-6';
+
         $orders = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with(['vendors.products' => function ($q) {
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
@@ -227,7 +229,7 @@ class OrderController extends BaseController
                 $query->where('user_id', $user->id);
             });
         }
-
+        $ClassName = $request->has('className') ? $request->className : 'col-xl-6';
         $order_count = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with('vendors')->where(function ($q1) {
             // 1 for cod ,38 for offline manual by harbans
             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1, 38]);
@@ -666,6 +668,7 @@ class OrderController extends BaseController
         $response2['appointment_orders'] = $appointment_orders??0;
         $response2['p2p_orders'] = $p2p_orders??0;
         $response2['pagination'] ='';
+        $response2['ClassName'] =$ClassName;
        
         if(!empty($response2['next_page_url'])){
            // $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']); 
@@ -686,7 +689,7 @@ class OrderController extends BaseController
             $response2['pagination'] = $pagination;
         }
         $response2['count_resp'] = count($orders);
-        $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee))->render();
+        $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('ClassName'=>$ClassName,'orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee))->render();
         if($request->response ==2){
             return $response2;
         }
@@ -1580,7 +1583,7 @@ class OrderController extends BaseController
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
-
+            
 
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
@@ -1945,6 +1948,7 @@ class OrderController extends BaseController
                             $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                         }
                         $client = CP::orderBy('id', 'asc')->first();
+                        Log::info("order Pre Time is ".$vendor_details->order_pre_time);
                         $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -2078,6 +2082,7 @@ class OrderController extends BaseController
                 'vendor_name' => $vendor_details->name ?? null,
                 'tip_amount' => $order->tip_amount,
                 'payment_method' => $order->payment_method,
+                'order_pre_time'=>$vendor_details->order_pre_time
             ];
             //pr($postdata);
             if ($orderVendorDetails->is_restricted == 1) {
@@ -3161,7 +3166,6 @@ class OrderController extends BaseController
                 // ->where('user_id', 2)
                 ->where('id', 11)
                 ->get();
-                dd($orders->toArray());
                 $cart_details = Cart::with('cartProducts')->where('user_id', 2)->first();
         // dd($orders->toArray());
         $product_details = [];
@@ -3234,7 +3238,6 @@ class OrderController extends BaseController
         $order_vendor = OrderVendor::where('order_id', 47)->first();
         $order_vendor->order_status_option_id = rand();
         $order_vendor->save();
-        dd($order_vendor);
     }
 
 

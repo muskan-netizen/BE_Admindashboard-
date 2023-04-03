@@ -4,7 +4,7 @@ namespace App\Http\Traits\HomePage;
 
 use App\Models\{Category, HomeProduct, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory, VendorCities, PromoCodeDetail, Promocode};
 use Carbon\Carbon;
-use Session, DB;
+use Session, DB, Auth;
 use Illuminate\Support\Str;
 
 
@@ -208,6 +208,10 @@ trait HomePageTrait
                     $multiply =  Session::get('currencyMultiplier') ?? 1;
                     $title = $product->translation->first() ? $product->translation->first()->title : $product->sku;
                     $image_url = $product->media->first() && !is_null($product->media->first()->image) ? $product->media->first()->image->path['image_fit'] . $p_dim . $product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                    $is_p2p = 0;
+                    if(@$product->category->categoryDetail->type_id && @$product->category->categoryDetail->type_id == 13){
+                        $is_p2p = 1;
+                    }
                     $productFiltered[] = array(
                         'id' => $product->id,
                         'tag_title' => $spotlight_products_title ?? 'Single Category Products',
@@ -227,7 +231,8 @@ trait HomePageTrait
                         'compare_price_numeric' =>@$product->variant->first()->compare_at_price * $multiply,
                         'price_numeric' =>@$product->variant->first()->price * $multiply,
                         'categoryDetail' => (@$product->category->categoryDetail) ? @$product->category->categoryDetail: [],
-                        'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug
+                        'category' => (@$product->category->categoryDetail->translation) ? @$product->category->categoryDetail->translation->first()->name : @$product->category->categoryDetail->slug,
+                        'is_p2p' => $is_p2p
                     );
                 }
             }
@@ -311,6 +316,79 @@ trait HomePageTrait
             $q->where('refrence_id', $vendor_id);
         })->where('restriction_on', 1)->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
         return $result2;
+     }
+
+     public function getRefrenceWisePromoCodes($vendor_ids = [], $product_ids = []){
+        $promo_codes = new \Illuminate\Database\Eloquent\Collection;
+        $now = Carbon::now()->toDateTimeString();
+
+        $firstOrderCheck = 0;
+        if( Auth::user()){
+            $userOrder = auth()->user()->orders->first();
+            if($userOrder){
+                $firstOrderCheck = 1;
+            }
+        }
+        if (!empty($product_ids)) {
+            $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids)->pluck('promocode_id');
+            $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details ) {
+                $query->where(function ($query2) use ($promo_code_details) {
+                    $query2->where('restriction_type', 1);
+                    if (!empty($promo_code_details->toArray())) {
+                        $query2->whereNotIn('id', $promo_code_details->toArray());
+                    }
+                });
+
+                $query->orWhere(function ($query1) use ($promo_code_details) {
+                    $query1->where('restriction_type', 0);
+                    if (!empty($promo_code_details->toArray())) {
+                        $query1->whereIn('id', $promo_code_details->toArray());
+                    } else {
+                        $query1->where('id', 0);
+                    }
+                });
+            });
+            if($firstOrderCheck){
+                $result1->where('first_order_only', 0);
+            }
+
+            $result1->where(['promo_visibility' => 'public']);
+    
+            $result1 = $result1->where('is_deleted', 0)->get();
+
+            $promo_codes = $promo_codes->merge($result1);
+        
+        }
+
+        if(!empty($vendor_ids)){
+            $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->whereIn('refrence_id', $vendor_ids)->pluck('promocode_id');
+            $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details ) {
+                $query->where(function ($query2) use ($vendor_promo_code_details) {
+                    $query2->where('restriction_type', 1);
+                    if (!empty($vendor_promo_code_details->toArray())) {
+                        $query2->whereNotIn('id', $vendor_promo_code_details->toArray());
+                    }
+                });
+
+                $query->orWhere(function ($query1) use ($vendor_promo_code_details) {
+                    $query1->where('restriction_type', 0);
+                    if (!empty($vendor_promo_code_details->toArray())) {
+                        $query1->whereIn('id', $vendor_promo_code_details->toArray());
+                    } else {
+                        $query1->where('id', 0);
+                    }
+                });
+            });
+            if($firstOrderCheck){
+                $result2->where('first_order_only', 0);
+            }
+
+            $result2->where(['promo_visibility' => 'public']);
+
+            $result2 = $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
+            $promo_codes = $promo_codes->merge($result2);
+        }
+        return $promo_codes;
      }
 
      public function vendorProducts_v2($venderIds, $langId, $currency = 'USD', $where = '', $type)

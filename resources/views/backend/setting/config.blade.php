@@ -147,10 +147,10 @@
                                                     name="is_same_day_delivery_switch" id="is_same_day_delivery_switch"
                                                     class="form-control checkbox_change"
                                                     data-className="is_same_day_delivery" data-color="#43bee1"
-                                                    @if (@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) checked='checked' @endif>
+                                                    @if (@$getAdditionalPreference['is_same_day_delivery'] == 1) checked='checked' @endif>
                                             </span>
                                             <input type="hidden"
-                                                @if (@getAdditionalPreference(['is_same_day_delivery'])['is_same_day_delivery'] == 1) value="1" @else value="0" @endif
+                                                @if (@$getAdditionalPreference['is_same_day_delivery'] == 1) value="1" @else value="0" @endif
                                                 name="is_same_day_delivery" id="is_same_day_delivery" />
                                         </div>
 
@@ -162,10 +162,10 @@
                                                     name="is_next_day_delivery_switch" id="is_next_day_delivery_switch"
                                                     class="form-control checkbox_change"
                                                     data-className="is_next_day_delivery" data-color="#43bee1"
-                                                    @if (@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) checked='checked' @endif>
+                                                    @if (@$getAdditionalPreference['is_next_day_delivery'] == 1) checked='checked' @endif>
                                             </span>
                                             <input type="hidden"
-                                                @if (@getAdditionalPreference(['is_next_day_delivery'])['is_next_day_delivery'] == 1) value="1" @else value="0" @endif
+                                                @if (@$getAdditionalPreference['is_next_day_delivery'] == 1) value="1" @else value="0" @endif
                                                 name="is_next_day_delivery" id="is_next_day_delivery" />
                                         </div>
 
@@ -178,10 +178,10 @@
                                                     id="is_hyper_local_delivery_switch"
                                                     class="form-control checkbox_change"
                                                     data-className="is_hyper_local_delivery" data-color="#43bee1"
-                                                    @if (@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) checked='checked' @endif>
+                                                    @if (@$getAdditionalPreference['is_hyper_local_delivery'] == 1) checked='checked' @endif>
                                             </span>
                                             <input type="hidden"
-                                                @if (@getAdditionalPreference(['is_hyper_local_delivery'])['is_hyper_local_delivery'] == 1) value="1" @else value="0" @endif
+                                                @if (@$getAdditionalPreference['is_hyper_local_delivery'] == 1) value="1" @else value="0" @endif
                                                 name="is_hyper_local_delivery" id="is_hyper_local_delivery" />
                                         </div>
                                     </div>
@@ -214,10 +214,10 @@
                                                     name="is_cod_payment_switch" id="is_cod_payment_switch"
                                                     class="form-control checkbox_change" data-className="is_cod_payment"
                                                     data-color="#43bee1"
-                                                    @if (@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) checked='checked' @endif>
+                                                    @if (@$getAdditionalPreference['is_cod_payment'] == 1) checked='checked' @endif>
                                             </span>
                                             <input type="hidden"
-                                                @if (@getAdditionalPreference(['is_cod_payment'])['is_cod_payment'] == 1) value="1" @else value="0" @endif
+                                                @if (@$getAdditionalPreference['is_cod_payment'] == 1) value="1" @else value="0" @endif
                                                 name="is_cod_payment" id="is_cod_payment" />
                                         </div>
 
@@ -229,10 +229,10 @@
                                                     name="is_prepaid_payment_switch" id="is_prepaid_payment_switch"
                                                     class="form-control checkbox_change"
                                                     data-className="is_prepaid_payment" data-color="#43bee1"
-                                                    @if (@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) checked='checked' @endif>
+                                                    @if (@$getAdditionalPreference['is_prepaid_payment'] == 1) checked='checked' @endif>
                                             </span>
                                             <input type="hidden"
-                                                @if (@getAdditionalPreference(['is_prepaid_payment'])['is_prepaid_payment'] == 1) value="1" @else value="0" @endif
+                                                @if (@$getAdditionalPreference['is_prepaid_payment'] == 1) value="1" @else value="0" @endif
                                                 name="is_prepaid_payment" id="is_prepaid_payment" />
                                         </div>
 
@@ -244,10 +244,10 @@
                                                     name="is_partial_payment_switch" id="is_partial_payment_switch"
                                                     class="form-control checkbox_change"
                                                     data-className="is_partial_payment" data-color="#43bee1"
-                                                    @if (@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) checked='checked' @endif>
+                                                    @if (@$getAdditionalPreference['is_partial_payment'] == 1) checked='checked' @endif>
                                             </span>
                                             <input type="hidden"
-                                                @if (@getAdditionalPreference(['is_partial_payment'])['is_partial_payment'] == 1) value="1" @else value="0" @endif
+                                                @if (@$getAdditionalPreference['is_partial_payment'] == 1) value="1" @else value="0" @endif
                                                 name="is_partial_payment" id="is_partial_payment" />
                                         </div>
                                     </div>
@@ -604,9 +604,6 @@
         </div>
     </form>
 
-        @php
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription']);
-    @endphp
 
     <div class="row">
         <div class="col-12">
@@ -1345,7 +1342,7 @@
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
-                <h4 class="page-title text-uppercase">Free Delivery By Roles</h4>
+                <h4 class="page-title text-uppercase">Peer to Peer(P2P)</h4>
             </div><!-- Social Logins title end -->
 
             <form method="POST" action="{{ route('additional.update') }}">
@@ -1359,7 +1356,7 @@
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="fb_login" class="d-flex align-items-center justify-content-between">
                                     <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-hubspot"></i>
-                                        <span>{{ __('Free delivery by roles') }}</span>
+                                        <span>{{ __('Peer to Peer(P2P) Delivery') }}</span>
                                     </h5>
 
                                     <button class="btn btn-info btn-block save_btn" name="free_delivery_submit"
@@ -1372,31 +1369,69 @@
                                     @if (@$getAdditionalPreference['is_free_delivery_by_roles'] == '1') checked='checked' value="1" @endif>
                                 <input type="hidden" @if (isset($getAdditionalPreference['is_free_delivery_by_roles']) == 1) value="1" @else value="0" @endif
                                     name="is_free_delivery_by_roles" id="is_free_delivery_by_roles_hidden" />
-
-                                {{-- @if (isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '1') checked='checked' @endif> --}}
                             </div>
                         </div>
                     </div>
-                    {{-- <input type="hidden" name='custom_mods_config_additional' value='1'>
-                  <input type="hidden" name='is_hubspot' value='1'> --}}
-                    {{-- <div class="row fb_row" style="{{((isset($preference) && $preference->client_preferences_additional->is_hubspot_enable == '0')) ? '' : 'display:none;'}}"> --}}
-                    <hr />
+
+                    <hr>
+                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                            <label for="add_to_cart_btn_switch"
+                                class="mr-2 mb-0">{{ __('Add to Cart') }}<small
+                                    class="d-block pr-5">{{ __('Enable to allow customers to add to cart.') }}</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery"
+                                    name="add_to_cart_btn_switch" id="add_to_cart_btn_switch"
+                                    class="form-control checkbox_change" data-className="add_to_cart_btn"
+                                    data-color="#43bee1"
+                                    @if ($getAdditionalPreference['add_to_cart_btn'] == 1) checked='checked' @endif>
+                            </span>
+                            <input type="hidden"
+                                @if ($getAdditionalPreference['add_to_cart_btn'] == 1) value="1" @else value="0" @endif
+                                name="add_to_cart_btn" id="add_to_cart_btn" />
+                        </div>
+                        
+                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                            <label for="chat_button_switch" class="mr-2 mb-0">{{ __('Chat Button') }}<small
+                                    class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="chat_button_switch"
+                                    id="chat_button_switch" class="form-control checkbox_change"
+                                    data-className="chat_button" data-color="#43bee1"
+                                    @if ($getAdditionalPreference['chat_button'] == 1) checked='checked' @endif>
+                            </span>
+                            <input type="hidden"
+                                @if ($getAdditionalPreference['chat_button'] == 1) value="1" @else value="0" @endif
+                                name="chat_button" id="chat_button" />
+                        </div>
+                        
+                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                            <label for="call_button_switch" class="mr-2 mb-0">{{ __('Call Button') }}<small
+                                    class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="call_button_switch"
+                                    id="call_button_switch" class="form-control checkbox_change"
+                                    data-className="call_button" data-color="#43bee1"
+                                    @if ($getAdditionalPreference['call_button'] == 1) checked='checked' @endif>
+                            </span>
+                            <input type="hidden"
+                                @if ($getAdditionalPreference['call_button'] == 1) value="1" @else value="0" @endif
+                                name="call_button" id="call_button" />
+                        </div>
+
+                        <hr />
                     <div class="row hub_row alCustomToggleColor"
                         style="{{ isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1 ? '' : 'display:none;' }}">
                         <div class="col-12">
-                            <label class="mr-2 mb-0">Apply free delivery to these roles on all products</label>
-                            @foreach ($allRoles as $allRole)
-                                <div class="form-group mb-2 mt-2">
-                                    <label for="fb_client_id">{{ $allRole->role }}</label>
-                                    <input type="checkbox" data-plugin="switchery" id="apply_free_del"
-                                        class="form-control checkbox_change"
-                                        name="apply_free_del[{{ $allRole->id }}]"
-                                        data-className="apply_free_del_hidden" data-color="#43bee1"
-                                        value="{{ $allRole->id }}" @if (in_array($allRole->id, $productDeliveryFeeByRole)) checked @endif>
-                                </div>
-                            @endforeach
+                            <label class="mr-2 mb-0">{{__('Apply free delivery to these roles on all products')}}</label>
+                            <select name="apply_free_del[]" class="form-control select2-multiple" id="apply_free_delivery" multiple="multiple">
+                                @foreach($allRoles as $allRole)
+                                {{-- $getAdditionalPreference['is_free_delivery_by_roles'] --}}
+                                    <option value="{{$allRole->id}}" @if (in_array($allRole->id, $productDeliveryFeeByRole)) selected @endif >{{$allRole->name}}</option>
+                                @endforeach
+                            </select>
+
                         </div>
                     </div>
+                       
+
+
                 </div><!-- HubSpot card end -->
             </form>
         </div>
@@ -1431,9 +1466,9 @@
                                 <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch"
                                     id="is_postpay_enable_switch" class="form-control checkbox_change"
                                     data-className="is_postpay_enable" data-color="#43bee1"
-                                    @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) checked='checked' @endif>
+                                    @if ($getAdditionalPreference['is_postpay_enable'] == 1) checked='checked' @endif>
                                 <input type="hidden"
-                                    @if (@getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'] == 1) value="1" @else value="0" @endif
+                                    @if (@$getAdditionalPreference['is_postpay_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_postpay_enable" id="is_postpay_enable" /> -->
                             </div>  
                         </div>
@@ -1443,20 +1478,20 @@
                                 <input type="checkbox" data-plugin="switchery" name="is_order_edit_enable_switch"
                                     id="is_order_edit_enable_switch" class="form-control checkbox_change"
                                     data-className="is_order_edit_enable" data-color="#43bee1"
-                                    @if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) checked='checked' @endif>
+                                    @if (@$getAdditionalPreference['is_order_edit_enable'] == 1) checked='checked' @endif>
                                 <input type="hidden"
-                                    @if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) value="1" @else value="0" @endif
+                                    @if (@$getAdditionalPreference['is_order_edit_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_order_edit_enable" id="is_order_edit_enable" />
                             </div>  
                         
-                            <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if (@getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'] == 1) @else none @endif;">
+                            <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if (@$getAdditionalPreference['is_order_edit_enable'] == 1) @else none @endif;">
                                 <div class="col-8">
                                     <label for="" class="mr-3">{{ __('Disable Order Edit before (Hours)') }}</label>
                                 </div>
                                 <div class="col-4">
                                     <input type="number" name="order_edit_before_hours" id="order_edit_before_hours"
                                         placeholder="" class="form-control"
-                                        value="{{ old('order_edit_before_hours', @getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'] ?? '') }}">
+                                        value="{{ old('order_edit_before_hours', @$getAdditionalPreference['order_edit_before_hours'] ?? '') }}">
                                 </div>
                                 <hr/>
                             </div>
@@ -1817,7 +1852,7 @@
                                                 <p class="mb-2"><span
                                                         class="font-weight-semibold mr-2">{{ __('From') }}:</span>
                                                     johndoe<span>
-                                                        < /span>contact@royodispatcher.com<span>></span>
+                                                        </span>contact@royodispatcher.com<span> ></span>
                                                 </p>
                                                 <p class="mb-2"><span
                                                         class="font-weight-semibold mr-2">{{ __('Reply To') }}:</span>

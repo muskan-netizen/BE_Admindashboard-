@@ -373,7 +373,7 @@ class OrderController extends BaseController
                         $order_vendor->user_id = $user->id;
                         $order_vendor->order_id = $order->id;
                         $order_vendor->vendor_id = $vendor_id;
-                        $OrderVendor->subscription_invoices_vendor_id = $vendor_subcription_lnvoices_id;
+                        $order_vendor->subscription_invoices_vendor_id = $vendor_subcription_lnvoices_id;
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
@@ -461,7 +461,7 @@ class OrderController extends BaseController
                                     if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
                                         $tax_category_ids[] = $tax_rate_detail->id;
                                     }
-                                    $rate = round($tax_rate_detail->tax_rate);
+                                    $rate = $tax_rate_detail->tax_rate;
                                     $tax_amount = ($price_in_dollar_compare * $rate) / 100;
                                     $product_tax = ($quantity_price+$productAddon_price) * $rate / 100;
                                     $taxable_amount = $taxable_amount + $product_tax;
@@ -509,7 +509,7 @@ class OrderController extends BaseController
                            
 
                             //$taxable_amount += $product_taxable_amount;
-                            $vendor_taxable_amount += $taxable_amount;
+                            $vendor_taxable_amount += decimal_format($taxable_amount);
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $variant_price = $variant->price;
                             // change variant_price price when is_service_product_price_from_dispatch on 
@@ -1542,7 +1542,7 @@ class OrderController extends BaseController
             else
                 $call_back_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/dispatch-order-status-update/" . $dynamic;
             //   $call_back_url = route('dispatch-order-update', $dynamic);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
             $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
@@ -1591,6 +1591,7 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
+            Log::info("order Pre Time is ".$vendor_details->order_pre_time);
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -1614,7 +1615,8 @@ class OrderController extends BaseController
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'order_pre_time'=>$vendor_details->order_pre_time
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2077,7 +2079,7 @@ class OrderController extends BaseController
 
                         $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     }
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);

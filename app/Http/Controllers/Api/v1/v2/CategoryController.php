@@ -7,15 +7,16 @@ use Validation;
 use Carbon\Carbon;
 // use Client;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,ProductActionTrait};
+use App\Http\Traits\HomePage\HomePageTrait;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference};
+use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference, Type};
 use Log;
 class CategoryController extends BaseController
 {
     private $field_status = 2;
-    use ApiResponser;
+    use ApiResponser,HomePageTrait,ProductActionTrait;
     /**     * Get Company ShortCode     *     */
     
     public function categoryData(Request $request, $cid = 0)
@@ -548,10 +549,18 @@ class CategoryController extends BaseController
             if ($cid == 0) {
                 return response()->json(['error' => 'No record found.'], 404);
             }
+            $p_ids = [];
+            $v_ids = [];
+            $promo = [];
+            $cateVendors = [];
+            $uniqVendors = [];
             $user = Auth::user();
             $langId = $user->language;
+
+            // Get vendors
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude);
-            
+
+            // Get all data by category id
             $category = Category::with([
                 'tags', 'type'  => function($q) {
                     $q->select('id', 'title as redirect_to');
@@ -572,30 +581,53 @@ class CategoryController extends BaseController
                         },
                     ]);
                 },
-                'products'  => function ($q) use ($langId) {
-                        $q->with(['media' => function($q){
-                            $q->groupBy('product_id');
-                        }, 'media.image',
-                        'translation' => function($q) use($langId){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-                        },
-                        'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
-                            $q->groupBy('product_id');
-                        },
-                    ]);
-                }
-                ,
                 'vendorCategory.vendor'  => function ($q) use ($ses_vendors) {
                     $q->whereIn('id', $ses_vendors);
                 },
                 'translation' => function ($q) use ($langId) {
                     $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                         ->where('category_translations.language_id', $langId);
-                }
+                },'cateBrands'  
             ])->select('id', 'status', 'icon', 'image', 'slug', 'type_id', 'can_add_products')->where('status', 1)->where('parent_id', $cid)->get();
+
+            // Collection of refrence_ids for promocode
+            if(!empty($category)){
+                foreach($category as $cst){
+                    $p_ids = array_merge($p_ids, $cst->products->pluck('id')->toArray());
+                    $v_ids = array_merge($v_ids, $cst->vendorCategory->pluck('vendor_id')->toArray());
+                    $cateVendors[] = $cst->vendorCategory->toArray();
+                }
+            }
+
+            // Remove duplicate ids and get promocode
+                $p_ids = array_unique($p_ids);
+                $v_ids = array_unique($v_ids);
+                $promo = $this->getRefrenceWisePromoCodes($v_ids, $p_ids);
+   
+
+            // Get popular & top_rated products
+            $popular_products = array_map(function($v){ $v->path = get_file_path($v->path,'FILL_URL','260','260'); return $v;},$this->vendorProducts($v_ids, $langId, '', 'popular_products'));
+            $top_rated_products = array_map(function($v){ $v->path = get_file_path($v->path,'FILL_URL','260','260'); return $v;},$this->vendorProducts($v_ids, $langId, '', 'top_rated_products'));
             
-            return $this->successResponse($category);
+            // Remove duplicate vendore
+            foreach($cateVendors as $key => $value) {
+                foreach($value as $vel){
+                    if(in_array($vel['vendor_id'], $v_ids)){
+                        $index = array_search($vel['vendor_id'], $v_ids);
+                        unset($v_ids[$index]);
+                        $uniqVendors[] = $vel;
+                    }
+                }
+            }
+
+            $data = [
+                'top_rated_products' => $top_rated_products,
+                'popular_products' => $popular_products,
+                'uniqVendors' => $uniqVendors,
+                'category' => $category,
+                'promo' => $promo
+            ];
+            return $this->successResponse($data);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }

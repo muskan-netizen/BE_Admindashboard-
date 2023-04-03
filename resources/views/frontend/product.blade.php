@@ -357,10 +357,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             {{-- Chat Button --}}
                                             <hr>
                                                 <h6 class="sold-by">
-                                            @if( !is_attribute_enabled())
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
-
-
                                                     <?php /*<span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
                                                     <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}"><i class="fa fa-comments" aria-hidden="true"></i></a>
@@ -370,7 +367,6 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @if(getAdditionalPreference(['call_button'])['call_button'])
                                                 <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
                                                 {{-- {{__('Call Button')}} --}}
-                                            @endif
                                             @endif
                                                 </h6>
                                     @endif
@@ -781,9 +777,11 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </li>
                                                 @endif
 
+                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
                                                 <li class="nav-item ml-3"><a class="nav-link {{(count($rating_details)>0)?'':'active'}}" id="compare-product-tab" data-toggle="tab" href="#compare-product" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Compare products')}}</a>
                                                     <div class="material-border"></div>
                                                 </li>
+                                @endif
                                             </ul>
                                             <div class="tab-content nav-material" id="top-tabContent">
                                                 {{-- <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
@@ -828,8 +826,11 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     <p>{{__('No Reviews Yet')}}</p>
                                                     @endforelse
                                                 </div>
-                                                @include('frontend.compare-product-table')
 
+                                                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
+                                                    @include('frontend.compare-product-table')
+                                                @endif
+                                                
                                             </div>
                                         </div>
                                     </div>

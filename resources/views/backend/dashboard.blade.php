@@ -34,7 +34,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 <div class="col-md-6 float-right">
                     <form class="d-flex">
                         @if(auth()->user()->is_superadmin)
-                          <div class="input-group mr-2">
+                          <div class="input-group mr-2  d-none">
                             <select name="app_managers" class="form-control select2-single mr-2" id="app_managers">
                             <option value="" >Select Manager</option>
                             @foreach($managers as $mng)
@@ -45,7 +45,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         @endif
 
                         @if(@auth()->user()->roles[0]->name == 'Manager')
-                        <div class="input-group mr-2">
+                        <div class="input-group mr-2  d-none">
                             <select name="type" id="reportType" class="form-control mr-2" >
                             <option value="" >Select Type</option>
                                 <option value="Vendor" >Vendor</option>
