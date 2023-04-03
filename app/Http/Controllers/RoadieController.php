@@ -81,7 +81,6 @@ class RoadieController extends Controller
                     "end" => date('Y-m-d H:i:s', strtotime('+5 days'))
                 ]
             ];
-            // dd($postData);
             $quotation = $this->getQuotations($postData);
             return $quotation;
         }catch (\Exception $e) {
@@ -168,5 +167,17 @@ class RoadieController extends Controller
                 'message' => $e->getMessage()
             ]);
         }
-    }    
+    }
+    
+    public function roadieWebhook(Request $request){
+        $json = json_decode($request->getContent());
+        dd($json);
+        try {
+        }catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
 }
