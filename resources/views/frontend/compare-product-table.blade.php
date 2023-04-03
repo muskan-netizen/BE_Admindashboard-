@@ -50,9 +50,8 @@
                                     </div> <!-- .top-info -->
             
                                     <ul class="cd-features-list">
-                                        <li>{{decimal_format($compare->variant->first()->price * $compare->variant->first()->multiplier)}}</li>
-                                        <li class="rate"><span>{{ number_format($compare->averageRating, 1, '.', '')}}</span></li>
-                                      
+                                        <li>{{showPriceWithCurrency($compare->variant->first()->price)}}</li>
+                                        <li class="rate{{round($compare->averageRating)}}"><span>{{ number_format($compare->averageRating, 1, '.', '')}}</span></li>
                                         <li>{!!  $compare->translation->first()->body_html?? 'N/A' !!}
                                         </li>
                                         <li><a href="{{route('vendorDetail',[$compare->vendor->slug])}}"> {{$compare->vendor->name}}</a></li>
