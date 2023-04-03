@@ -32,12 +32,13 @@ class OrderController extends Controller{
     
     
     public function getOrderVendorCalculations(Request $request,$flag = false){
-        $data['total_order_count'] = $this->getOrdervendors($request)->count();
-        $data['total_delivery_fees'] = decimal_format($this->getOrdervendors($request)->sum('delivery_fee'));
-        $data['total_cash_to_collected'] = decimal_format($this->getOrdervendors($request)->whereHas('orderDetail', function ($query) {
+        $order = $this->getOrdervendors($request);
+        $data['total_order_count'] = $order->count();
+        $data['total_delivery_fees'] = decimal_format($order->sum('delivery_fee'));
+        $data['total_cash_to_collected'] = decimal_format($order->whereHas('orderDetail', function ($query) {
             return $query->where('payment_option_id', '=', 1);
         })->sum('payable_amount'));
-        $data['total_earnings_by_vendors'] = decimal_format($this->getOrdervendors($request)->sum('payable_amount'));    
+            $data['total_earnings_by_vendors'] = decimal_format($order->sum('payable_amount'));    
         
         if($flag){
             return $data;

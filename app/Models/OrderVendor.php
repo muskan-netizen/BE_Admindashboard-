@@ -9,9 +9,7 @@ class OrderVendor extends Model{
     use HasFactory;
     const CANCEL_STATUS = 'Cancelled';
 	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url','delivery_response'];
-	public $appends = [
-	    'vendor_amount'
-	];
+	
 	public function orderDetail(){
 	    return $this->hasOne('App\Models\Order' , 'id', 'order_id'); 
 	}
