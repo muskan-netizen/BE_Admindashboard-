@@ -61,7 +61,7 @@
                     </th>
                  </tr>
               </thead>
-              {!! (isset($mailData['email_template_content'])) ?  $mailData['email_template_content'] : $email_template_content !!}
+                 {!! $mailData['email_template_content'] !!}
             </table>
          </div>
       </section>
