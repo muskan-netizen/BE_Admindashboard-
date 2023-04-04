@@ -2310,9 +2310,10 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
 
 ////////////////////////////////////// skipcash payment gateway////////////////////////////////////
 
-window.paymentViaSkipCash = function paymentViaSkipCash(address_id,order){
+window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
     let total_amount = 0;
     let tip = 0;
+    let cabElement = $("#pickup_now");
     let tipElement = $("#cart_tip_amount");
     let cartElement = $("input[name='cart_total_payable_amount']");
     let cart_id = $("#cart_total_payable_amount").data("cart_id");
@@ -2321,7 +2322,6 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id,order){
     let walletElement = $("input[name='wallet_amount']");
     let ajaxData = [];
     let data = [];
-
     if (path.indexOf("cart") !== -1) {
         total_amount = cartElement.val();
         tip = tipElement.val();
@@ -2339,13 +2339,17 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id,order){
         // ajaxData = $("#subscription_payment_form").serializeArray();
         data.subscription_id = subscription_id.val();
         data.payment_from ='subscription';
+    }else if (cabElement.length > 0) {
+        total_amount = cabElement.attr('data-amount');
+        data.payment_from = 'pickup_delivery';
+        data.order_id = order.order_number;
     } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
         total_amount = walletElement.val();
         data.payment_from ='tip';
         data.order_number = $("#order_number").val();
     }
     data.amount = total_amount;
-    data.payment_option_id =44;
+    data.payment_option_id =52;
     data._token = $('input[name=_token]').val();
     $.redirect(skipcash, data);
 }

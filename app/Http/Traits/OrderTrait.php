@@ -18,6 +18,7 @@ use App\Http\Traits\{ValidatorTrait, ApiResponser, SquareInventoryManager,smsMan
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Models\{CaregoryKycDoc, Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, CartCoupon, OrderProductPrescription, CartProductPrescription, UserVendor, VendorOrderProductStatus};
+use Illuminate\Support\Facades\Redirect;
 
 trait OrderTrait
 {
@@ -1517,14 +1518,19 @@ trait OrderTrait
                 $order->save();
 
                 $this->orderSuccessCartDetail($order);
-
-                $returnUrl = route('order.success',[$order->id]);
-                $response['status'] = 'Success';
-                $response['msg'] = 'Success Order.';
-                $response['payment_from'] = 'cart';
-                $response['route'] = $returnUrl;
-
+                if($payment->payment_from == 'web'){
+                        $returnUrl = route('order.success',[$order->id]);
+                        $response['status'] = 'Success';
+                        $response['msg'] = 'Success Order.';
+                        $response['payment_from'] = 'cart';
+                        $response['route'] = $returnUrl;
+                        
                 return $response;
+
+                }else{
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=skip_cash'.'&status=00&order='.$order->order_number;
+                    return Redirect::to($returnUrl);  
+                }
                 
 
        } else {
@@ -1647,12 +1653,13 @@ trait OrderTrait
         {
 
             try {
-                        // Auto accept order
+                    // Auto accept order
                     $orderController = new OrderController();
                     $orderController->autoAcceptOrderIfOn($order->id);
 
-                    $cart = Cart::where('user_id', auth()->id())->select('id')->first();
+                    $cart = Cart::where('user_id',$order->user_id)->select('id')->first();
                     $cartid = $cart->id;
+
                     Cart::where('id', $cartid)->update([
                         'schedule_type' => null,
                         'scheduled_date_time' => null,

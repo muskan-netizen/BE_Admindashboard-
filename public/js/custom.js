@@ -4925,13 +4925,13 @@ $(document).ready(function () {
             case 49:
                 paymentViaplugnpay('', payment_option_id, '');
                  break;
-                 case 50:
+            case 50:
                 paymentViazulpay('', payment_option_id, '');
                  break;
-            break;
-             case 50:
-                paymentViazulpay('', payment_option_id, '');
-                 break;
+            case 52:
+                paymentViaSkipCash('',payment_option_id,'');
+                break;
+                
         }
 
     }
@@ -5676,6 +5676,10 @@ $(document).ready(function () {
                 break;
             case 50:
                 paymentViazulpay('',payment_option_id,'');
+                break;
+
+            case 52:
+                paymentViaSkipCash('',payment_option_id,'');
                 break;
             
             case 53:

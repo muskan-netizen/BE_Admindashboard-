@@ -99,7 +99,7 @@ class PaymentOptionController extends BaseController{
 
     public function postPaymentVia_skip_cash(Request $request){
         $gateway = new SkipCashController();
-          return $gateway->beforePayment($request);
+          return $gateway->mobilePay($request,'app');
     }
     
     public function postPaymentVia_azul(Request $request){

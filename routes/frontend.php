@@ -150,7 +150,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//Skip Cash
 
 	Route::post('payment/skipcash', 'Front\SkipCashController@showSkipCashPage')->name('payment.skipcash');
-	Route::get('order/success', 'Front\SkipCashController@successPage')->name('payment.skipcash.success');
+	Route::get('success/skipcash', 'Front\SkipCashController@successPage')->name('payment.skipcash.success');
 	Route::post('/skipcash/webhook', 'Front\SkipCashController@handleWebhook');
 
 
