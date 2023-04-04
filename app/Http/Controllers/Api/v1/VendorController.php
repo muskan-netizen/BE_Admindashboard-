@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption, VendorAdditionalInfo};
 use Log;
+use Illuminate\Contracts\Pagination\Paginator;
 class VendorController extends BaseController{
     use ApiResponser;
     private $field_status = 2;
@@ -1997,7 +1998,7 @@ class VendorController extends BaseController{
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
         $latitude = $request->latitude;
         $longitude = $request->longitude;
-        $limit = $request->has('limit') ? $request->limit : 12;
+        $limit = $request->has('limit') ? $request->limit :12;
         $page = $request->has('page') ? $request->page : 1;
 
         //filter
@@ -2061,6 +2062,7 @@ class VendorController extends BaseController{
                 });
             });
         }
+        $total = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit)->lastPage();
         $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit, $page)->sortBy('vendorToUserDistance')->values();
 
         foreach ($vendorData as $vendor) {
@@ -2122,6 +2124,7 @@ class VendorController extends BaseController{
         // }
         
         $newCollection = collect([
+            'total' => $total,
             'current_page' => $page,
             'per_page' => $limit,
             'data' => $vendorData
