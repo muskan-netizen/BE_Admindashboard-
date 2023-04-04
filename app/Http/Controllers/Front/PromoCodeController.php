@@ -175,9 +175,8 @@ class PromoCodeController extends Controller{
                         $promo_codes = $promo_codes->merge($result1);
                     }
                 }
-                $restriction = 1;
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
-                $promoVendor = Promocode::where('restriction_on', $restriction);
+                $promoVendor = Promocode::where('restriction_on', 1);
                 $result2 = $promoVendor->where(function ($query) use ($vendor_promo_code_details) {
                     $query->where(function ($query2) use ($vendor_promo_code_details) {
                         $query2->where('restriction_type', 1);
