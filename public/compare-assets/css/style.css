@@ -24,7 +24,7 @@ Main Components
 .product_compare_design header {
   padding: 0 5% 25px;
 }
-.product_compare_designheader::after {
+.product_compare_design header::after {
   clear: both;
   content: "";
   display: table;
@@ -640,7 +640,12 @@ No JS
 .no-js .cd-products-columns .check {
   display: none;
 }
-
+.product_compare_design header {
+  margin: 20px 0px !important;
+  padding: 0 5% 25px !important;
+  box-shadow: none;
+  background:transparent;
+}
 
 /*-----responsive query for compare product----------*/
 
