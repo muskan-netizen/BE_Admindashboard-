@@ -1554,7 +1554,7 @@ $timezone = Auth::user()->timezone;
             var order_id = $(this).data('order_id');
             var vendor_id = $(this).data('vendor_id');
             if(time <=0 ){
-                alert("Time Should Be Between 0 and 60 minutes");
+                alert("Please enter a valid minutes");
                 return false;
             }
             $.ajax({
