@@ -911,6 +911,7 @@ class OrderController extends BaseController
         $user_docs = UserDocs::where('user_id', $order->user_id)->get();
         $user_registration_documents = UserRegistrationDocuments::get();
         $vendor_data = Vendor::where('id', $vendor_id)->first();
+        $buffer_time = OrderVendor::where(['order_id'=>$order_id,'vendor_id'=>$vendor_id])->first();
 
         $driver_data = '';
         if ($order->vendors[0]->shipping_delivery_type == 'L') {
@@ -933,10 +934,10 @@ class OrderController extends BaseController
         if(!empty($order->recurring_booking_time)){
             $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number,'type'=>2])->get();
         }
-
         //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
+            'buffer_time'=>$buffer_time->extra_time,
             'order' => $order,
             'processorProduct' => $processorProduct,
             'vendor_order_statuses' => $vendor_order_statuses,
@@ -2925,7 +2926,9 @@ class OrderController extends BaseController
                 $notification_content = NotificationTemplate::where('id', 8)->first();
             } elseif ($order_status_id == 6) {
                 $notification_content = NotificationTemplate::where('id', 9)->first();
-            }
+            } elseif ($order_status_id == 7) {
+                $notification_content = NotificationTemplate::where('id', 13)->first();
+            } 
             if ($notification_content) {
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
@@ -3240,11 +3243,11 @@ class OrderController extends BaseController
         $postdata= [
             'order_id'=>$request->order_id,
             'vendor_id'=>$request->vendor_id,
-            'extra_time'=>$request->time,
         ];
         $order=  OrderVendor::where($postdata)->first();
         $order->extra_time = $request->time;
         $order->save();
+        $postdata['time'] = $request->time;
         $dispatch_domain = $this->getDispatchDomain();
         $client = new Client([
             'headers' => [
@@ -3259,13 +3262,24 @@ class OrderController extends BaseController
             ['form_params' => ($postdata)]
         );
         $response = json_decode($res->getBody(), true);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Time Added Success Fully.',
-            'data' => [
-                'time' => $response,
-            ]
-        ], 200);
+        if($response['status']=='success'){
+            $order = Order::find($order->order_id);
+            $user_ids=explode(" ",$order->user_id); 
+            $this->sendStatusChangePushNotificationCustomer($user_ids, $order,7);
+            $response = json_decode($res->getBody(), true);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Time Added Success Fully.',
+                
+            ], 200);
+        }else{
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Some Thing Went Wrong.',
+              
+            ], 200);
+        }
+        
         
 
     }

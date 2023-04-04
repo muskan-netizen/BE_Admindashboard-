@@ -368,8 +368,8 @@ $timezone = Auth::user()->timezone;
 
                             {{ __("Exchange To") }}<a href="{{$order->vendors[0]->exchanged_to_order->vendor_detail_url }}"><span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span></a>
                             @endIf
-                            <input type="number" value="{{$order->vendors->first()->extra_time}}" id="buffer_time">
-                            <button class="buffer_time_btn  badge badge-info" data-order_id={{$order->id}} data-vendor_id={{$vendor_id}} '>{{ __('Add Delay Time') }} <img src=""> </button>
+                            <input type="number" value="{{$buffer_time}}" id="buffer_time">
+                            <button class="buffer_time_btn  badge badge-info"  data-order_id={{$order->id}} data-vendor_id={{$vendor_id}} '>{{ __('Add Delay Time') }} <img src=""> </button>
 
                             @if(@$order->vendors[0]->exchanged_of_order)
                             {{ __("Exchange Of") }}
@@ -1552,9 +1552,8 @@ $timezone = Auth::user()->timezone;
             var time = $("#buffer_time").val();
             //alert(time);
             var order_id = $(this).data('order_id');
-              var vendor_id = $(this).data('vendor_id');
-            alert(vendor_id);
-            if(time <=0 || time >60){
+            var vendor_id = $(this).data('vendor_id');
+            if(time <=0 || time >=60){
                 alert("Time Should Be Between 0 and 60 minutes");
                 return false;
             }
@@ -1575,6 +1574,9 @@ $timezone = Auth::user()->timezone;
                                 $.NotificationApp.send("Success", response.message, "top-right",
                                     "#5ba035", "success");
                                
+                            }else{
+                                  $.NotificationApp.send("Error", response.message, "top-right",
+                                    "#5ba035", "error");
                             }
                         },
                         error: function(response) {

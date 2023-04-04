@@ -99,6 +99,13 @@ class NotificationTemplateSeeder extends Seeder
                 "tags" => "{order_id}",
                 "content" => "Your order ({order_id}) has been modified",
                 "slug" => "order-modified-customer"
+            ],
+            [
+                "label" => "Order Delayed (Customer)",
+                "subject" => "Order Delayed",
+                "tags" => "{order_id}",
+                "content" => "Your order ({order_id}) has been Delayed",
+                "slug" => "order-delayed-customer"
             ]
         ];
         NotificationTemplate::truncate();
