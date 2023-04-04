@@ -176,8 +176,7 @@ class PromoCodeController extends Controller{
                     }
                 }
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
-                $promoVendor = Promocode::where('restriction_on', 1);
-                $result2 = $promoVendor->where(function ($query) use ($vendor_promo_code_details) {
+                $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
                     $query->where(function ($query2) use ($vendor_promo_code_details) {
                         $query2->where('restriction_type', 1);
                         if (!empty($vendor_promo_code_details->toArray())) {
