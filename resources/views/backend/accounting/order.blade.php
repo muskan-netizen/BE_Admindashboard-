@@ -116,7 +116,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                     <th>{{ __('Date & Time') }}</th>
                                     <th>{{ __('Customer Name') }}</th>
                                     <th>{{ __('Vendor') }}</th>
-                                    <th>{{ __('Vendor Amount') }}</th>
+                                    <th>{{ __('Vendor Earning') }}</th>
                                     <th>{{ __('Subtotal Amount') }}</th>
                                     @if(auth()->user()->is_superadmin ==1)
                                         <th>{{ __('Markup Price') }}({{ __("Visible For Admin") }})</th>
@@ -153,12 +153,13 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        function getPercentageAmount(percent,amount){
+       function getPercentageAmount(percent,amount,delivery){
             // var totalPercent = (percent/amount * 100);
+            var price = parseFloat(amount) + parseFloat(delivery);
            if(amount == 0.00){
             	return amount;
             }else{
-            	var totalPercent = (percent * 100) / amount; // Added by ovi
+            	var totalPercent = (percent * 100) / price; // Added by ovi
             	return parseFloat(totalPercent).toFixed(2);
             }
             
@@ -285,7 +286,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 
                             {data: 'admin_commission', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
-                                return data+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
+                                return data+" ("+getPercentageAmount(data,full.subtotal_amount,full.delivery_fee)+"%)";
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
                             {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
