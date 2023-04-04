@@ -286,7 +286,7 @@ class OrderController extends BaseController
                                         $total_taxes+=(float)$row1[1];
                                     }
                                 }
-                    $order->taxable_amount = $total_taxes;
+                    $order->taxable_amount = decimal_format($total_taxes);
                     if(checkColumnExists('orders', 'is_postpay')){
                         $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
                     }
@@ -2445,7 +2445,7 @@ class OrderController extends BaseController
                 $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
             }else{
                 $order['total_amount'] = $order->total_amount;
-                $order['payable_amount'] = $order->payable_amount;
+                $order['payable_amount'] = decimal_format($order->payable_amount);
             }
             //mohit sir branch code added by sohail
             $advancePayableAmount = 0;
@@ -2470,8 +2470,8 @@ class OrderController extends BaseController
            }
 
             // $order['user_document_value'] =  $user_docs;
-            $order->taxable_amount =  $total_other_taxes??0;
-            $order->total_other_taxes =  $total_other_taxes??0;
+           $order->taxable_amount =  decimal_format($total_other_taxes??0);
+           $order->total_other_taxes =  decimal_format($total_other_taxes??0);
             $order['user_document_list'] =  $user_registration_documents;
             $order['category_KYC_document'] = $category_KYC_document??null;
 
