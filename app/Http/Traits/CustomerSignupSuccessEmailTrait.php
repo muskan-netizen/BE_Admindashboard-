@@ -37,6 +37,7 @@ trait CustomerSignupSuccessEmailTrait{
                   'email' => $user->email,
                   'powered_by' => url('/'),
                   'phone_no' => $user->phone_number,
+                  'logo' => $client_detail->logo['original'],
                   'email_template_content' => $content,
                   'subject' => $email_template->subject,
                   'customer_name' => ucwords($user->name),
