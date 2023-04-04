@@ -1101,12 +1101,18 @@ body.al_body_template_nine .product-card-box.position-relative.al_box_third_temp
 body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule_div input::-webkit-calendar-picker-indicator {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23fff" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
 }
+.dark  div#login-section .btn {
+    color: #000!important;
+}
+
 @media (max-width:1400px){
     .al_body_template_four  .brand-ing {
         width: 180px;
         height: 180px;
     }
-    
+    .paddingrigh {
+        padding-right: 15px!important;
+    }
 }
 @media (max-width:991px){
     .al_body_template_four .vender-icon img {
