@@ -2062,7 +2062,6 @@ class VendorController extends BaseController{
                 });
             });
         }
-        $total = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit)->lastPage();
         $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit, $page)->sortBy('vendorToUserDistance')->values();
 
         foreach ($vendorData as $vendor) {
@@ -2124,7 +2123,6 @@ class VendorController extends BaseController{
         // }
         
         $newCollection = collect([
-            'total' => $total,
             'current_page' => $page,
             'per_page' => $limit,
             'data' => $vendorData
