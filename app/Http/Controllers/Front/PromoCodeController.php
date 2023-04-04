@@ -101,7 +101,6 @@ class PromoCodeController extends Controller{
             $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
 
             $doller_compare = $customerCurrency ?  $customerCurrency->doller_compare : 1 ;
-            //pr($firstOrderCheck);
             // $order_vendor_coupon_list = OrderVendor::whereNotNull('coupon_id')->where('user_id', $user->id)->get([DB::raw('coupon_id'),  DB::raw('sum(coupon_id) as total')]);
             $now = Carbon::now()->toDateTimeString();
             $now = convertDateTimeInClientTimeZone($now);
@@ -176,9 +175,7 @@ class PromoCodeController extends Controller{
                         $promo_codes = $promo_codes->merge($result1);
                     }
                 }
-
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
-               
                 $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
                     $query->where(function ($query2) use ($vendor_promo_code_details) {
                         $query2->where('restriction_type', 1);
@@ -197,6 +194,7 @@ class PromoCodeController extends Controller{
                     });
 
                 });
+                
                 if($firstOrderCheck){
                     $result2->where('first_order_only', 0);
                 }
