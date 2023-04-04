@@ -168,6 +168,7 @@ class DeliveryOptionController extends Controller
                 if ((isset($test_mode_arr)) && ($test_mode_arr == 'on')) {
                     $test_mode = 1;
                 }
+                
 
                 if ((isset($method_name_arr)) && (strtolower($method_name_arr) == 'ahoy')) {
                     $validatedData = $request->validate([
