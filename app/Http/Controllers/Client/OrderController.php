@@ -767,6 +767,7 @@ class OrderController extends BaseController
         if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
             $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
         }
+        
         $order = $order->findOrFail($order_id);
         //    return $order;
         // set payment option dynamic name
@@ -911,7 +912,6 @@ class OrderController extends BaseController
         $user_docs = UserDocs::where('user_id', $order->user_id)->get();
         $user_registration_documents = UserRegistrationDocuments::get();
         $vendor_data = Vendor::where('id', $vendor_id)->first();
-        $buffer_time = OrderVendor::where(['order_id'=>$order_id,'vendor_id'=>$vendor_id])->first();
 
         $driver_data = '';
         if ($order->vendors[0]->shipping_delivery_type == 'L') {
@@ -937,7 +937,6 @@ class OrderController extends BaseController
         //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
-            'buffer_time'=>$buffer_time->extra_time,
             'order' => $order,
             'processorProduct' => $processorProduct,
             'vendor_order_statuses' => $vendor_order_statuses,
@@ -3240,33 +3239,12 @@ class OrderController extends BaseController
     }
 
     public function addExtraPrepTimeToOrder(Request $request){
-        $postdata= [
-            'order_id'=>$request->order_id,
-            'vendor_id'=>$request->vendor_id,
-        ];
-        $order=  OrderVendor::where($postdata)->first();
-        $order->extra_time = $request->time;
-        $order->save();
-        $postdata['time'] = $request->time;
-        $dispatch_domain = $this->getDispatchDomain();
-        $client = new Client([
-            'headers' => [
-                'personaltoken' => $dispatch_domain->delivery_service_key,
-                'shortcode' => $dispatch_domain->delivery_service_key_code,
-                'content-type' => 'application/json'
-            ]
-        ]);
-        $url = $dispatch_domain->delivery_service_key_url;    
-               $res = $client->post(
-            $url . '/api/task/update_order_prepration_time',
-            ['form_params' => ($postdata)]
-        );
-        $response = json_decode($res->getBody(), true);
+      
+        $response    = $this->addBufferTime($request);
         if($response['status']=='success'){
-            $order = Order::find($order->order_id);
+            $order = Order::find($response ['order_id']);
             $user_ids=explode(" ",$order->user_id); 
             $this->sendStatusChangePushNotificationCustomer($user_ids, $order,7);
-            $response = json_decode($res->getBody(), true);
             return response()->json([
                 'status' => 'success',
                 'message' => 'Time Added Success Fully.',

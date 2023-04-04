@@ -1503,4 +1503,32 @@ trait OrderTrait
              ]);
          }
      }
+
+     public function addBufferTime($request){
+        $postdata= [
+            'order_id'=>$request->order_id,
+            'vendor_id'=>$request->vendor_id,
+        ];
+        $order=  OrderVendor::where($postdata)->first();
+        $order->extra_time = $request->time;
+        $order->save();
+        $postdata['time'] = $request->time;
+        $dispatch_domain = $this->getDispatchDomain();
+        $client = new Client([
+            'headers' => [
+                'personaltoken' => $dispatch_domain->delivery_service_key,
+                'shortcode' => $dispatch_domain->delivery_service_key_code,
+                'content-type' => 'application/json'
+            ]
+        ]);
+        $url = $dispatch_domain->delivery_service_key_url;    
+               $res = $client->post(
+            $url . '/api/task/update_order_prepration_time',
+            ['form_params' => ($postdata)]
+        );
+        $response = json_decode($res->getBody(), true);
+        $response['order_id'] =$order->order_id;
+        return $response;
+     }
+     
 }
