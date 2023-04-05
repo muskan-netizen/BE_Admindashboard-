@@ -10,7 +10,7 @@ use App\Models\Client as CP;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
-use App\Models\{VendorMultiBanner,WebStylingOption};
+use App\Models\{VendorAdditionalInfo, VendorMultiBanner,WebStylingOption};
 
 
 trait VendorTrait{
@@ -34,6 +34,14 @@ trait VendorTrait{
         ];
         return $respons;
      
+    }
+
+    public function updateVendorAdditionalPreference($id,$additionalData)
+    {
+        return  VendorAdditionalInfo::updateOrCreate(
+                ['vendor_id'=> $id],
+                $additionalData
+            );
     }
 
 

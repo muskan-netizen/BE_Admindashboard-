@@ -1992,6 +1992,60 @@
             </form>
         </div>
 
+        <div class="col-xl-4 col-lg-4 h-100">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">Influencer Module</h4>
+            </div>
+
+            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                @csrf
+                <input type="hidden" name="influencer_mode" value="1">
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head text-uppercase">
+                                        <span>{{ __('Manage Influencer') }}</span>
+                                    </h5>
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                            </div>
+                            
+                            @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry')
+
+                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                <label for="is_influencer_refer_and_earn_switch" class="mr-2 mb-0">{{__('Influencer Module')}}<small class="d-block pr-5">{{__("Enable to allow influencer module.")}}</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="is_influencer_refer_and_earn_switch" id="is_influencer_refer_and_earn_switch" class="form-control checkbox_change" data-className="is_influencer_refer_and_earn" data-color="#43bee1" @if($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) checked='checked'  @endif>
+                                </span>
+                                <input type="hidden"  @if($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif  name="is_influencer_refer_and_earn"  id="is_influencer_refer_and_earn"/>
+                            </div>
+
+                                
+                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                        <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Refer and Earn by Influencer') }}
+                                            <small
+                                                class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
+                                        <span> <input type="checkbox" data-plugin="switchery"
+                                                name="celebrity_check" id="celebrity_check" class="form-control"
+                                                data-color="#43bee1"
+                                                @if (isset($preference) && $preference->celebrity_check == '1') checked='checked' @endif></span>
+                                                
+                                    </div>
+
+                                    
+                                
+                            @endif
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </form>
+        </div>
+
     </div>
 
 

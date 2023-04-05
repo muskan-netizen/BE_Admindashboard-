@@ -61,7 +61,9 @@
     text-transform: capitalize;
     margin-right:0!important;
 }
-
+.search_bar.menu-right .icon-nav a span {
+    font-family: 'Poppins', sans-serif;
+}
 .al_body_template_one .vendor-design_new {
     margin-top: -16%;
     display: flex;
@@ -85,7 +87,9 @@
 .al_body_template_four .profile_address ul.vendor-info li.d-block.vendor-location a span {
     color: #000;
 }
-
+.main-rating i {
+    padding-left: 2px;
+}
 .al_body_template_eight .vendor-design_new {
     margin-top: -14%;
     display: flex;
@@ -315,6 +319,12 @@ span.org_price.ml-1.font-14 {
 }
 .al_body_template_one .inner_spacing h4 {
     color: #000;
+    font-size: 14px;
+    font-weight: 600;
+}
+.al_body_template_one .inner_spacing h4 small {
+    font-size: 14px;
+    font-weight: 300;
 }
 .al_body_template_one .main-fillter .side_fillter {
     border: none;margin-top: 0px !important;

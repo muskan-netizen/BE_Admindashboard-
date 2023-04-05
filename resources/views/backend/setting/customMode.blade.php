@@ -1,17 +1,7 @@
 
 @if ($client_preference_detail->business_type != 'taxi')
 @if ($client_preference_detail->business_type != 'laundry')
-    <div class="col-md-4">
-        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Refere and Earn by Influncer') }}
-                <small
-                    class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
-            <span> <input type="checkbox" data-plugin="switchery"
-                    name="celebrity_check" id="celebrity_check" class="form-control"
-                    data-color="#43bee1"
-                    @if (isset($preference) && $preference->celebrity_check == '1') checked='checked' @endif></span>
-        </div>
-    </div>
+
     <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="pharmacy_check" class="mr-2 mb-0">{{ __('Pharmacy Mod') }}
@@ -677,21 +667,13 @@
     </div>
     <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="is_influencer_refer_and_earn_switch" class="mr-2 mb-0">{{__('Influencer Module')}}<small class="d-block pr-5">{{__("Enable to allow influencer module.")}}</small></label>
-        <span> <input type="checkbox" data-plugin="switchery" name="is_influencer_refer_and_earn_switch" id="is_influencer_refer_and_earn_switch" class="form-control checkbox_change" data-className="is_influencer_refer_and_earn" data-color="#43bee1" @if($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) checked='checked'  @endif>
-            </span>
-            <input type="hidden"  @if(@$getAdditionalPreference['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif  name="is_influencer_refer_and_earn"  id="is_influencer_refer_and_earn"/>
-        </div>
-        </div>
-    <div class="col-md-4">
-        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="is_admin_vendor_rating" class="mr-2 mb-0">{{__('Admin Vendor Rating')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
            <span> <input type="checkbox" data-plugin="switchery" name="is_admin_vendor_rating_switch" id="is_admin_vendor_rating_switch" class="form-control checkbox_change" data-className="is_admin_vendor_rating"  data-color="#43bee1" @if($getAdditionalPreference['is_admin_vendor_rating'] == 1) checked='checked' @endif>
             </span>
             <input type="hidden"  @if($getAdditionalPreference['is_admin_vendor_rating'] == 1) value="1" @else value="0" @endif  name="is_admin_vendor_rating"  id="is_admin_vendor_rating"/>
          </div>
         </div>
-        <div class="col-md-4 d-none">
+        <div class="col-md-4 ">
             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                 <label for="is_enable_compare_product" class="mr-2 mb-0">{{__('Compare Product')}}<small class="d-block pr-5">{{__("Enable Compare Product Option in Product Details Recomended For ECommerce.")}}</small></label>
                 <span> <input type="checkbox" data-plugin="switchery" name="is_enable_compare_product" id="is_enable_compare_product_switch" class="form-control checkbox_change" data-className="is_enable_compare_product"  data-color="#43bee1" @if($getAdditionalPreference['is_enable_compare_product'] == 1) checked='checked' @endif>

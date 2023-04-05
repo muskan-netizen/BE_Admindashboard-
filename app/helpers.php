@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
+use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, VendorAdditionalInfo, WebStylingOption};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -89,6 +89,22 @@ if (!function_exists('getAdditionalPreference')) {
 //         return $values;
 //     }
 // }
+
+if (!function_exists('getVendorAdditionalPreference')) {
+    function getVendorAdditionalPreference($vendorId,$key = ''){
+        $vendorInfo =  VendorAdditionalInfo::where('vendor_id',$vendorId);
+        if($key){
+            $data =  $vendorInfo->value($key);
+            if($key == 'compare_categories' && !empty($data))
+                $data = explode(',',$data);
+
+        }else{
+            $data =$vendorInfo->first();
+        }   
+
+        return $data??[];
+    }
+}
 
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
