@@ -79,7 +79,7 @@ trait AzulPaymentService
                 'ECommerceUrl' => $this->ECOMMERCE_URL,
                 'CustomOrderId' => $card['order_number'],
                 'DataVaultToken' => $userCard->token,
-                'ForceNo3DS' => '1'
+                'ForceNo3DS' => '0'
             ];
         }else{
             
@@ -114,14 +114,14 @@ trait AzulPaymentService
                 'CustomOrderId' => $card['order_number'],
                 'SaveToDataVault' => $saveVault,
                 'DataVaultToken' => '',
-                'ForceNo3DS' => '1'
+                'ForceNo3DS' => '0'
             ];
             if($saveVault){
-                $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
+               $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
             }
         }
         $response = $this->sendRequest($request);
-        if ($response['code'] != 200) {
+       if ($response['code'] != 200) {
             Log::info([
                 'error http payWithCard',
                 'order_id: ' . json_encode($response['message'])
@@ -140,7 +140,7 @@ trait AzulPaymentService
             ]);
             return [
                 'message' => $response['data']->ErrorDescription,
-                'ok' => $response['data']->ResponseCode,
+                 'ok' => false,
                 'data' => $response['data']
             ];
         }
