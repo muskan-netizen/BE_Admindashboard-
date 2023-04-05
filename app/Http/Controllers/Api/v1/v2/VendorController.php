@@ -2776,8 +2776,8 @@ class VendorController extends BaseController{
             $userid = $user->id;
             $latitude = $user->latitude;
             $longitude = $user->longitude;
-            $limit = $request->has('limit') ? $request->limit : 2;
-            $page = $request->has('page') ? $request->page : 1;
+            $limit = $request->has('limit') ? $request->limit : 15;
+            $page = $request->has('page') ? $request->page : 2;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             $langId = $user->language;
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
