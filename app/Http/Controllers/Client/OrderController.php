@@ -769,9 +769,7 @@ class OrderController extends BaseController
         if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
             $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
         }
-        
         $order = $order->findOrFail($order_id);
-        //  dd($order);
         //    return $order;
         // set payment option dynamic name
         if (@$order->paymentOption->code) {
@@ -937,7 +935,6 @@ class OrderController extends BaseController
         if(!empty($order->recurring_booking_time)){
             $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number,'type'=>2])->get();
         }
-        $extra_time = OrderVendor::where(['order_id'=> $order_id,'vendor_id'=>$vendor_id])->first();
         //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
@@ -956,8 +953,7 @@ class OrderController extends BaseController
             "category_KYC_document" => $category_KYC_document,
             'driver_data' => (($driver_data) ? json_decode($driver_data) : ''),
             'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
-            'recurring_booking' => $recurring_booking,
-            'extra_time'=>$extra_time
+            'recurring_booking' => $recurring_booking
         ]);
     }
 
