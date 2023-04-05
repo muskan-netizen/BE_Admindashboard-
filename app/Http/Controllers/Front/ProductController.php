@@ -99,6 +99,7 @@ class ProductController extends FrontController{
          /**
           * long_term service product
           * */
+
         if($product->is_long_term_service == 1){
             $product_id = $product->LongTermProducts->product_id;
             $url_slug   = $product->LongTermProducts->product->url_slug;
@@ -246,10 +247,9 @@ class ProductController extends FrontController{
             }
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
 
-            $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles']);
+            $suggested_product = Product::with(['vendor', 'translation', 'variant', 'productVariantByRoles']);
             if( !empty($product->category->category_id) ) {
-                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
-                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->orderby('id', 'desc')->limit(20)->get();
+                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
             }
 
 
@@ -260,7 +260,6 @@ class ProductController extends FrontController{
                     }
                 }
             }
-
 
             if( !empty($product->brand_id) ) {
                 $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
@@ -353,6 +352,8 @@ class ProductController extends FrontController{
             if( $parsed_cutoff_time->gt($current_time) ) {
                 $current_time_response = true;
             }
+
+            
             return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct]);
         }
    }

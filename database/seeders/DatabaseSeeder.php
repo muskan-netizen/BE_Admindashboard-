@@ -50,7 +50,8 @@ class DatabaseSeeder extends Seeder
               PanelAuthUserSeeder::class,
               AppStylingAddOptionTableSeeder::class,
               MainRoleSeeder::class,
-              MainPermissionSeeder::class
+              MainPermissionSeeder::class,
+              ShippingOptionSeeder::class
           ]);
         // $this->call(UsersTableSeeder::class);
        // $this->call(AppStylingOptionsTableSeeder::class);

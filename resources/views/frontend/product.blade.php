@@ -70,6 +70,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     </style>
 
 @endsection
+@section('css-compare')
+@endsection
 
 @section('content')
 
@@ -777,7 +779,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </li>
                                                 @endif
 
-                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
+                                                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] && 
+                                                (in_array($product->category->category_id,getVendorAdditionalPreference($product->vendor_id,'compare_categories'))))
+                                                
                                                 <li class="nav-item ml-3"><a class="nav-link {{(count($rating_details)>0)?'':'active'}}" id="compare-product-tab" data-toggle="tab" href="#compare-product" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Compare products')}}</a>
                                                     <div class="material-border"></div>
                                                 </li>
@@ -826,10 +830,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     <p>{{__('No Reviews Yet')}}</p>
                                                     @endforelse
                                                 </div>
-
-                                                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
                                                     @include('frontend.compare-product-table')
-                                                @endif
                                                 
                                             </div>
                                         </div>

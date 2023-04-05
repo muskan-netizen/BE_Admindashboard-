@@ -9,8 +9,8 @@ use Illuminate\Support\Collection;
 use App\Models\{Client as CP,SubscriptionInvoicesVendor};
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
-use App\Models\{VendorMultiBanner,WebStylingOption};
+
+use App\Models\{VendorAdditionalInfo, VendorMultiBanner,WebStylingOption};
 
 
 trait VendorTrait{
@@ -50,6 +50,14 @@ trait VendorTrait{
         $order_count = DB::select( DB::raw($query));
         $vendor_id = array_column( $order_count,'vendor_id');
        return  $vendor_id;
+    }
+
+    public function updateVendorAdditionalPreference($id,$additionalData)
+    {
+        return  VendorAdditionalInfo::updateOrCreate(
+                ['vendor_id'=> $id],
+                $additionalData
+            );
     }
 
 

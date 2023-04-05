@@ -71,7 +71,7 @@ class ClientPreferenceController extends BaseController{
 
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
 
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price']);
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_influencer_refer_and_earn']);
 
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
@@ -316,6 +316,9 @@ class ClientPreferenceController extends BaseController{
             }
             $request->request->add(['square_credentials' => $json_creds]);
         }
+        if($request->has('influencer_mode')){
+            $preference->celebrity_check = ($request->has('celebrity_check') && $request->celebrity_check == 'on') ? 1 : 0;
+        }
 
         // update Client Preference Additional column
         $this->updatePreferenceAdditional($request);
@@ -450,7 +453,7 @@ class ClientPreferenceController extends BaseController{
         if($request->has('custom_mods_config') && $request->custom_mods_config == '1'){
             $preference->enquire_mode = ($request->has('enquire_mode') && $request->enquire_mode == 'on') ? 1 : 0;
             $preference->pharmacy_check = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
-            $preference->celebrity_check = ($request->has('celebrity_check') && $request->celebrity_check == 'on') ? 1 : 0;
+           
             $preference->subscription_mode = ($request->has('subscription_mode') && $request->subscription_mode == 'on') ? 1 : 0;
             $preference->tip_before_order = ($request->has('tip_before_order') && $request->tip_before_order == 'on') ? 1 : 0;
             $preference->tip_after_order = ($request->has('tip_after_order') && $request->tip_after_order == 'on') ? 1 : 0;
