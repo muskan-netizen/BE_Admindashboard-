@@ -730,15 +730,17 @@ class OrderController extends BaseController
 
     public function getOrderDetail($domain = '', $order_id, $vendor_id)
     {
+        //  dd($vendor_id);
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $vendor_order_status_option_ids = [];
         $vendor_order_status_created_dates = [];
         $order = Order::with(array(
-            'vendors' => function ($query) use ($vendor_id) {
-                $query->where('vendor_id', $vendor_id);
-            },
-            'vendors.products.prescription' => function ($query) use ($vendor_id, $order_id) {
+            'vendors' => function ($query) use ($vendor_id,$order_id) {
+                $query->join('vendors', 'vendors.id', '=', 'order_vendors.vendor_id')
+                ->where('vendors.id', $vendor_id)
+                ->where('order_vendors.order_id', $order_id);            },
+              'vendors.products.prescription' => function ($query) use ($vendor_id, $order_id) {
                 $query->where('vendor_id', $vendor_id)->where('order_id', $order_id);
             },
             'vendors.products' => function ($query) use ($vendor_id) {
@@ -747,10 +749,10 @@ class OrderController extends BaseController
                     $query->with('order_product_status');
                 }
             },
-            'vendors.products.product',
-            'vendors.products.addon',
-            'vendors.products.addon.set',
-            'vendors.products.addon.option',
+             'vendors.products.product',
+             'vendors.products.addon',
+             'vendors.products.addon.set',
+             'vendors.products.addon.option',
             'vendors.products.addon.option.translation' => function ($q) use ($langId) {
                 $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
                 $q->where('addon_option_translations.language_id', $langId);
@@ -769,6 +771,7 @@ class OrderController extends BaseController
         }
         
         $order = $order->findOrFail($order_id);
+        //  dd($order);
         //    return $order;
         // set payment option dynamic name
         if (@$order->paymentOption->code) {
@@ -934,6 +937,7 @@ class OrderController extends BaseController
         if(!empty($order->recurring_booking_time)){
             $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number,'type'=>2])->get();
         }
+        $extra_time = OrderVendor::where(['order_id'=> $order_id,'vendor_id'=>$vendor_id])->first();
         //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
@@ -953,6 +957,7 @@ class OrderController extends BaseController
             'driver_data' => (($driver_data) ? json_decode($driver_data) : ''),
             'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
             'recurring_booking' => $recurring_booking,
+            'extra_time'=>$extra_time
         ]);
     }
 
@@ -2925,9 +2930,7 @@ class OrderController extends BaseController
                 $notification_content = NotificationTemplate::where('id', 8)->first();
             } elseif ($order_status_id == 6) {
                 $notification_content = NotificationTemplate::where('id', 9)->first();
-            } elseif ($order_status_id == 7) {
-                $notification_content = NotificationTemplate::where('id', 13)->first();
-            } 
+            }
             if ($notification_content) {
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
@@ -3243,12 +3246,10 @@ class OrderController extends BaseController
         $response    = $this->addBufferTime($request);
         if($response['status']=='success'){
             $order = Order::find($response ['order_id']);
-            $user_ids=explode(" ",$order->user_id); 
-            $this->sendStatusChangePushNotificationCustomer($user_ids, $order,7);
+            $this->sendDelayPushNotification($order->user_id, $order,$request);
             return response()->json([
                 'status' => 'success',
                 'message' => 'Time Added Success Fully.',
-                
             ], 200);
         }else{
             return response()->json([
