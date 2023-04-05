@@ -17,6 +17,10 @@ class CabBookingLayout extends Model
         return $langData;
     }
 
+    public function translation_one($langId = 0){
+        return $this->hasOne('App\Models\CabBookingLayoutTranslation');
+    }
+
     public function translation(){
       return $this->belongsTo('App\Models\CabBookingLayoutTranslation', 'id', 'cab_booking_layout_id' );
     }
@@ -49,15 +53,11 @@ class CabBookingLayout extends Model
 
     public function scopeApp($query)
     {
-      if(checkColumnExists('cab_booking_layouts', 'type')){
-        return $query->where('type', 2);
-      }
+      return $query->where('type', 2);
     }
 
     public function scopeWeb($query)
     {
-      if(checkColumnExists('cab_booking_layouts', 'type')){
-        return $query->where('type', 1);
-      }
+      return $query->where('type', 1);
     }
 }

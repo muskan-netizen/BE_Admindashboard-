@@ -27,7 +27,7 @@
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
-                                        <span data-plugin="counterup">{{$total_order_value}}</span>
+                                        <span data-plugin="counterup" id="total_order_value">{{$total_order_value}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">{{ __("Total Order Value") }}</p>
                                 </div>
@@ -66,6 +66,11 @@
                         <div class="row">
                             <div class="col-md-3">
                                  <input type="text" class="form-control al_box_height flatpickr-input" id="range-datepicker" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
+                            </div>
+                            <div class="col-sm-3 mb-1">
+                                <button type="button" class="btn btn-danger al_box_height waves-effect waves-light" id="clear_filter_btn_icon">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
                             </div>
                         </div>
                    </div>
@@ -110,6 +115,7 @@
             mode: "range",
             onClose: function(selectedDates, dateStr, instance) {
                 initDataTable();
+                getOrderCalculations();
             }
         });
 
@@ -164,6 +170,27 @@
             });
 
         }
+        
+		function getOrderCalculations(){
+			 $.ajax({
+                 method:"GET",
+                  url: "{{route('account.vendor.calculations')}}",
+                  data:{
+                    date_filter: $('#range-datepicker').val(),
+                  },
+                  success:function(response){
+                  	$("#total_order_value").html(response.total_order_value);
+                  	$("#total_delivery_fees").html(response.total_delivery_fees);
+                  	$("#total_admin_commissions").html(response.total_admin_commissions);
+                  }
+            });
+		}
+		$("#clear_filter_btn_icon").click(function() {
+            $('#range-datepicker').val('');
+            initDataTable();
+            getOrderCalculations();
+            
+        });
     });
 </script>
 @endsection

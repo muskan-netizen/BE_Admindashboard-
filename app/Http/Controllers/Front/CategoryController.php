@@ -671,8 +671,8 @@ class CategoryController extends FrontController{
             $product = $this->productDetail($request->product_id);
           
             $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
-            $is_slot_from_dispatch = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_slot_from_dispatch  : '') : '';
-            $show_dispatcher_agent = checkColumnExists('products', 'is_show_dispatcher_agent') ? ($product ? $product->is_show_dispatcher_agent  : '') :' ';
+            $is_slot_from_dispatch = $product ? $product->is_slot_from_dispatch  : '';
+            $show_dispatcher_agent = $product ? $product->is_show_dispatcher_agent  : '';
           
             $last_mile_check       = $product ? $product->Requires_last_mile  : '';
             $vendorStartDate       = $vendorStartTime  = '';

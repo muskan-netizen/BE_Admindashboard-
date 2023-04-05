@@ -818,7 +818,7 @@ $(document).ready(function () {
         $('.cross').hide();
         $('#schedule_datetime').val('');
         $('#tasknow').val('now');
-        cartHeader();
+        // cartHeader();
     });
 
     $(document).on("click", ".clproduct_cart_order_form", function(e) {
@@ -2305,7 +2305,6 @@ $(document).ready(function () {
                             OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);
                             OrderStorage.setStorageSingle('LongTermServiceAdded',cart_details.products[0].is_long_term_service);
                             OrderStorage.setStorageSingle('RecurringBookingAdded',cart_details.products[0].is_recurring_booking);
-                            console.log(cart_details.products[0].dispatch_agent_id);
                             OrderSessionStorage.setStorageSingle('dispatcher_agent_id',cart_details.products[0].dispatch_agent_id)
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
@@ -2336,12 +2335,15 @@ $(document).ready(function () {
                                 //if(response.schedule_datetime!=null){
                                     var schedule_datetime = '';
                                     if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && typeof $('#edit_order_schedule_slot').val()!='undefined' && $('#edit_order_schedule_slot').val()!=''){
+                                    
                                         var edit_order_schedule_datetime = $("#edit_order_schedule_datetime").val();
                                         schedule_datetime  = edit_order_schedule_datetime.split(" ")[0];
                                     }else{
                                         schedule_datetime = $("#edit_order_schedule_datetime").val();
                                     }
-                                    if(schedule_datetime!='' && typeof $("#schedule_datetime").val()!='undefined'){
+                                  
+                                    if(schedule_datetime!=''&& schedule_datetime!=undefined && typeof $("#schedule_datetime").val()!='undefined'){
+                                      
                                         $("#schedule_datetime").val(schedule_datetime);
                                         $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("max", $("#schedule_datetime").val());
@@ -2841,9 +2843,14 @@ $(document).ready(function () {
         $('#add_new_address_form').hide();
     });
     $(document).on("click", "#add_new_address_btn", function () {
+        if(auth){
         $(this).hide();
         initialize();
+        $("#add_new_address_form_modal").modal('show');
         $('#add_new_address_form').show();
+        }else{
+          $('#login_modal').modal('show');
+        }
     });
     $(document).on("click", "#save_address", function () {
         let city = $('#add_new_address_form #city').val();

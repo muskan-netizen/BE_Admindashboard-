@@ -965,7 +965,7 @@ class VendorController extends FrontController
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
                     $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
-
+                    $value->category_type_id = (!empty($value->category->categoryDetail->first())) ? $value->category->categoryDetail->type_id : 0;
                     $cid = $value->category_id;
 
                     if(!in_array($cid, $category_list)){
