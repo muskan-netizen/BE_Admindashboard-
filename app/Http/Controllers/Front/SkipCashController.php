@@ -21,7 +21,6 @@ class SkipCashController extends Controller
 
     public function orderNumber($request)
    {
-    \Log::info(json_encode($request->all()));
        $time = time();
        $user_id = auth()->id();
        $amount = $request->amt??$request->amount;
@@ -73,7 +72,7 @@ class SkipCashController extends Controller
 
            ]);
        } else if ($request->payment_from == 'pickup_delivery') {
-           $time = $request->order_id;
+           $time = $request->order_id??$request->order_number;
            Payment::create([
                'amount' => 0,
                'transaction_id' => $time,
@@ -193,7 +192,6 @@ class SkipCashController extends Controller
 
     public function mobilePay(Request $request)
     {
-
         $request->request->add(['payment_from' => $request->action,'from'=>$request->action,'amt'=>number_format($request->amount,2),'subsid'=>$request->subscription_id??'','user_from'=>'app']);
         $data =  $this->showSkipCashPage($request,'','app');
        if(isset($data) && !empty($data))
@@ -256,13 +254,9 @@ class SkipCashController extends Controller
                 $this->failedOrderWalletRefund($order);
 
                 if($payment->payment_from != 'app'){
-                    $returnUrl = route('order.return.success');
-                    $response['status'] = 'Fail';
-                    $response['msg'] = 'Failed Order.';
-                    $response['payment_from'] = 'cart';
-                    $response['route'] = $returnUrl;
 
-                    return $response;
+                    return Redirect::to(route('showCart'))->with('error',$request->message);
+                    
                 } else {
 
                     $returnUrl = route('payment.gateway.return.response').'/?gateway=skip_cash'.'&status=00&order='.$order->order_number;

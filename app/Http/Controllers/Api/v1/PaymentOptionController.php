@@ -16,6 +16,7 @@ use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
 use App\Http\Controllers\Front\MpesaController;
 use App\Http\Controllers\Front\MvodafoneController;
+use App\Http\Controllers\Front\NmiPaymentController;
 use App\Http\Controllers\Front\PayphoneController;
 use App\Http\Controllers\Front\SkipCashController;
 use App\Http\Controllers\Front\ToyyibPayController;
@@ -99,7 +100,12 @@ class PaymentOptionController extends BaseController{
 
     public function postPaymentVia_skip_cash(Request $request){
         $gateway = new SkipCashController();
-          return $gateway->mobilePay($request,'app');
+          return $gateway->mobilePay($request);
+    }
+
+     public function postPaymentVia_nmi(Request $request){
+        $gateway = new NmiPaymentController();
+          return $gateway->mobilePay($request);
     }
     
     public function postPaymentVia_azul(Request $request){

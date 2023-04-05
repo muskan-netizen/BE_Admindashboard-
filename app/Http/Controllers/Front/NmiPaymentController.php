@@ -49,66 +49,77 @@ class NmiPaymentController extends Controller
    {
        $time = time();
        $user_id = auth()->id();
-
-       if ($request->from == 'cart') {
+       $amount = $request->amt??$request->amount;
+       \Log::info(json_encode($request->all()));
+       if ($request->payment_from == 'cart') {
            $time = $request->order_number;
            Payment::create([
                'amount' => 0,
                'transaction_id' => $time,
-               'balance_transaction' => $request->amt,
+               'balance_transaction' => $amount,
                'type' => 'cart',
                'date' => date('Y-m-d'),
-               'user_id' => $user_id
+               'user_id' => $user_id,
+               'payment_from'=>$request->user_from??'web'
            ]);
-       } elseif ($request->from == 'wallet') {
+       } elseif ($request->payment_from == 'wallet') {
            $time = $request->transaction_id ?? time();
            Payment::create([
                'amount' => 0,
                'transaction_id' => $time,
-               'balance_transaction' => $request->amt,
+               'balance_transaction' => $amount,
                'type' => 'wallet',
                'date' => date('Y-m-d'),
-               'user_id' => $user_id
+               'user_id' => $user_id,
+               'payment_from'=>$request->user_from??'web'
+
            ]);
-       } elseif ($request->from == 'tip') {
-           $time = time();
-           Payment::create([
-               'amount' => 0,
-               'transaction_id' => $request->order_number . '_' . $time,
-               'balance_transaction' => $request->amt,
-               'type' => 'tip',
-               'date' => date('Y-m-d'),
-               'user_id' => $user_id
-           ]);
-       } elseif ($request->from == 'subscription') {
-           $time = time();
-           Payment::create([
-               'amount' => 0,
-               'transaction_id' => $request->subsid . '_' . $time,
-               'balance_transaction' => $request->amt,
-               'type' => 'subscription',
-               'date' => date('Y-m-d'),
-               'user_id' => $user_id
-           ]);
-       } else if ($request->from == 'pickup_delivery') {
-           $time = $request->order_number;
+       } elseif ($request->payment_from == 'tip') {
+           $time = $request->order_number . '_' . time();
            Payment::create([
                'amount' => 0,
                'transaction_id' => $time,
-               'balance_transaction' => $request->amt,
+               'balance_transaction' => $amount,
+               'type' => 'tip',
+               'date' => date('Y-m-d'),
+               'user_id' => $user_id,
+               'payment_from'=>$request->user_from??'web'
+
+           ]);
+       } elseif ($request->payment_from == 'subscription') {
+           $time = $request->subsid??$request->subscription_id . '_' . time();
+           Payment::create([
+               'amount' => 0,
+               'transaction_id' => $time,
+               'balance_transaction' => $amount,
+               'type' => 'subscription',
+               'date' => date('Y-m-d'),
+               'user_id' => $user_id,
+               'payment_from'=>$request->user_from??'web'
+
+           ]);
+       } else if ($request->payment_from == 'pickup_delivery') {
+           $time = $request->order_id??$request->order_number;
+           Payment::create([
+               'amount' => 0,
+               'transaction_id' => $time,
+               'balance_transaction' => $amount,
                'type' => 'pickup_delivery',
                'date' => date('Y-m-d'),
-               'user_id' => $user_id
+               'user_id' => $user_id,
+               'payment_from'=>$request->user_from??'web'
+
            ]);
        }
        return $time;
    }
 
-   public function beforePayment(Request $request)
+   public function beforePayment(Request $request,$domain='',$app='')
    {
-
        $response = [];
        $user = auth()->user();
+       $request->request->add(['payment_from' => $request->action??$request->from,'from'=>$request->action??$request->from,'amt'=>$request->amount,'subsid'=>$request->subscription_id??'']);
+
        $number = $this->orderNumber($request);
 
        if ($request->from == 'wallet') {
@@ -124,33 +135,17 @@ class NmiPaymentController extends Controller
            ]);
        }
 
-       $expDate = substr($request->dt,0,2).'/'.substr($request->dt,-2);
-
-       $address = UserAddress::where('is_primary','1')->first();
-
-       $this->setBilling($user->name,$user->name,$user->name,$address->address,$address->address,$address->city, $address->state,$address->pincode,$address->country,$user->phone_number,$user->phone_number,$user->email,$this->domain);
-
-       $this->setShipping($user->name,$user->name,$user->name,$address->address,$address->address,$address->city, $address->state,$address->pincode,$address->country,$user->email);
-       $this->setOrder($number,"Royo Order",0, 0,$user->phone_number,$this->ip);
-       $dataResponse = $this->doSale($request->amount??$request->amt,$request->cno,$expDate);
+       $dataResponse = $this->makePayment($request,$number);
 
        if ($dataResponse['response'] == 3) {
-           $response['status'] = 'Fail';
-           $response['msg'] = $dataResponse['responsetext'];
-           $response['payment_from'] = $request->from;
-           $response['route'] = '';
-           return $response;
+
+            $messageArray['status'] = '0';
+            $messageArray['msg'] = $dataResponse['response'];
+            return $messageArray;
+
        }
        if (isset($dataResponse['response']) && $dataResponse['response'] == 1) {
-
-           if ($request->from == 'tip') {
-               $payment = Payment::where('transaction_id', $request->order_number . '_' . $number)->first();
-           } else if ($request->from == 'subscription') {
-               $payment = Payment::where('transaction_id', $request->subsid . '_' . $number)->first();
-           } else {
-               $payment = Payment::where('transaction_id', $request->order_number)->first();
-           }
-
+            $payment = Payment::where('transaction_id', $number)->first();
            if ($payment) {
                $payment->viva_order_id = $dataResponse['transactionid'];
                $payment->save();
@@ -168,20 +163,44 @@ class NmiPaymentController extends Controller
                return $this->completePickupDelivery($dataResponse, $payment, $request);
            }
        } else {
-
-           $returnUrl = route('order.return.success');
-           $response['status'] = 'Fail';
-           $response['msg'] = $dataResponse['responsetext'];
-           $response['payment_from'] = 'cart';
-           $response['route'] = $returnUrl;
-           return $response;
+            $response['status'] = '0';
+            $response['msg'] = $dataResponse['response'];
+            return $response;
        }
+   }
+
+   public function mobilePay(Request $request,$domain='')
+   {
+       $request->request->add(['payment_from' => $request->action,'from'=>$request->action,'amt'=>$request->amount,'subsid'=>$request->subscription_id??'','user_from'=>'app']);
+       $data =  $this->beforePayment($request,$domain,'app');
+       if(isset($data) && !empty($data))
+       {
+           return $data;
+       }
+   }
+   
+
+   public function makePayment(Request $request,$number)
+   {
+        $user = auth()->user();
+
+        $expDate = substr($request->dt,0,2).'/'.substr($request->dt,-2);
+        $address = UserAddress::where('is_primary','1')->first();
+        $this->setBilling($user->name,$user->name,$user->name,$address->address,$address->address,$address->city, $address->state,$address->pincode,$address->country,$user->phone_number,$user->phone_number,$user->email,$this->domain);
+
+        $this->setShipping($user->name,$user->name,$user->name,$address->address,$address->address,$address->city, $address->state,$address->pincode,$address->country,$user->email);
+        $this->setOrder($number,"Royo Order",0, 0,$user->phone_number,$this->ip);
+        $dataResponse = $this->doSale($request->amount??$request->amt,$request->cno,$expDate);
+        \Log::info(json_encode($dataResponse));
+        return $dataResponse;
    }
 
 
    public function completeOrderCart($request, $payment)
    {
       $order = Order::where('order_number', $payment->transaction_id)->first();
+      \Log::info(json_encode($order));
+
       if (isset($request['response']) && $request['response'] == 1) 
       {
                $order->payment_status = '1';
@@ -198,8 +217,10 @@ class NmiPaymentController extends Controller
                return $response;
 
                }else{
-                   $returnUrl = route('payment.gateway.return.response').'/?gateway=skip_cash'.'&status=00&order='.$order->order_number;
-                   return Redirect::to($returnUrl);  
+
+                    $responseArray['status'] = '200';
+                    $responseArray['msg'] = 'Success Order.';
+                    return $responseArray;
                }
                
 
@@ -207,24 +228,19 @@ class NmiPaymentController extends Controller
 
                $this->failedOrderWalletRefund($order);
 
-               if (isset($request->auth_token) && ! empty($request->auth_token)) {
-                   $returnUrl = route('order.return.success');
+               if($payment->payment_from == 'web'){
+                   $returnUrl = route('showCart');
                    $response['status'] = 'Fail';
                    $response['msg'] = 'Failed Order.';
                    $response['payment_from'] = 'cart';
                    $response['route'] = $returnUrl;
-
-                   return $response;
                } else {
 
-                   $returnUrl = route('order.return.success');
-                   $response['status'] = 'Fail';
-                   $response['msg'] = 'Failed Order.';
-                   $response['payment_from'] = 'cart';
-                   $response['route'] = $returnUrl;
-
-                   return $response;
+                $response['status'] = '0';
+                $response['msg'] = 'Failed';
                }
+               return $response;
+
       }
   }
 
@@ -236,8 +252,8 @@ class NmiPaymentController extends Controller
            $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $payment->transaction_id . '</b>']);
 
           if ($payment->payment_from == 'app') {
-              $returnUrl = route('payment.gateway.return.response') . '/?gateway=nmi' . '&status=200&transaction_id=' . $payment->transaction_id;
-              $response['route'] = $returnUrl;
+                    $response['status'] = '200';
+                    $response['msg'] = 'Success';
           } else {
               $returnUrl = route('user.wallet');
               $response['route'] = $returnUrl;
@@ -257,9 +273,9 @@ class NmiPaymentController extends Controller
 
           $orderController = new OrderController();
           $orderController->tipAfterOrder($request);
-          if ($request['from'] == 'app') {
-              $returnUrl = route('payment.gateway.return.response') . '/?gateway=nmi' . '&status=200&transaction_id=' . $payment->transaction_id;
-              $response['route'] = $returnUrl;
+          if ($payment->payment_from == 'app') {
+                $response['status'] = '200';
+                $response['msg'] = 'Success';
           } else {
               $returnUrl = route('user.orders');
               $response['route'] = $returnUrl;
@@ -284,9 +300,9 @@ class NmiPaymentController extends Controller
           $subscriptionController->purchaseSubscriptionPlan($request, '', $requestdata->subsid);
 
 
-          if ($request['from'] == 'app') {
-              $returnUrl = route('payment.gateway.return.response') . '/?gateway=nmi' . '&status=200&transaction_id=' . $payment->transaction_id;
-              $response['route'] = $returnUrl;
+          if ($payment->payment_from == 'app') {
+                    $response['status'] = '200';
+                    $response['msg'] = 'Success';
           } else {
               $returnUrl = route('user.subscription.plans');
               $response['route'] = $returnUrl;
@@ -309,9 +325,9 @@ class NmiPaymentController extends Controller
           $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
           $returnUrl = $request->reload_route;
           $response['route'] = $returnUrl;
-          if ($request->come_from == 'app') {
-              $returnUrl = route('payment.gateway.return.response') . '/?gateway=nmi' . '&status=200&transaction_id=' . $payment->transaction_id;
-              $response['route'] = $returnUrl;
+          if ($payment->payment_from == 'app') {
+                $response['status'] = '200';
+                $response['msg'] = 'Success';
           }
 
           return $response;

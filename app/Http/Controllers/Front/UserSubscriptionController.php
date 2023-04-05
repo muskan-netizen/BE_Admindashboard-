@@ -165,8 +165,11 @@ class UserSubscriptionController extends FrontController
      */
     public function purchaseSubscriptionPlan(Request $request, $domain = '', $slug = '')
     {
-        $currency_id = Session::get('customerCurrency');
+        $currency_id = Session::get('customerCurrency')??63;
+        \Log::info('$currency_id');
+        \Log::info($currency_id);
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+        \Log::info(json_encode($clientCurrency));
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }else{
@@ -209,7 +212,7 @@ class UserSubscriptionController extends FrontController
             $subscription_invoice->start_date = $start_date;
             $subscription_invoice->next_date = $next_date;
             $subscription_invoice->end_date = $end_date;
-            $subscription_invoice->subscription_amount = $request->amount / $clientCurrency->doller_compare;
+            $subscription_invoice->subscription_amount = $request->amount / $clientCurrency->doller_compare??1;
             $subscription_invoice->save();
             $subscription_invoice_id = $subscription_invoice->id;
             if($subscription_invoice_id){

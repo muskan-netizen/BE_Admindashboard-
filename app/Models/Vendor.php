@@ -34,6 +34,10 @@ class Vendor extends Model implements Auditable{
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_live','1');
     }
 
+    public function vendor_promo(){ 
+      return $this->belongsToMany('App\Models\Promocode', 'promocode_details', 'refrence_id', 'promocode_id')->where('expiry_date','>=',Carbon::now()->format('Y-m-d'))->where('promo_type_id',1)->select('amount','title');
+    }
+
     public function slot(){
       $client = Client::first();
       $mytime = Carbon::now()->setTimezone($client->timezone);

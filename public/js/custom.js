@@ -5442,8 +5442,7 @@ $(document).ready(function () {
             if(cardValidation(cardJson)){
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
-                    p
-                    aymentNmipay(address_id, payment_option_id,order,cardJson);
+                    paymentNmipay(address_id, payment_option_id,order,cardJson);
                 }
                 else{
                     return false;

@@ -3109,6 +3109,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
             success: function(response) {
                 
                 if (response.status == "Fail") {
+                    window.location.replace(response.route);
                      if(response.payment_from == 'wallet'){
                          $("#wallet_payment_methods_error").html(response.msg);
                          $("#wallet_payment_methods_error").css("color",'red');
