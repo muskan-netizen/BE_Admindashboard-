@@ -2837,7 +2837,7 @@ class VendorController extends BaseController{
 
                     $products = $products->orderBy('order_product_count', 'desc');
                 }
-                $products = $products->distinct();
+               $products = $products->groupBy('products.id');
                 $products = $products->paginate($limit, $page);
            
                 $response['products'] = $products ?? [];
