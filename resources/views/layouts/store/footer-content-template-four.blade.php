@@ -130,7 +130,7 @@ if(session()->has('applocale')){
                         @endif
 
                     @if(count($social_media_details))
-                    <div class="col-lg-3 col-md-6 pl-lg-5  d-none">
+                    <div class="col-lg-3 col-md-6 pl-lg-5 ">
                         <div class="sub-title">
                             <div class="footer-title mt-0">
                                 <h4 class="mt-0">{{ __('Connect') }}</h4>
@@ -165,7 +165,7 @@ if(session()->has('applocale')){
                                     <ul>
                                     @foreach($paymentMethod as $payment_method)
                                     <li>
-                                        <a href="#"><img class="blur-up lazyload" style="height: 40px;" src="{{  getImageUrl($payment_method->image_url,'40/40') }}"></a>
+                                        <a href="#" aria-label="{{ $payment_method->name}}"><img class="blur-up lazyload" style="height: 40px;" alt="{{ $payment_method->name}}" src="{{  getImageUrl($payment_method->image_url,'40/40') }}"></a>
                                     </li>
                                     @endforeach
                                         <!-- <li>
