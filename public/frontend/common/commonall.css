@@ -362,6 +362,9 @@ span.org_price.ml-1.font-14 {
 }
 .displayProducts .inner_spacing h3 label{
     font-weight: 400;font-size: 16px;text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .al_body_template_four  .categories_img .product-image img{
     object-fit:cover;
