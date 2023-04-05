@@ -730,15 +730,17 @@ class OrderController extends BaseController
 
     public function getOrderDetail($domain = '', $order_id, $vendor_id)
     {
+        //  dd($vendor_id);
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $vendor_order_status_option_ids = [];
         $vendor_order_status_created_dates = [];
         $order = Order::with(array(
-            'vendors' => function ($query) use ($vendor_id) {
-                $query->where('vendor_id', $vendor_id);
-            },
-            'vendors.products.prescription' => function ($query) use ($vendor_id, $order_id) {
+            'vendors' => function ($query) use ($vendor_id,$order_id) {
+                $query->join('vendors', 'vendors.id', '=', 'order_vendors.vendor_id')
+                ->where('vendors.id', $vendor_id)
+                ->where('order_vendors.order_id', $order_id);            },
+              'vendors.products.prescription' => function ($query) use ($vendor_id, $order_id) {
                 $query->where('vendor_id', $vendor_id)->where('order_id', $order_id);
             },
             'vendors.products' => function ($query) use ($vendor_id) {
@@ -747,10 +749,10 @@ class OrderController extends BaseController
                 $query->with('order_product_status');
                 
             },
-            'vendors.products.product',
-            'vendors.products.addon',
-            'vendors.products.addon.set',
-            'vendors.products.addon.option',
+             'vendors.products.product',
+             'vendors.products.addon',
+             'vendors.products.addon.set',
+             'vendors.products.addon.option',
             'vendors.products.addon.option.translation' => function ($q) use ($langId) {
                 $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
                 $q->where('addon_option_translations.language_id', $langId);
@@ -764,9 +766,9 @@ class OrderController extends BaseController
             'reports',
 
         ));
-        
-        $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
-        
+        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
+            $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
+        }
         $order = $order->findOrFail($order_id);
         //    return $order;
         // set payment option dynamic name
@@ -933,7 +935,6 @@ class OrderController extends BaseController
         if(!empty($order->recurring_booking_time)){
             $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number,'type'=>2])->get();
         }
-
         //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
@@ -952,7 +953,7 @@ class OrderController extends BaseController
             "category_KYC_document" => $category_KYC_document,
             'driver_data' => (($driver_data) ? json_decode($driver_data) : ''),
             'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
-            'recurring_booking' => $recurring_booking,
+            'recurring_booking' => $recurring_booking
         ]);
     }
 
@@ -1990,7 +1991,6 @@ class OrderController extends BaseController
                         ]);
 
                         $url = $dispatch_domain->delivery_service_key_url;
-
                         $res = $client->post(
                             $url . '/api/task/create',
                             ['form_params' => ($postdata)]
@@ -2108,9 +2108,6 @@ class OrderController extends BaseController
 
                 return 1;
             }
-
-
-
         }
             return 2;
         } catch (\Exception $e) {
@@ -3220,6 +3217,28 @@ class OrderController extends BaseController
         $order_vendor = OrderVendor::where('order_id', 47)->first();
         $order_vendor->order_status_option_id = rand();
         $order_vendor->save();
+    }
+
+    public function addExtraPrepTimeToOrder(Request $request){
+      
+        $response    = $this->addBufferTime($request);
+        if($response['status']=='success'){
+            $order = Order::find($response ['order_id']);
+            $this->sendDelayPushNotification($order->user_id, $order,$request);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Time Added Success Fully.',
+            ], 200);
+        }else{
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Some Thing Went Wrong.',
+              
+            ], 200);
+        }
+        
+        
+
     }
 
 
