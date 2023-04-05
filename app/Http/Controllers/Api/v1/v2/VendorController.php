@@ -2236,7 +2236,7 @@ class VendorController extends BaseController{
                         }
                     ])->join('product_translations', 'product_translations.product_id', '=', 'products.id')
                     ->select('products.*',DB::raw("'$multipli' as variant_multiplier"))->withCount(['variantSet','addOn'])
-                    ->orderBy('product_translations.title', 'asc')
+                    ->orderBy('products.id', 'asc')
                     ->groupBy('products.id');
                     }]);
                     
@@ -2298,7 +2298,7 @@ class VendorController extends BaseController{
                     if(isset($request->category_id))
                     $products = $products->where('category_id',$request->category_id);
 
-                    $products = $products->paginate($limit, $page); 
+                    $products = $products->orderBy('products.id', 'asc')->paginate($limit, $page); 
                 // if(!empty($products)){
                 //     foreach ($products as $key => $product) {
                       
@@ -2776,8 +2776,8 @@ class VendorController extends BaseController{
             $userid = $user->id;
             $latitude = $user->latitude;
             $longitude = $user->longitude;
-            $limit = $request->has('limit') ? $request->limit : 15;
-            $page = $request->has('page') ? $request->page : 2;
+            $limit = $request->has('limit') ? $request->limit : 2;
+            $page = $request->has('page') ? $request->page : 1;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             $langId = $user->language;
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
@@ -2837,8 +2837,7 @@ class VendorController extends BaseController{
 
                     $products = $products->orderBy('order_product_count', 'desc');
                 }
-               $products = $products->groupBy('products.id');
-                $products = $products->paginate($limit, $page);
+               $products = $products->groupBy('products.id')->paginate($limit, $page);
            
                 $response['products'] = $products ?? [];
            
